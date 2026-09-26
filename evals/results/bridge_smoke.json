@@ -1,0 +1,32 @@
+[
+ {
+  "label": "correct_diagnosis",
+  "case_id": "c01",
+  "seed": 42,
+  "suspected": "ch3",
+  "reverted_override": "env.episode_length_s=1.0",
+  "recovered": true,
+  "ratios": {
+   "Train/mean_episode_length": 0.999,
+   "Train/mean_reward": 1.024,
+   "Policy/mean_noise_std": 0.95
+  },
+  "approved_at": "2026-09-26T05:21:12+00:00",
+  "finished_at": "2026-09-26T05:23:32+00:00"
+ },
+ {
+  "label": "wrong_diagnosis",
+  "case_id": "c01",
+  "seed": 42,
+  "suspected": "ch1",
+  "reverted_override": "env.rewards.action_rate_l2.weight=-0.012",
+  "recovered": false,
+  "ratios": {
+   "Train/mean_episode_length": 0.05,
+   "Train/mean_reward": 0.118,
+   "Policy/mean_noise_std": 0.731
+  },
+  "approved_at": "2026-09-26T05:23:32+00:00",
+  "finished_at": "2026-09-26T05:25:58+00:00"
+ }
+]
