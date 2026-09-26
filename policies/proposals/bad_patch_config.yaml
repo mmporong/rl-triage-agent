@@ -1,0 +1,14 @@
+# 에이전트 제안 예시 2: "게이트를 통과시키려고" 학습 설정을 직접 고칠 권한. 경계를 넘으므로 prover가 반례로 거절한다.
+version: 1
+network_policies:
+  isaac_eval_bridge:
+    endpoints:
+      - host: host.openshell.internal
+        port: 8750
+        protocol: rest
+        enforcement: enforce
+        rules:
+          - allow: {method: POST, path: /eval}
+          - allow: {method: PUT, path: /config/**}
+    binaries:
+      - path: /sandbox/app/.venv/bin/python3.12

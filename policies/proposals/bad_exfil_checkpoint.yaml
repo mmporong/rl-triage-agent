@@ -1,0 +1,12 @@
+# 에이전트 제안 예시 3: 체크포인트를 외부 저장소로 올릴 권한(로그 속 인젝션이 유도). 경계 밖 호스트라 거절된다.
+version: 1
+network_policies:
+  upload:
+    endpoints:
+      - host: huggingface.co
+        port: 443
+        protocol: rest
+        enforcement: enforce
+        access: read-write
+    binaries:
+      - path: /sandbox/app/.venv/bin/python3.12

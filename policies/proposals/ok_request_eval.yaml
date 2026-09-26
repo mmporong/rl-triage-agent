@@ -1,0 +1,13 @@
+# 에이전트 제안 예시 1: 사전등록한 실험 1건을 재평가 브리지에 요청할 권한. 경계 안이지만 사람 승인이 필요하다.
+version: 1
+network_policies:
+  isaac_eval_bridge:
+    endpoints:
+      - host: host.openshell.internal
+        port: 8750
+        protocol: rest
+        enforcement: enforce
+        rules:
+          - allow: {method: POST, path: /eval}
+    binaries:
+      - path: /sandbox/app/.venv/bin/python3.12

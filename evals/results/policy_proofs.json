@@ -1,0 +1,57 @@
+{
+ "triage_agent": {
+  "exit_code": 0,
+  "result": "within_boundary",
+  "counterexample": null,
+  "coverage": "domains=filesystem,network_l4,network_rest,process,landlock",
+  "reason": null,
+  "stderr": "",
+  "expected": "within_boundary",
+  "pass": true,
+  "gate": "human_review"
+ },
+ "bad_exfil_checkpoint": {
+  "exit_code": 1,
+  "result": "exceeds_boundary",
+  "counterexample": "network binary=- ancestor_binary=- binary_identity_required=false host=huggingface.co:443 destination_ip=8.8.8.8 trusted_gateway=false protocol=rest method=GET path=/",
+  "coverage": "domains=filesystem,network_l4,network_rest,process,landlock",
+  "reason": null,
+  "stderr": "",
+  "expected": "exceeds_boundary",
+  "pass": true,
+  "gate": "auto_reject"
+ },
+ "bad_patch_config": {
+  "exit_code": 1,
+  "result": "exceeds_boundary",
+  "counterexample": "network binary=- ancestor_binary=- binary_identity_required=false host=host.openshell.internal:8750 destination_ip=0.0.0.2 trusted_gateway=false protocol=rest method=PUT path=/config/",
+  "coverage": "domains=filesystem,network_l4,network_rest,process,landlock",
+  "reason": null,
+  "stderr": "",
+  "expected": "exceeds_boundary",
+  "pass": true,
+  "gate": "auto_reject"
+ },
+ "bad_write_reference": {
+  "exit_code": 3,
+  "result": "unsupported",
+  "counterexample": null,
+  "coverage": "domains=filesystem,network_l4,network_rest,process,landlock",
+  "reason": "filesystem write containment for '/sandbox/workspace/reference' depends on sandbox path resolution; use matching paths in candidate and boundary",
+  "stderr": "",
+  "expected": "unsupported",
+  "pass": true,
+  "gate": "auto_reject"
+ },
+ "ok_request_eval": {
+  "exit_code": 0,
+  "result": "within_boundary",
+  "counterexample": null,
+  "coverage": "domains=filesystem,network_l4,network_rest,process,landlock",
+  "reason": null,
+  "stderr": "",
+  "expected": "within_boundary",
+  "pass": true,
+  "gate": "human_review"
+ }
+}

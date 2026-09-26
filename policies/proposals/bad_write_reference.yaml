@@ -1,0 +1,6 @@
+# 에이전트 제안 예시 4: 기준 실행 설정(reference)에 쓰기. prover가 경로 포함관계를 증명하지 못해(unsupported) 게이트가 fail-closed로 거절한다.
+version: 1
+filesystem_policy:
+  include_workdir: false
+  read_only: [/usr, /lib, /lib64, /etc, /sandbox/app, /sandbox/workspace/cases]
+  read_write: [/tmp, /sandbox/workspace/scratch, /sandbox/workspace/preregistrations, /sandbox/workspace/reference]

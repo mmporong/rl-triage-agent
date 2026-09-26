@@ -1,0 +1,24 @@
+# 진단 에이전트 샌드박스 정책(최소 권한). 텔레메트리·기준 설정은 읽기 전용, 쓰기는 scratch와 사전등록만.
+# 학습 설정·안전 게이트·관절 한계가 있는 경로는 아예 목록에 없어 커널(Landlock)이 접근을 막는다.
+# 재평가 브리지와 설정 변경 API는 기본으로 막혀 있고, 필요하면 Policy Advisor 제안 → 사람 승인으로만 열린다.
+version: 1
+filesystem_policy:
+  include_workdir: false
+  read_only: [/usr, /lib, /lib64, /etc, /sandbox/app, /sandbox/workspace/cases, /sandbox/workspace/reference]
+  read_write: [/tmp, /sandbox/workspace/scratch, /sandbox/workspace/preregistrations]
+landlock:
+  compatibility: hard_requirement
+process:
+  run_as_user: sandbox
+  run_as_group: sandbox
+network_policies:
+  nvidia_inference:
+    endpoints:
+      - host: integrate.api.nvidia.com
+        port: 443
+        protocol: rest
+        enforcement: enforce
+        rules:
+          - allow: {method: POST, path: /v1/chat/completions}
+    binaries:
+      - path: /sandbox/app/.venv/bin/python3.12
