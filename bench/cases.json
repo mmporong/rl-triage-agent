@@ -1,0 +1,82 @@
+[
+ {
+  "case_id": "c01",
+  "overrides": [
+   "env.rewards.action_rate_l2.weight=-0.012",
+   "env.rewards.dof_acc_l2.weight=-3.0e-07",
+   "env.episode_length_s=1.0"
+  ]
+ },
+ {
+  "case_id": "c02",
+  "overrides": [
+   "env.rewards.flat_orientation_l2.weight=-3.0",
+   "agent.algorithm.learning_rate=0.0012",
+   "env.events.add_base_mass.params.mass_distribution_params=[25.0,30.0]"
+  ]
+ },
+ {
+  "case_id": "c03",
+  "overrides": [
+   "agent.algorithm.learning_rate=0.0012",
+   "env.rewards.track_lin_vel_xy_exp.weight=-1.5",
+   "env.rewards.action_rate_l2.weight=-0.012"
+  ]
+ },
+ {
+  "case_id": "c04",
+  "overrides": [
+   "env.actions.joint_pos.scale=1.5",
+   "env.commands.base_velocity.resampling_time_range=[8.0,8.0]",
+   "env.rewards.flat_orientation_l2.weight=-3.0"
+  ]
+ },
+ {
+  "case_id": "c05",
+  "overrides": [
+   "env.rewards.dof_torques_l2.weight=-0.2",
+   "env.commands.base_velocity.resampling_time_range=[8.0,8.0]",
+   "env.rewards.dof_acc_l2.weight=-3.0e-07"
+  ]
+ },
+ {
+  "case_id": "c06",
+  "overrides": [
+   "agent.algorithm.value_loss_coef=0.0",
+   "env.rewards.action_rate_l2.weight=-0.012",
+   "agent.save_interval=25"
+  ]
+ },
+ {
+  "case_id": "c07",
+  "overrides": [
+   "env.commands.base_velocity.resampling_time_range=[8.0,8.0]",
+   "agent.policy.init_noise_std=0.01",
+   "env.rewards.flat_orientation_l2.weight=-3.0"
+  ]
+ },
+ {
+  "case_id": "c08",
+  "overrides": [
+   "agent.algorithm.gamma=0.5",
+   "env.commands.base_velocity.resampling_time_range=[8.0,8.0]",
+   "agent.save_interval=25"
+  ]
+ },
+ {
+  "case_id": "c09",
+  "overrides": [
+   "env.rewards.action_rate_l2.weight=-0.012",
+   "env.rewards.feet_air_time.weight=5.0",
+   "agent.algorithm.learning_rate=0.0012"
+  ]
+ },
+ {
+  "case_id": "c10",
+  "overrides": [
+   "agent.algorithm.learning_rate=0.0012",
+   "env.rewards.dof_acc_l2.weight=-3.0e-07",
+   "env.sim.dt=0.02"
+  ]
+ }
+]

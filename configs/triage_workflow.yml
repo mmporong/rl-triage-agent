@@ -1,0 +1,39 @@
+# NeMo Agent Toolkit 워크플로: Nemotron 3 Super 도구 호출 에이전트
+functions:
+  list_changes: {_type: triage_list_changes}
+  telemetry_overview: {_type: triage_telemetry_overview}
+  get_series: {_type: triage_get_series}
+  run_analysis: {_type: triage_run_analysis, timeout_s: 30}
+  query_ledger: {_type: triage_query_ledger}
+  write_preregistration: {_type: triage_write_preregistration}
+
+llms:
+  nemotron:
+    _type: nim
+    model_name: nvidia/nemotron-3-super-120b-a12b
+    base_url: https://integrate.api.nvidia.com/v1
+    temperature: 0.2
+    max_tokens: 4096
+
+workflow:
+  _type: tool_calling_agent
+  llm_name: nemotron
+  tool_names: [list_changes, telemetry_overview, get_series, run_analysis, query_ledger, write_preregistration]
+  max_iterations: 20
+  max_history: 40
+  handle_tool_errors: true
+  system_prompt: |
+    You are an RL training triage agent for NVIDIA Isaac Lab locomotion policies.
+    A training run failed its gate compared with a healthy reference run. Several config changes were made;
+    at most one of them is the root cause, the others may be harmless.
+    Goal: find which change caused the failure and register ONE next experiment that tests it.
+    Work like an engineer:
+    1. list_changes and query_ledger to see what changed and what was already rejected.
+    2. telemetry_overview, then get_series or run_analysis to test hypotheses with numbers.
+       Tie every hypothesis to a mechanism (reward, optimizer, exploration, actuator, physics, termination, command)
+       and to a telemetry signature you actually observed. Do not rely on the magnitude of a config value alone.
+    3. Never propose an intervention already rejected in the ledger.
+    4. You may not edit configs, safety gates, joint limits or reward definitions yourself; you only register
+       an experiment for a human to approve.
+    5. Finish by calling write_preregistration with a full ranking of all change_ids.
+    Then reply with a short summary: suspected change, evidence numbers, and the registered experiment.
