@@ -18,12 +18,17 @@ New-Item -ItemType Directory -Force -Path (Split-Path $logFile) | Out-Null
 
 Push-Location $IsaacLab
 try {
-    $trainArgs = @('-p', 'scripts\reinforcement_learning\rsl_rl\train.py',
+    # isaaclab.bat(cmd)는 '='와 ','를 인자 구분자로 쪼개 hydra override를 깨뜨린다.
+    # Isaac Sim 번들 python.bat에 인자마다 큰따옴표를 씌운 한 줄로 넘긴다.
+    $trainArgs = @('scripts\reinforcement_learning\rsl_rl\train.py',
         '--task', $Task, '--num_envs', $NumEnvs, '--max_iterations', $MaxIterations,
         '--seed', $Seed, '--headless', '--run_name', $runName) + $Overrides
+    $argLine = ($trainArgs | ForEach-Object { '"' + ([string]$_).Replace('"', '\"') + '"' }) -join ' '
+    $pythonBat = Join-Path $IsaacLab '_isaac_sim\python.bat'
     $sw = [Diagnostics.Stopwatch]::StartNew()
-    & .\isaaclab.bat @trainArgs *> $logFile
-    $exit = $LASTEXITCODE
+    $proc = Start-Process -FilePath $pythonBat -ArgumentList $argLine -WorkingDirectory $IsaacLab -NoNewWindow -Wait -PassThru `
+        -RedirectStandardOutput $logFile -RedirectStandardError "$logFile.err"
+    $exit = $proc.ExitCode
     $sw.Stop()
     # Isaac Lab 2.1.1 train.py는 --experiment_name을 반영하지 않아 태스크 기본 실험 폴더에 기록된다.
     $runDir = Get-ChildItem "logs\rsl_rl" -Directory | ForEach-Object { Get-ChildItem $_.FullName -Directory } |
