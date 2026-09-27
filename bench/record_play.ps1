@@ -17,8 +17,8 @@ if (-not $runDir) { throw "실행 폴더 없음: $RunName" }
 $ckpt = Get-ChildItem $runDir.FullName -Filter 'model_*.pt' | Sort-Object { [int]($_.BaseName -replace 'model_', '') } |
     Select-Object -Last 1
 $playArgs = @('scripts\reinforcement_learning\rsl_rl\play.py', '--task', $Task, '--num_envs', $NumEnvs,
-    '--headless', '--video', '--video_length', $VideoLength,
-    '--load_run', $runDir.Name, '--checkpoint', $ckpt.Name) + $Overrides
+    '--headless', '--video', '--video_length', $VideoLength, '--kit_args=--/app/vulkan=false --/app/window/hideUi=true',
+    '--checkpoint', $ckpt.FullName) + $Overrides
 $argLine = ($playArgs | ForEach-Object { '"' + ([string]$_).Replace('"', '\"') + '"' }) -join ' '
 $log = Join-Path $repo "bench\private\logs\play_$OutName.log"
 $proc = Start-Process -FilePath (Join-Path $IsaacLab '_isaac_sim\python.bat') -ArgumentList $argLine `
