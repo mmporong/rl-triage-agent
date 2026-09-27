@@ -9,9 +9,12 @@ functions:
 
 llms:
   nemotron:
-    _type: nim
+    # v1은 _type: nim 이었으나 도구 호출 응답을 빈 응답으로 잃는 문제(20회 중 13회)로
+    # 같은 모델·엔드포인트를 OpenAI 호환 클라이언트로 부른다. 프롬프트·도구는 동결본 그대로.
+    _type: openai
     model_name: nvidia/nemotron-3-super-120b-a12b
     base_url: https://integrate.api.nvidia.com/v1
+    api_key: ${NVIDIA_API_KEY}
     temperature: 0.2
     max_tokens: 4096
 

@@ -1,0 +1,14 @@
+# OpenShell 샌드박스 이미지: RL Triage Agent (NeMo Agent Toolkit + Nemotron)
+FROM nvcr.io/nvidia/base/ubuntu:24.04
+RUN apt-get update && apt-get install -y --no-install-recommends python3.12 python3.12-venv ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=ghcr.io/astral-sh/uv:0.11.6 /uv /usr/local/bin/uv
+RUN useradd -m -u 1001 -s /bin/bash sandbox
+WORKDIR /sandbox
+COPY pyproject.toml uv.lock README.md /sandbox/app/
+COPY src /sandbox/app/src
+COPY configs /sandbox/app/configs
+COPY tests /sandbox/app/tests
+RUN cd /sandbox/app && UV_PROJECT_ENVIRONMENT=/sandbox/app/.venv UV_PYTHON_DOWNLOADS=never \
+    uv sync --frozen --python /usr/bin/python3.12 && chmod -R a+rX /sandbox/app
+ENV TRIAGE_WORKSPACE=/sandbox/workspace PATH=/sandbox/app/.venv/bin:$PATH PYTHONUTF8=1

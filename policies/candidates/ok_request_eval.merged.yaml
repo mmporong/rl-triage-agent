@@ -30,7 +30,7 @@ network_policies:
           method: POST
           path: /v1/chat/completions
     binaries:
-    - path: /sandbox/app/.venv/bin/python3.12
+    - path: /usr/bin/python3.12
   isaac_eval_bridge:
     endpoints:
     - host: host.openshell.internal
@@ -42,4 +42,4 @@ network_policies:
           method: POST
           path: /eval
     binaries:
-    - path: /sandbox/app/.venv/bin/python3.12
+    - path: /usr/bin/python3.12

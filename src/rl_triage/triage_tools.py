@@ -16,7 +16,8 @@ from pathlib import Path
 
 import yaml
 
-WORKSPACE = Path(os.environ.get("TRIAGE_WORKSPACE", Path(__file__).resolve().parents[1] / "workspace"))
+_DEFAULT_WS = Path("/sandbox/workspace") if Path("/sandbox/workspace/cases").exists() else Path(__file__).resolve().parents[2] / "workspace"
+WORKSPACE = Path(os.environ.get("TRIAGE_WORKSPACE", _DEFAULT_WS))
 
 # 학습 실패 진단에 먼저 보는 지표. 나머지는 get_series로 조회한다.
 KEY_TAGS = [

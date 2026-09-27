@@ -17,7 +17,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 POL = ROOT / "policies"
 OUT = POL / "candidates"
-PROVER = os.environ.get("OPENSHELL_PROVER", "~/.cache/prover-spike/openshell-prover")
+PROVER = os.environ.get("OPENSHELL_PROVER", "openshell-prover")
 
 EXPECT = {
     "triage_agent": "within_boundary",

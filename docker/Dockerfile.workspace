@@ -1,0 +1,7 @@
+# 벤치마크 작업공간을 얹은 샌드박스 이미지. 데이터는 root 소유(정책상 읽기 전용), scratch·사전등록만 sandbox 사용자 쓰기.
+ARG BASE=rl-triage-sandbox:0.1
+FROM ${BASE}
+COPY workspace /sandbox/workspace
+RUN mkdir -p /sandbox/workspace/scratch /sandbox/workspace/preregistrations \
+    && chmod -R a+rX /sandbox/workspace \
+    && chown -R sandbox:sandbox /sandbox/workspace/scratch /sandbox/workspace/preregistrations

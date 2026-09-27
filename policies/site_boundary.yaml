@@ -21,7 +21,6 @@ network_policies:
           - allow: {method: POST, path: /v1/chat/completions}
           - allow: {method: GET, path: /v1/models}
     binaries:
-      - path: /sandbox/app/.venv/bin/python3.12
       - path: /usr/bin/python3.12
   isaac_eval_bridge:
     endpoints:
@@ -33,5 +32,4 @@ network_policies:
           - allow: {method: GET, path: /runs/**}
           - allow: {method: POST, path: /eval}
     binaries:
-      - path: /sandbox/app/.venv/bin/python3.12
       - path: /usr/bin/python3.12

@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# RL Triage Agent용으로 고친 NVIDIA provider 프로필(원본: NVIDIA/OpenShell providers/nvidia.yaml).
+# Example provider profile. OpenShell does not load it; import it explicitly:
+#   openshell provider profile lint   -f providers/nvidia.yaml
+#   openshell provider profile import -f providers/nvidia.yaml --global
+#
+# Copy and edit this file rather than importing it unchanged. `binaries` is the
+# least-privilege control that decides which processes may reach the endpoints
+# below, so it has to name the paths in *your* image.
+#
+# Client binaries:   curl.
+# Reference layout:  curl at /usr/bin/curl or /usr/local/bin/curl. Add the SDK
+#                    interpreter if the workload calls the API through a library.
+# Credential scope:  NVIDIA_API_KEY, sent as a bearer authorization header to
+#                    integrate.api.nvidia.com and nowhere else.
+# Endpoint access:   integrate.api.nvidia.com, read-write, L7 enforced.
+# Smoke test:        openshell sandbox create --provider <name> -- \
+#                      curl -sS https://integrate.api.nvidia.com/v1/models
+
+id: nvidia
+display_name: NVIDIA
+description: NVIDIA inference endpoints
+category: inference
+inference_capable: true
+credentials:
+  - name: api_key
+    description: NVIDIA API key
+    env_vars: [NVIDIA_API_KEY]
+    required: true
+    auth_style: bearer
+    header_name: authorization
+discovery:
+  credentials: [api_key]
+endpoints:
+  - host: integrate.api.nvidia.com
+    port: 443
+    protocol: rest
+    enforcement: enforce
+    # 최소 권한: 채팅 완성 호출만 허용 (공식 예시는 access: read-write)
+    rules:
+      - allow: {method: POST, path: /v1/chat/completions}
+binaries: [/usr/bin/python3.12]

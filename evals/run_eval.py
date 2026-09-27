@@ -69,9 +69,15 @@ def run_control(ws: Path, case_id: str) -> dict:
     prompt = CONTROL_PROMPT.format(changes=json.dumps(T.list_changes(case_id), ensure_ascii=False, default=str),
                                    overview=json.dumps(T.telemetry_overview(case_id)["rows"], ensure_ascii=False))
     t0 = time.time()
-    resp = client.chat.completions.create(model=MODEL, messages=[{"role": "user", "content": prompt}],
-                                          temperature=0.2, max_tokens=4096)
-    text = resp.choices[0].message.content or ""
+    try:
+        resp = client.chat.completions.create(model=MODEL, messages=[{"role": "user", "content": prompt}],
+                                              temperature=0.2, max_tokens=4096)
+        text = resp.choices[0].message.content or ""
+    except Exception as e:  # API 오류는 인프라 오류로 기록하고 평가를 계속한다
+        return {"elapsed_s": round(time.time() - t0, 1), "suspected": None, "ranking": None,
+                "raw_tail": f"{type(e).__name__}: {e}"[-1500:]}
+    if not text:
+        text = "empty response"
     ranking = None
     try:
         ranking = json.loads(text[text.index("{"): text.rindex("}") + 1])["ranking"]
@@ -81,26 +87,57 @@ def run_control(ws: Path, case_id: str) -> dict:
             "ranking": ranking, "raw_tail": text[-1500:]}
 
 
+INFRA_MARKERS = ("empty response", "rate limit", "429", "502", "503", "504", "timed out", "Connection", "overloaded")
+
+
+def is_infra_error(res: dict) -> bool:
+    text = (res.get("stderr_tail") or "") + (res.get("raw_tail") or "")
+    return any(m in text for m in INFRA_MARKERS)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--mode", choices=["agent", "control", "both"], default="both")
     ap.add_argument("--cases", nargs="*")
+    ap.add_argument("--retry-infra", action="store_true",
+                    help="기존 결과에서 인프라 오류(LLM 빈 응답 등으로 결론 없이 종료)만 다시 실행해 attempt를 늘려 기록한다")
+    ap.add_argument("--bench", choices=["v1", "v2"], default="v1")
+    ap.add_argument("--tag", default="", help="결과 파일 하위 폴더(evals/results/<tag>/)")
+    ap.add_argument("--max-attempts", type=int, default=4, help="인프라 오류일 때만 대기 후 재시도하는 최대 횟수")
     args = ap.parse_args()
-    ws = ROOT / "workspace" / f"seed{args.seed}"
-    key = json.loads((ROOT / "bench" / "private" / "answer_key.json").read_text(encoding="utf-8"))
+    ws = ROOT / ("workspace" if args.bench == "v1" else "workspace_v2") / f"seed{args.seed}"
+    key_name = "answer_key.json" if args.bench == "v1" else "answer_key_v2.json"
+    key = json.loads((ROOT / "bench" / "private" / key_name).read_text(encoding="utf-8"))
     case_ids = args.cases or sorted(p.name for p in (ws / "cases").iterdir())
     modes = ["agent", "control"] if args.mode == "both" else [args.mode]
-    results_path = ROOT / "evals" / "results" / f"seed{args.seed}.jsonl"
+    results_path = ROOT / "evals" / "results" / args.tag / f"seed{args.seed}.jsonl"
     results_path.parent.mkdir(parents=True, exist_ok=True)
-    for cid in case_ids:
-        for mode in modes:
+    todo = [(cid, mode, 1) for cid in case_ids for mode in modes]
+    if args.retry_infra:
+        # 모델 판단이 아니라 인프라 오류로 결론 없이 끝난 실행만 다시 돌린다. 원래 기록은 그대로 둔다.
+        rows = [json.loads(l) for l in results_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+        latest = {}
+        for r in rows:
+            latest[(r["case_id"], r["mode"])] = r
+        todo = [(c, m, r.get("attempt", 1) + 1) for (c, m), r in sorted(latest.items())
+                if m in modes and r.get("suspected") is None and is_infra_error(r)]
+        print(f"infra retry: {len(todo)} runs")
+    for cid, mode, attempt in todo:
+        # 인프라 오류(서버 과부하·빈 응답 등)만 대기 후 재시도한다. 모든 시도를 기록한다.
+        while True:
             res = run_agent(ws, cid) if mode == "agent" else run_control(ws, cid)
-            res.update(score(ws, cid, res.get("suspected"), key), case_id=cid, seed=args.seed, mode=mode, model=MODEL)
+            infra = res.get("suspected") is None and is_infra_error(res)
+            res.update(score(ws, cid, res.get("suspected"), key), case_id=cid, seed=args.seed, mode=mode, model=MODEL,
+                       bench=args.bench, attempt=attempt, infra_error=infra)
             with results_path.open("a", encoding="utf-8") as f:
                 f.write(json.dumps(res, ensure_ascii=False) + "\n")
-            print(f"{cid} {mode:7s} suspected={res['suspected']} truth={res['truth']} correct={res['correct']} "
-                  f"({res['elapsed_s']}s)")
+            print(f"{cid} {mode:7s} attempt={attempt} suspected={res['suspected']} truth={res['truth']} "
+                  f"correct={res['correct']} infra={infra} ({res['elapsed_s']}s)", flush=True)
+            if not infra or attempt >= args.max_attempts:
+                break
+            time.sleep(30 * 2 ** (attempt - 1))
+            attempt += 1
 
 
 if __name__ == "__main__":
