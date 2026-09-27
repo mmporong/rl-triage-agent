@@ -8,13 +8,20 @@ Isaac Lab으로 보행 정책을 학습하는 로봇 RL 엔지니어는 보상 �
 RL Triage Agent는 이 시행착오를 줄이기 위해 실패한 학습의 텔레메트리를 정상 기준 실행과 비교해 원인을 좁히는 에이전트입니다. Nemotron 3 Super가 NeMo Agent Toolkit 위에서 조사 계획을 세우고, 지표 비교, 학습 곡선 조회, 분석 코드 실행 도구를 필요한 순서로 호출해 가설을 수치로 검증합니다. 조사가 끝나면 설정을 고치는 대신 원인 순위, 근거 수치, 되돌려 볼 변수 하나와 성공 기준을 사전등록 JSON으로 남깁니다. 사람이 승인하면 재평가 브리지가 Isaac Lab에서 그 변수만 바꿔 재학습하고, 회복 여부로 진단을 확인합니다. 실패를 덮는 위험은 OpenShell로 막습니다. 에이전트는 샌드박스에서 설정과 기준 데이터에 쓸 수 없고, 권한을 더 요청하면 openshell-prover가 허용 경계를 넘는 요청을 자동 거절합니다. 결함 10종을 주입한 벤치마크의 보류 세트에서 텔레메트리만으로 결함 유형을 10건 중 6건 맞혔고, 같은 모델의 단일 프롬프트는 2건이었습니다.
 
 [활용한 핵심 기술 및 AI 모델]
-NVIDIA Nemotron 3 Super 120B (build.nvidia.com API, 도구 호출과 추론)
-NVIDIA NeMo Agent Toolkit 1.9 (tool_calling_agent 워크플로, 사용자 정의 도구 7개)
-NVIDIA OpenShell 0.1.1 (커스텀 샌드박스 이미지, Landlock 파일 정책, L7 REST 네트워크 정책, NVIDIA provider 자격증명 주입)
-openshell-prover 0.1.1 (권한 확장 요청의 SMT 증명, 반례 기반 자동 거절)
-NVIDIA Skills (skills-lock.json: nemo-rl-auto-research, nemoclaw-user-guide, nemotron-policy-generator / 자체 스킬 isaaclab-rl-triage)
-NVIDIA Isaac Lab 2.1.1, Isaac Sim 4.5 (Unitree Go2 결함 주입 벤치마크, 재평가 재학습, 녹화)
-Python, uv, Docker, WSL2, RSL-RL PPO
+[NVIDIA AI 기술]
+- NVIDIA Nemotron 3 Super 120B (nvidia/nemotron-3-super-120b-a12b, build.nvidia.com API): 에이전트의 조사 계획, 도구 호출, 원인 추론
+- NVIDIA NeMo Agent Toolkit 1.9 (nvidia-nat): tool_calling_agent 워크플로와 사용자 정의 도구 7개(변경 목록, 지표 비교, 학습 곡선 조회, 분석 코드 실행, 기각 이력, 실험 사전등록, 메커니즘 진단)
+- NVIDIA OpenShell 0.1.1: 에이전트 실행 샌드박스(커스텀 이미지, Landlock 파일 정책, L7 REST 네트워크 정책), NVIDIA provider로 API 키를 요청 시점에만 주입
+- openshell-prover 0.1.1: 에이전트의 권한 확장 요청을 허용 경계 정책과 SMT로 비교해 증명되지 않으면 자동 거절
+- NVIDIA Skills (build.nvidia.com/skills, skills-lock.json): nemo-rl-auto-research, nemoclaw-user-guide, nemotron-policy-generator 설치, 자체 스킬 isaaclab-rl-triage를 NVIDIA 스킬 형식으로 패키징
+- NVIDIA Isaac Lab 2.1.1, Isaac Sim 4.5: Unitree Go2 보행 학습 결함 주입 벤치마크(결함 10종, seed 3개), 진단 확인용 재학습, 데모 영상 녹화
+
+[전체 스택]
+- 강화학습: RSL-RL PPO, TensorBoard 텔레메트리 추출
+- 에이전트·평가: Python 3.12, uv, pytest, OpenAI 호환 클라이언트(단일 프롬프트 대조군)
+- 실행 환경: Windows 11 + WSL2 Ubuntu 24.04, Docker 29, NVIDIA RTX 3060
+- 재평가 브리지: Python HTTP 서버(사람 CLI 승인 후 Isaac Lab 재학습 실행)
 
 [추가 URL]
 GitHub: https://github.com/mmporong/rl-triage-agent
+데모 영상(50초): https://github.com/mmporong/rl-triage-agent/blob/main/docs/demo/rl_triage_demo.mp4

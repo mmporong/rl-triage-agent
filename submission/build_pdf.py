@@ -7,10 +7,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 t = (ROOT / "submission" / "form_answers.txt").read_text(encoding="utf-8")
-parts = re.split(r"\n?\[(.+?)\]\n", "\n" + t)
+# 최상위 제목에서만 나눈다(기술 스택 안의 [NVIDIA AI 기술] 같은 소제목은 본문으로 둔다).
+HEADS = ["서비스 명", "해결하고자 했던 문제", "서비스 소개 및 주요 기능", "활용한 핵심 기술 및 AI 모델", "추가 URL"]
+parts = re.split(r"\n?\[(" + "|".join(map(re.escape, HEADS)) + r")\]\n", "\n" + t)
 sec = {k: v.strip() for k, v in zip(parts[1::2], parts[2::2])}
 png = (ROOT / "docs" / "demo" / "png").as_uri()
-stack = "".join(f"<li>{html.escape(l)}</li>" for l in sec["활용한 핵심 기술 및 AI 모델"].splitlines() if l.strip())
+stack = "".join(
+    (f"<li style='list-style:none;margin-left:-5mm;font-weight:700'>{html.escape(l)}</li>" if l.startswith("[")
+     else f"<li>{html.escape(l.lstrip('- '))}</li>")
+    for l in sec["활용한 핵심 기술 및 AI 모델"].splitlines() if l.strip())
 
 doc = f"""<!doctype html><html lang="ko"><meta charset="utf-8"><style>
 @page {{ size: A4; margin: 16mm 15mm; }}
