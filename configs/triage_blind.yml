@@ -12,7 +12,8 @@ llms:
     base_url: https://integrate.api.nvidia.com/v1
     api_key: ${NVIDIA_API_KEY}
     temperature: 0.2
-    max_tokens: 4096
+    # v1.1: 추론 모델이 4096 토큰 안에서 생각만 하다 잘리는 문제(과제 B 개발 세트 5/20)로 한도를 올린다.
+    max_tokens: 16384
 
 workflow:
   _type: tool_calling_agent
@@ -21,6 +22,7 @@ workflow:
   max_iterations: 20
   max_history: 40
   handle_tool_errors: true
+  truncation_retry: {max_retries: 2, token_increment: 8192}
   system_prompt: |
     You are an RL training triage agent for NVIDIA Isaac Lab locomotion policies (Unitree Go2, flat terrain, RSL-RL PPO).
     A training run deviates from a healthy reference run. Nobody knows what was changed.

@@ -77,7 +77,7 @@ def run_control_blind(ws: Path, case_id: str) -> dict:
     t0 = time.time()
     try:
         resp = client.chat.completions.create(model=MODEL, messages=[{"role": "user", "content": prompt}],
-                                              temperature=0.2, max_tokens=4096)
+                                              temperature=0.2, max_tokens=16384)
         text = resp.choices[0].message.content or "empty response"
     except Exception as e:
         return {"elapsed_s": round(time.time() - t0, 1), "suspected": None, "ranking": None,
@@ -137,7 +137,7 @@ def run_control(ws: Path, case_id: str) -> dict:
     t0 = time.time()
     try:
         resp = client.chat.completions.create(model=MODEL, messages=[{"role": "user", "content": prompt}],
-                                              temperature=0.2, max_tokens=4096)
+                                              temperature=0.2, max_tokens=16384)
         text = resp.choices[0].message.content or ""
     except Exception as e:  # API 오류는 인프라 오류로 기록하고 평가를 계속한다
         return {"elapsed_s": round(time.time() - t0, 1), "suspected": None, "ranking": None,
