@@ -76,7 +76,11 @@ Benchmark: 10 injected faults (reward, actuator, exploration, optimizer, physics
 |---|---|---:|---:|---:|
 | A. Which change broke it? (change list + telemetry) | dev (seeds 42, 7) | 20/20 | 20/20 | 33% |
 | B. Unknown cause: which mechanism? (telemetry only) | dev (seeds 42, 7) | 10/20 (5 truncated at 4096 tokens) | 8/20 | 17% |
-| B. Unknown cause | **held-out (seed 123), config v1.1** | _pending_ | _pending_ | 17% |
+| B. Unknown cause | **held-out (seed 123), config v1.1** | **6/10** | 2/10 | 17% |
+| B. Unknown cause, top-2 | held-out (seed 123) | 6/10 | 6/10 | 33% |
+| A. Which change broke it? | held-out (seed 123) | 10/10 | 10/10 | 33% |
+
+On the held-out set the agent was right and the baseline wrong in 4 cases (c01, c04, c05, c07), never the reverse; with n=10 this is not statistically significant (two-sided binomial p≈0.125). Both methods never ranked the true mechanism first for **physics** or **optimizer** faults, on dev or held-out. The baseline tends to answer "reward" from the summary table; the agent pulls the termination and action curves before deciding.
 
 Loop verification (`evals/results/bridge_smoke.json`): reverting the true culprit recovered the run (episode-length ratio 0.999, reward ratio 1.024); reverting a benign change did not (0.05). A wrong diagnosis is caught by retraining.
 

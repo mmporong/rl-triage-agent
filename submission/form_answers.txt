@@ -1,0 +1,20 @@
+[서비스 명]
+RL Triage Agent (Isaac Lab 학습 실패 원인 추적 에이전트)
+
+[해결하고자 했던 문제]
+로봇 강화학습 엔지니어는 Isaac Lab에서 설정 몇 개를 한꺼번에 바꾸고 학습을 돌립니다. 학습이 무너지면 보상, 액추에이터, 탐색, PPO 설정, 물리, 종료 조건 중 어디가 원인인지 모른 채 비슷한 개입을 되풀이하게 됩니다. 저희 팀의 Go2 학습에서도 명령 크기를 줄이는 개입이 세 번 연속 기각됐는데, 같은 증상은 12일 전 기록에 이미 남아 있었습니다. 이 일을 에이전트에게 맡기려면 설정이나 보상을 고쳐 게이트만 통과시키는 편법도 막아야 합니다.
+
+[서비스 소개 및 주요 기능]
+Isaac Lab 학습 텔레메트리를 정상 기준 실행과 비교해 원인을 찾고, 설정을 고치는 대신 다음 실험 하나를 사전등록하는 에이전트입니다. Nemotron 3 Super가 NeMo Agent Toolkit 위에서 계획을 세우고 지표 비교, 학습 곡선 조회, 분석 코드 실행 도구를 골라 부릅니다. 결과는 원인 순위와 근거 수치, 바꿀 변수 하나와 판정 기준을 담은 JSON으로 남습니다. 사람이 승인하면 재평가 브리지가 Isaac Lab에서 그 변수만 바꿔 다시 학습하고 회복 여부를 판정합니다. 에이전트는 OpenShell 샌드박스에서 돌아가며 설정, 보상, 기준 데이터에 쓸 수 없고 API 키는 자리표시자로만 봅니다. 권한을 더 요청하면 openshell-prover가 현장 경계와 비교해 증명되지 않는 요청을 자동으로 거절합니다. 결함 10종을 넣은 Go2 벤치마크의 보류 세트에서, 무엇을 바꿨는지 모르는 실패의 원인 유형을 10건 중 6건 맞혔습니다(같은 모델 단일 프롬프트는 2건).
+
+[활용한 핵심 기술 및 AI 모델]
+NVIDIA Nemotron 3 Super 120B (build.nvidia.com API, 도구 호출과 추론)
+NVIDIA NeMo Agent Toolkit 1.9 (tool_calling_agent 워크플로, 사용자 정의 도구 7개)
+NVIDIA OpenShell 0.1.1 (커스텀 샌드박스 이미지, Landlock 파일 정책, L7 REST 네트워크 정책, NVIDIA provider 자격증명 주입)
+openshell-prover 0.1.1 (권한 확장 요청의 SMT 증명, 반례 기반 자동 거절)
+NVIDIA Skills (skills-lock.json: nemo-rl-auto-research, nemoclaw-user-guide, nemotron-policy-generator / 자체 스킬 isaaclab-rl-triage)
+NVIDIA Isaac Lab 2.1.1, Isaac Sim 4.5 (Unitree Go2 결함 주입 벤치마크, 재평가 재학습, 녹화)
+Python, uv, Docker, WSL2, RSL-RL PPO
+
+[추가 URL]
+GitHub: https://github.com/mmporong/rl-triage-agent

@@ -1,0 +1,105 @@
+{
+ "secret_seed": 690129933,
+ "cases": {
+  "c01": {
+   "harmful_id": "H06",
+   "harmful_override": "env.episode_length_s=1.0",
+   "category": "termination",
+   "note": "에피소드 길이 20초→1초",
+   "benign_ids": [
+    "B01",
+    "B04"
+   ]
+  },
+  "c02": {
+   "harmful_id": "H10",
+   "harmful_override": "env.events.add_base_mass.params.mass_distribution_params=[25.0,30.0]",
+   "category": "physics",
+   "note": "몸통 질량 +25~30kg",
+   "benign_ids": [
+    "B06",
+    "B02"
+   ]
+  },
+  "c03": {
+   "harmful_id": "H01",
+   "harmful_override": "env.rewards.track_lin_vel_xy_exp.weight=-1.5",
+   "category": "reward",
+   "note": "속도 추종 보상 부호 반전",
+   "benign_ids": [
+    "B04",
+    "B02"
+   ]
+  },
+  "c04": {
+   "harmful_id": "H02",
+   "harmful_override": "env.actions.joint_pos.scale=1.5",
+   "category": "actuator",
+   "note": "관절 위치 액션 스케일 6배",
+   "benign_ids": [
+    "B05",
+    "B06"
+   ]
+  },
+  "c05": {
+   "harmful_id": "H05",
+   "harmful_override": "env.rewards.dof_torques_l2.weight=-0.2",
+   "category": "reward",
+   "note": "토크 패널티 1000배",
+   "benign_ids": [
+    "B01",
+    "B05"
+   ]
+  },
+  "c06": {
+   "harmful_id": "H09",
+   "harmful_override": "agent.algorithm.value_loss_coef=0.0",
+   "category": "optimizer",
+   "note": "가치함수 학습 끔",
+   "benign_ids": [
+    "B04",
+    "B03"
+   ]
+  },
+  "c07": {
+   "harmful_id": "H03",
+   "harmful_override": "agent.policy.init_noise_std=0.01",
+   "category": "exploration",
+   "note": "초기 탐색 노이즈 거의 0",
+   "benign_ids": [
+    "B05",
+    "B06"
+   ]
+  },
+  "c08": {
+   "harmful_id": "H04",
+   "harmful_override": "agent.algorithm.gamma=0.5",
+   "category": "optimizer",
+   "note": "할인율 과소(근시안)",
+   "benign_ids": [
+    "B03",
+    "B05"
+   ]
+  },
+  "c09": {
+   "harmful_id": "H08",
+   "harmful_override": "env.rewards.feet_air_time.weight=5.0",
+   "category": "reward",
+   "note": "발 체공 보상 20배",
+   "benign_ids": [
+    "B04",
+    "B02"
+   ]
+  },
+  "c10": {
+   "harmful_id": "H07",
+   "harmful_override": "env.sim.dt=0.02",
+   "category": "physics",
+   "note": "물리 스텝 4배(제어 12.5Hz)",
+   "benign_ids": [
+    "B01",
+    "B02"
+   ]
+  }
+ }
+}

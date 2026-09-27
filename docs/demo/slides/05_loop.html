@@ -1,0 +1,23 @@
+<!doctype html><html lang='ko'><meta charset='utf-8'><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1280px;height:720px;background:#f4f1ea;color:#161616;font-family:'Malgun Gothic','Pretendard',sans-serif;
+     padding:56px 72px;display:flex;flex-direction:column;overflow:hidden}
+.kicker{font-size:20px;letter-spacing:.08em;color:#5b5b5b;text-transform:uppercase}
+h1{font-size:52px;line-height:1.15;margin:14px 0 18px;font-weight:800}
+h2{font-size:38px;margin:10px 0 22px;font-weight:800}
+p.sub{font-size:24px;color:#3a3a3a;line-height:1.5}
+.bar{height:6px;width:120px;background:#76b900;margin-top:auto}
+table{border-collapse:collapse;font-size:22px;width:100%}
+td,th{padding:10px 14px;border-bottom:1px solid #cfc8b8;text-align:left;vertical-align:top}
+th{font-size:18px;color:#5b5b5b;font-weight:600}
+.num{font-family:Consolas,monospace;font-weight:700}
+.ok{color:#2f6b00;font-weight:700}.no{color:#a3241b;font-weight:700}
+.step{display:flex;gap:18px;align-items:flex-start;margin:7px 0;font-size:21px}
+.step b{font-family:Consolas,monospace;background:#161616;color:#f4f1ea;padding:3px 10px;border-radius:4px;min-width:210px}
+.step span{color:#333;line-height:1.35}
+.foot{font-size:16px;color:#6b6b6b;margin-top:auto}
+</style><body>
+      <div class='kicker'>사전등록 → 사람 승인 → Isaac Lab 재학습</div>
+      <h2>진단은 실제 재학습으로 확인한다</h2>
+      <table><tr><th>사전등록</th><th>되돌린 변경 하나</th><th>에피소드 길이 비</th><th>판정</th></tr><tr><td>올바른 진단</td><td class='num'>env.episode_length_s=1.0</td><td class='num'>0.999</td><td class='ok'>회복</td></tr><tr><td>틀린 진단</td><td class='num'>env.rewards.action_rate_l2.weight=-0.012</td><td class='num'>0.05</td><td class='no'>미회복</td></tr></table>
+      <p class='sub' style='margin-top:22px;font-size:21px'>틀린 진단은 재학습이 걸러낸다. 승인은 브리지 호스트의 사람만 할 수 있다.</p></body></html>
