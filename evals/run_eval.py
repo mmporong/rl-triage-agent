@@ -41,7 +41,10 @@ def score(ws: Path, case_id: str, suspected: str | None, key: dict) -> dict:
 
 
 def run_agent(ws: Path, case_id: str) -> dict:
-    env = {**os.environ, "TRIAGE_WORKSPACE": str(ws), "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
+    trace = ROOT / "evals" / "results" / "traces" / f"{ws.name}_{case_id}_{int(time.time())}.jsonl"
+    trace.parent.mkdir(parents=True, exist_ok=True)
+    env = {**os.environ, "TRIAGE_WORKSPACE": str(ws), "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8",
+           "TRIAGE_TRACE": str(trace)}
     prereg = ws / "preregistrations" / f"{case_id}.json"
     if prereg.exists():
         prereg.unlink()
@@ -50,7 +53,7 @@ def run_agent(ws: Path, case_id: str) -> dict:
         ["uv", "run", "--no-sync", "nat", "run", "--config_file", str(ROOT / "configs" / "triage_workflow.yml"),
          "--input", f"Triage failed training case_id={case_id}. Find the root-cause change and register the next experiment."],
         capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, cwd=ROOT, timeout=900)
-    out = {"elapsed_s": round(time.time() - t0, 1), "exit_code": proc.returncode,
+    out = {"elapsed_s": round(time.time() - t0, 1), "exit_code": proc.returncode, "trace": trace.name,
            "stdout_tail": proc.stdout[-3000:], "stderr_tail": proc.stderr[-1500:]}
     if prereg.exists():
         doc = json.loads(prereg.read_text(encoding="utf-8"))
