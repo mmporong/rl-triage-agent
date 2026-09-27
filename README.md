@@ -1,78 +1,157 @@
-# RL Triage Agent — Isaac Lab 학습 실패 원인 추적 에이전트
+# Isaac Lab RL Training Triage Agent
 
-NVIDIA Isaac Lab에서 로봇 보행 정책 학습이 기준 실행과 다르게 무너졌을 때, 여러 설정 변경 중 **어느 변경이 원인인지** 텔레메트리로 찾아내고, 사람이 승인할 **다음 실험 하나**를 사전등록하는 에이전트다. 에이전트는 설정·안전 게이트·관절 한계·보상을 직접 고칠 수 없다. 그 경계는 NVIDIA OpenShell 정책과 `openshell-prover` 증명으로 강제한다.
+| Catalog field | Value |
+| --- | --- |
+| Description | Finds which config change broke an Isaac Lab RL locomotion training run from its telemetry, registers one next experiment for human approval, and verifies it by retraining — inside an OpenShell sandbox that cannot touch configs, safety gates or reward definitions. |
+| Industry | ✨ Other |
+| Requirements | Linux or WSL2 · Docker · OpenShell 0.1.1 · NVIDIA API key (build.nvidia.com) · Isaac Lab 2.1.1 + RTX GPU only for re-running experiments |
+| NemoClaw | N/A |
+| Harness | N/A |
+| OpenShell | 0.1.1 |
+| Collection | Hackathon |
 
-> Status: 개발 중(Korea Agentic AI Hackathon 2026 예선). 아래 "측정 전"으로 표시한 항목은 아직 실행하지 않았다.
+A robot RL engineer changes several settings, trains, and the run collapses. Was it the reward, the actuator scale, exploration noise, PPO settings, physics or termination? This agent reads the training telemetry against a healthy reference run, tests hypotheses with its own analysis code, and hands back **one preregistered experiment** instead of a patched config. A human approves it, the eval bridge retrains in Isaac Lab with only that variable changed, and the result confirms or rejects the diagnosis.
 
-## 왜 필요한가
+> 한국어 요약은 [아래](#한국어-요약)에 있습니다.
 
-로봇 RL 엔지니어는 한 번에 여러 설정을 바꾸고 학습을 돌린다. 학습이 무너지면 보상·물리·액추에이터·탐색·최적화·계측 중 어디가 원인인지 모른 채 같은 계열의 개입을 반복하기 쉽다. 이 저장소 작성자의 실제 Go2 학습([isaac-walk-rl](https://github.com/mmporong/isaac-walk-rl))에서도 안전 게이트 실패에 명령 축소 계열 개입이 3회 연속 기각됐고, 같은 증상은 12일 전 계측에 이미 남아 있었다.
+## Screenshot
 
-## 동작
-
-```
-목표("이 학습이 왜 무너졌나")
-  → Nemotron 3 Super 계획 (NeMo Agent Toolkit tool_calling_agent)
-  → 도구: list_changes / telemetry_overview / get_series / run_analysis(샌드박스 파이썬) / query_ledger
-  → write_preregistration: 의심 변경, 전체 순위, 가설, 단일 실험 변수, 판정 기준
-  → (사람 승인) 재평가 브리지가 의심 변경 하나만 되돌려 Isaac Lab에서 재학습 → 회복 여부 판정
-```
-
-| NVIDIA 구성요소 | 쓰임 |
+| Healthy reference (checkpoint at 100 iterations) | Injected actuator fault (action scale 0.25 → 1.5) |
 |---|---|
-| Nemotron 3 Super (`nvidia/nemotron-3-super-120b-a12b`, build.nvidia.com) | 계획·도구 호출·추론 |
-| NeMo Agent Toolkit 1.9 (`nvidia-nat`) | 에이전트 워크플로(`configs/triage_workflow.yml`), 도구 6개 등록(`src/rl_triage/nat_functions.py`) |
-| OpenShell | 샌드박스 정책(`policies/triage_agent.yaml`), 현장 경계(`policies/site_boundary.yaml`), Policy Advisor 권한 요청 |
-| openshell-prover | 권한 확장 제안을 경계와 SMT로 비교, 반례 출력(`evals/prove_policies.py`) |
-| NVIDIA Skills | `skills-lock.json`(nemo-rl-auto-research, nemoclaw-user-guide, nemotron-policy-generator), 자체 스킬 `skills/isaaclab-rl-triage` |
-| Isaac Lab 2.1.1 / Isaac Sim 4.5 | 결함 주입 벤치마크와 재평가 재학습(`Isaac-Velocity-Flat-Unitree-Go2-v0`) |
+| ![Go2 robots walking under velocity commands](docs/media/baseline_s42_play.gif) | ![Go2 robots collapsing and rearing](docs/media/c04_s42_play.gif) |
 
-## 결함 주입 벤치마크
+Both clips are Isaac Sim 4.5 off-screen renders of trained checkpoints (`bench/record_play.ps1`). The agent never sees video; it diagnoses from TensorBoard scalars only.
 
-- 결함 10종(보상·액추에이터·탐색·최적화·물리·종료)을 Go2 flat 기본 학습에 hydra override로 주입한다. 각 케이스는 해로운 변경 1개 + 무해한 변경 2개를 비밀 seed로 섞었다(`bench/catalog.py`, `bench/cases.json`).
-- 1024 환경 × 100 iteration × seed 2개(42, 7), 기준 실행과 무해 변경 전부 적용 실행 포함 총 24회.
-- 벤치마크 성립 확인: 회복 판정 기준(`eval_bridge.RECOVERY_BAND`)에서 무해 실행 2/2는 회복, 결함 실행 20/20은 미회복.
-- 루프 검증(에이전트 평가 아님, `evals/results/bridge_smoke.json`): c01 seed 42에서 수동 사전등록 2건을 브리지로 승인·재학습했다. 원인 변경을 되돌리면 회복(에피소드 길이 비 0.999, 보상 비 1.024), 무해 변경을 되돌리면 미회복(에피소드 길이 비 0.05). 틀린 진단은 재학습이 걸러낸다.
-- 정답표는 평가가 끝난 뒤 `bench/answer_key.json`으로 공개한다.
+## At A Glance
 
-### 결과 — 측정 전
+| Question | Answer |
+| --- | --- |
+| Category | Community Recipe |
+| Contributor or provenance | Team Mollet (Korea Agentic AI Hackathon 2026) |
+| Use this when | An Isaac Lab RSL-RL training run deviates from a known healthy run after config changes, or for an unknown reason |
+| You will get | A ranked root cause with telemetry evidence, a preregistered single-variable experiment (`preregistrations/<case>.json`), and optionally a retraining verdict |
+| Runs on | Linux or Windows 11 + WSL2 (Ubuntu 24.04) with Docker; Isaac Lab on a Windows or Linux RTX host for retraining |
+| Requires | NVIDIA API key for `nvidia/nemotron-3-super-120b-a12b`, OpenShell 0.1.1 gateway, `uv` |
+| Verified on | Windows 11 + WSL2 Ubuntu 24.04, Docker 29.8.1, OpenShell 0.1.1, NeMo Agent Toolkit 1.9.0, Isaac Sim 4.5.0 / Isaac Lab 2.1.1, RTX 3060 12 GB |
+| Evidence level | live end-to-end |
+| Support and maturity | Best-effort community support; hackathon prototype |
+| External access, data, and actions | Sends telemetry summaries and agent messages to `integrate.api.nvidia.com` (NVIDIA API). Retraining writes new runs under the Isaac Lab log directory. No other writes. |
+| Start here | [Quickstart](#quickstart) |
+| Confirm success | [Verification](#verification) |
 
-| 방식 | top-1 원인 적중 | 비고 |
+## How it works
+
+```mermaid
+flowchart LR
+    U["Engineer: why did this run fail?"] --> A
+    subgraph S["OpenShell sandbox (policies/triage_agent.yaml)"]
+      A["NeMo Agent Toolkit tool-calling agent<br/>Nemotron 3 Super"] --> T1["telemetry_overview / get_series"]
+      A --> T2["run_analysis (Python on telemetry)"]
+      A --> T3["list_changes / query_ledger"]
+      A --> P["write_preregistration"]
+    end
+    P --> H{"Human approves?<br/>(bridge CLI, not reachable from sandbox)"}
+    H -->|yes| B["Eval bridge: retrain in Isaac Lab<br/>with one variable changed"]
+    B --> V["Recovered / not recovered"]
+    A -. "asks for more access" .-> ADV["OpenShell Policy Advisor"] --> PR["openshell-prover vs site boundary"]
+    PR -->|exceeds or unprovable| R["auto reject"]
+```
+
+| NVIDIA component | Role here |
+|---|---|
+| Nemotron 3 Super 120B (build.nvidia.com) | Planning, tool calling, reasoning |
+| NeMo Agent Toolkit 1.9 (`nvidia-nat`) | Agent workflow (`configs/*.yml`), 7 registered tools (`src/rl_triage/nat_functions.py`) |
+| OpenShell 0.1.1 | Sandbox image, Landlock filesystem policy, L7 REST network policy, NVIDIA provider (the agent only sees a placeholder key) |
+| openshell-prover 0.1.1 | SMT check of every requested permission against `policies/site_boundary.yaml` |
+| NVIDIA Skills | `skills-lock.json` (nemo-rl-auto-research, nemoclaw-user-guide, nemotron-policy-generator); own skill `skills/isaaclab-rl-triage` in NVIDIA skill format |
+| Isaac Lab 2.1.1 / Isaac Sim 4.5 | Fault-injection benchmark, retraining for verification, recorded clips |
+
+This recipe follows the **OpenShell path** described in the NemoClaw docs ("you use OpenShell as the platform and supply your own container, policy YAML, provider setup"), because the workload is a custom analysis image rather than a NemoClaw reference harness. NemoClaw's current blueprint pins OpenShell 0.0.116, while the prover features used here are in OpenShell 0.1.x.
+
+## Results
+
+Benchmark: 10 injected faults (reward, actuator, exploration, optimizer, physics, termination) on `Isaac-Velocity-Flat-Unitree-Go2-v0`, 1024 envs, 100 iterations. Each case mixes 1 harmful and 2 benign hydra overrides, shuffled with a secret seed. The benchmark separates cleanly: benign-only runs 2/2 recovered, fault runs 20/20 not recovered.
+
+| Task | Set | RL Triage Agent | Single-prompt Nemotron 3 Super (same inputs) | Random |
+|---|---|---:|---:|---:|
+| A. Which change broke it? (change list + telemetry) | dev (seeds 42, 7) | 20/20 | 20/20 | 33% |
+| B. Unknown cause: which mechanism? (telemetry only) | dev (seeds 42, 7) | 10/20 (5 truncated at 4096 tokens) | 8/20 | 17% |
+| B. Unknown cause | **held-out (seed 123), config v1.1** | _pending_ | _pending_ | 17% |
+
+Loop verification (`evals/results/bridge_smoke.json`): reverting the true culprit recovered the run (episode-length ratio 0.999, reward ratio 1.024); reverting a benign change did not (0.05). A wrong diagnosis is caught by retraining.
+
+Security (`evals/results/policy_proofs.json`, `evals/results/sandbox_kernel_tests.txt`):
+
+| Threat | Control | Evidence |
 |---|---|---|
-| 무작위 | 33% (1/3) | 이론값 |
-| 단일 프롬프트 Nemotron 3 Super (같은 입력) | 측정 전 | 대조군 |
-| RL Triage Agent (NAT 도구 호출) | 측정 전 | 프롬프트·도구는 평가 전 커밋 `4acb1ed`에 동결 |
+| Agent edits configs, joint limits or rewards to pass the gate | No config path in the sandbox filesystem policy; bridge has no config API (405) | kernel test PASS; prover counterexample `PUT /config/` |
+| Checkpoint or robot model exfiltration | Only `POST /v1/chat/completions` on `integrate.api.nvidia.com` | kernel test PASS; prover counterexample `huggingface.co:443` |
+| GPU retraining abuse | Preregistration required + human CLI approval; no HTTP approval route | `tests/test_security.py` |
+| API key leakage | OpenShell provider injects the key at egress; the sandbox sees `openshell:resolve:...` | observed in sandbox run |
+| Writing reference data | Landlock read-only; prover returns `unsupported` → fail-closed reject | kernel test PASS |
 
-## 보안 경계
-
-| 위협 | 통제 | 검증 |
-|---|---|---|
-| 게이트를 통과시키려 설정·관절 한계·보상 수정(명세 우회) | 설정 경로가 샌드박스 파일 정책에 없음, 재평가 브리지에 설정 API 없음(405) | `tests/test_security.py`, prover `bad_patch_config` 반례 `PUT /config/` |
-| 체크포인트·로봇 모델 외부 반출 | 네트워크는 `integrate.api.nvidia.com`의 `POST /v1/chat/completions`만 | prover `bad_exfil_checkpoint` 반례 `huggingface.co:443` |
-| GPU 재학습 남용 | 재평가는 사전등록 필수 + 사람 CLI 승인, HTTP 승인 경로 없음 | `tests/test_security.py` |
-| API 키 노출 | OpenShell provider가 요청에만 키 주입 | 측정 전(샌드박스 실행 필요) |
-| 커널 수준 차단(기준 설정 쓰기, 외부 전송, 클라우드 메타데이터) | Landlock·seccomp·네트워크 정책 | `tests/sandbox/` — 측정 전(샌드박스 전용) |
-
-prover 결과(`evals/results/policy_proofs.json`): 에이전트 정책과 재평가 요청은 `within_boundary` → 사람 검토, 설정 변경·외부 반출 요청은 `exceeds_boundary` → 자동 거절, 기준 설정 쓰기 요청은 prover가 증명하지 못해(`unsupported`) → fail-closed 자동 거절.
-
-## 실행
+## Quickstart
 
 ```bash
+git clone <this repo> && cd rl-triage-agent
 uv sync
-uv run pytest -q tests                              # 단위·보안 테스트
-uv run python evals/prove_policies.py               # OpenShell 정책 증명(WSL/Linux에 openshell-prover 필요)
-uv run python bench/build_workspace.py 42           # 벤치마크 텔레메트리 → 에이전트 작업공간
-export NVIDIA_API_KEY=nvapi-...                     # build.nvidia.com
-uv run python evals/run_eval.py --seed 42 --mode both
-uv run python -m rl_triage.eval_bridge serve        # 재평가 브리지(Isaac Lab 호스트)
-uv run python -m rl_triage.eval_bridge list         # 사람: 대기 요청 확인
-uv run python -m rl_triage.eval_bridge approve <id> # 사람: 승인 → 재학습 → 회복 판정
+uv run pytest -q tests                                   # unit + app-level security tests
+uv run python bench/build_workspace.py 42                # benchmark telemetry -> agent workspace
+export NVIDIA_API_KEY=nvapi-...                          # build.nvidia.com
+uv run nat run --config_file configs/triage_workflow.yml \
+  --input "Triage failed training case_id=c01. Find the root-cause change and register the next experiment."
 ```
 
-## 한계
+Inside OpenShell (WSL2/Linux with Docker):
 
-- 벤치마크 순환성: 결함 카탈로그와 에이전트를 같은 사람이 만들었다. 완화: 무해 변경과 섞고 비밀 seed로 섞음, 에이전트 프롬프트·도구를 평가 전에 커밋으로 동결, 같은 모델·입력의 단일 프롬프트 대조군.
-- 스킬 `isaaclab-rl-triage`의 메커니즘-흔적 표는 벤치마크 점검 뒤 작성했다. 그래서 정량 결과는 스킬을 쓰지 않는 동결 에이전트로만 계산한다.
-- 탐색 노이즈를 거의 0으로 만든 결함(H03)은 보상이 오히려 높다. 이 케이스는 "실패"가 아니라 "기준 대비 이상"이다.
-- 100 iteration 짧은 학습이다. 장기 학습에서만 드러나는 결함은 다루지 않는다.
-- 네트워크 규칙은 허용된 실행 파일의 자식 프로세스에도 적용된다. 그래서 `run_analysis`가 실행한 코드도 NVIDIA 추론 API 경로에는 접근할 수 있다.
+```bash
+openshell provider profile import -f policies/providers/nvidia.yaml --global
+docker build -f docker/Dockerfile.sandbox -t rl-triage-sandbox:0.1 .
+bash scripts/sandbox_up.sh 42                            # provider + workspace image + sandbox with policies/triage_agent.yaml
+openshell sandbox exec -n rl-triage --env HOME=/tmp -- bash -c 'cd /sandbox/app && nat run --config_file configs/triage_workflow.yml --input "Triage failed training case_id=c03."'
+```
+
+Human-approved retraining (Isaac Lab host):
+
+```bash
+uv run python -m rl_triage.eval_bridge serve             # agent side can only submit
+uv run python -m rl_triage.eval_bridge list              # human
+uv run python -m rl_triage.eval_bridge approve <id>      # human: retrain with one variable changed -> verdict
+```
+
+## Verification
+
+**Evidence level:** live end-to-end
+
+```bash
+uv run python evals/prove_policies.py
+OPENSHELL_SANDBOX=1 python -m pytest -q tests/sandbox    # inside the sandbox
+uv run python evals/run_eval.py --task blind --seed 123 --mode both --tag heldout
+```
+
+**Expected result:**
+
+```text
+triage_agent           result=within_boundary   gate=human_review PASS
+bad_exfil_checkpoint   result=exceeds_boundary  gate=auto_reject  PASS
+bad_patch_config       result=exceeds_boundary  gate=auto_reject  PASS
+bad_write_reference    result=unsupported       gate=auto_reject  PASS
+ok_request_eval        result=within_boundary   gate=human_review PASS
+6 passed                                                  # tests/sandbox
+```
+
+**This verifies:** permission proofs, kernel enforcement inside a live OpenShell sandbox, agent accuracy on recorded Isaac Lab telemetry, and the approve → retrain → verdict loop on a real Isaac Lab run.
+
+**This does not verify:** faults that only appear in long training (>100 iterations), rough terrain, manipulation tasks, real robots, or multi-sandbox fleets.
+
+## Limitations
+
+- Benchmark circularity: the fault catalog and the agent were built by the same team. Mitigations: benign changes mixed in with a secret seed, prompts committed before each evaluation (`4acb1ed`, `517f613`, `c7e8cd9`), same-model single-prompt baseline, held-out seed.
+- Task A saturated: with extreme fault values both the agent and the single-prompt baseline score 20/20. We tried plausible-magnitude changes (v2, `bench/v2/labels.json`); at 100 iterations most did not break training, and a reward-ratio verdict mislabels reward-weight changes, so v2 was not used for scoring.
+- The skill's mechanism table (`skills/isaaclab-rl-triage/SKILL.md`) was written after looking at benchmark telemetry; scored runs do not load the skill.
+- Network rules apply to child processes, so code run by `run_analysis` can still reach the allowed NVIDIA inference path.
+- The NVIDIA free endpoint was often overloaded; the harness retries only infrastructure errors and logs every attempt.
+
+## 한국어 요약
+
+**Isaac Lab 학습 실패 원인 추적 에이전트.** 로봇 RL 엔지니어가 설정 여러 개를 바꾸고 학습했는데 학습이 무너졌을 때, 텔레메트리를 정상 기준 실행과 비교해 원인을 찾고, 설정을 직접 고치는 대신 **다음 실험 하나를 사전등록**합니다. 사람이 승인하면 재평가 브리지가 Isaac Lab에서 그 변수 하나만 바꿔 다시 학습해 진단을 확인합니다. 에이전트는 OpenShell 샌드박스 안에서 설정·안전 게이트·보상을 건드릴 수 없고, 더 많은 권한 요청은 openshell-prover가 현장 경계와 비교해 증명되지 않으면 자동 거절합니다.
