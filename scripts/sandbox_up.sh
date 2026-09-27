@@ -17,4 +17,4 @@ docker build -q -f "$REPO/docker/Dockerfile.workspace" -t "rl-triage-ws:seed$SEE
 openshell sandbox delete "$NAME" >/dev/null 2>&1 || true
 openshell sandbox create --name "$NAME" --from "rl-triage-ws:seed$SEED" \
   --policy "$REPO/policies/triage_agent.yaml" --provider nvidia-triage
-openshell sandbox exec -n "$NAME" -- bash -c 'id; ls -la /sandbox/workspace; ls /sandbox/workspace/cases | wc -l'
+openshell sandbox exec -n "$NAME" -- ls /sandbox/workspace/cases </dev/null | wc -l

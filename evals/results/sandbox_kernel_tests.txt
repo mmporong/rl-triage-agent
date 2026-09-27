@@ -1,0 +1,7 @@
+# OpenShell 0.1.1 샌드박스(rl-triage, policies/triage_agent.yaml) 안에서 실행, 2026-09-27 KST
+$ openshell sandbox exec -n rl-triage -- bash -c 'cd /sandbox/app && OPENSHELL_SANDBOX=1 python -m pytest -q -p no:cacheprovider tests/sandbox'
+......                                                                   [100%]
+6 passed in 0.05s
+# 통과 항목: reference params 쓰기 차단, case telemetry 쓰기 차단, scratch 쓰기 허용,
+#            정책 밖 경로(/home) 읽기 차단, 외부 호스트(huggingface.co) 차단, 클라우드 메타데이터 차단
+# 같은 샌드박스에서 NVIDIA_API_KEY 값은 'openshell:re...' 자리표시자였고 Nemotron 호출은 성공했다(프록시 주입).

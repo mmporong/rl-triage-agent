@@ -1,0 +1,15 @@
+{
+ "case_id": "c03",
+ "created_at": "2026-09-27T01:20:50+00:00",
+ "suspected_change_id": "ch2",
+ "ranking": [
+  "ch2",
+  "ch1",
+  "ch3"
+ ],
+ "hypothesis": "Flipping the weight of track_lin_vel_xy_exp from positive to negative penalizes forward movement, causing the policy to avoid locomotion, leading to negative total reward, increased base-contact terminations (falls), and degraded tracking performance.",
+ "single_experimental_variable": "env.rewards.track_lin_vel_xy_exp.weight",
+ "acceptance_gate": "Train/mean_reward > 2.0",
+ "expected_signature": "Track_lin_vel_xy_exp reward becomes positive (similar to reference ~0.34), mean_reward recovers to reference levels, base_contact termination rate drops back to reference (~0.002), and episode length remains stable.",
+ "frozen_for_next_run": true
+}
