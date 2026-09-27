@@ -28,6 +28,69 @@ TELEMETRY (last-20% means vs reference):
 """
 
 
+BLIND_CONTROL_PROMPT = """A failed Isaac Lab locomotion RL training run (Unitree Go2, flat, RSL-RL PPO) deviates from a healthy
+reference run. Nobody knows what was changed. Rank these failure mechanisms from most to least likely:
+reward, actuator, exploration, optimizer, physics, termination.
+Answer ONLY with JSON: {{"mechanism_ranking": ["...", ...], "reason": "..."}}
+
+TELEMETRY (last-20% means vs reference):
+{overview}
+"""
+
+
+def score_blind(case_id: str, ranking, key: dict) -> dict:
+    truth = key["cases"][case_id]["category"]
+    ranking = ranking or []
+    return {"truth": truth, "suspected": ranking[0] if ranking else None, "ranking": ranking,
+            "correct": bool(ranking) and ranking[0] == truth, "top2": truth in ranking[:2],
+            "category": truth}
+
+
+def run_agent_blind(ws: Path, case_id: str) -> dict:
+    diag = ws / "diagnoses" / f"{case_id}.json"
+    if diag.exists():
+        diag.unlink()
+    trace = ROOT / "evals" / "results" / "traces" / f"blind_{ws.name}_{case_id}_{int(time.time())}.jsonl"
+    trace.parent.mkdir(parents=True, exist_ok=True)
+    env = {**os.environ, "TRIAGE_WORKSPACE": str(ws), "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8",
+           "TRIAGE_TRACE": str(trace)}
+    t0 = time.time()
+    proc = subprocess.run(
+        ["uv", "run", "--no-sync", "nat", "run", "--config_file", str(ROOT / "configs" / "triage_blind.yml"),
+         "--input", f"Diagnose the failed training case_id={case_id}. Rank the failure mechanisms."],
+        capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, cwd=ROOT, timeout=900)
+    out = {"elapsed_s": round(time.time() - t0, 1), "exit_code": proc.returncode, "trace": trace.name,
+           "stdout_tail": proc.stdout[-3000:], "stderr_tail": proc.stderr[-1500:], "ranking": None}
+    if diag.exists():
+        out["ranking"] = json.loads(diag.read_text(encoding="utf-8"))["mechanism_ranking"]
+    out["suspected"] = out["ranking"][0] if out["ranking"] else None
+    return out
+
+
+def run_control_blind(ws: Path, case_id: str) -> dict:
+    from openai import OpenAI
+    sys.path.insert(0, str(ROOT / "src"))
+    from rl_triage import triage_tools as T
+    T.WORKSPACE = ws
+    client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=os.environ["NVIDIA_API_KEY"])
+    prompt = BLIND_CONTROL_PROMPT.format(overview=json.dumps(T.telemetry_overview(case_id)["rows"], ensure_ascii=False))
+    t0 = time.time()
+    try:
+        resp = client.chat.completions.create(model=MODEL, messages=[{"role": "user", "content": prompt}],
+                                              temperature=0.2, max_tokens=4096)
+        text = resp.choices[0].message.content or "empty response"
+    except Exception as e:
+        return {"elapsed_s": round(time.time() - t0, 1), "suspected": None, "ranking": None,
+                "raw_tail": f"{type(e).__name__}: {e}"[-1500:]}
+    ranking = None
+    try:
+        ranking = json.loads(text[text.index("{"): text.rindex("}") + 1])["mechanism_ranking"]
+    except (ValueError, KeyError):
+        pass
+    return {"elapsed_s": round(time.time() - t0, 1), "suspected": ranking[0] if ranking else None,
+            "ranking": ranking, "raw_tail": text[-1500:]}
+
+
 def score(ws: Path, case_id: str, suspected: str | None, key: dict) -> dict:
     sys.path.insert(0, str(ROOT / "src"))
     from rl_triage import triage_tools as T
@@ -106,10 +169,13 @@ def main():
     ap.add_argument("--retry-infra", action="store_true",
                     help="기존 결과에서 인프라 오류(LLM 빈 응답 등으로 결론 없이 종료)만 다시 실행해 attempt를 늘려 기록한다")
     ap.add_argument("--bench", choices=["v1", "v2"], default="v1")
+    ap.add_argument("--task", choices=["changes", "blind"], default="changes",
+                    help="changes: 설정 변경 중 원인 찾기, blind: 변경 목록 없이 메커니즘 진단(과제 B)")
     ap.add_argument("--tag", default="", help="결과 파일 하위 폴더(evals/results/<tag>/)")
     ap.add_argument("--max-attempts", type=int, default=4, help="인프라 오류일 때만 대기 후 재시도하는 최대 횟수")
     args = ap.parse_args()
-    ws = ROOT / ("workspace" if args.bench == "v1" else "workspace_v2") / f"seed{args.seed}"
+    ws_root = "workspace_blind" if args.task == "blind" else ("workspace" if args.bench == "v1" else "workspace_v2")
+    ws = ROOT / ws_root / f"seed{args.seed}"
     key_name = "answer_key.json" if args.bench == "v1" else "answer_key_v2.json"
     key = json.loads((ROOT / "bench" / "private" / key_name).read_text(encoding="utf-8"))
     case_ids = args.cases or sorted(p.name for p in (ws / "cases").iterdir())
@@ -129,10 +195,16 @@ def main():
     for cid, mode, attempt in todo:
         # 인프라 오류(서버 과부하·빈 응답 등)만 대기 후 재시도한다. 모든 시도를 기록한다.
         while True:
-            res = run_agent(ws, cid) if mode == "agent" else run_control(ws, cid)
-            infra = res.get("suspected") is None and is_infra_error(res)
-            res.update(score(ws, cid, res.get("suspected"), key), case_id=cid, seed=args.seed, mode=mode, model=MODEL,
-                       bench=args.bench, attempt=attempt, infra_error=infra)
+            if args.task == "blind":
+                res = run_agent_blind(ws, cid) if mode == "agent" else run_control_blind(ws, cid)
+                infra = res.get("suspected") is None and is_infra_error(res)
+                res.update(score_blind(cid, res.get("ranking"), key), case_id=cid, seed=args.seed, mode=mode,
+                           model=MODEL, bench=args.bench, task="blind", attempt=attempt, infra_error=infra)
+            else:
+                res = run_agent(ws, cid) if mode == "agent" else run_control(ws, cid)
+                infra = res.get("suspected") is None and is_infra_error(res)
+                res.update(score(ws, cid, res.get("suspected"), key), case_id=cid, seed=args.seed, mode=mode,
+                           model=MODEL, bench=args.bench, attempt=attempt, infra_error=infra)
             with results_path.open("a", encoding="utf-8") as f:
                 f.write(json.dumps(res, ensure_ascii=False) + "\n")
             print(f"{cid} {mode:7s} attempt={attempt} suspected={res['suspected']} truth={res['truth']} "

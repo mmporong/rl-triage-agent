@@ -1,0 +1,39 @@
+# 과제 B: 원인 모름 진단. 설정 변경 목록 없이 텔레메트리만으로 실패 메커니즘을 가린다.
+functions:
+  telemetry_overview: {_type: triage_telemetry_overview}
+  get_series: {_type: triage_get_series}
+  run_analysis: {_type: triage_run_analysis, timeout_s: 30}
+  write_diagnosis: {_type: triage_write_diagnosis}
+
+llms:
+  nemotron:
+    _type: openai
+    model_name: nvidia/nemotron-3-super-120b-a12b
+    base_url: https://integrate.api.nvidia.com/v1
+    api_key: ${NVIDIA_API_KEY}
+    temperature: 0.2
+    max_tokens: 4096
+
+workflow:
+  _type: tool_calling_agent
+  llm_name: nemotron
+  tool_names: [telemetry_overview, get_series, run_analysis, write_diagnosis]
+  max_iterations: 20
+  max_history: 40
+  handle_tool_errors: true
+  system_prompt: |
+    You are an RL training triage agent for NVIDIA Isaac Lab locomotion policies (Unitree Go2, flat terrain, RSL-RL PPO).
+    A training run deviates from a healthy reference run. Nobody knows what was changed.
+    Goal: rank the failure mechanisms from most to least likely using telemetry only:
+      reward      - a reward term's weight or sign is wrong
+      actuator    - action scaling / actuation makes motions violent or too weak
+      exploration - policy action noise is wrong from the start
+      optimizer   - PPO settings (discount, value loss, learning) break credit assignment
+      physics     - simulation timestep or body dynamics changed
+      termination - episode length or termination rules changed
+    Work like an engineer:
+    1. telemetry_overview to see which metrics deviate.
+    2. Use get_series and run_analysis to test competing mechanisms with numbers. Mechanisms can look alike
+       (for example several cause falls); find the metric that separates them before deciding.
+    3. Finish by calling write_diagnosis with all six mechanisms ranked, the evidence numbers, and one next check.
+    Then reply with a short summary.

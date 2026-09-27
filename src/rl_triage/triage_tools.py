@@ -191,3 +191,19 @@ def write_preregistration(case_id: str, suspected_change_id: str, ranking: list[
     out_dir.mkdir(exist_ok=True)
     (out_dir / f"{case_id}.json").write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
     return {"saved": f"preregistrations/{case_id}.json", **doc}
+
+
+MECHANISMS = ["reward", "actuator", "exploration", "optimizer", "physics", "termination"]
+
+
+def write_diagnosis(case_id: str, mechanism_ranking: list[str], evidence: str, next_check: str) -> dict:
+    """원인을 모르는 실패에서 메커니즘 순위를 저장한다(과제 B). 설정 변경 목록 없이 텔레메트리만으로 판단한다."""
+    bad = [m for m in mechanism_ranking if m not in MECHANISMS]
+    if bad or not mechanism_ranking:
+        return {"error": f"알 수 없는 메커니즘: {bad}. 가능한 값: {MECHANISMS}"}
+    doc = {"case_id": case_id, "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+           "mechanism_ranking": mechanism_ranking, "evidence": evidence, "next_check": next_check}
+    out_dir = _safe(WORKSPACE / "diagnoses")
+    out_dir.mkdir(exist_ok=True)
+    (out_dir / f"{case_id}.json").write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
+    return {"saved": f"diagnoses/{case_id}.json", **doc}

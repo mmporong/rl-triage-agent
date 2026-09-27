@@ -10,12 +10,13 @@ root = Path(__file__).resolve().parents[1]
 runs, ws = root / "bench" / "runs", root / "workspace"
 cases = {c["case_id"]: c for c in json.loads((root / "bench" / "cases.json").read_text(encoding="utf-8"))}
 seed = int(sys.argv[1]) if len(sys.argv) > 1 else 42
+blind = "--blind" in sys.argv  # 과제 B: case.json(설정 변경 목록)을 넣지 않는다
 
 ref_tele = runs / f"baseline_s{seed}.telemetry.json"
 meta = root / "bench" / "private" / f"baseline_s{seed}.meta.json"
 if not ref_tele.exists():
     raise SystemExit(f"기준 실행 없음: {ref_tele}")
-ws_seed = ws / f"seed{seed}"
+ws_seed = (root / "workspace_blind" if blind else ws) / f"seed{seed}"
 if ws_seed.exists():
     shutil.rmtree(ws_seed)
 (ws_seed / "reference" / "params").mkdir(parents=True)
@@ -34,6 +35,7 @@ for cid, case in cases.items():
     d = ws_seed / "cases" / cid
     d.mkdir(parents=True)
     shutil.copy(tele, d / "telemetry.json")
-    (d / "case.json").write_text(json.dumps({"case_id": cid, "overrides": case["overrides"]}, ensure_ascii=False), encoding="utf-8")
+    if not blind:
+        (d / "case.json").write_text(json.dumps({"case_id": cid, "overrides": case["overrides"]}, ensure_ascii=False), encoding="utf-8")
     n += 1
-print(f"workspace/seed{seed}: cases={n}")
+print(f"{ws_seed.relative_to(root)}: cases={n}")

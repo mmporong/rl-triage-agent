@@ -1,0 +1,182 @@
+{
+ "S01": {
+  "override": "env.actions.joint_pos.scale=0.5",
+  "note": "액션 스케일 0.25→0.5 (2x)",
+  "recovered_by_seed": {
+   "42": false,
+   "7": false
+  },
+  "label": "harmful"
+ },
+ "S02": {
+  "override": "env.actions.joint_pos.scale=0.15",
+  "note": "액션 스케일 0.25→0.15 (0.6x)",
+  "recovered_by_seed": {
+   "42": true,
+   "7": true
+  },
+  "label": "benign"
+ },
+ "S03": {
+  "override": "agent.algorithm.gamma=0.95",
+  "note": "할인율 0.99→0.95",
+  "recovered_by_seed": {
+   "42": true,
+   "7": false
+  },
+  "label": "ambiguous"
+ },
+ "S04": {
+  "override": "agent.algorithm.learning_rate=0.003",
+  "note": "학습률 1e-3→3e-3 (3x)",
+  "recovered_by_seed": {
+   "42": true,
+   "7": true
+  },
+  "label": "benign"
+ },
+ "S05": {
+  "override": "agent.algorithm.learning_rate=0.0003",
+  "note": "학습률 1e-3→3e-4 (0.3x)",
+  "recovered_by_seed": {
+   "42": true,
+   "7": true
+  },
+  "label": "benign"
+ },
+ "S06": {
+  "override": "agent.policy.init_noise_std=0.3",
+  "note": "초기 탐색 노이즈 1.0→0.3",
+  "recovered_by_seed": {
+   "42": true,
+   "7": false
+  },
+  "label": "ambiguous"
+ },
+ "S07": {
+  "override": "env.rewards.dof_torques_l2.weight=-0.002",
+  "note": "토크 패널티 10x",
+  "recovered_by_seed": {
+   "42": false,
+   "7": false
+  },
+  "label": "harmful"
+ },
+ "S08": {
+  "override": "env.rewards.dof_acc_l2.weight=-2.5e-06",
+  "note": "관절 가속 패널티 10x",
+  "recovered_by_seed": {
+   "42": false,
+   "7": false
+  },
+  "label": "harmful"
+ },
+ "S09": {
+  "override": "env.rewards.action_rate_l2.weight=-0.05",
+  "note": "액션 변화율 패널티 5x",
+  "recovered_by_seed": {
+   "42": false,
+   "7": false
+  },
+  "label": "harmful"
+ },
+ "S10": {
+  "override": "env.rewards.feet_air_time.weight=1.0",
+  "note": "발 체공 보상 4x",
+  "recovered_by_seed": {
+   "42": true,
+   "7": true
+  },
+  "label": "benign"
+ },
+ "S11": {
+  "override": "env.rewards.track_lin_vel_xy_exp.weight=0.5",
+  "note": "선속도 추종 보상 1.5→0.5",
+  "recovered_by_seed": {
+   "42": true,
+   "7": true
+  },
+  "label": "benign"
+ },
+ "S12": {
+  "override": "env.rewards.flat_orientation_l2.weight=-10.0",
+  "note": "자세 패널티 4x",
+  "recovered_by_seed": {
+   "42": true,
+   "7": true
+  },
+  "label": "benign"
+ },
+ "S13": {
+  "override": "env.episode_length_s=5.0",
+  "note": "에피소드 길이 20s→5s",
+  "recovered_by_seed": {
+   "42": false,
+   "7": false
+  },
+  "label": "harmful"
+ },
+ "S14": {
+  "override": "env.decimation=8",
+  "note": "제어 주기 50Hz→25Hz (decimation 4→8)",
+  "recovered_by_seed": {
+   "42": false,
+   "7": false
+  },
+  "label": "harmful"
+ },
+ "S15": {
+  "override": "env.events.add_base_mass.params.mass_distribution_params=[4.0,8.0]",
+  "note": "몸통 추가 질량 -1~3→4~8kg",
+  "recovered_by_seed": {
+   "42": false,
+   "7": true
+  },
+  "label": "ambiguous"
+ },
+ "S16": {
+  "override": "agent.num_steps_per_env=12",
+  "note": "롤아웃 길이 24→12",
+  "recovered_by_seed": {
+   "42": false,
+   "7": false
+  },
+  "label": "harmful"
+ },
+ "S17": {
+  "override": "agent.algorithm.entropy_coef=0.001",
+  "note": "엔트로피 계수 0.01→0.001",
+  "recovered_by_seed": {
+   "42": false,
+   "7": false
+  },
+  "label": "harmful"
+ },
+ "S18": {
+  "override": "env.commands.base_velocity.resampling_time_range=[3.0,3.0]",
+  "note": "명령 재샘플 10s→3s",
+  "recovered_by_seed": {
+   "42": false,
+   "7": false
+  },
+  "label": "harmful"
+ },
+ "S19": {
+  "override": "agent.save_interval=5",
+  "note": "체크포인트 저장 50→5",
+  "recovered_by_seed": {
+   "42": true,
+   "7": true
+  },
+  "label": "benign"
+ },
+ "S20": {
+  "override": "agent.algorithm.num_learning_epochs=3",
+  "note": "학습 에폭 5→3",
+  "recovered_by_seed": {
+   "42": true,
+   "7": true
+  },
+  "label": "benign"
+ }
+}

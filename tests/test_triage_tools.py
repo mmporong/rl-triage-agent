@@ -73,3 +73,9 @@ def test_preregistration_rejects_unknown_change_id(ws):
 def test_preregistration_saved(ws):
     res = T.write_preregistration("c01", "ch3", ["ch3", "ch1", "ch2"], "h", "revert ch3", "reward>0", "sig")
     assert (ws / "preregistrations" / "c01.json").exists() and res["suspected_change_id"] == "ch3"
+
+
+def test_write_diagnosis_validates_mechanisms(ws):
+    assert "error" in T.write_diagnosis("c01", ["gravity"], "e", "n")
+    res = T.write_diagnosis("c01", ["termination", "reward"], "episode length 50", "restore episode_length_s")
+    assert (ws / "diagnoses" / "c01.json").exists() and res["mechanism_ranking"][0] == "termination"
