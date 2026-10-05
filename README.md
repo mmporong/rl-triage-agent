@@ -41,17 +41,19 @@ Both clips are Isaac Sim 4.5 off-screen renders of trained checkpoints (`bench/r
 
 ## How it works
 
+Open either interactive diagram to zoom, search, inspect relationships, or play a route. Live/Still controls the trace animation.
+
 ![RL triage: sandboxed diagnosis, human approval, single-variable retraining, and permission checks](docs/media/rl-triage-architecture.png)
 
 The default sandbox has no bridge submission tool or access; the host submits the approval request.
 
-[Archify JSON source](docs/diagrams/rl-triage.architecture.json) · [Interactive diagram (download HTML)](docs/diagrams/rl-triage.html)
+[Archify JSON source](docs/diagrams/rl-triage.architecture.json) · [Interactive diagram](https://mmporong.github.io/rl-triage-agent/diagrams/rl-triage.html?theme=light)
 
 ![Offline policy proposal checks: within boundary goes to human review; exceeds boundary or unprovable requests are rejected](docs/media/rl-policy-architecture.png)
 
 Policy proposals are checked offline by `evals/prove_policies.py`, separately from the agent runtime.
 
-[Policy diagram JSON source](docs/diagrams/rl-policy.architecture.json) · [Interactive policy diagram (download HTML)](docs/diagrams/rl-policy.html)
+[Policy diagram JSON source](docs/diagrams/rl-policy.architecture.json) · [Interactive policy diagram](https://mmporong.github.io/rl-triage-agent/diagrams/rl-policy.html?theme=light)
 
 | NVIDIA component | Role here |
 |---|---|
