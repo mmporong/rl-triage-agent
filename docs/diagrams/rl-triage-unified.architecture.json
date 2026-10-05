@@ -1,0 +1,317 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "RL Triage Agent · 진단, 재학습, 권한 검증",
+    "quality_profile": "showcase",
+    "animation": "trace",
+    "viewBox": [
+      1300,
+      620
+    ],
+    "views": [
+      {
+        "id": "retraining",
+        "label": "진단 → 사람 승인 → 재학습",
+        "focus": [
+          "triage",
+          "prereg",
+          "submit",
+          "approval",
+          "bridge",
+          "verdict"
+        ]
+      },
+      {
+        "id": "analysis",
+        "label": "분석 도구와 외부 모델",
+        "focus": [
+          "triage",
+          "tools",
+          "model"
+        ]
+      },
+      {
+        "id": "policy",
+        "label": "오프라인 정책 제안 검사",
+        "focus": [
+          "proposal",
+          "proof",
+          "policy_review",
+          "deny"
+        ]
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "triage",
+      "type": "backend",
+      "label": "NAT 진단 에이전트",
+      "sublabel": "NeMo Agent Toolkit",
+      "pos": [
+        30,
+        70
+      ],
+      "size": [
+        190,
+        88
+      ]
+    },
+    {
+      "id": "prereg",
+      "type": "database",
+      "label": "실험 사전등록",
+      "sublabel": "write_preregistration",
+      "pos": [
+        290,
+        70
+      ],
+      "size": [
+        190,
+        88
+      ]
+    },
+    {
+      "id": "submit",
+      "type": "backend",
+      "label": "호스트 제출",
+      "sublabel": "승인 대기 요청 생성",
+      "tag": "submit CLI / POST /eval",
+      "pos": [
+        550,
+        70
+      ],
+      "size": [
+        190,
+        88
+      ]
+    },
+    {
+      "id": "approval",
+      "type": "security",
+      "label": "사람의 실험 승인",
+      "sublabel": "bridge approve CLI",
+      "tag": "샌드박스에서 승인 불가",
+      "pos": [
+        810,
+        70
+      ],
+      "size": [
+        190,
+        88
+      ]
+    },
+    {
+      "id": "bridge",
+      "type": "backend",
+      "label": "Isaac Lab 재학습",
+      "sublabel": "의심 변수 1개 되돌림",
+      "pos": [
+        1070,
+        70
+      ],
+      "size": [
+        190,
+        88
+      ]
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "텔레메트리 분석",
+      "sublabel": "기준 / 이력 / Python",
+      "pos": [
+        290,
+        230
+      ],
+      "size": [
+        190,
+        88
+      ]
+    },
+    {
+      "id": "model",
+      "type": "external",
+      "label": "Nemotron 3 Super",
+      "sublabel": "외부 NVIDIA 추론 API",
+      "tag": "integrate.api.nvidia.com",
+      "pos": [
+        550,
+        230
+      ],
+      "size": [
+        190,
+        88
+      ]
+    },
+    {
+      "id": "verdict",
+      "type": "database",
+      "label": "진단 검증 결과",
+      "sublabel": "회복 / 미회복",
+      "pos": [
+        1070,
+        230
+      ],
+      "size": [
+        190,
+        88
+      ]
+    },
+    {
+      "id": "proposal",
+      "type": "security",
+      "label": "정적 권한 제안",
+      "sublabel": "policies/proposals/*.yaml",
+      "tag": "기본 정책과 병합",
+      "pos": [
+        30,
+        420
+      ],
+      "size": [
+        230,
+        88
+      ]
+    },
+    {
+      "id": "proof",
+      "type": "security",
+      "label": "openshell-prover",
+      "sublabel": "site_boundary와 비교",
+      "pos": [
+        360,
+        420
+      ],
+      "size": [
+        230,
+        88
+      ]
+    },
+    {
+      "id": "policy_review",
+      "type": "security",
+      "label": "사람의 정책 검토",
+      "sublabel": "human_review",
+      "pos": [
+        730,
+        360
+      ],
+      "size": [
+        230,
+        76
+      ]
+    },
+    {
+      "id": "deny",
+      "type": "security",
+      "label": "자동 거절",
+      "sublabel": "auto_reject",
+      "pos": [
+        730,
+        490
+      ],
+      "size": [
+        230,
+        76
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "OpenShell 샌드박스 · 설정 / 보상 수정 차단",
+      "wraps": [
+        "triage",
+        "prereg",
+        "tools"
+      ],
+      "pad": 24
+    },
+    {
+      "kind": "region",
+      "label": "오프라인 정책 검사 · evals/prove_policies.py",
+      "wraps": [
+        "proposal",
+        "proof",
+        "policy_review",
+        "deny"
+      ],
+      "pad": 20
+    }
+  ],
+  "connections": [
+    {
+      "id": "register",
+      "from": "triage",
+      "to": "prereg",
+      "label": "실험 등록",
+      "variant": "emphasis"
+    },
+    {
+      "id": "host-submit",
+      "from": "prereg",
+      "to": "submit",
+      "label": "파일 읽기",
+      "variant": "emphasis"
+    },
+    {
+      "id": "pending",
+      "from": "submit",
+      "to": "approval",
+      "label": "승인 대기",
+      "variant": "emphasis"
+    },
+    {
+      "id": "approved-retrain",
+      "from": "approval",
+      "to": "bridge",
+      "label": "승인 후",
+      "variant": "emphasis"
+    },
+    {
+      "id": "verification",
+      "from": "bridge",
+      "to": "verdict",
+      "label": "재학습 판정",
+      "labelDy": 24
+    },
+    {
+      "id": "analysis-call",
+      "from": "triage",
+      "to": "tools",
+      "label": "도구 호출",
+      "labelDy": -8
+    },
+    {
+      "id": "inference-call",
+      "from": "triage",
+      "to": "model",
+      "label": "POST /v1/chat/completions",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "policy-proof",
+      "from": "proposal",
+      "to": "proof",
+      "label": "정책 검사",
+      "variant": "security"
+    },
+    {
+      "id": "within-boundary",
+      "from": "proof",
+      "to": "policy_review",
+      "label": "within_boundary",
+      "variant": "security"
+    },
+    {
+      "id": "fail-closed",
+      "from": "proof",
+      "to": "deny",
+      "label": "초과 / 증명 불가",
+      "variant": "security"
+    }
+  ]
+}
