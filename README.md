@@ -41,21 +41,17 @@ Both clips are Isaac Sim 4.5 off-screen renders of trained checkpoints (`bench/r
 
 ## How it works
 
-```mermaid
-flowchart LR
-    U["Engineer: why did this run fail?"] --> A
-    subgraph S["OpenShell sandbox (policies/triage_agent.yaml)"]
-      A["NeMo Agent Toolkit tool-calling agent<br/>Nemotron 3 Super"] --> T1["telemetry_overview / get_series"]
-      A --> T2["run_analysis (Python on telemetry)"]
-      A --> T3["list_changes / query_ledger"]
-      A --> P["write_preregistration"]
-    end
-    P --> H{"Human approves?<br/>(bridge CLI, not reachable from sandbox)"}
-    H -->|yes| B["Eval bridge: retrain in Isaac Lab<br/>with one variable changed"]
-    B --> V["Recovered / not recovered"]
-    A -. "asks for more access" .-> ADV["OpenShell Policy Advisor"] --> PR["openshell-prover vs site boundary"]
-    PR -->|exceeds or unprovable| R["auto reject"]
-```
+![RL triage: sandboxed diagnosis, human approval, single-variable retraining, and permission checks](docs/media/rl-triage-architecture.png)
+
+The default sandbox has no bridge submission tool or access; the host submits the approval request.
+
+[Archify JSON source](docs/diagrams/rl-triage.architecture.json) · [Interactive diagram (download HTML)](docs/diagrams/rl-triage.html)
+
+![Offline policy proposal checks: within boundary goes to human review; exceeds boundary or unprovable requests are rejected](docs/media/rl-policy-architecture.png)
+
+Policy proposals are checked offline by `evals/prove_policies.py`, separately from the agent runtime.
+
+[Policy diagram JSON source](docs/diagrams/rl-policy.architecture.json) · [Interactive policy diagram (download HTML)](docs/diagrams/rl-policy.html)
 
 | NVIDIA component | Role here |
 |---|---|

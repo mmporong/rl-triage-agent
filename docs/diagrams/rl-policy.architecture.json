@@ -1,0 +1,16 @@
+{
+ "schema_version":1,"diagram_type":"architecture",
+ "meta":{"title":"권한 확장 제안의 오프라인 검증","quality_profile":"showcase","viewBox":[1000,500]},
+ "components":[
+ {"id":"proposal","type":"security","label":"정적 정책 제안","sublabel":"policies/proposals/*.yaml","tag":"기본 정책과 병합","pos":[30,90],"size":[230,88]},
+ {"id":"proof","type":"security","label":"openshell-prover","sublabel":"site_boundary와 비교","pos":[360,90],"size":[230,76]},
+ {"id":"policy_review","type":"security","label":"사람의 정책 검토","sublabel":"human_review","pos":[730,90],"size":[230,76]},
+ {"id":"deny","type":"security","label":"자동 거절","sublabel":"auto_reject","pos":[360,320],"size":[230,76]}
+ ],
+ "connections":[
+ {"from":"proposal","to":"proof","label":"정책 검사","variant":"security"},
+ {"from":"proof","to":"policy_review","label":"within_boundary","variant":"security"},
+ {"from":"proof","to":"deny","label":"초과 / 증명 불가","variant":"security","labelDy":24}
+ ],
+ "cards":[{"dot":"slate","title":"검사 경로","items":["evals/prove_policies.py가 실행하는 평가이며 에이전트의 런타임 도구 호출이 아님"]}]
+}

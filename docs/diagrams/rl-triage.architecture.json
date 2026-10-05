@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "RL 실패 진단과 사람 승인형 재학습",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1200,
+      610
+    ]
+  },
+  "components": [
+    {
+      "id": "triage",
+      "type": "backend",
+      "label": "진단 에이전트",
+      "sublabel": "NeMo Agent Toolkit",
+      "pos": [
+        30,
+        70
+      ],
+      "size": [
+        230,
+        88
+      ]
+    },
+    {
+      "id": "prereg",
+      "type": "database",
+      "label": "실험 사전등록",
+      "sublabel": "write_preregistration",
+      "pos": [
+        330,
+        70
+      ],
+      "size": [
+        230,
+        76
+      ]
+    },
+    {
+      "id": "submit",
+      "type": "backend",
+      "label": "호스트에서 제출",
+      "sublabel": "승인 대기 요청 생성",
+      "tag": "submit CLI / POST /eval",
+      "pos": [
+        630,
+        70
+      ],
+      "size": [
+        230,
+        88
+      ]
+    },
+    {
+      "id": "approval",
+      "type": "security",
+      "label": "사람의 실험 승인",
+      "sublabel": "bridge approve CLI",
+      "tag": "샌드박스에서 승인 불가",
+      "pos": [
+        930,
+        70
+      ],
+      "size": [
+        230,
+        88
+      ]
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "텔레메트리 분석 도구",
+      "sublabel": "기준 / 이력 비교 · Python 분석",
+      "pos": [
+        330,
+        280
+      ],
+      "size": [
+        230,
+        88
+      ]
+    },
+    {
+      "id": "model",
+      "type": "external",
+      "label": "Nemotron 3 Super",
+      "sublabel": "integrate.api.nvidia.com",
+      "tag": "외부 NVIDIA 추론 API",
+      "pos": [
+        30,
+        460
+      ],
+      "size": [
+        230,
+        88
+      ]
+    },
+    {
+      "id": "bridge",
+      "type": "backend",
+      "label": "Isaac Lab 재학습",
+      "sublabel": "의심 변수 하나만 되돌림",
+      "pos": [
+        930,
+        280
+      ],
+      "size": [
+        230,
+        76
+      ]
+    },
+    {
+      "id": "verdict",
+      "type": "database",
+      "label": "진단 검증 결과",
+      "sublabel": "회복 / 미회복",
+      "pos": [
+        930,
+        460
+      ],
+      "size": [
+        230,
+        76
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "OpenShell 샌드박스 · 설정 / 안전 게이트 / 보상 수정 차단",
+      "wraps": [
+        "triage",
+        "prereg",
+        "tools"
+      ],
+      "pad": 30
+    }
+  ],
+  "connections": [
+    {
+      "from": "triage",
+      "to": "prereg",
+      "label": "실험 1개 등록",
+      "variant": "emphasis"
+    },
+    {
+      "from": "prereg",
+      "to": "submit",
+      "label": "등록 파일 읽기",
+      "variant": "emphasis",
+      "labelDy": -32
+    },
+    {
+      "from": "submit",
+      "to": "approval",
+      "label": "승인 대기",
+      "variant": "emphasis"
+    },
+    {
+      "from": "approval",
+      "to": "bridge",
+      "label": "승인 후",
+      "variant": "emphasis",
+      "labelDy": 24
+    },
+    {
+      "from": "bridge",
+      "to": "verdict",
+      "label": "재학습 판정",
+      "labelDy": 24
+    },
+    {
+      "from": "triage",
+      "to": "tools",
+      "label": "도구 호출"
+    },
+    {
+      "from": "triage",
+      "to": "model",
+      "label": "POST /v1/chat/completions",
+      "variant": "dashed",
+      "labelDy": 24
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "기본 정책 경계",
+      "items": [
+        "에이전트에는 브리지 제출 도구가 없으며 기본 정책은 브리지 접근을 허용하지 않음"
+      ]
+    }
+  ]
+}
