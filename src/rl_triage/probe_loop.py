@@ -108,6 +108,50 @@ def status(hypotheses: list[str], observed: dict[str, str], budget_left: int) ->
     return "open"
 
 
+# probe 판정 임계값. 결함 실행을 재기 전에 측정량의 물리적 의미로 정했다(docs/P1-A-LOOP.md 2절).
+# 비 기준은 같은 seed의 결함 없는(NONE) 실행 측정값 대비다. 측정값이 없으면 unknown.
+THRESHOLDS = {
+    "P_noise": ("noise_ratio", "absolute_log2", 1.0),          # 실제/기록 노이즈 비가 1/2 미만 또는 2 초과
+    "P_value": ("explained_variance", "drop", 0.5),             # 설명 분산이 NONE보다 0.5 넘게 낮음
+    "P_reward": ("track_lin_vel_xy_exp_rel_error", "above", 0.05),  # 추종 보상 재계산 오차 5% 초과(두 항 중 큰 값)
+    "P_torque": ("low_speed_saturation", "ratio_above", 3.0),   # 저속 토크 포화가 NONE의 3배 초과(바닥 0.01)
+    "P_slip": ("stance_foot_speed", "ratio_above", 2.0),        # 접지 중 발 속도가 NONE의 2배 초과
+    "P_episode": ("timeout_ratio", "below", 0.9),               # 시간 제한 종료가 설정 길이의 90% 전
+}
+
+
+def classify(probe: str, measurement: dict | None, reference: dict | None) -> str:
+    """원시 측정값을 abnormal/normal/unknown으로 바꾼다. reference는 같은 seed NONE 실행의 측정값."""
+    import math
+
+    if measurement is None:
+        return "unknown"
+    key, rule, thr = THRESHOLDS[probe]
+    if probe == "P_reward":
+        vals = [measurement.get("track_lin_vel_xy_exp_rel_error"), measurement.get("track_ang_vel_z_exp_rel_error")]
+        if any(v is None for v in vals):
+            return "unknown"
+        return "abnormal" if max(vals) > thr else "normal"
+    v = measurement.get(key)
+    if v is None:
+        return "unknown"
+    if rule == "absolute_log2":
+        return "abnormal" if v <= 0 or abs(math.log2(v)) > thr else "normal"
+    if rule == "below":
+        return "abnormal" if v < thr else "normal"
+    if rule == "above":
+        return "abnormal" if v > thr else "normal"
+    ref = (reference or {}).get(key)
+    if ref is None:
+        return "unknown"
+    if rule == "drop":
+        return "abnormal" if ref - v > thr else "normal"
+    if rule == "ratio_above":
+        floor = 0.01 if probe == "P_torque" else 1e-6
+        return "abnormal" if v > thr * max(ref, floor) else "normal"
+    raise ValueError(f"모르는 규칙 {rule!r}")
+
+
 # 엔지니어 체크리스트 순서(고정 순서 기준선). 싸고 흔한 확인부터: 에피소드 길이, 노이즈, 보상, 토크, 미끄러짐, 가치.
 FIXED_ORDER = ("P_episode", "P_noise", "P_reward", "P_torque", "P_slip", "P_value")
 

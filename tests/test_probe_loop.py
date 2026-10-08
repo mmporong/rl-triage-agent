@@ -128,3 +128,19 @@ def test_unknown_probe_results_can_end_unidentifiable():
     out = {p: "unknown" for p in L.PROBES}
     r = L.simulate("fixed", out)
     assert r["status"] == "unidentifiable" and r["probes_used"] == len(L.PROBES)
+
+
+def test_classify_thresholds_and_unknowns():
+    ref = {"explained_variance": 0.8, "low_speed_saturation": 0.002, "stance_foot_speed": 0.05}
+    assert L.classify("P_noise", {"noise_ratio": 1.1}, None) == "normal"
+    assert L.classify("P_noise", {"noise_ratio": 0.1}, None) == "abnormal"
+    assert L.classify("P_value", {"explained_variance": 0.1}, ref) == "abnormal"
+    assert L.classify("P_value", {"explained_variance": 0.6}, ref) == "normal"
+    assert L.classify("P_value", {"explained_variance": 0.6}, None) == "unknown"
+    assert L.classify("P_reward", {"track_lin_vel_xy_exp_rel_error": 0.0, "track_ang_vel_z_exp_rel_error": 0.2}, None) == "abnormal"
+    assert L.classify("P_torque", {"low_speed_saturation": 0.02}, ref) == "normal"  # 바닥 0.01의 3배 이하
+    assert L.classify("P_torque", {"low_speed_saturation": 0.2}, ref) == "abnormal"
+    assert L.classify("P_slip", {"stance_foot_speed": 0.2}, ref) == "abnormal"
+    assert L.classify("P_episode", {"timeout_ratio": 0.05}, None) == "abnormal"
+    assert L.classify("P_episode", {"timeout_ratio": None}, None) == "unknown"
+    assert L.classify("P_slip", None, ref) == "unknown"
