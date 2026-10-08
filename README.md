@@ -2,7 +2,7 @@
 
 ## 개발 상태와 이어하기
 
-현재 제품은 해커톤 프로토타입이며, AI Day 고도화는 연구·계획을 마친 단계입니다. 다음 개발은 공개 offline replay, 독립 회복 판정, 정보·예산을 맞춘 비교부터 진행합니다. 아래 과거 결과를 새 설계의 완료·일반화·비용 절감 증거로 읽지 않습니다.
+현재 제품은 해커톤 프로토타입이며, AI Day 고도화는 공개 offline replay(P0-A, [아래](#offline-replay-no-api-key-network-or-gpu))까지 구현했습니다. 다음 개발은 결정적 기준선, 독립 회복 판정, 정보·예산을 맞춘 비교입니다. 아래 과거 결과를 새 설계의 완료·일반화·비용 절감 증거로 읽지 않습니다.
 
 Claude는 [개발 인계](docs/CLAUDE-HANDOFF.md)에서 첫 작업·수용 기준·논문 근거·운영 경계를 확인합니다. [AI Day 계획](docs/AI-DAY-2026.md)은 고도화 순서와 철회 조건을 설명하고, [구현 순서](docs/IMPLEMENTATION-ORDER.md)는 비용 없는 재채점·결정적 기준선·회복 판정을 GPU·API 단계보다 앞에 둔 보정판입니다. 루트 CLAUDE.md가 인계를 연결합니다.
 
@@ -102,7 +102,8 @@ Security (`evals/results/policy_proofs.json`, `evals/results/sandbox_kernel_test
 git clone <this repo> && cd rl-triage-agent
 uv sync
 uv run pytest -q tests                                   # unit + app-level security tests
-uv run python bench/build_workspace.py 42                # benchmark telemetry -> agent workspace
+uv run python bench/build_workspace.py 42                # benchmark telemetry + public reference params -> workspace/seed42
+export TRIAGE_WORKSPACE=$PWD/workspace/seed42            # tools read this workspace
 export NVIDIA_API_KEY=nvapi-...                          # build.nvidia.com
 uv run nat run --config_file configs/triage_workflow.yml \
   --input "Triage failed training case_id=c01. Find the root-cause change and register the next experiment."
@@ -149,6 +150,34 @@ ok_request_eval        result=within_boundary   gate=human_review PASS
 **This verifies:** permission proofs, kernel enforcement inside a live OpenShell sandbox, agent accuracy on recorded Isaac Lab telemetry, and the approve → retrain → verdict loop on a real Isaac Lab run.
 
 **This does not verify:** faults that only appear in long training (>100 iterations), rough terrain, manipulation tasks, real robots, or multi-sandbox fleets.
+
+### Offline replay (no API key, network or GPU)
+
+A clean checkout can recompute the stored scores from public files only. The replay and the workspace builder use the Python standard library; they do not import the model client or NeMo Agent Toolkit.
+
+```bash
+python evals/replay.py evals/results/blind_v1 evals/results/heldout_blind evals/results/heldout_changes \
+  --traces evals/results/traces             # add --tag <new-folder> to save evals/results/<new-folder>/replay.json
+python bench/build_workspace.py 123 --blind # public params from bench/reference/; the blind leak check runs automatically
+```
+
+Rule: for each (task, seed, case, mode), the last row with `infra_error: false` counts; a cell with only infrastructure errors counts as wrong. Truth, top-1 and top-2 are recomputed from `bench/answer_key.json` (Task A also `bench/cases.json`), and the replay fails if any stored value differs. `--traces` fails on answer-file or `../..` markers in saved tool calls. Expected:
+
+```text
+evals/results/blind_v1: rows=47 infra=7 mismatches=0
+  blind    agent    top-1 10/20  top-2 12/20  seeds=7,42
+  blind    control  top-1 8/20  top-2 10/20  seeds=7,42
+evals/results/heldout_blind: rows=22 infra=2 mismatches=0
+  blind    agent    top-1 6/10  top-2 6/10  seeds=123
+  blind    control  top-1 2/10  top-2 6/10  seeds=123
+evals/results/heldout_changes: rows=22 infra=2 mismatches=0
+  changes  agent    top-1 10/10  top-2 10/10  seeds=123
+  changes  control  top-1 10/10  top-2 10/10  seeds=123
+evals/results/traces: trace files=50 leak hits=0
+status=pass
+```
+
+This re-derives past numbers; it is not new performance evidence. Two early files (`evals/results/v1_nim_client/seed42.jsonl`, `evals/results/smoke_c01_seed42.jsonl`) predate the `infra_error` field and are rejected rather than guessed. The leak check covers workspace inputs and saved traces only; agent code in the same checkout can still open `bench/answer_key.json`, so new scored runs need a location without answer files.
 
 ## Limitations
 

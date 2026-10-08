@@ -1,5 +1,7 @@
 * text=auto eol=lf
 *.ps1 text eol=crlf
+# Isaac Lab이 쓴 params 원본(CRLF)을 바이트 그대로 보존한다. manifest의 SHA256이 원본과 같아야 한다.
+bench/reference/params/** -text
 *.png binary
 *.gif binary
 *.mp4 binary

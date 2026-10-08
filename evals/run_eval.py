@@ -2,7 +2,9 @@
 
 사용: uv run python evals/run_eval.py --seed 42 --mode agent|control|both
 NVIDIA_API_KEY 환경변수가 필요하다(OpenShell 샌드박스에서는 provider가 주입).
-정답표(bench/private/answer_key.json)는 채점 단계에서만 읽고 에이전트 입력에는 넣지 않는다.
+정답표(v1: 공개 bench/answer_key.json)는 채점 단계에서만 읽고 에이전트 입력에는 넣지 않는다.
+같은 checkout에 정답표가 있으므로 새 채점 평가는 정답 파일이 없는 실행 위치에서 돌린다(docs/IMPLEMENTATION-ORDER.md 2절 A).
+저장된 결과의 재채점은 evals/replay.py가 같은 채점 규칙(rl_triage.scoring)으로 한다.
 """
 import argparse
 import json
@@ -13,6 +15,10 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+from rl_triage.leakcheck import check_blind_workspace  # noqa: E402
+from rl_triage.scoring import score_blind, score_changes  # noqa: E402
+
 MODEL = os.environ.get("TRIAGE_MODEL", "nvidia/nemotron-3-super-120b-a12b")
 
 CONTROL_PROMPT = """You are given a failed Isaac Lab locomotion RL training run and a healthy reference run.
@@ -36,14 +42,6 @@ Answer ONLY with JSON: {{"mechanism_ranking": ["...", ...], "reason": "..."}}
 TELEMETRY (last-20% means vs reference):
 {overview}
 """
-
-
-def score_blind(case_id: str, ranking, key: dict) -> dict:
-    truth = key["cases"][case_id]["category"]
-    ranking = ranking or []
-    return {"truth": truth, "suspected": ranking[0] if ranking else None, "ranking": ranking,
-            "correct": bool(ranking) and ranking[0] == truth, "top2": truth in ranking[:2],
-            "category": truth}
 
 
 def run_agent_blind(ws: Path, case_id: str) -> dict:
@@ -92,15 +90,8 @@ def run_control_blind(ws: Path, case_id: str) -> dict:
 
 
 def score(ws: Path, case_id: str, suspected: str | None, key: dict) -> dict:
-    sys.path.insert(0, str(ROOT / "src"))
-    from rl_triage import triage_tools as T
-    T.WORKSPACE = ws
-    changes = {c["change_id"]: f'{c["key"]}={json.dumps(c["new"]) if not isinstance(c["new"], str) else c["new"]}'
-               for c in T.list_changes(case_id)}
-    harmful = key["cases"][case_id]["harmful_override"].split("=", 1)[0]
-    truth = next(cid for cid, ov in changes.items() if ov.split("=", 1)[0] == harmful)
-    return {"truth": truth, "suspected": suspected, "correct": suspected == truth,
-            "category": key["cases"][case_id]["category"]}
+    case = json.loads((ws / "cases" / case_id / "case.json").read_text(encoding="utf-8"))
+    return score_changes(case_id, suspected, case["overrides"], key)
 
 
 def run_agent(ws: Path, case_id: str) -> dict:
@@ -176,8 +167,17 @@ def main():
     args = ap.parse_args()
     ws_root = "workspace_blind" if args.task == "blind" else ("workspace" if args.bench == "v1" else "workspace_v2")
     ws = ROOT / ws_root / f"seed{args.seed}"
-    key_name = "answer_key.json" if args.bench == "v1" else "answer_key_v2.json"
-    key = json.loads((ROOT / "bench" / "private" / key_name).read_text(encoding="utf-8"))
+    # v1 정답표는 평가 종료 후 공개했다(비공개 사본과 SHA256 동일, bench/reference/manifest.json w0_check).
+    # v2는 채점에 쓰지 않아 공개본이 없다.
+    key_path = ROOT / "bench" / ("answer_key.json" if args.bench == "v1" else "private/answer_key_v2.json")
+    key = json.loads(key_path.read_text(encoding="utf-8"))
+    if args.task == "blind":  # workspace_blind는 bench/build_workspace.py가 bench/cases.json으로 만든다
+        cases = json.loads((ROOT / "bench" / "cases.json").read_text(encoding="utf-8"))
+        manifest = json.loads((ROOT / "bench" / "reference" / "manifest.json").read_text(encoding="utf-8"))
+        ref_sha = manifest["seeds"].get(str(args.seed), {}).get("sha256")  # 공개 기준 params가 없는 seed는 문자열 검사만
+        problems = check_blind_workspace(ws, cases, key, ref_sha)
+        if problems:
+            raise SystemExit("blind 작업공간 유출 검사 실패:\n" + "\n".join(problems))
     case_ids = args.cases or sorted(p.name for p in (ws / "cases").iterdir())
     modes = ["agent", "control"] if args.mode == "both" else [args.mode]
     results_path = ROOT / "evals" / "results" / args.tag / f"seed{args.seed}.jsonl"

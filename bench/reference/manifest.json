@@ -1,0 +1,57 @@
+{
+ "purpose": "Public copies of the healthy baseline run params. bench/build_workspace.py reads them so a clean checkout can build workspaces without bench/private. Each file is a byte-identical copy of params/ written by Isaac Lab train.py for the run named in source_run_dir_name.",
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "seeds": {
+  "7": {
+   "source_run_dir_name": "2026-09-26_11-41-11_baseline_s7",
+   "telemetry": "bench/runs/baseline_s7.telemetry.json",
+   "sha256": {
+    "env.yaml": "6d89740d6176e6341b2ec977600e13f0e258601867a8dd5795aa9c57a6defbf2",
+    "agent.yaml": "4c136fcbaf4b675d6c376b12efc34c8cb8ca8b327428371e8af3a5141344197f"
+   }
+  },
+  "42": {
+   "source_run_dir_name": "2026-09-26_11-31-54_s02_baseline_s42",
+   "telemetry": "bench/runs/baseline_s42.telemetry.json",
+   "sha256": {
+    "env.yaml": "52fc9825f5e74b8eda31dd9e6a0d47adc1863ec042701d5e4b3106a84dca357a",
+    "agent.yaml": "2379c02068b003afc39204b26e2dc87c2c4926cc7073d19a3776be89b0de9b88"
+   }
+  },
+  "123": {
+   "source_run_dir_name": "2026-09-27_12-42-18_baseline_s123",
+   "telemetry": "bench/runs/baseline_s123.telemetry.json",
+   "sha256": {
+    "env.yaml": "f6b4ea3b6f956c32b3d7aa8371e336c059aea960acbae41119da9b9688a914d4",
+    "agent.yaml": "ddff9abd705f1beaac5d44969c0f73ea731b2fa03fc8b1048e4e21ae7f66c942"
+   }
+  }
+ },
+ "w0_check": {
+  "checked_on": "2026-10-08",
+  "host_os": "Windows 11 Pro 10.0.26200",
+  "isaac_sim_version_file": "4.5.0-rc.36+release.19112.f59b3005.gl",
+  "isaac_lab_git_describe": "v2.1.1",
+  "isaac_lab_tracked_changes": "none",
+  "rsl_rl_lib": "2.3.3",
+  "torch_in_kit_site_packages": "2.7.0+cu128",
+  "gpu": "NVIDIA GeForce RTX 3060, 12288 MiB",
+  "nvidia_driver": "610.62",
+  "answer_key": {
+   "public_path": "bench/answer_key.json",
+   "sha256_clean_checkout_lf": "92671c5ead5f4bd2413c12281d236779e7edd4dbf6d967100b933fa194a5c268",
+   "sha256_windows_working_copy_crlf": "e29fe9634f78df45a22c4a3e598fe9dac1c8c1a7504d40380214234c5048e9b9",
+   "private_copy_sha256_crlf": "e29fe9634f78df45a22c4a3e598fe9dac1c8c1a7504d40380214234c5048e9b9",
+   "private_copy_equal": true
+  },
+  "baseline_params_found": {"7": true, "42": true, "123": true},
+  "previous_workspaces_used_same_params": true,
+  "notes": [
+   "Versions were read from the host on 2026-10-08, not recorded at training time (2026-09-26 to 2026-09-27). They describe the current host, not proof of the training environment.",
+   "Which torch build Isaac Lab imported during the past runs was not verified.",
+   "Seed 42 has no private meta file. Its params come from the run named in its telemetry run_dir_name (s02_baseline_s42); the old fallback glob resolved to the same run.",
+   "previous_workspaces_used_same_params: workspace/ and workspace_blind/ reference params for seeds 7, 42 and 123 had the same SHA256 as these files.",
+   "The Windows working copy holds tracked text files with CRLF while .gitattributes checks them out with LF, so the answer key has two SHA256 values for the same content. The private copy equals the public file byte for byte (CRLF) and after CRLF to LF."
+  ]
+ }
+}
