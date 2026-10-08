@@ -19,6 +19,7 @@ import math
 import sys
 import time
 import traceback
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -98,6 +99,7 @@ def evaluate(args) -> None:
     try:
         for job in jobs["jobs"]:
             t0 = time.time()
+            started_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
             ckpt = Path(job["checkpoint"])
             runner.load(str(ckpt), load_optimizer=False)
             policy = runner.get_inference_policy(device=device)
@@ -137,13 +139,18 @@ def evaluate(args) -> None:
                 for i, (vx, vy, yaw) in enumerate(grid):
                     m = cond == i
                     by_condition.append({"command": [vx, vy, yaw], "fall_rate": float(fell[m].float().mean()),
-                                         "lin_vel_rmse_mps": rmse(lin_sq, m), "yaw_rate_rmse_radps": rmse(yaw_sq, m)})
+                                         "lin_vel_rmse_mps": rmse(lin_sq, m), "yaw_rate_rmse_radps": rmse(yaw_sq, m),
+                                         "num_envs": int(m.sum()), "fall_count": int(fell[m].sum()),
+                                         "alive_steps_sum": int(alive[m].sum()),
+                                         "lin_error_sq_sum": float(lin_sq[m].sum()),
+                                         "yaw_error_sq_sum": float(yaw_sq[m].sum())})
                 metrics = {"fall_rate": float(fell.float().mean()),
                            "mean_survival_s": float(alive.mean()) * step_dt,
                            "lin_vel_rmse_mps": math.sqrt(float(lin_sq.sum() / alive.sum())),
                            "yaw_rate_rmse_radps": math.sqrt(float(yaw_sq.sum() / alive.sum()))}
             report = {**common, "name": job["name"], "checkpoint": {"file": ckpt.name, "sha256": _sha256(ckpt)},
                       "metrics": metrics, "by_condition": by_condition, "elapsed_s": round(time.time() - t0, 1)}
+            report.update({"started_at": started_at, "finished_at": datetime.now(timezone.utc).isoformat(timespec="seconds")})
             out = Path(job["output"])
             out.parent.mkdir(parents=True, exist_ok=True)
             tmp = out.with_suffix(".tmp")
