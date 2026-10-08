@@ -35,7 +35,7 @@ PROBES = {
                             "optimizer": "normal", "physics": "normal", "termination": "normal"}},
     "P_torque": {"measures": "낮은 관절 속도에서 토크 포화 비율", "cost_gpu_s": 60,
                  "args": {"rollout_steps": 500, "num_envs": 256},
-                 "expect": {"actuator": "abnormal", "reward": "normal", "exploration": "normal",
+                 "expect": {"actuator": "abnormal", "reward": "normal", "exploration": None,
                             "optimizer": "normal", "physics": "normal", "termination": "normal"}},
     "P_slip": {"measures": "접지 중 발 수평 속도", "cost_gpu_s": 60,
                "args": {"rollout_steps": 500, "num_envs": 256},
@@ -109,13 +109,14 @@ def status(hypotheses: list[str], observed: dict[str, str], budget_left: int) ->
 
 
 # probe 판정 임계값. 결함 실행을 재기 전에 측정량의 물리적 의미로 정했다(docs/P1-A-LOOP.md 2절).
+# 2026-10-09 dev(seed 7 보정 실행) 결과로 P_value·P_slip의 측정 지표와 P_torque의 탐색 예상을 바꿨다(5절).
 # 비 기준은 같은 seed의 결함 없는(NONE) 실행 측정값 대비다. 측정값이 없으면 unknown.
 THRESHOLDS = {
     "P_noise": ("noise_ratio", "absolute_log2", 1.0),          # 실제/기록 노이즈 비가 1/2 미만 또는 2 초과
-    "P_value": ("explained_variance", "drop", 0.5),             # 설명 분산이 NONE보다 0.5 넘게 낮음
+    "P_value": ("value_rel_error", "ratio_above", 2.0),         # 상대 가치 오차가 NONE의 2배 초과(바닥 0.05)
     "P_reward": ("track_lin_vel_xy_exp_rel_error", "above", 0.05),  # 추종 보상 재계산 오차 5% 초과(두 항 중 큰 값)
     "P_torque": ("low_speed_saturation", "ratio_above", 3.0),   # 저속 토크 포화가 NONE의 3배 초과(바닥 0.01)
-    "P_slip": ("stance_foot_speed", "ratio_above", 2.0),        # 접지 중 발 속도가 NONE의 2배 초과
+    "P_slip": ("friction_use_p95", "ratio_below", 0.5),         # 하중 접지의 접선/수직력 95% 분위가 NONE의 절반 미만
     "P_episode": ("timeout_ratio", "below", 0.9),               # 시간 제한 종료가 설정 길이의 90% 전
 }
 
@@ -147,8 +148,10 @@ def classify(probe: str, measurement: dict | None, reference: dict | None) -> st
     if rule == "drop":
         return "abnormal" if ref - v > thr else "normal"
     if rule == "ratio_above":
-        floor = 0.01 if probe == "P_torque" else 1e-6
+        floor = {"P_torque": 0.01, "P_value": 0.05}.get(probe, 1e-6)
         return "abnormal" if v > thr * max(ref, floor) else "normal"
+    if rule == "ratio_below":
+        return "abnormal" if v < thr * ref else "normal"
     raise ValueError(f"모르는 규칙 {rule!r}")
 
 
