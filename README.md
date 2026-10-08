@@ -4,7 +4,7 @@
 
 현재 제품은 해커톤 프로토타입이며, AI Day 고도화는 연구·계획을 마친 단계입니다. 다음 개발은 공개 offline replay, 독립 회복 판정, 정보·예산을 맞춘 비교부터 진행합니다. 아래 과거 결과를 새 설계의 완료·일반화·비용 절감 증거로 읽지 않습니다.
 
-Claude는 [개발 인계](docs/CLAUDE-HANDOFF.md)에서 첫 작업·수용 기준·논문 근거·운영 경계를 확인합니다. [AI Day 계획](docs/AI-DAY-2026.md)은 고도화 순서와 철회 조건을 설명하며, 루트 CLAUDE.md가 인계를 연결합니다.
+Claude는 [개발 인계](docs/CLAUDE-HANDOFF.md)에서 첫 작업·수용 기준·논문 근거·운영 경계를 확인합니다. [AI Day 계획](docs/AI-DAY-2026.md)은 고도화 순서와 철회 조건을 설명하고, [구현 순서](docs/IMPLEMENTATION-ORDER.md)는 비용 없는 재채점·결정적 기준선·회복 판정을 GPU·API 단계보다 앞에 둔 보정판입니다. 루트 CLAUDE.md가 인계를 연결합니다.
 
 | Catalog field | Value |
 | --- | --- |

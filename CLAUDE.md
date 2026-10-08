@@ -6,4 +6,6 @@ AGENTS.md의 지시에 따라 docs/HANDOFF.md를 먼저 읽는다. 그 문서는
 
 @docs/CLAUDE-HANDOFF.md
 
-첫 작업은 공개 offline replay P0-A다. 현재 cwd·Git 상태를 확인하고, 필요한 코드와 계약을 읽은 뒤 안전한 로컬 구현·검증·별도 검수·커밋까지 이어간다. 과거 결과·다른 작성자의 변경을 보존하고 미실행 gate를 완료로 처리하지 않는다.
+@docs/IMPLEMENTATION-ORDER.md
+
+순서는 IMPLEMENTATION-ORDER.md가 보정한다. Windows 세션은 그 문서 1절 W0 시작 점검부터 하고, 첫 구현은 공개 offline replay P0-A다. 현재 cwd·Git 상태를 확인하고, 필요한 코드와 계약을 읽은 뒤 안전한 로컬 구현·검증·별도 검수·커밋까지 이어간다. 과거 결과·다른 작성자의 변경을 보존하고 미실행 gate를 완료로 처리하지 않는다.
