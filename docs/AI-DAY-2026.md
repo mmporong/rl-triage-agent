@@ -45,3 +45,22 @@
 10/8~13 공개 재현·oracle → 10/14~21 계측·기준선·holdout → 10/22~29 승인 실험 loop → 10/30~11/6 비교·독립 재현·RC → 11/7 이후 실제 발표 길이에 맞춰 고정 데모·영상 대안·Q&A를 준비한다. 이는 계획이며 실측 소요 시간이 아니다.
 
 다음 개발은 P0 하나부터 열고 새 결과를 새 tag에 저장한다. runtime·모델·정책 버전을 pin하고 어제 발표작의 OpenShell 0.0.116과 이 프로젝트의 과거 0.1.1 인계를 혼합하지 않는다. 기술 감사/후보 10개/현장 회고는 hackathon-specialist 저장소의 `reports/nvidia-ai-day-2026-rl-triage-20261008/`에 보존한다.
+
+## 최신 논문·방법론을 반영한 보정
+
+2026-10-08 Peer_1·Peer_2의 원문 14개 후속 조사에 따른 계획 보정이다. 제품 코드·모델·GPU 실험 결과는 추가하지 않았다. 기존 감사와 평가 기록을 보존한다.
+
+- **신규성 주장 축소:** [EvalXRL](https://arxiv.org/html/2608.17524v1)은 가설 갱신·수리 loop와 불변 평가 함수를 제안한 가까운 선행이다. 계획 논문이며 검증된 성능 결과는 아니다. loop나 독립 평가 자체를 최초로 주장하지 않고 Isaac의 관측 제약·승인/복구·전체 비용 조건에서의 추가 가치를 검증한다.
+- **반증 가능한 사전등록:** 각 가설의 예상·반증 signature, tag/시간 구간/reference SHA를 고정하고 실험 관측이 판정·갱신에 쓰이도록 연결한다. 현행 문자열 저장만으로 완성됐다고 하지 않는다. 회복은 유일 원인 확정과 구분하고, 구별 불가면 식별 불가로 종료한다.
+- **blind 실험 연결 공백:** 현행 approve는 suspected_change_id를 case.overrides 위치로 대응시킨다. Task B의 mechanism 순위를 이 경로의 완성으로 간주하지 않는다. 공개 허용 실험 목록과 canonical args로 blind 가설을 연결하고, 숨은 정답·변경 목록이 선택 근거에 유출되지 않도록 별도 설계한다.
+- **작은 실험 후보와 공정 대조:** [보상 진단 연구](https://arxiv.org/html/2605.28918v1)의 정적 분류표·동일 총 훈련 예산 Best-of-K·metrics-only를 추가한다. 무작위/최저 비용/전문가 고정 순서/모델 한 번 선택/적응 선택을 비교하고 계측·동적 진단·결과 갱신을 제거해 기여를 나눈다.
+- **확률 미확인 시 휴리스틱:** [BoxingGym](https://arxiv.org/html/2501.01540v2)·[BED-LLM](https://arxiv.org/html/2508.21184v3)은 가설과 실험 선택의 참고다. RL 개입의 likelihood·prior·모델 endpoint 확률 지원이 미검증이므로 현재는 가설 구별 휴리스틱으로 명시한다. Bayesian/EIG 수치와 비용 절감은 검증 전 주장하지 않는다.
+- **실행/보류 쌍 평가:** [AgentAbstain](https://arxiv.org/html/2607.10059v1)을 참고해 계측 누락/오래됨·승인 불일치를 최소 변화 쌍으로 평가한다. always-act/always-abstain·고정 gate와 비교하며 coverage–risk와 유효 사례 회복을 함께 본다. 자기 confidence만으로 승인하지 않는다.
+- **승인 소비·복구 계약:** [CapLease](https://arxiv.org/html/2608.01710v1)는 요청 ID 중복과 의미상 같은 행동의 재발급을 구분한다. proposal digest·approval event·canonical args·effect key·예산·receipt·불명 결과 조회를 설계한다. 신뢰된 원장과 멱등 sink의 가정 없이 외부 효과 exactly-once를 보장하지 않으며 새 SDK 설치를 전제하지 않는다.
+- **실제 사용 경로 검수:** [agent eval 지침](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)·[Building to the Test](https://arxiv.org/html/2606.28430v1)에 따라 결과 상태와 trace를 대조한다. oracle·승인 gate·관측 갱신을 무력화했을 때 해당 수용 검사가 실패하는지 확인한다. 테스트 개수나 파일 존재를 작업 성공으로 대신하지 않는다.
+
+행사 전에는 한 task·구별 가능한 두 원인·승인 실험 하나·회복/비회복/보류/식별 불가·공정 replay로 범위를 고정한다. 두 번째 task, formal Bayesian 실험 설계, 범용 scientist·큰 병렬 탐색·새 모델 훈련은 행사 후 검증 범위다. 정적 결정 트리가 동등 이상이거나 전체 비용 이득이 없으면 agent 우월성·절감 문구를 철회한다.
+
+Q/O는 수용 후 다음 작업을 공급하는 기존 계약을 유지하되 실제 inbox→ACK→검수→수용→공급과 재시작·중복·stale 결과를 검증한다. [Scaling Agent Systems](https://arxiv.org/html/2512.08296v3)가 보여주듯 병렬화 이득은 과제 구조에 달려 있다. 같은 모델·총 슬롯·예산에서 단일 O와 Q/O를 비교하고 Q 비용을 포함한다. 미실측 속도 향상을 약속하지 않는다.
+
+전체 근거·반례·Peer 결과는 별도 저장소의 `$HOME/hackathon-specialist/reports/nvidia-ai-day-2026-rl-triage-methods-20261008/report.md`에 보존한다. 이 절은 후속 구현 입력이며 새 제품 gate를 닫은 기록이 아니다.
