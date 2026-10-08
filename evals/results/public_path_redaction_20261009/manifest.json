@@ -1,0 +1,160 @@
+{
+ "date": "2026-10-09",
+ "why": "공개 저장소에 남아 있던 사용자 이름이 든 절대경로를 가린다(사용자 승인, 결과 파일 수정 금지 규칙의 예외).",
+ "scope": "추적 파일 중 Windows·WSL 사용자 이름이 든 경로가 있던 파일. 원본은 bench/private/legacy_redaction_20261009/(비공개)에 보관. git 이력에는 원본이 남는다.",
+ "note": "점수 필드(case_id·ranking·truth·correct 등)는 바뀌지 않는다. 이전 replay 기록(evals/results/replay_*)의 입력 sha256_lf는 가리기 전 파일 값이다.",
+ "files": [
+  {
+   "path": "docs/HANDOFF.md",
+   "original_sha256_lf": "628db35a877b796b99a1f2d6b86b7c19bf30948d7cf24ff32fcc5e912bdfbc09",
+   "redacted_sha256_lf": "9a1188d6cd76c6517269e789ad096a4785ec0316bf496ce710df784565303de6",
+   "replacements": {
+    "/mnt/c/Users/<user>/rl-triage-agent -> /mnt/c/Users/<user>/rl-triage-agent": 2
+   }
+  },
+  {
+   "path": "evals/results/aborted_openai_client_run/seed7.jsonl",
+   "original_sha256_lf": "4173a4f44f485e3de460f28eabaef2c6e6204205ada6567a949afe156fbead3a",
+   "redacted_sha256_lf": "be8995642cd6dc73ddaffd72ba1ac974530b6cc830f2ea7aeb401f6d80214c05",
+   "replacements": {
+    "/home/<wsl-user> -> <wsl-home>": 20
+   }
+  },
+  {
+   "path": "evals/results/blind_v1/seed42.jsonl",
+   "original_sha256_lf": "cb022e7ec0e4f096b498a457afc61b652091a059d08603b74f04196897701c3c",
+   "redacted_sha256_lf": "b75f33ab6d5237998a60f1944b0d08988d6c7f1d08fce6445c9dd64d4ce9ebd1",
+   "replacements": {
+    "/home/<wsl-user> -> <wsl-home>": 16
+   }
+  },
+  {
+   "path": "evals/results/blind_v1/seed7.jsonl",
+   "original_sha256_lf": "dd9696f98352ebc292572a6aaa1dc9cb2e3f4e795e8c1476792e0b02ae8f3622",
+   "redacted_sha256_lf": "597be3351adc5461255fc71e89afdf223c6e22ab5523503c10f4180fbd18e93c",
+   "replacements": {
+    "/home/<wsl-user> -> <wsl-home>": 12
+   }
+  },
+  {
+   "path": "evals/results/heldout_blind/seed123.jsonl",
+   "original_sha256_lf": "ba3a40d5b3b1a4ecc625c16103bf30323213214f3a13f8832920bec3ede8cadd",
+   "redacted_sha256_lf": "813e19c42f4f6f8c3eb9a17768281723f8e3d652907ccd0b45e944bbdce46d7e",
+   "replacements": {
+    "/home/<wsl-user> -> <wsl-home>": 4
+   }
+  },
+  {
+   "path": "evals/results/heldout_changes/seed123.jsonl",
+   "original_sha256_lf": "1ea894cf8e4e0a148eff3fdc5550df925dd62a1217e437c57146a8c7c8e316a0",
+   "redacted_sha256_lf": "8b193ecd95a2295a2dc4c2e28001825a366c00d2d8948dc221b5a483a0db2b4d",
+   "replacements": {
+    "/home/<wsl-user> -> <wsl-home>": 12
+   }
+  },
+  {
+   "path": "evals/results/openai_client_probe/seed42_c04-c07.jsonl",
+   "original_sha256_lf": "0dd89111a44d0b1c5b4073bf00ef212b5e1f77b3baaebb6bfd711077074cbbd6",
+   "redacted_sha256_lf": "e599600dc07dde25421d6634fa506991bbc8e8cd835162f3990bbf38b3f48c5a",
+   "replacements": {
+    "/home/<wsl-user> -> <wsl-home>": 8
+   }
+  },
+  {
+   "path": "evals/results/openai_client_probe/seed42_overloaded.jsonl",
+   "original_sha256_lf": "c130f09a3edf4ea27b268829e43f79910682541fcb3fb3de05bbb50775953d17",
+   "redacted_sha256_lf": "7d130d98fecd563b9b42b4d4a391add1f6c43a457b6eacced8096027c2edd8e3",
+   "replacements": {
+    "/home/<wsl-user> -> <wsl-home>": 8
+   }
+  },
+  {
+   "path": "evals/results/traces/blind_seed123_c05_1790482743.jsonl",
+   "original_sha256_lf": "4a923e83b85b43ebcf6e7b472a13104306816689682b6c7388a597aaa32ffe9e",
+   "redacted_sha256_lf": "edaf437de9a8a928eb2eac28423ff7a8b15f7919d83e05b5010463a92aa1a5b1",
+   "replacements": {
+    "/mnt/c/Users/<user>/rl-triage-agent -> <repo>": 1
+   }
+  },
+  {
+   "path": "evals/results/traces/blind_seed123_c06_1790482818.jsonl",
+   "original_sha256_lf": "08a78c1fbf8a245bd00d29879598dac4b84ea0b34136038261122525c00c8fe6",
+   "redacted_sha256_lf": "3188e5e0758502edb7c2111d88ca2daf0cea1b4cb438baaba2030188e446ba48",
+   "replacements": {
+    "/mnt/c/Users/<user> -> <user-home>": 1
+   }
+  },
+  {
+   "path": "evals/results/traces/blind_seed7_c02_1790478518.jsonl",
+   "original_sha256_lf": "5bb5a81187916608a20b5166677c74a48c4cd72d605cc7a440265bf1834067d2",
+   "redacted_sha256_lf": "664b8d1d3455d1bedd1ddbacf115cf6dc83291cce41a985d199ac5634fbf93fd",
+   "replacements": {
+    "/mnt/c/Users/<user>/rl-triage-agent -> <repo>": 1
+   }
+  },
+  {
+   "path": "evals/results/traces/blind_seed7_c02_1790480821.jsonl",
+   "original_sha256_lf": "275153dfe218b32194c9ddb8b78976378b4c081ec8453e887047f6ca26506525",
+   "redacted_sha256_lf": "cf7e759e33703f0479e94d26bef9b738592f6afc5d6e7512898d1d920ad2082a",
+   "replacements": {
+    "/mnt/c/Users/<user>/rl-triage-agent -> <repo>": 3
+   }
+  },
+  {
+   "path": "evals/results/traces/blind_seed7_c07_1790479615.jsonl",
+   "original_sha256_lf": "fd7d407a293f60ff0c73e1ef23b3080054d065d359308b094b623818c9c12261",
+   "redacted_sha256_lf": "82e3b199dd94da430e236bfac9d27376bd7548e9015d1cf7b14b588380b0cd2e",
+   "replacements": {
+    "/mnt/c/Users/<user>/rl-triage-agent -> <repo>": 3
+   }
+  },
+  {
+   "path": "evals/results/traces/blind_seed7_c08_1790479696.jsonl",
+   "original_sha256_lf": "773aa28a582467c6657178c04b95b0e6bf3acb74a745db729eceb1a35d6da0b5",
+   "redacted_sha256_lf": "55e56e9150c68fa063c1814b129e9a11e86a9f991f38865e065b97ba2f4d75d2",
+   "replacements": {
+    "/mnt/c/Users/<user>/rl-triage-agent -> <repo>": 2
+   }
+  },
+  {
+   "path": "evals/results/v1_nim_client/seed42.jsonl",
+   "original_sha256_lf": "b0987f0d8c1fccdf73dd99bbdc6118023d4c24fb851cbde94d3df98ca86fe07f",
+   "redacted_sha256_lf": "6dfad6bba1ad5bb71e6087903470a9bf2feab256a785a0d342ae512d6d5044a8",
+   "replacements": {
+    "/mnt/c/Users/<user>/rl-triage-agent -> <repo>": 6
+   }
+  },
+  {
+   "path": "evals/results/v1_nim_client/seed7.jsonl",
+   "original_sha256_lf": "1000484bb53b8d7947b21161dd5f576b02bf8722dd05069f119c1887d4fa2d91",
+   "redacted_sha256_lf": "f8de3b8db0db816f516ee963f8dda7eb5c0ac57c07c081047e291e56ea979be4",
+   "replacements": {
+    "/mnt/c/Users/<user>/rl-triage-agent -> <repo>": 5
+   }
+  },
+  {
+   "path": "evals/results/v1_openai_client/seed42.jsonl",
+   "original_sha256_lf": "e42b46a30bd5f32a92f283b23fbed1b0dc3c300c9fb88b75643c8dfa016581c3",
+   "redacted_sha256_lf": "1e33783c0d57af46d34e52dfad78ec1a9c71ca373c6f537abfd446249cbe7a41",
+   "replacements": {
+    "/home/<wsl-user> -> <wsl-home>": 24
+   }
+  },
+  {
+   "path": "evals/results/v1_openai_client/seed7.jsonl",
+   "original_sha256_lf": "9fdd439e2d208e30f21383e683880754c92f4d298659eadbe4fc3526bff0d5fc",
+   "redacted_sha256_lf": "a73dbd41baa2befc329c32affdd3c224932314ae36ff236bb2066244b0dadcc3",
+   "replacements": {
+    "/home/<wsl-user> -> <wsl-home>": 8
+   }
+  },
+  {
+   "path": "submission/pdf.html",
+   "original_sha256_lf": "73dee474b09e024db760fcc1e717396ce9a16a65702486247e8cf05d6f777157",
+   "redacted_sha256_lf": "4f89e784963347782e25a5b4b8d30fca3c6104ea844c652d59db0b609cc3f09f",
+   "replacements": {
+    "file:///C:/Users/<user>/rl-triage-agent/ -> ../": 4
+   }
+  }
+ ]
+}

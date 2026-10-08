@@ -198,7 +198,7 @@ evals/results/heldout_blind: rows=22 infra=2 mismatches=0
 evals/results/heldout_changes: rows=22 infra=2 mismatches=0
   changes  agent         top-1 10/10  top-2 10/10  seeds=123
   changes  control       top-1 10/10  top-2 10/10  seeds=123
-evals/results/traces: trace files=50 leak hits=0
+evals/results/traces: trace files=68 leak hits=0
 status=pass
 ```
 

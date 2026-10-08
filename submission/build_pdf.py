@@ -11,7 +11,7 @@ t = (ROOT / "submission" / "form_answers.txt").read_text(encoding="utf-8")
 HEADS = ["서비스 명", "해결하고자 했던 문제", "서비스 소개 및 주요 기능", "활용한 핵심 기술 및 AI 모델", "추가 URL"]
 parts = re.split(r"\n?\[(" + "|".join(map(re.escape, HEADS)) + r")\]\n", "\n" + t)
 sec = {k: v.strip() for k, v in zip(parts[1::2], parts[2::2])}
-png = (ROOT / "docs" / "demo" / "png").as_uri()
+png = "../docs/demo/png"  # submission/pdf.html 기준 상대 경로(절대 경로는 사용자 이름을 담는다)
 stack = "".join(
     (f"<li style='list-style:none;margin-left:-5mm;font-weight:700'>{html.escape(l)}</li>" if l.startswith("[")
      else f"<li>{html.escape(l.lstrip('- '))}</li>")

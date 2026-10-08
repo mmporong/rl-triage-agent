@@ -45,13 +45,13 @@ Isaac Lab RSL-RL 학습이 기준 실행과 다르게 무너졌을 때, 텔레�
 - **WSL 파이썬 환경**: `UV_PROJECT_ENVIRONMENT=$HOME/.venvs/rl-triage`. 예시:
   ```bash
   export PATH="$HOME/.local/bin:$PATH"; . ~/.config/nvidia/env
-  cd /mnt/c/Users/LIMMM/rl-triage-agent
+  cd /mnt/c/Users/<user>/rl-triage-agent
   export UV_PROJECT_ENVIRONMENT=$HOME/.venvs/rl-triage UV_LINK_MODE=copy PYTHONUTF8=1
   uv run --no-sync python evals/run_eval.py --task blind --seed 123 --mode both --tag <새태그>
   ```
 - **Windows 파이썬 환경**: 저장소 `.venv`(테스트·작업공간 생성·prover 호출용). `PYTHONUTF8=1 uv run --no-sync pytest -q tests` → 13 passed, 6 skipped(샌드박스 전용).
 - **OpenShell**: WSL Ubuntu에 0.1.1(snap, 게이트웨이 `127.0.0.1:17670`), `openshell-prover` 0.1.1은 `/usr/bin`. provider 프로필은 `policies/providers/nvidia.yaml`을 import한 상태.
-- **샌드박스 `rl-triage`가 2026-10-02 기준 Error 상태다.** 다시 만들려면 WSL에서 `bash /mnt/c/Users/LIMMM/rl-triage-agent/scripts/sandbox_up.sh 42`. 샌드박스 안 실행은 `openshell sandbox exec -n rl-triage --env HOME=/tmp -- bash -c 'cd /sandbox/app && nat run --config_file configs/triage_workflow.yml --input "..."'`, 커널 테스트는 `OPENSHELL_SANDBOX=1 python -m pytest -q -p no:cacheprovider tests/sandbox`.
+- **샌드박스 `rl-triage`가 2026-10-02 기준 Error 상태다.** 다시 만들려면 WSL에서 `bash /mnt/c/Users/<user>/rl-triage-agent/scripts/sandbox_up.sh 42`. 샌드박스 안 실행은 `openshell sandbox exec -n rl-triage --env HOME=/tmp -- bash -c 'cd /sandbox/app && nat run --config_file configs/triage_workflow.yml --input "..."'`, 커널 테스트는 `OPENSHELL_SANDBOX=1 python -m pytest -q -p no:cacheprovider tests/sandbox`.
 - **Isaac Lab**: Windows 네이티브, Isaac Sim 4.5 `E:\IsaacSim\isaac-sim-4.5.0`, Isaac Lab 2.1.1 `%USERPROFILE%\IsaacLab`, RTX 3060 12GB. 학습 1회(1024 env × 100 iter) 약 2.5분.
 
 ## 5. 반복해서 걸리는 함정
