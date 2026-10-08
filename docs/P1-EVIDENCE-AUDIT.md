@@ -147,6 +147,8 @@ $env:PYTHONUTF8 = "1"
 
 검증 파일은 `tests/test_behavior_oracle.py`, `tests/test_experiment_cost.py`, `tests/test_experiment_audit.py`다. CLI 테스트는 모델 관련 import·네트워크를 막고 GPU를 숨긴 하위 프로세스에서 기존 `Ledger`와 fixture 고정 평가를 연결한다. 저장된 걷는 정상 기준과 과거 제자리 기준의 호환성도 읽기 전용으로 확인한다. Isaac에서 새 수리를 성공시켰다는 검증은 아니다.
 
-`evals/fixed_eval.py`는 기존 metric 수식·계산 순서·명령·프로토콜을 보존하고 출력 필드만 추가했다. 실제 GPU에서 기존 기준 정책의 RMSE 일치와 새 원시 합계의 재계산 일치는 다음 고정 평가에서 확인한다. 현재 호스트의 다른 페인이 P0-C 학습·probe 측정을 맡고 있어 감사 구현이 별도 GPU 작업을 시작하지 않는다.
+`evals/fixed_eval.py`는 기존 metric 수식·계산 순서·명령·프로토콜을 보존하고 출력 필드만 추가했다. 2026-10-09 KST에 Herdr `w1:p5`가 커밋 `3afab08`의 평가기로 `baseline_s42`를 새 태그 `p0b2_compat_20261009`에서 재평가했다. 기존 `p0b2_fixed_eval_20261008`과 checkpoint SHA·프로토콜 SHA·네 metrics 값이 모두 일치했다. 선속도 RMSE는 `1.1754993595071246`, yaw RMSE는 `0.8225398750263119`, 낙상률은 `0`, 평균 생존 시간은 `20.0 s`다. 새 JSON을 `behavior_oracle._validated`로 읽어 조건별·전체 지표의 원시 통계 재계산 검증도 통과했다. 조건별 float32 합계를 다시 더할 때의 약 `5e-8` 상대 차이는 검사 허용오차 안에 있다.
 
-후속 실측 담당은 현재 Herdr `w1:p5`다. 이 페인은 P0-C 고정 평가 전에 `baseline_s42`를 새 태그에서 재평가해 기존 선속도 RMSE `1.1754993595071246`과 대조하기로 했다. 완료 조건은 기존 지표 일치와 새 원시 합계의 지표 재계산 통과다. 아직 결과를 수신하지 않았으므로 GPU 호환성 검증 완료로 기록하지 않는다. 수신할 산출물은 새 태그의 `runs/baseline_s42.json`과 실행 로그이며, 기존 `p0b2_fixed_eval_20261008` 자료를 덮어쓰지 않는다. 다른 호스트에서는 pane ID를 다시 조회한다.
+산출물은 `evals/results/p0b2_compat_20261009/runs/baseline_s42.json`이며 SHA256은 `c5fe9b24b08f112cc00f35e021a4b856f5479ad80f7f98eac16110837f71e1b1`이다. 실행 로그는 비공개 경로 `bench/private/fixed_eval/log_p0b2_compat_20261009_0.25_20261009-024144.txt`에 있다. JSON의 UTC 실행 구간은 `2026-10-08T17:41:59+00:00`부터 `2026-10-08T17:43:14+00:00`까지다. 결과 수신·파일 검수·원시 통계 재계산을 완료했고, 원본 결과를 보존했다. 이 검증 범위는 평가기 출력 호환성이다.
+
+후속 담당 `w1:p5`는 P0-C 보류 학습·고정 평가와 dev probe 재측정을 이어간다. 새 보류 세트의 진단·수리 성공률, 모델 요청/응답 trace, 같은 정보·예산의 AI 비교 실측은 아직 완료되지 않았다. 다른 호스트에서는 pane ID를 다시 조회한다.
