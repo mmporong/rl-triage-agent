@@ -1,11 +1,5 @@
 # Isaac Lab RL Training Triage Agent
 
-## 개발 상태와 이어하기
-
-현재 제품은 해커톤 프로토타입이며, AI Day 고도화로 공개 offline replay(P0-A), LLM 없는 결정적 기준선(P0-A2, [계약](docs/P0-A2-BASELINES.md)), 행동 기반 회복 판정(P0-B1, [계약](docs/P0-B1-RECOVERY.md)), 고정 조건 평가(P0-B2, [계약](docs/P0-B2-FIXED-EVAL.md)), 설정 diff에 드러나지 않는 숨은 결함 holdout(P0-C, [계약·결과](docs/P0-C-HOLDOUT.md)), 사람 승인 계측 probe 고리(P1-A, [설계·결과](docs/P1-A-LOOP.md)), 승인 소비 뒤 끊긴 실행의 복구(P1-B)까지 구현했습니다. 예전 벤치에서는 고정 규칙이 에이전트와 같거나 나아 정확도 우위 주장을 철회했습니다. 숨은 결함 holdout에서는 에이전트가 8/18로 규칙·단일 프롬프트(2~6/18)보다 많이 맞혔지만 표본이 작아 우위로 주장하지 않습니다. 다음 단계는 [구현 순서](docs/IMPLEMENTATION-ORDER.md) 7절과 [조사 보고서](docs/NEXT-STEPS-20261009.md)에 있습니다.
-
-Claude는 [개발 인계](docs/CLAUDE-HANDOFF.md)에서 첫 작업·수용 기준·논문 근거·운영 경계를 확인합니다. [AI Day 계획](docs/AI-DAY-2026.md)은 고도화 순서와 철회 조건을 설명하고, [구현 순서](docs/IMPLEMENTATION-ORDER.md)는 비용 없는 재채점·결정적 기준선·회복 판정을 GPU·API 단계보다 앞에 둔 보정판입니다. 루트 CLAUDE.md가 인계를 연결합니다.
-
 | Catalog field | Value |
 | --- | --- |
 | Description | Finds which config change broke an Isaac Lab RL locomotion training run from its telemetry, registers one next experiment for human approval, and verifies it by retraining — inside an OpenShell sandbox that cannot touch configs, safety gates or reward definitions. |
@@ -26,7 +20,7 @@ A robot RL engineer changes several settings, trains, and the run collapses. In 
 |---|---|
 | ![Go2 robots standing upright under velocity commands](docs/media/baseline_s42_play.gif) | ![Go2 robots collapsing and rearing](docs/media/c04_s42_play.gif) |
 
-Both clips are Isaac Sim 4.5 off-screen renders of trained checkpoints (`bench/record_play.ps1`). The agent never sees video; it diagnoses from TensorBoard scalars only. The 100-iteration "healthy" checkpoint stays upright but does not yet follow the commanded velocities: on a fixed 26-command grid its velocity-tracking error equals that of standing still (P0-B2, [contract](docs/P0-B2-FIXED-EVAL.md)).
+Both clips are Isaac Sim 4.5 off-screen renders of trained checkpoints (`bench/record_play.ps1`). The agent never sees video; it diagnoses from TensorBoard scalars only. The 100-iteration "healthy" checkpoint stays upright but does not yet follow the commanded velocities: on a fixed 26-command grid its velocity-tracking error equals that of standing still (`bench/protocols/fixed_eval_v1.json`).
 
 ## At A Glance
 
@@ -68,7 +62,7 @@ This recipe follows the **OpenShell path** described in the NemoClaw docs ("you 
 
 ## Results
 
-Benchmark: 10 injected faults (reward, actuator, exploration, optimizer, physics, termination) on `Isaac-Velocity-Flat-Unitree-Go2-v0`, 1024 envs, 100 iterations. Each case mixes 1 harmful and 2 benign hydra overrides, shuffled with a secret seed. Under the original recovery check (episode-length, mean-reward and noise ratios), benign-only runs were recovered and all fault runs were not. That check uses the training reward. A behavior-only check (P0-B1, [contract](docs/P0-B1-RECOVERY.md), `evals/results/p0b1_relabel_20261008/`) labels 21 of the 30 fault runs unhealthy, 6 healthy (c03 ×3, c08 ×2, c09 ×1) and 3 undetermined (c01, 1-second episode limit). At 100 iterations even the healthy reference barely follows velocity commands (per-step error 0.72–0.73 m/s, about 0.77 m/s for standing still), so behavior mostly separates falling from not falling. Evaluating every final checkpoint under one fixed condition (P0-B2, `evals/results/p0b2_fixed_eval_20261008/`) gives 15 of 30 fault runs unhealthy; the other 15 leave a policy that stands exactly like the reference. With the Isaac Lab default budget (4096 envs × 300 iterations) the reference does walk (tracking error 0.15 m/s vs 1.18 m/s standing still), so the next held-out set uses that budget.
+Benchmark: 10 injected faults (reward, actuator, exploration, optimizer, physics, termination) on `Isaac-Velocity-Flat-Unitree-Go2-v0`, 1024 envs, 100 iterations. Each case mixes 1 harmful and 2 benign hydra overrides, shuffled with a secret seed. Under the original recovery check (episode-length, mean-reward and noise ratios), benign-only runs were recovered and all fault runs were not. That check uses the training reward. A behavior-only check (`evals/results/p0b1_relabel_20261008/`) labels 21 of the 30 fault runs unhealthy, 6 healthy (c03 ×3, c08 ×2, c09 ×1) and 3 undetermined (c01, 1-second episode limit). At 100 iterations even the healthy reference barely follows velocity commands (per-step error 0.72–0.73 m/s, about 0.77 m/s for standing still), so behavior mostly separates falling from not falling. Evaluating every final checkpoint under one fixed condition (`evals/results/p0b2_fixed_eval_20261008/`) gives 15 of 30 fault runs unhealthy; the other 15 leave a policy that stands exactly like the reference. With the Isaac Lab default budget (4096 envs × 300 iterations) the reference does walk (tracking error 0.15 m/s vs 1.18 m/s standing still), so the hidden-fault set below uses that budget.
 
 | Task | Set | RL Triage Agent | Single-prompt Nemotron 3 Super (summary-only input) | Random |
 |---|---|---:|---:|---:|
@@ -82,7 +76,7 @@ Task A dev: the agent column is the re-run with the OpenAI-compatible client (`e
 
 On the held-out set the agent was right and the baseline wrong in 4 cases (c01, c04, c05, c07), never the reverse; with n=10 this is not statistically significant (two-sided binomial p≈0.125). Both methods never ranked the true mechanism first for **physics** or **optimizer** faults, on dev or held-out. The baseline tends to answer "reward" from the summary table; the agent pulls the termination and action curves before deciding.
 
-Deterministic baselines without a model (P0-A2, [contract](docs/P0-A2-BASELINES.md), `evals/results/p0a2_holdout_20261008/`), Task B held-out seed 123:
+Deterministic baselines without a model (`evals/results/p0a2_holdout_20261008/`), Task B held-out seed 123:
 
 | Baseline | Input | Top-1 | Top-2 |
 |---|---|---:|---:|
@@ -93,21 +87,21 @@ Deterministic baselines without a model (P0-A2, [contract](docs/P0-A2-BASELINES.
 
 The rules were written on dev seeds 7 and 42 and committed (`eb318b4`) before they were run on seed 123; the author had seen three seed-123 values quoted in the plan. The held-out seed reuses the same 10 fault templates, and a nearest-neighbour lookup already gets 10/10, so this held-out set tests recognition of known templates, not generalization. We therefore withdraw the claim that the agent diagnoses better than a deterministic rule set on this benchmark. When the failed run's params are visible, all 10 faults are solved by a config diff without a model; new held-out faults must not be explainable by a config diff.
 
-기존 agent는 전체 시계열과 분석 도구를 사용하지만 대조군은 요약 입력을 받았습니다. 위 표는 정보가 일치한 비교가 아니며, 같은 정보·총예산의 재평가가 필요합니다. 같은 정보를 쓰는 고정 규칙(P0-A2)이 보류 seed를 10/10 맞혔으므로, 에이전트 정확도 우위 주장은 철회했습니다. 회복 판정의 보상 비율 의존과 blind 실험 연결 공백은 [개발 인계](docs/CLAUDE-HANDOFF.md)에 기록했습니다.
+In the first results table the agent reads the full time series with analysis tools, while the single-prompt baseline gets a summary table, so the inputs are not matched. The hidden-fault set below compares methods on the same telemetry.
 
-Hidden-fault held-out set (P0-C, [contract and results](docs/P0-C-HOLDOUT.md)): six faults that change code or runtime state, not the saved config (reward frame, DC-motor curve, sampling noise, frozen critic, runtime friction, early time-out), one per mechanism, trained with the Isaac Lab default budget (4096 envs × 300 iterations) on seeds 2026–2028. All 18 fault runs fail the fixed evaluation; their saved params differ from the reference only by run name. Task B scores (`evals/results/replay_p0c_20261009/`):
+Hidden-fault held-out set (`evals/results/p0c_holdout_20261009/`, answer key `bench/answer_key_p0c.json`): six faults that change code or runtime state, not the saved config (reward frame, DC-motor curve, sampling noise, frozen critic, runtime friction, early time-out), one per mechanism, trained with the Isaac Lab default budget (4096 envs × 300 iterations) on seeds 2026–2028. All 18 fault runs fail the fixed evaluation; their saved params differ from the reference only by run name. Task B scores (`evals/results/replay_p0c_20261009/`):
 
 | Method | Input | Top-1 | Top-2 |
 |---|---|---:|---:|
 | Label frequency / config diff | none / params | 3/18 | 6/18 |
-| Frozen P0-A2 rules | telemetry | 5/18 | 9/18 |
-| Nearest v1 dev case | telemetry + v1 labels | 6/18 | 6/18 |
+| Frozen rules from the first benchmark | telemetry | 5/18 | 9/18 |
+| Nearest case from the first benchmark | telemetry + its labels | 6/18 | 6/18 |
 | Single prompt, full time series | same telemetry as the agent | 2/18 | 8/18 |
 | RL Triage Agent | telemetry + analysis tools | 8/18 | 12/18 |
 
 Six fault types over three seeds is a small sample and the rules came from a different training budget, so this is not a claim of superiority. The agent's analysis code ran under a Linux Landlock sandbox that cannot read the answer key (canary checked before each seed).
 
-Next-experiment loop (P1-A, [design and results](docs/P1-A-LOOP.md)): instead of retraining, the loop proposes one measurement probe at a time (noise, critic learning, reward recomputation, torque saturation, runtime physics, episode length), a human approves it, and the observation rules hypotheses in or out. On the same 18 runs, running all six probes confirms 17; ordering probes from the agent's top-3 hypotheses confirms 14 with 2.1 probes on average and no wrong confirmation. The probes and the hidden faults were written by the same person and the probe definitions were revised four times on a dev seed, so this shows the loop works, not that it generalizes. The approval ledger refuses a second request for the same experiment while one is open, and if a run stops after consuming its approval but before writing a result, new runs are blocked until `python evals/loop.py recover <case>` closes it from the saved probe output for the same checkpoint or records it as unknown, which needs a new approval.
+Next-experiment loop (`evals/loop.py`, `evals/results/p1a_loop_compare_20261009/`): instead of retraining, the loop proposes one measurement probe at a time (noise, critic learning, reward recomputation, torque saturation, runtime physics, episode length), a human approves it, and the observation rules hypotheses in or out. On the same 18 runs, running all six probes confirms 17; ordering probes from the agent's top-3 hypotheses confirms 14 with 2.1 probes on average and no wrong confirmation. The probes and the hidden faults were written by the same person and the probe definitions were revised four times on a dev seed, so this shows the loop works, not that it generalizes. Each approval runs one probe once; a probe interrupted after approval is closed from its saved output or marked unknown before the next one runs.
 
 Loop verification (`evals/results/bridge_smoke.json`): reverting the true culprit recovered the run (episode-length ratio 0.999, reward ratio 1.024); reverting a benign change did not (0.05). Under the behavior-only check the first run is healthy and the second is undetermined (its 1-second episode limit is still in place), so the wrong diagnosis is not confirmed by retraining.
 
@@ -202,7 +196,7 @@ evals/results/traces: trace files=68 leak hits=0
 status=pass
 ```
 
-Deterministic baselines (P0-A2) use the same offline setup. Seeds outside dev 7·42 run only when the rule and input files are committed; the output rows rescore with the replay above.
+Deterministic baselines use the same offline setup. Seeds outside dev 7 and 42 run only when the rule and input files are committed; the output rows rescore with the replay above.
 
 ```bash
 python evals/baselines.py --seeds 7 42 --out /tmp/p0a2_dev    # or --tag <new-folder>; [--run-params <Isaac Lab log dir>]
