@@ -35,7 +35,9 @@ def test_code_swap_keeps_identity_name_and_defaults():
     assert target(Env()) is False
     H._swap_code(target, H._time_out_early)
     assert (id(target), target.__name__, target.__module__) == (ident, name, module)
-    assert target(Env()) is True  # 150 >= 100
+    assert target(Env()) is True  # 150 >= 50 (최대 길이의 5%)
+    Env.episode_length_buf = 49
+    assert target(Env()) is False
 
 
 def test_unknown_fault_is_rejected_before_any_patch():

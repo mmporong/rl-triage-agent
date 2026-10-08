@@ -16,7 +16,7 @@ FAULTS = {
     "F3": {"category": "exploration", "note": "학습 중 행동 샘플링 노이즈가 기록되는 std와 무관하게 0.05"},
     "F4": {"category": "optimizer", "note": "critic 기울기를 0으로 만들어 가치 함수가 학습되지 않음(value_loss_coef는 그대로)"},
     "F5": {"category": "physics", "note": "환경 생성 뒤 로봇 접촉 재질의 정·동마찰 0.25배"},
-    "F6": {"category": "termination", "note": "time_out이 최대 에피소드 길이의 10%에서 발생(episode_length_s는 그대로)"},
+    "F6": {"category": "termination", "note": "time_out이 최대 에피소드 길이의 5%에서 발생(episode_length_s는 그대로)"},
 }
 
 
@@ -32,7 +32,8 @@ def _track_lin_vel_world(env, std, command_name, asset_cfg=None):
 
 def _time_out_early(env):
     # isaaclab.envs.mdp.terminations.time_out의 __code__로 들어간다.
-    return env.episode_length_buf >= int(env.max_episode_length * 0.1)
+    # 보정 2차(seed 7): 10%에서는 고정 평가가 깨지지 않아 docs/P0-C-HOLDOUT.md 규칙대로 5%로 키웠다.
+    return env.episode_length_buf >= int(env.max_episode_length * 0.05)
 
 
 def _swap_code(target, replacement) -> None:
