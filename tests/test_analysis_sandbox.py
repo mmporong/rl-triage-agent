@@ -108,3 +108,10 @@ def test_trace_counts_unsandboxed_analysis_calls(tmp_path):
             {"tool": "get_series", "result_head": "{}"}]
     trace.write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
     assert E.trace_sandbox_counts(trace) == {"analysis_calls": 2, "analysis_sandboxed": 1}
+
+
+def test_workspace_path_is_hidden_from_analysis_output(ws, monkeypatch):
+    monkeypatch.setenv("TRIAGE_ANALYSIS_SANDBOX", "off")
+    out = T.run_analysis("raise RuntimeError('boom')", "c01")
+    assert out["exit_code"] != 0 and "<workspace>" in out["stderr"]
+    assert str(T.WORKSPACE.resolve()) not in out["stderr"] + out["stdout"]

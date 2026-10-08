@@ -235,8 +235,12 @@ def run_analysis(code: str, case_id: str, timeout_s: int = 30) -> dict:
         sandboxed = mode != "off" and bool(lines) and lines[0].strip() == _SANDBOX_MARK
         stderr = "".join(lines[1:] if sandboxed else lines)
         sandbox = "landlock" if sandboxed else ("off" if mode == "off" else "unavailable")
+        # traceback에 찍히는 작업공간 절대경로(사용자 이름 포함)를 가린다. 모델 입력과 trace 모두에 남지 않는다.
+        ws = str(WORKSPACE.resolve())
+        hide = lambda s: s.replace(ws, "<workspace>")  # noqa: E731
         # sandbox를 첫 키로 둬 trace(result_head 600자)에 남게 한다.
-        return {"sandbox": sandbox, "exit_code": proc.returncode, "stdout": proc.stdout[-4000:], "stderr": stderr[-2000:]}
+        return {"sandbox": sandbox, "exit_code": proc.returncode, "stdout": hide(proc.stdout)[-4000:],
+                "stderr": hide(stderr)[-2000:]}
     except subprocess.TimeoutExpired:
         return {"sandbox": "timeout", "exit_code": None, "stdout": "", "stderr": f"timeout {timeout_s}s"}
     finally:
