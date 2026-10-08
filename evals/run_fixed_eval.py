@@ -29,18 +29,24 @@ PROTOCOL = ROOT / "bench" / "protocols" / "fixed_eval_v1.json"
 PRIVATE = ROOT / "bench" / "private" / "fixed_eval"
 
 
-def telemetry_runs() -> list[str]:
-    seen, names = set(), []
+def telemetry_runs() -> dict[str, str]:
+    """bench/runs 텔레메트리 이름 → 학습 실행 폴더 이름(run_dir_name). 같은 실행은 이름순 첫 텔레메트리 하나만."""
+    seen, runs = set(), {}
     for f in sorted((ROOT / "bench" / "runs").glob("*.telemetry.json")):
         rd = json.loads(f.read_text(encoding="utf-8"))["run_dir_name"]
         if rd not in seen:
             seen.add(rd)
-            names.append(f.name.removesuffix(".telemetry.json"))
-    return names
+            runs[f.name.removesuffix(".telemetry.json")] = rd
+    return runs
 
 
-def find_run(log_root: Path, name: str) -> Path:
-    dirs = sorted(d for d in log_root.iterdir() if d.is_dir() and re.fullmatch(rf"\d{{4}}-\d\d-\d\d_\d\d-\d\d-\d\d_{re.escape(name)}", d.name))
+def find_run(log_root: Path, name: str, run_dir_name: str | None = None) -> Path:
+    """텔레메트리에 기록된 실행 폴더 이름이 있으면 그대로 찾고, 없으면 `<날짜>_<이름>` 폴더를 찾는다."""
+    if run_dir_name:
+        dirs = [log_root / run_dir_name] if (log_root / run_dir_name).is_dir() else []
+    else:
+        dirs = sorted(d for d in log_root.iterdir()
+                      if d.is_dir() and re.fullmatch(rf"\d{{4}}-\d\d-\d\d_\d\d-\d\d-\d\d_{re.escape(name)}", d.name))
     if len(dirs) != 1:
         raise SystemExit(f"{name}: 실행 폴더가 {len(dirs)}개다")
     return dirs[0]
@@ -69,11 +75,12 @@ def main(argv=None) -> int:
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", args.tag) or not re.fullmatch(r"[A-Za-z0-9._-]*", args.suffix):
         raise SystemExit("--tag·--suffix는 영문·숫자·._- 만 쓴다")
     log_root = args.isaaclab / "logs" / "rsl_rl" / "unitree_go2_flat"
-    names = telemetry_runs() if args.runs == ["all"] else args.runs
+    known = telemetry_runs()
+    names = list(known) if args.runs == ["all"] else args.runs
     out_dir = ROOT / "evals" / "results" / args.tag / "runs"
     groups: dict[float, list[dict]] = {}
     for name in names:
-        run_dir = find_run(log_root, name)
+        run_dir = find_run(log_root, name, known.get(name))
         ckpts = [run_dir / c for c in args.checkpoints] if args.checkpoints else [last_checkpoint(run_dir)]
         for ckpt in ckpts:
             if not ckpt.is_file():

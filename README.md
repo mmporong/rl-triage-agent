@@ -2,7 +2,7 @@
 
 ## 개발 상태와 이어하기
 
-현재 제품은 해커톤 프로토타입이며, AI Day 고도화는 공개 offline replay(P0-A, [아래](#offline-replay-no-api-key-network-or-gpu)), LLM 없는 결정적 기준선(P0-A2, [계약](docs/P0-A2-BASELINES.md)), 학습 보상을 쓰지 않는 행동 기반 회복 판정(P0-B1, [계약](docs/P0-B1-RECOVERY.md))까지 구현했습니다. P0-A2에서 같은 텔레메트리를 쓰는 고정 규칙이 과제 B 보류 seed를 10/10 맞혀, 에이전트가 규칙보다 잘 맞힌다는 주장은 철회했습니다. 다음 개발은 고정 평가 조건 실측(P0-B2), 설정 diff로 풀리지 않는 새 holdout, 정보·예산을 맞춘 비교입니다. 아래 과거 결과를 새 설계의 완료·일반화·비용 절감 증거로 읽지 않습니다.
+현재 제품은 해커톤 프로토타입이며, AI Day 고도화는 공개 offline replay(P0-A, [아래](#offline-replay-no-api-key-network-or-gpu)), LLM 없는 결정적 기준선(P0-A2, [계약](docs/P0-A2-BASELINES.md)), 학습 보상을 쓰지 않는 행동 기반 회복 판정(P0-B1, [계약](docs/P0-B1-RECOVERY.md)), 모든 체크포인트를 같은 조건에서 재는 고정 평가(P0-B2, [계약](docs/P0-B2-FIXED-EVAL.md))까지 구현했습니다. P0-A2에서 같은 텔레메트리를 쓰는 고정 규칙이 과제 B 보류 seed를 10/10 맞혀, 에이전트가 규칙보다 잘 맞힌다는 주장은 철회했습니다. 기존 벤치(1024 env × 100회)의 정상 기준은 서 있기만 하는 정책이라, 다음 holdout은 기본 학습 예산(4096 env × 300회)과 설정 diff로 풀리지 않는 숨은 결함으로 만듭니다(P0-C, [계약 초안](docs/P0-C-HOLDOUT.md)). 아래 과거 결과를 새 설계의 완료·일반화·비용 절감 증거로 읽지 않습니다.
 
 Claude는 [개발 인계](docs/CLAUDE-HANDOFF.md)에서 첫 작업·수용 기준·논문 근거·운영 경계를 확인합니다. [AI Day 계획](docs/AI-DAY-2026.md)은 고도화 순서와 철회 조건을 설명하고, [구현 순서](docs/IMPLEMENTATION-ORDER.md)는 비용 없는 재채점·결정적 기준선·회복 판정을 GPU·API 단계보다 앞에 둔 보정판입니다. 루트 CLAUDE.md가 인계를 연결합니다.
 
@@ -24,9 +24,9 @@ A robot RL engineer changes several settings, trains, and the run collapses. In 
 
 | Healthy reference (checkpoint at 100 iterations) | Injected actuator fault (action scale 0.25 → 1.5) |
 |---|---|
-| ![Go2 robots walking under velocity commands](docs/media/baseline_s42_play.gif) | ![Go2 robots collapsing and rearing](docs/media/c04_s42_play.gif) |
+| ![Go2 robots standing upright under velocity commands](docs/media/baseline_s42_play.gif) | ![Go2 robots collapsing and rearing](docs/media/c04_s42_play.gif) |
 
-Both clips are Isaac Sim 4.5 off-screen renders of trained checkpoints (`bench/record_play.ps1`). The agent never sees video; it diagnoses from TensorBoard scalars only.
+Both clips are Isaac Sim 4.5 off-screen renders of trained checkpoints (`bench/record_play.ps1`). The agent never sees video; it diagnoses from TensorBoard scalars only. The 100-iteration "healthy" checkpoint stays upright but does not yet follow the commanded velocities: on a fixed 26-command grid its velocity-tracking error equals that of standing still (P0-B2, [contract](docs/P0-B2-FIXED-EVAL.md)).
 
 ## At A Glance
 
@@ -68,7 +68,7 @@ This recipe follows the **OpenShell path** described in the NemoClaw docs ("you 
 
 ## Results
 
-Benchmark: 10 injected faults (reward, actuator, exploration, optimizer, physics, termination) on `Isaac-Velocity-Flat-Unitree-Go2-v0`, 1024 envs, 100 iterations. Each case mixes 1 harmful and 2 benign hydra overrides, shuffled with a secret seed. Under the original recovery check (episode-length, mean-reward and noise ratios), benign-only runs were recovered and all fault runs were not. That check uses the training reward. A behavior-only check (P0-B1, [contract](docs/P0-B1-RECOVERY.md), `evals/results/p0b1_relabel_20261008/`) labels 21 of the 30 fault runs unhealthy, 6 healthy (c03 ×3, c08 ×2, c09 ×1) and 3 undetermined (c01, 1-second episode limit). At 100 iterations even the healthy reference barely follows velocity commands (per-step error 0.72–0.73 m/s, about 0.77 m/s for standing still), so behavior mostly separates falling from not falling.
+Benchmark: 10 injected faults (reward, actuator, exploration, optimizer, physics, termination) on `Isaac-Velocity-Flat-Unitree-Go2-v0`, 1024 envs, 100 iterations. Each case mixes 1 harmful and 2 benign hydra overrides, shuffled with a secret seed. Under the original recovery check (episode-length, mean-reward and noise ratios), benign-only runs were recovered and all fault runs were not. That check uses the training reward. A behavior-only check (P0-B1, [contract](docs/P0-B1-RECOVERY.md), `evals/results/p0b1_relabel_20261008/`) labels 21 of the 30 fault runs unhealthy, 6 healthy (c03 ×3, c08 ×2, c09 ×1) and 3 undetermined (c01, 1-second episode limit). At 100 iterations even the healthy reference barely follows velocity commands (per-step error 0.72–0.73 m/s, about 0.77 m/s for standing still), so behavior mostly separates falling from not falling. Evaluating every final checkpoint under one fixed condition (P0-B2, `evals/results/p0b2_fixed_eval_20261008/`) gives 15 of 30 fault runs unhealthy; the other 15 leave a policy that stands exactly like the reference. With the Isaac Lab default budget (4096 envs × 300 iterations) the reference does walk (tracking error 0.15 m/s vs 1.18 m/s standing still), so the next held-out set uses that budget.
 
 | Task | Set | RL Triage Agent | Single-prompt Nemotron 3 Super (summary-only input) | Random |
 |---|---|---:|---:|---:|

@@ -120,6 +120,7 @@ git log --oneline origin/main..HEAD
 | P0-A | 완료(`0f112ca`) | 진입점 `evals/replay.py`, 공용 채점 `src/rl_triage/scoring.py`, 유출 검사 `src/rl_triage/leakcheck.py`, 공개 params `bench/reference/params/`, 테스트 `tests/test_offline_replay.py`. clean clone 재현 기록 `evals/results/replay_p0a_20261008/replay.json`(G절 표 일치, 저장값 불일치 0, trace 50개 표식 0) |
 | P0-A2 | 완료(동결 `eb318b4` 뒤 seed 123 적용) | 계약·결과 [P0-A2-BASELINES.md](P0-A2-BASELINES.md). seed 123 top-1: 고정 규칙 10/10, 최근접 dev 사례 10/10, 설정 diff 10/10, 빈도순 3/10 (에이전트 6/10, 대조군 2/10). 에이전트 정확도 우위 주장 철회, seed holdout은 템플릿 재인식 시험으로 판정. 기록 `evals/results/p0a2_{dev,holdout}_20261008/`, `replay_p0a2_20261008/` |
 | P0-B1 | 완료(계약 `ad894bc` 뒤 적용) | 계약·결과 [P0-B1-RECOVERY.md](P0-B1-RECOVERY.md). 실행 78개 중 19개 라벨 변경. 결함 실행 30개: unhealthy 21, healthy 6(c03 3개 등), undetermined 3(c01). 정상 기준 실행도 속도 명령을 거의 따르지 못해 100회 학습 텔레메트리의 행동 판정은 낙상 여부 위주다. 기록 `evals/results/p0b1_relabel_20261008/` |
+| P0-B2 | 완료(계약 `5264dac` 뒤 평가, Windows 로컬 GPU) | 계약·결과 [P0-B2-FIXED-EVAL.md](P0-B2-FIXED-EVAL.md). 고정 26개 명령 격자에서 100회 기준 정책의 추종 오차는 제자리와 같다(1.175 대 1.177). 결함 실행 30개 중 unhealthy 15. 같은 seed 재학습은 체크포인트 동일. 4096 env × 300회 기준은 걷는다(0.154). P0-C 학습 예산 결정 근거. 기록 `evals/results/p0b2_{fixed_eval,pilot}_20261008/` |
 
 사용자 결정(2026-10-08): 주 task는 Go2 flat을 유지한다(이족 전환 안 함). 실행은 Windows 로컬(RTX 3060)에서 하며 로컬 GPU 실행은 허용됐다. 이것으로 3절 결정 게이트의 호스트는 Windows로 정해졌다. Brev는 필요할 때 따로 요청한다. NVIDIA API 호출은 이 허용 범위에 넣지 않았으므로 P0-C 평가 전에 승인을 받는다.
 
