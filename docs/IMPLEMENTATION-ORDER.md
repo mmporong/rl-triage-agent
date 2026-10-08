@@ -118,6 +118,9 @@ git log --oneline origin/main..HEAD
 |---|---|---|
 | W0 | 완료(2026-10-08, Windows) | 작업 트리 깨끗, `be8cae9`로 fast-forward. 비공개·공개 정답표 동일(원본 바이트와 LF 정규화 모두). 기준 params 3개 존재: seed 42는 비공개 meta가 없고 텔레메트리 `run_dir_name`(s02_baseline_s42)의 실행 폴더로 확인했다. 버전·해시는 `bench/reference/manifest.json`의 `w0_check`. 버전은 10/8 호스트 값이며 학습 당시 기록이 아니고, 학습 때 import된 torch 빌드는 미확인. `bench/private/` 이름·크기·SHA256 목록은 비공개 폴더 안에만 저장 |
 | P0-A | 완료(`0f112ca`) | 진입점 `evals/replay.py`, 공용 채점 `src/rl_triage/scoring.py`, 유출 검사 `src/rl_triage/leakcheck.py`, 공개 params `bench/reference/params/`, 테스트 `tests/test_offline_replay.py`. clean clone 재현 기록 `evals/results/replay_p0a_20261008/replay.json`(G절 표 일치, 저장값 불일치 0, trace 50개 표식 0) |
+| P0-A2 | 규칙 동결(seed 123 적용 전) | 계약 [P0-A2-BASELINES.md](P0-A2-BASELINES.md), 규칙 `src/rl_triage/rules.py`, 실행 `evals/baselines.py`. dev 7·42에 맞춘 규칙이라 dev 만점은 성능 근거가 아니다. 규칙 작성자가 seed 123 값 일부(2절 C)를 알았다 |
+
+사용자 결정(2026-10-08): 주 task는 Go2 flat을 유지한다(이족 전환 안 함). 실행은 Windows 로컬(RTX 3060)에서 하며 로컬 GPU 실행은 허용됐다. 이것으로 3절 결정 게이트의 호스트는 Windows로 정해졌다. Brev는 필요할 때 따로 요청한다. NVIDIA API 호출은 이 허용 범위에 넣지 않았으므로 P0-C 평가 전에 승인을 받는다.
 
 P0-A에서 남긴 제약:
 

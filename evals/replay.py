@@ -36,7 +36,7 @@ from rl_triage.scoring import score_blind, score_changes  # noqa: E402
 KEY_PATH = ROOT / "bench" / "answer_key.json"
 CASES_PATH = ROOT / "bench" / "cases.json"
 CODE_FILES = ("evals/replay.py", "src/rl_triage/scoring.py", "src/rl_triage/leakcheck.py")
-MODES = ("agent", "control")
+MODES = ("agent", "control", "rule_prior", "rule_features", "rule_template", "rule_b0")  # rule_*: evals/baselines.py
 RULE = ("per (task, seed, case_id, mode): last row with infra_error=false, in file-name then line order; "
         "a cell with only infra rows counts as wrong; truth/top-1/top-2 recomputed from bench/answer_key.json "
         "(Task A also bench/cases.json); empty ranking is wrong; any stored truth/correct/top2 that differs fails")
@@ -154,18 +154,18 @@ def summarize(path: Path, key: dict, cases: dict) -> dict:
             "mismatches": mismatches, "tasks": tasks}
 
 
-def code_version(extra_paths: list[str]) -> dict:
+def code_version(extra_paths: list[str], code_files=CODE_FILES) -> dict:
     head = dirty = None
     try:
         out = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, timeout=30)
         head = out.stdout.strip() or None
         if head:
-            st = subprocess.run(["git", "status", "--porcelain", "--", *CODE_FILES, "bench/answer_key.json",
+            st = subprocess.run(["git", "status", "--porcelain", "--", *code_files, "bench/answer_key.json",
                                  "bench/cases.json", *extra_paths], cwd=ROOT, capture_output=True, text=True, timeout=30)
             dirty = bool(st.stdout.strip())
     except (OSError, subprocess.SubprocessError):
         pass
-    return {"git_head": head, "git_dirty": dirty, "sha256_lf": {f: _sha256_lf(ROOT / f) for f in CODE_FILES}}
+    return {"git_head": head, "git_dirty": dirty, "sha256_lf": {f: _sha256_lf(ROOT / f) for f in code_files}}
 
 
 def _trace_digest(trace_dir: Path) -> str:
@@ -181,7 +181,7 @@ def _print_table(report: dict) -> None:
                 if mode in t:
                     m = t[mode]
                     extra = f"  infra_only={m['infra_only_cells']}" if m["infra_only_cells"] else ""
-                    print(f"  {task:8s} {mode:8s} top-1 {m['top1']}/{m['cells']}  top-2 {m['top2']}/{m['cells']}"
+                    print(f"  {task:8s} {mode:13s} top-1 {m['top1']}/{m['cells']}  top-2 {m['top2']}/{m['cells']}"
                           f"  seeds={','.join(map(str, t['seeds']))}{extra}")
         for line in f["mismatches"]:
             print(f"  MISMATCH {line}", file=sys.stderr)
