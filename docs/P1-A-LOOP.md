@@ -65,6 +65,8 @@ seed 7 보정 실행(NONE, F1~F5, F6 5%)에서 probe를 처음 쟀다(`evals/res
 - `P_value`: 같은 실행의 `model_0.pt` 대비 마지막 체크포인트의 critic 파라미터 상대 변화. NONE의 10% 미만이면 abnormal. GPU 없이 체크포인트만 읽는다.
 - `P_slip` → `P_physics`: 시뮬레이터에서 읽은 재질 마찰·질량·물리 dt가 설정과 무작위화 범위 안인지. 불일치가 하나라도 있으면 abnormal.
 
+4차 dev 측정(`evals/results/p1a_probes_dev4_20261009/`, 바꾼 두 probe; 나머지 넷은 2차 측정 값): NONE은 6종 모두 normal, 결함 6종은 각자의 probe에서 abnormal이었다(critic 변화 F4 0.000, 나머지 0.47~1.60; 물리 판독은 F5만 정마찰 0.200 불일치). F3에서 `P_torque`도 abnormal이지만 예상 없음이라 갱신에 쓰이지 않는다. 이 결과표로 전수·고정 순서·무작위 세 방식 모두 6종을 참 범주로 확정했다.
+
 두 probe 모두 P0-C 결함(F4 critic 기울기 0, F5 런타임 마찰 변경)을 직접 겨눈다. 그래서 P0-C에서 이 probe로 원인을 찾는 것은 고리의 갱신·승인·종료가 동작한다는 확인이고, 진단 능력의 근거가 아니다.
 
 이 수정은 설계자가 결함을 아는 상태에서 dev 결함을 보고 한 것이다. holdout(seed 2026~2028)은 수정 전후 모두 재지 않았다. 수정한 정의는 다시 dev에서 재서 기록하고, 그 뒤 holdout에 한 번 적용한다.

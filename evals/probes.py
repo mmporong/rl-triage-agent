@@ -167,7 +167,8 @@ def run(args) -> None:
 
     jobs = json.loads(args.jobs.read_text(encoding="utf-8"))
     fault = jobs["fault"]
-    num_envs = max(PROBES[p]["args"]["num_envs"] for j in jobs["jobs"] for p in j["probes"])
+    # 체크포인트만 읽는 probe(P_value)는 환경 수 인자가 없다. 환경은 다른 probe 때문에 어차피 만든다.
+    num_envs = max(PROBES[p]["args"].get("num_envs", 64) for j in jobs["jobs"] for p in j["probes"])
     env_cfg = parse_env_cfg(TASK, device=args.device, num_envs=num_envs)
     env_cfg.seed = int(jobs["seed"])
     agent_cfg = load_cfg_from_registry(TASK, "rsl_rl_cfg_entry_point")

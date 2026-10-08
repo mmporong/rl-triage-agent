@@ -1,0 +1,37 @@
+{
+ "name": "p0ccal_F5_s7",
+ "checkpoint": {
+  "file": "model_299.pt",
+  "sha256": "1838761d1963ded70f5b47759ce0f6c9317dbc28028cc3998404aef24ddce836"
+ },
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "seed": 7,
+ "num_envs": 64,
+ "probes": {
+  "P_value": {
+   "measurement": {
+    "critic_change": 1.5193836586623246,
+    "actor_change": 1.8770259760520307,
+    "from": "model_0.pt"
+   },
+   "exit": 0,
+   "elapsed_s": 0.0
+  },
+  "P_physics": {
+   "measurement": {
+    "mismatch_count": 2,
+    "mismatches": [
+     "static_friction 0.200 not in [0.8, 0.8]",
+     "dynamic_friction 0.150 not in [0.6, 0.6]"
+    ],
+    "static_friction_mean": 0.20000001788139343,
+    "dynamic_friction_mean": 0.15000000596046448,
+    "mass_delta_min": -0.8235235214233398,
+    "mass_delta_max": 2.8312816619873047,
+    "physics_dt": 0.005
+   },
+   "exit": 0,
+   "elapsed_s": 0.0
+  }
+ }
+}
