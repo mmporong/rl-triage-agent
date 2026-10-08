@@ -8,7 +8,8 @@ param(
     [string[]]$Overrides = @(),
     [string]$Task = 'Isaac-Velocity-Flat-Unitree-Go2-v0',
     [string]$IsaacLab = "$HOME\IsaacLab",
-    [string]$OutDir = ''  # 텔레메트리 폴더(기본 bench\runs). 벤치 밖 실험은 다른 폴더에 둔다
+    [string]$OutDir = '',  # 텔레메트리 폴더(기본 bench\runs). 벤치 밖 실험은 다른 폴더에 둔다
+    [string]$Fault = ''    # P0-C 숨은 결함(NONE, F1~F6). 주면 bench\train_with_fault.py를 거쳐 학습한다
 )
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
@@ -22,15 +23,24 @@ Push-Location $IsaacLab
 try {
     # isaaclab.bat(cmd)는 '='와 ','를 인자 구분자로 쪼개 hydra override를 깨뜨린다.
     # Isaac Sim 번들 python.bat에 인자마다 큰따옴표를 씌운 한 줄로 넘긴다.
-    $trainArgs = @('scripts\reinforcement_learning\rsl_rl\train.py',
+    $entry = if ($Fault) { Join-Path $repo 'bench\train_with_fault.py' } else { 'scripts\reinforcement_learning\rsl_rl\train.py' }
+    $trainArgs = @($entry,
         '--task', $Task, '--num_envs', $NumEnvs, '--max_iterations', $MaxIterations,
         '--seed', $Seed, '--headless', '--run_name', $runName) + $Overrides
     $argLine = ($trainArgs | ForEach-Object { '"' + ([string]$_).Replace('"', '\"') + '"' }) -join ' '
     $pythonBat = Join-Path $IsaacLab '_isaac_sim\python.bat'
     $sw = [Diagnostics.Stopwatch]::StartNew()
-    $proc = Start-Process -FilePath $pythonBat -ArgumentList $argLine -WorkingDirectory $IsaacLab -NoNewWindow -Wait -PassThru `
-        -RedirectStandardOutput $logFile -RedirectStandardError "$logFile.err"
+    # 결함 이름은 환경변수로만 넘긴다. 명령줄·params·실행 이름에 남지 않는다.
+    if ($Fault) { $env:TRIAGE_FAULT = $Fault }
+    try {
+        $proc = Start-Process -FilePath $pythonBat -ArgumentList $argLine -WorkingDirectory $IsaacLab -NoNewWindow -Wait -PassThru `
+            -RedirectStandardOutput $logFile -RedirectStandardError "$logFile.err"
+    }
+    finally { Remove-Item Env:TRIAGE_FAULT -ErrorAction SilentlyContinue }
     $exit = $proc.ExitCode
+    if ($Fault -and -not (Select-String -Path $logFile -Pattern '^\[hidden_fault\]' -Quiet)) {
+        throw "결함 $Fault 주입 확인 줄이 로그에 없다. 로그: $logFile"
+    }
     $sw.Stop()
     # Isaac Lab 2.1.1 train.py는 --experiment_name을 반영하지 않아 태스크 기본 실험 폴더에 기록된다.
     $runDir = Get-ChildItem "logs\rsl_rl" -Directory | ForEach-Object { Get-ChildItem $_.FullName -Directory } |
@@ -43,7 +53,7 @@ try {
     $global:LASTEXITCODE = 0  # 위 판정 뒤 bat의 거짓 실패 코드가 호출자(eval_bridge 등)에 남지 않게 지운다
     $meta = [ordered]@{
         case_id = $CaseId; seed = $Seed; num_envs = $NumEnvs; max_iterations = $MaxIterations
-        task = $Task; train_exit_code = $exit; wall_time_s = [math]::Round($sw.Elapsed.TotalSeconds, 1)
+        task = $Task; fault = $Fault; train_exit_code = $exit; wall_time_s = [math]::Round($sw.Elapsed.TotalSeconds, 1)
         run_dir = $runDir.FullName
     }
     $meta | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $repo "bench\private\$runName.meta.json")
