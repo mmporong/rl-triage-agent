@@ -108,6 +108,49 @@ def status(hypotheses: list[str], observed: dict[str, str], budget_left: int) ->
     return "open"
 
 
+# 엔지니어 체크리스트 순서(고정 순서 기준선). 싸고 흔한 확인부터: 에피소드 길이, 노이즈, 보상, 토크, 미끄러짐, 가치.
+FIXED_ORDER = ("P_episode", "P_noise", "P_reward", "P_torque", "P_slip", "P_value")
+
+
+def simulate(strategy: str, outcomes: dict[str, str], ranking: list[str] | None = None, top_k: int = 3,
+             budget: int = len(PROBES), seed: int = 0) -> dict:
+    """미리 잰 probe 결과표(outcomes: probe→abnormal/normal/unknown) 위에서 선택 방식을 돌린다.
+
+    같은 체크포인트·seed에서 probe 결과는 순서와 무관하므로, 실행마다 probe를 한 번씩만 재고 방식끼리 비교한다.
+    strategy: exhaustive(모두, 이름순) | fixed(FIXED_ORDER) | random(seed 고정) | discriminate(ranking 상위 top_k를 가르기).
+    exhaustive·fixed·random은 모든 범주를 가설로 두고 순서대로 보며, 갱신 규칙은 같다.
+    """
+    import random as _random
+
+    if strategy == "discriminate":
+        if not ranking:
+            raise ValueError("discriminate에는 ranking이 필요하다")
+        hyps = list(ranking[:top_k])
+    else:
+        hyps = list(MECHANISMS)
+    order = {"exhaustive": sorted(PROBES), "fixed": list(FIXED_ORDER),
+             "random": _random.Random(seed).sample(sorted(PROBES), len(PROBES))}.get(strategy)
+    observed: dict[str, str] = {}
+    steps = []
+    while len(observed) < budget:
+        # 전수 방식만 결론이 나도 끝까지 돈다(상한 비용).
+        if strategy != "exhaustive" and status(hyps, observed, budget - len(observed)) != "open":
+            break
+        probe = (next_probe(hyps, observed) if strategy == "discriminate"
+                 else next((p for p in order if p not in observed), None))
+        if probe is None:
+            break
+        out = outcomes.get(probe, "unknown")
+        observed[probe] = out
+        hyps, dropped = update(hyps, probe, out)
+        steps.append({"probe": probe, "outcome": out, "dropped": dropped, "left": list(hyps)})
+    final = status(hyps, observed, budget - len(observed))
+    if final == "open":
+        final = "unidentifiable"
+    return {"strategy": strategy, "status": final, "conclusion": hyps[0] if final == "confirmed" else None,
+            "probes_used": len(observed), "gpu_s": sum(PROBES[p]["cost_gpu_s"] for p in observed), "steps": steps}
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 

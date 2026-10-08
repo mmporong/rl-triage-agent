@@ -98,3 +98,33 @@ def test_receipt_cannot_be_written_twice(tmp_path):
     with pytest.raises(L.LedgerError, match="실행 중"):
         led.receipt(rid, "abnormal", {}, gpu_s=1.0, exit_code=0)
     assert not (tmp_path / "ledger.jsonl.lock").exists()  # 쓰기가 끝나면 잠금이 풀린다
+
+
+def _outcomes_for(true_mechanism):
+    """참 범주가 원인일 때 예상대로 나오는 probe 결과표(예상 없음은 normal)."""
+    return {p: (spec["expect"].get(true_mechanism) or "normal") for p, spec in L.PROBES.items()}
+
+
+@pytest.mark.parametrize("truth", L.MECHANISMS)
+def test_every_strategy_confirms_the_truth_when_probes_behave_as_expected(truth):
+    out = _outcomes_for(truth)
+    for strategy in ("exhaustive", "fixed", "random"):
+        r = L.simulate(strategy, out, seed=1)
+        assert (r["status"], r["conclusion"]) == ("confirmed", truth), (strategy, r)
+    # 진단 순위에 참 범주가 상위 3위 안에 있으면 가르기 방식도 확정하고, 전수보다 probe를 적게 쓴다
+    ranking = [truth] + [m for m in L.MECHANISMS if m != truth]
+    r = L.simulate("discriminate", out, ranking=ranking[1:3] + [truth])
+    assert (r["status"], r["conclusion"]) == ("confirmed", truth) and r["probes_used"] <= 3, r
+    assert L.simulate("exhaustive", out)["probes_used"] == len(L.PROBES)
+
+
+def test_discriminate_cannot_recover_a_truth_outside_its_hypotheses():
+    out = _outcomes_for("physics")
+    r = L.simulate("discriminate", out, ranking=["reward", "optimizer", "exploration"])
+    assert r["status"] == "none_supported" and r["conclusion"] is None
+
+
+def test_unknown_probe_results_can_end_unidentifiable():
+    out = {p: "unknown" for p in L.PROBES}
+    r = L.simulate("fixed", out)
+    assert r["status"] == "unidentifiable" and r["probes_used"] == len(L.PROBES)
