@@ -2,7 +2,7 @@
 
 ## 개발 상태와 이어하기
 
-현재 제품은 해커톤 프로토타입이며, AI Day 고도화는 공개 offline replay(P0-A, [아래](#offline-replay-no-api-key-network-or-gpu))까지 구현했습니다. 다음 개발은 결정적 기준선, 독립 회복 판정, 정보·예산을 맞춘 비교입니다. 아래 과거 결과를 새 설계의 완료·일반화·비용 절감 증거로 읽지 않습니다.
+현재 제품은 해커톤 프로토타입이며, AI Day 고도화는 공개 offline replay(P0-A, [아래](#offline-replay-no-api-key-network-or-gpu))와 LLM 없는 결정적 기준선(P0-A2, [계약](docs/P0-A2-BASELINES.md))까지 구현했습니다. P0-A2에서 같은 텔레메트리를 쓰는 고정 규칙이 과제 B 보류 seed를 10/10 맞혀, 에이전트가 규칙보다 잘 맞힌다는 주장은 철회했습니다. 다음 개발은 독립 회복 판정, 설정 diff로 풀리지 않는 새 holdout, 정보·예산을 맞춘 비교입니다. 아래 과거 결과를 새 설계의 완료·일반화·비용 절감 증거로 읽지 않습니다.
 
 Claude는 [개발 인계](docs/CLAUDE-HANDOFF.md)에서 첫 작업·수용 기준·논문 근거·운영 경계를 확인합니다. [AI Day 계획](docs/AI-DAY-2026.md)은 고도화 순서와 철회 조건을 설명하고, [구현 순서](docs/IMPLEMENTATION-ORDER.md)는 비용 없는 재채점·결정적 기준선·회복 판정을 GPU·API 단계보다 앞에 둔 보정판입니다. 루트 CLAUDE.md가 인계를 연결합니다.
 
@@ -82,7 +82,18 @@ Task A dev: the agent column is the re-run with the OpenAI-compatible client (`e
 
 On the held-out set the agent was right and the baseline wrong in 4 cases (c01, c04, c05, c07), never the reverse; with n=10 this is not statistically significant (two-sided binomial p≈0.125). Both methods never ranked the true mechanism first for **physics** or **optimizer** faults, on dev or held-out. The baseline tends to answer "reward" from the summary table; the agent pulls the termination and action curves before deciding.
 
-기존 agent는 전체 시계열과 분석 도구를 사용하지만 대조군은 요약 입력을 받았습니다. 위 표는 정보가 일치한 비교가 아니며, 같은 정보·총예산의 재평가가 필요합니다. 회복 판정의 보상 비율 의존과 blind 실험 연결 공백은 [개발 인계](docs/CLAUDE-HANDOFF.md)에 기록했습니다.
+Deterministic baselines without a model (P0-A2, [contract](docs/P0-A2-BASELINES.md), `evals/results/p0a2_holdout_20261008/`), Task B held-out seed 123:
+
+| Baseline | Input | Top-1 | Top-2 |
+|---|---|---:|---:|
+| Label frequency only (`rule_prior`) | none | 3/10 | 5/10 |
+| Fixed rules on normalized telemetry (`rule_features`) | same as the agent | 10/10 | 10/10 |
+| Nearest dev case (`rule_template`) | same + dev labels | 10/10 | 10/10 |
+| Config diff (`rule_b0`) | failed-run params vs reference | 10/10 | 10/10 |
+
+The rules were written on dev seeds 7 and 42 and committed (`eb318b4`) before they were run on seed 123; the author had seen three seed-123 values quoted in the plan. The held-out seed reuses the same 10 fault templates, and a nearest-neighbour lookup already gets 10/10, so this held-out set tests recognition of known templates, not generalization. We therefore withdraw the claim that the agent diagnoses better than a deterministic rule set on this benchmark. When the failed run's params are visible, all 10 faults are solved by a config diff without a model; new held-out faults must not be explainable by a config diff.
+
+기존 agent는 전체 시계열과 분석 도구를 사용하지만 대조군은 요약 입력을 받았습니다. 위 표는 정보가 일치한 비교가 아니며, 같은 정보·총예산의 재평가가 필요합니다. 같은 정보를 쓰는 고정 규칙(P0-A2)이 보류 seed를 10/10 맞혔으므로, 에이전트 정확도 우위 주장은 철회했습니다. 회복 판정의 보상 비율 의존과 blind 실험 연결 공백은 [개발 인계](docs/CLAUDE-HANDOFF.md)에 기록했습니다.
 
 Loop verification (`evals/results/bridge_smoke.json`): reverting the true culprit recovered the run (episode-length ratio 0.999, reward ratio 1.024); reverting a benign change did not (0.05). A wrong diagnosis is caught by retraining.
 
@@ -165,16 +176,23 @@ Rule: for each (task, seed, case, mode), the last row with `infra_error: false` 
 
 ```text
 evals/results/blind_v1: rows=47 infra=7 mismatches=0
-  blind    agent    top-1 10/20  top-2 12/20  seeds=7,42
-  blind    control  top-1 8/20  top-2 10/20  seeds=7,42
+  blind    agent         top-1 10/20  top-2 12/20  seeds=7,42
+  blind    control       top-1 8/20  top-2 10/20  seeds=7,42
 evals/results/heldout_blind: rows=22 infra=2 mismatches=0
-  blind    agent    top-1 6/10  top-2 6/10  seeds=123
-  blind    control  top-1 2/10  top-2 6/10  seeds=123
+  blind    agent         top-1 6/10  top-2 6/10  seeds=123
+  blind    control       top-1 2/10  top-2 6/10  seeds=123
 evals/results/heldout_changes: rows=22 infra=2 mismatches=0
-  changes  agent    top-1 10/10  top-2 10/10  seeds=123
-  changes  control  top-1 10/10  top-2 10/10  seeds=123
+  changes  agent         top-1 10/10  top-2 10/10  seeds=123
+  changes  control       top-1 10/10  top-2 10/10  seeds=123
 evals/results/traces: trace files=50 leak hits=0
 status=pass
+```
+
+Deterministic baselines (P0-A2) use the same offline setup. Seeds outside dev 7·42 run only when the rule and input files are committed; the output rows rescore with the replay above.
+
+```bash
+python evals/baselines.py --seeds 7 42 --out /tmp/p0a2_dev    # or --tag <new-folder>; [--run-params <Isaac Lab log dir>]
+python evals/replay.py evals/results/p0a2_holdout_20261008
 ```
 
 This re-derives past numbers; it is not new performance evidence. Two early files (`evals/results/v1_nim_client/seed42.jsonl`, `evals/results/smoke_c01_seed42.jsonl`) predate the `infra_error` field and are rejected rather than guessed. The leak check covers workspace inputs and saved traces only; agent code in the same checkout can still open `bench/answer_key.json`, so new scored runs need a location without answer files.

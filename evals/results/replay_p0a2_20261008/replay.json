@@ -1,0 +1,199 @@
+{
+ "kind": "offline_replay",
+ "status": "pass",
+ "rule": "per (task, seed, case_id, mode): last row with infra_error=false, in file-name then line order; a cell with only infra rows counts as wrong; truth/top-1/top-2 recomputed from bench/answer_key.json (Task A also bench/cases.json); empty ranking is wrong; any stored truth/correct/top2 that differs fails",
+ "created_at": "2026-10-08T13:07:37+00:00",
+ "command": "python evals/replay.py evals/results/heldout_blind evals/results/p0a2_holdout_20261008 evals/results/blind_v1 evals/results/p0a2_dev_20261008 --tag replay_p0a2_20261008",
+ "inputs": {
+  "answer_key": {
+   "path": "bench/answer_key.json",
+   "sha256_lf": "92671c5ead5f4bd2413c12281d236779e7edd4dbf6d967100b933fa194a5c268"
+  },
+  "cases": {
+   "path": "bench/cases.json",
+   "sha256_lf": "57efbef2d589246766e91aeae7556d81faf68a227d315bf2ae45461e90d0f86f"
+  },
+  "results": [
+   {
+    "path": "evals/results/heldout_blind",
+    "files": [
+     {
+      "path": "evals/results/heldout_blind/seed123.jsonl",
+      "sha256_lf": "ba3a40d5b3b1a4ecc625c16103bf30323213214f3a13f8832920bec3ede8cadd",
+      "rows": 22
+     }
+    ],
+    "rows": 22,
+    "infra_rows": 2,
+    "mismatches": [],
+    "tasks": {
+     "blind": {
+      "seeds": [
+       123
+      ],
+      "agent": {
+       "cells": 10,
+       "top1": 6,
+       "top2": 6,
+       "infra_only_cells": []
+      },
+      "control": {
+       "cells": 10,
+       "top1": 2,
+       "top2": 6,
+       "infra_only_cells": []
+      }
+     }
+    }
+   },
+   {
+    "path": "evals/results/p0a2_holdout_20261008",
+    "files": [
+     {
+      "path": "evals/results/p0a2_holdout_20261008/seed123.jsonl",
+      "sha256_lf": "73e57c481abb2ce673a0c6b2a0a13976a084d2c63ff4de428074d3604f8c4122",
+      "rows": 40
+     }
+    ],
+    "rows": 40,
+    "infra_rows": 0,
+    "mismatches": [],
+    "tasks": {
+     "blind": {
+      "seeds": [
+       123
+      ],
+      "rule_b0": {
+       "cells": 10,
+       "top1": 10,
+       "top2": 10,
+       "infra_only_cells": []
+      },
+      "rule_features": {
+       "cells": 10,
+       "top1": 10,
+       "top2": 10,
+       "infra_only_cells": []
+      },
+      "rule_prior": {
+       "cells": 10,
+       "top1": 3,
+       "top2": 5,
+       "infra_only_cells": []
+      },
+      "rule_template": {
+       "cells": 10,
+       "top1": 10,
+       "top2": 10,
+       "infra_only_cells": []
+      }
+     }
+    }
+   },
+   {
+    "path": "evals/results/blind_v1",
+    "files": [
+     {
+      "path": "evals/results/blind_v1/seed42.jsonl",
+      "sha256_lf": "cb022e7ec0e4f096b498a457afc61b652091a059d08603b74f04196897701c3c",
+      "rows": 24
+     },
+     {
+      "path": "evals/results/blind_v1/seed7.jsonl",
+      "sha256_lf": "dd9696f98352ebc292572a6aaa1dc9cb2e3f4e795e8c1476792e0b02ae8f3622",
+      "rows": 23
+     }
+    ],
+    "rows": 47,
+    "infra_rows": 7,
+    "mismatches": [],
+    "tasks": {
+     "blind": {
+      "seeds": [
+       7,
+       42
+      ],
+      "agent": {
+       "cells": 20,
+       "top1": 10,
+       "top2": 12,
+       "infra_only_cells": []
+      },
+      "control": {
+       "cells": 20,
+       "top1": 8,
+       "top2": 10,
+       "infra_only_cells": []
+      }
+     }
+    }
+   },
+   {
+    "path": "evals/results/p0a2_dev_20261008",
+    "files": [
+     {
+      "path": "evals/results/p0a2_dev_20261008/seed42.jsonl",
+      "sha256_lf": "4180e2580fe2a2d3d322a3a65aef39dfdd429d8cbc585ecb8748dbf9c6eb4b2b",
+      "rows": 40
+     },
+     {
+      "path": "evals/results/p0a2_dev_20261008/seed7.jsonl",
+      "sha256_lf": "da9cbaca2128fc8e02a3ce353616127a8d9941f5ff3f77bdcb82e7bed6613de0",
+      "rows": 40
+     }
+    ],
+    "rows": 80,
+    "infra_rows": 0,
+    "mismatches": [],
+    "tasks": {
+     "blind": {
+      "seeds": [
+       7,
+       42
+      ],
+      "rule_b0": {
+       "cells": 20,
+       "top1": 20,
+       "top2": 20,
+       "infra_only_cells": []
+      },
+      "rule_features": {
+       "cells": 20,
+       "top1": 20,
+       "top2": 20,
+       "infra_only_cells": []
+      },
+      "rule_prior": {
+       "cells": 20,
+       "top1": 6,
+       "top2": 10,
+       "infra_only_cells": []
+      },
+      "rule_template": {
+       "cells": 20,
+       "top1": 20,
+       "top2": 20,
+       "infra_only_cells": []
+      }
+     }
+    }
+   }
+  ]
+ },
+ "code": {
+  "git_head": "8c72acc5bcc7beb10cd3eed3f7b56458ab2da132",
+  "git_dirty": false,
+  "sha256_lf": {
+   "evals/replay.py": "91417b91cbbb0f0ad312b8cedd77c975fb571a204b65e0a0409863e96cd429dc",
+   "src/rl_triage/scoring.py": "d81405966f4d4d11d5b21e6c60f059322a8fcc3fd6a3f521d07bc46410752352",
+   "src/rl_triage/leakcheck.py": "25d970b70336a531d033f4833c3a4dbef969874349cbf5b73bf9ca2a83ea379a"
+  }
+ },
+ "environment": {
+  "python": "3.12.13",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "model_calls": 0,
+  "network": "not used",
+  "gpu": "not used"
+ }
+}

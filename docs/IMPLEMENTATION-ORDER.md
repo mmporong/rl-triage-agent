@@ -48,7 +48,7 @@ git log --oneline origin/main..HEAD
 ### C. 보상 항 단위 오독 — P1-A와 P0-A2
 
 - [사실] `Episode_Reward/<항>`은 에피소드 합 평균을 `max_episode_length_s`(Go2 flat 20초)로 나눈 값이다([reward_manager.py v2.1.1](https://github.com/isaac-sim/IsaacLab/blob/v2.1.1/source/isaaclab/isaaclab/managers/reward_manager.py)). 빨리 넘어지면 모든 항이 같이 작아진다. `Episode_Termination/*`은 비율이 아니라 리셋된 env 개수다([termination_manager.py v2.1.1](https://github.com/isaac-sim/IsaacLab/blob/v2.1.1/source/isaaclab/isaaclab/managers/termination_manager.py)).
-- [사실] 에이전트는 c02에서 episode length 비 0.214와 `dof_torques_l2` 비 0.269를 나란히 적고 actuator로 판단했고(`evals/results/traces/blind_seed123_c02_1790482327.jsonl`), c10에서는 torque 비 0.043을 "very weak torques"로 읽었다(`…_c10_1790483734.jsonl`).
+- [사실] 에이전트는 c02에서 episode length 비 0.214와 `dof_torques_l2` 비 0.269를 나란히 적고 actuator로 판단했고(`evals/results/traces/blind_seed123_c02_1790482327.jsonl`), c10에서는 torque 비 0.043을 "very weak torques"로 읽었다(`…_c10_1790483734.jsonl`). (2026-10-08 P0-A2 확인: c02의 0.269는 에이전트가 쓴 숫자이고 텔레메트리 값은 0.658이다.)
 - [사실] c08(`gamma=0.5`) 근거 문장에 "value loss ratio 0.016"이 있었는데도 actuator를 1위로 냈다(`…_c08_1790483263.jsonl`).
 - 대응: 생존 시간으로 나눈 보상 항, 리셋 수로 나눈 종료 개수, step_dt로 환산한 에피소드 길이를 도구가 계산해 제공한다. 같은 특징을 쓰는 고정 규칙 기준선과 비교한다.
 
@@ -118,7 +118,7 @@ git log --oneline origin/main..HEAD
 |---|---|---|
 | W0 | 완료(2026-10-08, Windows) | 작업 트리 깨끗, `be8cae9`로 fast-forward. 비공개·공개 정답표 동일(원본 바이트와 LF 정규화 모두). 기준 params 3개 존재: seed 42는 비공개 meta가 없고 텔레메트리 `run_dir_name`(s02_baseline_s42)의 실행 폴더로 확인했다. 버전·해시는 `bench/reference/manifest.json`의 `w0_check`. 버전은 10/8 호스트 값이며 학습 당시 기록이 아니고, 학습 때 import된 torch 빌드는 미확인. `bench/private/` 이름·크기·SHA256 목록은 비공개 폴더 안에만 저장 |
 | P0-A | 완료(`0f112ca`) | 진입점 `evals/replay.py`, 공용 채점 `src/rl_triage/scoring.py`, 유출 검사 `src/rl_triage/leakcheck.py`, 공개 params `bench/reference/params/`, 테스트 `tests/test_offline_replay.py`. clean clone 재현 기록 `evals/results/replay_p0a_20261008/replay.json`(G절 표 일치, 저장값 불일치 0, trace 50개 표식 0) |
-| P0-A2 | 규칙 동결(seed 123 적용 전) | 계약 [P0-A2-BASELINES.md](P0-A2-BASELINES.md), 규칙 `src/rl_triage/rules.py`, 실행 `evals/baselines.py`. dev 7·42에 맞춘 규칙이라 dev 만점은 성능 근거가 아니다. 규칙 작성자가 seed 123 값 일부(2절 C)를 알았다 |
+| P0-A2 | 완료(동결 `eb318b4` 뒤 seed 123 적용) | 계약·결과 [P0-A2-BASELINES.md](P0-A2-BASELINES.md). seed 123 top-1: 고정 규칙 10/10, 최근접 dev 사례 10/10, 설정 diff 10/10, 빈도순 3/10 (에이전트 6/10, 대조군 2/10). 에이전트 정확도 우위 주장 철회, seed holdout은 템플릿 재인식 시험으로 판정. 기록 `evals/results/p0a2_{dev,holdout}_20261008/`, `replay_p0a2_20261008/` |
 
 사용자 결정(2026-10-08): 주 task는 Go2 flat을 유지한다(이족 전환 안 함). 실행은 Windows 로컬(RTX 3060)에서 하며 로컬 GPU 실행은 허용됐다. 이것으로 3절 결정 게이트의 호스트는 Windows로 정해졌다. Brev는 필요할 때 따로 요청한다. NVIDIA API 호출은 이 허용 범위에 넣지 않았으므로 P0-C 평가 전에 승인을 받는다.
 
