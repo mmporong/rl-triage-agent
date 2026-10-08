@@ -5,6 +5,7 @@
   python evals/loop.py approve <케이스> <request_id> --approver <이름>
   python evals/loop.py reject  <케이스> <request_id> --approver <이름> --reason <이유>
   python evals/loop.py run     <케이스> <request_id> [--tag <probe 결과 tag>]   # 승인된 probe 하나를 Isaac에서 잰다
+  python evals/loop.py recover <케이스> [--tag <probe 결과 tag>]  # 결과 없이 끝난 요청을 산출물로 닫기(재실행 없음)
   python evals/loop.py status  <케이스>
 
 - start는 상위 가설과 각 가설의 probe 예상을 사전등록하고 첫 probe를 제안한다(승인 대기).
@@ -91,23 +92,60 @@ def isaac_execute(case: str, probe: str, tag: str) -> tuple[dict | None, float, 
     return rec.get("measurement"), time.time() - t0, rec.get("exit")
 
 
+def _after_receipt(case: str, prereg: dict, state: dict, led: L.Ledger, rid: str, probe: str, outcome: str,
+                   note: str = "") -> str:
+    state["observed"][probe] = outcome
+    state["hypotheses"], dropped = L.update(state["hypotheses"], probe, outcome)
+    state["history"].append({"request_id": rid, "probe": probe, "outcome": outcome, "dropped": dropped,
+                             **({"note": note} if note else {})})
+    state["pending"] = None
+    msg = f"{probe}: {outcome}{note} 기각={dropped} 남은 가설={state['hypotheses']}\n"
+    return msg + _propose_next(case, prereg, state, led)
+
+
 def run(case: str, rid: str, execute) -> str:
     prereg, state, led = _load(case)
     req = led.requests().get(rid)
     if req is None:
         raise SystemExit(f"{rid}: 없는 요청")
+    if led.orphans():
+        raise SystemExit(f"결과 없이 끝난 요청 {led.orphans()}이 있다. 먼저 recover로 닫는다")
     probe = req["probe"]
     led.consume(rid, prereg, probe)  # 승인 없거나 이미 소비했으면 여기서 멈춘다
     measurement, gpu_s, exit_code = execute(case, probe)
     reference = json.loads((_dir(case) / "reference.json").read_text(encoding="utf-8"))
     outcome = L.classify(probe, measurement, reference.get(probe)) if exit_code == 0 else "unknown"
-    led.receipt(rid, outcome, measurement or {}, gpu_s=round(gpu_s, 1), exit_code=exit_code)
-    state["observed"][probe] = outcome
-    state["hypotheses"], dropped = L.update(state["hypotheses"], probe, outcome)
-    state["history"].append({"request_id": rid, "probe": probe, "outcome": outcome, "dropped": dropped})
-    state["pending"] = None
-    msg = f"{probe}: {outcome} 기각={dropped} 남은 가설={state['hypotheses']}\n"
-    return msg + _propose_next(case, prereg, state, led)
+    outcome = led.receipt(rid, outcome, measurement or {}, gpu_s=round(gpu_s, 1), exit_code=exit_code)["outcome"]
+    return _after_receipt(case, prereg, state, led, rid, probe, outcome)
+
+
+def file_artifact(case: str, probe: str, prereg: dict, tag: str) -> dict | None:
+    """같은 효과의 산출물: evals/results/<tag>/probes/<케이스>.json의 그 probe 측정(체크포인트 SHA256 일치)."""
+    path = ROOT / "evals" / "results" / tag / "probes" / f"{case}.json"
+    if not path.exists():
+        return None
+    rep = json.loads(path.read_text(encoding="utf-8"))
+    rec = rep.get("probes", {}).get(probe)
+    if not rec or rec.get("exit") != 0 or rep.get("checkpoint", {}).get("sha256") != prereg["checkpoint_sha256"]:
+        return None
+    return {"measurement": rec["measurement"], "gpu_s": rec.get("elapsed_s", 0.0), "exit_code": 0,
+            "checkpoint_sha256": rep["checkpoint"]["sha256"], "source": f"evals/results/{tag}/probes/{case}.json"}
+
+
+def recover(case: str, find_artifact) -> str:
+    """결과 없이 끝난 요청을 다시 실행하지 않고 닫는다. 산출물이 있으면 그 값으로, 없으면 unknown(새 승인 필요)."""
+    prereg, state, led = _load(case)
+    reference = json.loads((_dir(case) / "reference.json").read_text(encoding="utf-8"))
+    out = []
+    for rid in led.orphans():
+        probe = led.requests()[rid]["probe"]
+        art = find_artifact(case, probe, prereg)
+        if art is not None:
+            art["outcome"] = L.classify(probe, art["measurement"], reference.get(probe))
+        outcome = led.recover(rid, art, prereg)["outcome"]
+        note = " (산출물로 복구)" if art else " (산출물 없음, 다시 재려면 새 승인)"
+        out.append(_after_receipt(case, prereg, state, led, rid, probe, outcome, note))
+    return "\n".join(out) or "고아 요청 없음"
 
 
 def reject(case: str, rid: str, approver: str, reason: str) -> str:
@@ -141,6 +179,9 @@ def main(argv=None) -> int:
     r.add_argument("case")
     r.add_argument("request_id")
     r.add_argument("--tag", default="p1a_loop_probes")
+    rc = sub.add_parser("recover")
+    rc.add_argument("case")
+    rc.add_argument("--tag", default="p1a_loop_probes")
     st = sub.add_parser("status")
     st.add_argument("case")
     args = ap.parse_args(argv)
@@ -157,6 +198,8 @@ def main(argv=None) -> int:
             print(reject(args.case, args.request_id, args.approver, args.reason))
         elif args.cmd == "run":
             print(run(args.case, args.request_id, lambda c, p: isaac_execute(c, p, args.tag)))
+        elif args.cmd == "recover":
+            print(recover(args.case, lambda c, p, pr: file_artifact(c, p, pr, args.tag)))
         else:
             _, state, _ = _load(args.case)
             print(json.dumps(state, ensure_ascii=False, indent=1))

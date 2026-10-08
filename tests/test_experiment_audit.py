@@ -329,7 +329,8 @@ def test_non_discriminating_or_out_of_order_probe_is_rejected(tmp_path, probe):
 
 def test_parallel_open_requests_are_rejected(tmp_path):
     case = _setup(tmp_path)
-    case["ledger"].propose(case["prereg"], "P_reward", 120)
+    # 원장은 같은 실험(effect key)의 동시 요청을 거부하므로, 다른 probe로 두 번째 열린 요청을 만든다.
+    case["ledger"].propose(case["prereg"], "P_physics", 120)
     proc = _register(case)
     assert proc.returncode == 2 and "열린 probe" in proc.stderr
 

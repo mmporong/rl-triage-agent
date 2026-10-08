@@ -63,3 +63,38 @@ def test_existing_loop_record_is_not_overwritten(loop):
     loop.start("h01_s2026", ["termination", "physics"], 3, 4, "c" * 64, REF)
     with pytest.raises(SystemExit, match="덮어쓰지 않는다"):
         loop.start("h01_s2026", ["termination", "physics"], 3, 4, "c" * 64, REF)
+
+
+def test_crash_after_consume_blocks_new_runs_until_recovered(loop):
+    loop.start("h04_s2027", ["reward", "actuator"], 3, 4, "d" * 64, REF)
+    _, state, led = loop._load("h04_s2027")
+    rid = state["pending"]
+    led.approve(rid, "human")
+    led.consume(rid, json.loads((loop.LOOPS / "h04_s2027" / "prereg.json").read_text(encoding="utf-8")), "P_reward")
+    # 실행 프로세스가 receipt 전에 죽었다. 같은 승인으로 다시 돌릴 수도, 다른 요청을 돌릴 수도 없다
+    with pytest.raises(SystemExit, match="recover"):
+        loop.run("h04_s2027", rid, _fake({}, []))
+    calls = []
+
+    def artifact(case, probe, prereg):
+        calls.append(probe)
+        return {"measurement": {"track_lin_vel_xy_exp_rel_error": 0.5, "track_ang_vel_z_exp_rel_error": 0.0},
+                "gpu_s": 40.0, "exit_code": 0, "checkpoint_sha256": prereg["checkpoint_sha256"],
+                "source": "evals/results/x/probes/h04_s2027.json"}
+
+    out = loop.recover("h04_s2027", artifact)
+    assert calls == ["P_reward"] and "산출물로 복구" in out and "종료: confirmed" in out
+    _, state, led = loop._load("h04_s2027")
+    assert led.orphans() == [] and state["hypotheses"] == ["reward"]
+
+
+def test_recover_without_artifact_records_unknown(loop):
+    loop.start("h06_s2028", ["reward", "actuator"], 3, 4, "e" * 64, REF)
+    _, state, led = loop._load("h06_s2028")
+    rid = state["pending"]
+    led.approve(rid, "human")
+    led.consume(rid, json.loads((loop.LOOPS / "h06_s2028" / "prereg.json").read_text(encoding="utf-8")), "P_reward")
+    out = loop.recover("h06_s2028", lambda c, p, pr: None)
+    assert "unknown (산출물 없음" in out
+    _, state, _ = loop._load("h06_s2028")
+    assert state["observed"] == {"P_reward": "unknown"} and state["hypotheses"] == ["reward", "actuator"]

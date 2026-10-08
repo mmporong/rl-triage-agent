@@ -252,13 +252,29 @@ class Ledger:
                     state[rid]["receipt"] = ev
         return state
 
+    @staticmethod
+    def effect_key(prereg_digest: str, probe: str, args_digest: str) -> str:
+        """의미상 같은 실험(같은 사전등록·probe·canonical args)의 키. 요청 ID와 별개로 중복 효과를 가린다."""
+        return digest({"prereg": prereg_digest, "probe": probe, "args": args_digest})[:16]
+
     def propose(self, prereg: dict, probe: str, budget_gpu_s: int) -> dict:
+        """같은 실험이 대기·승인·실행 중이면 거부한다. 끝난 실험을 다시 제안하면 repeat_of로 표시하고 새 승인을 받는다."""
         if probe not in PROBES:
             raise LedgerError(f"모르는 probe {probe!r}")
         args = PROBES[probe]["args"]
-        rid = digest({"prereg": digest(prereg), "probe": probe, "args": args, "n": len(self.events())})[:12]
-        return self._append({"event": "proposed", "request_id": rid, "prereg_digest": digest(prereg),
-                             "probe": probe, "args_digest": digest(args), "budget_gpu_s": budget_gpu_s})
+        pd, ad = digest(prereg), digest(args)
+        ek = self.effect_key(pd, probe, ad)
+        same = [r for r in self.requests().values() if self.effect_key(r["prereg_digest"], r["probe"], r["args_digest"]) == ek]
+        live = [r["request_id"] for r in same if r["state"] in ("pending", "approved", "running")]
+        if live:
+            raise LedgerError(f"같은 실험이 이미 진행 중이다: {live}")
+        done = [r["request_id"] for r in same if r["state"] == "done"]
+        rid = digest({"prereg": pd, "probe": probe, "args": args, "n": len(self.events())})[:12]
+        ev = {"event": "proposed", "request_id": rid, "prereg_digest": pd, "probe": probe, "args_digest": ad,
+              "effect_key": ek, "budget_gpu_s": budget_gpu_s}
+        if done:
+            ev["repeat_of"] = done[-1]
+        return self._append(ev)
 
     def approve(self, request_id: str, approver: str) -> dict:
         req = self.requests().get(request_id)
@@ -281,14 +297,45 @@ class Ledger:
             raise LedgerError(f"{request_id}: 승인된 사전등록·probe·args와 다르다")
         return self._append({"event": "consumed", "request_id": request_id})
 
-    def receipt(self, request_id: str, outcome: str, measurement: dict, gpu_s: float, exit_code: int | None) -> dict:
-        """실행 결과. timeout·비정상 종료는 실패로 단정하지 않고 unknown으로 남긴다."""
+    def receipt(self, request_id: str, outcome: str, measurement: dict, gpu_s: float, exit_code: int | None,
+                recovered_from: str | None = None, reason: str | None = None) -> dict:
+        """실행 결과. timeout·비정상 종료·예산 초과는 실패로 단정하지 않고 unknown으로 남긴다."""
         req = self.requests().get(request_id)
         if req is None or req["state"] != "running":
             raise LedgerError(f"{request_id}: 실행 중인 요청이 아니다")
-        if exit_code != 0:
+        over = gpu_s is not None and gpu_s > req["budget_gpu_s"]
+        if exit_code != 0 or over:
             outcome = "unknown"
         if outcome not in OUTCOMES:
             raise LedgerError(f"모르는 관측 {outcome!r}")
-        return self._append({"event": "receipt", "request_id": request_id, "outcome": outcome,
-                             "measurement": measurement, "gpu_s": gpu_s, "exit_code": exit_code})
+        ev = {"event": "receipt", "request_id": request_id, "outcome": outcome, "measurement": measurement,
+              "gpu_s": gpu_s, "exit_code": exit_code, "over_budget": over}
+        if recovered_from is not None:
+            ev["recovered_from"] = recovered_from
+        if reason is not None:
+            ev["reason"] = reason
+        return self._append(ev)
+
+    def orphans(self) -> list[str]:
+        """승인을 소비했는데 receipt가 없는 요청(실행 중 프로세스가 죽었거나 아직 도는 중)."""
+        return [rid for rid, r in self.requests().items() if r["state"] == "running"]
+
+    def recover(self, request_id: str, artifact: dict | None, prereg: dict | None = None) -> dict:
+        """고아 요청을 다시 실행하지 않고 닫는다.
+
+        artifact는 같은 effect의 산출물({outcome, measurement, gpu_s, exit_code, source})이다. 있으면 그 값으로 receipt를
+        쓰고 출처를 남긴다. 없으면 결과를 unknown으로 닫고, 다시 재려면 새 제안·새 승인을 받아야 한다.
+        한 작성자(같은 호스트의 승인 CLI·실행기)를 가정하며 외부 효과의 exactly-once는 보장하지 않는다.
+        """
+        if request_id not in self.orphans():
+            raise LedgerError(f"{request_id}: 고아 요청이 아니다")
+        if artifact is not None:
+            # 산출물이 그 사전등록(같은 체크포인트)의 것인지 원장 안에서 확인한다.
+            if prereg is None or digest(prereg) != self.requests()[request_id]["prereg_digest"]:
+                raise LedgerError(f"{request_id}: 산출물로 복구하려면 승인된 그 사전등록이 필요하다")
+            if artifact.get("checkpoint_sha256") != prereg.get("checkpoint_sha256"):
+                raise LedgerError(f"{request_id}: 산출물의 체크포인트가 사전등록과 다르다")
+        if artifact is None:
+            return self.receipt(request_id, "unknown", {}, 0.0, None, reason="orphan_without_artifact")
+        return self.receipt(request_id, artifact["outcome"], artifact.get("measurement") or {}, artifact.get("gpu_s", 0.0),
+                            artifact.get("exit_code", 0), recovered_from=artifact["source"])

@@ -146,3 +146,63 @@ def test_classify_thresholds_and_unknowns():
     assert L.classify("P_episode", {"timeout_ratio": 0.05}, None) == "abnormal"
     assert L.classify("P_episode", {"timeout_ratio": None}, None) == "unknown"
     assert L.classify("P_physics", None, ref) == "unknown"
+
+
+def test_same_experiment_in_flight_is_refused_and_repeats_are_marked(tmp_path):
+    led = L.Ledger(tmp_path / "ledger.jsonl")
+    first = led.propose(PREREG, "P_reward", budget_gpu_s=120)
+    with pytest.raises(L.LedgerError, match="진행 중"):
+        led.propose(PREREG, "P_reward", budget_gpu_s=120)
+    led.approve(first["request_id"], "human")
+    led.consume(first["request_id"], PREREG, "P_reward")
+    with pytest.raises(L.LedgerError, match="진행 중"):  # 실행 중에도 같은 효과를 다시 요청할 수 없다
+        led.propose(PREREG, "P_reward", budget_gpu_s=120)
+    led.receipt(first["request_id"], "normal", {}, gpu_s=10.0, exit_code=0)
+    again = led.propose(PREREG, "P_reward", budget_gpu_s=120)
+    assert again["repeat_of"] == first["request_id"] and again["effect_key"] == first["effect_key"]
+    led.propose(PREREG, "P_physics", budget_gpu_s=60)  # 다른 probe는 다른 효과
+
+
+def test_orphan_with_artifact_is_closed_without_rerun(tmp_path):
+    led, rid = _approved(tmp_path)
+    led.consume(rid, PREREG, "P_reward")  # 여기서 실행 프로세스가 죽었다고 본다
+    restarted = L.Ledger(tmp_path / "ledger.jsonl")
+    assert restarted.orphans() == [rid]
+    runs = []
+    artifact = {"outcome": "abnormal", "measurement": {"track_lin_vel_xy_exp_rel_error": 0.4}, "gpu_s": 50.0,
+                "exit_code": 0, "checkpoint_sha256": PREREG["checkpoint_sha256"], "source": "probes/h03_s2026.json"}
+    with pytest.raises(L.LedgerError, match="체크포인트"):
+        restarted.recover(rid, {**artifact, "checkpoint_sha256": "b" * 64}, PREREG)
+    with pytest.raises(L.LedgerError, match="사전등록"):
+        restarted.recover(rid, artifact)
+    ev = restarted.recover(rid, artifact, PREREG)
+    assert runs == [] and ev["outcome"] == "abnormal" and ev["recovered_from"].startswith("probes/")
+    assert restarted.orphans() == [] and restarted.requests()[rid]["state"] == "done"
+    with pytest.raises(L.LedgerError, match="고아"):
+        restarted.recover(rid, artifact, PREREG)
+
+
+def test_orphan_without_artifact_is_unknown_and_needs_a_new_approval(tmp_path):
+    led, rid = _approved(tmp_path)
+    led.consume(rid, PREREG, "P_reward")
+    ev = led.recover(rid, None)
+    assert ev["outcome"] == "unknown" and ev["reason"] == "orphan_without_artifact"
+    new = led.propose(PREREG, "P_reward", budget_gpu_s=120)
+    with pytest.raises(L.LedgerError, match="승인되지 않았"):
+        led.consume(new["request_id"], PREREG, "P_reward")
+
+
+def test_over_budget_result_is_unknown(tmp_path):
+    led, rid = _approved(tmp_path)
+    led.consume(rid, PREREG, "P_reward")
+    ev = led.receipt(rid, "abnormal", {"x": 1}, gpu_s=500.0, exit_code=0)  # 예산 120초
+    assert ev["outcome"] == "unknown" and ev["over_budget"] is True
+
+
+def test_recover_with_over_budget_artifact_is_unknown(tmp_path):
+    led, rid = _approved(tmp_path)
+    led.consume(rid, PREREG, "P_reward")
+    art = {"outcome": "abnormal", "measurement": {}, "gpu_s": 500.0, "exit_code": 0,
+           "checkpoint_sha256": PREREG["checkpoint_sha256"], "source": "x.json"}
+    ev = led.recover(rid, art, PREREG)
+    assert ev["outcome"] == "unknown" and ev["over_budget"] is True
