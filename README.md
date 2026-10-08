@@ -1,5 +1,11 @@
 # Isaac Lab RL Training Triage Agent
 
+## 개발 상태와 이어하기
+
+현재 제품은 해커톤 프로토타입이며, AI Day 고도화는 연구·계획을 마친 단계입니다. 다음 개발은 공개 offline replay, 독립 회복 판정, 정보·예산을 맞춘 비교부터 진행합니다. 아래 과거 결과를 새 설계의 완료·일반화·비용 절감 증거로 읽지 않습니다.
+
+Claude는 [개발 인계](docs/CLAUDE-HANDOFF.md)에서 첫 작업·수용 기준·논문 근거·운영 경계를 확인합니다. [AI Day 계획](docs/AI-DAY-2026.md)은 고도화 순서와 철회 조건을 설명하며, 루트 CLAUDE.md가 인계를 연결합니다.
+
 | Catalog field | Value |
 | --- | --- |
 | Description | Finds which config change broke an Isaac Lab RL locomotion training run from its telemetry, registers one next experiment for human approval, and verifies it by retraining — inside an OpenShell sandbox that cannot touch configs, safety gates or reward definitions. |
@@ -64,7 +70,7 @@ This recipe follows the **OpenShell path** described in the NemoClaw docs ("you 
 
 Benchmark: 10 injected faults (reward, actuator, exploration, optimizer, physics, termination) on `Isaac-Velocity-Flat-Unitree-Go2-v0`, 1024 envs, 100 iterations. Each case mixes 1 harmful and 2 benign hydra overrides, shuffled with a secret seed. The benchmark separates cleanly: benign-only runs 2/2 recovered, fault runs 20/20 not recovered.
 
-| Task | Set | RL Triage Agent | Single-prompt Nemotron 3 Super (same inputs) | Random |
+| Task | Set | RL Triage Agent | Single-prompt Nemotron 3 Super (summary-only input) | Random |
 |---|---|---:|---:|---:|
 | A. Which change broke it? (change list + telemetry) | dev (seeds 42, 7) | 20/20 | 20/20 | 33% |
 | B. Unknown cause: which mechanism? (telemetry only) | dev (seeds 42, 7) | 10/20 (5 truncated at 4096 tokens) | 8/20 | 17% |
@@ -75,6 +81,8 @@ Benchmark: 10 injected faults (reward, actuator, exploration, optimizer, physics
 Task A dev: the agent column is the re-run with the OpenAI-compatible client (`evals/results/v1_openai_client/`) after the first NAT `nim` client dropped tool-call responses; the baseline column is the first run (`evals/results/v1_nim_client/`). Every retry in every results file was triggered only by an infrastructure error (overload, empty or truncated response), never by a wrong answer.
 
 On the held-out set the agent was right and the baseline wrong in 4 cases (c01, c04, c05, c07), never the reverse; with n=10 this is not statistically significant (two-sided binomial p≈0.125). Both methods never ranked the true mechanism first for **physics** or **optimizer** faults, on dev or held-out. The baseline tends to answer "reward" from the summary table; the agent pulls the termination and action curves before deciding.
+
+기존 agent는 전체 시계열과 분석 도구를 사용하지만 대조군은 요약 입력을 받았습니다. 위 표는 정보가 일치한 비교가 아니며, 같은 정보·총예산의 재평가가 필요합니다. 회복 판정의 보상 비율 의존과 blind 실험 연결 공백은 [개발 인계](docs/CLAUDE-HANDOFF.md)에 기록했습니다.
 
 Loop verification (`evals/results/bridge_smoke.json`): reverting the true culprit recovered the run (episode-length ratio 0.999, reward ratio 1.024); reverting a benign change did not (0.05). A wrong diagnosis is caught by retraining.
 
@@ -152,4 +160,4 @@ ok_request_eval        result=within_boundary   gate=human_review PASS
 
 ## 한국어 요약
 
-**Isaac Lab 학습 실패 원인 추적 에이전트.** 로봇 RL 엔지니어가 설정 여러 개를 바꾸고 학습했는데 학습이 무너졌을 때, 텔레메트리를 정상 기준 실행과 비교해 원인을 찾고, 설정을 직접 고치는 대신 **다음 실험 하나를 사전등록**합니다. 사람이 승인하면 재평가 브리지가 Isaac Lab에서 그 변수 하나만 바꿔 다시 학습해 진단을 확인합니다. 에이전트는 OpenShell 샌드박스 안에서 설정·안전 게이트·보상을 건드릴 수 없고, 더 많은 권한 요청은 openshell-prover가 현장 경계와 비교해 증명되지 않으면 자동 거절합니다.
+**Isaac Lab 학습 실패 원인 추적 에이전트.** 로봇 RL 엔지니어가 설정 여러 개를 바꾸고 학습했는데 학습이 무너졌을 때, 텔레메트리를 정상 기준 실행과 비교해 원인을 찾고, **다음 실험 하나를 사전등록**합니다. 사람이 승인하면 재평가 브리지가 Isaac Lab에서 그 변수 하나만 바꿔 다시 학습해 진단을 확인합니다. 에이전트는 OpenShell 샌드박스 안에서 설정·안전 게이트·보상을 건드릴 수 없고, 더 많은 권한 요청은 openshell-prover가 현장 경계와 비교해 증명되지 않으면 자동 거절합니다.
