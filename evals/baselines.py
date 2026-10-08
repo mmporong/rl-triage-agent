@@ -40,6 +40,10 @@ KEY_PATH = ROOT / "bench" / "answer_key.json"
 CASES_PATH = ROOT / "bench" / "cases.json"
 MANIFEST_PATH = ROOT / "bench" / "reference" / "manifest.json"
 RUNS = ROOT / "bench" / "runs"
+KEY_P0C = ROOT / "bench" / "private" / "answer_key_p0c.json"  # P0-C 평가가 끝나면 공개본으로 옮긴다
+# 벤치별 기준 params·텔레메트리 위치. p0c는 숨은 결함 holdout(docs/P0-C-HOLDOUT.md)이다.
+BENCHES = {"v1": {"manifest_key": "seeds", "params": "seed", "runs": RUNS},
+           "p0c": {"manifest_key": "p0c_seeds", "params": "p0c_seed", "runs": ROOT / "bench" / "runs_p0c"}}
 CODE_FILES = ("evals/baselines.py", "evals/replay.py", "src/rl_triage/rules.py", "src/rl_triage/scoring.py",
               "src/rl_triage/triage_tools.py", "src/rl_triage/leakcheck.py")
 INPUT_DIRS = ("bench/runs", "bench/reference")
@@ -64,12 +68,13 @@ def _json(path: Path):
         raise InputError(f"{_show(path)}: 잘못된 JSON ({e.msg})") from None
 
 
-def load_seed(seed: int, manifest: dict, cases: list[dict], inputs: list[dict]) -> dict:
+def load_seed(seed: int, manifest: dict, cases: list[dict], inputs: list[dict], bench: str = "v1") -> dict:
     """seed 하나의 기준 params·기준 텔레메트리·실패 텔레메트리. manifest SHA256·실행 이름과 대조한다."""
-    ref = manifest["seeds"].get(str(seed))
+    spec = BENCHES[bench]
+    ref = manifest.get(spec["manifest_key"], {}).get(str(seed))
     if ref is None:
-        raise InputError(f"공개 기준 params가 없는 seed {seed}")
-    params = ROOT / "bench" / "reference" / "params" / f"seed{seed}"
+        raise InputError(f"공개 기준 params가 없는 {bench} seed {seed}")
+    params = ROOT / "bench" / "reference" / "params" / f"{spec['params']}{seed}"
     for name, want in ref["sha256"].items():
         if not (params / name).exists() or sha256(params / name) != want:
             raise InputError(f"{_show(params / name)}: 없거나 SHA256이 manifest와 다르다")
@@ -81,7 +86,7 @@ def load_seed(seed: int, manifest: dict, cases: list[dict], inputs: list[dict]) 
     inputs.append({"path": _show(ref_path), "sha256_lf": _sha256_lf(ref_path)})
     runs = {}
     for case in cases:
-        path = RUNS / f"{case['case_id']}_s{seed}.telemetry.json"
+        path = spec["runs"] / f"{case['case_id']}_s{seed}.telemetry.json"
         runs[case["case_id"]] = _json(path)["summary"]
         inputs.append({"path": _show(path), "sha256_lf": _sha256_lf(path)})
     env, agent = _yaml(params / "env.yaml"), _yaml(params / "agent.yaml")
@@ -135,14 +140,19 @@ def _round(x):
     return x
 
 
-def run(seeds: list[int], key: dict, cases: list[dict], manifest: dict, inputs: list[dict]) -> tuple[dict, dict, dict]:
-    data = {s: load_seed(s, manifest, cases, inputs) for s in sorted(set(seeds) | set(R.DEV_SEEDS))}
-    labelled = {s: [(R.features(data[s]["runs"][c["case_id"]], data[s]["ref"], data[s]["cfg"]),
-                     key["cases"][c["case_id"]]["category"]) for c in cases] for s in R.DEV_SEEDS}
+def run(seeds: list[int], key: dict, cases: list[dict], manifest: dict, inputs: list[dict], bench: str = "v1",
+        dev: tuple[dict, list[dict]] | None = None) -> tuple[dict, dict, dict]:
+    """dev=(v1 정답표, v1 cases)는 template 학습용이다. p0c를 평가할 때도 template은 v1 dev seed로만 학습한다."""
+    dev_key, dev_cases = dev or (key, cases)
+    dev_data = {s: load_seed(s, manifest, dev_cases, inputs, "v1") for s in R.DEV_SEEDS}
+    data = {s: (dev_data[s] if bench == "v1" and s in dev_data else load_seed(s, manifest, cases, inputs, bench))
+            for s in seeds}
+    labelled = {s: [(R.features(dev_data[s]["runs"][c["case_id"]], dev_data[s]["ref"], dev_data[s]["cfg"]),
+                     dev_key["cases"][c["case_id"]]["category"]) for c in dev_cases] for s in R.DEV_SEEDS}
     rows, train_seeds = {}, {}
     for seed in seeds:
         d = data[seed]
-        train_seeds[seed] = [s for s in R.DEV_SEEDS if s != seed]
+        train_seeds[seed] = [s for s in R.DEV_SEEDS if not (bench == "v1" and s == seed)]
         train = [x for s in train_seeds[seed] for x in labelled[s]]
         rows[seed] = []
         for case in cases:
@@ -157,7 +167,7 @@ def run(seeds: list[int], key: dict, cases: list[dict], manifest: dict, inputs: 
                        "rule_b0": (ranked_b, {"diff": scored})}
             for mode, (ranking, evidence) in outputs.items():
                 s = score_blind(cid, ranking, key)
-                rows[seed].append({"case_id": cid, "seed": seed, "mode": mode, "task": "blind", "bench": "v1",
+                rows[seed].append({"case_id": cid, "seed": seed, "mode": mode, "task": "blind", "bench": bench,
                                    "attempt": 1, "infra_error": False, "model": None, "info": MODES[mode],
                                    "ranking": ranking, "suspected": ranking[0], "truth": s["truth"],
                                    "correct": s["correct"], "top2": s["top2"], "category": s["category"],
@@ -180,6 +190,8 @@ def main(argv=None) -> int:
     dest.add_argument("--tag", help="evals/results/<tag>/에 쓴다(기존 폴더는 덮어쓰지 않음)")
     dest.add_argument("--out", type=Path, help="새 폴더에 쓴다")
     ap.add_argument("--run-params", type=Path, help="실제 실패 실행 params가 있는 Isaac Lab 로그 폴더(선택)")
+    ap.add_argument("--bench", choices=sorted(BENCHES), default="v1",
+                    help="p0c: 숨은 결함 holdout(케이스 h01~h06, 설정 변경 없음). 정답은 비공개 정답표에서 읽는다")
     args = ap.parse_args(argv)
     try:
         if args.tag is not None:
@@ -190,7 +202,7 @@ def main(argv=None) -> int:
             out_dir = args.out.resolve()
         if out_dir.exists():
             raise InputError(f"{_show(out_dir)}가 이미 있다. 결과는 덮어쓰지 않는다")
-        code = code_version(list(INPUT_DIRS), CODE_FILES)
+        code = code_version(list(INPUT_DIRS) + (["bench/runs_p0c"] if args.bench == "p0c" else []), CODE_FILES)
         problem = freeze_problem(code, args.seeds)
         if problem:
             raise InputError(problem)
@@ -199,7 +211,14 @@ def main(argv=None) -> int:
         if unknown:
             raise InputError(f"정답표에 없는 case_id {unknown}")
         inputs = [{"path": _show(p), "sha256_lf": _sha256_lf(p)} for p in (KEY_PATH, CASES_PATH, MANIFEST_PATH)]
-        rows, table, ctx = run(args.seeds, key, cases, manifest, inputs)
+        if args.bench == "p0c":
+            eval_key = _json(KEY_P0C)
+            eval_cases = [{"case_id": cid, "overrides": []} for cid in sorted(eval_key["cases"])]
+            inputs.append({"path": _show(KEY_P0C), "sha256_lf": _sha256_lf(KEY_P0C)})
+            rows, table, ctx = run(args.seeds, eval_key, eval_cases, manifest, inputs, "p0c", dev=(key, cases))
+            cases = eval_cases
+        else:
+            rows, table, ctx = run(args.seeds, key, cases, manifest, inputs)
         params_check = None
         if args.run_params:
             if not args.run_params.is_dir():
@@ -208,7 +227,8 @@ def main(argv=None) -> int:
     except (InputError, ValueError) as e:
         print(f"baselines 입력 오류: {e}", file=sys.stderr)
         return 2
-    command = ["python", "evals/baselines.py", "--seeds", *map(str, args.seeds)]
+    command = ["python", "evals/baselines.py", "--seeds", *map(str, args.seeds)] + (
+        ["--bench", args.bench] if args.bench != "v1" else [])
     command += ["--tag", args.tag] if args.tag is not None else ["--out", _show(out_dir)]
     if args.run_params:
         command += ["--run-params", "<external>"]
@@ -219,7 +239,7 @@ def main(argv=None) -> int:
             unique_inputs.append(i)
     report = {
         "kind": "rule_baselines", "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "command": " ".join(command), "seeds": args.seeds, "dev_seeds": list(R.DEV_SEEDS),
+        "command": " ".join(command), "bench": args.bench, "seeds": args.seeds, "dev_seeds": list(R.DEV_SEEDS),
         "template_train_seeds": {f"s{s}": v for s, v in ctx["train_seeds"].items()},
         "prior_order": list(R.PRIOR_ORDER), "thresholds": R.THRESHOLDS, "table": table,
         "run_params_check": params_check, "inputs": unique_inputs, "code": code,

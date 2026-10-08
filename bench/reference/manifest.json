@@ -44,7 +44,11 @@
    "private_copy_sha256_crlf": "e29fe9634f78df45a22c4a3e598fe9dac1c8c1a7504d40380214234c5048e9b9",
    "private_copy_equal": true
   },
-  "baseline_params_found": {"7": true, "42": true, "123": true},
+  "baseline_params_found": {
+   "7": true,
+   "42": true,
+   "123": true
+  },
   "previous_workspaces_used_same_params": true,
   "notes": [
    "Versions were read from the host on 2026-10-08, not recorded at training time (2026-09-26 to 2026-09-27). They describe the current host, not proof of the training environment.",
@@ -53,5 +57,34 @@
    "previous_workspaces_used_same_params: workspace/ and workspace_blind/ reference params for seeds 7, 42 and 123 had the same SHA256 as these files.",
    "The Windows working copy holds tracked text files with CRLF while .gitattributes checks them out with LF, so the answer key has two SHA256 values for the same content. The private copy equals the public file byte for byte (CRLF) and after CRLF to LF."
   ]
+ },
+ "p0c_seeds": {
+  "2026": {
+   "source_run_dir_name": "2026-10-09_02-08-58_baseline_p0c_s2026",
+   "telemetry": "bench/runs_p0c/baseline_p0c_s2026.telemetry.json",
+   "train": "4096 env x 300 iterations, TRIAGE_FAULT=NONE via bench/train_with_fault.py",
+   "sha256": {
+    "env.yaml": "d153ee695f877bf4d99e0ef81358ff7886c9e9a25f117eaf7187f490150acc36",
+    "agent.yaml": "82377e2081ed4a768dcc77a1627e6344089607a39c9f1d7a4a09a2c8e87127c8"
+   }
+  },
+  "2027": {
+   "source_run_dir_name": "2026-10-09_02-22-08_baseline_p0c_s2027",
+   "telemetry": "bench/runs_p0c/baseline_p0c_s2027.telemetry.json",
+   "train": "4096 env x 300 iterations, TRIAGE_FAULT=NONE via bench/train_with_fault.py",
+   "sha256": {
+    "env.yaml": "614711ac8d5c7b72359efbb7e6ef502f4c14d0204f9c320f1d119982e6385a8a",
+    "agent.yaml": "e821536f238909e57de9e33fef48246537f99dc4fdaf8128281b87f21c301172"
+   }
+  },
+  "2028": {
+   "source_run_dir_name": "2026-10-09_02-35-32_baseline_p0c_s2028",
+   "telemetry": "bench/runs_p0c/baseline_p0c_s2028.telemetry.json",
+   "train": "4096 env x 300 iterations, TRIAGE_FAULT=NONE via bench/train_with_fault.py",
+   "sha256": {
+    "env.yaml": "2ec1e42b47231ec33d5a91135b63a20912a75de6c1067faf5f3ecff018599638",
+    "agent.yaml": "4f8ed66fede1f583705762f2e844b77a794de168af991b28912bcf8d7ee94c3d"
+   }
+  }
  }
 }

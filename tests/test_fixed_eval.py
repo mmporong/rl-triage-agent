@@ -70,3 +70,13 @@ def test_summary_rejects_mixed_protocols(tmp_path):
     _write(tmp_path / "fe", [_report("baseline_s7"), other])
     proc = _offline("evals/fixed_eval_summary.py", tmp_path / "fe")
     assert proc.returncode == 2 and "프로토콜" in proc.stderr
+
+
+def test_summary_accepts_p0c_reference_names(tmp_path):
+    folder = tmp_path / "p0c"
+    _write(folder, [_report("baseline_p0c_s2026", lin=0.15, yaw=0.3), _report("baseline_p0c_s2027", lin=0.16, yaw=0.3),
+                    _report("h01_s2026", lin=1.2, yaw=0.7)])
+    proc = _offline("evals/fixed_eval_summary.py", folder, "--reference-prefix", "baseline_p0c")
+    assert proc.returncode == 0, proc.stderr
+    by = {r["run"]: r for r in json.loads((folder / "summary.json").read_text(encoding="utf-8"))["runs"]}
+    assert by["h01_s2026"]["reference"] == "baseline_p0c_s2026" and by["h01_s2026"]["fixed_label"] == "unhealthy"

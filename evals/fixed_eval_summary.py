@@ -28,7 +28,6 @@ from rl_triage import recovery as RC  # noqa: E402
 
 CODE_FILES = ("evals/fixed_eval_summary.py", "evals/fixed_eval.py", "src/rl_triage/recovery.py",
               "bench/protocols/fixed_eval_v1.json")
-REFERENCE = re.compile(r"baseline_s(\d+)")
 REPEAT = re.compile(r"baseline_repeat\d+_s(\d+)")
 
 
@@ -42,7 +41,7 @@ def behavior_of(report: dict) -> dict:
             "fall_frac": m["fall_rate"], "err_xy": m["lin_vel_rmse_mps"], "err_yaw": m["yaw_rate_rmse_radps"]}
 
 
-def summarize(folder: Path, relabel: dict | None) -> dict:
+def summarize(folder: Path, relabel: dict | None, reference_prefix: str = "baseline") -> dict:
     files = sorted((folder / "runs").glob("*.json"))
     reports = {f.stem: json.loads(f.read_text(encoding="utf-8")) for f in files if "__" not in f.stem}
     if not reports:
@@ -51,7 +50,8 @@ def summarize(folder: Path, relabel: dict | None) -> dict:
     if len(protocols) != 1:
         raise InputError(f"서로 다른 프로토콜 결과가 섞여 있다: {sorted(protocols)}")
     beh = {n: behavior_of(r) for n, r in reports.items()}
-    refs = {int(m[1]): n for n in beh if (m := REFERENCE.fullmatch(n))}
+    reference = re.compile(rf"{re.escape(reference_prefix)}_s(\d+)")
+    refs = {int(m[1]): n for n in beh if (m := reference.fullmatch(n))}
     if len(refs) < 2:
         raise InputError("서로 다른 seed의 기준 실행이 둘 이상 필요하다")
     base = [refs[s] for s in sorted(refs)]
@@ -88,19 +88,23 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="고정 평가 결과에 회복 판정을 적용한다(모델·네트워크·GPU 없음)")
     ap.add_argument("folder", type=Path)
     ap.add_argument("--relabel", type=Path, help="P0-B1 relabel.json(비교용, 선택)")
+    ap.add_argument("--reference-prefix", default="baseline",
+                    help="기준 실행 이름 접두어(<접두어>_s<seed>). P0-C는 baseline_p0c")
     args = ap.parse_args(argv)
     try:
         out = args.folder / "summary.json"
         if out.exists():
             raise InputError(f"{_show(out)}가 이미 있다. 결과는 덮어쓰지 않는다")
         relabel = json.loads(args.relabel.read_text(encoding="utf-8")) if args.relabel else None
-        result = summarize(args.folder, relabel)
+        result = summarize(args.folder, relabel, args.reference_prefix)
     except (InputError, ValueError, FileNotFoundError) as e:
         print(f"fixed eval summary 입력 오류: {e}", file=sys.stderr)
         return 2
     command = ["python", "evals/fixed_eval_summary.py", _show(args.folder)]
     if args.relabel:
         command += ["--relabel", _show(args.relabel)]
+    if args.reference_prefix != "baseline":
+        command += ["--reference-prefix", args.reference_prefix]
     report = {"kind": "fixed_eval_summary", "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
               "command": " ".join(command), "contract": {"doc": "docs/P0-B2-FIXED-EVAL.md", "margin": RC.MARGIN},
               **result, "code": code_version([_show(args.folder)], CODE_FILES),
