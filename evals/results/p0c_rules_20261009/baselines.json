@@ -1,0 +1,406 @@
+{
+ "kind": "rule_baselines",
+ "created_at": "2026-10-08T20:23:02+00:00",
+ "command": "python evals/baselines.py --seeds 2026 2027 2028 --bench p0c --tag p0c_rules_20261009 --run-params <external>",
+ "bench": "p0c",
+ "seeds": [
+  2026,
+  2027,
+  2028
+ ],
+ "dev_seeds": [
+  7,
+  42
+ ],
+ "template_train_seeds": {
+  "s2026": [
+   7,
+   42
+  ],
+  "s2027": [
+   7,
+   42
+  ],
+  "s2028": [
+   7,
+   42
+  ]
+ },
+ "prior_order": [
+  "reward",
+  "optimizer",
+  "physics",
+  "actuator",
+  "exploration",
+  "termination"
+ ],
+ "thresholds": {
+  "collapsed_len_ratio": 0.5,
+  "pinned_len": 0.1,
+  "timeout_majority": 0.5,
+  "noise_collapse": 0.16,
+  "value_loss_collapse": 0.12,
+  "tracking_rate_up": 2.0,
+  "single_term_dominance": 20.0,
+  "positive_term_up": 2.3,
+  "immediate_collapse": 0.022,
+  "torque_rate_up": 1.7,
+  "value_loss_up": 2.2,
+  "value_loss_up_max_rate": 79.0
+ },
+ "table": {
+  "rule_prior": {
+   "info": "none",
+   "s2026": {
+    "cells": 6,
+    "top1": 1,
+    "top2": 2
+   },
+   "s2027": {
+    "cells": 6,
+    "top1": 1,
+    "top2": 2
+   },
+   "s2028": {
+    "cells": 6,
+    "top1": 1,
+    "top2": 2
+   },
+   "total": {
+    "cells": 18,
+    "top1": 3,
+    "top2": 6
+   }
+  },
+  "rule_features": {
+   "info": "telemetry",
+   "s2026": {
+    "cells": 6,
+    "top1": 2,
+    "top2": 3
+   },
+   "s2027": {
+    "cells": 6,
+    "top1": 2,
+    "top2": 3
+   },
+   "s2028": {
+    "cells": 6,
+    "top1": 1,
+    "top2": 3
+   },
+   "total": {
+    "cells": 18,
+    "top1": 5,
+    "top2": 9
+   }
+  },
+  "rule_template": {
+   "info": "telemetry+dev_labels",
+   "s2026": {
+    "cells": 6,
+    "top1": 2,
+    "top2": 2
+   },
+   "s2027": {
+    "cells": 6,
+    "top1": 2,
+    "top2": 2
+   },
+   "s2028": {
+    "cells": 6,
+    "top1": 2,
+    "top2": 2
+   },
+   "total": {
+    "cells": 18,
+    "top1": 6,
+    "top2": 6
+   }
+  },
+  "rule_b0": {
+   "info": "config_diff",
+   "s2026": {
+    "cells": 6,
+    "top1": 1,
+    "top2": 2
+   },
+   "s2027": {
+    "cells": 6,
+    "top1": 1,
+    "top2": 2
+   },
+   "s2028": {
+    "cells": 6,
+    "top1": 1,
+    "top2": 2
+   },
+   "total": {
+    "cells": 18,
+    "top1": 3,
+    "top2": 6
+   }
+  }
+ },
+ "run_params_check": {
+  "root": "<external>",
+  "identity_keys_ignored": [
+   "agent.run_name",
+   "agent.seed",
+   "env.seed"
+  ],
+  "checked": 18,
+  "equal": 18,
+  "missing": [],
+  "mismatch": []
+ },
+ "inputs": [
+  {
+   "path": "bench/answer_key.json",
+   "sha256_lf": "92671c5ead5f4bd2413c12281d236779e7edd4dbf6d967100b933fa194a5c268"
+  },
+  {
+   "path": "bench/cases.json",
+   "sha256_lf": "57efbef2d589246766e91aeae7556d81faf68a227d315bf2ae45461e90d0f86f"
+  },
+  {
+   "path": "bench/reference/manifest.json",
+   "sha256_lf": "50a1568afe721094e0626a0eac9b43eaf76d2c2c1ee6e3961a13371a1da85d2a"
+  },
+  {
+   "path": "bench/private/answer_key_p0c.json",
+   "sha256_lf": "10a73620fe2a06203239832cd93308bacbb79cd7935ba53205f8c5d1387b831c"
+  },
+  {
+   "path": "bench/reference/params/seed7/env.yaml",
+   "sha256_lf": "bc3c7d0cb590d92a4c603846bdaadae2932854bb9069a39e22f04d9ed2ced4ad"
+  },
+  {
+   "path": "bench/reference/params/seed7/agent.yaml",
+   "sha256_lf": "e53bb547e83d1078360479c6fc54f1d6009cda7bdff3a2bb43b975b9e0b9e687"
+  },
+  {
+   "path": "bench/runs/baseline_s7.telemetry.json",
+   "sha256_lf": "7092e1984209f0b695a29168cf51eb4d48bfe3a158d07326b7de0fc720851b5a"
+  },
+  {
+   "path": "bench/runs/c01_s7.telemetry.json",
+   "sha256_lf": "39ed0f790bef3967f153351056d1f1a70f14cf6a67e55b7b556885e2e1524a64"
+  },
+  {
+   "path": "bench/runs/c02_s7.telemetry.json",
+   "sha256_lf": "4cfc2542ecc3a14599328ce4e5cf460aad7640184bb660231eeb585e7fa44734"
+  },
+  {
+   "path": "bench/runs/c03_s7.telemetry.json",
+   "sha256_lf": "21f9f1aff2a45245afe7e46161bebca9f69cb1d52cd8374a523da77718b738fd"
+  },
+  {
+   "path": "bench/runs/c04_s7.telemetry.json",
+   "sha256_lf": "53f862bc71e5e8d21e36220319217780da50eaa87643dff0547ce14fa8022212"
+  },
+  {
+   "path": "bench/runs/c05_s7.telemetry.json",
+   "sha256_lf": "9d0848365b13abf10cc22297d0ea9ac81e4bf21d2289f482c43400d640bad32f"
+  },
+  {
+   "path": "bench/runs/c06_s7.telemetry.json",
+   "sha256_lf": "0c7ae504f2747d9f2e9e375084e662f9363b1a5b42293c459eae04df6d2b3e9b"
+  },
+  {
+   "path": "bench/runs/c07_s7.telemetry.json",
+   "sha256_lf": "c48bbcfe76a0e384e13c273313140e1b194b5f0dc386183cda0c5aab7f3ff816"
+  },
+  {
+   "path": "bench/runs/c08_s7.telemetry.json",
+   "sha256_lf": "e0b54b0c3c642d34fb23f40c836e1a309701c8cc4b48a5b566fba5c3b5689322"
+  },
+  {
+   "path": "bench/runs/c09_s7.telemetry.json",
+   "sha256_lf": "4cfa5dfccca2d9a4923a3562b211299300fdfbb0da65b62fec076c86545a72ce"
+  },
+  {
+   "path": "bench/runs/c10_s7.telemetry.json",
+   "sha256_lf": "d0bdbd9ba79145341933a3961de67d533fb0f2646884ae5f89f98cfe963724be"
+  },
+  {
+   "path": "bench/reference/params/seed42/env.yaml",
+   "sha256_lf": "d3df25050872d6d37d1cb1f5c1eda36d1cf11bb7c32c61807af98bc338c5392d"
+  },
+  {
+   "path": "bench/reference/params/seed42/agent.yaml",
+   "sha256_lf": "cc10b1b5ad4f5d7e1563f5f6672a3f6bf6ee269e86ec8df7645934f248974807"
+  },
+  {
+   "path": "bench/runs/baseline_s42.telemetry.json",
+   "sha256_lf": "18b2043f4f645aefc75213670bdda76c52f2fd48357ce848a11db8916c76bde1"
+  },
+  {
+   "path": "bench/runs/c01_s42.telemetry.json",
+   "sha256_lf": "737ba46566d3ef0f956bc9e48a1bc3d852367261050119adcff0dd49e914b943"
+  },
+  {
+   "path": "bench/runs/c02_s42.telemetry.json",
+   "sha256_lf": "6390446edbd799fb2871ef20062a0aee9a8c19a0b3b8f489c3e111c08c5cf2c0"
+  },
+  {
+   "path": "bench/runs/c03_s42.telemetry.json",
+   "sha256_lf": "671dad97784bee0c0b1463d87b137737da2989c7ee7876fb2b1366e6fbad7de8"
+  },
+  {
+   "path": "bench/runs/c04_s42.telemetry.json",
+   "sha256_lf": "7a9613720a6a4b9239cb09ab30a92367ee45de4f126f0c65c322e0853ed1d143"
+  },
+  {
+   "path": "bench/runs/c05_s42.telemetry.json",
+   "sha256_lf": "7136e84886bde4c831f8db9e17586ad345302acc0e5396e7a516d6d92ddf2219"
+  },
+  {
+   "path": "bench/runs/c06_s42.telemetry.json",
+   "sha256_lf": "4d9aa6f7c42f9f05153ba9825d0e834b1d26fb31504ae9da0557880f9d3c59f8"
+  },
+  {
+   "path": "bench/runs/c07_s42.telemetry.json",
+   "sha256_lf": "7b9b19020b04682b404c69228a997a91d9d16c7d7496a8ccae3309e6e4b51750"
+  },
+  {
+   "path": "bench/runs/c08_s42.telemetry.json",
+   "sha256_lf": "1f22d1c564b7c4699dbb7536025b07b3e1db37df141490bf03b69107c1647c13"
+  },
+  {
+   "path": "bench/runs/c09_s42.telemetry.json",
+   "sha256_lf": "6831a3acce4684c1c7c2e88050bfd38654d642d2b0eed509eff2a4ea907f0c7d"
+  },
+  {
+   "path": "bench/runs/c10_s42.telemetry.json",
+   "sha256_lf": "d64bdecca1289e3291f51160be877b4426a6edfa6dc86997aee58706b541d165"
+  },
+  {
+   "path": "bench/reference/params/p0c_seed2026/env.yaml",
+   "sha256_lf": "ad9bf6e19c72bb371cb5ecac36740b5f7681013033888fa4bea4550e5153a86c"
+  },
+  {
+   "path": "bench/reference/params/p0c_seed2026/agent.yaml",
+   "sha256_lf": "41b0b16e34463b8b1d5d553254322e420ef7ae8a4a1d7196fab63592d8d6048e"
+  },
+  {
+   "path": "bench/runs_p0c/baseline_p0c_s2026.telemetry.json",
+   "sha256_lf": "bdcc275f72ac4a8e14848e31313f14878d9063cbb301ecdf1618cf337c684681"
+  },
+  {
+   "path": "bench/runs_p0c/h01_s2026.telemetry.json",
+   "sha256_lf": "96ff134a613da2e532746a25817b74c4e3b2b518cc58a204db87e59a5bc9d4d4"
+  },
+  {
+   "path": "bench/runs_p0c/h02_s2026.telemetry.json",
+   "sha256_lf": "ca66192f406142ee3017544b0a0419a6cbc6efa2abc799099485cad42ca22d16"
+  },
+  {
+   "path": "bench/runs_p0c/h03_s2026.telemetry.json",
+   "sha256_lf": "d7597034bdbac73e4d085054a2af197423dbbe0ff1f3358bcff4e21898051a5b"
+  },
+  {
+   "path": "bench/runs_p0c/h04_s2026.telemetry.json",
+   "sha256_lf": "588559872df2aadb07195482cd57ff059f37005e0168da3a150680004be7f471"
+  },
+  {
+   "path": "bench/runs_p0c/h05_s2026.telemetry.json",
+   "sha256_lf": "60ad9b42d4017d89f87a3aad96f2df370e6f6431c3707882ed2ecba5f0bfc870"
+  },
+  {
+   "path": "bench/runs_p0c/h06_s2026.telemetry.json",
+   "sha256_lf": "ca62e80c6830504a752ccc73474136cb4cfb67f3b9dae7ea64753d8e265cbfd2"
+  },
+  {
+   "path": "bench/reference/params/p0c_seed2027/env.yaml",
+   "sha256_lf": "66d90d188ae1193e897bb6f64d127d0c6955fa2352dfdb3b508b69e201ed5fc9"
+  },
+  {
+   "path": "bench/reference/params/p0c_seed2027/agent.yaml",
+   "sha256_lf": "c17f9f419cb26504998eaaac291c72a724b178ba9f8de24b2b067c6fb3a754da"
+  },
+  {
+   "path": "bench/runs_p0c/baseline_p0c_s2027.telemetry.json",
+   "sha256_lf": "a2c4d9b9971e2d3b335a542dcb14637f084aedef5ce10e3adfc6e91f4cc8217f"
+  },
+  {
+   "path": "bench/runs_p0c/h01_s2027.telemetry.json",
+   "sha256_lf": "f4b3a44b674689112380a8f2774c9760a51d2b011acff4d840ebb0e86b8089d9"
+  },
+  {
+   "path": "bench/runs_p0c/h02_s2027.telemetry.json",
+   "sha256_lf": "4ad5317ac27a668e0799b9c894a25f2f11565d47edee734cf3b6e6c9b10ba67f"
+  },
+  {
+   "path": "bench/runs_p0c/h03_s2027.telemetry.json",
+   "sha256_lf": "381b26ba5c70686ecccbd578da0800460f486466b847537c7cc0b5a7fcd6e912"
+  },
+  {
+   "path": "bench/runs_p0c/h04_s2027.telemetry.json",
+   "sha256_lf": "e4bbf1793b2d2928ee6dce60a3b916dff784b7cc2a1601660a2ddd49d44e7d4c"
+  },
+  {
+   "path": "bench/runs_p0c/h05_s2027.telemetry.json",
+   "sha256_lf": "59aa51d13c0cd831a74387df5c97915ed21f477ae05bf11285c3aafc9ca68a1d"
+  },
+  {
+   "path": "bench/runs_p0c/h06_s2027.telemetry.json",
+   "sha256_lf": "a8f7f13e3d69cb1345138bcbcb386bf377cf5b3cbf4798324da3b25b7539f1e8"
+  },
+  {
+   "path": "bench/reference/params/p0c_seed2028/env.yaml",
+   "sha256_lf": "2d3ba7cfcbcba155e526612a0644e9b516f2810fe42730db40dd20a620e98d23"
+  },
+  {
+   "path": "bench/reference/params/p0c_seed2028/agent.yaml",
+   "sha256_lf": "71a5151cd61eb2d986a6f0da06755f30f4657301efe00aadcd3c1ac6ef546e56"
+  },
+  {
+   "path": "bench/runs_p0c/baseline_p0c_s2028.telemetry.json",
+   "sha256_lf": "2c14352906f2decb6341c84153799b0654026f34e612719a5bd05c3c3c5738ad"
+  },
+  {
+   "path": "bench/runs_p0c/h01_s2028.telemetry.json",
+   "sha256_lf": "5eac88d6453d071c902d1189f60cfeb27cef4732bfdbf2d3a9e869e70a814e2b"
+  },
+  {
+   "path": "bench/runs_p0c/h02_s2028.telemetry.json",
+   "sha256_lf": "e50c33b6267797a055e8e1d8db9cdf479e7c98c42702b51ff6fec80972a1b02f"
+  },
+  {
+   "path": "bench/runs_p0c/h03_s2028.telemetry.json",
+   "sha256_lf": "a8c5c9bf8621515e953b991b0dbd3fbc2733c8eb9a72f00ef90dbb176dfd3e48"
+  },
+  {
+   "path": "bench/runs_p0c/h04_s2028.telemetry.json",
+   "sha256_lf": "1dd4c11fcea2eac57c52a9543bbdb87ade64024da7770852b83e04296aed2c67"
+  },
+  {
+   "path": "bench/runs_p0c/h05_s2028.telemetry.json",
+   "sha256_lf": "751e84fd01eb88b5b13a60bb74bb965d4045f117dc9abb2fa2a11474c268f541"
+  },
+  {
+   "path": "bench/runs_p0c/h06_s2028.telemetry.json",
+   "sha256_lf": "051921a4628ac5a6c953db68419597f743810c5ee932e3e031c0bd28e60b3895"
+  }
+ ],
+ "code": {
+  "git_head": "8dd3bcb091594fa509220b85d779846b64b4a5ac",
+  "git_dirty": false,
+  "sha256_lf": {
+   "evals/baselines.py": "00b2b5d1f3500ca406da11106a2af9ee3dd40262165ac171684021b6f08b6475",
+   "evals/replay.py": "b2de9072293b87089c63e1ea246bb9a6bbb81881ebf44e74b7dc0757961024e7",
+   "src/rl_triage/rules.py": "11298d86f8df8ae2f9553dd77bffd687034c065f246cf3f36689c70c26aa2cfd",
+   "src/rl_triage/scoring.py": "d81405966f4d4d11d5b21e6c60f059322a8fcc3fd6a3f521d07bc46410752352",
+   "src/rl_triage/triage_tools.py": "2260d9f42da26619b5df709e8c3270610554c862a2257143eb86f5f0f743f3f3",
+   "src/rl_triage/leakcheck.py": "fa7c15525587e907bcb4ba686fdf79eb28ceb519ec6acca1aa48c1697ee2d831"
+  }
+ },
+ "environment": {
+  "python": "3.12.13",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "model_calls": 0,
+  "network": "not used",
+  "gpu": "not used"
+ }
+}

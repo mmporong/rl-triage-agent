@@ -1,0 +1,68 @@
+{
+ "name": "h03_s2028",
+ "checkpoint": {
+  "file": "model_299.pt",
+  "sha256": "2eeba4770add552ac4828eb1b8c9266253ff7e289f11f770f75c432214ac2b60"
+ },
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "seed": 2028,
+ "num_envs": 256,
+ "probes": {
+  "P_episode": {
+   "measurement": {
+    "timeout_count": 6144,
+    "median_timeout_step": 50.0,
+    "timeout_ratio": 0.05
+   },
+   "exit": 0,
+   "elapsed_s": 35.6
+  },
+  "P_noise": {
+   "measurement": {
+    "noise_ratio": 1.0015236139297485,
+    "logged_std_mean": 0.4980851411819458
+   },
+   "exit": 0,
+   "elapsed_s": 5.9
+  },
+  "P_physics": {
+   "measurement": {
+    "mismatch_count": 0,
+    "mismatches": [],
+    "static_friction_mean": 0.8000000715255737,
+    "dynamic_friction_mean": 0.5999999642372131,
+    "mass_delta_min": -0.9989762306213379,
+    "mass_delta_max": 2.9998092651367188,
+    "physics_dt": 0.005
+   },
+   "exit": 0,
+   "elapsed_s": 0.0
+  },
+  "P_reward": {
+   "measurement": {
+    "track_lin_vel_xy_exp_rel_error": 1.6878946071940958e-08,
+    "track_ang_vel_z_exp_rel_error": 1.6536107074749395e-08
+   },
+   "exit": 0,
+   "elapsed_s": 6.0
+  },
+  "P_torque": {
+   "measurement": {
+    "low_speed_saturation": 0.006033774350487792,
+    "velocity_limit": 30.0,
+    "effort_limit": 23.5
+   },
+   "exit": 0,
+   "elapsed_s": 14.7
+  },
+  "P_value": {
+   "measurement": {
+    "critic_change": 1.5720713752059123,
+    "actor_change": 1.9410574964522986,
+    "from": "model_0.pt"
+   },
+   "exit": 0,
+   "elapsed_s": 0.0
+  }
+ }
+}

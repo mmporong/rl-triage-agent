@@ -1,0 +1,71 @@
+{
+ "name": "h01_s2028",
+ "checkpoint": {
+  "file": "model_299.pt",
+  "sha256": "301b71b85526f762c46c91e5f73325b0ad12cf0014dc0f56cce16e6255ca57e8"
+ },
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "seed": 2028,
+ "num_envs": 256,
+ "probes": {
+  "P_episode": {
+   "measurement": {
+    "timeout_count": 256,
+    "median_timeout_step": 1000.0,
+    "timeout_ratio": 1.0
+   },
+   "exit": 0,
+   "elapsed_s": 37.7
+  },
+  "P_noise": {
+   "measurement": {
+    "noise_ratio": 1.000543236732483,
+    "logged_std_mean": 0.5784759521484375
+   },
+   "exit": 0,
+   "elapsed_s": 6.2
+  },
+  "P_physics": {
+   "measurement": {
+    "mismatch_count": 2,
+    "mismatches": [
+     "static_friction 0.200 not in [0.8, 0.8]",
+     "dynamic_friction 0.150 not in [0.6, 0.6]"
+    ],
+    "static_friction_mean": 0.20000001788139343,
+    "dynamic_friction_mean": 0.14999999105930328,
+    "mass_delta_min": -0.9989762306213379,
+    "mass_delta_max": 2.9998092651367188,
+    "physics_dt": 0.005
+   },
+   "exit": 0,
+   "elapsed_s": 0.0
+  },
+  "P_reward": {
+   "measurement": {
+    "track_lin_vel_xy_exp_rel_error": 1.7312564368765492e-08,
+    "track_ang_vel_z_exp_rel_error": 1.6856262434750135e-08
+   },
+   "exit": 0,
+   "elapsed_s": 6.4
+  },
+  "P_torque": {
+   "measurement": {
+    "low_speed_saturation": 0.0014721379553768621,
+    "velocity_limit": 30.0,
+    "effort_limit": 23.5
+   },
+   "exit": 0,
+   "elapsed_s": 15.6
+  },
+  "P_value": {
+   "measurement": {
+    "critic_change": 1.4458149536525253,
+    "actor_change": 1.9678820460540216,
+    "from": "model_0.pt"
+   },
+   "exit": 0,
+   "elapsed_s": 0.0
+  }
+ }
+}

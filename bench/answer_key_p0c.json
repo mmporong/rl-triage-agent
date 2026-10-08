@@ -1,0 +1,41 @@
+{
+ "bench": "p0c",
+ "secret_seed": 942213598,
+ "holdout_seeds": [
+  2026,
+  2027,
+  2028
+ ],
+ "cases": {
+  "h01": {
+   "fault": "F5",
+   "category": "physics",
+   "note": "환경 생성 뒤 로봇 접촉 재질의 정·동마찰 0.25배"
+  },
+  "h02": {
+   "fault": "F1",
+   "category": "reward",
+   "note": "속도 추종 보상이 몸체 좌표 대신 월드 좌표 선속도를 씀"
+  },
+  "h03": {
+   "fault": "F6",
+   "category": "termination",
+   "note": "time_out이 최대 에피소드 길이의 5%에서 발생(episode_length_s는 그대로)"
+  },
+  "h04": {
+   "fault": "F4",
+   "category": "optimizer",
+   "note": "critic 기울기를 0으로 만들어 가치 함수가 학습되지 않음(value_loss_coef는 그대로)"
+  },
+  "h05": {
+   "fault": "F3",
+   "category": "exploration",
+   "note": "학습 중 행동 샘플링 노이즈가 기록되는 std와 무관하게 0.05"
+  },
+  "h06": {
+   "fault": "F2",
+   "category": "actuator",
+   "note": "DC 모터 토크-속도 곡선의 속도 항 5배(낮은 관절 속도에서 토크 포화)"
+  }
+ }
+}
