@@ -7,8 +7,8 @@ import pytest
 from rl_triage import probe_loop as L
 from test_offline_replay import ROOT
 
-REF = {"P_value": {"value_rel_error": 0.2}, "P_torque": {"low_speed_saturation": 0.002},
-       "P_slip": {"friction_use_p95": 0.6}}
+REF = {"P_value": {"value_return_corr": 0.8}, "P_torque": {"low_speed_saturation": 0.002},
+       "P_slip": {"loaded_foot_speed": 0.02}}
 
 
 @pytest.fixture
@@ -54,7 +54,7 @@ def test_rejected_probe_is_replaced_by_an_alternative_without_spending_budget(lo
     assert state["observed"] == {} and state["skipped"] == ["P_reward"]
     rid = state["pending"]
     led.approve(rid, "human")
-    out = loop.run("h05_s2026", rid, _fake({"P_slip": {"friction_use_p95": 0.15}}, []))
+    out = loop.run("h05_s2026", rid, _fake({"P_slip": {"loaded_foot_speed": 0.3}}, []))
     assert "기각=['reward', 'optimizer']" in out and "P_slip" in out  # physics만 남고, 이미 본 확정 probe라 종료
     assert "종료: confirmed" in out
 

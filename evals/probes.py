@@ -69,7 +69,12 @@ def measure(probe: str, env, runner) -> dict:
         R, V = torch.stack(rets[:cut]).flatten(), torch.stack(vals[:cut]).flatten()
         # dev(seed 7) 결과로 바꾼 판정 지표: 정상 실행은 수익 분산이 작아 설명 분산이 음수로 흔들렸다(-0.13).
         # 상대 가치 오차 mean|R-V|/mean|R|를 판정에 쓰고 설명 분산은 참고로 남긴다.
-        return {"value_rel_error": float((R - V).abs().mean() / R.abs().mean().clamp_min(1e-8)),
+        # dev 2차: 상대 가치 오차는 결함 6종 모두에서 커져(0.62~3.46) optimizer만 가리키지 못했다.
+        # critic 출력과 실제 수익의 상관을 판정에 쓴다(학습되지 않은 critic은 0 근처).
+        rc, vc = R - R.mean(), V - V.mean()
+        corr = float((rc * vc).sum() / (rc.norm() * vc.norm()).clamp_min(1e-8))
+        return {"value_return_corr": corr,
+                "value_rel_error": float((R - V).abs().mean() / R.abs().mean().clamp_min(1e-8)),
                 "explained_variance": float(1.0 - torch.var(R - V) / torch.var(R).clamp_min(1e-8)),
                 "return_std": float(R.std())}
     if probe == "P_reward":
@@ -122,6 +127,7 @@ def measure(probe: str, env, runner) -> dict:
             raise ValueError(f"접촉 센서와 로봇의 발 순서가 다르다: {sensor_names} != {robot_names}")
         acc = [0.0, 0.0]
         ratios = []
+        loaded_speed = [0.0, 0.0]
 
         def on(i, r, d, x):
             f = contact.data.net_forces_w[:, sensor_feet, :]
@@ -132,11 +138,16 @@ def measure(probe: str, env, runner) -> dict:
             # 하중을 실은 접지(수직력 10N 이상, Go2 무게 약 147N)에서 접선력/수직력. 쿨롱 한계라 마찰이 작으면 작아진다.
             loaded = f[..., 2] > 10.0
             ratios.append((torch.linalg.norm(f[..., :2], dim=-1) / f[..., 2].clamp_min(1e-6))[loaded])
+            loaded_speed[0] += float(speed[loaded].sum())
+            loaded_speed[1] += float(loaded.sum())
 
         _rollout(env, policy, args["rollout_steps"], on)
         rr = torch.cat(ratios)
         # dev(seed 7) 결과로 바꾼 판정 지표: 접지 발 속도는 1N 기준 접지가 발-스텝의 91%를 잡아 마찰 0.25배를 못 가렸다.
-        return {"friction_use_p95": float(torch.quantile(rr, 0.95)) if rr.numel() else None,
+        # dev 2차: 접촉 센서 net_forces_w에 접선력이 거의 없어(모든 실행 1e-7) 마찰 사용률을 잴 수 없었다.
+        # 하중 접지(수직력 10N 이상) 중 발의 수평 속도를 판정에 쓴다(정상 지면에서는 0 근처, 미끄러우면 커진다).
+        return {"loaded_foot_speed": loaded_speed[0] / loaded_speed[1] if loaded_speed[1] else None,
+                "friction_use_p95": float(torch.quantile(rr, 0.95)) if rr.numel() else None,
                 "loaded_samples": int(rr.numel()), "stance_foot_speed": acc[0] / max(acc[1], 1.0),
                 "stance_samples": acc[1]}
     if probe == "P_episode":

@@ -1,0 +1,65 @@
+{
+ "name": "p0ccal_NONE_s7",
+ "checkpoint": {
+  "file": "model_299.pt",
+  "sha256": "0c2676b0bc92cd975d0318a9905e82be11c7b9ba3799918aa5d3f47cf2da8b96"
+ },
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "seed": 7,
+ "num_envs": 256,
+ "probes": {
+  "P_episode": {
+   "measurement": {
+    "timeout_count": 256,
+    "median_timeout_step": 1000.0,
+    "timeout_ratio": 1.0
+   },
+   "exit": 0,
+   "elapsed_s": 70.7
+  },
+  "P_noise": {
+   "measurement": {
+    "noise_ratio": 1.0006142854690552,
+    "logged_std_mean": 0.3722397983074188
+   },
+   "exit": 0,
+   "elapsed_s": 11.8
+  },
+  "P_reward": {
+   "measurement": {
+    "track_lin_vel_xy_exp_rel_error": 1.7043521429727094e-08,
+    "track_ang_vel_z_exp_rel_error": 1.6372819868770703e-08
+   },
+   "exit": 0,
+   "elapsed_s": 12.1
+  },
+  "P_slip": {
+   "measurement": {
+    "friction_use_p95": 1.3435885648505064e-07,
+    "loaded_samples": 445384,
+    "stance_foot_speed": 0.7413083833037799,
+    "stance_samples": 467186.0
+   },
+   "exit": 0,
+   "elapsed_s": 30.5
+  },
+  "P_torque": {
+   "measurement": {
+    "low_speed_saturation": 0.0004365521540270505,
+    "velocity_limit": 30.0,
+    "effort_limit": 23.5
+   },
+   "exit": 0,
+   "elapsed_s": 30.0
+  },
+  "P_value": {
+   "measurement": {
+    "value_rel_error": 0.1057170182466507,
+    "explained_variance": -0.13207697868347168,
+    "return_std": 0.45555418729782104
+   },
+   "exit": 0,
+   "elapsed_s": 59.1
+  }
+ }
+}
