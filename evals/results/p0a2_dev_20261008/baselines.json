@@ -1,0 +1,266 @@
+{
+ "kind": "rule_baselines",
+ "created_at": "2026-10-08T13:04:57+00:00",
+ "command": "python evals/baselines.py --seeds 7 42 --tag p0a2_dev_20261008 --run-params <external>",
+ "seeds": [
+  7,
+  42
+ ],
+ "dev_seeds": [
+  7,
+  42
+ ],
+ "template_train_seeds": {
+  "s7": [
+   42
+  ],
+  "s42": [
+   7
+  ]
+ },
+ "prior_order": [
+  "reward",
+  "optimizer",
+  "physics",
+  "actuator",
+  "exploration",
+  "termination"
+ ],
+ "thresholds": {
+  "collapsed_len_ratio": 0.5,
+  "pinned_len": 0.1,
+  "timeout_majority": 0.5,
+  "noise_collapse": 0.16,
+  "value_loss_collapse": 0.12,
+  "tracking_rate_up": 2.0,
+  "single_term_dominance": 20.0,
+  "positive_term_up": 2.3,
+  "immediate_collapse": 0.022,
+  "torque_rate_up": 1.7,
+  "value_loss_up": 2.2,
+  "value_loss_up_max_rate": 79.0
+ },
+ "table": {
+  "rule_prior": {
+   "info": "none",
+   "s7": {
+    "cells": 10,
+    "top1": 3,
+    "top2": 5
+   },
+   "s42": {
+    "cells": 10,
+    "top1": 3,
+    "top2": 5
+   },
+   "total": {
+    "cells": 20,
+    "top1": 6,
+    "top2": 10
+   }
+  },
+  "rule_features": {
+   "info": "telemetry",
+   "s7": {
+    "cells": 10,
+    "top1": 10,
+    "top2": 10
+   },
+   "s42": {
+    "cells": 10,
+    "top1": 10,
+    "top2": 10
+   },
+   "total": {
+    "cells": 20,
+    "top1": 20,
+    "top2": 20
+   }
+  },
+  "rule_template": {
+   "info": "telemetry+dev_labels",
+   "s7": {
+    "cells": 10,
+    "top1": 10,
+    "top2": 10
+   },
+   "s42": {
+    "cells": 10,
+    "top1": 10,
+    "top2": 10
+   },
+   "total": {
+    "cells": 20,
+    "top1": 20,
+    "top2": 20
+   }
+  },
+  "rule_b0": {
+   "info": "config_diff",
+   "s7": {
+    "cells": 10,
+    "top1": 10,
+    "top2": 10
+   },
+   "s42": {
+    "cells": 10,
+    "top1": 10,
+    "top2": 10
+   },
+   "total": {
+    "cells": 20,
+    "top1": 20,
+    "top2": 20
+   }
+  }
+ },
+ "run_params_check": {
+  "root": "<external>",
+  "identity_keys_ignored": [
+   "agent.run_name",
+   "agent.seed",
+   "env.seed"
+  ],
+  "checked": 20,
+  "equal": 20,
+  "missing": [],
+  "mismatch": []
+ },
+ "inputs": [
+  {
+   "path": "bench/answer_key.json",
+   "sha256_lf": "92671c5ead5f4bd2413c12281d236779e7edd4dbf6d967100b933fa194a5c268"
+  },
+  {
+   "path": "bench/cases.json",
+   "sha256_lf": "57efbef2d589246766e91aeae7556d81faf68a227d315bf2ae45461e90d0f86f"
+  },
+  {
+   "path": "bench/reference/manifest.json",
+   "sha256_lf": "69953add9f7ee3c31af766618a05bc46aea1eae7b0a7cbca4dc9a18b4e955452"
+  },
+  {
+   "path": "bench/reference/params/seed7/env.yaml",
+   "sha256_lf": "bc3c7d0cb590d92a4c603846bdaadae2932854bb9069a39e22f04d9ed2ced4ad"
+  },
+  {
+   "path": "bench/reference/params/seed7/agent.yaml",
+   "sha256_lf": "e53bb547e83d1078360479c6fc54f1d6009cda7bdff3a2bb43b975b9e0b9e687"
+  },
+  {
+   "path": "bench/runs/baseline_s7.telemetry.json",
+   "sha256_lf": "7092e1984209f0b695a29168cf51eb4d48bfe3a158d07326b7de0fc720851b5a"
+  },
+  {
+   "path": "bench/runs/c01_s7.telemetry.json",
+   "sha256_lf": "39ed0f790bef3967f153351056d1f1a70f14cf6a67e55b7b556885e2e1524a64"
+  },
+  {
+   "path": "bench/runs/c02_s7.telemetry.json",
+   "sha256_lf": "4cfc2542ecc3a14599328ce4e5cf460aad7640184bb660231eeb585e7fa44734"
+  },
+  {
+   "path": "bench/runs/c03_s7.telemetry.json",
+   "sha256_lf": "21f9f1aff2a45245afe7e46161bebca9f69cb1d52cd8374a523da77718b738fd"
+  },
+  {
+   "path": "bench/runs/c04_s7.telemetry.json",
+   "sha256_lf": "53f862bc71e5e8d21e36220319217780da50eaa87643dff0547ce14fa8022212"
+  },
+  {
+   "path": "bench/runs/c05_s7.telemetry.json",
+   "sha256_lf": "9d0848365b13abf10cc22297d0ea9ac81e4bf21d2289f482c43400d640bad32f"
+  },
+  {
+   "path": "bench/runs/c06_s7.telemetry.json",
+   "sha256_lf": "0c7ae504f2747d9f2e9e375084e662f9363b1a5b42293c459eae04df6d2b3e9b"
+  },
+  {
+   "path": "bench/runs/c07_s7.telemetry.json",
+   "sha256_lf": "c48bbcfe76a0e384e13c273313140e1b194b5f0dc386183cda0c5aab7f3ff816"
+  },
+  {
+   "path": "bench/runs/c08_s7.telemetry.json",
+   "sha256_lf": "e0b54b0c3c642d34fb23f40c836e1a309701c8cc4b48a5b566fba5c3b5689322"
+  },
+  {
+   "path": "bench/runs/c09_s7.telemetry.json",
+   "sha256_lf": "4cfa5dfccca2d9a4923a3562b211299300fdfbb0da65b62fec076c86545a72ce"
+  },
+  {
+   "path": "bench/runs/c10_s7.telemetry.json",
+   "sha256_lf": "d0bdbd9ba79145341933a3961de67d533fb0f2646884ae5f89f98cfe963724be"
+  },
+  {
+   "path": "bench/reference/params/seed42/env.yaml",
+   "sha256_lf": "d3df25050872d6d37d1cb1f5c1eda36d1cf11bb7c32c61807af98bc338c5392d"
+  },
+  {
+   "path": "bench/reference/params/seed42/agent.yaml",
+   "sha256_lf": "cc10b1b5ad4f5d7e1563f5f6672a3f6bf6ee269e86ec8df7645934f248974807"
+  },
+  {
+   "path": "bench/runs/baseline_s42.telemetry.json",
+   "sha256_lf": "18b2043f4f645aefc75213670bdda76c52f2fd48357ce848a11db8916c76bde1"
+  },
+  {
+   "path": "bench/runs/c01_s42.telemetry.json",
+   "sha256_lf": "737ba46566d3ef0f956bc9e48a1bc3d852367261050119adcff0dd49e914b943"
+  },
+  {
+   "path": "bench/runs/c02_s42.telemetry.json",
+   "sha256_lf": "6390446edbd799fb2871ef20062a0aee9a8c19a0b3b8f489c3e111c08c5cf2c0"
+  },
+  {
+   "path": "bench/runs/c03_s42.telemetry.json",
+   "sha256_lf": "671dad97784bee0c0b1463d87b137737da2989c7ee7876fb2b1366e6fbad7de8"
+  },
+  {
+   "path": "bench/runs/c04_s42.telemetry.json",
+   "sha256_lf": "7a9613720a6a4b9239cb09ab30a92367ee45de4f126f0c65c322e0853ed1d143"
+  },
+  {
+   "path": "bench/runs/c05_s42.telemetry.json",
+   "sha256_lf": "7136e84886bde4c831f8db9e17586ad345302acc0e5396e7a516d6d92ddf2219"
+  },
+  {
+   "path": "bench/runs/c06_s42.telemetry.json",
+   "sha256_lf": "4d9aa6f7c42f9f05153ba9825d0e834b1d26fb31504ae9da0557880f9d3c59f8"
+  },
+  {
+   "path": "bench/runs/c07_s42.telemetry.json",
+   "sha256_lf": "7b9b19020b04682b404c69228a997a91d9d16c7d7496a8ccae3309e6e4b51750"
+  },
+  {
+   "path": "bench/runs/c08_s42.telemetry.json",
+   "sha256_lf": "1f22d1c564b7c4699dbb7536025b07b3e1db37df141490bf03b69107c1647c13"
+  },
+  {
+   "path": "bench/runs/c09_s42.telemetry.json",
+   "sha256_lf": "6831a3acce4684c1c7c2e88050bfd38654d642d2b0eed509eff2a4ea907f0c7d"
+  },
+  {
+   "path": "bench/runs/c10_s42.telemetry.json",
+   "sha256_lf": "d64bdecca1289e3291f51160be877b4426a6edfa6dc86997aee58706b541d165"
+  }
+ ],
+ "code": {
+  "git_head": "eb318b408084134e135e13af88ff3d4afbc0c22b",
+  "git_dirty": false,
+  "sha256_lf": {
+   "evals/baselines.py": "9bc3d8884871b799968751ec5e9fe056828dd6b602f25724d5facb6d0f83fdb3",
+   "evals/replay.py": "91417b91cbbb0f0ad312b8cedd77c975fb571a204b65e0a0409863e96cd429dc",
+   "src/rl_triage/rules.py": "11298d86f8df8ae2f9553dd77bffd687034c065f246cf3f36689c70c26aa2cfd",
+   "src/rl_triage/scoring.py": "d81405966f4d4d11d5b21e6c60f059322a8fcc3fd6a3f521d07bc46410752352",
+   "src/rl_triage/triage_tools.py": "35fc107f5e7e9d11f8b8d6ecc7f73490768f6c941fb40b1fa912e2c1c9bc8e6b",
+   "src/rl_triage/leakcheck.py": "25d970b70336a531d033f4833c3a4dbef969874349cbf5b73bf9ca2a83ea379a"
+  }
+ },
+ "environment": {
+  "python": "3.12.13",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "model_calls": 0,
+  "network": "not used",
+  "gpu": "not used"
+ }
+}
