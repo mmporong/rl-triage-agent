@@ -34,9 +34,11 @@ from rl_triage.leakcheck import scan_traces  # noqa: E402
 from rl_triage.scoring import score_blind, score_changes  # noqa: E402
 
 KEY_PATH = ROOT / "bench" / "answer_key.json"
+# 평가가 끝난 뒤 공개하는 다른 벤치 정답표. 파일이 있을 때만 그 벤치 행을 채점한다.
+OTHER_KEYS = {"p0c": ROOT / "bench" / "answer_key_p0c.json"}
 CASES_PATH = ROOT / "bench" / "cases.json"
 CODE_FILES = ("evals/replay.py", "src/rl_triage/scoring.py", "src/rl_triage/leakcheck.py")
-MODES = ("agent", "control", "rule_prior", "rule_features", "rule_template", "rule_b0")  # rule_*: evals/baselines.py
+MODES = ("agent", "control", "control_full", "rule_prior", "rule_features", "rule_template", "rule_b0")  # rule_*: evals/baselines.py
 RULE = ("per (task, seed, case_id, mode): last row with infra_error=false, in file-name then line order; "
         "a cell with only infra rows counts as wrong; truth/top-1/top-2 recomputed from bench/answer_key.json "
         "(Task A also bench/cases.json); empty ranking is wrong; any stored truth/correct/top2 that differs fails")
@@ -94,14 +96,16 @@ def _require(where: str, row: dict, fields) -> None:
         raise ReplayError(f"{where}: 필드 누락 {missing}")
 
 
-def rescore(where: str, row: dict, key: dict, cases: dict) -> tuple[dict, list[str]]:
+def rescore(where: str, row: dict, keys: dict, cases: dict) -> tuple[dict, list[str]]:
     """행 하나를 다시 채점한다. (재계산 결과, 저장값 불일치 목록)."""
     _require(where, row, ("case_id", "mode", "seed", "infra_error", "truth", "correct"))
     cid, task = row["case_id"], row.get("task") or "changes"
+    bench = row.get("bench", "v1")
+    if bench not in keys:
+        raise ReplayError(f"{where}: {bench!r} 벤치는 공개 정답표가 없다")
+    key = keys[bench]
     if cid not in key["cases"]:
         raise ReplayError(f"{where}: 정답표에 없는 case_id {cid!r}")
-    if row.get("bench", "v1") != "v1":
-        raise ReplayError(f"{where}: v1 외 벤치({row['bench']!r})는 공개 정답표가 없다")
     if row["mode"] not in MODES:
         raise ReplayError(f"{where}: 모르는 mode {row['mode']!r}")
     if not isinstance(row["seed"], int) or not isinstance(row["infra_error"], bool):
@@ -116,6 +120,8 @@ def rescore(where: str, row: dict, key: dict, cases: dict) -> tuple[dict, list[s
         got, compared = {"truth": s["truth"], "correct": s["correct"], "top2": s["top2"]}, ("truth", "correct", "top2")
     elif task == "changes":
         _require(where, row, ("suspected",))
+        if bench != "v1":
+            raise ReplayError(f"{where}: 과제 A는 v1만 있다")
         if cid not in cases:
             raise ReplayError(f"{where}: bench/cases.json에 없는 case_id {cid!r}")
         s = score_changes(cid, row["suspected"], cases[cid]["overrides"], key)
@@ -126,11 +132,11 @@ def rescore(where: str, row: dict, key: dict, cases: dict) -> tuple[dict, list[s
     return {"task": task, **got}, mismatch
 
 
-def summarize(path: Path, key: dict, cases: dict) -> dict:
+def summarize(path: Path, keys: dict, cases: dict) -> dict:
     rows, infos = load_rows(path)
     cells, mismatches, infra = {}, [], 0
     for where, row in rows:
-        res, mm = rescore(where, row, key, cases)
+        res, mm = rescore(where, row, keys, cases)
         mismatches += mm
         cell = (res["task"], row["seed"], row["case_id"], row["mode"])
         if row["infra_error"]:
@@ -208,9 +214,10 @@ def main(argv=None) -> int:
             out_dir = ROOT / "evals" / "results" / args.tag
             if out_dir.exists():
                 raise ReplayError(f"evals/results/{args.tag}가 이미 있다. 결과는 덮어쓰지 않는다")
-        key = json.loads(KEY_PATH.read_text(encoding="utf-8"))
+        keys = {"v1": json.loads(KEY_PATH.read_text(encoding="utf-8"))}
+        keys.update({b: json.loads(p.read_text(encoding="utf-8")) for b, p in OTHER_KEYS.items() if p.exists()})
         cases = {c["case_id"]: c for c in json.loads(CASES_PATH.read_text(encoding="utf-8"))}
-        folders = [summarize(p, key, cases) for p in args.inputs]
+        folders = [summarize(p, keys, cases) for p in args.inputs]
         traces = None
         if args.traces:
             if not args.traces.is_dir():
@@ -234,6 +241,8 @@ def main(argv=None) -> int:
         "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "command": " ".join(command),
         "inputs": {"answer_key": {"path": _show(KEY_PATH), "sha256_lf": _sha256_lf(KEY_PATH)},
+                   "other_answer_keys": {b: {"path": _show(p), "sha256_lf": _sha256_lf(p)}
+                                         for b, p in OTHER_KEYS.items() if p.exists()},
                    "cases": {"path": _show(CASES_PATH), "sha256_lf": _sha256_lf(CASES_PATH)},
                    "results": folders},
         "code": code_version([_show(p) for p in inside]),

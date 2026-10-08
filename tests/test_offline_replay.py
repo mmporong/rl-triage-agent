@@ -228,3 +228,11 @@ def test_trace_scan_finds_answer_file_access(tmp_path):
     (tmp_path / "blind_seed1_c01_1.jsonl").write_text(json.dumps(line) + "\n", encoding="utf-8")
     hits = L.scan_traces(tmp_path)["hits"]
     assert any("answer_key" in h for h in hits) and any("../.." in h for h in hits)
+
+
+def test_unpublished_bench_rows_are_input_errors(tmp_path):
+    row = {**_blind_row(case_id="h01"), "bench": "p0c"}
+    proc = _replay(_write(tmp_path, row))
+    if (ROOT / "bench" / "answer_key_p0c.json").exists():
+        pytest.skip("p0c 정답표가 이미 공개됐다")
+    assert proc.returncode == 2 and "공개 정답표가 없다" in proc.stderr, proc.stderr

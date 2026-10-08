@@ -26,7 +26,8 @@ def blind_markers(cases: list[dict], key: dict | None = None) -> list[str]:
         for ov in case["overrides"]:
             marks.update((ov, ov.split("=", 1)[0]))
     for entry in (key or {}).get("cases", {}).values():
-        marks.add(entry["harmful_override"])
+        if entry.get("harmful_override"):  # v1. P0-C 정답표(fault·category·note)에는 없다
+            marks.add(entry["harmful_override"])
         if entry.get("note"):
             marks.add(entry["note"])
     return sorted(marks)

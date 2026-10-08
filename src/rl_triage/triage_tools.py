@@ -133,31 +133,112 @@ def get_series(case_id: str, tag: str, points: int = 20) -> dict:
     return {"tag": tag, "this_run": sample(run[tag]), "reference": sample(ref.get(tag, []))}
 
 
+# run_analysis 하위 프로세스가 텔레메트리를 읽은 뒤 자기 자신을 묶는 Linux Landlock 코드(x86_64 syscall 444~446).
+# 에이전트가 쓴 코드는 이 제한 뒤에 실행된다. 파이썬 설치 경로 읽기와 scratch 쓰기만 남고, 정답 파일·저장소·
+# /mnt/c·/proc(다른 프로세스 환경변수)은 열 수 없다. 네트워크는 Landlock ABI 3에서 막지 못한다.
+_LANDLOCK = r'''
+def _triage_landlock(read_dirs, write_dirs):
+    import ctypes, os
+    libc = ctypes.CDLL(None, use_errno=True)
+    abi = libc.syscall(444, None, 0, 1)
+    if abi < 1:
+        raise OSError(ctypes.get_errno(), "Landlock을 쓸 수 없다")
+    handled = (1 << 13) - 1
+    if abi >= 2:
+        handled |= 1 << 13
+    if abi >= 3:
+        handled |= 1 << 14
+    class _Attr(ctypes.Structure):
+        _fields_ = [("handled_access_fs", ctypes.c_uint64)]
+    class _Beneath(ctypes.Structure):
+        _pack_ = 1
+        _fields_ = [("allowed_access", ctypes.c_uint64), ("parent_fd", ctypes.c_int32)]
+    attr = _Attr(handled)
+    rfd = libc.syscall(444, ctypes.byref(attr), ctypes.sizeof(attr), 0)
+    if rfd < 0:
+        raise OSError(ctypes.get_errno(), "landlock_create_ruleset")
+    def add(path, access):
+        fd = os.open(path, os.O_PATH | os.O_CLOEXEC)
+        try:
+            rule = _Beneath(access & handled, fd)
+            if libc.syscall(445, rfd, 1, ctypes.byref(rule), 0) != 0:
+                raise OSError(ctypes.get_errno(), "landlock_add_rule " + path)
+        finally:
+            os.close(fd)
+    for p in read_dirs:
+        if os.path.isdir(p):
+            add(p, (1 << 0) | (1 << 2) | (1 << 3))
+    for p in write_dirs:
+        add(p, handled)
+    if libc.prctl(38, 1, 0, 0, 0) != 0:
+        raise OSError(ctypes.get_errno(), "PR_SET_NO_NEW_PRIVS")
+    if libc.syscall(446, rfd, 0) != 0:
+        raise OSError(ctypes.get_errno(), "landlock_restrict_self")
+    os.close(rfd)
+'''
+# Landlock이 걸린 뒤 하위 프로세스가 stderr에 쓰는 표식. run_analysis 결과의 sandbox 필드로 바뀌어 trace에 남는다.
+_SANDBOX_MARK = "[analysis-sandbox:landlock]"
+# 하위 프로세스에 넘기는 환경변수. API 키 등 부모 환경은 넘기지 않는다.
+_CHILD_ENV_KEYS = ("PATH", "SYSTEMROOT", "LANG", "LC_ALL", "TMPDIR", "TEMP", "TMP")
+
+
+def analysis_sandbox_mode() -> str:
+    """TRIAGE_ANALYSIS_SANDBOX: required(Landlock이 안 걸리면 실행 거부) | auto(Linux면 시도) | off."""
+    mode = os.environ.get("TRIAGE_ANALYSIS_SANDBOX", "auto")
+    if mode not in ("required", "auto", "off"):
+        raise ValueError(f"TRIAGE_ANALYSIS_SANDBOX는 required·auto·off 중 하나여야 한다: {mode!r}")
+    return "off" if mode == "auto" and not sys.platform.startswith("linux") else mode
+
+
 def run_analysis(code: str, case_id: str, timeout_s: int = 30) -> dict:
     """텔레메트리에 대해 파이썬 분석 코드를 실행한다.
 
     코드 안에서 `run`(이 케이스 series dict)과 `ref`(정상 기준 series dict)를 쓸 수 있고,
-    결과는 print로 출력한다. 별도 프로세스·시간 제한으로 실행하며 OpenShell 샌드박스에서는
-    네트워크와 workspace 밖 쓰기가 커널에서 막힌다.
+    결과는 print로 출력한다. 별도 프로세스·시간 제한·최소 환경변수로 실행한다. Linux에서는 텔레메트리를 읽은 뒤
+    Landlock으로 파이썬 설치 경로 읽기와 scratch 쓰기만 남기고(TRIAGE_ANALYSIS_SANDBOX), OpenShell 샌드박스에서는
+    정책이 같은 경계를 커널에서 강제한다.
     """
+    mode = analysis_sandbox_mode()
     run_path = _case_dir(case_id) / "telemetry.json"
     ref_path = _safe(WORKSPACE / "reference" / "telemetry.json")
+    scratch = _safe(WORKSPACE / "scratch")
+    scratch.mkdir(exist_ok=True)
     prelude = (
-        "import json, math, statistics\n"
+        "import json, math, statistics, sys\n"
         f"run = json.load(open(r'{run_path}', encoding='utf-8'))['series']\n"
         f"ref = json.load(open(r'{ref_path}', encoding='utf-8'))['series']\n"
     )
-    scratch = _safe(WORKSPACE / "scratch")
-    scratch.mkdir(exist_ok=True)
+    if mode != "off":
+        reads = sorted({p for d in (sys.prefix, sys.base_prefix, sys.exec_prefix) for p in (d, os.path.realpath(d))}
+                       | {"/usr", "/lib", "/lib64", "/etc"})
+        prelude += _LANDLOCK + (
+            "try:\n"
+            f"    _triage_landlock({reads!r}, [{str(scratch)!r}])\n"
+            f"    sys.stderr.write({_SANDBOX_MARK!r} + '\\n')\n"
+            "except Exception as _e:\n"
+            f"    if {mode!r} == 'required':\n"
+            "        raise SystemExit('analysis sandbox required but unavailable: %s' % _e)\n"
+            "    print('[analysis sandbox unavailable: %s]' % _e, file=sys.stderr)\n"
+            "del _triage_landlock\n"
+        )
     with tempfile.NamedTemporaryFile("w", suffix=".py", dir=scratch, delete=False, encoding="utf-8") as f:
         f.write(prelude + code)
         script = f.name
+    env = {k: os.environ[k] for k in _CHILD_ENV_KEYS if k in os.environ}
+    env.update(PYTHONIOENCODING="utf-8", PYTHONUTF8="1")
     try:
-        proc = subprocess.run([sys.executable, script], capture_output=True, text=True,
-                              timeout=timeout_s, cwd=scratch)
-        return {"exit_code": proc.returncode, "stdout": proc.stdout[-4000:], "stderr": proc.stderr[-2000:]}
+        proc = subprocess.run([sys.executable, script], capture_output=True, text=True, encoding="utf-8",
+                              errors="replace", timeout=timeout_s, cwd=scratch, env=env)
+        # 표식은 에이전트 코드보다 먼저 찍힌다. required에서는 Landlock이 실패하면 에이전트 코드가 아예 실행되지 않는다.
+        # off면 Landlock 코드를 넣지 않았으므로 표식을 읽지 않는다(에이전트 코드가 표식을 흉내 낼 수 있다).
+        lines = proc.stderr.splitlines(keepends=True)
+        sandboxed = mode != "off" and bool(lines) and lines[0].strip() == _SANDBOX_MARK
+        stderr = "".join(lines[1:] if sandboxed else lines)
+        sandbox = "landlock" if sandboxed else ("off" if mode == "off" else "unavailable")
+        # sandbox를 첫 키로 둬 trace(result_head 600자)에 남게 한다.
+        return {"sandbox": sandbox, "exit_code": proc.returncode, "stdout": proc.stdout[-4000:], "stderr": stderr[-2000:]}
     except subprocess.TimeoutExpired:
-        return {"exit_code": None, "stdout": "", "stderr": f"timeout {timeout_s}s"}
+        return {"sandbox": "timeout", "exit_code": None, "stdout": "", "stderr": f"timeout {timeout_s}s"}
     finally:
         os.unlink(script)
 
