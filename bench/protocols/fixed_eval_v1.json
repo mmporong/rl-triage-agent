@@ -1,0 +1,26 @@
+{
+ "name": "fixed_eval_v1",
+ "purpose": "Evaluate every training run's final checkpoint under one fixed condition, independent of the run's own training settings (P0-B2, docs/P0-B2-FIXED-EVAL.md).",
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "eval_seed": 2026,
+ "envs_per_condition": 40,
+ "horizon_steps": 1000,
+ "step_dt": 0.02,
+ "episode_length_s": 20.0,
+ "command_grid": {
+  "vx_mps": [-1.0, 0.0, 1.0],
+  "vy_mps": [-1.0, 0.0, 1.0],
+  "yaw_rate_radps": [-1.0, 0.0, 1.0],
+  "exclude": [[0.0, 0.0, 0.0]]
+ },
+ "env_changes": {
+  "events.add_base_mass": "disabled (default base mass)",
+  "observations.policy.enable_corruption": false,
+  "commands.base_velocity.heading_command": false,
+  "commands.base_velocity.rel_standing_envs": 0.0,
+  "commands.base_velocity.resampling_time_range": [1.0e9, 1.0e9],
+  "commands": "overwritten every step with the grid command assigned to each env"
+ },
+ "policy_interface_from_run": ["env.actions.joint_pos.scale"],
+ "accounting": "each env contributes only its first episode; a fall is base_contact before the time limit"
+}
