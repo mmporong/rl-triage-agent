@@ -1,0 +1,94 @@
+{
+ "kind": "loop_compare",
+ "probes": "evals/results/p1a_probes_holdout_20261009",
+ "rankings": [
+  "rules",
+  "llm"
+ ],
+ "top_k": 3,
+ "random_seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "answer_key": "bench/answer_key_p0c.json",
+ "answer_key_sha256_lf": "10a73620fe2a06203239832cd93308bacbb79cd7935ba53205f8c5d1387b831c",
+ "table": {
+  "exhaustive": {
+   "cells": 18,
+   "correct": 17,
+   "wrong": 0,
+   "unidentifiable": 0,
+   "none_supported": 1,
+   "probes_used": 108,
+   "gpu_s_est": 4950,
+   "gpu_s_measured": 1235.1,
+   "mean_probes": 6.0
+  },
+  "fixed": {
+   "cells": 18,
+   "correct": 17,
+   "wrong": 1,
+   "unidentifiable": 0,
+   "none_supported": 0,
+   "probes_used": 61,
+   "gpu_s_est": 3400,
+   "gpu_s_measured": 1029.7,
+   "mean_probes": 3.39
+  },
+  "random": {
+   "cells": 90,
+   "correct": 87,
+   "wrong": 3,
+   "unidentifiable": 0,
+   "none_supported": 0,
+   "probes_used": 314,
+   "gpu_s_est": 14880,
+   "gpu_s_measured": 3790.9,
+   "mean_probes": 3.49
+  },
+  "discriminate:llm_agent": {
+   "cells": 18,
+   "correct": 14,
+   "wrong": 0,
+   "unidentifiable": 0,
+   "none_supported": 4,
+   "probes_used": 37,
+   "gpu_s_est": 1640,
+   "gpu_s_measured": 285.3,
+   "mean_probes": 2.06
+  },
+  "discriminate:llm_control_full": {
+   "cells": 16,
+   "correct": 12,
+   "wrong": 0,
+   "unidentifiable": 0,
+   "none_supported": 4,
+   "probes_used": 37,
+   "gpu_s_est": 1880,
+   "gpu_s_measured": 322.3,
+   "mean_probes": 2.31
+  },
+  "discriminate:rules": {
+   "cells": 18,
+   "correct": 12,
+   "wrong": 0,
+   "unidentifiable": 0,
+   "none_supported": 6,
+   "probes_used": 42,
+   "gpu_s_est": 1170,
+   "gpu_s_measured": 167.9,
+   "mean_probes": 2.33
+  }
+ },
+ "code": {
+  "git_head": "2c9d41623ce5ce2bbc245c9c9e20814a68bed570",
+  "git_dirty": false,
+  "sha256_lf": {
+   "evals/loop_compare.py": "d0f5da836618982dac7985515e14dc495ca45d1ba7d94bdd26fb7ecbcb1c426a",
+   "src/rl_triage/probe_loop.py": "dbd4bcca20ad87a645e562f2168076dcf4a3fe63bbcd55e00f1b87fa5fbbbd37"
+  }
+ }
+}

@@ -2,7 +2,7 @@
 
 ## 개발 상태와 이어하기
 
-현재 제품은 해커톤 프로토타입이며, AI Day 고도화는 공개 offline replay(P0-A, [아래](#offline-replay-no-api-key-network-or-gpu)), LLM 없는 결정적 기준선(P0-A2, [계약](docs/P0-A2-BASELINES.md)), 학습 보상을 쓰지 않는 행동 기반 회복 판정(P0-B1, [계약](docs/P0-B1-RECOVERY.md)), 모든 체크포인트를 같은 조건에서 재는 고정 평가(P0-B2, [계약](docs/P0-B2-FIXED-EVAL.md))까지 구현했습니다. P0-A2에서 같은 텔레메트리를 쓰는 고정 규칙이 과제 B 보류 seed를 10/10 맞혀, 에이전트가 규칙보다 잘 맞힌다는 주장은 철회했습니다. 기존 벤치(1024 env × 100회)의 정상 기준은 서 있기만 하는 정책이라, 다음 holdout은 기본 학습 예산(4096 env × 300회)과 설정 diff로 풀리지 않는 숨은 결함으로 만듭니다(P0-C, [계약 초안](docs/P0-C-HOLDOUT.md)). 아래 과거 결과를 새 설계의 완료·일반화·비용 절감 증거로 읽지 않습니다.
+현재 제품은 해커톤 프로토타입이며, AI Day 고도화로 공개 offline replay(P0-A), LLM 없는 결정적 기준선(P0-A2, [계약](docs/P0-A2-BASELINES.md)), 행동 기반 회복 판정(P0-B1, [계약](docs/P0-B1-RECOVERY.md)), 고정 조건 평가(P0-B2, [계약](docs/P0-B2-FIXED-EVAL.md)), 설정 diff에 드러나지 않는 숨은 결함 holdout(P0-C, [계약·결과](docs/P0-C-HOLDOUT.md)), 사람 승인 계측 probe 고리(P1-A, [설계·결과](docs/P1-A-LOOP.md))까지 구현했습니다. 예전 벤치에서는 고정 규칙이 에이전트와 같거나 나아 정확도 우위 주장을 철회했습니다. 숨은 결함 holdout에서는 에이전트가 8/18로 규칙·단일 프롬프트(2~6/18)보다 많이 맞혔지만 표본이 작아 우위로 주장하지 않습니다. 다음 단계는 [구현 순서](docs/IMPLEMENTATION-ORDER.md) 7절과 [조사 보고서](docs/NEXT-STEPS-20261009.md)에 있습니다.
 
 Claude는 [개발 인계](docs/CLAUDE-HANDOFF.md)에서 첫 작업·수용 기준·논문 근거·운영 경계를 확인합니다. [AI Day 계획](docs/AI-DAY-2026.md)은 고도화 순서와 철회 조건을 설명하고, [구현 순서](docs/IMPLEMENTATION-ORDER.md)는 비용 없는 재채점·결정적 기준선·회복 판정을 GPU·API 단계보다 앞에 둔 보정판입니다. 루트 CLAUDE.md가 인계를 연결합니다.
 
@@ -94,6 +94,20 @@ Deterministic baselines without a model (P0-A2, [contract](docs/P0-A2-BASELINES.
 The rules were written on dev seeds 7 and 42 and committed (`eb318b4`) before they were run on seed 123; the author had seen three seed-123 values quoted in the plan. The held-out seed reuses the same 10 fault templates, and a nearest-neighbour lookup already gets 10/10, so this held-out set tests recognition of known templates, not generalization. We therefore withdraw the claim that the agent diagnoses better than a deterministic rule set on this benchmark. When the failed run's params are visible, all 10 faults are solved by a config diff without a model; new held-out faults must not be explainable by a config diff.
 
 기존 agent는 전체 시계열과 분석 도구를 사용하지만 대조군은 요약 입력을 받았습니다. 위 표는 정보가 일치한 비교가 아니며, 같은 정보·총예산의 재평가가 필요합니다. 같은 정보를 쓰는 고정 규칙(P0-A2)이 보류 seed를 10/10 맞혔으므로, 에이전트 정확도 우위 주장은 철회했습니다. 회복 판정의 보상 비율 의존과 blind 실험 연결 공백은 [개발 인계](docs/CLAUDE-HANDOFF.md)에 기록했습니다.
+
+Hidden-fault held-out set (P0-C, [contract and results](docs/P0-C-HOLDOUT.md)): six faults that change code or runtime state, not the saved config (reward frame, DC-motor curve, sampling noise, frozen critic, runtime friction, early time-out), one per mechanism, trained with the Isaac Lab default budget (4096 envs × 300 iterations) on seeds 2026–2028. All 18 fault runs fail the fixed evaluation; their saved params differ from the reference only by run name. Task B scores (`evals/results/replay_p0c_20261009/`):
+
+| Method | Input | Top-1 | Top-2 |
+|---|---|---:|---:|
+| Label frequency / config diff | none / params | 3/18 | 6/18 |
+| Frozen P0-A2 rules | telemetry | 5/18 | 9/18 |
+| Nearest v1 dev case | telemetry + v1 labels | 6/18 | 6/18 |
+| Single prompt, full time series | same telemetry as the agent | 2/18 | 8/18 |
+| RL Triage Agent | telemetry + analysis tools | 8/18 | 12/18 |
+
+Six fault types over three seeds is a small sample and the rules came from a different training budget, so this is not a claim of superiority. The agent's analysis code ran under a Linux Landlock sandbox that cannot read the answer key (canary checked before each seed).
+
+Next-experiment loop (P1-A, [design and results](docs/P1-A-LOOP.md)): instead of retraining, the loop proposes one measurement probe at a time (noise, critic learning, reward recomputation, torque saturation, runtime physics, episode length), a human approves it, and the observation rules hypotheses in or out. On the same 18 runs, running all six probes confirms 17; ordering probes from the agent's top-3 hypotheses confirms 14 with 2.1 probes on average and no wrong confirmation. The probes and the hidden faults were written by the same person and the probe definitions were revised four times on a dev seed, so this shows the loop works, not that it generalizes.
 
 Loop verification (`evals/results/bridge_smoke.json`): reverting the true culprit recovered the run (episode-length ratio 0.999, reward ratio 1.024); reverting a benign change did not (0.05). Under the behavior-only check the first run is healthy and the second is undetermined (its 1-second episode limit is still in place), so the wrong diagnosis is not confirmed by retraining.
 

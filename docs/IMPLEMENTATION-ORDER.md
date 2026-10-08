@@ -43,7 +43,7 @@ git log --oneline origin/main..HEAD
 - [사실] Isaac Lab v2.1.1 `scripts/reinforcement_learning/rsl_rl/train.py` 177~180행은 모든 실행의 `params/env.yaml`·`agent.yaml`을 저장한다([원문](https://github.com/isaac-sim/IsaacLab/blob/v2.1.1/scripts/reinforcement_learning/rsl_rl/train.py#L177-L180)).
 - [사실] 보류 seed 123의 physics·optimizer 결함 4종(c02 몸통 질량, c10 `sim.dt`, c06 `value_loss_coef`, c08 `gamma`)은 모두 hydra override 설정값이다(`bench/answer_key.json`, `bench/catalog.py`).
 - [추론] 실제 사용 조건에서는 이 4종이 YAML diff 한 번에 드러난다. Task B는 실패 실행 params를 감춘 조건이라(`bench/build_workspace.py`) "현실에서는 diff로 끝난다"는 반론에 답하지 못한다. 변경 목록을 준 Task A는 두 방식 모두 포화였다(`evals/results/heldout_changes/seed123.jsonl` top-1 10/10 대 10/10).
-- 대응: P0-C 기준선에 **B0 설정 diff 사전 점검**(LLM 없음)을 넣는다. 새 holdout은 설정 diff로 설명되지 않는 결함으로 구성한다. 후보: 프레임워크 의미 변경([Isaac Lab 릴리스 노트](https://isaac-sim.github.io/IsaacLab/main/source/refs/release_notes.html) v2.0.2의 actuator 한계 의미 변경), CPU/GPU 물리 백엔드 차이, 이벤트·랜덤화 타이밍([#915](https://github.com/isaac-sim/IsaacLab/issues/915)), `env.yaml` 밖의 자산 변경.
+- 대응: P0-C 기준선에 **B0 설정 diff 사전 점검**(LLM 없음)을 넣는다. 새 holdout은 설정 diff로 설명되지 않는 결함으로 구성한다. 후보: 프레임워크 의미 변경([Isaac Lab 릴리스 노트](https://isaac-sim.github.io/IsaacLab/main/source/refs/release_notes.html) v2.0.2의 actuator 한계 의미 변경), CPU/GPU 물리 백엔드 차이, 이벤트·랜덤화 동작, `env.yaml` 밖의 자산 변경. (2026-10-09 정정: 처음 인용한 [#915](https://github.com/isaac-sim/IsaacLab/issues/915)는 IsaacLab·IsaacGym 학습 성능 비교 질문이고 이벤트 타이밍 이슈가 아니다. 외부 원인 후보는 [NEXT-STEPS-20261009.md](NEXT-STEPS-20261009.md) 1절.)
 
 ### C. 보상 항 단위 오독 — P1-A와 P0-A2
 
@@ -121,8 +121,8 @@ git log --oneline origin/main..HEAD
 | P0-A2 | 완료(동결 `eb318b4` 뒤 seed 123 적용) | 계약·결과 [P0-A2-BASELINES.md](P0-A2-BASELINES.md). seed 123 top-1: 고정 규칙 10/10, 최근접 dev 사례 10/10, 설정 diff 10/10, 빈도순 3/10 (에이전트 6/10, 대조군 2/10). 에이전트 정확도 우위 주장 철회, seed holdout은 템플릿 재인식 시험으로 판정. 기록 `evals/results/p0a2_{dev,holdout}_20261008/`, `replay_p0a2_20261008/` |
 | P0-B1 | 완료(계약 `ad894bc` 뒤 적용) | 계약·결과 [P0-B1-RECOVERY.md](P0-B1-RECOVERY.md). 실행 78개 중 19개 라벨 변경. 결함 실행 30개: unhealthy 21, healthy 6(c03 3개 등), undetermined 3(c01). 정상 기준 실행도 속도 명령을 거의 따르지 못해 100회 학습 텔레메트리의 행동 판정은 낙상 여부 위주다. 기록 `evals/results/p0b1_relabel_20261008/` |
 | P0-B2 | 완료(계약 `5264dac` 뒤 평가, Windows 로컬 GPU) | 계약·결과 [P0-B2-FIXED-EVAL.md](P0-B2-FIXED-EVAL.md). 고정 26개 명령 격자에서 100회 기준 정책의 추종 오차는 제자리와 같다(1.175 대 1.177). 결함 실행 30개 중 unhealthy 15. 같은 seed 재학습은 체크포인트 동일. 4096 env × 300회 기준은 걷는다(0.154). P0-C 학습 예산 결정 근거. 기록 `evals/results/p0b2_{fixed_eval,pilot}_20261008/` |
-| P0-C | 진행 중(보정) | 계약 [P0-C-HOLDOUT.md](P0-C-HOLDOUT.md). 숨은 결함 6종, seed 7 보정 1차에서 F1~F5 깨짐·F6(10%) 안 깨짐 → F6 5%로 2차 대기. 분석 도구 Landlock 경계·canary 커밋(`0ed7fcd`). GPU를 다른 프로젝트 학습이 쓰는 동안 대기(사용자 결정 2026-10-09) |
-| P1-A | 설계·핵심부 | 설계 [P1-A-LOOP.md](P1-A-LOOP.md), 핵심 `src/rl_triage/probe_loop.py`(probe 선택·갱신·승인 원장). Isaac probe 측정은 GPU 확인 전 |
+| P0-C | 완료(2026-10-09) | 계약·결과 [P0-C-HOLDOUT.md](P0-C-HOLDOUT.md) 6절. 숨은 결함 6종 × seed 3, 4096 env × 300회. 결함 실행 18개 모두 고정 평가 unhealthy, params diff 18/18 비어 있음. top-1: 빈도순·설정 diff 3/18, 동결 규칙 5/18, 최근접 v1 사례 6/18, 단일 프롬프트(전체 시계열) 2/18, 에이전트 8/18. 표본이 작아 우위 주장은 하지 않음. 정답표 공개 `bench/answer_key_p0c.json`, 재채점 `evals/results/replay_p0c_20261009/` |
+| P1-A | holdout 비교 완료 | [P1-A-LOOP.md](P1-A-LOOP.md) 7절. probe 6종(dev에서 네 차례 정의 수정)으로 전수 17/18, 고정 순서 17/18(평균 3.4개, 틀린 확정 1), 에이전트 순위 가르기 14/18(평균 2.1개, 틀린 확정 0). probe 작성자가 결함 작성자라 고리 동작 확인으로만 쓴다 |
 
 사용자 결정(2026-10-08): 주 task는 Go2 flat을 유지한다(이족 전환 안 함). 실행은 Windows 로컬(RTX 3060)에서 하며 로컬 GPU 실행은 허용됐다. 이것으로 3절 결정 게이트의 호스트는 Windows로 정해졌다. Brev는 필요할 때 따로 요청한다. NVIDIA API 호출은 이 허용 범위에 넣지 않았으므로 P0-C 평가 전에 승인을 받는다.
 
@@ -131,3 +131,17 @@ P0-A에서 남긴 제약:
 - `evals/results/v1_nim_client/seed42.jsonl`·`evals/results/smoke_c01_seed42.jsonl`은 `infra_error` 필드가 없어 G절 규칙으로 재채점하지 않고 입력 오류로 거부한다. README 과제 A dev 대조군 20/20 중 seed 42 절반이 이 파일에 의존한다.
 - 유출 검사는 작업공간 입력과 저장 trace만 본다. 같은 checkout의 정답 파일 읽기를 막는 canary 검사는 P0-C 수용 기준으로 남아 있다(2절 A).
 - 이 Windows 사본은 추적 텍스트 파일 132개가 CRLF(인덱스는 LF)다. replay는 CRLF→LF 정규화 SHA를 기록해 clean checkout과 같은 값을 남긴다.
+
+## 7. 다음 단계 (2026-10-09 조사)
+
+조사 보고서 [NEXT-STEPS-20261009.md](NEXT-STEPS-20261009.md)의 우선 작업이다. 수용 검사는 보고서 2.2절.
+
+| 순위 | 작업 | 왜 지금 | 비용 |
+|---|---|---|---|
+| T1 | 외부 원인 결함 안전성 시험(2절 F) | "probe와 결함을 같은 사람이 만들었다"는 반론에 답하는 유일한 실험. 공개 이슈로 원인이 확정된 결함(후보 X1 COM 무작위화 누적 #7311, X2 접촉력 고착 #7613, X3 push 덮어쓰기)으로, 동결 probe가 틀린 확정 없이 식별 불가로 멈추는지를 사전등록하고 잰다 | GPU 3~4시간 |
+| T2 | P1-C 보류·최소 변화 쌍 | NONE·체크포인트 SHA 불일치·승인 뒤 사전등록 변경·unknown·범주 밖 결함에서 고리가 멈추는지, always-act·always-abstain과 비교 | GPU 거의 0 |
+| T3 | P1-B 복구 | 원장에 consume 뒤 receipt 전 고아 요청 복구 경로가 없다. effect key로 산출물을 찾아 재실행 없이 receipt, 없으면 unknown과 새 승인 | GPU 0 |
+| T4 | RC 독립 재현·고정 데모·Q&A | 깨끗한 clone 한 명령 재계산, 5·10·15분 데모(진단 → 사전등록 → 거절 → 승인 → probe → 확정 → 회복 판정), 녹화본, 철회한 주장·설계자 결합·표본 크기 Q&A | GPU 수 분 |
+| T5 | LLM 역할 측정(조건부) | 에이전트 순위 가르기와 규칙 순위 가르기를 같은 결과표에서 비교(P1-A 7절에 1차 결과) | API |
+
+행사 정보(2026-10-09 공개 자료): 11/9 컨퍼런스, 11/10 DLI 워크숍·인증시험. 해커톤 Top 5 피칭의 일시·길이·형식·심사 기준은 공개 자료에서 찾지 못했다. 주최 측에 일시·길이·실시간 데모 허용·심사 기준·발표작 변경 승인을 확인해야 한다.

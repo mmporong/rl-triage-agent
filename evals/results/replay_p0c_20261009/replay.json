@@ -1,0 +1,158 @@
+{
+ "kind": "offline_replay",
+ "status": "pass",
+ "rule": "per (task, seed, case_id, mode): last row with infra_error=false, in file-name then line order; a cell with only infra rows counts as wrong; truth/top-1/top-2 recomputed from bench/answer_key.json (Task A also bench/cases.json); empty ranking is wrong; any stored truth/correct/top2 that differs fails",
+ "created_at": "2026-10-08T22:10:40+00:00",
+ "command": "python evals/replay.py evals/results/p0c_holdout_20261009 evals/results/p0c_rules_20261009 --traces evals/results/traces --tag replay_p0c_20261009",
+ "inputs": {
+  "answer_key": {
+   "path": "bench/answer_key.json",
+   "sha256_lf": "92671c5ead5f4bd2413c12281d236779e7edd4dbf6d967100b933fa194a5c268"
+  },
+  "other_answer_keys": {
+   "p0c": {
+    "path": "bench/answer_key_p0c.json",
+    "sha256_lf": "10a73620fe2a06203239832cd93308bacbb79cd7935ba53205f8c5d1387b831c"
+   }
+  },
+  "cases": {
+   "path": "bench/cases.json",
+   "sha256_lf": "57efbef2d589246766e91aeae7556d81faf68a227d315bf2ae45461e90d0f86f"
+  },
+  "results": [
+   {
+    "path": "evals/results/p0c_holdout_20261009",
+    "files": [
+     {
+      "path": "evals/results/p0c_holdout_20261009/seed2026.jsonl",
+      "sha256_lf": "748f858b22d55ccaa95ed3502da08589a03373f0226d5d1a6b369129bec24f9f",
+      "rows": 17
+     },
+     {
+      "path": "evals/results/p0c_holdout_20261009/seed2027.jsonl",
+      "sha256_lf": "e0436ab308d56ea5b514570d47388aeaf6da6541b92ac9227dddd11ec75bbeef",
+      "rows": 24
+     },
+     {
+      "path": "evals/results/p0c_holdout_20261009/seed2028.jsonl",
+      "sha256_lf": "17ebeb491526f7387e3d1883bd6375bd790876881f0eef059a34458e8a73aae5",
+      "rows": 14
+     }
+    ],
+    "rows": 55,
+    "infra_rows": 20,
+    "mismatches": [],
+    "tasks": {
+     "blind": {
+      "seeds": [
+       2026,
+       2027,
+       2028
+      ],
+      "agent": {
+       "cells": 18,
+       "top1": 8,
+       "top2": 12,
+       "infra_only_cells": []
+      },
+      "control_full": {
+       "cells": 18,
+       "top1": 2,
+       "top2": 8,
+       "infra_only_cells": [
+        "s2027/h04"
+       ]
+      }
+     }
+    }
+   },
+   {
+    "path": "evals/results/p0c_rules_20261009",
+    "files": [
+     {
+      "path": "evals/results/p0c_rules_20261009/seed2026.jsonl",
+      "sha256_lf": "4c8e0b42306e415ef86e67ba6291e1762fc2a6a1927a86be1de485ca572f8b07",
+      "rows": 24
+     },
+     {
+      "path": "evals/results/p0c_rules_20261009/seed2027.jsonl",
+      "sha256_lf": "b679a82615a51332f786e037b39f0c4a9495513257b9b8274433a5d3ac8b480e",
+      "rows": 24
+     },
+     {
+      "path": "evals/results/p0c_rules_20261009/seed2028.jsonl",
+      "sha256_lf": "fd9e05426f2caf61903f4c5e1e1ff72c3f2fe0f1e54a190c415536b013209709",
+      "rows": 24
+     }
+    ],
+    "rows": 72,
+    "infra_rows": 0,
+    "mismatches": [],
+    "tasks": {
+     "blind": {
+      "seeds": [
+       2026,
+       2027,
+       2028
+      ],
+      "rule_b0": {
+       "cells": 18,
+       "top1": 3,
+       "top2": 6,
+       "infra_only_cells": []
+      },
+      "rule_features": {
+       "cells": 18,
+       "top1": 5,
+       "top2": 9,
+       "infra_only_cells": []
+      },
+      "rule_prior": {
+       "cells": 18,
+       "top1": 3,
+       "top2": 6,
+       "infra_only_cells": []
+      },
+      "rule_template": {
+       "cells": 18,
+       "top1": 6,
+       "top2": 6,
+       "infra_only_cells": []
+      }
+     }
+    }
+   }
+  ]
+ },
+ "code": {
+  "git_head": "2c9d41623ce5ce2bbc245c9c9e20814a68bed570",
+  "git_dirty": false,
+  "sha256_lf": {
+   "evals/replay.py": "b2de9072293b87089c63e1ea246bb9a6bbb81881ebf44e74b7dc0757961024e7",
+   "src/rl_triage/scoring.py": "d81405966f4d4d11d5b21e6c60f059322a8fcc3fd6a3f521d07bc46410752352",
+   "src/rl_triage/leakcheck.py": "fa7c15525587e907bcb4ba686fdf79eb28ceb519ec6acca1aa48c1697ee2d831"
+  }
+ },
+ "environment": {
+  "python": "3.12.13",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "model_calls": 0,
+  "network": "not used",
+  "gpu": "not used"
+ },
+ "trace_scan": {
+  "path": "evals/results/traces",
+  "sha256_lf_of_listing": "5fa852f110b2bdb33a3545377e4fb9534f4f1665c8a3ef6c820c78ed62c82a1b",
+  "files": 68,
+  "markers": [
+   "answer_key",
+   "cases.json",
+   "case.json",
+   "bench/private",
+   "secret_seed",
+   "harmful_override",
+   "../.."
+  ],
+  "hits": []
+ }
+}
