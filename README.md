@@ -2,7 +2,7 @@
 
 ## 개발 상태와 이어하기
 
-현재 제품은 해커톤 프로토타입이며, AI Day 고도화는 공개 offline replay(P0-A, [아래](#offline-replay-no-api-key-network-or-gpu))와 LLM 없는 결정적 기준선(P0-A2, [계약](docs/P0-A2-BASELINES.md))까지 구현했습니다. P0-A2에서 같은 텔레메트리를 쓰는 고정 규칙이 과제 B 보류 seed를 10/10 맞혀, 에이전트가 규칙보다 잘 맞힌다는 주장은 철회했습니다. 다음 개발은 독립 회복 판정, 설정 diff로 풀리지 않는 새 holdout, 정보·예산을 맞춘 비교입니다. 아래 과거 결과를 새 설계의 완료·일반화·비용 절감 증거로 읽지 않습니다.
+현재 제품은 해커톤 프로토타입이며, AI Day 고도화는 공개 offline replay(P0-A, [아래](#offline-replay-no-api-key-network-or-gpu)), LLM 없는 결정적 기준선(P0-A2, [계약](docs/P0-A2-BASELINES.md)), 학습 보상을 쓰지 않는 행동 기반 회복 판정(P0-B1, [계약](docs/P0-B1-RECOVERY.md))까지 구현했습니다. P0-A2에서 같은 텔레메트리를 쓰는 고정 규칙이 과제 B 보류 seed를 10/10 맞혀, 에이전트가 규칙보다 잘 맞힌다는 주장은 철회했습니다. 다음 개발은 고정 평가 조건 실측(P0-B2), 설정 diff로 풀리지 않는 새 holdout, 정보·예산을 맞춘 비교입니다. 아래 과거 결과를 새 설계의 완료·일반화·비용 절감 증거로 읽지 않습니다.
 
 Claude는 [개발 인계](docs/CLAUDE-HANDOFF.md)에서 첫 작업·수용 기준·논문 근거·운영 경계를 확인합니다. [AI Day 계획](docs/AI-DAY-2026.md)은 고도화 순서와 철회 조건을 설명하고, [구현 순서](docs/IMPLEMENTATION-ORDER.md)는 비용 없는 재채점·결정적 기준선·회복 판정을 GPU·API 단계보다 앞에 둔 보정판입니다. 루트 CLAUDE.md가 인계를 연결합니다.
 
@@ -68,7 +68,7 @@ This recipe follows the **OpenShell path** described in the NemoClaw docs ("you 
 
 ## Results
 
-Benchmark: 10 injected faults (reward, actuator, exploration, optimizer, physics, termination) on `Isaac-Velocity-Flat-Unitree-Go2-v0`, 1024 envs, 100 iterations. Each case mixes 1 harmful and 2 benign hydra overrides, shuffled with a secret seed. The benchmark separates cleanly: benign-only runs 2/2 recovered, fault runs 20/20 not recovered.
+Benchmark: 10 injected faults (reward, actuator, exploration, optimizer, physics, termination) on `Isaac-Velocity-Flat-Unitree-Go2-v0`, 1024 envs, 100 iterations. Each case mixes 1 harmful and 2 benign hydra overrides, shuffled with a secret seed. Under the original recovery check (episode-length, mean-reward and noise ratios), benign-only runs were recovered and all fault runs were not. That check uses the training reward. A behavior-only check (P0-B1, [contract](docs/P0-B1-RECOVERY.md), `evals/results/p0b1_relabel_20261008/`) labels 21 of the 30 fault runs unhealthy, 6 healthy (c03 ×3, c08 ×2, c09 ×1) and 3 undetermined (c01, 1-second episode limit). At 100 iterations even the healthy reference barely follows velocity commands (per-step error 0.72–0.73 m/s, about 0.77 m/s for standing still), so behavior mostly separates falling from not falling.
 
 | Task | Set | RL Triage Agent | Single-prompt Nemotron 3 Super (summary-only input) | Random |
 |---|---|---:|---:|---:|
@@ -95,7 +95,7 @@ The rules were written on dev seeds 7 and 42 and committed (`eb318b4`) before th
 
 기존 agent는 전체 시계열과 분석 도구를 사용하지만 대조군은 요약 입력을 받았습니다. 위 표는 정보가 일치한 비교가 아니며, 같은 정보·총예산의 재평가가 필요합니다. 같은 정보를 쓰는 고정 규칙(P0-A2)이 보류 seed를 10/10 맞혔으므로, 에이전트 정확도 우위 주장은 철회했습니다. 회복 판정의 보상 비율 의존과 blind 실험 연결 공백은 [개발 인계](docs/CLAUDE-HANDOFF.md)에 기록했습니다.
 
-Loop verification (`evals/results/bridge_smoke.json`): reverting the true culprit recovered the run (episode-length ratio 0.999, reward ratio 1.024); reverting a benign change did not (0.05). A wrong diagnosis is caught by retraining.
+Loop verification (`evals/results/bridge_smoke.json`): reverting the true culprit recovered the run (episode-length ratio 0.999, reward ratio 1.024); reverting a benign change did not (0.05). Under the behavior-only check the first run is healthy and the second is undetermined (its 1-second episode limit is still in place), so the wrong diagnosis is not confirmed by retraining.
 
 Security (`evals/results/policy_proofs.json`, `evals/results/sandbox_kernel_tests.txt`):
 

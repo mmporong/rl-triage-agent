@@ -119,6 +119,7 @@ git log --oneline origin/main..HEAD
 | W0 | 완료(2026-10-08, Windows) | 작업 트리 깨끗, `be8cae9`로 fast-forward. 비공개·공개 정답표 동일(원본 바이트와 LF 정규화 모두). 기준 params 3개 존재: seed 42는 비공개 meta가 없고 텔레메트리 `run_dir_name`(s02_baseline_s42)의 실행 폴더로 확인했다. 버전·해시는 `bench/reference/manifest.json`의 `w0_check`. 버전은 10/8 호스트 값이며 학습 당시 기록이 아니고, 학습 때 import된 torch 빌드는 미확인. `bench/private/` 이름·크기·SHA256 목록은 비공개 폴더 안에만 저장 |
 | P0-A | 완료(`0f112ca`) | 진입점 `evals/replay.py`, 공용 채점 `src/rl_triage/scoring.py`, 유출 검사 `src/rl_triage/leakcheck.py`, 공개 params `bench/reference/params/`, 테스트 `tests/test_offline_replay.py`. clean clone 재현 기록 `evals/results/replay_p0a_20261008/replay.json`(G절 표 일치, 저장값 불일치 0, trace 50개 표식 0) |
 | P0-A2 | 완료(동결 `eb318b4` 뒤 seed 123 적용) | 계약·결과 [P0-A2-BASELINES.md](P0-A2-BASELINES.md). seed 123 top-1: 고정 규칙 10/10, 최근접 dev 사례 10/10, 설정 diff 10/10, 빈도순 3/10 (에이전트 6/10, 대조군 2/10). 에이전트 정확도 우위 주장 철회, seed holdout은 템플릿 재인식 시험으로 판정. 기록 `evals/results/p0a2_{dev,holdout}_20261008/`, `replay_p0a2_20261008/` |
+| P0-B1 | 완료(계약 `ad894bc` 뒤 적용) | 계약·결과 [P0-B1-RECOVERY.md](P0-B1-RECOVERY.md). 실행 78개 중 19개 라벨 변경. 결함 실행 30개: unhealthy 21, healthy 6(c03 3개 등), undetermined 3(c01). 정상 기준 실행도 속도 명령을 거의 따르지 못해 100회 학습 텔레메트리의 행동 판정은 낙상 여부 위주다. 기록 `evals/results/p0b1_relabel_20261008/` |
 
 사용자 결정(2026-10-08): 주 task는 Go2 flat을 유지한다(이족 전환 안 함). 실행은 Windows 로컬(RTX 3060)에서 하며 로컬 GPU 실행은 허용됐다. 이것으로 3절 결정 게이트의 호스트는 Windows로 정해졌다. Brev는 필요할 때 따로 요청한다. NVIDIA API 호출은 이 허용 범위에 넣지 않았으므로 P0-C 평가 전에 승인을 받는다.
 
