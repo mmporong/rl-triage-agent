@@ -111,3 +111,16 @@ git log --oneline origin/main..HEAD
 - 공개 저장소다. `bench/private/`·키·사용자 경로·비공개 현장 원문을 커밋하지 않는다. 커밋 전 `git diff --cached`로 경로·계정 문자열을 확인한다.
 - 각 단계는 작성 → 관련 검증 → 수정 → 재검증 → 별도 검수 → 경로별 커밋 순서로 닫는다. push는 그 세션에서 사용자 요청을 받은 뒤 한다.
 - GPU 학습·API 호출·Brev 인스턴스 생성은 사용자 승인 범위를 확인한 뒤 시작한다.
+
+## 6. 진행 상태
+
+| 단계 | 상태 | 근거·남은 제약 |
+|---|---|---|
+| W0 | 완료(2026-10-08, Windows) | 작업 트리 깨끗, `be8cae9`로 fast-forward. 비공개·공개 정답표 동일(원본 바이트와 LF 정규화 모두). 기준 params 3개 존재: seed 42는 비공개 meta가 없고 텔레메트리 `run_dir_name`(s02_baseline_s42)의 실행 폴더로 확인했다. 버전·해시는 `bench/reference/manifest.json`의 `w0_check`. 버전은 10/8 호스트 값이며 학습 당시 기록이 아니고, 학습 때 import된 torch 빌드는 미확인. `bench/private/` 이름·크기·SHA256 목록은 비공개 폴더 안에만 저장 |
+| P0-A | 완료(`0f112ca`) | 진입점 `evals/replay.py`, 공용 채점 `src/rl_triage/scoring.py`, 유출 검사 `src/rl_triage/leakcheck.py`, 공개 params `bench/reference/params/`, 테스트 `tests/test_offline_replay.py`. clean clone 재현 기록 `evals/results/replay_p0a_20261008/replay.json`(G절 표 일치, 저장값 불일치 0, trace 50개 표식 0) |
+
+P0-A에서 남긴 제약:
+
+- `evals/results/v1_nim_client/seed42.jsonl`·`evals/results/smoke_c01_seed42.jsonl`은 `infra_error` 필드가 없어 G절 규칙으로 재채점하지 않고 입력 오류로 거부한다. README 과제 A dev 대조군 20/20 중 seed 42 절반이 이 파일에 의존한다.
+- 유출 검사는 작업공간 입력과 저장 trace만 본다. 같은 checkout의 정답 파일 읽기를 막는 canary 검사는 P0-C 수용 기준으로 남아 있다(2절 A).
+- 이 Windows 사본은 추적 텍스트 파일 132개가 CRLF(인덱스는 LF)다. replay는 CRLF→LF 정규화 SHA를 기록해 clean checkout과 같은 값을 남긴다.

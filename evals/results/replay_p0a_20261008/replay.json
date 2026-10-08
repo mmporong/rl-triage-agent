@@ -1,0 +1,152 @@
+{
+ "kind": "offline_replay",
+ "status": "pass",
+ "rule": "per (task, seed, case_id, mode): last row with infra_error=false, in file-name then line order; a cell with only infra rows counts as wrong; truth/top-1/top-2 recomputed from bench/answer_key.json (Task A also bench/cases.json); empty ranking is wrong; any stored truth/correct/top2 that differs fails",
+ "created_at": "2026-10-08T10:06:08+00:00",
+ "command": "python evals/replay.py evals/results/blind_v1 evals/results/heldout_blind evals/results/heldout_changes --traces evals/results/traces --tag replay_p0a_20261008",
+ "inputs": {
+  "answer_key": {
+   "path": "bench/answer_key.json",
+   "sha256_lf": "92671c5ead5f4bd2413c12281d236779e7edd4dbf6d967100b933fa194a5c268"
+  },
+  "cases": {
+   "path": "bench/cases.json",
+   "sha256_lf": "57efbef2d589246766e91aeae7556d81faf68a227d315bf2ae45461e90d0f86f"
+  },
+  "results": [
+   {
+    "path": "evals/results/blind_v1",
+    "files": [
+     {
+      "path": "evals/results/blind_v1/seed42.jsonl",
+      "sha256_lf": "cb022e7ec0e4f096b498a457afc61b652091a059d08603b74f04196897701c3c",
+      "rows": 24
+     },
+     {
+      "path": "evals/results/blind_v1/seed7.jsonl",
+      "sha256_lf": "dd9696f98352ebc292572a6aaa1dc9cb2e3f4e795e8c1476792e0b02ae8f3622",
+      "rows": 23
+     }
+    ],
+    "rows": 47,
+    "infra_rows": 7,
+    "mismatches": [],
+    "tasks": {
+     "blind": {
+      "seeds": [
+       7,
+       42
+      ],
+      "agent": {
+       "cells": 20,
+       "top1": 10,
+       "top2": 12,
+       "infra_only_cells": []
+      },
+      "control": {
+       "cells": 20,
+       "top1": 8,
+       "top2": 10,
+       "infra_only_cells": []
+      }
+     }
+    }
+   },
+   {
+    "path": "evals/results/heldout_blind",
+    "files": [
+     {
+      "path": "evals/results/heldout_blind/seed123.jsonl",
+      "sha256_lf": "ba3a40d5b3b1a4ecc625c16103bf30323213214f3a13f8832920bec3ede8cadd",
+      "rows": 22
+     }
+    ],
+    "rows": 22,
+    "infra_rows": 2,
+    "mismatches": [],
+    "tasks": {
+     "blind": {
+      "seeds": [
+       123
+      ],
+      "agent": {
+       "cells": 10,
+       "top1": 6,
+       "top2": 6,
+       "infra_only_cells": []
+      },
+      "control": {
+       "cells": 10,
+       "top1": 2,
+       "top2": 6,
+       "infra_only_cells": []
+      }
+     }
+    }
+   },
+   {
+    "path": "evals/results/heldout_changes",
+    "files": [
+     {
+      "path": "evals/results/heldout_changes/seed123.jsonl",
+      "sha256_lf": "1ea894cf8e4e0a148eff3fdc5550df925dd62a1217e437c57146a8c7c8e316a0",
+      "rows": 22
+     }
+    ],
+    "rows": 22,
+    "infra_rows": 2,
+    "mismatches": [],
+    "tasks": {
+     "changes": {
+      "seeds": [
+       123
+      ],
+      "agent": {
+       "cells": 10,
+       "top1": 10,
+       "top2": 10,
+       "infra_only_cells": []
+      },
+      "control": {
+       "cells": 10,
+       "top1": 10,
+       "top2": 10,
+       "infra_only_cells": []
+      }
+     }
+    }
+   }
+  ]
+ },
+ "code": {
+  "git_head": "0f112cae41098a2de30a122285016cb621aecc74",
+  "git_dirty": false,
+  "sha256_lf": {
+   "evals/replay.py": "f7ee8e09a701fb42ce6d7901dd46b29b1dd65db13d2c808b975b7fc159bb2bc7",
+   "src/rl_triage/scoring.py": "d81405966f4d4d11d5b21e6c60f059322a8fcc3fd6a3f521d07bc46410752352",
+   "src/rl_triage/leakcheck.py": "25d970b70336a531d033f4833c3a4dbef969874349cbf5b73bf9ca2a83ea379a"
+  }
+ },
+ "environment": {
+  "python": "3.14.0",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "model_calls": 0,
+  "network": "not used",
+  "gpu": "not used"
+ },
+ "trace_scan": {
+  "path": "evals/results/traces",
+  "sha256_lf_of_listing": "4010fe81991d7e65e9896b877cac28725ac697402223945f736aad6246f2860d",
+  "files": 50,
+  "markers": [
+   "answer_key",
+   "cases.json",
+   "case.json",
+   "bench/private",
+   "secret_seed",
+   "harmful_override",
+   "../.."
+  ],
+  "hits": []
+ }
+}
