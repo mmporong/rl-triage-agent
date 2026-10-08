@@ -3,10 +3,8 @@
 | Catalog field | Value |
 | --- | --- |
 | Description | Finds which config change broke an Isaac Lab RL locomotion training run from its telemetry, registers one next experiment for human approval, and verifies it by retraining — inside an OpenShell sandbox that cannot touch configs, safety gates or reward definitions. |
-| Industry | ✨ Other |
+| Industry | 🤖 Physical AI |
 | Requirements | Linux or WSL2 · Docker · OpenShell 0.1.1 · NVIDIA API key (build.nvidia.com) · Isaac Lab 2.1.1 + RTX GPU only for re-running experiments |
-| NemoClaw | N/A |
-| Harness | N/A |
 | OpenShell | 0.1.1 |
 | Collection | Hackathon |
 
