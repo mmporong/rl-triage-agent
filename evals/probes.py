@@ -42,7 +42,7 @@ def _rollout(env, policy, steps, on_step):
             on_step(info, rew, dones, extras)
 
 
-def measure(probe: str, env, runner) -> dict:
+def measure(probe: str, env, runner, ckpt: Path) -> dict:
     import torch
     base = env.unwrapped
     policy = runner.alg.policy
@@ -55,28 +55,21 @@ def measure(probe: str, env, runner) -> dict:
         zz = torch.cat(z)
         return {"noise_ratio": float(zz.std()), "logged_std_mean": float(policy.action_std.mean())}
     if probe == "P_value":
-        vals, rews, dones = [], [], []
-        _rollout(env, policy, args["rollout_steps"],
-                 lambda i, r, d, x: (vals.append(i["value"]), rews.append(r), dones.append(d.float())))
-        gamma = runner.alg.gamma
-        ret = vals[-1].clone()
-        rets = []
-        for t in reversed(range(len(rews))):
-            ret = rews[t] + gamma * (1.0 - dones[t]) * ret
-            rets.append(ret)
-        rets.reverse()
-        cut = len(rews) // 2  # 뒤쪽 절반은 부트스트랩 영향이 커서 앞쪽 절반만 본다
-        R, V = torch.stack(rets[:cut]).flatten(), torch.stack(vals[:cut]).flatten()
-        # dev(seed 7) 결과로 바꾼 판정 지표: 정상 실행은 수익 분산이 작아 설명 분산이 음수로 흔들렸다(-0.13).
-        # 상대 가치 오차 mean|R-V|/mean|R|를 판정에 쓰고 설명 분산은 참고로 남긴다.
-        # dev 2차: 상대 가치 오차는 결함 6종 모두에서 커져(0.62~3.46) optimizer만 가리키지 못했다.
-        # critic 출력과 실제 수익의 상관을 판정에 쓴다(학습되지 않은 critic은 0 근처).
-        rc, vc = R - R.mean(), V - V.mean()
-        corr = float((rc * vc).sum() / (rc.norm() * vc.norm()).clamp_min(1e-8))
-        return {"value_return_corr": corr,
-                "value_rel_error": float((R - V).abs().mean() / R.abs().mean().clamp_min(1e-8)),
-                "explained_variance": float(1.0 - torch.var(R - V) / torch.var(R).clamp_min(1e-8)),
-                "return_std": float(R.std())}
+        # dev 3차: 롤아웃 수익 기반 지표(설명 분산·상대 오차·상관)가 정상 실행에서도 흔들려(상관 -0.06)
+        # critic이 학습되는지를 체크포인트로 본다. 첫 체크포인트 대비 마지막 체크포인트 파라미터 상대 변화.
+        first = Path(ckpt).with_name(args["from"])
+        sd0 = torch.load(str(first), map_location="cpu", weights_only=False)["model_state_dict"]
+        sd1 = torch.load(str(ckpt), map_location="cpu", weights_only=False)["model_state_dict"]
+
+        def change(prefix):
+            keys = [k for k in sd0 if k.startswith(prefix)]
+            if not keys:
+                raise ValueError(f"체크포인트에 {prefix} 파라미터가 없다")
+            d = sum(float((sd1[k].float() - sd0[k].float()).norm() ** 2) for k in keys) ** 0.5
+            n = sum(float(sd0[k].float().norm() ** 2) for k in keys) ** 0.5
+            return d / max(n, 1e-12)
+
+        return {"critic_change": change("critic."), "actor_change": change("actor."), "from": first.name}
     if probe == "P_reward":
         rm = base.reward_manager
         original = rm.compute
@@ -119,37 +112,31 @@ def measure(probe: str, env, runner) -> dict:
 
         _rollout(env, policy, args["rollout_steps"], on)
         return {"low_speed_saturation": sat[0] / max(low[0], 1.0), "velocity_limit": vlim, "effort_limit": elim}
-    if probe == "P_slip":
-        contact = base.scene.sensors["contact_forces"]
-        sensor_feet, sensor_names = contact.find_bodies(".*_foot")
-        robot_feet, robot_names = robot.find_bodies(".*_foot")
-        if list(sensor_names) != list(robot_names):
-            raise ValueError(f"접촉 센서와 로봇의 발 순서가 다르다: {sensor_names} != {robot_names}")
-        acc = [0.0, 0.0]
-        ratios = []
-        loaded_speed = [0.0, 0.0]
-
-        def on(i, r, d, x):
-            f = contact.data.net_forces_w[:, sensor_feet, :]
-            touching = f[..., 2] > 1.0
-            speed = torch.linalg.norm(robot.data.body_lin_vel_w[:, robot_feet, :2], dim=-1)
-            acc[0] += float(speed[touching].sum())
-            acc[1] += float(touching.sum())
-            # 하중을 실은 접지(수직력 10N 이상, Go2 무게 약 147N)에서 접선력/수직력. 쿨롱 한계라 마찰이 작으면 작아진다.
-            loaded = f[..., 2] > 10.0
-            ratios.append((torch.linalg.norm(f[..., :2], dim=-1) / f[..., 2].clamp_min(1e-6))[loaded])
-            loaded_speed[0] += float(speed[loaded].sum())
-            loaded_speed[1] += float(loaded.sum())
-
-        _rollout(env, policy, args["rollout_steps"], on)
-        rr = torch.cat(ratios)
-        # dev(seed 7) 결과로 바꾼 판정 지표: 접지 발 속도는 1N 기준 접지가 발-스텝의 91%를 잡아 마찰 0.25배를 못 가렸다.
-        # dev 2차: 접촉 센서 net_forces_w에 접선력이 거의 없어(모든 실행 1e-7) 마찰 사용률을 잴 수 없었다.
-        # 하중 접지(수직력 10N 이상) 중 발의 수평 속도를 판정에 쓴다(정상 지면에서는 0 근처, 미끄러우면 커진다).
-        return {"loaded_foot_speed": loaded_speed[0] / loaded_speed[1] if loaded_speed[1] else None,
-                "friction_use_p95": float(torch.quantile(rr, 0.95)) if rr.numel() else None,
-                "loaded_samples": int(rr.numel()), "stance_foot_speed": acc[0] / max(acc[1], 1.0),
-                "stance_samples": acc[1]}
+    if probe == "P_physics":
+        # dev 3차: 접지 발 속도·마찰 사용률은 접촉 센서(접선력 없음)·몸체 속도 정의 때문에 정상 실행에서도 의미가 없었다.
+        # 시뮬레이터에서 실제 물리 값을 읽어 설정과 무작위화 범위에 맞는지 본다.
+        cfg = base.cfg
+        mismatches = []
+        mats = robot.root_physx_view.get_material_properties()
+        sf, df = float(mats[..., 0].mean()), float(mats[..., 1].mean())
+        pm = cfg.events.physics_material
+        if pm is not None:
+            for name, val, rng in (("static_friction", sf, pm.params["static_friction_range"]),
+                                   ("dynamic_friction", df, pm.params["dynamic_friction_range"])):
+                lo, hi = float(rng[0]), float(rng[1])
+                if not (lo * 0.95 <= val <= hi * 1.05):
+                    mismatches.append(f"{name} {val:.3f} not in [{lo}, {hi}]")
+        delta = (robot.root_physx_view.get_masses() - robot.data.default_mass.to("cpu")).sum(dim=1)
+        dmin, dmax = float(delta.min()), float(delta.max())
+        am = cfg.events.add_base_mass
+        lo, hi = (float(v) for v in am.params["mass_distribution_params"]) if am is not None else (0.0, 0.0)
+        if dmin < lo - 0.01 or dmax > hi + 0.01:
+            mismatches.append(f"mass delta [{dmin:.3f}, {dmax:.3f}] not in [{lo}, {hi}]")
+        if abs(base.physics_dt - cfg.sim.dt) > 1e-9:
+            mismatches.append(f"physics_dt {base.physics_dt} != cfg {cfg.sim.dt}")
+        return {"mismatch_count": len(mismatches), "mismatches": mismatches, "static_friction_mean": sf,
+                "dynamic_friction_mean": df, "mass_delta_min": dmin, "mass_delta_max": dmax,
+                "physics_dt": base.physics_dt}
     if probe == "P_episode":
         count = torch.zeros(base.num_envs, device=base.device)
         ends = []
@@ -198,7 +185,7 @@ def run(args) -> None:
                 env.unwrapped.reset(seed=int(jobs["seed"]))
                 t0 = time.time()
                 try:
-                    results[probe] = {"measurement": measure(probe, env, runner), "exit": 0,
+                    results[probe] = {"measurement": measure(probe, env, runner, ckpt), "exit": 0,
                                       "elapsed_s": round(time.time() - t0, 1)}
                 except Exception as e:  # probe 하나의 실패는 불명으로 남기고 다음 probe로 간다
                     results[probe] = {"measurement": None, "exit": 1, "error": f"{type(e).__name__}: {e}"[:300],

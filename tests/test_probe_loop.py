@@ -13,7 +13,7 @@ def test_probe_expectations_cover_every_mechanism_and_each_has_a_confirming_prob
         assert set(spec["expect"]) == set(L.MECHANISMS)
     assert {m: L.confirming_probe(m) for m in L.MECHANISMS} == {
         "reward": "P_reward", "actuator": "P_torque", "exploration": "P_noise",
-        "optimizer": "P_value", "physics": "P_slip", "termination": "P_episode"}
+        "optimizer": "P_value", "physics": "P_physics", "termination": "P_episode"}
 
 
 def test_every_pair_of_mechanisms_can_be_separated_by_some_probe():
@@ -24,7 +24,7 @@ def test_every_pair_of_mechanisms_can_be_separated_by_some_probe():
 
 
 def test_selection_update_and_status():
-    assert L.select_probe(["reward", "physics"]) == "P_reward"  # 같은 비용이면 이름순
+    assert L.select_probe(["reward", "physics"]) == "P_physics"  # 가르는 probe 중 가장 싼 것
     keep, dropped = L.update(["reward", "physics"], "P_reward", "abnormal")
     assert (keep, dropped) == (["reward"], ["physics"])
     assert L.update(["reward", "physics"], "P_reward", "unknown") == (["reward", "physics"], [])
@@ -49,7 +49,7 @@ def test_approval_is_consumed_once_and_bound_to_prereg_probe_and_args(tmp_path):
     with pytest.raises(L.LedgerError, match="다르다"):
         led.consume(rid, {**PREREG, "hypotheses": ["reward"]}, "P_reward")
     with pytest.raises(L.LedgerError, match="다르다"):
-        led.consume(rid, PREREG, "P_slip")
+        led.consume(rid, PREREG, "P_physics")
     led.consume(rid, PREREG, "P_reward")
     with pytest.raises(L.LedgerError, match="이미 소비"):
         led.consume(rid, PREREG, "P_reward")
@@ -87,8 +87,9 @@ def test_next_probe_asks_for_the_confirming_probe_when_one_hypothesis_is_left():
     assert L.select_probe(["reward"]) is None  # 가를 대상이 없으면 None
     assert L.next_probe(["reward"], {}) == "P_reward"
     assert L.next_probe(["reward"], {"P_reward": "abnormal"}) is None
-    assert L.next_probe(["reward", "physics"], {}) == "P_reward"
-    assert L.next_probe(["reward", "physics"], {"P_reward": "unknown"}) == "P_slip"
+    assert L.next_probe(["reward", "physics"], {}) == "P_physics"
+    assert L.next_probe(["reward", "physics"], {"P_physics": "unknown"}) == "P_reward"
+    assert L.select_probe(["reward", "actuator"]) == "P_reward"  # 같은 비용이면 이름순
 
 
 def test_receipt_cannot_be_written_twice(tmp_path):
@@ -131,17 +132,17 @@ def test_unknown_probe_results_can_end_unidentifiable():
 
 
 def test_classify_thresholds_and_unknowns():
-    ref = {"value_return_corr": 0.8, "low_speed_saturation": 0.002, "loaded_foot_speed": 0.02}
+    ref = {"critic_change": 0.5, "low_speed_saturation": 0.002}
     assert L.classify("P_noise", {"noise_ratio": 1.1}, None) == "normal"
     assert L.classify("P_noise", {"noise_ratio": 0.1}, None) == "abnormal"
-    assert L.classify("P_value", {"value_return_corr": 0.1}, ref) == "abnormal"
-    assert L.classify("P_value", {"value_return_corr": 0.6}, ref) == "normal"
-    assert L.classify("P_value", {"value_return_corr": 0.6}, None) == "unknown"
+    assert L.classify("P_value", {"critic_change": 0.0}, ref) == "abnormal"
+    assert L.classify("P_value", {"critic_change": 0.3}, ref) == "normal"
+    assert L.classify("P_value", {"critic_change": 0.3}, None) == "unknown"
     assert L.classify("P_reward", {"track_lin_vel_xy_exp_rel_error": 0.0, "track_ang_vel_z_exp_rel_error": 0.2}, None) == "abnormal"
     assert L.classify("P_torque", {"low_speed_saturation": 0.02}, ref) == "normal"  # 바닥 0.01의 3배 이하
     assert L.classify("P_torque", {"low_speed_saturation": 0.2}, ref) == "abnormal"
-    assert L.classify("P_slip", {"loaded_foot_speed": 0.2}, ref) == "abnormal"
-    assert L.classify("P_slip", {"loaded_foot_speed": 0.05}, ref) == "normal"
+    assert L.classify("P_physics", {"mismatch_count": 1}, None) == "abnormal"
+    assert L.classify("P_physics", {"mismatch_count": 0}, None) == "normal"
     assert L.classify("P_episode", {"timeout_ratio": 0.05}, None) == "abnormal"
     assert L.classify("P_episode", {"timeout_ratio": None}, None) == "unknown"
-    assert L.classify("P_slip", None, ref) == "unknown"
+    assert L.classify("P_physics", None, ref) == "unknown"

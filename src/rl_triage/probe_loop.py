@@ -24,10 +24,10 @@ PROBES = {
                 "args": {"rollout_steps": 200, "num_envs": 256},
                 "expect": {"exploration": "abnormal", "reward": "normal", "actuator": "normal",
                            "optimizer": "normal", "physics": "normal", "termination": "normal"}},
-    "P_value": {"measures": "롤아웃 수익에 대한 critic 설명 분산", "cost_gpu_s": 90,
-                "args": {"rollout_steps": 1000, "num_envs": 256},
-                "expect": {"optimizer": "abnormal", "reward": "normal", "actuator": None,
-                           "exploration": None, "physics": None, "termination": None}},
+    "P_value": {"measures": "첫 체크포인트 대비 마지막 체크포인트의 critic 파라미터 상대 변화(critic이 학습되는가)",
+                "cost_gpu_s": 5, "args": {"from": "model_0.pt", "to": "last"},
+                "expect": {"optimizer": "abnormal", "reward": "normal", "actuator": "normal",
+                           "exploration": "normal", "physics": "normal", "termination": "normal"}},
     "P_reward": {"measures": "상태에서 문서 정의대로 다시 계산한 추종 보상 항(track_lin_vel_xy_exp, track_ang_vel_z_exp)과 "
                              "보상 관리자 기록값의 상대 오차", "cost_gpu_s": 60,
                  "args": {"rollout_steps": 200, "num_envs": 256},
@@ -37,8 +37,8 @@ PROBES = {
                  "args": {"rollout_steps": 500, "num_envs": 256},
                  "expect": {"actuator": "abnormal", "reward": "normal", "exploration": None,
                             "optimizer": "normal", "physics": "normal", "termination": "normal"}},
-    "P_slip": {"measures": "접지 중 발 수평 속도", "cost_gpu_s": 60,
-               "args": {"rollout_steps": 500, "num_envs": 256},
+    "P_physics": {"measures": "시뮬레이터에서 읽은 재질 마찰·질량·물리 dt와 설정·무작위화 범위의 불일치 수", "cost_gpu_s": 30,
+                  "args": {"num_envs": 64},
                "expect": {"physics": "abnormal", "reward": "normal", "actuator": "normal",
                           "exploration": "normal", "optimizer": "normal", "termination": "normal"}},
     "P_episode": {"measures": "시간 제한 종료 스텝 / (episode_length_s / step_dt)", "cost_gpu_s": 60,
@@ -109,14 +109,14 @@ def status(hypotheses: list[str], observed: dict[str, str], budget_left: int) ->
 
 
 # probe 판정 임계값. 결함 실행을 재기 전에 측정량의 물리적 의미로 정했다(docs/P1-A-LOOP.md 2절).
-# 2026-10-09 dev(seed 7 보정 실행) 결과로 P_value·P_slip의 측정 지표와 P_torque의 탐색 예상을 두 차례 바꿨다(5절).
+# 2026-10-09 dev(seed 7 보정 실행) 결과로 P_value·P_physics(옛 P_slip)의 측정과 P_torque의 탐색 예상을 세 차례 바꿨다(5절).
 # 비 기준은 같은 seed의 결함 없는(NONE) 실행 측정값 대비다. 측정값이 없으면 unknown.
 THRESHOLDS = {
     "P_noise": ("noise_ratio", "absolute_log2", 1.0),          # 실제/기록 노이즈 비가 1/2 미만 또는 2 초과
-    "P_value": ("value_return_corr", "ratio_below", 0.5),       # critic 출력-실제 수익 상관이 NONE의 절반 미만
+    "P_value": ("critic_change", "ratio_below", 0.1),           # critic 파라미터 상대 변화가 NONE의 10% 미만
     "P_reward": ("track_lin_vel_xy_exp_rel_error", "above", 0.05),  # 추종 보상 재계산 오차 5% 초과(두 항 중 큰 값)
     "P_torque": ("low_speed_saturation", "ratio_above", 3.0),   # 저속 토크 포화가 NONE의 3배 초과(바닥 0.01)
-    "P_slip": ("loaded_foot_speed", "ratio_above", 3.0),        # 하중 접지 중 발 수평 속도가 NONE의 3배 초과(바닥 0.01 m/s)
+    "P_physics": ("mismatch_count", "above", 0.5),              # 설정과 다른 런타임 물리 값이 하나라도 있음
     "P_episode": ("timeout_ratio", "below", 0.9),               # 시간 제한 종료가 설정 길이의 90% 전
 }
 
@@ -148,7 +148,7 @@ def classify(probe: str, measurement: dict | None, reference: dict | None) -> st
     if rule == "drop":
         return "abnormal" if ref - v > thr else "normal"
     if rule == "ratio_above":
-        floor = {"P_torque": 0.01, "P_slip": 0.01}.get(probe, 1e-6)
+        floor = {"P_torque": 0.01}.get(probe, 1e-6)
         return "abnormal" if v > thr * max(ref, floor) else "normal"
     if rule == "ratio_below":
         return "abnormal" if v < thr * ref else "normal"
@@ -156,7 +156,7 @@ def classify(probe: str, measurement: dict | None, reference: dict | None) -> st
 
 
 # 엔지니어 체크리스트 순서(고정 순서 기준선). 싸고 흔한 확인부터: 에피소드 길이, 노이즈, 보상, 토크, 미끄러짐, 가치.
-FIXED_ORDER = ("P_episode", "P_noise", "P_reward", "P_torque", "P_slip", "P_value")
+FIXED_ORDER = ("P_episode", "P_noise", "P_reward", "P_torque", "P_physics", "P_value")
 
 
 def simulate(strategy: str, outcomes: dict[str, str], ranking: list[str] | None = None, top_k: int = 3,

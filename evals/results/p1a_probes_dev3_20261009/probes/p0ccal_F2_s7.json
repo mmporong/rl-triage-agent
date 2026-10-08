@@ -1,0 +1,33 @@
+{
+ "name": "p0ccal_F2_s7",
+ "checkpoint": {
+  "file": "model_299.pt",
+  "sha256": "3a045c7eb82b8d6565d6f847e45f5ac1cd60d4d3e323b0c041cdab569729110a"
+ },
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "seed": 7,
+ "num_envs": 256,
+ "probes": {
+  "P_value": {
+   "measurement": {
+    "value_return_corr": -0.10498030483722687,
+    "value_rel_error": 0.7946215867996216,
+    "explained_variance": -0.44603633880615234,
+    "return_std": 1.0918781757354736
+   },
+   "exit": 0,
+   "elapsed_s": 60.4
+  },
+  "P_slip": {
+   "measurement": {
+    "loaded_foot_speed": 0.3690150398924241,
+    "friction_use_p95": 1.3435885648505064e-07,
+    "loaded_samples": 463586,
+    "stance_foot_speed": 0.3829466154186306,
+    "stance_samples": 489374.0
+   },
+   "exit": 0,
+   "elapsed_s": 31.4
+  }
+ }
+}

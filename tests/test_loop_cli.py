@@ -7,8 +7,8 @@ import pytest
 from rl_triage import probe_loop as L
 from test_offline_replay import ROOT
 
-REF = {"P_value": {"value_return_corr": 0.8}, "P_torque": {"low_speed_saturation": 0.002},
-       "P_slip": {"loaded_foot_speed": 0.02}}
+REF = {"P_value": {"critic_change": 0.5}, "P_torque": {"low_speed_saturation": 0.002},
+       "P_physics": {"mismatch_count": 0}}
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def _fake(measurements, calls):
 
 
 def test_reward_fault_is_confirmed_after_one_approved_probe(loop):
-    msg = loop.start("h03_s2026", ["reward", "physics", "optimizer"], 3, 4, "a" * 64, REF)
+    msg = loop.start("h03_s2026", ["reward", "actuator"], 3, 4, "a" * 64, REF)
     assert "P_reward" in msg and "사람 승인 필요" in msg
     _, state, led = loop._load("h03_s2026")
     rid = state["pending"]
@@ -46,16 +46,16 @@ def test_reward_fault_is_confirmed_after_one_approved_probe(loop):
 
 
 def test_rejected_probe_is_replaced_by_an_alternative_without_spending_budget(loop):
-    loop.start("h05_s2026", ["reward", "physics", "optimizer"], 3, 4, "b" * 64, REF)
+    loop.start("h05_s2026", ["reward", "actuator"], 3, 4, "b" * 64, REF)
     _, state, _ = loop._load("h05_s2026")
     out = loop.reject("h05_s2026", state["pending"], "human", "보상 재계산 probe는 지금 못 돌린다")
-    assert "P_slip" in out
+    assert "P_torque" in out
     _, state, led = loop._load("h05_s2026")
     assert state["observed"] == {} and state["skipped"] == ["P_reward"]
     rid = state["pending"]
     led.approve(rid, "human")
-    out = loop.run("h05_s2026", rid, _fake({"P_slip": {"loaded_foot_speed": 0.3}}, []))
-    assert "기각=['reward', 'optimizer']" in out and "P_slip" in out  # physics만 남고, 이미 본 확정 probe라 종료
+    out = loop.run("h05_s2026", rid, _fake({"P_torque": {"low_speed_saturation": 0.2}}, []))
+    assert "기각=['reward']" in out  # actuator만 남고, 이미 본 확정 probe(P_torque)라 종료
     assert "종료: confirmed" in out
 
 
