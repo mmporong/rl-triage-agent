@@ -13,6 +13,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -61,10 +62,13 @@ def main(argv=None) -> int:
     ap.add_argument("--runs", nargs="+", required=True)
     ap.add_argument("--probes", nargs="+", default=sorted(PROBES), choices=sorted(PROBES))
     ap.add_argument("--per-probe-output", action="store_true", help="probe 하나를 <실행>__<probe>.json에 저장")
+    ap.add_argument("--metered", action="store_true", help="별도 wrapper로 CPU·실제 env.step 수를 기록")
     ap.add_argument("--isaaclab", type=Path, default=Path.home() / "IsaacLab")
     args = ap.parse_args(argv)
     if args.per_probe_output and len(args.probes) != 1:
         ap.error("--per-probe-output은 --probes 하나와 함께 쓴다")
+    if args.metered and (not args.per_probe_output or len(args.runs) != 1):
+        ap.error("--metered는 --per-probe-output과 실행 하나에만 쓴다")
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", args.tag):
         raise SystemExit("--tag는 영문·숫자·._- 만 쓴다")
     key = json.loads(KEY_PATH.read_text(encoding="utf-8")) if KEY_PATH.exists() else None
@@ -75,7 +79,7 @@ def main(argv=None) -> int:
     for name in args.runs:
         suffix = f"__{args.probes[0]}" if args.per_probe_output else ""
         out = out_dir / f"{name}{suffix}.json"
-        if out.exists():
+        if out.exists() or (args.metered and (out_dir.parent / "resources" / out.name).exists()):
             if args.per_probe_output:
                 raise SystemExit(f"{out.name}: 기존 probe 결과가 있다. 새 --tag를 쓴다")
             print(f"skip {name}", flush=True)
@@ -92,13 +96,44 @@ def main(argv=None) -> int:
         jobs_file = PRIVATE / f"jobs_{job_label}_{i}_{stamp}.json"
         jobs_file.write_text(json.dumps({"fault": fault, "seed": seed, "jobs": jobs}, indent=1), encoding="utf-8")
         log = PRIVATE / f"log_{job_label}_{i}_{stamp}.txt"
-        cmd = [str(args.isaaclab / "_isaac_sim" / "python.bat"), str(ROOT / "evals" / "probes.py"),
+        metrics = PRIVATE / f"metrics_{job_label}_{i}_{stamp}.json"
+        entry = "metered_probes.py" if args.metered else "probes.py"
+        cmd = [str(args.isaaclab / "_isaac_sim" / "python.bat"), str(ROOT / "evals" / entry),
                "--jobs", str(jobs_file), "--headless"]
+        if args.metered:
+            cmd += ["--metrics", str(metrics)]
         t0 = time.time()
         with log.open("w", encoding="utf-8") as fh:
             proc = subprocess.run(cmd, cwd=args.isaaclab, stdout=fh, stderr=subprocess.STDOUT)
         done = sum(Path(j["output"]).exists() for j in jobs)
         failed += len(jobs) - done
+        if args.metered:
+            if not metrics.exists():
+                failed += 1
+            else:
+                meter = json.loads(metrics.read_text(encoding="utf-8"))
+                job = jobs[0]
+                report_path = Path(job["output"])
+                report = json.loads(report_path.read_text(encoding="utf-8")) if report_path.exists() else {}
+                rows = meter["measurements"]
+                frozen_sha = hashlib.sha256((ROOT / "evals/probes.py").read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+                if (meter["jobs_sha256"] != hashlib.sha256(jobs_file.read_bytes()).hexdigest()
+                        or meter["probes_sha256_lf"] != frozen_sha or not meter["completed"]
+                        or len(rows) != 1 or rows[0]["probe"] != args.probes[0]
+                        or rows[0]["checkpoint_sha256"] != report.get("checkpoint", {}).get("sha256")):
+                    raise SystemExit("계측 sidecar가 실행 입력·산출물과 다르다")
+                resources = {"schema": "probe_resources_v1", "case": job["name"], "probe": args.probes[0],
+                             "checkpoint_sha256": rows[0]["checkpoint_sha256"],
+                             "report_sha256_lf": hashlib.sha256(report_path.read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
+                             "cpu_s": meter["cpu_s"] + time.process_time(), "launcher_exit_code": proc.returncode,
+                             "cpu_scope": "isaac_python_wrapper_and_probe_driver_processes",
+                             "simulator_steps_scope": meter["simulator_steps_scope"],
+                             "meter_sha256_lf": hashlib.sha256(metrics.read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
+                             "probes_sha256_lf": frozen_sha, **rows[0]}
+                resources_path = out_dir.parent / "resources" / report_path.name
+                resources_path.parent.mkdir(parents=True, exist_ok=True)
+                with resources_path.open("x", encoding="utf-8", newline="\n") as fh:
+                    fh.write(json.dumps(resources, indent=1, allow_nan=False) + "\n")
         # 그룹 번호와 실행 이름만 출력한다(결함 이름은 비공개 작업 목록에만 있다).
         print(f"group {i}: runs={[j['name'] for j in jobs]} exit={proc.returncode} done={done}/{len(jobs)} "
               f"wall={time.time() - t0:.0f}s", flush=True)

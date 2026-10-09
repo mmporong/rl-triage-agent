@@ -232,3 +232,46 @@ def test_over_budget_cli_receipt_remains_unknown_in_audit(loop):
     result = audit.audit_loop(pr, ref, st, events)
     assert result["observed"] == {"P_reward": "unknown"}
     assert result["request_budget_overruns"] == [rid]
+
+
+def test_execution_sidecar_preserves_process_wall_in_recovery(loop, tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setattr(loop, "ROOT", tmp_path)
+    clock, cpu = iter([10.0, 30.0]), iter([2.0, 3.0])
+    monkeypatch.setattr(loop.time, "perf_counter", lambda: next(clock))
+    monkeypatch.setattr(loop.time, "process_time", lambda: next(cpu))
+    case, probe, tag = "h01_s2027", "P_physics", "metered"
+    path = loop._probe_path(case, probe, tag)
+
+    def execute(cmd, **_):
+        assert "--metered" in cmd
+        path.parent.mkdir(parents=True)
+        path.write_text(json.dumps({"name": case, "checkpoint": {"sha256": "a" * 64},
+                                   "probes": {probe: {"measurement": {"mismatch_count": 0}, "exit": 0, "elapsed_s": 0.0}}}), encoding="utf-8")
+        resources = path.parent.parent / "resources" / path.name
+        resources.parent.mkdir()
+        resources.write_text(json.dumps({"case": case, "probe": probe, "checkpoint_sha256": "a" * 64,
+                                         "report_sha256_lf": loop.hashlib.sha256(path.read_bytes()).hexdigest(),
+                                         "cpu_s": 4.5, "simulator_steps": 0}), encoding="utf-8")
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(loop.subprocess, "run", execute)
+    assert loop.isaac_execute(case, probe, tag, metered=True) == ({"mismatch_count": 0}, 20.0, 0)
+    meta = json.loads(loop._execution_path(case, probe, tag).read_text(encoding="utf-8"))
+    assert meta["gpu_wall_s"] == 20.0 and meta["cpu_s"] == 5.5 and meta["simulator_steps"] == 0
+    prereg = {"checkpoint_sha256": "a" * 64}
+    assert loop.file_artifact(case, probe, prereg, tag)["gpu_s"] == 20.0
+    report = json.loads(path.read_text(encoding="utf-8"))
+    report["probes"][probe]["measurement"]["mismatch_count"] = 1
+    path.write_text(json.dumps(report), encoding="utf-8")
+    assert loop.file_artifact(case, probe, prereg, tag) is None
+
+
+def test_legacy_artifact_does_not_invent_missing_startup_cost(loop, tmp_path, monkeypatch):
+    monkeypatch.setattr(loop, "ROOT", tmp_path)
+    case, probe, tag = "h01_s2027", "P_physics", "legacy"
+    path = loop._probe_path(case, probe, tag)
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({"name": case, "checkpoint": {"sha256": "a" * 64},
+                               "probes": {probe: {"measurement": {"mismatch_count": 0}, "exit": 0, "elapsed_s": 0.0}}}), encoding="utf-8")
+    assert loop.file_artifact(case, probe, {"checkpoint_sha256": "a" * 64}, tag)["gpu_s"] is None

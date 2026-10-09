@@ -15,9 +15,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 import sys
+import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -83,24 +86,50 @@ def _probe_path(case: str, probe: str, tag: str) -> Path:
     return ROOT / "evals" / "results" / tag / "probes" / f"{case}__{probe}.json"
 
 
+def _execution_path(case: str, probe: str, tag: str) -> Path:
+    return ROOT / "evals" / "results" / tag / "execution" / f"{case}__{probe}.json"
+
+
 def isaac_preflight(case: str, probe: str, tag: str) -> None:
     out = _probe_path(case, probe, tag)
-    if out.exists():
+    if (out.exists() or _execution_path(case, probe, tag).exists()
+            or (out.parent.parent / "resources" / out.name).exists()):
         raise SystemExit(f"{out.name}: 기존 측정을 새 승인으로 재사용하지 않는다. 새 --tag를 쓴다")
 
 
-def isaac_execute(case: str, probe: str, tag: str) -> tuple[dict | None, float, int | None]:
+def isaac_execute(case: str, probe: str, tag: str, *, metered: bool = False) -> tuple[dict | None, float, int | None]:
     """evals/run_probes.py로 probe 하나를 잰다. (측정값, GPU 초, 종료 코드)."""
-    import time
-    t0 = time.time()
     out = _probe_path(case, probe, tag)
     isaac_preflight(case, probe, tag)
-    proc = subprocess.run([sys.executable, str(ROOT / "evals" / "run_probes.py"), "--tag", tag, "--runs", case,
-                           "--probes", probe, "--per-probe-output"], cwd=ROOT)
-    if proc.returncode != 0 or not out.exists():
-        return None, time.time() - t0, proc.returncode
-    rec = json.loads(out.read_text(encoding="utf-8"))["probes"].get(probe, {})
-    return rec.get("measurement"), time.time() - t0, rec.get("exit")
+    cmd = [sys.executable, str(ROOT / "evals" / "run_probes.py"), "--tag", tag, "--runs", case,
+           "--probes", probe, "--per-probe-output"]
+    if metered:
+        cmd.append("--metered")
+    started_at = datetime.now(timezone.utc).isoformat()
+    t0, cpu0 = time.perf_counter(), time.process_time()
+    proc = subprocess.run(cmd, cwd=ROOT)
+    wall, parent_cpu = time.perf_counter() - t0, time.process_time() - cpu0
+    rep = json.loads(out.read_text(encoding="utf-8")) if out.exists() else {}
+    rec = rep.get("probes", {}).get(probe, {})
+    code = proc.returncode if proc.returncode != 0 else rec.get("exit")
+    resources_path = out.parent.parent / "resources" / out.name
+    resource = json.loads(resources_path.read_text(encoding="utf-8")) if resources_path.exists() else None
+    report_sha = hashlib.sha256(out.read_bytes().replace(b"\r\n", b"\n")).hexdigest() if out.exists() else None
+    if resource and (resource["case"] != case or resource["probe"] != probe
+                     or resource["checkpoint_sha256"] != rep.get("checkpoint", {}).get("sha256")
+                     or resource["report_sha256_lf"] != report_sha):
+        raise ValueError("계측 출처와 probe 산출물이 다르다")
+    meta = {"schema": "probe_execution_v1", "case": case, "probe": probe,
+            "checkpoint_sha256": rep.get("checkpoint", {}).get("sha256"), "report_sha256_lf": report_sha,
+            "started_at": started_at, "finished_at": datetime.now(timezone.utc).isoformat(),
+            "gpu_wall_s": round(wall, 1), "execution_wall_s": round(wall, 1), "exit_code": code,
+            "parent_cpu_s": parent_cpu, "cpu_s": None if resource is None else parent_cpu + resource["cpu_s"],
+            "simulator_steps": None if resource is None else resource["simulator_steps"], "metered": metered}
+    path = _execution_path(case, probe, tag)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8", newline="\n") as fh:
+        fh.write(json.dumps(meta, indent=1, allow_nan=False) + "\n")
+    return rec.get("measurement") if code == 0 else None, wall, code
 
 
 def _after_receipt(case: str, prereg: dict, state: dict, led: L.Ledger, rid: str, probe: str, outcome: str,
@@ -141,7 +170,13 @@ def file_artifact(case: str, probe: str, prereg: dict, tag: str) -> dict | None:
     if (rep.get("name") != case or not rec or rec.get("exit") != 0
             or rep.get("checkpoint", {}).get("sha256") != prereg["checkpoint_sha256"]):
         return None
-    return {"measurement": rec["measurement"], "gpu_s": rec.get("elapsed_s", 0.0), "exit_code": 0,
+    meta_path = _execution_path(case, probe, tag)
+    meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else None
+    if meta and (meta["case"] != case or meta["probe"] != probe or meta["exit_code"] != 0
+                 or meta["checkpoint_sha256"] != prereg["checkpoint_sha256"]
+                 or meta["report_sha256_lf"] != hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()):
+        return None
+    return {"measurement": rec["measurement"], "gpu_s": None if meta is None else meta["gpu_wall_s"], "exit_code": 0,
             "checkpoint_sha256": rep["checkpoint"]["sha256"], "source": path.relative_to(ROOT).as_posix()}
 
 
@@ -192,6 +227,7 @@ def main(argv=None) -> int:
     r.add_argument("case")
     r.add_argument("request_id")
     r.add_argument("--tag", default="p1a_loop_probes")
+    r.add_argument("--metered", action="store_true")
     rc = sub.add_parser("recover")
     rc.add_argument("case")
     rc.add_argument("--tag", default="p1a_loop_probes")
@@ -210,7 +246,7 @@ def main(argv=None) -> int:
         elif args.cmd == "reject":
             print(reject(args.case, args.request_id, args.approver, args.reason))
         elif args.cmd == "run":
-            print(run(args.case, args.request_id, lambda c, p: isaac_execute(c, p, args.tag),
+            print(run(args.case, args.request_id, lambda c, p: isaac_execute(c, p, args.tag, metered=args.metered),
                       preflight=lambda c, p: isaac_preflight(c, p, args.tag)))
         elif args.cmd == "recover":
             print(recover(args.case, lambda c, p, pr: file_artifact(c, p, pr, args.tag)))
