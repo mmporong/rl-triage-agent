@@ -108,6 +108,8 @@ def main(argv=None) -> int:
         done = sum(Path(j["output"]).exists() for j in jobs)
         failed += len(jobs) - done
         if args.metered:
+            if metrics.with_suffix(".post_close.json").exists():
+                metrics = metrics.with_suffix(".post_close.json")
             if not metrics.exists():
                 failed += 1
             else:
@@ -127,6 +129,7 @@ def main(argv=None) -> int:
                              "report_sha256_lf": hashlib.sha256(report_path.read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
                              "cpu_s": meter["cpu_s"] + time.process_time(), "launcher_exit_code": proc.returncode,
                              "cpu_scope": "isaac_python_wrapper_and_probe_driver_processes",
+                             "isaac_cpu_scope": meter["cpu_scope"], "app_close_cpu_included": meter["phase"] == "after_main",
                              "simulator_steps_scope": meter["simulator_steps_scope"],
                              "meter_sha256_lf": hashlib.sha256(metrics.read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
                              "probes_sha256_lf": frozen_sha, **rows[0]}

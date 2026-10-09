@@ -1,6 +1,6 @@
 # Isaac 승인 고리 실행 사전등록
 
-기존 순위를 재생한 뒤 승인 원장부터 실제 Isaac probe, 갱신, 종료, 비용 감사까지 기록한다. 사전등록은 `bench/protocols/live_loop_v1.json`이다. **이 문서·코드·입력 해시를 커밋한 뒤 측정한다.** 기존 결과와 probe 수식·canonical args·임계값·결함 크기는 바꾸지 않는다.
+기존 순위를 재생한 뒤 승인 원장부터 실제 Isaac probe, 갱신, 종료, 비용 감사까지 기록한다. 최초 사전등록은 `bench/protocols/live_loop_v1.json`이며 종료 시점 계측 보완은 `live_loop_v2.json`에 남긴다. **이 문서·코드·입력 해시를 커밋한 뒤 측정한다.** 기존 결과와 probe 수식·canonical args·임계값·결함 크기는 바꾸지 않는다.
 
 ## 사례와 절차
 
@@ -29,7 +29,7 @@
 - 프로세스 실행 시간·CPU·스텝·출력 해시: 같은 tag의 `execution/`. 복구는 이 시간으로 원래 실행을 한 번만 계산한다. sidecar 없는 과거 파일은 기동 시간을 알 수 없어 비용을 null로 남긴다.
 - worker 프로세스 CPU: 같은 tag의 `workers/`. 사례별 입력·계약·추가 비용·timeline·audit·결과는 `cases/<case>/`.
 
-비용 벡터는 모델 호출·입출력 토큰·GPU 벽시계 초·CPU 초·사람 검토 초·개별 실행 벽시계 초·제어 전이 수다. 모델·사람 검토가 없는 이번 범위에서는 해당 값이 0이다. CPU는 운영자 Python, worker Python, 실행 driver Python, Isaac Python 프로세스의 계측 구간 합이다. batch launcher 셸과 외부 서비스 CPU를 계측한 값은 아니다. GPU 벽시계는 기동·load·reset·측정·close를 포함하는 실행 구간이며 장치 busy 시간이 아니다. 실행별 벽시계 합과 사례 전체 경과 시간을 따로 기록한다. offline finalize·파일 저장 이후 비용은 실행 범위 밖이다.
+비용 벡터는 모델 호출·입출력 토큰·GPU 벽시계 초·CPU 초·사람 검토 초·개별 실행 벽시계 초·제어 전이 수다. 모델·사람 검토가 없는 이번 범위에서는 해당 값이 0이다. CPU는 운영자 Python, worker Python, 실행 driver Python, Isaac Python 프로세스의 계측 구간 합이다. Isaac CPU는 환경 close까지 먼저 저장하고 app close가 Python으로 돌아오면 추가 sidecar의 종료 후 값을 사용한다. 돌아오지 않으면 app close 중 CPU는 포함하지 않으며 `app_close_cpu_included=false`와 계측 범위를 표시한다. batch launcher 셸과 외부 서비스 CPU도 계측 범위 밖이다. GPU 벽시계는 기동·load·reset·측정·close를 포함하는 실행 구간이며 장치 busy 시간이 아니다. 실행별 벽시계 합과 사례 전체 경과 시간을 따로 기록한다. offline finalize·파일 저장 이후 비용은 실행 범위 밖이다.
 
 공학 한도는 사례당 GPU 벽시계 480초, CPU·개별 실행 합·전체 경과 각각 900초, 전이 1,228,800회다. 실행 전 예상 성능이나 소요 시간으로 읽지 않는다. 기존 probe별 승인 한도도 유지하고 초과 관측은 unknown으로 남긴다. 정상 반복 자료는 추가하지 않으며 기존 상대 여유값과 정상 변동 0을 사용한다. 절대 추종 상한은 고정 명령 격자의 제자리 오차 절반, 생존 하한 0.9, 낙상 상한 0.05로 사전등록한다.
 
@@ -41,8 +41,26 @@ PowerShell에서 저장소로 이동하고, 커밋된 사전등록을 사용한�
 
 ```powershell
 cd "$HOME/rl-triage-agent"
+$env:PYTHONUTF8 = "1"
+$env:PYTHONIOENCODING = "utf-8"
 .venv/Scripts/python.exe evals/live_loop_evidence.py run `
-  --prereg bench/protocols/live_loop_v1.json --tag live_loop_20261009 --case h01_s2027
+  --prereg bench/protocols/live_loop_v2.json --tag <새-tag> --case <아직-시작하지-않은-case>
 ```
 
 이미 있는 고리·결과는 덮어쓰지 않는다. 관측 불일치·예산 초과는 원시 기록과 함께 보고한다.
+
+## 종료 시점 계측 보완
+
+v1의 첫 `h01_s2027/P_noise` 측정은 원시 값이 이전과 일치했지만 Isaac 종료 뒤 계측 파일이 남지 않았다. wrapper 외부 finally에만 저장하던 경로를 환경 종료 직후 저장하도록 보완했다. 운영자 출력에서도 cp949가 em dash를 인코딩하지 못해 중단됐으므로 실행 환경을 UTF-8로 고정한다. 이 변경은 측정 수식·RNG·인자·순위·사례·threshold를 바꾸지 않는다.
+
+첫 원장 receipt의 unknown·GPU 18.4초와 초기 CPU·스텝·timeline 누락은 보존한다. 같은 probe를 다시 재서 성공 결과로 바꾸지 않는다. 이후 사례와 남은 probe만 새 계측으로 이어가며, 사전등록 조건별 실패와 인프라 누락을 결과표에 포함한다. 원시 classify 일치와 receipt 판정 일치를 따로 보고한다.
+
+v2는 최초 report·execution·worker·감사 계약·고리 사전등록·기준·중단 state 스냅샷의 SHA와 원장 LF prefix의 길이·행 수·SHA를 고정한다. 기존 원장에 append한 뒤에도 최초 prefix가 같아야 한다. `evals/resume_live_loop_evidence.py`는 이 자료와 커밋 코드를 검증한 뒤 현재 pending부터 이어가고, 최초 CPU·스텝과 전체 timeline 누락을 유지한 audit/result를 새로 쓴다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+$env:PYTHONUTF8 = "1"
+$env:PYTHONIOENCODING = "utf-8"
+.venv/Scripts/python.exe evals/resume_live_loop_evidence.py `
+  --prereg bench/protocols/live_loop_v2.json --tag live_loop_20261009 --case h01_s2027
+```

@@ -29,7 +29,7 @@ from run_fixed_eval import find_run, last_checkpoint  # noqa: E402
 
 L = loop.L
 ACTOR = "codex_operator_user_authorized_test"
-CODE = ("evals/live_loop_evidence.py", "evals/metered_probes.py", "evals/loop.py", "evals/run_probes.py",
+CODE = ("evals/live_loop_evidence.py", "evals/resume_live_loop_evidence.py", "evals/metered_probes.py", "evals/loop.py", "evals/run_probes.py",
         "evals/probes.py", "bench/hidden_faults.py", "bench/external_faults.py", *A._code_sources())
 
 
@@ -131,6 +131,22 @@ def verify_prereg(path, prereg):
         for source in case["sources"].values():
             if sha(ROOT / source["path"]) != source["sha256_lf"]:
                 raise ValueError(f"사전등록 입력 변경: {source['path']}")
+    verify_amendment(prereg)
+
+
+def verify_amendment(prereg):
+    amendment = prereg.get("amendment")
+    if not amendment:
+        return
+    if sha(ROOT / amendment["previous_protocol"]) != amendment["previous_sha256_lf"]:
+        raise ValueError("이전 사전등록 파일이 달라졌다")
+    for source in amendment["prior_artifacts"].values():
+        if sha(ROOT / source["path"]) != source["sha256_lf"]:
+            raise ValueError(f"최초 실패 증거 변경: {source['path']}")
+    prefix = amendment["ledger_prefix"]
+    data = (ROOT / prefix["path"]).read_bytes().replace(b"\r\n", b"\n")[:prefix["bytes_lf"]]
+    if hashlib.sha256(data).hexdigest() != prefix["sha256_lf"] or len(data.splitlines()) != prefix["line_count"]:
+        raise ValueError("최초 원장의 사전등록 prefix가 달라졌다")
 
 
 def worker(case, rid, tag, interrupt):
@@ -249,6 +265,8 @@ def run_case(path, tag, case_name):
             raise ValueError("실시간 probe의 체크포인트·seed가 다르다")
         live = report["probes"][probe]["measurement"] or {}
         agreement = measurement_agreement(probe, live, prior["probes"][probe]["measurement"], ref.get(probe), prereg)
+        agreement["receipt_outcome"] = led.requests()[rid]["receipt"]["outcome"]
+        agreement["receipt_agreement"] = agreement["receipt_outcome"] == agreement["prior_outcome"]
         agreements.append(agreement)
         runs.append({"request_id": rid, "probe": probe, "worker_exit": code, "process_started_at": process_started,
                      "receipt_observed_at": now(), "process_to_receipt_s": (datetime.now(timezone.utc) - A._timestamp(process_started)).total_seconds(),
@@ -274,7 +292,8 @@ def run_case(path, tag, case_name):
     A._write_new(folder / "audit.json", audit)
     result = {"schema": "live_loop_case_v1", "case": case, "prereg_sha256_lf": sha(path),
               "actor": ACTOR, "scope": prereg["diagnosis_scope"], "runs": runs, "recovery": recovery,
-              "agreements": agreements, "classification_agreement": all(a["live_outcome"] == a["prior_outcome"] for a in agreements),
+              "agreements": agreements, "raw_classification_agreement": all(a["live_outcome"] == a["prior_outcome"] for a in agreements),
+              "classification_agreement": all(a["receipt_agreement"] for a in agreements),
               "scalar_agreement": all(a["scalar_agreement"] for a in agreements), "audit_finalize_error": None,
               "loop_status": audit["loop"]["diagnosis_status"], "observed": audit["loop"]["observed"],
               "costs": audit["costs"]["totals"], "end_to_end_wall": audit["end_to_end_wall"],

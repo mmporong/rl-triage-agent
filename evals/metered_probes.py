@@ -49,25 +49,41 @@ def main(argv=None):
     if opts.metrics.exists():
         raise SystemExit("계측 sidecar는 덮어쓰지 않는다")
     records = []
-    original, saved_argv = probes.measure, sys.argv
+    original, original_run, saved_argv = probes.measure, probes.run, sys.argv
     probes.measure = observe_measure(original, records)
     sys.argv = [str(ROOT / "evals/probes.py"), *remaining]
+
+    def persist(path, completed, phase):
+        report = {"schema": "probe_process_metrics_v1", "completed": completed, "measurements": records, "phase": phase,
+                  "cpu_s": time.process_time(),
+                  "cpu_scope": "isaac_python_lifetime_after_main" if phase == "after_main" else "isaac_python_lifetime_through_env_close_before_app_close",
+                  "simulator_steps_scope": "successful_measure_env_step_calls_times_actual_num_envs",
+                  "jobs_sha256": hashlib.sha256(Path(remaining[remaining.index("--jobs") + 1]).read_bytes()).hexdigest(),
+                  "probes_sha256_lf": hashlib.sha256((ROOT / "evals/probes.py").read_bytes().replace(b"\r\n", b"\n")).hexdigest()}
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("x", encoding="utf-8", newline="\n") as fh:
+            fh.write(json.dumps(report, indent=1, allow_nan=False) + "\n")
+
+    def measured_run(args):
+        completed = False
+        try:
+            result = original_run(args)
+            completed = True
+            return result
+        finally:
+            persist(opts.metrics, completed, "before_app_close")
+
+    probes.run = measured_run
     completed = False
     try:
         code = probes.main()
         completed = code == 0
         return code
     finally:
-        probes.measure, sys.argv = original, saved_argv
-        report = {"schema": "probe_process_metrics_v1", "completed": completed, "measurements": records,
-                  "cpu_s": time.process_time(),
-                  "cpu_scope": "isaac_python_process_lifetime_through_app_close",
-                  "simulator_steps_scope": "successful_measure_env_step_calls_times_actual_num_envs",
-                  "jobs_sha256": hashlib.sha256(Path(remaining[remaining.index("--jobs") + 1]).read_bytes()).hexdigest(),
-                  "probes_sha256_lf": hashlib.sha256((ROOT / "evals/probes.py").read_bytes().replace(b"\r\n", b"\n")).hexdigest()}
-        opts.metrics.parent.mkdir(parents=True, exist_ok=True)
-        with opts.metrics.open("x", encoding="utf-8", newline="\n") as fh:
-            fh.write(json.dumps(report, indent=1, allow_nan=False) + "\n")
+        probes.measure, probes.run, sys.argv = original, original_run, saved_argv
+        # Isaac shutdown이 Python으로 돌아오지 않아도 run의 종료 시점 계측은 남는다.
+        path = opts.metrics.with_suffix(".post_close.json") if opts.metrics.exists() else opts.metrics
+        persist(path, completed, "after_main")
 
 
 if __name__ == "__main__":
