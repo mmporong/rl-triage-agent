@@ -1,0 +1,649 @@
+{
+ "schema": "t2_no_intervention_prereg_v1",
+ "status": "preregistered_not_executed",
+ "prepared_at": "2026-10-09T04:53:27.801699+00:00",
+ "preparation_head": "eb568e4579a5a91555dafcc9d01e3cf6c08883b1",
+ "selection_rule": "all_X2_X3_seed7_healthy_development_calibration_plus_matched_NONE; no new performance set",
+ "scope": "gate_only_prereg; zero_new_model_probe_intervention_or_gpu_execution; separate_from_T1",
+ "sources": {
+  "calibration": {
+   "path": "evals/results/t1_calibration_20261009/t1_calibration.json",
+   "sha256_lf": "3f2696df925820a9c321cdb6001c6951f96f5f09ee1e8ab251e6ac254f7f1eb1"
+  },
+  "mechanism_smoke": {
+   "path": "evals/results/t1_smoke_20261009/summary.json",
+   "sha256_lf": "c672c6a1f7d2e16159eb3a2043444396c60fdb7d1cc262e3fb650494e4a5165f"
+  },
+  "fixed_eval_protocol": {
+   "path": "bench/protocols/fixed_eval_v1.json",
+   "sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46"
+  }
+ },
+ "code_sha256_lf": {
+  "src/rl_triage/behavior_oracle.py": "0733c00fba29243dccee2c8c24c265ded533590698e6147c90c17f5c53603c49",
+  "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e"
+ },
+ "absolute_gates": {
+  "min_survival_fraction": 0.9,
+  "max_fall_rate": 0.05,
+  "max_lin_vel_rmse_mps": 0.5883484054145521,
+  "max_yaw_rate_rmse_radps": 0.41602514716892186
+ },
+ "normal_variation_policy": "zero normal repeats; reference self-comparison plus existing RC.MARGIN; no measured variance claim",
+ "cases": [
+  {
+   "case": "X2",
+   "training_seed": 7,
+   "inputs": {
+    "candidate": {
+     "path": "evals/results/t1_calibration_20261009/runs/t1cal_X2_s7.json",
+     "sha256_lf": "af61521d091394ede663395377501f6b52c646b160bbeb8c7fb2ebad35e4243a"
+    },
+    "reference": {
+     "path": "evals/results/t1_calibration_20261009/runs/p0ccal_NONE_s7.json",
+     "sha256_lf": "05b1ae53a8cf31f88a7726be49bfa5d75f5cb2b809ac63d2cf01158f1695800c"
+    }
+   },
+   "checkpoint_sha256_as_recorded": {
+    "candidate": "d2aa327e66ac680a8f147187b3b8331c23233aacea6c95398cd2751760c04249",
+    "reference": "0c2676b0bc92cd975d0318a9905e82be11c7b9ba3799918aa5d3f47cf2da8b96"
+   },
+   "reference_identity": {
+    "protocol": "fixed_eval_v1",
+    "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+    "eval_seed": 2026,
+    "num_envs": 1040,
+    "horizon_steps": 1000,
+    "step_dt": 0.02,
+    "versions": {
+     "torch": "2.7.0+cu128",
+     "gpu": "NVIDIA GeForce RTX 3060",
+     "isaaclab": "0.41.3",
+     "isaaclab_tasks": "0.10.36",
+     "isaaclab_rl": "0.1.8",
+     "rsl-rl-lib": "2.3.3",
+     "isaacsim": null
+    },
+    "commands": [
+     [
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     [
+      -1.0,
+      -1.0,
+      0.0
+     ],
+     [
+      -1.0,
+      -1.0,
+      1.0
+     ],
+     [
+      -1.0,
+      0.0,
+      -1.0
+     ],
+     [
+      -1.0,
+      0.0,
+      0.0
+     ],
+     [
+      -1.0,
+      0.0,
+      1.0
+     ],
+     [
+      -1.0,
+      1.0,
+      -1.0
+     ],
+     [
+      -1.0,
+      1.0,
+      0.0
+     ],
+     [
+      -1.0,
+      1.0,
+      1.0
+     ],
+     [
+      0.0,
+      -1.0,
+      -1.0
+     ],
+     [
+      0.0,
+      -1.0,
+      0.0
+     ],
+     [
+      0.0,
+      -1.0,
+      1.0
+     ],
+     [
+      0.0,
+      0.0,
+      -1.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ],
+     [
+      0.0,
+      1.0,
+      -1.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      1.0
+     ],
+     [
+      1.0,
+      -1.0,
+      -1.0
+     ],
+     [
+      1.0,
+      -1.0,
+      0.0
+     ],
+     [
+      1.0,
+      -1.0,
+      1.0
+     ],
+     [
+      1.0,
+      0.0,
+      -1.0
+     ],
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      1.0,
+      0.0,
+      1.0
+     ],
+     [
+      1.0,
+      1.0,
+      -1.0
+     ],
+     [
+      1.0,
+      1.0,
+      0.0
+     ],
+     [
+      1.0,
+      1.0,
+      1.0
+     ]
+    ]
+   },
+   "relative_bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1,
+    "err_yaw_ratio_max": 1.1,
+    "fall_frac_max": 0.05
+   },
+   "normal_repeats": 0,
+   "development_selection": {
+    "observed_before_prereg": true,
+    "calibration_label": "healthy",
+    "candidate_metrics": {
+     "fall_rate": 0.0,
+     "mean_survival_s": 20.0,
+     "lin_vel_rmse_mps": 0.14177348125202943,
+     "yaw_rate_rmse_radps": 0.2874568860234654
+    },
+    "reference_metrics": {
+     "fall_rate": 0.0,
+     "mean_survival_s": 20.0,
+     "lin_vel_rmse_mps": 0.14515526837939904,
+     "yaw_rate_rmse_radps": 0.2981218706122684
+    },
+    "checkpoint_files_rehashed_for_this_prereg": false,
+    "new_t2_execution": false
+   }
+  },
+  {
+   "case": "X3",
+   "training_seed": 7,
+   "inputs": {
+    "candidate": {
+     "path": "evals/results/t1_calibration_20261009/runs/t1cal_X3_s7.json",
+     "sha256_lf": "99babdb51612f00f031cdb4e973e7baca4e829dddf0739f0d9eace9d85991802"
+    },
+    "reference": {
+     "path": "evals/results/t1_calibration_20261009/runs/t1cal_X3_REF_s7.json",
+     "sha256_lf": "db8eae5ba2ce120398d965499126f512ab67f187e44b27748a41c243534cf33c"
+    }
+   },
+   "checkpoint_sha256_as_recorded": {
+    "candidate": "54e8c4a5bb56f172de232caafef584f1c958ecae6b4ea175aa0384259a2dc7d5",
+    "reference": "4bf7bb318c29151bfd5671a6477437a480ae987cb8c1d2d39694d27683af05e1"
+   },
+   "reference_identity": {
+    "protocol": "fixed_eval_v1",
+    "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+    "eval_seed": 2026,
+    "num_envs": 1040,
+    "horizon_steps": 1000,
+    "step_dt": 0.02,
+    "versions": {
+     "torch": "2.7.0+cu128",
+     "gpu": "NVIDIA GeForce RTX 3060",
+     "isaaclab": "0.41.3",
+     "isaaclab_tasks": "0.10.36",
+     "isaaclab_rl": "0.1.8",
+     "rsl-rl-lib": "2.3.3",
+     "isaacsim": null
+    },
+    "commands": [
+     [
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     [
+      -1.0,
+      -1.0,
+      0.0
+     ],
+     [
+      -1.0,
+      -1.0,
+      1.0
+     ],
+     [
+      -1.0,
+      0.0,
+      -1.0
+     ],
+     [
+      -1.0,
+      0.0,
+      0.0
+     ],
+     [
+      -1.0,
+      0.0,
+      1.0
+     ],
+     [
+      -1.0,
+      1.0,
+      -1.0
+     ],
+     [
+      -1.0,
+      1.0,
+      0.0
+     ],
+     [
+      -1.0,
+      1.0,
+      1.0
+     ],
+     [
+      0.0,
+      -1.0,
+      -1.0
+     ],
+     [
+      0.0,
+      -1.0,
+      0.0
+     ],
+     [
+      0.0,
+      -1.0,
+      1.0
+     ],
+     [
+      0.0,
+      0.0,
+      -1.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ],
+     [
+      0.0,
+      1.0,
+      -1.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      1.0
+     ],
+     [
+      1.0,
+      -1.0,
+      -1.0
+     ],
+     [
+      1.0,
+      -1.0,
+      0.0
+     ],
+     [
+      1.0,
+      -1.0,
+      1.0
+     ],
+     [
+      1.0,
+      0.0,
+      -1.0
+     ],
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      1.0,
+      0.0,
+      1.0
+     ],
+     [
+      1.0,
+      1.0,
+      -1.0
+     ],
+     [
+      1.0,
+      1.0,
+      0.0
+     ],
+     [
+      1.0,
+      1.0,
+      1.0
+     ]
+    ]
+   },
+   "relative_bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1,
+    "err_yaw_ratio_max": 1.1,
+    "fall_frac_max": 0.08846153989434243
+   },
+   "normal_repeats": 0,
+   "development_selection": {
+    "observed_before_prereg": true,
+    "calibration_label": "healthy",
+    "candidate_metrics": {
+     "fall_rate": 0.03846153989434242,
+     "mean_survival_s": 19.264422607421874,
+     "lin_vel_rmse_mps": 0.1534727820583516,
+     "yaw_rate_rmse_radps": 0.3091468080254662
+    },
+    "reference_metrics": {
+     "fall_rate": 0.03846153989434242,
+     "mean_survival_s": 19.267904052734377,
+     "lin_vel_rmse_mps": 0.1529411925449622,
+     "yaw_rate_rmse_radps": 0.2995120928811447
+    },
+    "checkpoint_files_rehashed_for_this_prereg": false,
+    "new_t2_execution": false
+   }
+  },
+  {
+   "case": "NONE",
+   "training_seed": 7,
+   "inputs": {
+    "candidate": {
+     "path": "evals/results/t1_calibration_20261009/runs/p0ccal_NONE_s7.json",
+     "sha256_lf": "05b1ae53a8cf31f88a7726be49bfa5d75f5cb2b809ac63d2cf01158f1695800c"
+    },
+    "reference": {
+     "path": "evals/results/t1_calibration_20261009/runs/p0ccal_NONE_s7.json",
+     "sha256_lf": "05b1ae53a8cf31f88a7726be49bfa5d75f5cb2b809ac63d2cf01158f1695800c"
+    }
+   },
+   "checkpoint_sha256_as_recorded": {
+    "candidate": "0c2676b0bc92cd975d0318a9905e82be11c7b9ba3799918aa5d3f47cf2da8b96",
+    "reference": "0c2676b0bc92cd975d0318a9905e82be11c7b9ba3799918aa5d3f47cf2da8b96"
+   },
+   "reference_identity": {
+    "protocol": "fixed_eval_v1",
+    "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+    "eval_seed": 2026,
+    "num_envs": 1040,
+    "horizon_steps": 1000,
+    "step_dt": 0.02,
+    "versions": {
+     "torch": "2.7.0+cu128",
+     "gpu": "NVIDIA GeForce RTX 3060",
+     "isaaclab": "0.41.3",
+     "isaaclab_tasks": "0.10.36",
+     "isaaclab_rl": "0.1.8",
+     "rsl-rl-lib": "2.3.3",
+     "isaacsim": null
+    },
+    "commands": [
+     [
+      -1.0,
+      -1.0,
+      -1.0
+     ],
+     [
+      -1.0,
+      -1.0,
+      0.0
+     ],
+     [
+      -1.0,
+      -1.0,
+      1.0
+     ],
+     [
+      -1.0,
+      0.0,
+      -1.0
+     ],
+     [
+      -1.0,
+      0.0,
+      0.0
+     ],
+     [
+      -1.0,
+      0.0,
+      1.0
+     ],
+     [
+      -1.0,
+      1.0,
+      -1.0
+     ],
+     [
+      -1.0,
+      1.0,
+      0.0
+     ],
+     [
+      -1.0,
+      1.0,
+      1.0
+     ],
+     [
+      0.0,
+      -1.0,
+      -1.0
+     ],
+     [
+      0.0,
+      -1.0,
+      0.0
+     ],
+     [
+      0.0,
+      -1.0,
+      1.0
+     ],
+     [
+      0.0,
+      0.0,
+      -1.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ],
+     [
+      0.0,
+      1.0,
+      -1.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      1.0
+     ],
+     [
+      1.0,
+      -1.0,
+      -1.0
+     ],
+     [
+      1.0,
+      -1.0,
+      0.0
+     ],
+     [
+      1.0,
+      -1.0,
+      1.0
+     ],
+     [
+      1.0,
+      0.0,
+      -1.0
+     ],
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      1.0,
+      0.0,
+      1.0
+     ],
+     [
+      1.0,
+      1.0,
+      -1.0
+     ],
+     [
+      1.0,
+      1.0,
+      0.0
+     ],
+     [
+      1.0,
+      1.0,
+      1.0
+     ]
+    ]
+   },
+   "relative_bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1,
+    "err_yaw_ratio_max": 1.1,
+    "fall_frac_max": 0.05
+   },
+   "normal_repeats": 0,
+   "development_selection": {
+    "observed_before_prereg": true,
+    "calibration_label": "healthy",
+    "candidate_metrics": {
+     "fall_rate": 0.0,
+     "mean_survival_s": 20.0,
+     "lin_vel_rmse_mps": 0.14515526837939904,
+     "yaw_rate_rmse_radps": 0.2981218706122684
+    },
+    "reference_metrics": {
+     "fall_rate": 0.0,
+     "mean_survival_s": 20.0,
+     "lin_vel_rmse_mps": 0.14515526837939904,
+     "yaw_rate_rmse_radps": 0.2981218706122684
+    },
+    "checkpoint_files_rehashed_for_this_prereg": false,
+    "new_t2_execution": false
+   }
+  }
+ ],
+ "decision_rule": {
+  "precondition": "verify input/code SHA; reference passes absolute gates; protocol/seed/grid/horizon identities equal",
+  "healthy": "do_not_open_loop; no_model; no_probe; no_approval_consumption; no_configuration_change; no_training",
+  "unhealthy": "outside_T2_healthy_scope; stop; any future diagnostic execution needs a separate preregistration",
+  "undetermined_or_invalid": "stop_undetermined; do_not_intervene; not_a_healthy_success"
+ },
+ "future_acceptance": {
+  "receipt_count": 0,
+  "probe_execution_count": 0,
+  "model_calls": 0,
+  "intervention_count": 0,
+  "gpu_wall_s_for_gate": 0,
+  "all_selected_cases_pass_frozen_healthy_gate": true
+ },
+ "required_future_record_fields": [
+  "input_hashes_verified",
+  "reference_valid",
+  "behavior_label",
+  "loop_opened",
+  "model_calls",
+  "probe_executions",
+  "approved",
+  "consumed",
+  "receipts",
+  "interventions",
+  "gate_cpu_s",
+  "gate_wall_s",
+  "gpu_wall_s"
+ ],
+ "claim_limits": [
+  "inputs already selected after seeing calibration",
+  "not independent generalization or T1 cause identification",
+  "NONE is a reference self-check, not an independent repeat",
+  "no T2 execution or scored success yet"
+ ]
+}
