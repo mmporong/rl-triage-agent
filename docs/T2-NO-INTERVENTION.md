@@ -1,6 +1,6 @@
 # T2: healthy 입력에서 고리를 열지 않는 게이트 사전등록
 
-상태는 **사전등록 완료·T2 실행 전**이다. [기계 판독 사전등록](../bench/protocols/t2_no_intervention_v1.json)은 이미 관측한 개발 보정 자료 X2·X3와 같은 기준 실행 NONE을 고정한다. T1 원인 식별 결과와 분리하며, 아직 T2 성공 건수나 성능 수치를 보고하지 않는다.
+상태는 **사전등록·게이트 실행 코드 준비 완료, T2 측정 전**이다. [입력·게이트 사전등록](../bench/protocols/t2_no_intervention_v1.json)은 이미 관측한 개발 보정 자료 X2·X3와 같은 기준 실행 NONE을 고정한다. [실행 코드 사전등록](../bench/protocols/t2_gate_execution_v1.json)은 원래 사전등록 SHA와 게이트 CLI·추가 의존 코드의 SHA를 고정한다. 입력·선정·행동 기준은 그대로이며 T1 원인 식별 결과와 분리한다.
 
 ## 입력과 선정 근거
 
@@ -28,3 +28,17 @@
 향후 실행은 사전등록 커밋 뒤 별도 새 tag에 기록한다. 입력 해시 확인, 기준 유효성, 행동 판정, 고리 생성 여부, 모델·probe·승인·소비·receipt·개입 수, 게이트 CPU·벽시계 비용을 남긴다. 수용 조건은 선택한 3건 모두 동결 healthy 게이트를 통과하고, 모델·probe·승인 소비·receipt·개입 각각 0건인 것이다. 파일 읽기와 행동 판정 비용을 0으로 가정하지 않는다. 게이트는 Isaac 프로세스를 시작하지 않으므로 그 실행의 GPU 벽시계는 0이다.
 
 전부 통과하면 "이미 healthy로 관측한 개발 입력 3건에서 게이트가 추가 진단·개입을 시작하지 않았다"로 쓴다. 일부 실패하면 각 입력의 불일치·기준 실패·unhealthy·undetermined를 그대로 분리한다. 개발 입력 선정에 결과를 이미 사용했으므로 독립 보류 세트 일반화, 원인 식별 성공, 상류 버그의 영향이 항상 없다는 주장으로 확대하지 않는다.
+
+## 게이트 실행 하네스
+
+`evals/t2_no_intervention.py`는 사전등록·코드가 커밋됐고 해시가 같은지 확인한 뒤 평가 JSON의 행동 값을 판정한다. 모델·Isaac 실행 코드를 가져오지 않으며 기존 승인 원장 등 `evals/loops/`의 모든 파일을 실행 전후 해시로 대조한다. 결과는 사전등록의 `planned_tag`에 한 번만 쓴다. 다른 tag나 기존 결과 폴더는 판정 전에 거부한다. 이번 검증 범위는 이 게이트 CLI이며 일반 `loop.py` 호출의 라우팅을 바꾸지 않는다.
+
+기존 보정 JSON에는 원시 합계 통계가 없어 `assessment.metrics_verified=false`를 유지한다. 입력 SHA·조건별 수치의 제한된 일관성 검사와 기록된 checkpoint SHA 대조를 검증하고, 새 checkpoint 파일 검증이나 새 행동 평가로 표현하지 않는다. 비용은 사전 확인부터 판정·원장 스냅샷까지 게이트 Python의 CPU·벽시계다. Python 기동·import, Git 자식 프로세스 CPU, 결과 저장 비용은 포함하지 않는다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+$env:PYTHONUTF8 = "1"
+$env:PYTHONIOENCODING = "utf-8"
+.venv/Scripts/python.exe evals/t2_no_intervention.py `
+  --prereg bench/protocols/t2_gate_execution_v1.json --tag t2_gate_20261009
+```

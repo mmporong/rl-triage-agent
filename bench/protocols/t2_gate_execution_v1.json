@@ -1,0 +1,28 @@
+{
+ "schema": "t2_gate_execution_prereg_v1",
+ "prepared_at": "2026-10-09T06:02:38.314362+00:00",
+ "preparation_head": "7b0e7a7a613a2d5777e95cb4b138a8097a040ccd",
+ "base_protocol": {
+  "path": "bench/protocols/t2_no_intervention_v1.json",
+  "sha256_lf": "377962b3eae320d50ac35ea96ce52eb1a93aee84eaccf974d14c3c29c9cf31b8"
+ },
+ "code_sha256_lf": {
+  "evals/t2_no_intervention.py": "81fa8d46abb938f968b29c4d3e1c9aa6c3d5ed5ee4db9586a5a55d9778497b3f",
+  "src/rl_triage/experiment_cost.py": "534bfebadc0392459da2b425ebcc9b6a923f894e25299a734434efeeaef736b7",
+  "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1"
+ },
+ "selection_inputs_gates_unchanged": true,
+ "probe_definitions_changed": false,
+ "new_gpu_execution": false,
+ "planned_tag": "t2_gate_20261009",
+ "scope": "offline gate CLI on fixed previously-seen evaluation JSON; no integration change to generic loop CLI",
+ "checkpoint_scope": "compare recorded checkpoint SHA in frozen JSON; do not claim checkpoint file rehash",
+ "behavior_metric_scope": "legacy condition metrics; raw aggregate counts unavailable and metrics_verified flags are preserved",
+ "cost_scope": "gate Python process CPU and elapsed from preflight through decisions and approval-file snapshots; interpreter/import startup, Git child CPU and result writes excluded",
+ "zero_execution_evidence": "gate CLI imports no model/Isaac execution code; snapshot all existing loop files before and after; log gate outcome and zero invocation/approval/intervention counters",
+ "acceptance_additions": [
+  "existing loop files unchanged",
+  "all fixed input hashes and reference identities/bands match"
+ ],
+ "preregistration_order": "commit base protocol, this execution manifest and its frozen code before running planned tag"
+}
