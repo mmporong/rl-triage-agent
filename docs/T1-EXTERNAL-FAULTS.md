@@ -164,3 +164,27 @@ X1의 선속도 RMSE는 기준 0.147392 m/s, 결함 0.162590 m/s다. 비율이 �
 실행 식별 값을 제외한 params diff는 X1·X3의 짝에서 0개, X2와 순정 기준 사이에서 사전등록한 `env.scene.contact_forces.history_length` 한 줄(3 → 0)이다. 주입·크기·probe·판정 소스의 LF 정규화 해시는 `41b3642`와 일치한다. 판정 결과의 `git_dirty: true`는 커밋 전 결과 폴더도 검사에 포함된 상태를 기록한 값이며 수정하지 않았다.
 
 D3는 X1 한 종류의 seed 2026·2027·2028과 각 짝 기준만 학습한다(결함 3건, 기준 3건). X2·X3의 크기를 키우거나 probe를 조정하지 않는다.
+
+### D3 holdout 학습 (2026-10-09)
+
+[bench/runs_t1](../bench/runs_t1/)의 holdout 6개 실행을 모두 4096 env × 300회로 마쳤다. 각 실행은 exit 0, 24개 지표 × 300시점, `model_299.pt`가 있으며 세 짝 모두 실행 식별 값 외 params diff가 0개다.
+
+| seed | 기준 학습 wall time(s) | 결함 학습 wall time(s) |
+|---|---:|---:|
+| 2026 | 614.7 | 674.5 |
+| 2027 | 592.8 | 733.1 |
+| 2028 | 873.6 | 1871.3 |
+
+시간 합계는 5360.0초다. 마지막 seed 실행 중 다른 프로세스의 GPU 메모리 점유를 관찰했으므로 이 시간표로 처리 속도나 비용 우위를 비교하지 않는다. 보행 조건·실패 없음 판정은 아직 실행하지 않은 D4 고정 평가에서 정한다.
+
+학습 뒤 추가한 [build_workspace_t1.py](../bench/build_workspace_t1.py)는 사례별 기준 텔레메트리·params를 등록하고, [t1_rankings.py](../evals/t1_rankings.py)는 동결 규칙과 P0-C 에이전트를 같은 입력에 적용한다. 정답표는 작업공간에 복사하지 않는다. 아래 입력·코드를 커밋한 뒤 순위 실행을 시작한다.
+
+```bash
+python bench/build_workspace_t1.py register
+python bench/build_workspace_t1.py build
+python evals/t1_rankings.py --mode rules --tag t1_rules_20261009
+TRIAGE_ANALYSIS_SANDBOX=required uv run --no-sync python evals/t1_rankings.py --mode agent --tag t1_agent_20261009
+python evals/t1_holdout_summary.py evals/results/t1_fixed_eval_20261009
+```
+
+에이전트 실행은 Linux에서 정답표·`/proc/self/environ` 읽기 거부를 확인한 뒤 시작한다. 프롬프트·도구·주입·probe·임계값은 바꾸지 않는다. D4 결과 문구는 선행 커밋 `1299579`에 등록했다.
