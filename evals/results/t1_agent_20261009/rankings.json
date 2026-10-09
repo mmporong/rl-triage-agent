@@ -1,0 +1,79 @@
+{
+ "kind": "t1_rankings",
+ "mode": "agent",
+ "code": {
+  "git_head": "29ce990a162c5b99a02ca7cd119bb5fa18a92c0d",
+  "git_dirty": false,
+  "sha256_lf": {
+   "bench/build_workspace_t1.py": "a1ebdbbf6cb6cd3e48c9205c38470a103f00bde1621d5fd3478ad9afab1bdf4b",
+   "evals/t1_rankings.py": "f49231ae7e1f80053de7596ffdc472367492c314f25989e891b0b30b8ca48b59",
+   "evals/run_eval.py": "4abc3f1513f2b4f4a0e7adcfc287a9e72c0206b43cf9ccbe30816030ab035683",
+   "evals/baselines.py": "00b2b5d1f3500ca406da11106a2af9ee3dd40262165ac171684021b6f08b6475",
+   "evals/replay.py": "b2de9072293b87089c63e1ea246bb9a6bbb81881ebf44e74b7dc0757961024e7",
+   "configs/triage_blind.yml": "3e50d3f3a7b72e7b67f2e29e73bc017dcfc4cdf62cd02b878e3381f8ffabd28e",
+   "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af",
+   "src/rl_triage/nat_functions.py": "2c27a4eb58a9f92685ccf1e0f7b5b7fbb8171a2c9334c98269141a367f919cc8",
+   "src/rl_triage/rules.py": "11298d86f8df8ae2f9553dd77bffd687034c065f246cf3f36689c70c26aa2cfd",
+   "src/rl_triage/leakcheck.py": "fa7c15525587e907bcb4ba686fdf79eb28ceb519ec6acca1aa48c1697ee2d831"
+  }
+ },
+ "model": "nvidia/nemotron-3-super-120b-a12b",
+ "planned_cells": 3,
+ "completed_cells": 3,
+ "attempts": 3,
+ "answer_key_sha256_lf": "d8cd3f3b82b315ea78dcfaf7e3b36664d8cd3df8cf8d58b90076615a2681d483",
+ "inputs": [
+  {
+   "path": "bench/reference/params/t1_e01_seed2026/agent.yaml",
+   "sha256_lf": "12d517b49c9a27666e72b79b8597f7d7e486856888620e5f2547591bd9850ea7"
+  },
+  {
+   "path": "bench/reference/params/t1_e01_seed2026/env.yaml",
+   "sha256_lf": "2b94a8dd07d1dc0f6eae5911a7df2badbcd5a719972659d9ecef8d92d1231a6b"
+  },
+  {
+   "path": "bench/reference/params/t1_e01_seed2027/agent.yaml",
+   "sha256_lf": "9a8daffa5e2a880952bd6c740748ccbba25b47f0dd56e81c3110ef7319a63151"
+  },
+  {
+   "path": "bench/reference/params/t1_e01_seed2027/env.yaml",
+   "sha256_lf": "e0a599479f52e50f7f8e52e19c249ebdc7b6183f952f271924b8a5fca36b1e35"
+  },
+  {
+   "path": "bench/reference/params/t1_e01_seed2028/agent.yaml",
+   "sha256_lf": "921554c37b6d0ac44d6b100b9c9276db61dc21dbceb4c00f73dcf5d6a2e59612"
+  },
+  {
+   "path": "bench/reference/params/t1_e01_seed2028/env.yaml",
+   "sha256_lf": "0924f0f831e5217667b028da7f986976f1ab487ccb35612feb04095f512c0dba"
+  },
+  {
+   "path": "bench/reference/t1_manifest.json",
+   "sha256_lf": "20ff41ceed8e4fea99b227a1017e81060c4caaa025ef85dc6ae0fa071f39eb9d"
+  },
+  {
+   "path": "bench/runs_t1/e01_s2026.telemetry.json",
+   "sha256_lf": "026b5b14517a0e47cedb8aa6f75903eaec1457764ab4535bcd5dd909ebb4088a"
+  },
+  {
+   "path": "bench/runs_t1/e01_s2027.telemetry.json",
+   "sha256_lf": "be9d967256670502558a9fd788102c4f6f3bfa485f7913b25fa1049110b4ad13"
+  },
+  {
+   "path": "bench/runs_t1/e01_s2028.telemetry.json",
+   "sha256_lf": "6d934c96629709809cd76f6f8e3e143c4e62c94953e2a76d3f2b7a8e16bb2e36"
+  },
+  {
+   "path": "bench/runs_t1/ref_e01_s2026.telemetry.json",
+   "sha256_lf": "7f27b713f349e244326346d02c925a4859f76ecd8a6e1b50f7df69c5c9751d5f"
+  },
+  {
+   "path": "bench/runs_t1/ref_e01_s2027.telemetry.json",
+   "sha256_lf": "b49bb456fb2dd8e6ac0e326454f60eed51aa4b69ac64dd7939486ca71c514f21"
+  },
+  {
+   "path": "bench/runs_t1/ref_e01_s2028.telemetry.json",
+   "sha256_lf": "fd3336cca809b5f60314e51623d428e2923306d514d79c62d76fc4e91e9232c2"
+  }
+ ]
+}

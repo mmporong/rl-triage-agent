@@ -1,0 +1,11 @@
+{
+ "runner": "uv run --no-sync python",
+ "sandbox_mode": "required",
+ "sandbox": "landlock",
+ "targets": [
+  "<answer key>",
+  "/proc/self/environ"
+ ],
+ "denied": true,
+ "exit_code": 0
+}

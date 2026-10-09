@@ -1,0 +1,83 @@
+{
+ "kind": "loop_compare",
+ "probes": "evals/results/t1_probes_20261009",
+ "rankings": [
+  "rules",
+  "agent"
+ ],
+ "top_k": 3,
+ "random_seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "answer_key": "bench/private/answer_key_t1.json",
+ "answer_key_sha256_lf": "d8cd3f3b82b315ea78dcfaf7e3b36664d8cd3df8cf8d58b90076615a2681d483",
+ "table": {
+  "exhaustive": {
+   "cells": 3,
+   "correct": 0,
+   "wrong": 0,
+   "unidentifiable": 0,
+   "none_supported": 3,
+   "probes_used": 18,
+   "gpu_s_est": 825,
+   "gpu_s_measured": 206.8,
+   "mean_probes": 6.0
+  },
+  "fixed": {
+   "cells": 3,
+   "correct": 0,
+   "wrong": 0,
+   "unidentifiable": 0,
+   "none_supported": 3,
+   "probes_used": 18,
+   "gpu_s_est": 825,
+   "gpu_s_measured": 206.8,
+   "mean_probes": 6.0
+  },
+  "random": {
+   "cells": 15,
+   "correct": 0,
+   "wrong": 0,
+   "unidentifiable": 0,
+   "none_supported": 15,
+   "probes_used": 90,
+   "gpu_s_est": 4125,
+   "gpu_s_measured": 1034.0,
+   "mean_probes": 6.0
+  },
+  "discriminate:agent": {
+   "cells": 3,
+   "correct": 0,
+   "wrong": 0,
+   "unidentifiable": 0,
+   "none_supported": 3,
+   "probes_used": 9,
+   "gpu_s_est": 375,
+   "gpu_s_measured": 61.6,
+   "mean_probes": 3.0
+  },
+  "discriminate:rules": {
+   "cells": 3,
+   "correct": 0,
+   "wrong": 0,
+   "unidentifiable": 0,
+   "none_supported": 3,
+   "probes_used": 9,
+   "gpu_s_est": 285,
+   "gpu_s_measured": 21.6,
+   "mean_probes": 3.0
+  }
+ },
+ "code": {
+  "git_head": "29ce990a162c5b99a02ca7cd119bb5fa18a92c0d",
+  "git_dirty": true,
+  "sha256_lf": {
+   "evals/loop_compare.py": "65febe426b03cf2a834f16acaf0e7da48a3c21715c1256666221f164612e41ea",
+   "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1"
+  }
+ }
+}

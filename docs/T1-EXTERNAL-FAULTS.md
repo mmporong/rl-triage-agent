@@ -175,7 +175,7 @@ D3는 X1 한 종류의 seed 2026·2027·2028과 각 짝 기준만 학습한다(�
 | 2027 | 592.8 | 733.1 |
 | 2028 | 873.6 | 1871.3 |
 
-시간 합계는 5360.0초다. 마지막 seed 실행 중 다른 프로세스의 GPU 메모리 점유를 관찰했으므로 이 시간표로 처리 속도나 비용 우위를 비교하지 않는다. 보행 조건·실패 없음 판정은 아직 실행하지 않은 D4 고정 평가에서 정한다.
+시간 합계는 5360.0초다. 마지막 seed 실행 중 다른 프로세스의 GPU 메모리 점유를 관찰했으므로 이 시간표로 처리 속도나 비용 우위를 비교하지 않는다. 보행 조건·실패 없음 판정은 아래 D4 고정 평가 기록으로 확인한다.
 
 학습 뒤 추가한 [build_workspace_t1.py](../bench/build_workspace_t1.py)는 사례별 기준 텔레메트리·params를 등록하고, [t1_rankings.py](../evals/t1_rankings.py)는 동결 규칙과 P0-C 에이전트를 같은 입력에 적용한다. 정답표는 작업공간에 복사하지 않는다. 아래 입력·코드를 커밋한 뒤 순위 실행을 시작한다.
 
@@ -188,3 +188,52 @@ python evals/t1_holdout_summary.py evals/results/t1_fixed_eval_20261009
 ```
 
 에이전트 실행은 Linux에서 정답표·`/proc/self/environ` 읽기 거부를 확인한 뒤 시작한다. 프롬프트·도구·주입·probe·임계값은 바꾸지 않는다. D4 결과 문구는 선행 커밋 `1299579`에 등록했다.
+
+### D4 고정 평가·순위 (2026-10-09)
+
+입력·실행 코드 커밋 `29ce990` 뒤 고정 평가 6개와 각 방식의 순위 3개를 실행했다. 다른 GPU 작업이 해제된 것을 확인한 뒤 Isaac 평가를 시작했다. 결과 문구는 측정 전 커밋 `1299579`의 `0<F<N` 분기에 해당한다. **유효한 짝 3개 중 unhealthy 2/3, 실패 없음 1/3**이다. 여기서 unhealthy는 사전등록한 상대 오차 기준을 넘었다는 뜻이며, 낙상이나 보행 중단을 뜻하지 않는다.
+
+[holdout_summary.json](../evals/results/t1_fixed_eval_20261009/holdout_summary.json)의 원시 통계·체크포인트 SHA는 6/6 검증했고, 기준 보행 조건은 3/3 충족했다. 평가 조건은 `fixed_eval_v1`, 1040 env, 1000 step, 평가 seed 2026, action scale 0.25다. 모든 실행의 낙상 비율은 0, 평균 생존 시간은 20.0초다.
+
+| 학습 seed | 선속도 오차 비 | 회전 오차 비 | 고정 평가 판정 |
+|---|---:|---:|---|
+| 2026 | 1.0432 | 1.0575 | healthy, 실패 없음 |
+| 2027 | 0.8764 | 1.2435 | 회전 오차 비 > 1.10, unhealthy |
+| 2028 | 1.1479 | 1.0233 | 선속도 오차 비 > 1.10, unhealthy |
+
+순위는 [규칙 기록](../evals/results/t1_rules_20261009/rankings.json)과 [에이전트 기록](../evals/results/t1_agent_20261009/rankings.json)에 있다. 각 방식은 계획 3개·완료 3개·시도 3개로 인프라 재시도 없이 끝났다. 에이전트 모델은 P0-C와 같은 `nvidia/nemotron-3-super-120b-a12b`다. Landlock canary는 3/3 통과했고 분석 호출 14/14에 Landlock이 적용됐다.
+
+| 방식 | seed별 상위 세 범주(2026 / 2027 / 2028) | 순위 실행 경과 시간 합(s) |
+|---|---|---:|
+| 규칙 | optimizer, reward, physics / 동일 / 동일 | 0.200282 |
+| 에이전트 | exploration, actuator, optimizer / exploration, optimizer, reward / exploration, actuator, optimizer | 724.2 |
+
+두 방식의 입력 해시 13개와 코드 해시 10개가 일치한다. 이 순위 표는 원인 확정 결과가 아니며, 경과 시간은 순위 실행의 기록이다. probe의 측정 시간이나 전체 작업 비용을 대신하지 않고, GPU 절감·LLM 우위로 해석하지 않는다.
+
+### D4 probe·선택 방식 비교 (2026-10-09)
+
+[t1_probes_20261009/probes](../evals/results/t1_probes_20261009/probes/)의 6개 실행 × 6종 측정은 36/36 정상 종료했고 체크포인트 SHA가 실제 `model_299.pt`와 모두 일치했다. 세 결함 실행의 probe 판정 18개는 전부 normal이었다. 동결 파일 8개의 LF 정규화 바이트는 `41b3642`와 일치한다. 결함 크기·probe·임계값은 변경하지 않았다.
+
+[loop_compare.json](../evals/results/t1_loop_compare_20261009/loop_compare.json)과 [사례별 기록](../evals/results/t1_loop_compare_20261009/loop_compare.jsonl)의 결과는 다음과 같다. **이 표본에서 오답 확정은 0/3이지만 원인 범주 확정도 0/3이다.** 동결 probe 고리는 COM 누적 결함을 식별하지 못했고, 모든 사례에서 후보 가설의 근거가 없다는 `none_supported`로 끝났다. 이를 식별 불가(`unidentifiable`)나 진단 성공으로 바꾸어 표현하지 않는다.
+
+| 방식 | 채점 수 | 정답 확정 | 오답 확정 | 식별 불가 | none_supported | unhealthy 오답 | healthy 오답 | 평균 probe 수 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 전수 | 3 | 0 | 0 | 0 | 3 | 0/2 | 0/1 | 6 |
+| 고정 순서 | 3 | 0 | 0 | 0 | 3 | 0/2 | 0/1 | 6 |
+| random 0·1·2·3·4 각각 | 각 3 | 각 0 | 각 0 | 각 0 | 각 3 | 각각 0/2 | 각각 0/1 | 각각 6 |
+| 에이전트 순위 가르기 | 3 | 0 | 0 | 0 | 3 | 0/2 | 0/1 | 3 |
+| 규칙 순위 가르기 | 3 | 0 | 0 | 0 | 3 | 0/2 | 0/1 | 3 |
+
+unhealthy 집단은 seed 2027·2028의 2건, healthy 집단은 seed 2026의 1건이다. 각 방식에서 unhealthy의 `none_supported`는 2/2, healthy는 1/1이다. random은 같은 세 학습 결과를 다섯 순서로 재생한 15개 셀이며 독립 학습 표본 15개가 아니다.
+
+전체 36개 probe의 `measure()` 구간 합은 397.8초다. 비교 JSON의 방식별 측정 시간은 이 결과표에서 선택한 probe의 시간을 더한 값이며 기동·reset·checkpoint 로딩·모델 순위·사람 검토 비용을 포함하지 않는다. 이 시간으로 GPU 절감 또는 종단 비용 우위를 주장하지 않는다. 비교 결과의 `git_dirty: true`는 probe 결과 폴더가 미커밋 상태인 시점의 기록이며 바꾸지 않았다.
+
+모든 순위·고정 평가·probe·선택 방식 평가가 끝난 뒤 [정답표](../bench/answer_key_t1.json)를 공개 사본으로 고정했다. 비공개 원본과 바이트가 같고 LF SHA256은 `d8cd3f3b82b315ea78dcfaf7e3b36664d8cd3df8cf8d58b90076615a2681d483`이다. 공개 사본으로 재계산하려면 기존 결과와 다른 새 tag를 사용한다.
+
+```bash
+python evals/loop_compare.py --probes evals/results/t1_probes_20261009 --tag t1_replay_<new-tag> \
+    --key bench/answer_key_t1.json --ranking rules=evals/results/t1_rules_20261009 \
+    --ranking agent=evals/results/t1_agent_20261009
+```
+
+표본은 외부 결함 한 종류의 seed 반복 3건이다. 다른 결함·task에 대한 보장, 통계적 우위, LLM 필요성의 증거로 확대하지 않는다.
