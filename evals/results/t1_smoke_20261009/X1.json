@@ -1,0 +1,42 @@
+{
+ "fault": "X1",
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "num_envs": 64,
+ "injected": {
+  "changed": {
+   "events.base_com": {
+    "mode": "reset",
+    "com_range": {
+     "x": [
+      -0.05,
+      0.05
+     ],
+     "y": [
+      -0.05,
+      0.05
+     ],
+     "z": [
+      -0.01,
+      0.01
+     ]
+    }
+   }
+  },
+  "checks": {
+   "base_com_in_reset": true
+  }
+ },
+ "com": {
+  "resets_per_env": 10,
+  "outside_range_frac": 1.0,
+  "worst_xy_max_m": 0.34850066900253296,
+  "final_xy_rms_m": 0.09912367910146713,
+  "final_z_rms_m": 0.020147807896137238
+ },
+ "teleport": {
+  "lost_frac": 0.0,
+  "dx_mean_m": 0.0030336715281009674,
+  "dx_max_m": 0.48784464597702026
+ },
+ "elapsed_s": 2.7
+}

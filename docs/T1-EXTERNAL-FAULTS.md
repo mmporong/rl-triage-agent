@@ -117,4 +117,14 @@ python evals/loop_compare.py --probes evals/results/t1_probes_<date> --tag t1_lo
 
 ## 10. 결과
 
-(학습 뒤 기록)
+### D1 smoke (2026-10-09)
+
+사전등록 커밋 `41b3642`의 코드로 64 env에서 실행했다. 결과는 [t1_smoke_20261009/summary.json](../evals/results/t1_smoke_20261009/summary.json)이며 누락 실행은 0/6이다.
+
+| 후보 | 실측 | 3절 판정 |
+|---|---|---|
+| X1 | COM 범위 이탈 X1 100%, X1_REF 0%; 텔레포트 손실 NONE·X1_REF·X1 모두 0% | Bug 1 재현, Bug 2 없음 → 짝 설계 유지 |
+| X2 | 바닥 접촉 NONE·X2 모두 100%; 공중 5회 잔류 접촉력 NONE 0%, X2 100% | 포함 |
+| X3 | push 뒤 평균 vx: X3_REF 0.9967 m/s, X3 -0.0118 m/s | 포함 |
+
+크기·주입·판정·probe 파일은 수정하지 않았다. D2는 X1·X2·X3에 대해 4096 env × 300회, dev seed 7로 진행한다. D1의 메커니즘 재현만으로 학습 실패나 진단 성능을 주장하지 않는다.

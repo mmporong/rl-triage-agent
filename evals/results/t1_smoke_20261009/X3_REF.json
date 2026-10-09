@@ -1,0 +1,37 @@
+{
+ "fault": "X3_REF",
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "num_envs": 64,
+ "injected": {
+  "changed": {
+   "events.push_robot": {
+    "mode": "interval",
+    "interval_range_s": [
+     10.0,
+     15.0
+    ],
+    "velocity_range": {
+     "x": [
+      -0.5,
+      0.5
+     ],
+     "y": [
+      -0.5,
+      0.5
+     ]
+    }
+   }
+  },
+  "checks": {
+   "push_robot_in_interval": true
+  }
+ },
+ "push": {
+  "vx_before_mean": 1.0039560794830322,
+  "vx_after_mean": 0.9967031478881836,
+  "vx_after_min": 0.4972555935382843,
+  "vx_after_max": 1.499092698097229,
+  "vz_after_abs_mean": 0.02654094249010086
+ },
+ "elapsed_s": 0.4
+}
