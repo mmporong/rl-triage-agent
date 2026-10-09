@@ -9,6 +9,10 @@ Isaac Sim 번들 파이썬에서만 쓰인다(isaaclab·rsl_rl은 gym.make 시�
 """
 from __future__ import annotations
 
+import importlib.util
+import sys
+from pathlib import Path
+
 FAULTS = {
     "NONE": {"category": None, "note": "결함 없음(기준 실행도 같은 부트스트랩으로 학습)"},
     "F1": {"category": "reward", "note": "속도 추종 보상이 몸체 좌표 대신 월드 좌표 선속도를 씀"},
@@ -43,7 +47,21 @@ def _swap_code(target, replacement) -> None:
     target.__code__ = replacement.__code__
 
 
+def _external(fault: str):
+    """X로 시작하는 이름은 T1 외부 원인 결함(bench/external_faults.py)이다. P0-C 결함 표(FAULTS)는 그대로 둔다."""
+    if not fault.startswith("X"):
+        return None
+    if "external_faults" not in sys.modules:
+        spec = importlib.util.spec_from_file_location("external_faults", Path(__file__).with_name("external_faults.py"))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        sys.modules["external_faults"] = mod
+    return sys.modules["external_faults"]
+
+
 def _before_env(fault: str) -> None:
+    if ext := _external(fault):
+        return ext.before_env(fault, _swap_code)
     import torch
 
     if fault == "F1":
@@ -84,6 +102,8 @@ def _before_env(fault: str) -> None:
 
 
 def _after_env(fault: str, env) -> dict:
+    if ext := _external(fault):
+        return ext.after_env(fault, env)
     if fault != "F5":
         return {}
     import torch
@@ -98,8 +118,9 @@ def _after_env(fault: str, env) -> dict:
 
 def arm(fault: str) -> None:
     """gymnasium.make를 감싸 환경 생성 직전·직후에 결함을 넣는다. train.py는 이 시점에 이미 Isaac Sim을 띄웠다."""
-    if fault not in FAULTS:
-        raise SystemExit(f"모르는 TRIAGE_FAULT {fault!r}: {sorted(FAULTS)}")
+    ext = _external(fault)
+    if fault not in FAULTS and not (ext and fault in ext.FAULTS):
+        raise SystemExit(f"모르는 TRIAGE_FAULT {fault!r}: {sorted(FAULTS)} 또는 external_faults {sorted(ext.FAULTS) if ext else []}")
     import json
 
     import gymnasium

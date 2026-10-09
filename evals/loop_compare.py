@@ -4,7 +4,8 @@
   python evals/loop_compare.py --probes evals/results/<probe tag> --tag <새 폴더> \
       [--ranking rules=evals/results/p0c_rules_20261009] [--ranking agent=evals/results/p0c_holdout_20261009] ...
 
-- probe 판정은 같은 seed 기준 실행(baseline_p0c_s<seed>) 측정값 대비(probe_loop.classify)다.
+- probe 판정은 같은 seed 기준 실행 측정값 대비(probe_loop.classify)다. 기준은 정답표 사례의 reference
+  (T1: ref_<사례> 또는 baseline_p0c), 없으면 baseline_p0c_s<seed>다.
 - 방식: exhaustive, fixed, random(seed 0~4 평균), discriminate:<이름>(그 결과 폴더의 진단 순위 상위 3개를 가르기).
   순위 폴더는 replay 형식 jsonl이다. rules 폴더는 rule_features 행, 그 밖은 mode별(agent, control_full)로 읽는다.
 - 출력: <폴더>/loop_compare.jsonl(실행×방식 한 줄), <폴더>/loop_compare.json(방식별 표). 정답은 P0-C 정답표.
@@ -13,7 +14,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -28,18 +28,20 @@ CODE_FILES = ("evals/loop_compare.py", "src/rl_triage/probe_loop.py")
 RANDOM_SEEDS = range(5)
 
 
-def load_outcomes(folder: Path) -> tuple[dict, dict]:
+def load_outcomes(folder: Path, key: dict | None = None) -> tuple[dict, dict]:
     """(실행 이름 → probe → 판정, 실행 이름 → probe → 측정 초)."""
     reports = {f.stem: json.loads(f.read_text(encoding="utf-8")) for f in sorted((folder / "probes").glob("*.json"))}
-    refs = {int(m[1]): r for n, r in reports.items() if (m := re.fullmatch(r"baseline_p0c_s(\d+)", n))}
+    cases = (key or {}).get("cases", {})
+    references = {"baseline_p0c"} | {c.get("reference", "baseline_p0c") for c in cases.values()}
     outcomes, seconds = {}, {}
     for name, rep in reports.items():
-        if name.startswith("baseline_p0c_"):
+        case, seed = name.rsplit("_s", 1)
+        if case in references:
             continue
-        seed = int(name.rsplit("_s", 1)[1])
-        if seed not in refs:
-            raise SystemExit(f"{name}: seed {seed} 기준 실행 probe 결과가 없다")
-        ref = refs[seed]["probes"]
+        ref_name = f"{cases.get(case, {}).get('reference', 'baseline_p0c')}_s{seed}"
+        if ref_name not in reports:
+            raise SystemExit(f"{name}: 기준 실행 {ref_name} probe 결과가 없다")
+        ref = reports[ref_name]["probes"]
         outcomes[name], seconds[name] = {}, {}
         for p in L.PROBES:
             r = rep["probes"].get(p)
@@ -85,7 +87,7 @@ def main(argv=None) -> int:
     if key_path is None:
         raise SystemExit("P0-C 정답표가 없다")
     key = json.loads(key_path.read_text(encoding="utf-8"))
-    outcomes, seconds = load_outcomes(args.probes)
+    outcomes, seconds = load_outcomes(args.probes, key)
     rankings = {}
     for spec in args.ranking:
         rankings.update(load_rankings(spec))
