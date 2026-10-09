@@ -8,7 +8,7 @@
   (T1: ref_<사례> 또는 baseline_p0c), 없으면 baseline_p0c_s<seed>다.
 - 방식: exhaustive, fixed, random(seed 0~4 평균), discriminate:<이름>(그 결과 폴더의 진단 순위 상위 3개를 가르기).
   순위 폴더는 replay 형식 jsonl이다. rules 폴더는 rule_features 행, 그 밖은 mode별(agent, control_full)로 읽는다.
-- 출력: <폴더>/loop_compare.jsonl(실행×방식 한 줄), <폴더>/loop_compare.json(방식별 표). 정답은 P0-C 정답표.
+- 출력: <폴더>/loop_compare.jsonl(실행×방식 한 줄), <폴더>/loop_compare.json(방식별 표). 정답은 --key로 준 정답표(기본 P0-C).
 """
 from __future__ import annotations
 
