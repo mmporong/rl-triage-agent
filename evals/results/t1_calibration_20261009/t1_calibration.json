@@ -1,0 +1,149 @@
+{
+ "kind": "t1_calibration",
+ "smoke": "evals/results/t1_smoke_20261009/summary.json",
+ "smoke_sha256_lf": "c672c6a1f7d2e16159eb3a2043444396c60fdb7d1cc262e3fb650494e4a5165f",
+ "include": [
+  "X1"
+ ],
+ "candidates": {
+  "X1": {
+   "include": true,
+   "reason": "포함",
+   "run": "t1cal_X1_s7",
+   "reference": "t1cal_X1_REF_s7",
+   "reference_walks": true,
+   "label": "unhealthy",
+   "failed": [
+    "err_xy_ratio"
+   ],
+   "bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1,
+    "err_yaw_ratio_max": 1.1,
+    "fall_frac_max": 0.05
+   },
+   "compared": {
+    "survival_ratio": 1.0,
+    "fall_frac": 0.0,
+    "err_xy_ratio": 1.1031,
+    "err_yaw_ratio": 1.0373,
+    "horizon_ratio": 1.0
+   },
+   "reference_metrics": {
+    "fall_rate": 0.0,
+    "mean_survival_s": 20.0,
+    "lin_vel_rmse_mps": 0.1473917640982522,
+    "yaw_rate_rmse_radps": 0.2932791019741082
+   },
+   "run_metrics": {
+    "fall_rate": 0.0,
+    "mean_survival_s": 20.0,
+    "lin_vel_rmse_mps": 0.16259023288586483,
+    "yaw_rate_rmse_radps": 0.304214489401992
+   }
+  },
+  "X2": {
+   "include": false,
+   "reason": "상류 크기에서 깨지지 않음",
+   "run": "t1cal_X2_s7",
+   "reference": "p0ccal_NONE_s7",
+   "reference_walks": true,
+   "label": "healthy",
+   "failed": [],
+   "bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1,
+    "err_yaw_ratio_max": 1.1,
+    "fall_frac_max": 0.05
+   },
+   "compared": {
+    "survival_ratio": 1.0,
+    "fall_frac": 0.0,
+    "err_xy_ratio": 0.9767,
+    "err_yaw_ratio": 0.9642,
+    "horizon_ratio": 1.0
+   },
+   "reference_metrics": {
+    "fall_rate": 0.0,
+    "mean_survival_s": 20.0,
+    "lin_vel_rmse_mps": 0.14515526837939904,
+    "yaw_rate_rmse_radps": 0.2981218706122684
+   },
+   "run_metrics": {
+    "fall_rate": 0.0,
+    "mean_survival_s": 20.0,
+    "lin_vel_rmse_mps": 0.14177348125202943,
+    "yaw_rate_rmse_radps": 0.2874568860234654
+   }
+  },
+  "X3": {
+   "include": false,
+   "reason": "상류 크기에서 깨지지 않음",
+   "run": "t1cal_X3_s7",
+   "reference": "t1cal_X3_REF_s7",
+   "reference_walks": true,
+   "label": "healthy",
+   "failed": [],
+   "bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1,
+    "err_yaw_ratio_max": 1.1,
+    "fall_frac_max": 0.0885
+   },
+   "compared": {
+    "survival_ratio": 0.9998,
+    "fall_frac": 0.0385,
+    "err_xy_ratio": 1.0035,
+    "err_yaw_ratio": 1.0322,
+    "horizon_ratio": 1.0
+   },
+   "reference_metrics": {
+    "fall_rate": 0.03846153989434242,
+    "mean_survival_s": 19.267904052734377,
+    "lin_vel_rmse_mps": 0.1529411925449622,
+    "yaw_rate_rmse_radps": 0.2995120928811447
+   },
+   "run_metrics": {
+    "fall_rate": 0.03846153989434242,
+    "mean_survival_s": 19.264422607421874,
+    "lin_vel_rmse_mps": 0.1534727820583516,
+    "yaw_rate_rmse_radps": 0.3091468080254662
+   }
+  }
+ },
+ "inputs": [
+  {
+   "path": "evals/results/t1_calibration_20261009/runs/p0ccal_NONE_s7.json",
+   "sha256_lf": "05b1ae53a8cf31f88a7726be49bfa5d75f5cb2b809ac63d2cf01158f1695800c"
+  },
+  {
+   "path": "evals/results/t1_calibration_20261009/runs/t1cal_X1_REF_s7.json",
+   "sha256_lf": "c40e7145ca4568d61ab1292192af7c230ab756200b7a2828c1548ba5ee335f50"
+  },
+  {
+   "path": "evals/results/t1_calibration_20261009/runs/t1cal_X1_s7.json",
+   "sha256_lf": "e00ba715f5b91b6af53e14cd758f9ebcc9591f265d939e62486957ea4f1c363d"
+  },
+  {
+   "path": "evals/results/t1_calibration_20261009/runs/t1cal_X2_s7.json",
+   "sha256_lf": "af61521d091394ede663395377501f6b52c646b160bbeb8c7fb2ebad35e4243a"
+  },
+  {
+   "path": "evals/results/t1_calibration_20261009/runs/t1cal_X3_REF_s7.json",
+   "sha256_lf": "db8eae5ba2ce120398d965499126f512ab67f187e44b27748a41c243534cf33c"
+  },
+  {
+   "path": "evals/results/t1_calibration_20261009/runs/t1cal_X3_s7.json",
+   "sha256_lf": "99babdb51612f00f031cdb4e973e7baca4e829dddf0739f0d9eace9d85991802"
+  }
+ ],
+ "code": {
+  "git_head": "44ecb88a4d0e01a8de8e60ae8e7ab39b20a1fcf0",
+  "git_dirty": true,
+  "sha256_lf": {
+   "evals/t1_calibration.py": "ac4970937032b8410171fefe1e0fe1f8bd04d55242cb93920ff38fdd7ea693a8",
+   "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+   "evals/fixed_eval_summary.py": "a3061883ba4b6b73507d15f90ccc227ef50bd339e01fd6437b5c2de17743daf3"
+  }
+ }
+}
