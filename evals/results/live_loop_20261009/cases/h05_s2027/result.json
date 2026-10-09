@@ -1,0 +1,74 @@
+{
+ "schema": "live_loop_case_v1",
+ "case": "h05_s2027",
+ "prereg_sha256_lf": "098afe68bf8d745bb4faac2a3d261c403b7adcebcca81bdc905bd6b371c6108b",
+ "actor": "codex_operator_user_authorized_test",
+ "scope": "replay_cached_rankings_no_fresh_model_call",
+ "runs": [
+  {
+   "request_id": "6125bb3c00a1",
+   "probe": "P_noise",
+   "worker_exit": 0,
+   "process_started_at": "2026-10-09T04:38:20.596093+00:00",
+   "receipt_observed_at": "2026-10-09T04:38:41.998591+00:00",
+   "process_to_receipt_s": 21.402498,
+   "execution": "evals/results/live_loop_20261009/execution/h05_s2027__P_noise.json",
+   "interrupted_before_receipt": false
+  }
+ ],
+ "recovery": null,
+ "agreements": [
+  {
+   "probe": "P_noise",
+   "live_outcome": "abnormal",
+   "prior_outcome": "abnormal",
+   "scalar_comparison": {
+    "noise_ratio": {
+     "live": 0.05025530606508255,
+     "prior": 0.05030973255634308,
+     "within_tolerance": false
+    }
+   },
+   "scalar_agreement": false,
+   "all_live_measurements": {
+    "noise_ratio": 0.05025530606508255,
+    "logged_std_mean": 0.99498051404953
+   },
+   "all_prior_measurements": {
+    "noise_ratio": 0.05030973255634308,
+    "logged_std_mean": 0.99498051404953
+   },
+   "receipt_outcome": "abnormal",
+   "receipt_agreement": true
+  }
+ ],
+ "raw_classification_agreement": true,
+ "classification_agreement": true,
+ "scalar_agreement": false,
+ "audit_finalize_error": null,
+ "loop_status": "confirmed",
+ "observed": {
+  "P_noise": "abnormal"
+ },
+ "costs": {
+  "model_calls": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "gpu_wall_s": 21.2,
+  "cpu_s": 28.140625,
+  "human_review_s": 0,
+  "execution_wall_s": 22.038816699991003,
+  "simulator_steps": 51200
+ },
+ "end_to_end_wall": {
+  "elapsed_s": 23.005777,
+  "limit_s": 900,
+  "budget_status": "within",
+  "timeline_sha256": "8ff178bedcf6267f82c9a893bf19dba3ab1dca1d79640f408bd5177581d90629",
+  "coverage_complete": true,
+  "missing": []
+ },
+ "checkpoint_sha256_verified_against_prereg": true,
+ "repair_executed": false,
+ "none_wrong_confirmation": false
+}

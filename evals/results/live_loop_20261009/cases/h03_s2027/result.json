@@ -1,0 +1,115 @@
+{
+ "schema": "live_loop_case_v1",
+ "case": "h03_s2027",
+ "prereg_sha256_lf": "098afe68bf8d745bb4faac2a3d261c403b7adcebcca81bdc905bd6b371c6108b",
+ "actor": "codex_operator_user_authorized_test",
+ "scope": "replay_cached_rankings_no_fresh_model_call",
+ "runs": [
+  {
+   "request_id": "bd8c699061df",
+   "probe": "P_reward",
+   "worker_exit": 0,
+   "process_started_at": "2026-10-09T04:36:52.956984+00:00",
+   "receipt_observed_at": "2026-10-09T04:37:10.952807+00:00",
+   "process_to_receipt_s": 17.995823,
+   "execution": "evals/results/live_loop_20261009/execution/h03_s2027__P_reward.json",
+   "interrupted_before_receipt": false
+  },
+  {
+   "request_id": "0cabb606e38c",
+   "probe": "P_torque",
+   "worker_exit": 0,
+   "process_started_at": "2026-10-09T04:37:10.964727+00:00",
+   "receipt_observed_at": "2026-10-09T04:37:37.826680+00:00",
+   "process_to_receipt_s": 26.861953,
+   "execution": "evals/results/live_loop_20261009/execution/h03_s2027__P_torque.json",
+   "interrupted_before_receipt": false
+  }
+ ],
+ "recovery": null,
+ "agreements": [
+  {
+   "probe": "P_reward",
+   "live_outcome": "normal",
+   "prior_outcome": "normal",
+   "scalar_comparison": {
+    "track_lin_vel_xy_exp_rel_error": {
+     "live": 1.6931743758163974e-08,
+     "prior": 1.6931743758163974e-08,
+     "within_tolerance": true
+    },
+    "track_ang_vel_z_exp_rel_error": {
+     "live": 1.668215920958005e-08,
+     "prior": 1.668215920958005e-08,
+     "within_tolerance": true
+    }
+   },
+   "scalar_agreement": true,
+   "all_live_measurements": {
+    "track_lin_vel_xy_exp_rel_error": 1.6931743758163974e-08,
+    "track_ang_vel_z_exp_rel_error": 1.668215920958005e-08
+   },
+   "all_prior_measurements": {
+    "track_lin_vel_xy_exp_rel_error": 1.6931743758163974e-08,
+    "track_ang_vel_z_exp_rel_error": 1.668215920958005e-08
+   },
+   "receipt_outcome": "normal",
+   "receipt_agreement": true
+  },
+  {
+   "probe": "P_torque",
+   "live_outcome": "normal",
+   "prior_outcome": "normal",
+   "scalar_comparison": {
+    "low_speed_saturation": {
+     "live": 0.00399765859514293,
+     "prior": 0.00399765859514293,
+     "within_tolerance": true
+    }
+   },
+   "scalar_agreement": true,
+   "all_live_measurements": {
+    "low_speed_saturation": 0.00399765859514293,
+    "velocity_limit": 30.0,
+    "effort_limit": 23.5
+   },
+   "all_prior_measurements": {
+    "low_speed_saturation": 0.00399765859514293,
+    "velocity_limit": 30.0,
+    "effort_limit": 23.5
+   },
+   "receipt_outcome": "normal",
+   "receipt_agreement": true
+  }
+ ],
+ "raw_classification_agreement": true,
+ "classification_agreement": true,
+ "scalar_agreement": true,
+ "audit_finalize_error": null,
+ "loop_status": "unidentifiable",
+ "observed": {
+  "P_reward": "normal",
+  "P_torque": "normal"
+ },
+ "costs": {
+  "model_calls": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "gpu_wall_s": 44.400000000000006,
+  "cpu_s": 59.90625,
+  "human_review_s": 0,
+  "execution_wall_s": 45.59916920005344,
+  "simulator_steps": 179200
+ },
+ "end_to_end_wall": {
+  "elapsed_s": 45.833146,
+  "limit_s": 900,
+  "budget_status": "within",
+  "timeline_sha256": "40d1bc8ab3121a5ff3ed0737b8ae8a1d67485e1a1f8789c12fc61183339d24bf",
+  "coverage_complete": true,
+  "missing": []
+ },
+ "checkpoint_sha256_verified_against_prereg": true,
+ "repair_executed": false,
+ "none_wrong_confirmation": false
+}

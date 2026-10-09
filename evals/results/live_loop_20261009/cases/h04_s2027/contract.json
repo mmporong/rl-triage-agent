@@ -1,0 +1,218 @@
+{
+ "schema": "p1_experiment_audit_v1",
+ "registered_at": "2026-10-09T04:37:38.748931+00:00",
+ "method": "cached_agent_live_loop",
+ "information_sha256": "bb8c385113861b6c62c6c5681f6491f8103625e1bec5a1e127eb7ef12d469860",
+ "end_to_end_wall_limit_s": 900,
+ "information_bytes": 109855,
+ "comparison_contract_sha256": "dcba8ac03fc221e4d6a9a982ccc93ea294d1229d2e3d7780607d8518014bd26e",
+ "oracle": {
+  "schema": "behavior_oracle_v1",
+  "evaluation": {
+   "protocol": "fixed_eval_v1",
+   "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+   "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+   "eval_seed": 2026,
+   "num_envs": 1040,
+   "horizon_steps": 1000,
+   "step_dt": 0.02,
+   "versions": {
+    "torch": "2.7.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 3060",
+    "isaaclab": "0.41.3",
+    "isaaclab_tasks": "0.10.36",
+    "isaaclab_rl": "0.1.8",
+    "rsl-rl-lib": "2.3.3",
+    "isaacsim": null
+   },
+   "commands": [
+    [
+     -1.0,
+     -1.0,
+     -1.0
+    ],
+    [
+     -1.0,
+     -1.0,
+     0.0
+    ],
+    [
+     -1.0,
+     -1.0,
+     1.0
+    ],
+    [
+     -1.0,
+     0.0,
+     -1.0
+    ],
+    [
+     -1.0,
+     0.0,
+     0.0
+    ],
+    [
+     -1.0,
+     0.0,
+     1.0
+    ],
+    [
+     -1.0,
+     1.0,
+     -1.0
+    ],
+    [
+     -1.0,
+     1.0,
+     0.0
+    ],
+    [
+     -1.0,
+     1.0,
+     1.0
+    ],
+    [
+     0.0,
+     -1.0,
+     -1.0
+    ],
+    [
+     0.0,
+     -1.0,
+     0.0
+    ],
+    [
+     0.0,
+     -1.0,
+     1.0
+    ],
+    [
+     0.0,
+     0.0,
+     -1.0
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ],
+    [
+     0.0,
+     1.0,
+     -1.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0
+    ],
+    [
+     0.0,
+     1.0,
+     1.0
+    ],
+    [
+     1.0,
+     -1.0,
+     -1.0
+    ],
+    [
+     1.0,
+     -1.0,
+     0.0
+    ],
+    [
+     1.0,
+     -1.0,
+     1.0
+    ],
+    [
+     1.0,
+     0.0,
+     -1.0
+    ],
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     1.0,
+     0.0,
+     1.0
+    ],
+    [
+     1.0,
+     1.0,
+     -1.0
+    ],
+    [
+     1.0,
+     1.0,
+     0.0
+    ],
+    [
+     1.0,
+     1.0,
+     1.0
+    ]
+   ]
+  },
+  "reference_sha256": "97274dbaf31a7b5b68e081a031d2bd38fe394e6db92907d72da946ab49120516",
+  "reference_checkpoint_sha256": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+  "calibration_sha256": [],
+  "normal_repeats": 0,
+  "reference_metrics_verified": true,
+  "calibration_metrics_verified": true,
+  "margin": {
+   "ratio": 0.1,
+   "fall_frac": 0.05
+  },
+  "bands": {
+   "survival_ratio_min": 0.9,
+   "err_xy_ratio_max": 1.1,
+   "err_yaw_ratio_max": 1.1,
+   "fall_frac_max": 0.05
+  },
+  "absolute_gates": {
+   "min_survival_fraction": 0.9,
+   "max_fall_rate": 0.05,
+   "max_lin_vel_rmse_mps": 0.5883484054145521,
+   "max_yaw_rate_rmse_radps": 0.41602514716892186
+  },
+  "contract_sha256": "4fd112e39d24aa586303d6e0059c75e769372951817e8d90c641a597523c8919"
+ },
+ "limits": {
+  "model_calls": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "gpu_wall_s": 480,
+  "cpu_s": 900,
+  "human_review_s": 0,
+  "execution_wall_s": 900,
+  "simulator_steps": 1228800
+ },
+ "case": "h04_s2027",
+ "loop_prereg_digest": "976efd1a4e3127f8f355022a1d4ce6db4f2fe3de583c2f05fce97938a7d8b0c9",
+ "probe_reference_digest": "4930a5811a02de2a4fb43dcc7a68a014575ceec42fa88e0cf121be0507787100",
+ "probe_registry_digest": "f80774928b68e2eb9a698b56855ca2f67c10d0e8600df44acfba782b4a94fbd4",
+ "reference_file_sha256": "9237d034d0c7be7775fa8330baeb0d08b63583ca301d1d83758d0776dce0cc73",
+ "protocol_file_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+ "gates_file_sha256": "48e6c0a7a1657681d01f15e6c276cb7e17bcd2aeb22f4246d0e292c41cc5a67f",
+ "limits_file_sha256": "9647d9db8d77d6f2bc1f2b6717bfbd28aee1934d11750f15d28a24edc26b99fd",
+ "registration_sources": {
+  "prereg_sha256": "c487f9a3f8180b419e672e5a2c17e6c7119e4e5f51a41072b2cf76fa866470fb",
+  "probe_reference_sha256": "9e6f2c7fef969b6c6c6242f6285c225a6f2a8bfea7aadcf40c5637f6da842dca",
+  "state_sha256": "f48c92536fe487aefcf14e63cb3912cf1e052e612cb3c429e9484691687ee5de",
+  "ledger_sha256": "38bd488fa26baf64c5279f62cfaa121b4c59f605519cd1cf57f9d3f0aa0e6d19"
+ },
+ "code_sha256_lf": {
+  "evals/audit_experiment.py": "e536f257513333ba954d9e4420833c62a77abe35f6eafb667deac229eaa78cdf",
+  "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+  "src/rl_triage/behavior_oracle.py": "0733c00fba29243dccee2c8c24c265ded533590698e6147c90c17f5c53603c49",
+  "src/rl_triage/experiment_cost.py": "534bfebadc0392459da2b425ebcc9b6a923f894e25299a734434efeeaef736b7",
+  "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+  "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1"
+ },
+ "audit_contract_sha256": "3b8a8d56e268b7cf5ba2938b984f695b1ea694a661115676a160dd44a0d51364"
+}

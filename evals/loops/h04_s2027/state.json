@@ -1,10 +1,9 @@
 {
  "hypotheses": [
-  "exploration",
   "optimizer"
  ],
  "observed": {
-  "P_noise": "unknown",
+  "P_noise": "normal",
   "P_reward": "normal"
  },
  "skipped": [
@@ -15,18 +14,20 @@
  "pending": null,
  "history": [
   {
-   "request_id": "d6d5387ded35",
+   "request_id": "81cafd8242e7",
    "probe": "P_value",
    "rejected": "사전등록된 첫 제안 거절 시험"
   },
   {
-   "request_id": "b8961155f3c7",
+   "request_id": "27333895af7a",
    "probe": "P_noise",
-   "outcome": "unknown",
-   "dropped": []
+   "outcome": "normal",
+   "dropped": [
+    "exploration"
+   ]
   },
   {
-   "request_id": "f7b8f23be851",
+   "request_id": "f1ab2b173da6",
    "probe": "P_reward",
    "outcome": "normal",
    "dropped": [

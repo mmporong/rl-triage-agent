@@ -1,0 +1,79 @@
+{
+ "schema": "live_loop_case_v1",
+ "case": "h02_s2027",
+ "prereg_sha256_lf": "098afe68bf8d745bb4faac2a3d261c403b7adcebcca81bdc905bd6b371c6108b",
+ "actor": "codex_operator_user_authorized_test",
+ "scope": "replay_cached_rankings_no_fresh_model_call",
+ "runs": [
+  {
+   "request_id": "54d342cbcd0f",
+   "probe": "P_reward",
+   "worker_exit": 0,
+   "process_started_at": "2026-10-09T04:36:33.402597+00:00",
+   "receipt_observed_at": "2026-10-09T04:36:52.004391+00:00",
+   "process_to_receipt_s": 18.601794,
+   "execution": "evals/results/live_loop_20261009/execution/h02_s2027__P_reward.json",
+   "interrupted_before_receipt": false
+  }
+ ],
+ "recovery": null,
+ "agreements": [
+  {
+   "probe": "P_reward",
+   "live_outcome": "abnormal",
+   "prior_outcome": "abnormal",
+   "scalar_comparison": {
+    "track_lin_vel_xy_exp_rel_error": {
+     "live": 0.24274299286305903,
+     "prior": 0.24274511620402336,
+     "within_tolerance": true
+    },
+    "track_ang_vel_z_exp_rel_error": {
+     "live": 1.64641968192214e-08,
+     "prior": 1.6465922341168948e-08,
+     "within_tolerance": true
+    }
+   },
+   "scalar_agreement": true,
+   "all_live_measurements": {
+    "track_lin_vel_xy_exp_rel_error": 0.24274299286305903,
+    "track_ang_vel_z_exp_rel_error": 1.64641968192214e-08
+   },
+   "all_prior_measurements": {
+    "track_lin_vel_xy_exp_rel_error": 0.24274511620402336,
+    "track_ang_vel_z_exp_rel_error": 1.6465922341168948e-08
+   },
+   "receipt_outcome": "abnormal",
+   "receipt_agreement": true
+  }
+ ],
+ "raw_classification_agreement": true,
+ "classification_agreement": true,
+ "scalar_agreement": true,
+ "audit_finalize_error": null,
+ "loop_status": "confirmed",
+ "observed": {
+  "P_reward": "abnormal"
+ },
+ "costs": {
+  "model_calls": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "gpu_wall_s": 18.3,
+  "cpu_s": 24.0625,
+  "human_review_s": 0,
+  "execution_wall_s": 19.206414400134236,
+  "simulator_steps": 51200
+ },
+ "end_to_end_wall": {
+  "elapsed_s": 20.015942,
+  "limit_s": 900,
+  "budget_status": "within",
+  "timeline_sha256": "7ebd23720629a218551b363a40c9183ab97bca8fba7c48cbb64966d1eb75e97c",
+  "coverage_complete": true,
+  "missing": []
+ },
+ "checkpoint_sha256_verified_against_prereg": true,
+ "repair_executed": false,
+ "none_wrong_confirmation": false
+}

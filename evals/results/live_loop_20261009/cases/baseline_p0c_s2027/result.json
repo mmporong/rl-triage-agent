@@ -1,0 +1,79 @@
+{
+ "schema": "live_loop_case_v1",
+ "case": "baseline_p0c_s2027",
+ "prereg_sha256_lf": "098afe68bf8d745bb4faac2a3d261c403b7adcebcca81bdc905bd6b371c6108b",
+ "actor": "codex_operator_user_authorized_test",
+ "scope": "replay_cached_rankings_no_fresh_model_call",
+ "runs": [
+  {
+   "request_id": "35fa0557d250",
+   "probe": "P_reward",
+   "worker_exit": 0,
+   "process_started_at": "2026-10-09T04:39:03.556374+00:00",
+   "receipt_observed_at": "2026-10-09T04:39:22.511529+00:00",
+   "process_to_receipt_s": 18.955155,
+   "execution": "evals/results/live_loop_20261009/execution/baseline_p0c_s2027__P_reward.json",
+   "interrupted_before_receipt": false
+  }
+ ],
+ "recovery": null,
+ "agreements": [
+  {
+   "probe": "P_reward",
+   "live_outcome": "normal",
+   "prior_outcome": "normal",
+   "scalar_comparison": {
+    "track_lin_vel_xy_exp_rel_error": {
+     "live": 1.6960870818927276e-08,
+     "prior": 1.6960870818927276e-08,
+     "within_tolerance": true
+    },
+    "track_ang_vel_z_exp_rel_error": {
+     "live": 1.6648567071619878e-08,
+     "prior": 1.6648567071619878e-08,
+     "within_tolerance": true
+    }
+   },
+   "scalar_agreement": true,
+   "all_live_measurements": {
+    "track_lin_vel_xy_exp_rel_error": 1.6960870818927276e-08,
+    "track_ang_vel_z_exp_rel_error": 1.6648567071619878e-08
+   },
+   "all_prior_measurements": {
+    "track_lin_vel_xy_exp_rel_error": 1.6960870818927276e-08,
+    "track_ang_vel_z_exp_rel_error": 1.6648567071619878e-08
+   },
+   "receipt_outcome": "normal",
+   "receipt_agreement": true
+  }
+ ],
+ "raw_classification_agreement": true,
+ "classification_agreement": true,
+ "scalar_agreement": true,
+ "audit_finalize_error": null,
+ "loop_status": "unidentifiable",
+ "observed": {
+  "P_reward": "normal"
+ },
+ "costs": {
+  "model_calls": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "gpu_wall_s": 18.7,
+  "cpu_s": 26.296875,
+  "human_review_s": 0,
+  "execution_wall_s": 20.00836950005032,
+  "simulator_steps": 51200
+ },
+ "end_to_end_wall": {
+  "elapsed_s": 20.586034,
+  "limit_s": 900,
+  "budget_status": "within",
+  "timeline_sha256": "d27753e734bc47e1f7228b31a0af2c0ae9f6570f56f342eb05db7cf77c5c23c6",
+  "coverage_complete": true,
+  "missing": []
+ },
+ "checkpoint_sha256_verified_against_prereg": true,
+ "repair_executed": false,
+ "none_wrong_confirmation": false
+}

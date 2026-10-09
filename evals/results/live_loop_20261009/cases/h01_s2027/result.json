@@ -1,0 +1,122 @@
+{
+ "schema": "live_loop_case_v1",
+ "case": "h01_s2027",
+ "prereg_sha256_lf": "098afe68bf8d745bb4faac2a3d261c403b7adcebcca81bdc905bd6b371c6108b",
+ "first_prereg_sha256_lf": "63e4e1364a48a5f80b1a45d5c0ecc02d93cf6626c6ee94dc04facb38ed1fcf74",
+ "actor": "codex_operator_user_authorized_test",
+ "scope": "replay_cached_rankings_no_fresh_model_call",
+ "runs": [
+  {
+   "request_id": "b8961155f3c7",
+   "probe": "P_noise",
+   "worker_exit": 1,
+   "process_to_receipt_s": null,
+   "execution": "evals/results/live_loop_20261009/execution/h01_s2027__P_noise.json",
+   "interrupted_before_receipt": false,
+   "infrastructure_error": "missing metrics after Isaac shutdown; cp949 console encoding"
+  },
+  {
+   "request_id": "f7b8f23be851",
+   "probe": "P_reward",
+   "worker_exit": 0,
+   "process_started_at": "2026-10-09T04:35:30.680744+00:00",
+   "receipt_observed_at": "2026-10-09T04:35:50.094024+00:00",
+   "process_to_receipt_s": 19.41328,
+   "execution": "evals/results/live_loop_20261009/execution/h01_s2027__P_reward.json",
+   "interrupted_before_receipt": false
+  }
+ ],
+ "recovery": null,
+ "agreements": [
+  {
+   "probe": "P_noise",
+   "live_outcome": "normal",
+   "prior_outcome": "normal",
+   "scalar_comparison": {
+    "noise_ratio": {
+     "live": 0.9995942115783691,
+     "prior": 0.9995942115783691,
+     "within_tolerance": true
+    }
+   },
+   "scalar_agreement": true,
+   "all_live_measurements": {
+    "noise_ratio": 0.9995942115783691,
+    "logged_std_mean": 0.5514878034591675
+   },
+   "all_prior_measurements": {
+    "noise_ratio": 0.9995942115783691,
+    "logged_std_mean": 0.5514878034591675
+   },
+   "receipt_outcome": "unknown",
+   "receipt_agreement": false
+  },
+  {
+   "probe": "P_reward",
+   "live_outcome": "normal",
+   "prior_outcome": "normal",
+   "scalar_comparison": {
+    "track_lin_vel_xy_exp_rel_error": {
+     "live": 1.7401774496939027e-08,
+     "prior": 1.7405953944837905e-08,
+     "within_tolerance": true
+    },
+    "track_ang_vel_z_exp_rel_error": {
+     "live": 1.6668534881247866e-08,
+     "prior": 1.666857177617942e-08,
+     "within_tolerance": true
+    }
+   },
+   "scalar_agreement": true,
+   "all_live_measurements": {
+    "track_lin_vel_xy_exp_rel_error": 1.7401774496939027e-08,
+    "track_ang_vel_z_exp_rel_error": 1.6668534881247866e-08
+   },
+   "all_prior_measurements": {
+    "track_lin_vel_xy_exp_rel_error": 1.7405953944837905e-08,
+    "track_ang_vel_z_exp_rel_error": 1.666857177617942e-08
+   },
+   "receipt_outcome": "normal",
+   "receipt_agreement": true
+  }
+ ],
+ "raw_classification_agreement": true,
+ "classification_agreement": false,
+ "scalar_agreement": true,
+ "audit_finalize_error": null,
+ "loop_status": "unidentifiable",
+ "observed": {
+  "P_noise": "unknown",
+  "P_reward": "normal"
+ },
+ "costs": {
+  "model_calls": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "gpu_wall_s": 37.599999999999994,
+  "cpu_s": null,
+  "human_review_s": 0,
+  "execution_wall_s": null,
+  "simulator_steps": null
+ },
+ "end_to_end_wall": {
+  "elapsed_s": null,
+  "limit_s": 900,
+  "budget_status": "unknown",
+  "timeline_sha256": null,
+  "coverage_complete": false,
+  "missing": [
+   "timeline"
+  ]
+ },
+ "checkpoint_sha256_verified_against_prereg": true,
+ "repair_executed": false,
+ "none_wrong_confirmation": false,
+ "infrastructure_errors": [
+  "initial metric sidecar missing after Isaac shutdown",
+  "initial cp949 console encoding failure"
+ ],
+ "missing_initial_costs_preserved": true,
+ "resume_controller_sha256_lf": "6e310d21a7a09a89ad64031a0e202fa6e01300c581df608c3530f1b48d72b20d",
+ "initial_failure_prefix_verified": true
+}

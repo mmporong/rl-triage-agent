@@ -1,0 +1,74 @@
+{
+ "case": "h04_s2027",
+ "hypotheses": [
+  "exploration",
+  "reward",
+  "optimizer"
+ ],
+ "checkpoint_sha256": "b8124e7e482bd6bb1f82d89268094c16caddb91e46a877edb5d046861a128b0d",
+ "expectations": {
+  "P_noise": {
+   "exploration": "abnormal",
+   "reward": "normal",
+   "optimizer": "normal"
+  },
+  "P_value": {
+   "exploration": "normal",
+   "reward": "normal",
+   "optimizer": "abnormal"
+  },
+  "P_reward": {
+   "exploration": "normal",
+   "reward": "abnormal",
+   "optimizer": "normal"
+  },
+  "P_torque": {
+   "exploration": null,
+   "reward": "normal",
+   "optimizer": "normal"
+  },
+  "P_physics": {
+   "exploration": "normal",
+   "reward": "normal",
+   "optimizer": "normal"
+  },
+  "P_episode": {
+   "exploration": "normal",
+   "reward": "normal",
+   "optimizer": "normal"
+  }
+ },
+ "thresholds": {
+  "P_noise": [
+   "noise_ratio",
+   "absolute_log2",
+   1.0
+  ],
+  "P_value": [
+   "critic_change",
+   "ratio_below",
+   0.1
+  ],
+  "P_reward": [
+   "track_lin_vel_xy_exp_rel_error",
+   "above",
+   0.05
+  ],
+  "P_torque": [
+   "low_speed_saturation",
+   "ratio_above",
+   3.0
+  ],
+  "P_physics": [
+   "mismatch_count",
+   "above",
+   0.5
+  ],
+  "P_episode": [
+   "timeout_ratio",
+   "below",
+   0.9
+  ]
+ },
+ "budget_probes": 4
+}

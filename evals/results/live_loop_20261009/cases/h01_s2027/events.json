@@ -1,0 +1,79 @@
+[
+ {
+  "attempt_id": "h01_s2027:d6d5387ded35",
+  "status": "rejected",
+  "costs": {
+   "cpu_s": 0,
+   "human_review_s": 0,
+   "simulator_steps": 0
+  }
+ },
+ {
+  "attempt_id": "h01_s2027:b8961155f3c7",
+  "status": "failed",
+  "costs": {
+   "cpu_s": null,
+   "human_review_s": 0,
+   "simulator_steps": null
+  }
+ },
+ {
+  "attempt_id": "h01_s2027:initial_controller_interrupted",
+  "stage": "control",
+  "status": "failed",
+  "costs": {
+   "model_calls": 0,
+   "input_tokens": 0,
+   "output_tokens": 0,
+   "gpu_wall_s": 0,
+   "cpu_s": null,
+   "human_review_s": 0,
+   "execution_wall_s": null,
+   "simulator_steps": 0
+  },
+  "note": "Initial coordinator CPU/timeline and worker overhead interval were not durably stored; not reconstructed."
+ },
+ {
+  "attempt_id": "h01_s2027:control:3",
+  "stage": "control",
+  "status": "completed",
+  "started_at": "2026-10-09T04:35:30.679712+00:00",
+  "finished_at": "2026-10-09T04:35:30.680744+00:00",
+  "costs": {
+   "model_calls": 0,
+   "input_tokens": 0,
+   "output_tokens": 0,
+   "gpu_wall_s": 0,
+   "cpu_s": 0.0,
+   "human_review_s": 0,
+   "execution_wall_s": 0.0009562999475747347,
+   "simulator_steps": 0
+  }
+ },
+ {
+  "attempt_id": "h01_s2027:f7b8f23be851",
+  "status": "completed",
+  "costs": {
+   "cpu_s": 26.234375,
+   "human_review_s": 0,
+   "simulator_steps": 51200
+  }
+ },
+ {
+  "attempt_id": "h01_s2027:resume_controller_overhead",
+  "stage": "control",
+  "status": "completed",
+  "started_at": "2026-10-09T04:35:30.679185+00:00",
+  "finished_at": "2026-10-09T04:35:50.100058+00:00",
+  "costs": {
+   "model_calls": 0,
+   "input_tokens": 0,
+   "output_tokens": 0,
+   "gpu_wall_s": 0,
+   "cpu_s": 0.1875,
+   "human_review_s": 0,
+   "execution_wall_s": 0.2202601001597948,
+   "simulator_steps": 0
+  }
+ }
+]

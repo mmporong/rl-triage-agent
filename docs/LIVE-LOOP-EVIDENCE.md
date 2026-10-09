@@ -64,3 +64,52 @@ $env:PYTHONIOENCODING = "utf-8"
 .venv/Scripts/python.exe evals/resume_live_loop_evidence.py `
   --prereg bench/protocols/live_loop_v2.json --tag live_loop_20261009 --case h01_s2027
 ```
+
+## 측정 결과: live_loop_20261009
+
+v1 실행 코드는 `0d712a8`, 종료 시점 보완과 나머지 실행 코드는 `eb568e4`다. 두 사전등록 모두 해당 측정 전에 커밋했다. [요약](../evals/results/live_loop_20261009/summary_v2.json)과 [비용표](../evals/results/live_loop_20261009/costs_v2.csv)는 저장된 8건의 원장·계약·출력·감사를 GPU 없이 다시 대조한 결과다. 원장 receipt ID와 결과표는 1:1이며 최초 실패 자료는 v2의 파일 SHA 및 원장 prefix 대조를 통과했다. 최초 집계 `summary.json`·`costs.csv`는 보존하고 판정에는 분모·예산 검증을 보완한 v2 집계를 사용한다.
+
+| 사례 | 고리 종료 | GPU 벽시계 초 | CPU 초 | 제어 전이 수 | receipt 일치 | 수치 허용치 |
+|---|---|---:|---:|---:|---|---|
+| h01_s2027 | unidentifiable | 37.6 | 누락 | 누락 | 실패 | 통과 |
+| h02_s2027 | confirmed: reward | 18.3 | 24.0625 | 51,200 | 통과 | 통과 |
+| h03_s2027 | unidentifiable | 44.4 | 59.90625 | 179,200 | 통과 | 통과 |
+| h04_s2027 | unidentifiable | 40.5 | 54.5625 | 102,400 | 통과 | 통과 |
+| h05_s2027 | confirmed: exploration | 21.2 | 28.140625 | 51,200 | 통과 | 실패 |
+| h06_s2027 | unidentifiable | 19.2 | 25.125 | 51,200 | 통과 | 통과 |
+| baseline_p0c_s2027 | unidentifiable | 18.7 | 26.296875 | 51,200 | 통과 | 통과 |
+| e01_s2027 | unidentifiable | 35.9 | 51.265625 | 102,400 | 통과 | 통과 |
+
+승인·소비·receipt는 각각 12건이고 거절은 8건이다. 8건 모두 종료했으며 pending·고아 요청과 감사 입력 오류는 0건이다. 출력의 checkpoint SHA·seed와 사전등록 입력은 12/12건 일치했다. 원시 classify는 12/12건, 실제 receipt 판정은 11/12건 일치했다. 사례 단위 receipt 일치는 7/8건이다. 확정 2건, 식별 불가 6건, 틀린 확정 0/8건이며 NONE 틀린 확정은 0/1건이다. 이는 기존 순위와 설계자 결합 사례의 실행 시험이므로 독립 정확도 평가로 쓰지 않는다.
+
+수치 허용치는 필드 18/19개, probe 11/12개, 사례 7/8건에서 통과했다. `h05/P_noise.noise_ratio`는 이전 `0.05030973255634308`, 이번 `0.05025530606508255`로 상대 차이 0.1081828%다. 사전등록 0.1%를 넘었으나 두 원시 판정은 모두 abnormal이다. 오차 원인은 확인하지 않았으며 재측정·허용치 변경·probe 수정은 하지 않았다.
+
+`h04/P_noise` worker는 출력 저장 뒤 receipt 전에 종료 코드 75로 중단됐고 `recover`를 한 번 수행했다. 복구 전후 execution 기록 수는 각각 6개, 출력 해시는 같고 복구 후 고아는 없다. 복구 경로가 실행기를 호출하지 않고 새 실행 기록을 만들지 않아 추가 GPU 벽시계와 전이 수는 각각 0이다. 장치 busy 시간의 별도 측정은 아니다.
+
+GPU 벽시계 합은 **235.8초**다. 비용 8필드가 모두 있는 사례는 7/8건이다. `h01` 최초 인프라 실패 때문에 전체 CPU·개별 실행 벽시계·전이 수 합은 `null`이다. 기록이 있는 부분만의 합은 CPU 295.78125초, 개별 실행 벽시계 243.3685807초, 전이 640,000회이며 전체 합으로 해석하지 않는다. 새 자원 기록 11개 모두 `app_close_cpu_included=false`다. 환경 종료 이후 Isaac app close의 CPU, 셸·외부 서비스 CPU는 포함하지 않는다.
+
+| 사전등록 수용 조건 | 관측 | 결과 |
+|---|---|---|
+| 종료 고리 4건 이상 | 8건 | 통과 |
+| finalize 입력 오류 0건 | 0건 | 통과 |
+| receipt 판정 전부 일치 | 11/12건 | 실패 |
+| 수치 필드 전부 허용치 안 | 18/19개 | 실패 |
+| 프로세스 시작부터 receipt까지 시간 전부 기록 | 11/12건 | 실패 |
+| 중단 복구 1회·추가 GPU 실행 0 | 1회·0초 | 통과 |
+| 모든 사례 비용 8필드 누락 없음 | 7/8건 | 실패 |
+| NONE 틀린 확정 0건 | 0/1건 | 통과 |
+| 사례별 비용 한도 모두 확인·통과 | 7건 within, h01 unknown | 실패 |
+| 사례 전체 경과 한도 모두 확인·통과 | 7건 within, h01 unknown | 실패 |
+| probe 개수·개별 승인 한도 모두 통과 | 8/8건 | 통과 |
+
+**전체 수용 조건은 미충족(`accepted=false`)이다.** 실행·복구 기록은 남았지만 receipt 재현성과 비용 계측 완전성을 모두 만족하지 못했다. 신규 모델 호출·입출력 토큰·사람 검토 시간은 각각 0이다. 따라서 LLM을 새로 호출하는 진단 전체 비용, 사람 승인 사용성, 수리 후 행동 회복, 규칙 대비 모델 우위나 GPU 절감은 이 결과의 측정 범위에 없다.
+
+사전등록 한도는 사례별로 적용한다. 8건 합계에는 별도 한도를 등록하지 않았으므로 합계 `budget_status`는 `not_evaluated`다. 각 사례의 비용·전체 경과·probe 한도는 위 표와 사례별 audit에서 확인한다. GPU 없는 재검산은 다음과 같이 수행한다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+$env:PYTHONUTF8 = "1"
+$env:PYTHONIOENCODING = "utf-8"
+.venv/Scripts/python.exe evals/live_loop_summary.py `
+  --prereg bench/protocols/live_loop_v2.json --tag live_loop_20261009 --check-only
+```
