@@ -1,0 +1,817 @@
+{
+ "schema": "t2_gate_result_v1",
+ "started_at": "2026-10-09T06:08:20.190983+00:00",
+ "execution_prereg_sha256_lf": "326713b4ac69d9825b394c8ef84dbe7b011a931616530a89816abddae7f5e57d",
+ "base_protocol": {
+  "path": "bench/protocols/t2_no_intervention_v1.json",
+  "sha256_lf": "377962b3eae320d50ac35ea96ce52eb1a93aee84eaccf974d14c3c29c9cf31b8"
+ },
+ "execution_commit": "0df6e9d74a451b2855a4eb2f7a4f9b577bfa24ab",
+ "cases": 3,
+ "healthy": 3,
+ "rows": [
+  {
+   "case": "X2",
+   "input_hashes_verified": true,
+   "reference_valid": true,
+   "behavior_label": "healthy",
+   "decision": "do_not_open_loop",
+   "error": null,
+   "loop_opened": false,
+   "model_calls": 0,
+   "probe_executions": 0,
+   "approved": 0,
+   "consumed": 0,
+   "receipts": 0,
+   "interventions": 0,
+   "gpu_wall_s": 0,
+   "checkpoint_file_rehashed": false,
+   "assessment": {
+    "label": "healthy",
+    "failed": [],
+    "relative": {
+     "label": "healthy",
+     "failed": [],
+     "short_horizon": false,
+     "checks": {
+      "survival_ratio": true,
+      "fall_frac": true,
+      "err_xy_ratio": true,
+      "err_yaw_ratio": true
+     }
+    },
+    "absolute_checks": {
+     "survival_fraction": true,
+     "fall_rate": true,
+     "lin_vel_rmse_mps": true,
+     "yaw_rate_rmse_radps": true
+    },
+    "compared": {
+     "survival_ratio": 1.0,
+     "fall_frac": 0.0,
+     "err_xy_ratio": 0.9767022777393758,
+     "err_yaw_ratio": 0.9642260912730094,
+     "horizon_ratio": 1.0
+    },
+    "metrics": {
+     "fall_rate": 0.0,
+     "mean_survival_s": 20.0,
+     "lin_vel_rmse_mps": 0.14177348125202943,
+     "yaw_rate_rmse_radps": 0.2874568860234654
+    },
+    "metrics_verified": true,
+    "checkpoint_sha256": "d2aa327e66ac680a8f147187b3b8331c23233aacea6c95398cd2751760c04249",
+    "action_scale": 0.25
+   },
+   "contract": {
+    "schema": "behavior_oracle_v1",
+    "evaluation": {
+     "protocol": "fixed_eval_v1",
+     "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+     "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+     "eval_seed": 2026,
+     "num_envs": 1040,
+     "horizon_steps": 1000,
+     "step_dt": 0.02,
+     "versions": {
+      "torch": "2.7.0+cu128",
+      "gpu": "NVIDIA GeForce RTX 3060",
+      "isaaclab": "0.41.3",
+      "isaaclab_tasks": "0.10.36",
+      "isaaclab_rl": "0.1.8",
+      "rsl-rl-lib": "2.3.3",
+      "isaacsim": null
+     },
+     "commands": [
+      [
+       -1.0,
+       -1.0,
+       -1.0
+      ],
+      [
+       -1.0,
+       -1.0,
+       0.0
+      ],
+      [
+       -1.0,
+       -1.0,
+       1.0
+      ],
+      [
+       -1.0,
+       0.0,
+       -1.0
+      ],
+      [
+       -1.0,
+       0.0,
+       0.0
+      ],
+      [
+       -1.0,
+       0.0,
+       1.0
+      ],
+      [
+       -1.0,
+       1.0,
+       -1.0
+      ],
+      [
+       -1.0,
+       1.0,
+       0.0
+      ],
+      [
+       -1.0,
+       1.0,
+       1.0
+      ],
+      [
+       0.0,
+       -1.0,
+       -1.0
+      ],
+      [
+       0.0,
+       -1.0,
+       0.0
+      ],
+      [
+       0.0,
+       -1.0,
+       1.0
+      ],
+      [
+       0.0,
+       0.0,
+       -1.0
+      ],
+      [
+       0.0,
+       0.0,
+       1.0
+      ],
+      [
+       0.0,
+       1.0,
+       -1.0
+      ],
+      [
+       0.0,
+       1.0,
+       0.0
+      ],
+      [
+       0.0,
+       1.0,
+       1.0
+      ],
+      [
+       1.0,
+       -1.0,
+       -1.0
+      ],
+      [
+       1.0,
+       -1.0,
+       0.0
+      ],
+      [
+       1.0,
+       -1.0,
+       1.0
+      ],
+      [
+       1.0,
+       0.0,
+       -1.0
+      ],
+      [
+       1.0,
+       0.0,
+       0.0
+      ],
+      [
+       1.0,
+       0.0,
+       1.0
+      ],
+      [
+       1.0,
+       1.0,
+       -1.0
+      ],
+      [
+       1.0,
+       1.0,
+       0.0
+      ],
+      [
+       1.0,
+       1.0,
+       1.0
+      ]
+     ]
+    },
+    "reference_sha256": "8d1bcf3429b67af56c6cdd82cf7f7aac82b1e204089dad29d1104652f2bc18a7",
+    "reference_checkpoint_sha256": "0c2676b0bc92cd975d0318a9905e82be11c7b9ba3799918aa5d3f47cf2da8b96",
+    "calibration_sha256": [],
+    "normal_repeats": 0,
+    "reference_metrics_verified": true,
+    "calibration_metrics_verified": true,
+    "margin": {
+     "ratio": 0.1,
+     "fall_frac": 0.05
+    },
+    "bands": {
+     "survival_ratio_min": 0.9,
+     "err_xy_ratio_max": 1.1,
+     "err_yaw_ratio_max": 1.1,
+     "fall_frac_max": 0.05
+    },
+    "absolute_gates": {
+     "min_survival_fraction": 0.9,
+     "max_fall_rate": 0.05,
+     "max_lin_vel_rmse_mps": 0.5883484054145521,
+     "max_yaw_rate_rmse_radps": 0.41602514716892186
+    },
+    "contract_sha256": "0fec8e2494f6488a9a123a3284e40913124abe7a929a7d48200a7a670286adf9"
+   },
+   "gate_cpu_s": 0.0,
+   "gate_wall_s": 0.0025573999155312777
+  },
+  {
+   "case": "X3",
+   "input_hashes_verified": true,
+   "reference_valid": true,
+   "behavior_label": "healthy",
+   "decision": "do_not_open_loop",
+   "error": null,
+   "loop_opened": false,
+   "model_calls": 0,
+   "probe_executions": 0,
+   "approved": 0,
+   "consumed": 0,
+   "receipts": 0,
+   "interventions": 0,
+   "gpu_wall_s": 0,
+   "checkpoint_file_rehashed": false,
+   "assessment": {
+    "label": "healthy",
+    "failed": [],
+    "relative": {
+     "label": "healthy",
+     "failed": [],
+     "short_horizon": false,
+     "checks": {
+      "survival_ratio": true,
+      "fall_frac": true,
+      "err_xy_ratio": true,
+      "err_yaw_ratio": true
+     }
+    },
+    "absolute_checks": {
+     "survival_fraction": true,
+     "fall_rate": true,
+     "lin_vel_rmse_mps": true,
+     "yaw_rate_rmse_radps": true
+    },
+    "compared": {
+     "survival_ratio": 0.999819313750838,
+     "fall_frac": 0.03846153989434242,
+     "err_xy_ratio": 1.0034757772222362,
+     "err_yaw_ratio": 1.0321680338567993,
+     "horizon_ratio": 1.0
+    },
+    "metrics": {
+     "fall_rate": 0.03846153989434242,
+     "mean_survival_s": 19.264422607421874,
+     "lin_vel_rmse_mps": 0.1534727820583516,
+     "yaw_rate_rmse_radps": 0.3091468080254662
+    },
+    "metrics_verified": true,
+    "checkpoint_sha256": "54e8c4a5bb56f172de232caafef584f1c958ecae6b4ea175aa0384259a2dc7d5",
+    "action_scale": 0.25
+   },
+   "contract": {
+    "schema": "behavior_oracle_v1",
+    "evaluation": {
+     "protocol": "fixed_eval_v1",
+     "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+     "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+     "eval_seed": 2026,
+     "num_envs": 1040,
+     "horizon_steps": 1000,
+     "step_dt": 0.02,
+     "versions": {
+      "torch": "2.7.0+cu128",
+      "gpu": "NVIDIA GeForce RTX 3060",
+      "isaaclab": "0.41.3",
+      "isaaclab_tasks": "0.10.36",
+      "isaaclab_rl": "0.1.8",
+      "rsl-rl-lib": "2.3.3",
+      "isaacsim": null
+     },
+     "commands": [
+      [
+       -1.0,
+       -1.0,
+       -1.0
+      ],
+      [
+       -1.0,
+       -1.0,
+       0.0
+      ],
+      [
+       -1.0,
+       -1.0,
+       1.0
+      ],
+      [
+       -1.0,
+       0.0,
+       -1.0
+      ],
+      [
+       -1.0,
+       0.0,
+       0.0
+      ],
+      [
+       -1.0,
+       0.0,
+       1.0
+      ],
+      [
+       -1.0,
+       1.0,
+       -1.0
+      ],
+      [
+       -1.0,
+       1.0,
+       0.0
+      ],
+      [
+       -1.0,
+       1.0,
+       1.0
+      ],
+      [
+       0.0,
+       -1.0,
+       -1.0
+      ],
+      [
+       0.0,
+       -1.0,
+       0.0
+      ],
+      [
+       0.0,
+       -1.0,
+       1.0
+      ],
+      [
+       0.0,
+       0.0,
+       -1.0
+      ],
+      [
+       0.0,
+       0.0,
+       1.0
+      ],
+      [
+       0.0,
+       1.0,
+       -1.0
+      ],
+      [
+       0.0,
+       1.0,
+       0.0
+      ],
+      [
+       0.0,
+       1.0,
+       1.0
+      ],
+      [
+       1.0,
+       -1.0,
+       -1.0
+      ],
+      [
+       1.0,
+       -1.0,
+       0.0
+      ],
+      [
+       1.0,
+       -1.0,
+       1.0
+      ],
+      [
+       1.0,
+       0.0,
+       -1.0
+      ],
+      [
+       1.0,
+       0.0,
+       0.0
+      ],
+      [
+       1.0,
+       0.0,
+       1.0
+      ],
+      [
+       1.0,
+       1.0,
+       -1.0
+      ],
+      [
+       1.0,
+       1.0,
+       0.0
+      ],
+      [
+       1.0,
+       1.0,
+       1.0
+      ]
+     ]
+    },
+    "reference_sha256": "c57fef5d1a381354f9e436abc242c30e7de50495e7e13855e09c0cc0f2ec6f79",
+    "reference_checkpoint_sha256": "4bf7bb318c29151bfd5671a6477437a480ae987cb8c1d2d39694d27683af05e1",
+    "calibration_sha256": [],
+    "normal_repeats": 0,
+    "reference_metrics_verified": true,
+    "calibration_metrics_verified": true,
+    "margin": {
+     "ratio": 0.1,
+     "fall_frac": 0.05
+    },
+    "bands": {
+     "survival_ratio_min": 0.9,
+     "err_xy_ratio_max": 1.1,
+     "err_yaw_ratio_max": 1.1,
+     "fall_frac_max": 0.08846153989434243
+    },
+    "absolute_gates": {
+     "min_survival_fraction": 0.9,
+     "max_fall_rate": 0.05,
+     "max_lin_vel_rmse_mps": 0.5883484054145521,
+     "max_yaw_rate_rmse_radps": 0.41602514716892186
+    },
+    "contract_sha256": "06660633b99b54e93335ccd64dc975d614de4d845cf05738813f98d88c2e7896"
+   },
+   "gate_cpu_s": 0.0,
+   "gate_wall_s": 0.0024584000930190086
+  },
+  {
+   "case": "NONE",
+   "input_hashes_verified": true,
+   "reference_valid": true,
+   "behavior_label": "healthy",
+   "decision": "do_not_open_loop",
+   "error": null,
+   "loop_opened": false,
+   "model_calls": 0,
+   "probe_executions": 0,
+   "approved": 0,
+   "consumed": 0,
+   "receipts": 0,
+   "interventions": 0,
+   "gpu_wall_s": 0,
+   "checkpoint_file_rehashed": false,
+   "assessment": {
+    "label": "healthy",
+    "failed": [],
+    "relative": {
+     "label": "healthy",
+     "failed": [],
+     "short_horizon": false,
+     "checks": {
+      "survival_ratio": true,
+      "fall_frac": true,
+      "err_xy_ratio": true,
+      "err_yaw_ratio": true
+     }
+    },
+    "absolute_checks": {
+     "survival_fraction": true,
+     "fall_rate": true,
+     "lin_vel_rmse_mps": true,
+     "yaw_rate_rmse_radps": true
+    },
+    "compared": {
+     "survival_ratio": 1.0,
+     "fall_frac": 0.0,
+     "err_xy_ratio": 1.0,
+     "err_yaw_ratio": 1.0,
+     "horizon_ratio": 1.0
+    },
+    "metrics": {
+     "fall_rate": 0.0,
+     "mean_survival_s": 20.0,
+     "lin_vel_rmse_mps": 0.14515526837939904,
+     "yaw_rate_rmse_radps": 0.2981218706122684
+    },
+    "metrics_verified": true,
+    "checkpoint_sha256": "0c2676b0bc92cd975d0318a9905e82be11c7b9ba3799918aa5d3f47cf2da8b96",
+    "action_scale": 0.25
+   },
+   "contract": {
+    "schema": "behavior_oracle_v1",
+    "evaluation": {
+     "protocol": "fixed_eval_v1",
+     "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+     "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+     "eval_seed": 2026,
+     "num_envs": 1040,
+     "horizon_steps": 1000,
+     "step_dt": 0.02,
+     "versions": {
+      "torch": "2.7.0+cu128",
+      "gpu": "NVIDIA GeForce RTX 3060",
+      "isaaclab": "0.41.3",
+      "isaaclab_tasks": "0.10.36",
+      "isaaclab_rl": "0.1.8",
+      "rsl-rl-lib": "2.3.3",
+      "isaacsim": null
+     },
+     "commands": [
+      [
+       -1.0,
+       -1.0,
+       -1.0
+      ],
+      [
+       -1.0,
+       -1.0,
+       0.0
+      ],
+      [
+       -1.0,
+       -1.0,
+       1.0
+      ],
+      [
+       -1.0,
+       0.0,
+       -1.0
+      ],
+      [
+       -1.0,
+       0.0,
+       0.0
+      ],
+      [
+       -1.0,
+       0.0,
+       1.0
+      ],
+      [
+       -1.0,
+       1.0,
+       -1.0
+      ],
+      [
+       -1.0,
+       1.0,
+       0.0
+      ],
+      [
+       -1.0,
+       1.0,
+       1.0
+      ],
+      [
+       0.0,
+       -1.0,
+       -1.0
+      ],
+      [
+       0.0,
+       -1.0,
+       0.0
+      ],
+      [
+       0.0,
+       -1.0,
+       1.0
+      ],
+      [
+       0.0,
+       0.0,
+       -1.0
+      ],
+      [
+       0.0,
+       0.0,
+       1.0
+      ],
+      [
+       0.0,
+       1.0,
+       -1.0
+      ],
+      [
+       0.0,
+       1.0,
+       0.0
+      ],
+      [
+       0.0,
+       1.0,
+       1.0
+      ],
+      [
+       1.0,
+       -1.0,
+       -1.0
+      ],
+      [
+       1.0,
+       -1.0,
+       0.0
+      ],
+      [
+       1.0,
+       -1.0,
+       1.0
+      ],
+      [
+       1.0,
+       0.0,
+       -1.0
+      ],
+      [
+       1.0,
+       0.0,
+       0.0
+      ],
+      [
+       1.0,
+       0.0,
+       1.0
+      ],
+      [
+       1.0,
+       1.0,
+       -1.0
+      ],
+      [
+       1.0,
+       1.0,
+       0.0
+      ],
+      [
+       1.0,
+       1.0,
+       1.0
+      ]
+     ]
+    },
+    "reference_sha256": "8d1bcf3429b67af56c6cdd82cf7f7aac82b1e204089dad29d1104652f2bc18a7",
+    "reference_checkpoint_sha256": "0c2676b0bc92cd975d0318a9905e82be11c7b9ba3799918aa5d3f47cf2da8b96",
+    "calibration_sha256": [],
+    "normal_repeats": 0,
+    "reference_metrics_verified": true,
+    "calibration_metrics_verified": true,
+    "margin": {
+     "ratio": 0.1,
+     "fall_frac": 0.05
+    },
+    "bands": {
+     "survival_ratio_min": 0.9,
+     "err_xy_ratio_max": 1.1,
+     "err_yaw_ratio_max": 1.1,
+     "fall_frac_max": 0.05
+    },
+    "absolute_gates": {
+     "min_survival_fraction": 0.9,
+     "max_fall_rate": 0.05,
+     "max_lin_vel_rmse_mps": 0.5883484054145521,
+     "max_yaw_rate_rmse_radps": 0.41602514716892186
+    },
+    "contract_sha256": "0fec8e2494f6488a9a123a3284e40913124abe7a929a7d48200a7a670286adf9"
+   },
+   "gate_cpu_s": 0.0,
+   "gate_wall_s": 0.0022186997812241316
+  }
+ ],
+ "counts": {
+  "model_calls": 0,
+  "probe_executions": 0,
+  "approved": 0,
+  "consumed": 0,
+  "receipts": 0,
+  "interventions": 0
+ },
+ "loop_snapshots": {
+  "before": {
+   "evals/loops/baseline_p0c_s2027/ledger.jsonl": "4957805718674be47a72accced1269c687fc40ce7c8fa09262d03829568b91ea",
+   "evals/loops/baseline_p0c_s2027/prereg.json": "1392588bc5078492f60c43556b8611fd1b821f7fa46c3b7bbce2aa8ae7dc3c98",
+   "evals/loops/baseline_p0c_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/baseline_p0c_s2027/state.json": "4b378194ac5a98e8a97db9a207b4c515021ee01302a1760d96566aee08d73b8f",
+   "evals/loops/e01_s2027/ledger.jsonl": "70849342ff2030e69810f93be9c44e7c7ad9473dc38364d8eae5048e6caa2ce6",
+   "evals/loops/e01_s2027/prereg.json": "f4a71a21ea2927a64ed69b9da855a7d46eeff6e7297982d8d6dbe76e80c7b8a0",
+   "evals/loops/e01_s2027/reference.json": "fdf7ff67d893172b621e00fe7fa955e79c83b9cc14fb9bc20b625f384f333119",
+   "evals/loops/e01_s2027/state.json": "4923b5ce97b37c4c740023ea0a7e96feb19a7dc645316d7f0d50ffc3faa82b94",
+   "evals/loops/h01_s2027/ledger.jsonl": "3e8c5ed79c8ea082f21204ee9d9931f4ca9c41de816741dea86fb316cfbfa301",
+   "evals/loops/h01_s2027/prereg.json": "861c1f257fe8119d77ca0e3923439523194c8561e6264194421374e67c24e818",
+   "evals/loops/h01_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h01_s2027/state.json": "4434360f7460aed5aa4097b9d7c0050b5403f6d5dc8ee98cfe5ae603bc2d5ecb",
+   "evals/loops/h02_s2027/ledger.jsonl": "4d7315d54fbc1fe44ff0c2aab53af98658e973d12df749c327e6d4cdbb8ff487",
+   "evals/loops/h02_s2027/prereg.json": "f48ff06230f70587dfb066e59c75243770198f67505bc82be621b334be04175c",
+   "evals/loops/h02_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h02_s2027/state.json": "404b8516552b99bb3fb776bfbcc599e0468e83f084177eca63e0a3ae3547ae63",
+   "evals/loops/h03_s2027/ledger.jsonl": "c7789af3a1ddfa5cd2701e0d76b075160a4fcdece7aee78c3176a234bf85a684",
+   "evals/loops/h03_s2027/prereg.json": "528316bdffb0c28c02e09bc97acecab9981d73cadbd8d80021c83b6d70e502f4",
+   "evals/loops/h03_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h03_s2027/state.json": "5ef4c689ce73e7d48980abd63014a4111e743c16e6cb98f17b3ff71fd5630ccb",
+   "evals/loops/h04_s2027/ledger.jsonl": "99b3e506d5b768aba8b2b9527de3045594198f040e89d29b814def3dfb004c50",
+   "evals/loops/h04_s2027/prereg.json": "1258ca5545a708a119c492be41f975d4018ba128cc4ded52576e44bb9a26c8f8",
+   "evals/loops/h04_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h04_s2027/state.json": "f0f2a2445957846062c9bb7bd7ce7452a8b404818d6bd7879f0f44ed5121fa0c",
+   "evals/loops/h05_s2027/ledger.jsonl": "4a0fb9dc26e3dd05e7e507785bd4f25806e9578a51d252c16b8c6f102062871b",
+   "evals/loops/h05_s2027/prereg.json": "51958b360cb3daae0b813765f79badd751e7a3e8a78003fb9b021bf903993b16",
+   "evals/loops/h05_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h05_s2027/state.json": "ee534d706109f4e4392d04af6d49d693cb535623d0798d1c7d7d70f5f3acf4b7",
+   "evals/loops/h06_s2027/ledger.jsonl": "5599a710a5a5379ecd99d6e4d67bd44f38f9b63b527570a24d6eff03ad0fd7c2",
+   "evals/loops/h06_s2027/prereg.json": "fd0804cea7a6832096f64fab8c07f5fa3023c418f241fbbf8f3560144a38126e",
+   "evals/loops/h06_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h06_s2027/state.json": "4d0874c22bfb32f779519ece0bae4f4c5e433d48ccd21ba939104958355c7dfe"
+  },
+  "after": {
+   "evals/loops/baseline_p0c_s2027/ledger.jsonl": "4957805718674be47a72accced1269c687fc40ce7c8fa09262d03829568b91ea",
+   "evals/loops/baseline_p0c_s2027/prereg.json": "1392588bc5078492f60c43556b8611fd1b821f7fa46c3b7bbce2aa8ae7dc3c98",
+   "evals/loops/baseline_p0c_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/baseline_p0c_s2027/state.json": "4b378194ac5a98e8a97db9a207b4c515021ee01302a1760d96566aee08d73b8f",
+   "evals/loops/e01_s2027/ledger.jsonl": "70849342ff2030e69810f93be9c44e7c7ad9473dc38364d8eae5048e6caa2ce6",
+   "evals/loops/e01_s2027/prereg.json": "f4a71a21ea2927a64ed69b9da855a7d46eeff6e7297982d8d6dbe76e80c7b8a0",
+   "evals/loops/e01_s2027/reference.json": "fdf7ff67d893172b621e00fe7fa955e79c83b9cc14fb9bc20b625f384f333119",
+   "evals/loops/e01_s2027/state.json": "4923b5ce97b37c4c740023ea0a7e96feb19a7dc645316d7f0d50ffc3faa82b94",
+   "evals/loops/h01_s2027/ledger.jsonl": "3e8c5ed79c8ea082f21204ee9d9931f4ca9c41de816741dea86fb316cfbfa301",
+   "evals/loops/h01_s2027/prereg.json": "861c1f257fe8119d77ca0e3923439523194c8561e6264194421374e67c24e818",
+   "evals/loops/h01_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h01_s2027/state.json": "4434360f7460aed5aa4097b9d7c0050b5403f6d5dc8ee98cfe5ae603bc2d5ecb",
+   "evals/loops/h02_s2027/ledger.jsonl": "4d7315d54fbc1fe44ff0c2aab53af98658e973d12df749c327e6d4cdbb8ff487",
+   "evals/loops/h02_s2027/prereg.json": "f48ff06230f70587dfb066e59c75243770198f67505bc82be621b334be04175c",
+   "evals/loops/h02_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h02_s2027/state.json": "404b8516552b99bb3fb776bfbcc599e0468e83f084177eca63e0a3ae3547ae63",
+   "evals/loops/h03_s2027/ledger.jsonl": "c7789af3a1ddfa5cd2701e0d76b075160a4fcdece7aee78c3176a234bf85a684",
+   "evals/loops/h03_s2027/prereg.json": "528316bdffb0c28c02e09bc97acecab9981d73cadbd8d80021c83b6d70e502f4",
+   "evals/loops/h03_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h03_s2027/state.json": "5ef4c689ce73e7d48980abd63014a4111e743c16e6cb98f17b3ff71fd5630ccb",
+   "evals/loops/h04_s2027/ledger.jsonl": "99b3e506d5b768aba8b2b9527de3045594198f040e89d29b814def3dfb004c50",
+   "evals/loops/h04_s2027/prereg.json": "1258ca5545a708a119c492be41f975d4018ba128cc4ded52576e44bb9a26c8f8",
+   "evals/loops/h04_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h04_s2027/state.json": "f0f2a2445957846062c9bb7bd7ce7452a8b404818d6bd7879f0f44ed5121fa0c",
+   "evals/loops/h05_s2027/ledger.jsonl": "4a0fb9dc26e3dd05e7e507785bd4f25806e9578a51d252c16b8c6f102062871b",
+   "evals/loops/h05_s2027/prereg.json": "51958b360cb3daae0b813765f79badd751e7a3e8a78003fb9b021bf903993b16",
+   "evals/loops/h05_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h05_s2027/state.json": "ee534d706109f4e4392d04af6d49d693cb535623d0798d1c7d7d70f5f3acf4b7",
+   "evals/loops/h06_s2027/ledger.jsonl": "5599a710a5a5379ecd99d6e4d67bd44f38f9b63b527570a24d6eff03ad0fd7c2",
+   "evals/loops/h06_s2027/prereg.json": "fd0804cea7a6832096f64fab8c07f5fa3023c418f241fbbf8f3560144a38126e",
+   "evals/loops/h06_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+   "evals/loops/h06_s2027/state.json": "4d0874c22bfb32f779519ece0bae4f4c5e433d48ccd21ba939104958355c7dfe"
+  }
+ },
+ "costs": {
+  "model_calls": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "gpu_wall_s": 0,
+  "cpu_s": 0.03125,
+  "human_review_s": 0,
+  "execution_wall_s": 0.09053019993007183,
+  "simulator_steps": 0
+ },
+ "acceptance": {
+  "selected_three_cases_healthy": true,
+  "all_inputs_verified": true,
+  "no_loop_opened": true,
+  "no_execution_or_intervention": true,
+  "loop_files_unchanged": true,
+  "no_isaac_gpu_execution": true
+ },
+ "accepted": true,
+ "scope": "offline_gate_on_previously_seen_development_reports; no_model_probe_repair_training",
+ "cost_scope": "gate Python CPU and elapsed from preflight through decisions and loop snapshots; Git child CPU, interpreter/import startup and result writes excluded",
+ "claim_limits": [
+  "inputs already selected after seeing calibration",
+  "not independent generalization or T1 cause identification",
+  "NONE is a reference self-check, not an independent repeat",
+  "gate-only execution; general loop CLI routing not changed",
+  "checkpoint hashes checked as recorded in reports; checkpoint files not rehashed",
+  "legacy condition metrics; raw sums absent, assessment.metrics_verified remains false"
+ ]
+}

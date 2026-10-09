@@ -1,6 +1,6 @@
 # T2: healthy 입력에서 고리를 열지 않는 게이트 사전등록
 
-상태는 **사전등록·게이트 실행 코드 준비 완료, T2 측정 전**이다. [입력·게이트 사전등록](../bench/protocols/t2_no_intervention_v1.json)은 이미 관측한 개발 보정 자료 X2·X3와 같은 기준 실행 NONE을 고정한다. [실행 코드 사전등록](../bench/protocols/t2_gate_execution_v1.json)은 원래 사전등록 SHA와 게이트 CLI·추가 의존 코드의 SHA를 고정한다. 입력·선정·행동 기준은 그대로이며 T1 원인 식별 결과와 분리한다.
+상태는 **T2 게이트 단독 실행 완료**다. [입력·게이트 사전등록](../bench/protocols/t2_no_intervention_v1.json)은 이미 관측한 개발 보정 자료 X2·X3와 같은 기준 실행 NONE을 고정한다. [실행 코드 사전등록](../bench/protocols/t2_gate_execution_v1.json)은 원래 사전등록 SHA와 게이트 CLI·추가 의존 코드의 SHA를 고정하며 `0df6e9d`에 커밋한 뒤 측정했다. 입력·선정·행동 기준은 그대로이며 T1 원인 식별 결과와 분리한다.
 
 ## 입력과 선정 근거
 
@@ -33,7 +33,7 @@
 
 `evals/t2_no_intervention.py`는 사전등록·코드가 커밋됐고 해시가 같은지 확인한 뒤 평가 JSON의 행동 값을 판정한다. 모델·Isaac 실행 코드를 가져오지 않으며 기존 승인 원장 등 `evals/loops/`의 모든 파일을 실행 전후 해시로 대조한다. 결과는 사전등록의 `planned_tag`에 한 번만 쓴다. 다른 tag나 기존 결과 폴더는 판정 전에 거부한다. 이번 검증 범위는 이 게이트 CLI이며 일반 `loop.py` 호출의 라우팅을 바꾸지 않는다.
 
-기존 보정 JSON에는 원시 합계 통계가 없어 `assessment.metrics_verified=false`를 유지한다. 입력 SHA·조건별 수치의 제한된 일관성 검사와 기록된 checkpoint SHA 대조를 검증하고, 새 checkpoint 파일 검증이나 새 행동 평가로 표현하지 않는다. 비용은 사전 확인부터 판정·원장 스냅샷까지 게이트 Python의 CPU·벽시계다. Python 기동·import, Git 자식 프로세스 CPU, 결과 저장 비용은 포함하지 않는다.
+기존 보정 JSON의 조건별 원시 합계 통계와 전체 행동 지표를 기존 `behavior_oracle`로 대조한다. 기록된 checkpoint SHA도 사전등록과 비교하며 새 checkpoint 파일 검증이나 새 행동 평가로 표현하지 않는다. 비용은 사전 확인부터 판정·원장 스냅샷까지 게이트 Python의 CPU·벽시계다. Python 기동·import, Git 자식 프로세스 CPU, 결과 저장 비용은 포함하지 않는다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"
@@ -42,3 +42,21 @@ $env:PYTHONIOENCODING = "utf-8"
 .venv/Scripts/python.exe evals/t2_no_intervention.py `
   --prereg bench/protocols/t2_gate_execution_v1.json --tag t2_gate_20261009
 ```
+
+위 tag의 결과가 이미 있으므로 같은 명령의 재실행은 판정 전에 거부된다. 다음 실행은 새 사전등록 파일에 새 planned tag를 고정하고 커밋한 뒤 진행한다.
+
+## 실행 결과: t2_gate_20261009
+
+[보정 결과 JSON](../evals/results/t2_gate_20261009/summary_v2.json)에 3건의 입력 검증·기준 계약·판정·비용·원장 스냅샷을 저장했다. 원본 `summary.json`도 보존한다.
+
+| 사례 | 입력 SHA·기준 유효성 | 행동 판정 | 종료 결정 |
+|---|---|---|---|
+| X2 | 통과 | healthy | do_not_open_loop |
+| X3 | 통과 | healthy | do_not_open_loop |
+| NONE | 통과 | healthy | do_not_open_loop |
+
+3/3건이 동결 게이트를 통과했고 고리를 열지 않았다. 모델 호출·probe 실행·승인·소비·receipt·개입은 각각 0건이다. 기존 고리 파일 32개의 실행 전후 LF SHA가 같으며 새로운 고리는 만들지 않았다. 새 Isaac 실행·GPU 벽시계·제어 전이는 각각 0이다. 게이트 Python CPU는 0.03125초, 사전 확인부터 종료 스냅샷까지 벽시계는 0.0905301999초다. 이 비용 범위에 결과 저장·Python 기동·import·Git 자식 CPU는 포함하지 않는다.
+
+사전등록 수용 조건은 모두 통과했다(`accepted=true`). 세 평가 모두 조건별 원시 합계가 있고 검산을 통과해 `metrics_verified=true`다. "이미 healthy로 관측한 개발 입력 3건에서 게이트가 추가 진단·개입을 시작하지 않았다"는 게이트 동작 결과이며, 새 행동 평가·독립 일반화·원인 식별 성공을 뜻하지 않는다.
+
+실행 사전등록의 `behavior_metric_scope`와 원본 결과의 `claim_limits`에는 원시 통계가 없다는 잘못된 설명이 있었다. 실제 세 행의 assessment는 처음부터 모두 `metrics_verified=true`였다. 입력·판정 규칙은 원시 통계가 없어야 한다는 조건을 요구하지 않았으므로 게이트 판정은 영향을 받지 않았다. 사전등록·실행 코드·원본 결과는 보존하고, 실행 후 읽기 전용 검산으로 세 assessment가 원시 입력과 같은지 확인한 뒤 `summary_v2.json`의 설명만 보정했다. 원본 SHA와 보정 이유를 `annotation_correction`에 넣었으며 측정 시각·행·비용·횟수·판정·수용 결과는 원본과 같다. 새 게이트 측정이나 GPU 실행은 하지 않았다.
