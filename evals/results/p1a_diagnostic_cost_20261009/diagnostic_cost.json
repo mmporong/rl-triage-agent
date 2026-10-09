@@ -1,0 +1,150 @@
+{
+ "kind": "diagnostic_cost",
+ "unique_cases": 18,
+ "table": {
+  "discriminate:llm_agent": {
+   "unique_cases": 18,
+   "evaluation_cells": 18,
+   "order_repeats": 1,
+   "same_cases_as_exhaustive": true,
+   "correct_per_repeat": 14.0,
+   "wrong_per_repeat": 0.0,
+   "unidentifiable_per_repeat": 0.0,
+   "none_supported_per_repeat": 4.0,
+   "correct_rate": 0.7777777777777778,
+   "probe_measurement_s_per_repeat": 285.3,
+   "probe_measurement_s_per_case": 15.85,
+   "mean_probes": 2.0555555555555554,
+   "relative_probe_time_vs_exhaustive": 4.3291
+  },
+  "discriminate:llm_control_full": {
+   "unique_cases": 16,
+   "evaluation_cells": 16,
+   "order_repeats": 1,
+   "same_cases_as_exhaustive": false,
+   "correct_per_repeat": 12.0,
+   "wrong_per_repeat": 0.0,
+   "unidentifiable_per_repeat": 0.0,
+   "none_supported_per_repeat": 4.0,
+   "correct_rate": 0.75,
+   "probe_measurement_s_per_repeat": 322.3,
+   "probe_measurement_s_per_case": 20.144,
+   "mean_probes": 2.3125,
+   "relative_probe_time_vs_exhaustive": null
+  },
+  "discriminate:rules": {
+   "unique_cases": 18,
+   "evaluation_cells": 18,
+   "order_repeats": 1,
+   "same_cases_as_exhaustive": true,
+   "correct_per_repeat": 12.0,
+   "wrong_per_repeat": 0.0,
+   "unidentifiable_per_repeat": 0.0,
+   "none_supported_per_repeat": 6.0,
+   "correct_rate": 0.6666666666666666,
+   "probe_measurement_s_per_repeat": 167.9,
+   "probe_measurement_s_per_case": 9.328,
+   "mean_probes": 2.3333333333333335,
+   "relative_probe_time_vs_exhaustive": 7.356
+  },
+  "exhaustive": {
+   "unique_cases": 18,
+   "evaluation_cells": 18,
+   "order_repeats": 1,
+   "same_cases_as_exhaustive": true,
+   "correct_per_repeat": 17.0,
+   "wrong_per_repeat": 0.0,
+   "unidentifiable_per_repeat": 0.0,
+   "none_supported_per_repeat": 1.0,
+   "correct_rate": 0.9444444444444444,
+   "probe_measurement_s_per_repeat": 1235.1,
+   "probe_measurement_s_per_case": 68.617,
+   "mean_probes": 6.0,
+   "relative_probe_time_vs_exhaustive": 1.0
+  },
+  "fixed": {
+   "unique_cases": 18,
+   "evaluation_cells": 18,
+   "order_repeats": 1,
+   "same_cases_as_exhaustive": true,
+   "correct_per_repeat": 17.0,
+   "wrong_per_repeat": 1.0,
+   "unidentifiable_per_repeat": 0.0,
+   "none_supported_per_repeat": 0.0,
+   "correct_rate": 0.9444444444444444,
+   "probe_measurement_s_per_repeat": 1029.7,
+   "probe_measurement_s_per_case": 57.206,
+   "mean_probes": 3.388888888888889,
+   "relative_probe_time_vs_exhaustive": 1.1995
+  },
+  "random": {
+   "unique_cases": 18,
+   "evaluation_cells": 90,
+   "order_repeats": 5,
+   "same_cases_as_exhaustive": true,
+   "correct_per_repeat": 17.4,
+   "wrong_per_repeat": 0.6,
+   "unidentifiable_per_repeat": 0.0,
+   "none_supported_per_repeat": 0.0,
+   "correct_rate": 0.9666666666666667,
+   "probe_measurement_s_per_repeat": 758.18,
+   "probe_measurement_s_per_case": 42.121,
+   "mean_probes": 3.488888888888889,
+   "relative_probe_time_vs_exhaustive": 1.629
+  }
+ },
+ "training": {
+  "runs": 21,
+  "mean_wall_s": 551.0095238095238,
+  "median_wall_s": 493.2,
+  "min_wall_s": 429.3,
+  "max_wall_s": 802.3,
+  "total_wall_s": 11571.199999999999
+ },
+ "retraining_elimination_scenario": {
+  "kind": "hypothetical_upper_budget",
+  "max_trainings_per_case": 6,
+  "wall_s_per_case": 3306.057142857143,
+  "wall_s_for_cohort": 59509.02857142857,
+  "applicable_to_hidden_config_diff": false,
+  "measured_savings_ratio": null,
+  "reason": "숨은 결함에는 설정 diff로 되돌릴 대상이 없다. 원인 범주별 수정 개입도 정의·실행하지 않았다."
+ },
+ "measurement_scope": {
+  "probe": "evals/probes.py measure() elapsed_s 합(0.1초 반올림); 저장 결과표의 선택 경로 재생",
+  "training": "bench/run_case.ps1 프로세스 시작부터 종료까지 wall_time_s",
+  "excluded": [
+   "probe 프로세스 시작·환경 생성·reset·정책 로드",
+   "기준 probe",
+   "모델 호출·토큰",
+   "사람 검토",
+   "개발·실패·재시도 전체 비용"
+  ],
+  "gpu_device_busy_time_measured": false,
+  "end_to_end_savings_measured": false
+ },
+ "limitations": [
+  "18건은 저장된 결함·probe 결과의 재생이다. 결함과 probe를 같은 설계자가 만든 시험이다.",
+  "선택 방식마다 정답 확정률이 다르므로 시간 비율은 같은 성능에서의 절감률이 아니다.",
+  "무작위 순서 5회는 같은 18건의 재생이며 독립 학습 표본 90건이 아니다.",
+  "discriminate:llm_control_full은 16건만 있어 전체 18건과 시간 비율을 계산하지 않는다."
+ ],
+ "inputs": [
+  {
+   "path": "evals/results/p1a_loop_compare_20261009/loop_compare.jsonl",
+   "sha256_lf": "98c61b46801cf58847753ad2b8fae1aeee354b5743a04d18713fc6ab1cbccd40"
+  },
+  {
+   "path": "training_times.json",
+   "sha256_lf": "8c166f8b5e3dfeb03f99048a237f9a79cdcd0bc365198d2c452543096ba6cbaf"
+  }
+ ],
+ "code": {
+  "git_head": "e94219539eef8c7d2b363b53b4c271a0bd430ab3",
+  "git_dirty": false,
+  "sha256_lf": {
+   "evals/diagnostic_cost.py": "b17f72b35241a6e65c780325a3b48544d8c458e7e676d16d10671be2481e0f76",
+   "evals/replay.py": "b2de9072293b87089c63e1ea246bb9a6bbb81881ebf44e74b7dc0757961024e7"
+  }
+ }
+}
