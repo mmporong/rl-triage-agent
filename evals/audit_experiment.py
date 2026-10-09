@@ -241,20 +241,21 @@ def audit_loop(prereg: dict, reference: dict, state: dict, events: list[dict]) -
                 raise ValueError("종료 코드는 정수 또는 null이어야 한다")
             if not isinstance(ev["measurement"], dict):
                 raise ValueError("probe 측정값은 객체여야 한다")
-            measured = L.classify(probe, ev["measurement"], reference.get(probe)) if code == 0 else "unknown"
+            gpu_wall = ev.get("gpu_s")
+            over = gpu_wall is not None and gpu_wall > req["budget_gpu_s"]
+            measured = L.classify(probe, ev["measurement"], reference.get(probe)) if code == 0 and not over else "unknown"
             if measured != ev["outcome"]:
                 raise ValueError("receipt의 관측 판정이 사전등록한 측정·임계값과 다르다")
             observed[probe] = measured
             hypotheses, dropped = L.update(hypotheses, probe, measured)
             history.append({"request_id": rid, "probe": probe, "outcome": measured, "dropped": dropped})
-            gpu_wall = ev.get("gpu_s")
             cost = {"attempt_id": f"{prereg['case']}:{rid}",
                     "status": "completed" if code == 0 else "unknown" if code is None else "failed",
                     "stage": "probe", "started_at": req["consumed_at"], "finished_at": ev["at"],
                     "costs": {"model_calls": 0, "input_tokens": 0, "output_tokens": 0,
                               "gpu_wall_s": gpu_wall, "execution_wall_s": gpu_wall}}
             C.summarize_costs([cost], {})
-            if gpu_wall is not None and gpu_wall > req["budget_gpu_s"]:
+            if over:
                 overruns.append(rid)
             costs.append(cost)
             req["state"] = "done"

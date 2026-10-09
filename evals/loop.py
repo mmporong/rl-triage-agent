@@ -79,13 +79,24 @@ def start(case: str, ranking: list[str], top_k: int, budget: int, checkpoint_sha
     return _propose_next(case, prereg, state, L.Ledger(d / "ledger.jsonl"))
 
 
+def _probe_path(case: str, probe: str, tag: str) -> Path:
+    return ROOT / "evals" / "results" / tag / "probes" / f"{case}__{probe}.json"
+
+
+def isaac_preflight(case: str, probe: str, tag: str) -> None:
+    out = _probe_path(case, probe, tag)
+    if out.exists():
+        raise SystemExit(f"{out.name}: 기존 측정을 새 승인으로 재사용하지 않는다. 새 --tag를 쓴다")
+
+
 def isaac_execute(case: str, probe: str, tag: str) -> tuple[dict | None, float, int | None]:
     """evals/run_probes.py로 probe 하나를 잰다. (측정값, GPU 초, 종료 코드)."""
     import time
     t0 = time.time()
-    out = ROOT / "evals" / "results" / tag / "probes" / f"{case}.json"
+    out = _probe_path(case, probe, tag)
+    isaac_preflight(case, probe, tag)
     proc = subprocess.run([sys.executable, str(ROOT / "evals" / "run_probes.py"), "--tag", tag, "--runs", case,
-                           "--probes", probe], cwd=ROOT)
+                           "--probes", probe, "--per-probe-output"], cwd=ROOT)
     if proc.returncode != 0 or not out.exists():
         return None, time.time() - t0, proc.returncode
     rec = json.loads(out.read_text(encoding="utf-8"))["probes"].get(probe, {})
@@ -96,14 +107,13 @@ def _after_receipt(case: str, prereg: dict, state: dict, led: L.Ledger, rid: str
                    note: str = "") -> str:
     state["observed"][probe] = outcome
     state["hypotheses"], dropped = L.update(state["hypotheses"], probe, outcome)
-    state["history"].append({"request_id": rid, "probe": probe, "outcome": outcome, "dropped": dropped,
-                             **({"note": note} if note else {})})
+    state["history"].append({"request_id": rid, "probe": probe, "outcome": outcome, "dropped": dropped})
     state["pending"] = None
     msg = f"{probe}: {outcome}{note} 기각={dropped} 남은 가설={state['hypotheses']}\n"
     return msg + _propose_next(case, prereg, state, led)
 
 
-def run(case: str, rid: str, execute) -> str:
+def run(case: str, rid: str, execute, *, preflight=None) -> str:
     prereg, state, led = _load(case)
     req = led.requests().get(rid)
     if req is None:
@@ -111,6 +121,8 @@ def run(case: str, rid: str, execute) -> str:
     if led.orphans():
         raise SystemExit(f"결과 없이 끝난 요청 {led.orphans()}이 있다. 먼저 recover로 닫는다")
     probe = req["probe"]
+    if preflight is not None:
+        preflight(case, probe)
     led.consume(rid, prereg, probe)  # 승인 없거나 이미 소비했으면 여기서 멈춘다
     measurement, gpu_s, exit_code = execute(case, probe)
     reference = json.loads((_dir(case) / "reference.json").read_text(encoding="utf-8"))
@@ -120,16 +132,17 @@ def run(case: str, rid: str, execute) -> str:
 
 
 def file_artifact(case: str, probe: str, prereg: dict, tag: str) -> dict | None:
-    """같은 효과의 산출물: evals/results/<tag>/probes/<케이스>.json의 그 probe 측정(체크포인트 SHA256 일치)."""
-    path = ROOT / "evals" / "results" / tag / "probes" / f"{case}.json"
+    """probe별 산출물을 읽는다. 실행 이름·probe·체크포인트 SHA256이 맞아야 복구한다."""
+    path = _probe_path(case, probe, tag)
     if not path.exists():
         return None
     rep = json.loads(path.read_text(encoding="utf-8"))
     rec = rep.get("probes", {}).get(probe)
-    if not rec or rec.get("exit") != 0 or rep.get("checkpoint", {}).get("sha256") != prereg["checkpoint_sha256"]:
+    if (rep.get("name") != case or not rec or rec.get("exit") != 0
+            or rep.get("checkpoint", {}).get("sha256") != prereg["checkpoint_sha256"]):
         return None
     return {"measurement": rec["measurement"], "gpu_s": rec.get("elapsed_s", 0.0), "exit_code": 0,
-            "checkpoint_sha256": rep["checkpoint"]["sha256"], "source": f"evals/results/{tag}/probes/{case}.json"}
+            "checkpoint_sha256": rep["checkpoint"]["sha256"], "source": path.relative_to(ROOT).as_posix()}
 
 
 def recover(case: str, find_artifact) -> str:
@@ -197,7 +210,8 @@ def main(argv=None) -> int:
         elif args.cmd == "reject":
             print(reject(args.case, args.request_id, args.approver, args.reason))
         elif args.cmd == "run":
-            print(run(args.case, args.request_id, lambda c, p: isaac_execute(c, p, args.tag)))
+            print(run(args.case, args.request_id, lambda c, p: isaac_execute(c, p, args.tag),
+                      preflight=lambda c, p: isaac_preflight(c, p, args.tag)))
         elif args.cmd == "recover":
             print(recover(args.case, lambda c, p, pr: file_artifact(c, p, pr, args.tag)))
         else:

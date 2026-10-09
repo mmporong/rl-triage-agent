@@ -7,6 +7,7 @@
 
 - 결함 주입은 프로세스 전체에 걸리므로 (결함, seed)마다 Isaac 프로세스 하나를 띄운다.
 - 결과: evals/results/<tag>/probes/<실행 이름>.json(결함 정보 없음). 작업 목록·로그는 bench/private/probes/에만.
+- 승인 고리는 --per-probe-output으로 <실행 이름>__<probe>.json에 probe 하나씩 저장한다.
 - holdout 실행의 결함 이름은 출력하지 않는다. 이미 있는 결과는 건너뛴다.
 """
 from __future__ import annotations
@@ -59,8 +60,11 @@ def main(argv=None) -> int:
     ap.add_argument("--tag", required=True)
     ap.add_argument("--runs", nargs="+", required=True)
     ap.add_argument("--probes", nargs="+", default=sorted(PROBES), choices=sorted(PROBES))
+    ap.add_argument("--per-probe-output", action="store_true", help="probe 하나를 <실행>__<probe>.json에 저장")
     ap.add_argument("--isaaclab", type=Path, default=Path.home() / "IsaacLab")
     args = ap.parse_args(argv)
+    if args.per_probe_output and len(args.probes) != 1:
+        ap.error("--per-probe-output은 --probes 하나와 함께 쓴다")
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", args.tag):
         raise SystemExit("--tag는 영문·숫자·._- 만 쓴다")
     key = json.loads(KEY_PATH.read_text(encoding="utf-8")) if KEY_PATH.exists() else None
@@ -69,8 +73,11 @@ def main(argv=None) -> int:
     out_dir = ROOT / "evals" / "results" / args.tag / "probes"
     groups: dict[tuple[str, int], list[dict]] = {}
     for name in args.runs:
-        out = out_dir / f"{name}.json"
+        suffix = f"__{args.probes[0]}" if args.per_probe_output else ""
+        out = out_dir / f"{name}{suffix}.json"
         if out.exists():
+            if args.per_probe_output:
+                raise SystemExit(f"{out.name}: 기존 probe 결과가 있다. 새 --tag를 쓴다")
             print(f"skip {name}", flush=True)
             continue
         run_dir = find_run(log_root, name)
@@ -79,11 +86,12 @@ def main(argv=None) -> int:
             {"name": name, "checkpoint": str(last_checkpoint(run_dir)), "probes": args.probes, "output": str(out)})
     PRIVATE.mkdir(parents=True, exist_ok=True)
     failed = 0
+    job_label = f"{args.tag}_{args.probes[0]}" if args.per_probe_output else args.tag
     for i, ((fault, seed), jobs) in enumerate(sorted(groups.items())):
         stamp = time.strftime("%Y%m%d-%H%M%S")
-        jobs_file = PRIVATE / f"jobs_{args.tag}_{i}_{stamp}.json"
+        jobs_file = PRIVATE / f"jobs_{job_label}_{i}_{stamp}.json"
         jobs_file.write_text(json.dumps({"fault": fault, "seed": seed, "jobs": jobs}, indent=1), encoding="utf-8")
-        log = PRIVATE / f"log_{args.tag}_{i}_{stamp}.txt"
+        log = PRIVATE / f"log_{job_label}_{i}_{stamp}.txt"
         cmd = [str(args.isaaclab / "_isaac_sim" / "python.bat"), str(ROOT / "evals" / "probes.py"),
                "--jobs", str(jobs_file), "--headless"]
         t0 = time.time()
