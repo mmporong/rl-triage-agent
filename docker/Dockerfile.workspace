@@ -1,7 +1,9 @@
-# 벤치마크 작업공간을 얹은 샌드박스 이미지. 데이터는 root 소유(정책상 읽기 전용), scratch·사전등록만 sandbox 사용자 쓰기.
+# 벤치마크 작업공간을 얹은 샌드박스 이미지. 데이터는 root 소유(정책상 읽기 전용), scratch·사전등록·진단 출력만 sandbox 사용자 쓰기.
 ARG BASE=rl-triage-sandbox:0.1
 FROM ${BASE}
 COPY workspace /sandbox/workspace
-RUN mkdir -p /sandbox/workspace/scratch /sandbox/workspace/preregistrations \
+# 진단 출력의 실경로는 정책이 허용한 사전등록 디렉터리 아래에 둔다.
+RUN mkdir -p /sandbox/workspace/scratch /sandbox/workspace/preregistrations/diagnoses \
+    && ln -sT /sandbox/workspace/preregistrations/diagnoses /sandbox/workspace/diagnoses \
     && chmod -R a+rX /sandbox/workspace \
     && chown -R sandbox:sandbox /sandbox/workspace/scratch /sandbox/workspace/preregistrations

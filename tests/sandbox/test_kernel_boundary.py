@@ -29,6 +29,19 @@ def test_can_write_scratch_only():
     assert os.path.exists(p)
 
 
+def test_can_write_diagnosis():
+    from rl_triage import triage_tools
+
+    result = triage_tools.write_diagnosis("c01", ["physics"], "boundary fixture", "fixture check")
+    assert result["saved"] == "diagnoses/c01.json"
+    assert os.path.isfile(f"{WS}/diagnoses/c01.json")
+
+
+def test_cannot_write_workspace_root():
+    with pytest.raises(PermissionError):
+        open(f"{WS}/unregistered-output.json", "w").write("{}")
+
+
 def test_cannot_read_outside_policy():
     with pytest.raises(PermissionError):
         os.listdir("/home")

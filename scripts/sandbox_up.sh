@@ -11,7 +11,7 @@ openshell provider get nvidia-triage >/dev/null 2>&1 || \
 
 CTX=$(mktemp -d)
 cp -r "$REPO/workspace/seed$SEED" "$CTX/workspace"
-rm -rf "$CTX/workspace/preregistrations" "$CTX/workspace/scratch"
+rm -rf "$CTX/workspace/preregistrations" "$CTX/workspace/scratch" "$CTX/workspace/diagnoses"
 docker build -q -f "$REPO/docker/Dockerfile.workspace" -t "rl-triage-ws:seed$SEED" "$CTX"
 
 openshell sandbox delete "$NAME" >/dev/null 2>&1 || true
