@@ -10,7 +10,7 @@
 
 A robot RL engineer changes several settings, trains, and the run collapses. In our own Go2 training ([isaac-walk-rl](https://github.com/mmporong/isaac-walk-rl)), three command-shrinking interventions were rejected in a row (rev28 to rev30), while the same joint-limit symptom had already been recorded 12 days earlier (rev11 Gate01, commit `973769a`, 2026-08-28; attributed in rev31, commit `55159ac`, 2026-09-09). Was it the reward, the actuator scale, exploration noise, PPO settings, physics or termination? This agent reads the training telemetry against a healthy reference run, tests hypotheses with its own analysis code, and hands back **one preregistered experiment** instead of a patched config. A human approves it, the eval bridge retrains in Isaac Lab with only that variable changed, and the result confirms or rejects the diagnosis.
 
-When a healthy reference is unavailable, `configs/triage_single_run.yml` reads one failed run and saves competing hypotheses, measured evidence, limitations and one next measurement. Its output is marked `hypotheses_only`; it cannot establish normality, recovery or a confirmed cause from that run alone.
+When a healthy reference is unavailable, `configs/triage_single_run.yml` reads one failed run and saves competing hypotheses, measured evidence, limitations and one next measurement. Optional configuration facts are bound to that telemetry by file hashes, and cited configuration values are checked before saving. Its output is marked `hypotheses_only`; it cannot establish normality, recovery or a confirmed cause from that run alone.
 
 > 한국어 요약은 [아래](#한국어-요약)에 있습니다.
 
@@ -20,7 +20,7 @@ When a healthy reference is unavailable, `configs/triage_single_run.yml` reads o
 |---|---|
 | ![Go2 robots standing upright under velocity commands](docs/media/baseline_s42_play.gif) | ![Go2 robots collapsing and rearing](docs/media/c04_s42_play.gif) |
 
-Both clips are Isaac Sim 4.5 off-screen renders of trained checkpoints (`bench/record_play.ps1`). The agent never sees video; it diagnoses from TensorBoard scalars only. The 100-iteration "healthy" checkpoint stays upright but does not yet follow the commanded velocities: on a fixed 26-command grid its velocity-tracking error equals that of standing still (`bench/protocols/fixed_eval_v1.json`).
+Both clips are Isaac Sim 4.5 off-screen renders of trained checkpoints (`bench/record_play.ps1`). The agent never sees video; it reads TensorBoard scalars and optional selected configuration facts. The 100-iteration "healthy" checkpoint stays upright but does not yet follow the commanded velocities: on a fixed 26-command grid its velocity-tracking error equals that of standing still (`bench/protocols/fixed_eval_v1.json`).
 
 ## At A Glance
 
@@ -35,7 +35,7 @@ Both clips are Isaac Sim 4.5 off-screen renders of trained checkpoints (`bench/r
 | Verified on | Windows 11 + WSL2 Ubuntu 24.04, Docker 29.8.1, OpenShell 0.1.1, NeMo Agent Toolkit 1.9.0, Isaac Sim 4.5.0 / Isaac Lab 2.1.1, RTX 3060 12 GB |
 | Evidence level | live end-to-end |
 | Support and maturity | Best-effort community support; hackathon prototype |
-| External access, data, and actions | Sends telemetry summaries and agent messages to `integrate.api.nvidia.com` (NVIDIA API). Tools write assessments, preregistrations and analysis scratch files in the workspace. Approved verification writes evaluation records and new runs under the Isaac Lab log directory. |
+| External access, data, and actions | Sends telemetry summaries, selected configuration facts when supplied, and agent messages to `integrate.api.nvidia.com` (NVIDIA API). Tools write assessments, preregistrations and analysis scratch files in the workspace. Approved verification writes evaluation records and new runs under the Isaac Lab log directory. |
 | Start here | [Quickstart](#quickstart) |
 | Confirm success | [Verification](#verification) |
 
@@ -52,7 +52,7 @@ The default sandbox has no bridge submission tool or access; the host submits th
 | NVIDIA component | Role here |
 |---|---|
 | Nemotron 3 Super 120B (build.nvidia.com) | Planning, tool calling, reasoning |
-| NeMo Agent Toolkit 1.9 (`nvidia-nat`) | Agent workflows (`configs/*.yml`), 7 reference-based tools (`src/rl_triage/nat_functions.py`) and 4 single-run tools (`src/rl_triage/nat_single_run.py`) |
+| NeMo Agent Toolkit 1.9 (`nvidia-nat`) | Agent workflows (`configs/*.yml`), 7 reference-based tools (`src/rl_triage/nat_functions.py`) and 5 single-run tools (`src/rl_triage/nat_single_run.py`) |
 | OpenShell 0.1.1 | Sandbox image, Landlock filesystem policy, L7 REST network policy, NVIDIA provider (the agent only sees a placeholder key) |
 | openshell-prover 0.1.1 | SMT check of every requested permission against `policies/site_boundary.yaml` |
 | NVIDIA Skills | `skills-lock.json` (nemo-rl-auto-research, nemoclaw-user-guide, nemotron-policy-generator); own skill `skills/isaaclab-rl-triage` in NVIDIA skill format |
@@ -162,9 +162,13 @@ Prepare a separate workspace containing:
 workspace/single_run/
   reference/telemetry.json
   cases/<case_id>/telemetry.json
+  cases/<case_id>/configuration.json  # required when context.json is present
+  cases/<case_id>/context.json        # optional source hashes and selected facts
 ```
 
 Set `reference/telemetry.json` to exactly `{"reference_status":"absent","summary":{},"series":{}}`. The case telemetry must contain `summary` and `series` objects. Each summary metric uses `n`, `first`, `last`, `min`, `max`, `mean_first_20pct` and `mean_last_20pct`; each series maps a metric name to its scalar samples. Supply the task context in the input.
+
+To provide reward, observation or sensor definitions, follow [the configuration evidence format](docs/SINGLE-RUN-CONTEXT.md). The tool exposes selected facts, and assessment writing checks source hashes and cited values. Hashes check consistency of the supplied files; they do not authenticate a simulator export. Missing context remains unknown. A configured reward or contact observation does not prove successful behavior or measured contact.
 
 On Linux or WSL2, after the Quickstart installation and API-key setup:
 
@@ -176,7 +180,7 @@ uv run nat run --config_file configs/triage_single_run.yml \
   --input "Assess failed run case_id=<case_id>. Task context: <task and observed failure>."
 ```
 
-The four tools expose the scalar overview, sampled curves, isolated calculations and assessment writing. Analysis creates `scratch/`; the assessment is saved once to `preregistrations/assessments/<case_id>.json` and an existing assessment is never overwritten. This workflow makes model API calls but does not start Isaac, retrain or consume an experiment approval. The standalone [T2 gate](docs/T2-NO-INTERVENTION.md) has a separate preregistered execution contract; its existing result tag cannot be reused.
+The five tools expose configuration evidence, the scalar overview, sampled curves, isolated calculations and assessment writing. Analysis creates `scratch/`; the assessment is saved once to `preregistrations/assessments/<case_id>.json` and an existing assessment is never overwritten. Structured configuration checks do not verify every sentence of an assessment. This workflow makes model API calls but does not start Isaac, retrain or consume an experiment approval. The standalone [T2 gate](docs/T2-NO-INTERVENTION.md) has a separate preregistered execution contract; its existing result tag cannot be reused.
 
 ## Verification
 
@@ -248,6 +252,6 @@ This re-derives past numbers; it is not new performance evidence. Two early file
 
 ## 한국어 요약
 
-**Isaac Lab 학습 실패 원인 추적 에이전트.** 학습 로그를 읽고 원인 후보와 다음 측정 또는 실험 하나를 제안합니다. 정상 기준 실행이 있으면 텔레메트리를 비교하고 검증 실험을 사전등록합니다. 사람이 승인하면 probe를 실행하거나 재평가 브리지로 변수 하나만 바꿔 다시 학습해 가설을 확인합니다. 정상 기준이 없으면 단일 실행의 수치·가설·한계·다음 측정을 `hypotheses_only` 평가로 저장하며 원인을 확정하지 않습니다.
+**Isaac Lab 학습 실패 원인 추적 에이전트.** 학습 로그를 읽고 원인 후보와 다음 측정 또는 실험 하나를 제안합니다. 정상 기준 실행이 있으면 텔레메트리를 비교하고 검증 실험을 사전등록합니다. 사람이 승인하면 probe를 실행하거나 재평가 브리지로 변수 하나만 바꿔 다시 학습해 가설을 확인합니다. 정상 기준이 없으면 단일 실행의 수치·가설·한계·다음 측정을 `hypotheses_only` 평가로 저장하며 원인을 확정하지 않습니다. 설정 근거를 제공하면 파일 해시와 인용 값도 대조합니다. 이 검사는 제공된 파일끼리의 일관성을 확인하며, 시뮬레이터에서 나온 자료인지는 인증하지 않습니다.
 
 에이전트는 OpenShell 샌드박스 안에서 설정·안전 게이트·보상을 건드릴 수 없고, 권한 요청은 openshell-prover가 현장 경계와 비교해 증명되지 않으면 자동 거절합니다. 별도 T2 게이트는 사전등록된 행동 평가가 healthy이면 추가 고리를 열지 않습니다. 실제 실행 기록과 실패 판정은 위 결과와 연결된 문서에 보존합니다.

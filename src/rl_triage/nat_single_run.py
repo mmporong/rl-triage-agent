@@ -8,6 +8,19 @@ from rl_triage import single_run as S
 from rl_triage.nat_functions import _dump, _trace
 
 
+class SingleRunContextConfig(FunctionBaseConfig, name="triage_single_run_context"):
+    pass
+
+
+@register_function(config_type=SingleRunContextConfig)
+async def single_run_context_fn(config: SingleRunContextConfig, builder: Builder):
+    async def _run(case_id: str) -> str:
+        return _trace("single_run_context", {"case_id": case_id}, _dump(S.get_context(case_id)))
+    yield FunctionInfo.from_fn(_run, description=(
+        "단일 실행의 텔레메트리와 해시로 연결된 설정 근거를 읽는다. 선택된 보상·관측·센서 등의 설정 값과 "
+        "근거 ID를 반환한다. 설정은 행동이나 원인 확정의 증거가 아니다. 미제공은 설정 부재를 뜻하지 않는다."))
+
+
 class SingleRunOverviewConfig(FunctionBaseConfig, name="triage_single_run_overview"):
     pass
 
@@ -55,10 +68,11 @@ class WriteSingleAssessmentConfig(FunctionBaseConfig, name="triage_write_single_
 @register_function(config_type=WriteSingleAssessmentConfig)
 async def write_single_assessment_fn(config: WriteSingleAssessmentConfig, builder: Builder):
     async def _run(case_id: str, hypotheses: list[str], evidence: str,
-                   limitations: str, next_check: str) -> str:
+                   limitations: str, next_check: str, fact_claims: list[dict] | None = None) -> str:
         args = {"case_id": case_id, "hypotheses": hypotheses, "evidence": evidence,
-                "limitations": limitations, "next_check": next_check}
+                "limitations": limitations, "next_check": next_check, "fact_claims": fact_claims}
         return _trace("write_single_assessment", args, _dump(S.write_assessment(**args)))
     yield FunctionInfo.from_fn(_run, description=(
-        "단일 실행에서 관찰 가능한 가설과 수치 근거, 한계, 다음 계측 하나를 저장한다. status는 "
-        "hypotheses_only로 고정되며 임의의 가설 이름을 허용한다. 기존 평가는 덮어쓰지 않는다."))
+        "단일 실행의 가설·수치 근거·한계·다음 계측 하나를 저장한다. 설정 근거가 있으면 fact_claims에 "
+        "인용한 id와 value를 하나 이상 넣는다. 설정 해시와 인용 값이 맞아야 저장되며 자유 문장 전체의 "
+        "정확성을 판정하지는 않는다. status는 hypotheses_only이고 기존 평가는 덮어쓰지 않는다."))
