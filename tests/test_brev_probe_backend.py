@@ -267,3 +267,11 @@ def test_prepare_execution_registers_private_jobs_and_public_hash_chain(tmp_path
     assert public["owner_binding_digest"] == B.digest(owner)
     assert public["checkpoint_set"][1]["role"] == "P_value:from"
     assert "fault" not in json.dumps(public).lower()
+def test_transport_decodes_brev_utf8_independently_of_windows_locale(tmp_path):
+    import sys
+
+    protocol = {"probe_backend": B.backend_config("brev", owner_marker_sha256="a" * 64)}
+    backend = B.BrevProbeBackend(tmp_path, protocol)
+    result = backend._run([sys.executable, "-c", "import sys; sys.stdout.buffer.write('전송✓'.encode('utf-8'))"],
+                          "utf8 transport")
+    assert result.stdout == "전송✓"

@@ -218,6 +218,7 @@ class BrevProbeBackend:
     def _run(self, args: list[str], stage: str, deadline: float | None = None) -> subprocess.CompletedProcess:
         try:
             proc = self.runner(args, cwd=self.root, capture_output=True, text=True,
+                               encoding="utf-8", errors="replace",
                                timeout=self._remaining(deadline))
         except subprocess.TimeoutExpired as error:
             raise BrevBackendError(stage, "TransportTimeout") from error
