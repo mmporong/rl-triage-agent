@@ -24,6 +24,7 @@ def main() -> None:
     from isaaclab.app import AppLauncher  # pyright: ignore[reportMissingImports]
 
     app = AppLauncher(headless=True).app
+    sim = None
     try:
         from isaaclab.sim import SimulationCfg, SimulationContext  # pyright: ignore[reportMissingImports]
 
@@ -35,7 +36,14 @@ def main() -> None:
             for name in ("isaacsim", "isaaclab", "isaaclab_rl", "torch", "rsl-rl-lib", "gymnasium")
         }
     finally:
-        app.close()
+        try:
+            if sim is not None:
+                try:
+                    sim.clear_all_callbacks()
+                finally:
+                    sim.clear_instance()
+        finally:
+            app.close()
 
     report = {
         "schema": "cloud_environment_smoke_v1",
