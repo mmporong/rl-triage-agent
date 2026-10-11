@@ -16,6 +16,8 @@ media = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = media
 SPEC.loader.exec_module(media)
 
+V1_RECORDER_SOURCE_COMMIT = "d35f88adb1ec40c8748d3a7188bdb87b74fc6a32"
+
 
 @pytest.fixture(scope="module")
 def verified_evidence():
@@ -30,7 +32,14 @@ def recovery_repo(tmp_path_factory):
     for relative in (protocol_relative, recorder_relative, *(Path(path) for path in media.RECOVERY_PUBLIC_SOURCES)):
         target = temp_root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(ROOT / relative, target)
+        if relative == recorder_relative:
+            historical = subprocess.run(
+                ["git", "show", f"{V1_RECORDER_SOURCE_COMMIT}:{relative.as_posix()}"],
+                cwd=ROOT, check=True, capture_output=True,
+            ).stdout
+            target.write_bytes(historical)
+        else:
+            shutil.copyfile(ROOT / relative, target)
 
     protocol = media.load_json(temp_root / protocol_relative)
     output = temp_root / "docs" / "media" / "synthetic-recovery-fixture"
@@ -172,6 +181,21 @@ def test_verified_recovery_manifest_accepts_exact_three_clip_contract(recovery_r
     assert all(verified.clips[clip]["ffprobe"]["frame_count"] == 299 for clip in verified.clips)
 
 
+def test_current_default_v2_profile_binds_current_recorder_and_previous_v1_protocol():
+    recorder_spec = importlib.util.spec_from_file_location(
+        "record_evidence_media", ROOT / "bench/record_evidence_media.py")
+    assert recorder_spec is not None and recorder_spec.loader is not None
+    recorder_module = importlib.util.module_from_spec(recorder_spec)
+    recorder_spec.loader.exec_module(recorder_module)
+    current = media.load_json(ROOT / "bench/protocols/evidence_media_c01_v2.json")
+    previous = ROOT / "bench/protocols/evidence_media_c01_v1.json"
+    recorder = ROOT / current["recorder_source"]["path"]
+    assert recorder_module.DEFAULT_PROTOCOL == ROOT / "bench/protocols/evidence_media_c01_v2.json"
+    assert current["recorder_source"]["sha256_lf"] == media.sha256_lf(recorder)
+    assert current["previous_protocol_sha256_lf"] == media.sha256_lf(previous)
+    assert current["recorder_source"] != media.load_json(previous)["recorder_source"]
+
+
 def test_recovery_option_changes_only_the_two_separate_c01_cards(verified_evidence, recovery_repo):
     temp_root, manifest_path = recovery_repo
     recovery = media.verify_recovery_media(temp_root, manifest_path)
@@ -297,6 +321,7 @@ def test_recovery_pair_renders_one_chapter_below_source_duration(recovery_repo, 
 @pytest.mark.parametrize("attack", [
     "missing_clip", "partial_status", "wrong_clipset", "video_tamper",
     "source_binding", "embedded_probe", "cleanup", "unsafe_path", "protocol_tamper",
+    "recorder_tamper",
     "manifest_symlink", "video_symlink", "parent_symlink", "gpu_exclusive", "gpu_busy", "gpu_memory",
     "gpu_timestamp", "gpu_contexts", "gpu_after_busy",
 ])
@@ -329,6 +354,9 @@ def test_recovery_manifest_rejects_partial_or_tampered_capture(recovery_repo, tm
         protocol = media.load_json(protocol_path)
         protocol["video_length"] = 301
         protocol_path.write_text(json.dumps(protocol), encoding="utf-8")
+    elif attack == "recorder_tamper":
+        recorder_path = attacked_root / "bench" / "record_evidence_media.py"
+        recorder_path.write_bytes(recorder_path.read_bytes() + b"\n# tampered\n")
     elif attack == "gpu_exclusive":
         manifest["gpu_admission"]["gpu_exclusive"] = True
     elif attack == "gpu_busy":
