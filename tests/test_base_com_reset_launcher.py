@@ -110,13 +110,16 @@ def test_fixed_contract_includes_fault_observer_launcher_and_sdk_mechanism_sourc
         "source/isaaclab/isaaclab/envs/mdp/events.py",
         "source/isaaclab/isaaclab/assets/articulation/articulation.py",
         "source/isaaclab/isaaclab/managers/scene_entity_cfg.py",
+        "source/isaaclab/isaaclab/managers/event_manager.py",
+        "source/isaaclab/isaaclab/managers/manager_base.py",
     } <= L.ISAACLAB_SOURCE_FILES
     assert L.FIXED_PROTOCOL_VALUES["num_envs"] == 64
     assert L.FIXED_PROTOCOL_VALUES["reset_sequences"] == 20
     assert L.FIXED_PROTOCOL_VALUES["resets_per_env"] == 10
     assert L.FIXED_PROTOCOL_VALUES["model_selected"] is False
+    assert L.FIXED_PROTOCOL_VALUES["schema"] == "base_com_reset_observation_protocol_v3"
     assert L.FIXED_PROTOCOL_VALUES["gpu_admission_profile"] == "base_com_reset_readback_v2"
-    assert L.FIXED_PROTOCOL_VALUES["source_binding_revision"] == 2
+    assert L.FIXED_PROTOCOL_VALUES["source_binding_revision"] == 3
 
 
 def test_collect_resets_uses_exact_twenty_alternating_subsets_and_records_sdk_state():
@@ -147,6 +150,42 @@ def test_collect_resets_rejects_missing_active_event_and_size_drift():
     wrong = FakeBase(num_envs=63)
     with pytest.raises(ValueError, match="protocol size"):
         L.collect_resets(wrong, RecordingObserver(), FakeTorch, L.FIXED_PROTOCOL_VALUES)
+
+
+def test_configuration_payload_reads_independent_resolved_manager_term():
+    original = {
+        "events": {"base_com": {"params": {"asset_cfg": {
+            "body_names": "base", "body_ids": slice(None),
+        }}}},
+    }
+    resolved = {"params": {"asset_cfg": {"body_names": ["base"], "body_ids": [0]}}}
+
+    class EventManager:
+        def get_term_cfg(self, name):
+            assert name == "base_com"
+            return resolved
+
+    base = SimpleNamespace(cfg=original, event_manager=EventManager())
+    payload = L._configuration_snapshot_payload(
+        base, deepcopy(L.EXPECTED_INJECTION_READBACK), L.FIXED_PROTOCOL_VALUES, deepcopy,
+    )
+
+    assert payload["environment"]["events"]["base_com"]["params"]["asset_cfg"]["body_names"] == "base"
+    assert payload["resolved_event_readback"]["base_com"]["params"]["asset_cfg"] == {
+        "body_names": ["base"], "body_ids": [0],
+    }
+    assert payload["resolved_event_readback"]["source"] == L.RESOLVED_EVENT_READ_SOURCE
+    resolved["params"]["asset_cfg"]["body_ids"][0] = 7
+    assert payload["resolved_event_readback"]["base_com"]["params"]["asset_cfg"]["body_ids"] == [0]
+
+
+def test_configuration_payload_fails_when_manager_term_is_missing():
+    manager = SimpleNamespace(get_term_cfg=lambda _name: (_ for _ in ()).throw(KeyError("missing")))
+    base = SimpleNamespace(cfg={}, event_manager=manager)
+    with pytest.raises(KeyError, match="missing"):
+        L._configuration_snapshot_payload(
+            base, L.EXPECTED_INJECTION_READBACK, L.FIXED_PROTOCOL_VALUES, deepcopy,
+        )
 
 
 def test_parent_reaggregates_complete_raw_observer_report():
@@ -227,7 +266,7 @@ def manifest_fixture(tmp_path, monkeypatch):
     repo = tmp_path / "repo"
     run = repo / "bench/private/base_com_reset/tag1"
     run.mkdir(parents=True)
-    protocol_path = repo / "bench/protocols/base_com_reset_observation_v2.json"
+    protocol_path = repo / "bench/protocols/base_com_reset_observation_v3.json"
     protocol_path.parent.mkdir(parents=True)
     protocol_path.write_text("{}", encoding="utf-8")
     manifest = run / "manifest.json"
@@ -265,8 +304,8 @@ def test_manifest_rejects_protocol_copy_and_output_escape(tmp_path, monkeypatch)
     with pytest.raises(ValueError, match="fixed repository"):
         L.validate_manifest(manifest.resolve(), repo_root=repo, isaaclab_root=tmp_path)
 
-    body["protocol_path"] = str((repo / "bench/protocols/base_com_reset_observation_v2.json").resolve())
-    body["protocol_sha256"] = digest(repo / "bench/protocols/base_com_reset_observation_v2.json")
+    body["protocol_path"] = str((repo / "bench/protocols/base_com_reset_observation_v3.json").resolve())
+    body["protocol_sha256"] = digest(repo / "bench/protocols/base_com_reset_observation_v3.json")
     body["output_path"] = str((tmp_path / "escaped.json").resolve())
     manifest.write_text(json.dumps(body), encoding="utf-8")
     with pytest.raises(ValueError, match="output_path"):
@@ -297,9 +336,18 @@ def body_fixture(tmp_path):
         "environment": {"events": {"base_com": {
             "mode": "reset", "params": {
                 "com_range": L.EXPECTED_COM_RANGE,
-                "asset_cfg": {"name": "robot", "body_names": ["base"], "body_ids": [0]},
+                "asset_cfg": {
+                    "name": "robot", "body_names": "base", "body_ids": [None, None, None],
+                },
             },
         }}},
+        "resolved_event_readback": {
+            "source": L.RESOLVED_EVENT_READ_SOURCE,
+            "base_com": {"mode": "reset", "params": {
+                "com_range": L.EXPECTED_COM_RANGE,
+                "asset_cfg": {"name": "robot", "body_names": ["base"], "body_ids": [0]},
+            }},
+        },
     }), encoding="utf-8")
     receipt = {
         "task_binding_sha256": SHA,
@@ -543,7 +591,7 @@ def test_parent_rejects_wrong_resolved_base_binding(tmp_path, body_names, body_i
     body, validated, execution = body_fixture(tmp_path)
     path = validated["paths"]["configuration_path"]
     config = json.loads(path.read_text(encoding="utf-8"))
-    asset = config["environment"]["events"]["base_com"]["params"]["asset_cfg"]
+    asset = config["resolved_event_readback"]["base_com"]["params"]["asset_cfg"]
     asset["body_names"] = body_names
     asset["body_ids"] = body_ids
     path.write_text(json.dumps(config), encoding="utf-8")
@@ -561,17 +609,39 @@ def test_post_init_yaml_resolved_base_binding_and_safe_python_sequence_tags(tmp_
     term["params"]["com_range"] = {
         axis: tuple(bounds) for axis, bounds in L.EXPECTED_COM_RANGE.items()
     }
-    term["params"]["asset_cfg"]["joint_ids"] = slice(None)
+    term["params"]["asset_cfg"]["body_ids"] = slice(None)
     path.write_text(yaml.dump(config, sort_keys=True), encoding="utf-8")
     rebind_configuration(body, validated)
 
     assert L.verify_body(body, validated, execution, "f" * 40) == []
 
 
+def test_parent_rejects_missing_or_wrong_resolved_event_snapshot(tmp_path):
+    body, validated, execution = body_fixture(tmp_path)
+    path = validated["paths"]["configuration_path"]
+    config = json.loads(path.read_text(encoding="utf-8"))
+    del config["resolved_event_readback"]
+    path.write_text(json.dumps(config), encoding="utf-8")
+    rebind_configuration(body, validated)
+    assert "configuration_base_com_contract_mismatch" in L.verify_body(
+        body, validated, execution, "f" * 40,
+    )
+
+    body, validated, execution = body_fixture(tmp_path)
+    path = validated["paths"]["configuration_path"]
+    config = json.loads(path.read_text(encoding="utf-8"))
+    config["resolved_event_readback"]["base_com"]["mode"] = "interval"
+    path.write_text(json.dumps(config), encoding="utf-8")
+    rebind_configuration(body, validated)
+    assert "configuration_base_com_contract_mismatch" in L.verify_body(
+        body, validated, execution, "f" * 40,
+    )
+
+
 def test_parent_missing_output_writes_invalid_receipt_without_quality_claim(tmp_path, monkeypatch):
     repo = tmp_path / "repo"
     isaac = tmp_path / "isaac"
-    protocol = repo / "bench/protocols/base_com_reset_observation_v2.json"
+    protocol = repo / "bench/protocols/base_com_reset_observation_v3.json"
     protocol.parent.mkdir(parents=True)
     protocol.write_text(json.dumps({
         "scope": "scope", "launcher_watchdog_s": 1,

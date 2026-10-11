@@ -21,7 +21,7 @@ import runtime_readback_smoke as S
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-PROTOCOL = ROOT / "bench/protocols/base_com_reset_observation_v2.json"
+PROTOCOL = ROOT / "bench/protocols/base_com_reset_observation_v3.json"
 TASK = "Isaac-Velocity-Flat-Unitree-Go2-v0"
 ARMS = ("X1", "X1_REF")
 ISAACLAB_COMMIT = "90b79bb2d44feb8d833f260f2bf37da3487180ba"
@@ -38,6 +38,8 @@ ISAACLAB_SOURCE_FILES = set(S.ISAACLAB_SOURCE_FILES) | {
     "source/isaaclab/isaaclab/envs/mdp/events.py",
     "source/isaaclab/isaaclab/assets/articulation/articulation.py",
     "source/isaaclab/isaaclab/managers/scene_entity_cfg.py",
+    "source/isaaclab/isaaclab/managers/event_manager.py",
+    "source/isaaclab/isaaclab/managers/manager_base.py",
 }
 RESULT_WORDING = {
     "pass": "고정한 arm과 SDK에서 base COM reset readback의 출처·coverage·종료를 확인했다. 원인 판정이나 회복 증거는 아니다.",
@@ -70,6 +72,7 @@ OBSERVER_CALLER_PROVENANCE = {
     "reset_completion_claim_source": "caller",
     "reset_completion_verified_by_observer": False,
 }
+RESOLVED_EVENT_READ_SOURCE = "base.event_manager.get_term_cfg('base_com')"
 EXECUTION_CONTRACT = {
     "arm_scope": "one_of_X1_or_X1_REF_per_process",
     "reset_call": "base._reset_idx(alternating_even_odd_env_ids)",
@@ -79,7 +82,7 @@ EXECUTION_CONTRACT = {
     "cleanup": "parent_owned_windows_job_must_exit_naturally_and_be_empty",
 }
 FIXED_PROTOCOL_VALUES = {
-    "schema": "base_com_reset_observation_protocol_v2",
+    "schema": "base_com_reset_observation_protocol_v3",
     "scope": "actual_sdk_base_com_reset_mechanism_readback_not_diagnosis_or_recovery",
     "task": TASK,
     "seed": 20261012,
@@ -100,7 +103,7 @@ FIXED_PROTOCOL_VALUES = {
     "execution": EXECUTION_CONTRACT,
     "result_wording": RESULT_WORDING,
     "excluded_claims": EXCLUDED_CLAIMS,
-    "source_binding_revision": 2,
+    "source_binding_revision": 3,
 }
 PROTOCOL_FIELDS = set(FIXED_PROTOCOL_VALUES) | {
     "measurement_definitions_sha256", "source_files", "isaaclab_source_files",
@@ -122,7 +125,7 @@ def _load_observer():
 
 def protocol_location(path: Path, repo_root: Path = ROOT) -> Path:
     resolved = path.resolve()
-    expected = (repo_root / "bench/protocols/base_com_reset_observation_v2.json").resolve()
+    expected = (repo_root / "bench/protocols/base_com_reset_observation_v3.json").resolve()
     if resolved != expected:
         raise ValueError("manifest must bind the fixed repository base COM reset protocol")
     return resolved
@@ -318,15 +321,10 @@ def collect_resets(base: object, observer: object, torch_module: object,
     }
 
 
-def _write_configuration_snapshot(path: Path, base: object, injection: dict,
-                                  protocol: Mapping[str, object]) -> str:
-    from isaaclab.utils import class_to_dict
-    from isaaclab.utils.io import dump_yaml
-
-    temporary = path.with_name(f".{path.name}.{os.getpid()}.source.yaml")
-    if temporary.exists():
-        raise FileExistsError("configuration temporary file already exists")
-    data = {
+def _configuration_snapshot_payload(base: object, injection: dict,
+                                    protocol: Mapping[str, object], class_to_dict) -> dict:
+    resolved_base_com = base.event_manager.get_term_cfg("base_com")
+    return {
         "runtime_contract": {
             key: protocol[key] for key in (
                 "task", "seed", "num_envs", "reset_sequences", "resets_per_env",
@@ -335,7 +333,22 @@ def _write_configuration_snapshot(path: Path, base: object, injection: dict,
         },
         "injection_readback": injection,
         "environment": class_to_dict(base.cfg),
+        "resolved_event_readback": {
+            "source": RESOLVED_EVENT_READ_SOURCE,
+            "base_com": class_to_dict(resolved_base_com),
+        },
     }
+
+
+def _write_configuration_snapshot(path: Path, base: object, injection: dict,
+                                  protocol: Mapping[str, object]) -> str:
+    from isaaclab.utils import class_to_dict
+    from isaaclab.utils.io import dump_yaml
+
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.source.yaml")
+    if temporary.exists():
+        raise FileExistsError("configuration temporary file already exists")
+    data = _configuration_snapshot_payload(base, injection, protocol, class_to_dict)
     try:
         dump_yaml(str(temporary), data, sort_keys=True)
         raw = temporary.read_bytes()
@@ -450,14 +463,26 @@ def verify_configuration_snapshot(path: Path, protocol: Mapping[str, object],
     if config.get("injection_readback") != EXPECTED_INJECTION_READBACK:
         reasons.append("configuration_injection_readback_mismatch")
     try:
-        term = config["environment"]["events"]["base_com"]
-        params = term["params"]
-        asset = params["asset_cfg"]
-        body_ids = asset["body_ids"]
+        original_term = config["environment"]["events"]["base_com"]
+        original_params = original_term["params"]
+        original_asset = original_params["asset_cfg"]
+        resolved = config["resolved_event_readback"]
+        resolved_term = resolved["base_com"]
+        resolved_params = resolved_term["params"]
+        resolved_asset = resolved_params["asset_cfg"]
+        body_ids = resolved_asset["body_ids"]
         body_binding = observer_report["body_binding"]
         observer_base_index = body_binding["base_body_index"]
-        if (term["mode"] != "reset" or params["com_range"] != EXPECTED_COM_RANGE
-                or asset["name"] != "robot" or asset["body_names"] != ["base"]
+        if (original_term["mode"] != "reset"
+                or original_params["com_range"] != EXPECTED_COM_RANGE
+                or original_asset["name"] != "robot"
+                or original_asset["body_names"] != "base"
+                or original_asset["body_ids"] != [None, None, None]
+                or resolved["source"] != RESOLVED_EVENT_READ_SOURCE
+                or resolved_term["mode"] != "reset"
+                or resolved_params["com_range"] != EXPECTED_COM_RANGE
+                or resolved_asset["name"] != "robot"
+                or resolved_asset["body_names"] != ["base"]
                 or not isinstance(body_ids, list) or len(body_ids) != 1
                 or type(body_ids[0]) is not int or body_ids[0] < 0
                 or type(observer_base_index) is not int

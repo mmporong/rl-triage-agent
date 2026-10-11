@@ -268,7 +268,7 @@ This re-derives past numbers; it is not new performance evidence. Two early file
 
 **Isaac Lab 학습 실패 원인 추적 에이전트.** 학습 로그를 읽고 원인 후보와 다음 측정 또는 실험 하나를 제안합니다. 정상 기준 실행이 있으면 텔레메트리를 비교하고 검증 실험을 사전등록합니다. 사람이 승인하면 probe를 실행하거나 재평가 브리지로 변수 하나만 바꿔 다시 학습해 가설을 확인합니다. 정상 기준이 없으면 단일 실행의 수치·가설·한계·다음 측정을 `hypotheses_only` 평가로 저장하며 원인을 확정하지 않습니다. 설정 근거를 제공하면 파일 해시와 인용 값도 대조합니다. 이 검사는 제공된 파일끼리의 일관성을 확인하며, 시뮬레이터에서 나온 자료인지는 인증하지 않습니다.
 
-[근거 검증 흐름](docs/GROUNDED-SINGLE-RUN.md)은 중립 경로 그룹과 선택한 근거 ID를 조회한 뒤, 최대 16개 원문 근거로 가설의 전제를 대조합니다. 조회하지 않은 근거는 남겨 두고 읽기 전용 다음 검사를 승인 대기로 저장합니다. COM·보상·접촉 수집기는 [실제 SDK 검증](evals/results/runtime_readback_sdk_v1_20261011/result.json)에서 20 control step·80 env 표본의 7개 측정과 프로세스 종료를 확인했습니다. 별도 base COM reset 실행기는 고정한 64개 env·20회 reset의 초기 snapshot과 reset 뒤 편차를 부모가 재검증합니다. 모델이 선택한 검사의 승인·receipt 연결과 판단 변화·정책 회복은 후속 검증이 필요합니다.
+[근거 검증 흐름](docs/GROUNDED-SINGLE-RUN.md)은 중립 경로 그룹과 선택한 근거 ID를 조회한 뒤, 최대 16개 원문 근거로 가설의 전제를 대조합니다. 조회하지 않은 근거는 남겨 두고 읽기 전용 다음 검사를 승인 대기로 저장합니다. COM·보상·접촉 수집기는 [실제 SDK 검증](evals/results/runtime_readback_sdk_v1_20261011/result.json)에서 20 control step·80 env 표본의 7개 측정과 프로세스 종료를 확인했습니다. 별도 base COM reset 실행기는 고정한 64개 env·20회 reset의 초기 snapshot과 reset 뒤 편차, 원본 설정과 이벤트 관리자의 실제 body binding을 부모가 재검증합니다. 모델이 선택한 검사의 승인·receipt 연결과 판단 변화·정책 회복은 후속 검증이 필요합니다.
 
 [관측 후 판단 갱신 드라이버](docs/ACTIVE-DIAGNOSIS.md)는 새 Nemotron 호출이 고른 검사를 승인 원장과 실제 Isaac 실행에 연결합니다. 측정값을 받은 모델의 원문 순위와 규칙 판정은 따로 남기고, 최신 결과를 가린 호출 및 단순 규칙 두 방식의 실행과 비교합니다. 진단과 가림 검증의 상태를 구분해 대조 호출이 잘못돼도 유효한 실제 판단을 이어가며, 해당 쌍은 발표 증거에서 제외합니다. 이미 본 입력의 통합 기록이며 정확도 향상이나 GPU 절감으로 해석하지 않습니다.
 
