@@ -273,6 +273,20 @@ def test_manifest_rejects_protocol_outside_fixed_public_path(tmp_path):
         SMOKE.validate_manifest(manifest, repo_root=repo)
 
 
+@pytest.mark.parametrize("name", ["runtime_readback_smoke_v1.json", "runtime_readback_smoke_v2.json"])
+def test_protocol_location_accepts_versioned_committed_family(tmp_path, name):
+    path = tmp_path / "bench/protocols" / name
+    assert SMOKE.protocol_location(path, tmp_path) == path.resolve()
+
+
+@pytest.mark.parametrize("relative", ["bench/private/runtime_readback_smoke_v2.json",
+                                      "bench/protocols/other_v2.json",
+                                      "bench/protocols/runtime_readback_smoke_v0.json"])
+def test_protocol_location_rejects_unregistered_location_and_name(tmp_path, relative):
+    with pytest.raises(ValueError, match="repository runtime readback smoke protocol"):
+        SMOKE.protocol_location(tmp_path / relative, tmp_path)
+
+
 def test_tracked_sdk_change_fails_protocol_preflight(monkeypatch, tmp_path):
     proto = {
         "schema": "runtime_readback_smoke_protocol_v1",

@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import re
+import secrets
 from copy import deepcopy
 from datetime import datetime, timezone
 
@@ -23,6 +24,13 @@ NEXT_CHECK_KEYS = {"registry_id", "hypothesis_predictions"}
 HYPOTHESIS_PREDICTION_KEYS = {"hypothesis_id", "predictions"}
 PREDICTION_KEYS = {"measurement_id", "relation", "operand"}
 SAFE_ID = re.compile(r"[A-Za-z0-9_.:-]+")
+GROUP_INDEX_PAYLOAD_BYTE_CAP = 65_536
+GROUP_PAGE_LIMIT = 64
+DETAIL_ID_LIMIT = 16
+SELECTION_BINDING_KEYS = {
+    "selection_id", "case_id", "catalog_sha256", "selected_evidence_ids", "receipt_sha256",
+}
+SELECTION_ID = re.compile(r"sel_[0-9a-f]{32}")
 
 READ_ONLY_CHECKS = {
     "runtime_com_state": {
@@ -130,11 +138,284 @@ def evidence_catalog(case_id: str) -> dict:
         })
     body = {
         "case_id": case_id, "telemetry_sha256": source_sha,
-        "context_status": context["status"], "evidence": evidence,
+        "context_status": context["status"],
+        "configuration_sha256": context.get("configuration_sha256"),
+        "context_sha256": context.get("context_sha256"),
+        "evidence": evidence,
         "read_only_checks": deepcopy(READ_ONLY_CHECKS),
     }
     body["catalog_sha256"] = _canonical_sha(body)
     return body
+
+
+def _source_bindings(catalog: dict) -> dict:
+    configuration = {
+        (item["source"]["configuration_sha256"], item["source"]["context_sha256"])
+        for item in catalog["evidence"] if item["kind"] == "configuration"
+    }
+    if len(configuration) > 1:
+        raise ValueError("configuration 근거의 source binding이 일치하지 않습니다")
+    bindings = {
+        "telemetry": {"telemetry_sha256": catalog["telemetry_sha256"]},
+        "configuration": {
+            "status": catalog["context_status"],
+            "configuration_sha256": catalog["configuration_sha256"],
+            "context_sha256": catalog["context_sha256"],
+        },
+    }
+    if configuration:
+        configuration_sha256, context_sha256 = next(iter(configuration))
+        if (configuration_sha256, context_sha256) != (
+                catalog["configuration_sha256"], catalog["context_sha256"]):
+            raise ValueError("configuration 근거의 source binding이 catalog와 일치하지 않습니다")
+    return bindings
+
+
+def _index_row(item: dict) -> dict:
+    source = item["source"]
+    if item["kind"] == "telemetry_summary":
+        path = [source["tag"], source["field"]]
+        label = source["field"]
+        source_ref = "telemetry"
+    elif item["kind"] == "configuration":
+        path = deepcopy(source["path"])
+        label = item["evidence_id"].split("::", 1)[1]
+        source_ref = "configuration"
+    else:
+        raise ValueError(f"지원하지 않는 근거 kind입니다: {item['kind']!r}")
+    return {
+        "evidence_id": item["evidence_id"], "kind": item["kind"],
+        "label": label, "path": path, "state": item["state"],
+        "value_type": item["value_type"], "unit": item["unit"],
+        "source_ref": source_ref,
+    }
+
+
+def _group_prefix(item: dict) -> list:
+    source = item["source"]
+    if item["kind"] == "telemetry_summary":
+        return [source["tag"]]
+    if item["kind"] == "configuration":
+        return deepcopy(source["path"][:3])
+    raise ValueError(f"지원하지 않는 근거 kind입니다: {item['kind']!r}")
+
+
+def _catalog_groups(catalog: dict) -> dict[str, dict]:
+    grouped: dict[str, dict] = {}
+    seen_evidence_ids = set()
+    for item in catalog["evidence"]:
+        evidence_id = item["evidence_id"]
+        if evidence_id in seen_evidence_ids:
+            raise ValueError(f"catalog에 중복 evidence id가 있습니다: {evidence_id}")
+        seen_evidence_ids.add(evidence_id)
+        prefix = _group_prefix(item)
+        identity = {"kind": item["kind"], "path_prefix": prefix}
+        group_id = f"grp_{_canonical_sha(identity)[:16]}"
+        existing = grouped.setdefault(group_id, {**identity, "items": []})
+        if existing["kind"] != item["kind"] or existing["path_prefix"] != prefix:
+            raise ValueError(f"catalog group id 충돌입니다: {group_id}")
+        existing["items"].append(item)
+    for group in grouped.values():
+        group["items"].sort(key=lambda item: item["evidence_id"])
+    return dict(sorted(grouped.items()))
+
+
+def _group_index_payload(catalog: dict) -> tuple[dict, dict[str, dict]]:
+    groups = _catalog_groups(catalog)
+    rows = []
+    for group_id, group in groups.items():
+        evidence_ids = [item["evidence_id"] for item in group["items"]]
+        rows.append({
+            "group_id": group_id, "kind": group["kind"],
+            "label": str(group["path_prefix"][-1]),
+            "path_prefix": deepcopy(group["path_prefix"]),
+            "evidence_count": len(evidence_ids),
+            "evidence_id_range": {"first": evidence_ids[0], "last": evidence_ids[-1]},
+        })
+    payload = {
+        "case_id": catalog["case_id"], "catalog_sha256": catalog["catalog_sha256"],
+        "source_bindings": _source_bindings(catalog),
+        "total_evidence_count": len(catalog["evidence"]),
+        "group_count": len(rows), "groups": rows,
+        "read_only_checks": deepcopy(catalog["read_only_checks"]),
+        "values_included": False,
+    }
+    return payload, groups
+
+
+def evidence_catalog_group_index(case_id: str) -> dict:
+    """값을 싣지 않은 결정적 경로 그룹 인덱스를 크기 제한 안에서 반환한다."""
+    catalog = evidence_catalog(case_id)
+    payload, _ = _group_index_payload(catalog)
+    payload_bytes = len(json.dumps(
+        payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"),
+    ).encode("utf-8"))
+    if payload_bytes > GROUP_INDEX_PAYLOAD_BYTE_CAP:
+        raise ValueError(
+            f"group index payload가 {GROUP_INDEX_PAYLOAD_BYTE_CAP} byte 제한을 넘었습니다: {payload_bytes}"
+        )
+    return {
+        **payload, "group_index_sha256": _canonical_sha(payload),
+        "payload_utf8_bytes": payload_bytes,
+        "payload_byte_cap": GROUP_INDEX_PAYLOAD_BYTE_CAP,
+        "coverage_status": "all_evidence_grouped_values_not_loaded",
+        "comprehensive_diagnosis_supported": False,
+    }
+
+
+def _bounded_integer(value: object, label: str, *, minimum: int, maximum: int) -> int:
+    if type(value) is not int or value < minimum or value > maximum:
+        raise ValueError(f"{label}은 {minimum} 이상 {maximum} 이하 정수여야 합니다")
+    return value
+
+
+def _current_group(case_id: str, catalog_sha256: str, group_id: str) -> tuple[dict, dict, dict[str, dict]]:
+    catalog = evidence_catalog(case_id)
+    if not isinstance(catalog_sha256, str) or catalog_sha256 != catalog["catalog_sha256"]:
+        raise ValueError("catalog_sha256이 현재 근거와 다릅니다")
+    if not isinstance(group_id, str):
+        raise ValueError("group_id는 문자열이어야 합니다")
+    payload, groups = _group_index_payload(catalog)
+    if group_id not in groups:
+        raise ValueError(f"catalog에 없는 group id입니다: {group_id}")
+    return catalog, payload, groups
+
+
+def evidence_catalog_group_page(case_id: str, catalog_sha256: str, group_id: str,
+                                offset: int = 0, limit: int = GROUP_PAGE_LIMIT) -> dict:
+    """선택한 중립 경로 그룹에서 값 없는 근거 ID 페이지를 반환한다."""
+    catalog, payload, groups = _current_group(case_id, catalog_sha256, group_id)
+    group = groups[group_id]
+    group_total = len(group["items"])
+    clean_limit = _bounded_integer(limit, "limit", minimum=1, maximum=GROUP_PAGE_LIMIT)
+    clean_offset = _bounded_integer(offset, "offset", minimum=0, maximum=group_total - 1)
+    end = min(clean_offset + clean_limit, group_total)
+    rows = [_index_row(item) for item in group["items"][clean_offset:end]]
+    next_offset = end if end < group_total else None
+    selected_complete = clean_offset == 0 and end == group_total
+    return {
+        "case_id": case_id, "catalog_sha256": catalog["catalog_sha256"],
+        "group_index_sha256": _canonical_sha(payload),
+        "source_bindings": _source_bindings(catalog),
+        "group_id": group_id, "kind": group["kind"],
+        "path_prefix": deepcopy(group["path_prefix"]),
+        "group_evidence_count": group_total,
+        "offset": clean_offset, "limit": clean_limit, "count": len(rows),
+        "next_offset": next_offset,
+        "unvisited_before_count": clean_offset,
+        "unvisited_after_count": group_total - end,
+        "unvisited_group_count": len(groups) - 1,
+        "coverage_status": "complete_selected_group" if selected_complete else "partial_selected_group",
+        "catalog_coverage_status": "partial",
+        "comprehensive_diagnosis_supported": False,
+        "values_included": False, "evidence": rows,
+    }
+
+
+def evidence_catalog_details(case_id: str, catalog_sha256: str, evidence_ids: object) -> dict:
+    """선택한 소수 근거 ID의 현재 원문 행을 전체 catalog 해시에 묶어 반환한다."""
+    catalog = evidence_catalog(case_id)
+    if not isinstance(catalog_sha256, str) or catalog_sha256 != catalog["catalog_sha256"]:
+        raise ValueError("catalog_sha256이 현재 근거와 다릅니다")
+    if not isinstance(evidence_ids, list) or not evidence_ids:
+        raise ValueError("evidence_ids는 비어 있지 않은 목록이어야 합니다")
+    if len(evidence_ids) > DETAIL_ID_LIMIT:
+        raise ValueError(f"evidence_ids는 최대 {DETAIL_ID_LIMIT}개까지 허용됩니다")
+    if any(not isinstance(evidence_id, str) for evidence_id in evidence_ids):
+        raise ValueError("모든 evidence id는 문자열이어야 합니다")
+    if len(set(evidence_ids)) != len(evidence_ids):
+        raise ValueError("중복 evidence id는 허용되지 않습니다")
+    available = {item["evidence_id"]: item for item in catalog["evidence"]}
+    unknown = sorted(set(evidence_ids) - set(available))
+    if unknown:
+        raise ValueError(f"catalog에 없는 evidence id입니다: {unknown[0]}")
+    selected_ids = sorted(evidence_ids)
+    selected = [deepcopy(available[evidence_id]) for evidence_id in selected_ids]
+    selection_id = f"sel_{secrets.token_hex(16)}"
+    receipt = {
+        "schema": "grounded_evidence_selection_v1",
+        "selection_id": selection_id,
+        "case_id": case_id,
+        "catalog_sha256": catalog["catalog_sha256"],
+        "source_bindings": _source_bindings(catalog),
+        "selected_evidence_ids": selected_ids,
+        "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    }
+    receipt_sha256 = _canonical_sha(receipt)
+    out_dir = T._safe(T.WORKSPACE / "preregistrations" / "evidence_selections")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = T._safe(out_dir / f"{case_id}__{selection_id}.json")
+    try:
+        with out_path.open("x", encoding="utf-8") as output:
+            json.dump(receipt, output, ensure_ascii=False, indent=1)
+    except FileExistsError as exc:
+        raise ValueError("새 evidence selection id를 만들지 못했습니다") from exc
+    selection_binding = {
+        "selection_id": selection_id,
+        "case_id": case_id,
+        "catalog_sha256": catalog["catalog_sha256"],
+        "selected_evidence_ids": selected_ids,
+        "receipt_sha256": receipt_sha256,
+    }
+    return {
+        "case_id": case_id, "catalog_sha256": catalog["catalog_sha256"],
+        "source_bindings": _source_bindings(catalog),
+        "selection_binding": selection_binding,
+        "selected_evidence_count": len(selected),
+        "unselected_evidence_count": len(catalog["evidence"]) - len(selected),
+        "catalog_coverage_status": "selected_evidence_only",
+        "comprehensive_diagnosis_supported": False,
+        "evidence": selected,
+    }
+
+
+def _validated_selection(case_id: str, catalog_sha256: str,
+                         selection_binding: object) -> tuple[dict, list[str]]:
+    if not isinstance(selection_binding, dict) or set(selection_binding) != SELECTION_BINDING_KEYS:
+        raise ValueError(
+            "selection_binding은 selection_id, case_id, catalog_sha256, "
+            "selected_evidence_ids, receipt_sha256만 가져야 합니다"
+        )
+    selection_id = selection_binding["selection_id"]
+    if not isinstance(selection_id, str) or not SELECTION_ID.fullmatch(selection_id):
+        raise ValueError("selection_id가 host 발급 형식과 다릅니다")
+    if selection_binding["case_id"] != case_id or selection_binding["catalog_sha256"] != catalog_sha256:
+        raise ValueError("selection_binding의 case 또는 catalog가 요청과 다릅니다")
+    selected_ids = selection_binding["selected_evidence_ids"]
+    if (not isinstance(selected_ids, list) or not selected_ids or len(selected_ids) > DETAIL_ID_LIMIT
+            or any(not isinstance(item, str) for item in selected_ids)
+            or selected_ids != sorted(set(selected_ids))):
+        raise ValueError("selection_binding의 evidence id 목록이 잘못되었습니다")
+    receipt_sha256 = selection_binding["receipt_sha256"]
+    if not isinstance(receipt_sha256, str) or not re.fullmatch(r"[0-9a-f]{64}", receipt_sha256):
+        raise ValueError("selection receipt SHA-256 형식이 잘못되었습니다")
+
+    catalog = evidence_catalog(case_id)
+    if catalog_sha256 != catalog["catalog_sha256"]:
+        raise ValueError("catalog_sha256이 현재 근거와 다릅니다")
+    receipt_dir = T._safe(T.WORKSPACE / "preregistrations" / "evidence_selections")
+    receipt_path = T._safe(receipt_dir / f"{case_id}__{selection_id}.json")
+    if receipt_path.parent != receipt_dir or receipt_path.is_symlink() or not receipt_path.is_file():
+        raise ValueError("host가 발급한 evidence selection receipt가 없습니다")
+    try:
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise ValueError("evidence selection receipt를 읽을 수 없습니다") from exc
+    if not isinstance(receipt, dict) or _canonical_sha(receipt) != receipt_sha256:
+        raise ValueError("evidence selection receipt SHA-256이 다릅니다")
+    expected = {
+        "schema": "grounded_evidence_selection_v1",
+        "selection_id": selection_id,
+        "case_id": case_id,
+        "catalog_sha256": catalog_sha256,
+        "source_bindings": _source_bindings(catalog),
+        "selected_evidence_ids": selected_ids,
+    }
+    if any(receipt.get(key) != value for key, value in expected.items()) \
+            or set(receipt) != {*expected, "created_at"} \
+            or not isinstance(receipt.get("created_at"), str):
+        raise ValueError("evidence selection receipt 내용이 현재 요청과 다릅니다")
+    return catalog, selected_ids
 
 
 def _validate_operand(operand: object, expected_unit: str, expected_type: str, label: str) -> object:
@@ -165,7 +446,8 @@ def _relation_holds(actual: object, relation: str, operand: object) -> bool:
             "gt": actual > operand, "gte": actual >= operand}[relation]
 
 
-def _checked_hypotheses(catalog: dict, hypotheses: object) -> tuple[list[dict], list[str]]:
+def _checked_hypotheses(catalog: dict, hypotheses: object,
+                        selected_evidence_ids: set[str] | None = None) -> tuple[list[dict], list[str]]:
     if not isinstance(hypotheses, list) or len(hypotheses) < 2:
         raise ValueError("구조화된 가설이 두 개 이상 필요합니다")
     available = {item["evidence_id"]: item for item in catalog["evidence"]}
@@ -197,6 +479,8 @@ def _checked_hypotheses(catalog: dict, hypotheses: object) -> tuple[list[dict], 
                 raise ValueError(f"중복 premise evidence id입니다: {evidence_id}")
             if evidence_id not in available:
                 raise ValueError(f"catalog에 없는 evidence id입니다: {evidence_id}")
+            if selected_evidence_ids is not None and evidence_id not in selected_evidence_ids:
+                raise ValueError(f"selection에 포함되지 않은 premise evidence id입니다: {evidence_id}")
             seen_evidence.add(evidence_id)
             if relation not in RELATIONS:
                 raise ValueError(f"허용되지 않은 relation입니다: {relation}")
@@ -314,13 +598,14 @@ def _checked_next_check(next_check: object, hypothesis_ids: set[str]) -> dict:
 
 
 def write_grounded_assessment(case_id: str, catalog_sha256: str,
+                              selection_binding: object,
                               hypotheses: object, next_check: object) -> dict:
     """값 관계만 검증한 가설과 실행 전 read-only check 등록을 배타적으로 저장한다."""
     try:
-        catalog = evidence_catalog(case_id)
-        if catalog_sha256 != catalog["catalog_sha256"]:
-            raise ValueError("catalog_sha256이 현재 근거와 다릅니다")
-        checked_hypotheses, unavailable = _checked_hypotheses(catalog, hypotheses)
+        catalog, selected_ids = _validated_selection(case_id, catalog_sha256, selection_binding)
+        checked_hypotheses, unavailable = _checked_hypotheses(
+            catalog, hypotheses, set(selected_ids),
+        )
         checked_next = _checked_next_check(next_check, {item["id"] for item in checked_hypotheses})
         if unavailable:
             return {"status": "hold", "reason": "evidence_unavailable", "unavailable_evidence": unavailable}
@@ -330,6 +615,8 @@ def write_grounded_assessment(case_id: str, catalog_sha256: str,
         "case_id": case_id, "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "status": "hypotheses_only", "catalog_sha256": catalog["catalog_sha256"],
         "telemetry_sha256": catalog["telemetry_sha256"],
+        "selection_binding": deepcopy(selection_binding),
+        "selected_evidence_ids": selected_ids,
         "context_status": catalog["context_status"], "premises_verified": True,
         "model_narrative_unverified": True, "hypotheses": checked_hypotheses,
         "next_check": checked_next,

@@ -122,6 +122,16 @@ def _absolute_path(value: object, label: str) -> Path:
     return path
 
 
+def protocol_location(path: Path, repo_root: Path = ROOT) -> Path:
+    """Keep new source commitments separate from already-executed protocol files."""
+    resolved = path.resolve()
+    directory = (repo_root / "bench/protocols").resolve()
+    if (resolved.parent != directory or
+            re.fullmatch(r"runtime_readback_smoke_v[1-9][0-9]*\.json", resolved.name) is None):
+        raise ValueError("manifest must bind the repository runtime readback smoke protocol")
+    return resolved
+
+
 def _relative_source_path(root: Path, value: object, label: str) -> Path:
     if not isinstance(value, str) or not value or "\\" in value:
         raise ValueError(f"{label} must use a non-empty POSIX relative path")
@@ -288,9 +298,7 @@ def validate_manifest(manifest_path: Path, *, repo_root: Path = ROOT,
         key: _absolute_path(manifest[key], key)
         for key in ("protocol_path", "checkpoint_path", "output_path", "configuration_path")
     }
-    expected_protocol = (repo_root / "bench" / "protocols" / "runtime_readback_smoke_v1.json").resolve()
-    if paths["protocol_path"].resolve() != expected_protocol:
-        raise ValueError("manifest must bind the repository runtime readback smoke protocol")
+    protocol_location(paths["protocol_path"], repo_root)
     if paths["output_path"].parent.resolve() != run_directory or paths["output_path"].name != "body.json":
         raise ValueError("output_path must be body.json in the manifest tag directory")
     if (paths["configuration_path"].parent.resolve() != run_directory

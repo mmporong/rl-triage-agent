@@ -92,17 +92,66 @@ async def grounded_evidence_catalog_fn(config: GroundedEvidenceCatalogConfig, bu
         "missing과 null을 구분하며 샘플 곡선이나 정상성·인과 판단을 만들지 않는다."))
 
 
+class GroundedEvidenceGroupIndexConfig(FunctionBaseConfig, name="triage_grounded_evidence_group_index"):
+    pass
+
+
+@register_function(config_type=GroundedEvidenceGroupIndexConfig)
+async def grounded_evidence_group_index_fn(config: GroundedEvidenceGroupIndexConfig, builder: Builder):
+    async def _run(case_id: str) -> str:
+        return _trace(
+            "grounded_evidence_group_index", {"case_id": case_id},
+            _dump(G.evidence_catalog_group_index(case_id)),
+        )
+    yield FunctionInfo.from_fn(_run, description=(
+        "근거 값을 싣지 않고 telemetry tag와 configuration 경로로 나눈 결정적 그룹 인덱스를 반환한다. "
+        "모든 근거 ID의 그룹 범위와 원본 SHA를 제공하지만 포괄 진단이나 원인 순위를 만들지 않는다."))
+
+
+class GroundedEvidenceGroupPageConfig(FunctionBaseConfig, name="triage_grounded_evidence_group_page"):
+    pass
+
+
+@register_function(config_type=GroundedEvidenceGroupPageConfig)
+async def grounded_evidence_group_page_fn(config: GroundedEvidenceGroupPageConfig, builder: Builder):
+    async def _run(case_id: str, catalog_sha256: str, group_id: str,
+                   offset: int = 0, limit: int = G.GROUP_PAGE_LIMIT) -> str:
+        args = {"case_id": case_id, "catalog_sha256": catalog_sha256,
+                "group_id": group_id, "offset": offset, "limit": limit}
+        return _trace("grounded_evidence_group_page", args, _dump(G.evidence_catalog_group_page(**args)))
+    yield FunctionInfo.from_fn(_run, description=(
+        "선택한 중립 경로 그룹의 근거 ID·경로·상태·단위만 제한된 페이지로 반환한다. 값은 포함하지 않으며 "
+        "미조회 그룹과 페이지 수를 남겨 부분 조회를 포괄 진단으로 취급하지 않게 한다."))
+
+
+class GroundedEvidenceDetailsConfig(FunctionBaseConfig, name="triage_grounded_evidence_details"):
+    pass
+
+
+@register_function(config_type=GroundedEvidenceDetailsConfig)
+async def grounded_evidence_details_fn(config: GroundedEvidenceDetailsConfig, builder: Builder):
+    async def _run(case_id: str, catalog_sha256: str, evidence_ids: list[str]) -> str:
+        args = {"case_id": case_id, "catalog_sha256": catalog_sha256,
+                "evidence_ids": evidence_ids}
+        return _trace("grounded_evidence_details", args, _dump(G.evidence_catalog_details(**args)))
+    yield FunctionInfo.from_fn(_run, description=(
+        "그룹 페이지에서 고른 최대 16개 근거 ID의 원문 행을 현재 catalog SHA에 묶어 반환한다. "
+        "missing·null·0을 그대로 보존하며 근거 선택이나 원인 판단을 대신하지 않는다."))
+
+
 class WriteGroundedAssessmentConfig(FunctionBaseConfig, name="triage_write_grounded_assessment"):
     pass
 
 
 @register_function(config_type=WriteGroundedAssessmentConfig)
 async def write_grounded_assessment_fn(config: WriteGroundedAssessmentConfig, builder: Builder):
-    async def _run(case_id: str, catalog_sha256: str,
+    async def _run(case_id: str, catalog_sha256: str, selection_binding: dict,
                    hypotheses: list[dict], next_check: dict) -> str:
         args = {"case_id": case_id, "catalog_sha256": catalog_sha256,
+                "selection_binding": selection_binding,
                 "hypotheses": hypotheses, "next_check": next_check}
         return _trace("write_grounded_assessment", args, _dump(G.write_grounded_assessment(**args)))
     yield FunctionInfo.from_fn(_run, description=(
-        "근거 ID의 값 관계를 검증한 복수 가설과 host 등록 read-only 다음 측정을 저장한다. 자유 서술과 사전 예측의 "
+        "host가 발급한 selection_binding에 포함된 근거 ID의 값 관계만 검증해 복수 가설과 read-only 다음 측정을 "
+        "저장한다. 자유 서술과 사전 예측의 "
         "과학적 타당성은 검증하지 않으며, 측정은 실행하지 않고 approval_pending으로 등록한다."))

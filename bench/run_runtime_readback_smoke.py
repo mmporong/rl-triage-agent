@@ -16,7 +16,7 @@ import record_evidence_media as M
 import runtime_readback_smoke as S
 
 ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = ROOT / "bench/protocols/runtime_readback_smoke_v1.json"
+PROTOCOL = ROOT / "bench/protocols/runtime_readback_smoke_v2.json"
 SOURCE_FILES = S.PROJECT_SOURCE_FILES
 
 
@@ -199,7 +199,7 @@ def verify_body(body: dict, validated: dict, execution: dict, project_commit: st
     return reasons
 
 
-def run(tag: str, isaaclab: Path, checkpoint: Path) -> dict:
+def run(tag: str, isaaclab: Path, checkpoint: Path, protocol_path: Path = PROTOCOL) -> dict:
     if os.name != "nt":
         raise RuntimeError("native Windows launcher required")
     if re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,63}", tag) is None:
@@ -209,11 +209,12 @@ def run(tag: str, isaaclab: Path, checkpoint: Path) -> dict:
     folder = ROOT / "bench/private/runtime_readback" / tag
     if folder.exists():
         raise FileExistsError("use a new tag; an existing run is never overwritten")
-    protocol = S._read_json(PROTOCOL)
+    protocol_path = S.protocol_location(protocol_path)
+    protocol = S._read_json(protocol_path)
     if set(protocol["source_files"]) != SOURCE_FILES:
         raise ValueError("required source set differs from the fixed launcher")
     source_receipt = S._validate_protocol(protocol, repo_root=ROOT, isaaclab_root=isaaclab)
-    project_commit = verify_committed(ROOT, SOURCE_FILES | {PROTOCOL.relative_to(ROOT).as_posix()})
+    project_commit = verify_committed(ROOT, SOURCE_FILES | {protocol_path.relative_to(ROOT).as_posix()})
     if S._sha256_file(checkpoint) != protocol["checkpoint_sha256"]:
         raise ValueError("checkpoint SHA mismatch")
     for argument in (str(checkpoint), str(isaaclab), str(folder), str(ROOT)):
@@ -225,8 +226,8 @@ def run(tag: str, isaaclab: Path, checkpoint: Path) -> dict:
     folder.mkdir(parents=True, exist_ok=False)
     manifest_path = folder / "manifest.json"
     manifest = {
-        "schema": "runtime_readback_smoke_manifest_v1", "protocol_path": str(PROTOCOL.resolve()),
-        "protocol_sha256": S._sha256_file(PROTOCOL), "checkpoint_path": str(checkpoint),
+        "schema": "runtime_readback_smoke_manifest_v1", "protocol_path": str(protocol_path),
+        "protocol_sha256": S._sha256_file(protocol_path), "checkpoint_path": str(checkpoint),
         "output_path": str(folder / "body.json"), "configuration_path": str(folder / "configuration.yaml"),
     }
     write_new(manifest_path, manifest)
@@ -274,10 +275,14 @@ def main() -> int:
     parser.add_argument("--tag", required=True)
     parser.add_argument("--isaaclab", type=Path, default=Path.home() / "IsaacLab")
     parser.add_argument("--checkpoint", type=Path)
+    parser.add_argument("--protocol-version", type=int, default=2)
     args = parser.parse_args()
     checkpoint = args.checkpoint or args.isaaclab / (
         "logs/rsl_rl/unitree_go2_flat/2026-09-26_11-31-54_s02_baseline_s42/model_99.pt")
-    receipt = run(args.tag, args.isaaclab, checkpoint)
+    if args.protocol_version < 1:
+        parser.error("protocol version must be positive")
+    protocol_path = ROOT / "bench/protocols" / f"runtime_readback_smoke_v{args.protocol_version}.json"
+    receipt = run(args.tag, args.isaaclab, checkpoint, protocol_path)
     print(json.dumps({"status": receipt["status"], "execution": receipt["execution"],
                       "validation_reasons": receipt["validation_reasons"]}, ensure_ascii=False))
     return 0 if receipt["status"] == "pass" else 1

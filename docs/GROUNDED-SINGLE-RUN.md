@@ -13,8 +13,8 @@ cd "$HOME/rl-triage-agent"
 export TRIAGE_WORKSPACE="$PWD/workspace/single_run"
 uv run python - <<'PY'
 import json
-from rl_triage.grounded_evidence import evidence_catalog
-print(json.dumps(evidence_catalog("example"), ensure_ascii=False, indent=2))
+from rl_triage.grounded_evidence import evidence_catalog_group_index
+print(json.dumps(evidence_catalog_group_index("example"), ensure_ascii=False, indent=2))
 PY
 ```
 
@@ -28,13 +28,21 @@ uv run nat run --config_file configs/triage_single_run_grounded.yml \
   --input "Assess case example, cite the catalog, and register one read-only next check."
 ```
 
-이 흐름은 `grounded_evidence_catalog`와 `write_grounded_assessment` 두 도구를 사용한다. 결과는 `preregistrations/grounded_assessments/<case_id>.json`에 한 번 저장한다. 모델이 만든 코드나 셸 명령을 실행하는 도구는 이 흐름에 포함되지 않는다.
+이 흐름은 아래 네 도구를 사용한다. 결과는 `preregistrations/grounded_assessments/<case_id>.json`에 한 번 저장한다. 모델이 만든 코드나 셸 명령을 실행하는 도구는 이 흐름에 포함되지 않는다.
+
+1. `grounded_evidence_group_index`: 값 없이 telemetry tag와 설정 경로 앞 세 구간으로 만든 그룹을 반환한다. payload는 65,536 UTF-8 byte를 넘으면 거절하며, 크기·해시·조회 상태 metadata는 별도로 반환한다.
+2. `grounded_evidence_group_page`: 모델이 선택한 그룹에서 최대 64개 ID·경로·타입·단위를 읽는다. 미조회 그룹과 행 수를 기록한다.
+3. `grounded_evidence_details`: 선택한 ID 최대 16개의 원문 행을 읽고 현재 전체 catalog SHA를 대조한다. host가 새 선택 receipt를 `preregistrations/evidence_selections/<case_id>__<selection_id>.json`에 한 번 저장하고 `selection_binding`을 반환한다.
+4. `write_grounded_assessment`: 받은 `selection_binding`을 필수로 제출한다. 저장된 receipt·case·catalog·source SHA를 대조하고, 전제의 ID가 해당 선택 집합 안에 있을 때만 원본 값·예측 구조를 검증해 저장한다.
+
+모델 지시는 그룹 최대 두 개와 상세 조회 한 번을 사용하도록 되어 있다. 부분 조회로 원인을 모두 검토했다고 표현하면 안 된다. 기존 전체 catalog CPU API와 NAT 등록 함수도 유지한다. 이 변경은 입력 전달 범위를 줄이는 기능이며, provider의 token 수용·비용·진단 효과를 입증하는 결과는 아니다.
 
 ## 저장할 때 확인하는 내용
 
 | 확인 항목 | 동작 |
 |---|---|
-| 원본 결속 | context가 없어도 텔레메트리 원본 바이트의 SHA를 제공한다. context가 있으면 설정·텔레메트리 SHA를 다시 대조한다 |
+| 원본 결속 | context가 없어도 텔레메트리 원본 바이트의 SHA를 제공한다. context가 있으면 설정·context·텔레메트리 SHA를 다시 대조하며, 선택 fact가 없어도 설정·context SHA를 유지한다 |
+| 근거 선택 | host가 발급해 저장한 선택 receipt와 최대 16개 ID를 필수로 대조한다. 조회하지 않은 ID를 전제로 쓰면 저장을 거절한다 |
 | 제공 범위 | 등록한 설정 fact만 반환한다. 텔레메트리는 원본 summary의 고정 필드를 반환하며, 샘플 곡선으로 기존 summary를 재계산하지 않는다 |
 | 자료 없음 | `missing`, 명시적 `null`, 실제 숫자 `0`을 구분한다. 미제공 전제를 인용하면 `HOLD`이며 평가 파일을 만들지 않는다 |
 | 가설 전제 | 고유 ID, 연속 순위, 근거 ID·타입·단위·관계를 검증한다. 거짓 관계와 알 수 없는 ID는 저장을 거절한다 |
@@ -66,16 +74,20 @@ uv run nat run --config_file configs/triage_single_run_grounded.yml \
 
 수집기는 자료 없음·비유한 값·읽기 오류를 0으로 채우지 않는다. 측정 phase와 유효/미제공 표본 수를 기록하며, 원인·정상성·회복·프로세스 정리 확정은 모두 false다. 종료 확인은 부모 receipt가 수행한다. 모델 선택을 소비하는 승인 고리와 새 진단 효과는 별도로 검증해야 한다.
 
+별도 [base COM reset 관측기](../src/rl_triage/reset_com_observer.py)는 유일한 `base` body의 초기 COM snapshot을 저장하고, 호출자가 완료한 reset 뒤 fresh PhysX 값을 읽는다. x·y 편차는 원시 표본으로, 최대 절댓값과 허용 범위 이탈 env 비율은 집계 측정으로 구분한다. 다른 body의 정상 COM offset이 base 변화를 가리지 않게 한다. 샘플의 단위·reset ID·유효 수와 부분 coverage를 보존한다. 이 관측기는 reset이나 step을 실행하지 않으며, 초기 snapshot 시점과 reset 완료 여부는 caller 주장이다. 새 SDK 실행기가 그 시점·출처·절차를 대조해야 한다. 기존 세 registry의 실행 스텝 수집과 별개이며, 새 모델 선택·원인·회복 효과는 아직 검증하지 않았다.
+
 개발 입력의 CPU JSON/NAT round-trip은 무손실로 확인했다. provider의 context·token 수용과 새 모델 호출 완료는 아직 검증하지 않았다.
 
-실제 SDK 연결은 별도 `bench/protocols/runtime_readback_smoke_v1.json`으로 고정한다. stock Go2의 기존 체크포인트로 16개 env를 20 control step 실행하며, 그중 4개 env의 값을 읽는다. 새 학습이나 결함 주입은 포함하지 않는다. 결과별 문구도 실행 전에 프로토콜에 기록한다.
+현재 소스의 SDK 연결 계약은 별도 `bench/protocols/runtime_readback_smoke_v2.json`에 고정한다. v1을 실행한 뒤 조회 도구와 프로토콜 선택 코드가 바뀌어, 원래 v1은 보존하고 새 소스 해시를 v2에 결속했다. schema와 측정 크기·기준·결과 문구는 유지한다. stock Go2의 기존 체크포인트로 16개 env를 20 control step 실행하며, 그중 4개 env의 값을 읽는다. 새 학습이나 결함 주입은 포함하지 않는다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"
-& .venv/Scripts/python.exe bench/run_runtime_readback_smoke.py --tag readback_sdk_v1
+& .venv/Scripts/python.exe bench/run_runtime_readback_smoke.py --tag readback_sdk_v2 --protocol-version 2
 ```
 
 새 tag의 `bench/private/runtime_readback/<tag>`에 manifest·설정 snapshot·body와 부모 receipt가 남는다. 실행기는 커밋된 소스·SDK·체크포인트 해시를 대조하고, Windows Job에 연결한 프로세스만 추적한다. SDK clock·완료 보상·재설정 phase·coverage와 PID 생성 시각을 대조한 뒤 종료를 확인한다. 이 smoke의 판정 범위는 API 연결이며, AI 판단 변화와 정책 회복 검증은 별도로 필요하다.
+
+과거 v1 재현은 소스 커밋 `724aefdfc765f0c8de385737fac656b201457cfa`의 checkout과 새 tag를 사용한다. 현재 소스에서 옛 프로토콜을 선택해도 해시가 다르면 실행을 거절한다. v2 소스 결속은 실행 준비이며, 아래 v1 실측을 v2의 새 실행 결과로 세지 않는다.
 
 [소스 커밋 `724aefd`의 실측 요약](../evals/results/runtime_readback_sdk_v1_20261011/result.json)과 [원시 body](../evals/results/runtime_readback_sdk_v1_20261011/body.json)는 20 control step·80 physics step·4개 env의 80표본을 보존한다. 7개 측정 모두 유효한 값 80개·미제공 0개였고, 부모 wall은 13.078초였다. 원시 재집계와 해시·프로세스 종료의 별도 검수도 통과했다. 이 실행은 모델이 검사를 선택한 사례가 아니며, 정책 건강·원인·회복은 판정하지 않았다.
 
