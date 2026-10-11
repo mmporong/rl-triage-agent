@@ -2,6 +2,7 @@
 
 This is environment setup, not a diagnostic probe or a trained-policy evaluation.
 It does not load a checkpoint, create robots, or alter the frozen probe catalog.
+The body report is flushed before SDK fast shutdown; the parent must verify exit and cleanup.
 """
 from __future__ import annotations
 
@@ -25,6 +26,8 @@ def main() -> None:
 
     app = AppLauncher(headless=True).app
     sim = None
+    body_completed = False
+    packages: dict[str, str] = {}
     try:
         from isaaclab.sim import SimulationCfg, SimulationContext  # pyright: ignore[reportMissingImports]
 
@@ -35,6 +38,10 @@ def main() -> None:
             name: version(name)
             for name in ("isaacsim", "isaaclab", "isaaclab_rl", "torch", "rsl-rl-lib", "gymnasium")
         }
+        body_completed = True
+    except BaseException as error:
+        print("RL_TRIAGE_CLOUD_SMOKE_ERROR " + type(error).__name__, flush=True)
+        raise
     finally:
         try:
             if sim is not None:
@@ -42,27 +49,29 @@ def main() -> None:
                     sim.clear_all_callbacks()
                 finally:
                     sim.clear_instance()
+            if body_completed:
+                report = {
+                    "schema": "cloud_environment_smoke_v1",
+                    "completed": True,
+                    "scope": "empty_stage_environment_setup_not_diagnostic_evidence",
+                    "checkpoint_loaded": False,
+                    "robot_environments": 0,
+                    "empty_stage_physics_steps": 1,
+                    "wall_s": time.perf_counter() - started,
+                    "wall_scope": "helper_start_to_report_before_app_close",
+                    "cpu_s": time.process_time(),
+                    "cpu_scope": "smoke_python_process_lifetime_before_app_close",
+                    "shutdown_verification": "parent_execution_receipt_required",
+                    "device_busy_s": None,
+                    "packages": packages,
+                }
+                args.out.parent.mkdir(parents=True, exist_ok=True)
+                with args.out.open("x", encoding="utf-8", newline="\n") as handle:
+                    json.dump(report, handle, indent=2, allow_nan=False)
+                    handle.write("\n")
+                print("RL_TRIAGE_CLOUD_SMOKE " + json.dumps(report, allow_nan=False), flush=True)
         finally:
             app.close()
-
-    report = {
-        "schema": "cloud_environment_smoke_v1",
-        "completed": True,
-        "scope": "empty_stage_environment_setup_not_diagnostic_evidence",
-        "checkpoint_loaded": False,
-        "robot_environments": 0,
-        "empty_stage_physics_steps": 1,
-        "wall_s": time.perf_counter() - started,
-        "cpu_s": time.process_time(),
-        "cpu_scope": "smoke_python_process_lifetime",
-        "device_busy_s": None,
-        "packages": packages,
-    }
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    with args.out.open("x", encoding="utf-8", newline="\n") as handle:
-        json.dump(report, handle, indent=2, allow_nan=False)
-        handle.write("\n")
-    print("RL_TRIAGE_CLOUD_SMOKE " + json.dumps(report, allow_nan=False), flush=True)
 
 
 if __name__ == "__main__":
