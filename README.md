@@ -12,6 +12,8 @@ A robot RL engineer changes several settings, trains, and the run collapses. In 
 
 When a healthy reference is unavailable, `configs/triage_single_run.yml` reads one failed run and saves competing hypotheses, measured evidence, limitations and one next measurement. Optional configuration facts are bound to that telemetry by file hashes, and cited configuration values are checked before saving. Its output is marked `hypotheses_only`; it cannot establish normality, recovery or a confirmed cause from that run alone.
 
+The optional [grounded single-run workflow](docs/GROUNDED-SINGLE-RUN.md) checks structured hypothesis premises against source-bound evidence and registers one read-only next check. Missing, null and zero remain distinct; explanations and physical predictions remain unverified. Its runtime readback collector has CPU regression coverage, while actual Isaac execution and approval/receipt integration for these new checks remain to be verified. This addition has no new diagnosis or recovery performance result.
+
 The [active diagnosis host driver](docs/ACTIVE-DIAGNOSIS.md) connects a fresh Nemotron probe choice to an approval ledger, a fixed Isaac measurement and a fresh model reassessment. It preserves the model's raw ranking separately from the frozen evidence rules, compares each reassessment with a fresh call that lacks the latest receipt, and records independent executions of two rule baselines. Diagnosis and masked validation have separate outcomes: an invalid control excludes that pair from the evidence without blocking a valid actual decision. The preregistered measurement backend can use the native Windows Isaac installation or an existing Brev instance with the same pinned SDK. Cloud execution transfers the required source, checkpoint and trusted measurement job; the NVIDIA API key stays in the local WSL environment. Its registered cases demonstrate integration on previously seen inputs; they do not establish accuracy, generalization or savings.
 
 The [current active integration results](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md) contain 8 audited model cases and two independently executed rule baselines. All model records pass integrity checks, but **0/8 pass the measurement-dependent judgment-change criterion**. Seven model cases remain on HOLD. The recorded costs therefore do not establish diagnosis or savings superiority.
@@ -64,7 +66,7 @@ The default sandbox has no bridge submission tool or access; the host submits th
 | NVIDIA component | Role here |
 |---|---|
 | Nemotron 3 Super 120B (build.nvidia.com) | Planning, tool calling, reasoning |
-| NeMo Agent Toolkit 1.9 (`nvidia-nat`) | Agent workflows (`configs/*.yml`), 7 reference-based tools (`src/rl_triage/nat_functions.py`) and 5 single-run tools (`src/rl_triage/nat_single_run.py`) |
+| NeMo Agent Toolkit 1.9 (`nvidia-nat`) | Agent workflows (`configs/*.yml`), 7 reference-based tools (`src/rl_triage/nat_functions.py`), 5 legacy single-run tools and 2 grounded single-run tools (`src/rl_triage/nat_single_run.py`) |
 | OpenShell 0.1.1 | Sandbox image, Landlock filesystem policy, L7 REST network policy, NVIDIA provider (the agent only sees a placeholder key) |
 | openshell-prover 0.1.1 | SMT check of every requested permission against `policies/site_boundary.yaml` |
 | NVIDIA Skills | `skills-lock.json` (nemo-rl-auto-research, nemoclaw-user-guide, nemotron-policy-generator); own skill `skills/isaaclab-rl-triage` in NVIDIA skill format |
@@ -265,6 +267,8 @@ This re-derives past numbers; it is not new performance evidence. Two early file
 ## 한국어 요약
 
 **Isaac Lab 학습 실패 원인 추적 에이전트.** 학습 로그를 읽고 원인 후보와 다음 측정 또는 실험 하나를 제안합니다. 정상 기준 실행이 있으면 텔레메트리를 비교하고 검증 실험을 사전등록합니다. 사람이 승인하면 probe를 실행하거나 재평가 브리지로 변수 하나만 바꿔 다시 학습해 가설을 확인합니다. 정상 기준이 없으면 단일 실행의 수치·가설·한계·다음 측정을 `hypotheses_only` 평가로 저장하며 원인을 확정하지 않습니다. 설정 근거를 제공하면 파일 해시와 인용 값도 대조합니다. 이 검사는 제공된 파일끼리의 일관성을 확인하며, 시뮬레이터에서 나온 자료인지는 인증하지 않습니다.
+
+[근거 검증 흐름](docs/GROUNDED-SINGLE-RUN.md)은 가설의 전제를 등록된 수치와 대조하고, 읽기 전용 다음 검사를 승인 대기로 저장합니다. 새 COM·보상·접촉 수집기는 CPU 회귀를 검증했으며 실제 Isaac 실행과 승인·receipt 연결은 아직 검증하지 않았습니다. 새 진단 효과나 회복 성능은 측정 전입니다.
 
 [관측 후 판단 갱신 드라이버](docs/ACTIVE-DIAGNOSIS.md)는 새 Nemotron 호출이 고른 검사를 승인 원장과 실제 Isaac 실행에 연결합니다. 측정값을 받은 모델의 원문 순위와 규칙 판정은 따로 남기고, 최신 결과를 가린 호출 및 단순 규칙 두 방식의 실행과 비교합니다. 진단과 가림 검증의 상태를 구분해 대조 호출이 잘못돼도 유효한 실제 판단을 이어가며, 해당 쌍은 발표 증거에서 제외합니다. 이미 본 입력의 통합 기록이며 정확도 향상이나 GPU 절감으로 해석하지 않습니다.
 

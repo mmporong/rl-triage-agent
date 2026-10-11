@@ -71,6 +71,36 @@ def test_transport_failure_is_typed_and_does_not_publish_secret_or_command(tmp_p
     assert "secret" not in str(raised.value) and "alice" not in str(raised.value)
 
 
+def test_failed_transport_preserves_wsl_code_and_exit_without_raw_output(tmp_path):
+    def fail(*args, **kwargs):
+        return SimpleNamespace(returncode=1, stdout="Wsl/Service/0x80072747\ntoken=secret", stderr="")
+
+    backend = B.BrevProbeBackend(tmp_path, protocol(), runner=fail)
+    with pytest.raises(B.BrevBackendError) as raised:
+        backend._run(["wsl"], "gpu snapshot")
+    assert raised.value.error_type == "TransportFailed"
+    diagnostic = raised.value.diagnostic
+    assert diagnostic["returncode"] == 1
+    assert diagnostic["stdout"]["wsl_error_codes"] == ["Wsl/Service/0x80072747"]
+    assert "token=secret" not in json.dumps(diagnostic)
+
+
+def test_transport_timeout_preserves_partial_output_and_unknown_exit(tmp_path):
+    def timeout(*args, **kwargs):
+        raise subprocess.TimeoutExpired("private-command", 120, output=b"token=secret",
+                                        stderr=b"Wsl/Service/0x80072747")
+
+    backend = B.BrevProbeBackend(tmp_path, protocol(), runner=timeout)
+    with pytest.raises(B.BrevBackendError) as raised:
+        backend._run(["wsl"], "gpu snapshot")
+    assert raised.value.error_type == "TransportTimeout"
+    assert raised.value.diagnostic["returncode"] is None
+    assert raised.value.diagnostic["timed_out"] is True
+    assert raised.value.diagnostic["stderr"]["wsl_error_codes"] == ["Wsl/Service/0x80072747"]
+    assert "private-command" not in str(raised.value)
+    assert "token=secret" not in json.dumps(raised.value.diagnostic)
+
+
 def test_cloud_busy_snapshot_is_fail_closed_before_approval_and_uses_default_exec(tmp_path):
     calls = []
     snapshot = {"gpu_utilization_pct": 17, "memory_mib": 4096, "memory_total_mib": 46068,

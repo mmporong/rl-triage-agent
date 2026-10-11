@@ -5,6 +5,7 @@ from nat.cli.register_workflow import register_function
 from nat.data_models.function import FunctionBaseConfig
 
 from rl_triage import single_run as S
+from rl_triage import grounded_evidence as G
 from rl_triage.nat_functions import _dump, _trace
 
 
@@ -76,3 +77,32 @@ async def write_single_assessment_fn(config: WriteSingleAssessmentConfig, builde
         "단일 실행의 가설·수치 근거·한계·다음 계측 하나를 저장한다. 설정 근거가 있으면 fact_claims에 "
         "인용한 id와 value를 하나 이상 넣는다. 설정 해시와 인용 값이 맞아야 저장되며 자유 문장 전체의 "
         "정확성을 판정하지는 않는다. status는 hypotheses_only이고 기존 평가는 덮어쓰지 않는다."))
+
+
+class GroundedEvidenceCatalogConfig(FunctionBaseConfig, name="triage_grounded_evidence_catalog"):
+    pass
+
+
+@register_function(config_type=GroundedEvidenceCatalogConfig)
+async def grounded_evidence_catalog_fn(config: GroundedEvidenceCatalogConfig, builder: Builder):
+    async def _run(case_id: str) -> str:
+        return _trace("grounded_evidence_catalog", {"case_id": case_id}, _dump(G.evidence_catalog(case_id)))
+    yield FunctionInfo.from_fn(_run, description=(
+        "전체 단일 실행 telemetry의 원본 SHA와 고정 summary 필드, 선택된 configuration fact만 근거 ID로 반환한다. "
+        "missing과 null을 구분하며 샘플 곡선이나 정상성·인과 판단을 만들지 않는다."))
+
+
+class WriteGroundedAssessmentConfig(FunctionBaseConfig, name="triage_write_grounded_assessment"):
+    pass
+
+
+@register_function(config_type=WriteGroundedAssessmentConfig)
+async def write_grounded_assessment_fn(config: WriteGroundedAssessmentConfig, builder: Builder):
+    async def _run(case_id: str, catalog_sha256: str,
+                   hypotheses: list[dict], next_check: dict) -> str:
+        args = {"case_id": case_id, "catalog_sha256": catalog_sha256,
+                "hypotheses": hypotheses, "next_check": next_check}
+        return _trace("write_grounded_assessment", args, _dump(G.write_grounded_assessment(**args)))
+    yield FunctionInfo.from_fn(_run, description=(
+        "근거 ID의 값 관계를 검증한 복수 가설과 host 등록 read-only 다음 측정을 저장한다. 자유 서술과 사전 예측의 "
+        "과학적 타당성은 검증하지 않으며, 측정은 실행하지 않고 approval_pending으로 등록한다."))

@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "evals"))
 from rl_triage import active_diagnosis as D, probe_loop as L  # noqa: E402
+from rl_triage.process_diagnostics import launch_diagnostics  # noqa: E402
 import loop  # noqa: E402
 import brev_probe_backend as B  # noqa: E402
 from run_fixed_eval import find_run, last_checkpoint  # noqa: E402
@@ -32,6 +33,7 @@ from run_fixed_eval import find_run, last_checkpoint  # noqa: E402
 ACTOR = "codex_operator_user_authorized_test"
 MODEL = "nvidia/nemotron-3-super-120b-a12b"
 CODE = ("src/rl_triage/__init__.py", "src/rl_triage/active_diagnosis.py", "src/rl_triage/probe_loop.py",
+        "src/rl_triage/process_diagnostics.py",
         "evals/run_active_diagnosis.py", "evals/brev_probe_backend.py",
         "evals/active_model_call.py", "evals/loop.py",
         "evals/run_probes.py", "evals/probes.py", "evals/metered_probes.py",
@@ -349,10 +351,12 @@ def fresh_decision(folder, stage, packet, protocol):
         attempt_start, attempt_wall = now(), time.perf_counter()
         failed = None
         launch_error_type = None
+        worker_launch = None
         try:
             proc = subprocess.run(["wsl", "-d", "Ubuntu", "--", "bash", "-lc", command], cwd=ROOT,
                                   capture_output=True, timeout=330)
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as error:
+            worker_launch = launch_diagnostics(None, error.stdout, error.stderr, timed_out=True)
             try:
                 stop_model_worker(output, packet_path)
                 cleanup_failed = False
@@ -364,8 +368,11 @@ def fresh_decision(folder, stage, packet, protocol):
             proc = None
             cleanup_failed = False
             launch_error_type = type(error).__name__
+            worker_launch = launch_diagnostics(None)
         else:
             cleanup_failed = False
+            worker_launch = launch_diagnostics(proc.returncode, getattr(proc, "stdout", None),
+                                              getattr(proc, "stderr", None))
         if not output.exists():
             try:
                 write_new(output, {"schema": "active_model_call_v1", "packet_sha256": packet_digest,
@@ -382,6 +389,7 @@ def fresh_decision(folder, stage, packet, protocol):
                                    "error_message": "model worker launch failed" if launch_error_type else None,
                                    "retryable": bool(failed) and not cleanup_failed,
                                    "worker_cleanup_failed": cleanup_failed,
+                                   "worker_launch": worker_launch,
                                    **({"infra_error": failed} if failed and not cleanup_failed else {})})
             except (OSError, ValueError, TypeError) as error:
                 harness = ModelHarnessError(safe_error_message("model attempt write-once 실패", error))
@@ -510,7 +518,8 @@ def approved_probe(folder, tag, spec, protocol, packet, probe, stage, ledger, bi
             elapsed = None if wall_s is None else round(wall_s, 1)
             failure = f"{error.error_type}: {error}"
             write_new(folder / f"probe_failure_{stage}.json",
-                      {"error_type": error.error_type, "safe_message": str(error)})
+                      {"error_type": error.error_type, "safe_message": str(error),
+                       "transport_diagnostics": error.diagnostic})
         else:
             failure = type(error).__name__
     if wall_s is None:

@@ -19,6 +19,8 @@ import tempfile
 import time
 import uuid
 
+from rl_triage.process_diagnostics import launch_diagnostics
+
 
 DEFAULT_INSTANCE = "marked-lavender-warbler"
 DEFAULT_WORKSPACE = "rl-triage-active-evidence-20261011"
@@ -41,9 +43,10 @@ REMOTE_PREP_CODE = (
 class BrevBackendError(RuntimeError):
     """Safe, typed cloud-boundary failure."""
 
-    def __init__(self, stage: str, error_type: str = "BrevBackendError"):
+    def __init__(self, stage: str, error_type: str = "BrevBackendError", diagnostic: dict | None = None):
         self.stage = stage
         self.error_type = error_type
+        self.diagnostic = diagnostic
         self.launched = False
         self.launcher_wall_s: float | None = 0.0
         super().__init__(f"{stage}: {error_type}")
@@ -221,11 +224,13 @@ class BrevProbeBackend:
                                encoding="utf-8", errors="replace",
                                timeout=self._remaining(deadline))
         except subprocess.TimeoutExpired as error:
-            raise BrevBackendError(stage, "TransportTimeout") from error
+            raise BrevBackendError(stage, "TransportTimeout", launch_diagnostics(
+                None, error.stdout, error.stderr, timed_out=True)) from error
         except (OSError, subprocess.SubprocessError) as error:
-            raise BrevBackendError(stage, type(error).__name__) from error
+            raise BrevBackendError(stage, type(error).__name__, launch_diagnostics(None)) from error
         if proc.returncode != 0:
-            raise BrevBackendError(stage, "TransportFailed")
+            raise BrevBackendError(stage, "TransportFailed", launch_diagnostics(
+                proc.returncode, getattr(proc, "stdout", None), getattr(proc, "stderr", None)))
         return proc
 
     def _exec(self, command: str, stage: str, deadline: float | None = None) -> dict:
@@ -524,7 +529,7 @@ class BrevProbeBackend:
                                                         remote_metrics, f"{workspace}/IsaacLab", encoded_manifest,
                                                         str(watchdog_s)), "probe execution", transport_deadline)
                 except BrevBackendError as error:
-                    raise BrevCleanupUnverified("probe execution", error.error_type) from error
+                    raise BrevCleanupUnverified("probe execution", error.error_type, error.diagnostic) from error
                 launch_transport_wall = time.perf_counter() - launch_call
                 execution_state = {"launched": outcome.get("spawned") is True,
                                    "launcher_wall_s": outcome.get("launcher_wall_s")}

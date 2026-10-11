@@ -80,13 +80,29 @@ def _json_bytes(path: Path) -> tuple[bytes, object]:
     return raw, parsed
 
 
-def _case_telemetry(case_id: str) -> dict:
+def _telemetry_source(case_id: str) -> tuple[bytes, dict]:
     case_dir = _case_dir(case_id)
-    _, telemetry = _json_bytes(case_dir / "telemetry.json")
+    raw, telemetry = _json_bytes(case_dir / "telemetry.json")
     if not isinstance(telemetry, dict) or not isinstance(telemetry.get("summary"), dict) \
             or not isinstance(telemetry.get("series"), dict):
         raise ValueError("telemetry.json에는 summary와 series 객체가 필요합니다")
-    return telemetry
+    return raw, telemetry
+
+
+def read_full_telemetry(case_id: str) -> dict:
+    """샘플링 없이 전체 telemetry와 원본 바이트 SHA-256을 반환한다."""
+    _validate_absent_reference()
+    raw, telemetry = _telemetry_source(case_id)
+    return {
+        "case_id": case_id,
+        "telemetry_sha256": _sha256(raw),
+        "summary": telemetry["summary"],
+        "series": telemetry["series"],
+    }
+
+
+def _case_telemetry(case_id: str) -> dict:
+    return _telemetry_source(case_id)[1]
 
 
 def _sha256(raw: bytes) -> str:
@@ -131,10 +147,7 @@ def get_context(case_id: str) -> dict:
     """선택된 설정 사실만 원본 해시와 함께 반환한다. 설정은 측정된 동작을 증명하지 않는다."""
     _validate_absent_reference()
     case_dir = _case_dir(case_id)
-    telemetry_raw, telemetry = _json_bytes(case_dir / "telemetry.json")
-    if not isinstance(telemetry, dict) or not isinstance(telemetry.get("summary"), dict) \
-            or not isinstance(telemetry.get("series"), dict):
-        raise ValueError("telemetry.json에는 summary와 series 객체가 필요합니다")
+    telemetry_raw, _ = _telemetry_source(case_id)
 
     context_path = case_dir / "context.json"
     if context_path.is_symlink():

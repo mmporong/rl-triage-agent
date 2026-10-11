@@ -227,6 +227,22 @@ def test_missing_model_worker_artifact_keeps_one_attempt_with_unknown_cost(drive
     assert record["retryable"] is False
 
 
+def test_failed_wsl_launch_preserves_observed_code_without_secret_text(driver, tmp_path, monkeypatch):
+    folder = tmp_path / "case"
+    raw = "token=do-not-copy\nWsl/Service/0x80072747\n".encode("utf-16-le")
+    monkeypatch.setattr(driver.subprocess, "run", lambda *args, **kwargs:
+                        SimpleNamespace(returncode=1, stdout=raw, stderr=b""))
+    with pytest.raises(driver.ModelHarnessError, match="ModelWorkerMissingArtifact"):
+        driver.fresh_decision(folder, "initial", {"facts": {"x": 1}, "observed": [], "budget_left": 2},
+                              {"model": "model", "max_infra_attempts": 2})
+    record = driver.read(folder / "model/initial.attempt1.json")
+    assert record["worker_launch"]["returncode"] == 1
+    assert record["worker_launch"]["stdout"]["wsl_error_codes"] == ["Wsl/Service/0x80072747"]
+    assert record["cpu_s"] is None and record["input_tokens"] is None
+    assert "do-not-copy" not in json.dumps(record)
+    assert len(list((folder / "model").glob("*.attempt*.json"))) == 1
+
+
 def test_approval_envelope_binds_model_source_and_previous_receipt(driver, tmp_path, monkeypatch):
     folder = tmp_path / "cases/h01_s2027"
     reference = tmp_path / "reference.json"
