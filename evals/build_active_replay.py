@@ -16,7 +16,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "evals"))
-from audit_active_diagnosis import code_integrity_errors  # noqa: E402
+from audit_active_diagnosis import audit_case as audit_execution_case, code_integrity_errors  # noqa: E402
 
 PROTOCOL = Path("bench/protocols/active_diagnosis_v2.json")
 TAG_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
@@ -491,6 +491,7 @@ def _public_case(case: str, tag: str, protocol: dict, protocol_rel: str, snap: S
     if result.get("protocol_sha256_lf") != protocol_sha:
         artifact_reasons.append("결과가 현재 사전등록 protocol에 묶이지 않았다")
     artifact_reasons += _verify_ledger(case_dir, result, protocol, snap)
+    artifact_reasons += _cloud_audit(case, tag, protocol, protocol_rel, snap)
     artifact_reasons += _snapshot_model_artifacts(case_dir, result, snap)
     audit_case = audits.get(case)
     if audit_case is None:
@@ -528,6 +529,21 @@ def _public_case(case: str, tag: str, protocol: dict, protocol_rel: str, snap: S
             "contrast_index": contrast_index, "baselines": {}}
 
 
+def _cloud_audit(case: str, tag: str, protocol: dict, protocol_rel: str, snap: Snapshot) -> list[str]:
+    if protocol.get("probe_backend", {}).get("name") != "brev":
+        return []
+    case_dir = f"evals/results/{tag}/cases/{case}"
+    folder = _relative_path(case_dir)
+    for pattern in ("backend_preflight_*.json", "gpu_preflight_*.json", "gpu_wait_*.jsonl"):
+        for path in sorted(folder.glob(pattern)):
+            snap.record_file(path.relative_to(ROOT).as_posix())
+    meters = _relative_path(f"evals/results/{tag}/meters")
+    for path in sorted(meters.glob(f"{case}__*.json")):
+        snap.record_file(path.relative_to(ROOT).as_posix())
+    checked = audit_execution_case(ROOT, tag, case, {**protocol, "_audit_sha256_lf": snap.sources[protocol_rel]})
+    return [f"cloud 감사: {error}" for error in checked["errors"]] if not checked["valid"] else []
+
+
 def _baseline(case: str, tag: str, controller: str, protocol: dict,
               protocol_rel: str, snap: Snapshot) -> dict:
     rel = f"evals/results/{tag}/cases/{case}/result.json"
@@ -552,6 +568,7 @@ def _baseline(case: str, tag: str, controller: str, protocol: dict,
     reasons += _verify_registered_sources(_case_spec(protocol, case), snap)
     case_dir = f"evals/results/{tag}/cases/{case}"
     reasons += _verify_ledger(case_dir, result, protocol, snap)
+    reasons += _cloud_audit(case, tag, protocol, protocol_rel, snap)
     model_dir = _relative_path(f"{case_dir}/model")
     if model_dir.is_dir() and any(model_dir.glob("*.attempt*.json")):
         reasons.append("baseline에 모델 호출 파일이 있다")
@@ -697,15 +714,17 @@ const S=JSON.parse(document.getElementById("snapshot").textContent);let ci=Math.
 const $=id=>document.getElementById(id),el=(tag,text,cls)=>{{const n=document.createElement(tag);if(text!==undefined)n.textContent=String(text);if(cls)n.className=cls;return n}};
 const fmt=v=>v===null||v===undefined?"미측정":typeof v==="number"?new Intl.NumberFormat("ko-KR",{{maximumFractionDigits:2}}).format(v):String(v);
 const sec=v=>v===null||v===undefined?"미측정":fmt(v)+" s";
-const state=b=>b&&b.state==="verified"?"산출물 검증":"산출물 보류";const diagnosis=b=>!b||!b.result?"미실행":b.result.status==="completed"?"진단 완료":b.result.status==="hold"?"보류":"상태 미확인";const proof=b=>b&&b.proof?"변경 증명":"변경 미증명";const current=()=>S.cases[ci];
+const state=b=>b&&b.state==="verified"?"산출물 검증":"산출물 보류";
+const evidence=b=>({{"confirmed":"규칙상 확정","unidentifiable":"식별 불가","none_supported":"지원 가설 없음","open":"미확정"}}[b?.result?.evidence_state?.status]||"판정 미확인");
+const diagnosis=b=>!b||!b.result?"미실행":b.result.status==="completed"?"실행 종료 · "+evidence(b):b.result.status==="hold"?"보류":"상태 미확인";const proof=b=>b&&b.proof?"변경 증명":"변경 미증명";const current=()=>S.cases[ci];
 function renderKpis(){{const box=$("kpis");box.replaceChildren();const verified=S.cases.filter(x=>x.state==="verified").length,proved=S.cases.filter(x=>x.proof).length,values=S.cases.map(x=>x.result?.costs?.model_calls),known=values.filter(Number.isFinite),calls=known.reduce((n,x)=>n+x,0);[["산출물 검증",verified+" / 8"],["판단 변경 증명",proved+" / 8"],["기록된 모델 호출",known.length===8?calls:calls+" (일부 미측정)"],["spotlight",S.spotlight_verified?S.spotlight_case:"변경 증명 사례 없음"]].forEach(([a,b])=>{{const c=el("div",undefined,"card kpi");c.append(el("span",a,"muted"),el("b",b));box.append(c)}})}}
 function renderCases(){{const bar=$("casebar");bar.replaceChildren();S.cases.forEach((row,i)=>{{const b=el("button",row.case+" · "+state(row)+" · "+proof(row));b.setAttribute("aria-pressed",String(i===ci));b.addEventListener("click",()=>{{ci=i;si=0;render()}});bar.append(b)}})}}
 function pair(dl,k,v){{dl.append(el("dt",k),el("dd",fmt(v)))}}function list(items){{const ol=el("ol");(items?.length?items:["기록 없음"]).forEach(x=>ol.append(el("li",x)));return ol}}
 function renderStage(){{const row=current(),r=row.result||{{}},d=r.decisions||[],o=r.observed||[],pairs=r.pairs||[],ix=row.contrast_index??0,p=pairs[ix],before=d[ix],after=p?.actual?.decision,control=p?.control,obs=o[ix],box=$("stage");box.replaceChildren();box.append(el("span",state(row),"badge "+(row.state==="verified"?"ok":"")),el("span"," · "+proof(row),"badge "+(row.proof?"ok":"")));const titles=["1. AI 검사 선택","2. 승인된 실행","3. 실제 측정","4. 판단 갱신"];box.append(el("h3",titles[si]));const dl=el("dl");
-if(si===0){{pair(dl,"원시 6개 순위",before?.ranking?.join(" → "));pair(dl,"규칙 생존 가설",r.evidence_state?.hypotheses?.join(", "));pair(dl,"선택 검사",before?.probe);pair(dl,"행동",before?.action);pair(dl,"이유",before?.reason)}}
+if(si===0){{pair(dl,"검사 전 원시 6개 순위",before?.ranking?.join(" → "));pair(dl,"선택 검사",before?.probe);pair(dl,"행동",before?.action);pair(dl,"이유",before?.reason)}}
 if(si===1){{pair(dl,"승인 주체",r.approval_actor);pair(dl,"승인 신원 검증",r.approval_identity_attested);pair(dl,"사람 검토 시간",r.human_review_s);pair(dl,"request",obs?.request_id);pair(dl,"실행 결과 코드",obs?.exit_code)}}
 if(si===2){{pair(dl,"검사",obs?.probe);pair(dl,"판정",obs?.outcome);pair(dl,"측정",obs?.measurement?JSON.stringify(obs.measurement):null);pair(dl,"Isaac wall (s)",r.costs?.isaac_wall_s);pair(dl,"GPU device busy (s)",r.costs?.gpu_device_busy_s)}}
-if(si===3){{pair(dl,"진단 상태",diagnosis(row));pair(dl,"중단 사유",r.stop_reason);pair(dl,"실행 오류",r.error_type?`${{r.error_type}}: ${{r.error}}`:null);pair(dl,"실제 관측 후 판단 상태",p?.actual?.status);pair(dl,"실제 관측 후 판단 오류",p?.actual?.error?.type?`${{p.actual.error.type}}: ${{p.actual.error.message}}`:null);pair(dl,"최신 관측을 가린 대조 상태",control?.status);pair(dl,"최신 관측을 가린 대조 오류",control?.error?.type?`${{control.error.type}}: ${{control.error.message}}`:null);pair(dl,"갱신 원시 1위",after?.ranking?.[0]);pair(dl,"갱신 행동",after?.action);pair(dl,"receipt 인용",row.contrast?.latest_receipt_cited);pair(dl,"관측으로 이전 1위 기각",row.contrast?.changed_leader_rejected_by_actual_observation);box.append(el("p",row.proof?S.claim:"산출물 유효성과 판단 변경 증명은 별도 판정입니다.","notice"));if(row.artifact_reasons?.length)box.append(el("h3","산출물 HOLD 사유"),list(row.artifact_reasons));if(row.proof_reasons?.length)box.append(el("h3","변경 미증명 사유"),list(row.proof_reasons))}}
+if(si===3){{pair(dl,"실행과 식별 상태",diagnosis(row));pair(dl,"중단 사유",r.stop_reason);pair(dl,"실행 오류",r.error_type?`${{r.error_type}}: ${{r.error}}`:null);pair(dl,"실제 관측 후 판단 상태",p?.actual?.status);pair(dl,"실제 관측 후 판단 오류",p?.actual?.error?.type?`${{p.actual.error.type}}: ${{p.actual.error.message}}`:null);pair(dl,"최신 관측을 가린 대조 상태",control?.status);pair(dl,"최신 관측을 가린 대조 오류",control?.error?.type?`${{control.error.type}}: ${{control.error.message}}`:null);pair(dl,"검사 전 원시 1위",before?.ranking?.[0]);pair(dl,"실제 관측 후 원시 1위",after?.ranking?.[0]);pair(dl,"관측을 가린 호출의 원시 1위",control?.decision?.ranking?.[0]);pair(dl,"갱신 행동",after?.action);pair(dl,"갱신 이유",after?.reason);pair(dl,"인용한 근거",after?.claims?JSON.stringify(after.claims):null);pair(dl,"최종 규칙 생존 가설",r.evidence_state?.hypotheses?.join(", "));pair(dl,"receipt 인용",row.contrast?.latest_receipt_cited);pair(dl,"관측으로 이전 1위 기각",row.contrast?.changed_leader_rejected_by_actual_observation);box.append(el("p",row.proof?S.claim:"산출물 유효성과 판단 변경 증명은 별도 판정입니다.","notice"));if(row.artifact_reasons?.length)box.append(el("h3","산출물 HOLD 사유"),list(row.artifact_reasons));if(row.proof_reasons?.length)box.append(el("h3","변경 미증명 사유"),list(row.proof_reasons))}}
 box.append(dl);$("position").textContent=(si+1)+" / 4 · "+row.case}}
 function renderTable(){{const body=$("cohort");body.replaceChildren();S.cases.forEach(row=>{{const r=row.result||{{}},f=row.baselines.fixed_order,c=row.baselines.cheapest_discrimination,tr=el("tr");[row.case,diagnosis(row)+" / "+state(row)+" / "+proof(row),fmt(r.costs?.model_calls)+" / "+sec(r.costs?.model_wall_s),sec(r.costs?.isaac_wall_s),diagnosis(f)+" / "+state(f)+" / "+sec(f.result?.costs?.isaac_wall_s),diagnosis(c)+" / "+state(c)+" / "+sec(c.result?.costs?.isaac_wall_s),sec(r.costs?.gpu_device_busy_s)].forEach(v=>tr.append(el("td",v)));body.append(tr)}})}}
 function render(){{renderCases();renderStage()}}$("prev").addEventListener("click",()=>{{si=(si+3)%4;renderStage()}});$("next").addEventListener("click",()=>{{si=(si+1)%4;renderStage()}});document.querySelectorAll("[data-action]").forEach(b=>b.addEventListener("click",()=>$("actionState").textContent=b.dataset.action+"을 선택했습니다. 개념 재생이며 실행 요청은 보내지 않았습니다."));

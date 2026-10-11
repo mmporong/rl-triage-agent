@@ -26,14 +26,17 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "evals"))
 from rl_triage import active_diagnosis as D, probe_loop as L  # noqa: E402
 import loop  # noqa: E402
+import brev_probe_backend as B  # noqa: E402
 from run_fixed_eval import find_run, last_checkpoint  # noqa: E402
 
 ACTOR = "codex_operator_user_authorized_test"
 MODEL = "nvidia/nemotron-3-super-120b-a12b"
-CODE = ("src/rl_triage/active_diagnosis.py", "src/rl_triage/probe_loop.py",
-        "evals/run_active_diagnosis.py", "evals/active_model_call.py", "evals/loop.py",
+CODE = ("src/rl_triage/__init__.py", "src/rl_triage/active_diagnosis.py", "src/rl_triage/probe_loop.py",
+        "evals/run_active_diagnosis.py", "evals/brev_probe_backend.py",
+        "evals/active_model_call.py", "evals/loop.py",
         "evals/run_probes.py", "evals/probes.py", "evals/metered_probes.py",
         "evals/run_fixed_eval.py", "evals/audit_active_diagnosis.py", "evals/build_active_replay.py",
+        "bench/cloud_runtime_smoke.py",
         "bench/hidden_faults.py", "bench/external_faults.py")
 
 
@@ -86,7 +89,25 @@ def source(path):
     return {"path": path, "sha256_lf": sha(ROOT / path)}
 
 
-def prepare(path):
+def validate_secondary_commitment(value):
+    if value is None:
+        return None
+    keys = {"contract_sha256_lf", "grader_sha256_lf"}
+    if (not isinstance(value, dict) or set(value) != keys
+            or any(not isinstance(value[key], str) or re.fullmatch(r"[a-f0-9]{64}", value[key]) is None
+                   for key in keys)):
+        raise ValueError("보조 평가 계약과 채점기 SHA 두 개가 필요하다")
+    return dict(value)
+
+
+def prepare(path, backend=None, secondary=None):
+    secondary = validate_secondary_commitment(secondary)
+    backend = B.validate_backend_config(backend or {"name": "native_windows"})
+    budget_scope = ("remote_isaac_subprocess_wall_start_to_end_posthoc_180_acceptance; "
+                    "excludes_preapproval_transport_and_result_retrieval; "
+                    "360s_watchdog_owned_process_cleanup_required"
+                    if backend["name"] == "brev" else
+                    "isaac_launcher_wall_start_to_end_posthoc_180_acceptance; excludes_preapproval_gpu_wait")
     old = read(ROOT / "bench/protocols/live_loop_v2.json")
     cases = []
     for spec in old["cases"]:
@@ -97,16 +118,25 @@ def prepare(path):
         inputs = {"telemetry": source(f"{tele_root}/{case}.telemetry.json"),
                   "reference_telemetry": source(f"{tele_root}/{reference}.telemetry.json"),
                   "probe_reference": spec["sources"]["probe_reference"]}
-        checkpoint = last_checkpoint(find_run(Path.home() / "IsaacLab/logs/rsl_rl/unitree_go2_flat", case))
+        run_dir = find_run(Path.home() / "IsaacLab/logs/rsl_rl/unitree_go2_flat", case)
+        checkpoint = last_checkpoint(run_dir)
         actual = hashlib.sha256(checkpoint.read_bytes()).hexdigest()
         if actual != spec["checkpoint_sha256"]:
             raise ValueError(f"{case}: checkpoint가 기존 동결 입력과 다르다")
-        cases.append({"case": case, "checkpoint_sha256": actual, "sources": inputs})
+        dependencies = {}
+        for probe, registered in L.PROBES.items():
+            if "from" in registered["args"]:
+                dependency = checkpoint.with_name(registered["args"]["from"])
+                dependencies[probe] = {"file": dependency.name,
+                                       "sha256": hashlib.sha256(dependency.read_bytes()).hexdigest()}
+        cases.append({"case": case, "checkpoint_sha256": actual,
+                      "checkpoint_dependencies": dependencies, "sources": inputs})
     protocol = {"schema": "active_diagnosis_protocol_v2", "prepared_at": now(),
                 "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
-                "cases": cases, "model": MODEL, "max_probes": 2, "max_infra_attempts": 2,
+                "cases": cases, "model": MODEL, "probe_backend": backend,
+                "max_probes": 2, "max_infra_attempts": 2,
                 "probe_execution_budget_s": 180, "per_case_isaac_wall_limit_s": 360,
-                "budget_scope": "launcher_wall_including_startup_not_device_busy",
+                "budget_scope": budget_scope,
                 "probe_arguments": {p: v["args"] for p, v in L.PROBES.items()},
                 "thresholds": L.THRESHOLDS, "code_sha256_lf": {p: sha(ROOT / p) for p in CODE},
                 "approver": ACTOR, "human_review_s": None,
@@ -127,15 +157,25 @@ def prepare(path):
                     "unknown": "검사 또는 모델 응답이 불명이라 원인을 확정하지 않고 보류했다.",
                     "baseline_equal_or_better": "단순 규칙보다 나은 진단 또는 비용을 입증하지 못했다.",
                     "no_superiority_claim": "같은 조건의 새 보류 세트 비교 전에는 AI 우월성이나 GPU 절감을 주장하지 않는다."}}
+    if secondary is not None:
+        protocol["secondary_evaluation_commitment"] = secondary
     write_new(path, protocol)
     return protocol
 
 
 def verify_protocol(path, protocol):
+    validate_secondary_commitment(protocol.get("secondary_evaluation_commitment"))
     cases = [*(f"h{i:02d}_s2027" for i in range(1, 7)), "baseline_p0c_s2027", "e01_s2027"]
+    backend = B.validate_backend_config(protocol.get("probe_backend"))
+    expected_budget_scope = ("remote_isaac_subprocess_wall_start_to_end_posthoc_180_acceptance; "
+                             "excludes_preapproval_transport_and_result_retrieval; "
+                             "360s_watchdog_owned_process_cleanup_required"
+                             if backend["name"] == "brev" else
+                             "isaac_launcher_wall_start_to_end_posthoc_180_acceptance; excludes_preapproval_gpu_wait")
     if (protocol.get("schema") != "active_diagnosis_protocol_v2" or protocol.get("model") != MODEL
             or protocol.get("max_probes") != 2 or protocol.get("max_infra_attempts") != 2
             or protocol.get("probe_execution_budget_s") != 180 or protocol.get("per_case_isaac_wall_limit_s") != 360
+            or protocol.get("budget_scope") != expected_budget_scope
             or protocol.get("approver") != ACTOR or [c.get("case") for c in protocol.get("cases", [])] != cases
             or set(protocol.get("code_sha256_lf", {})) != set(CODE)
             or protocol.get("probe_arguments") != {p: v["args"] for p, v in L.PROBES.items()}
@@ -152,6 +192,16 @@ def verify_protocol(path, protocol):
                     "probe_reference": f"evals/results/{tag}/probes/{reference}.json"}
         if set(spec.get("sources", {})) != set(expected):
             raise ValueError("동결 입력 source 종류 불일치")
+        registered_dependencies = {probe: values["args"]["from"] for probe, values in L.PROBES.items()
+                                   if "from" in values["args"]}
+        dependencies = spec.get("checkpoint_dependencies")
+        if (not isinstance(dependencies, Mapping) or set(dependencies) != set(registered_dependencies)
+                or any(not isinstance(dependencies[probe], Mapping)
+                       or set(dependencies[probe]) != {"file", "sha256"}
+                       or dependencies[probe]["file"] != filename
+                       or not re.fullmatch(r"[0-9a-f]{64}", str(dependencies[probe]["sha256"]))
+                       for probe, filename in registered_dependencies.items())):
+            raise ValueError("동결 checkpoint dependency 계약 불일치")
         for key, item in spec["sources"].items():
             if item.get("path") != expected[key] or (ROOT / item["path"]).is_symlink():
                 raise ValueError("허용한 공개 입력 경로가 아니다")
@@ -397,12 +447,26 @@ def fresh_decision(folder, stage, packet, protocol):
 
 def approved_probe(folder, tag, spec, protocol, packet, probe, stage, ledger, binding):
     case = spec["case"]
-    snapshot = wait_for_gpu(folder, stage)
-    write_new(folder / f"gpu_preflight_{stage}.json", snapshot)
+    backend_config = B.validate_backend_config(protocol.get("probe_backend", {"name": "native_windows"}))
+    backend = B.BrevProbeBackend(ROOT, protocol) if backend_config["name"] == "brev" else None
     checkpoint = last_checkpoint(find_run(Path.home() / "IsaacLab/logs/rsl_rl/unitree_go2_flat", case))
+    plan = (backend.prepare_execution(case, probe, tag, checkpoint, spec["checkpoint_sha256"],
+                                      spec.get("checkpoint_dependencies"), binding)
+            if backend is not None else None)
+    snapshot = wait_for_gpu(folder, stage, snapshot_fn=backend.gpu_snapshot if backend else gpu_snapshot)
+    write_new(folder / f"gpu_preflight_{stage}.json", snapshot)
     if hashlib.sha256(checkpoint.read_bytes()).hexdigest() != spec["checkpoint_sha256"]:
         raise ValueError("승인 전 checkpoint SHA 불일치")
-    loop.isaac_preflight(case, probe, tag)
+    if backend is not None:
+        if plan is None:
+            raise RuntimeError("Brev execution plan 누락")
+        backend.preflight(case, probe, tag)
+        plan["public"]["launcher_watchdog_s"] = protocol["per_case_isaac_wall_limit_s"] - sum(
+            r["gpu_s"] for r in packet["observed"])
+        plan["public"]["gpu_snapshot_sha256_lf"] = L.digest(snapshot)
+        write_new(folder / f"backend_preflight_{stage}.json", plan["public"])
+    else:
+        loop.isaac_preflight(case, probe, tag)
     reference_report = read(ROOT / spec["sources"]["probe_reference"]["path"])
     reference = reference_report["probes"].get(probe, {}).get("measurement")
     envelope = {"case": case, "checkpoint_sha256": spec["checkpoint_sha256"],
@@ -410,6 +474,7 @@ def approved_probe(folder, tag, spec, protocol, packet, probe, stage, ledger, bi
                 "reference_source": spec["sources"]["probe_reference"],
                 "prior_receipt_digests": [r["receipt_digest"] for r in packet["observed"]],
                 "binding": binding, "budget_probes": protocol["max_probes"],
+                "probe_backend": plan["public"] if plan else {"name": "native_windows"},
                 "probe": probe, "args": L.PROBES[probe]["args"], "thresholds": L.THRESHOLDS}
     request = ledger.propose(envelope, probe, protocol["probe_execution_budget_s"])
     rid = request["request_id"]
@@ -420,14 +485,34 @@ def approved_probe(folder, tag, spec, protocol, packet, probe, stage, ledger, bi
     failure = None
     measurement, wall_s, exit_code, elapsed = None, None, None, None
     try:
-        measurement, wall_s, exit_code = loop.isaac_execute(case, probe, tag, metered=True)
+        if backend is not None:
+            if plan is None:
+                raise RuntimeError("Brev execution plan 누락")
+            remaining_case_wall = plan["public"]["launcher_watchdog_s"]
+            measurement, wall_s, exit_code = backend.execute(
+                case, probe, tag, checkpoint, spec["checkpoint_sha256"],
+                protocol["probe_execution_budget_s"], spec.get("checkpoint_dependencies"), plan,
+                remaining_case_wall)
+        else:
+            measurement, wall_s, exit_code = loop.isaac_execute(case, probe, tag, metered=True)
         artifact = loop.file_artifact(case, probe, envelope, tag)
         if artifact is None:
-            failure = "native_report_missing"
+            failure = "probe_report_missing"
         execution_path = ROOT / "evals/results" / tag / "execution" / f"{case}__{probe}.json"
         elapsed = read(execution_path)["gpu_wall_s"] if execution_path.exists() else round(wall_s, 1)
+    except B.BrevCleanupUnverified:
+        raise
     except (Exception, SystemExit) as error:
-        failure = type(error).__name__
+        if isinstance(error, B.BrevBackendError):
+            if error.launched and error.launcher_wall_s is None:
+                raise B.BrevCleanupUnverified("probe execution", "LauncherWallUnknown") from error
+            wall_s = error.launcher_wall_s
+            elapsed = None if wall_s is None else round(wall_s, 1)
+            failure = f"{error.error_type}: {error}"
+            write_new(folder / f"probe_failure_{stage}.json",
+                      {"error_type": error.error_type, "safe_message": str(error)})
+        else:
+            failure = type(error).__name__
     if wall_s is None:
         wall_s = time.perf_counter() - execution_start
     if elapsed is None:
@@ -515,15 +600,16 @@ def gpu_snapshot():
     return snap
 
 
-def wait_for_gpu(folder, stage, poll_s=2):
+def wait_for_gpu(folder, stage, poll_s=2, snapshot_fn=None):
+    snapshot_fn = snapshot_fn or gpu_snapshot
     path = Path(folder) / f"gpu_wait_{stage}.jsonl"
     path.parent.mkdir(parents=True, exist_ok=True)
     heartbeat = time.monotonic()
     with path.open("x", encoding="utf-8", newline="\n") as handle:
         while True:
             try:
-                snapshot = gpu_snapshot()
-            except GPUWaitError as error:
+                snapshot = snapshot_fn()
+            except (GPUWaitError, B.BrevGPUWaitError) as error:
                 snapshot = error.snapshot
                 handle.write(json.dumps(snapshot, ensure_ascii=False, allow_nan=False) + "\n")
                 handle.flush()
@@ -562,6 +648,7 @@ def run_case(protocol_path, tag, case, controller="model"):
               "checkpoint_sha256": spec["checkpoint_sha256"], "human_review_s": None,
               "approval_actor": ACTOR, "approval_identity_attested": False,
               "controller": controller, "gpu_device_busy_s": None}
+    fatal_backend_error = None
     try:
         if controller == "model":
             try:
@@ -643,6 +730,11 @@ def run_case(protocol_path, tag, case, controller="model"):
         result["status"] = "hold" if result["stop_reason"] in (
             "model_hold", "unknown_receipt_metrics_not_used_for_decision",
             "initial_model_invalid", "actual_model_invalid") else "completed"
+    except B.BrevCleanupUnverified as error:
+        result.update(status="hold", error_type=type(error).__name__,
+                      error=safe_error_message("Brev cleanup 확인 실패", error),
+                      orphan_requests=ledger.orphans())
+        fatal_backend_error = error
     except (ValueError, RuntimeError, subprocess.SubprocessError, L.LedgerError) as error:
         message = str(error) if isinstance(error, ModelHarnessError) else safe_error_message("진단 실행 중단", error)
         result.update(status="hold", error_type=type(error).__name__, error=message,
@@ -681,6 +773,8 @@ def run_case(protocol_path, tag, case, controller="model"):
     print(json.dumps({"case": case, "status": result["status"], "probes": len(observed),
                       "contrasts": result.get("contrasts"), "costs": result["costs"],
                       "result": str(folder / "result.json")}, ensure_ascii=False), flush=True)
+    if fatal_backend_error is not None:
+        raise fatal_backend_error
     return result
 
 
@@ -689,6 +783,12 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("prepare")
     p.add_argument("--out", type=Path, required=True)
+    p.add_argument("--backend", choices=["native_windows", "brev"], default="native_windows")
+    p.add_argument("--brev-instance", default=B.DEFAULT_INSTANCE)
+    p.add_argument("--brev-workspace-basename", default=B.DEFAULT_WORKSPACE)
+    p.add_argument("--brev-owner-marker-sha256")
+    p.add_argument("--secondary-contract-sha256-lf")
+    p.add_argument("--secondary-grader-sha256-lf")
     r = sub.add_parser("run")
     r.add_argument("--protocol", type=Path, required=True)
     r.add_argument("--tag", required=True)
@@ -699,7 +799,13 @@ def main():
     batch.add_argument("--tag", required=True)
     args = parser.parse_args()
     if args.command == "prepare":
-        protocol = prepare(args.out)
+        backend = B.backend_config(args.backend, args.brev_instance, args.brev_workspace_basename,
+                                   args.brev_owner_marker_sha256)
+        secondary = ({"contract_sha256_lf": args.secondary_contract_sha256_lf,
+                      "grader_sha256_lf": args.secondary_grader_sha256_lf}
+                     if args.secondary_contract_sha256_lf is not None or args.secondary_grader_sha256_lf is not None
+                     else None)
+        protocol = prepare(args.out, backend, secondary)
         print(json.dumps({"path": str(args.out), "cases": len(protocol["cases"])}))
     elif args.command == "run-all":
         protocol = read(args.protocol)

@@ -30,9 +30,20 @@ at least one fact from the latest receipt. A receipt may support keeping the sam
 ranking; never change a judgment merely because a new observation arrived.
 The previous_decision is only a prior proposal, not an observed outcome and not
 evidence that its requested probe ran. Without a usable observation, never confirm.
-An observed normal result eliminates only mechanisms whose public catalog expectation
-for that probe is abnormal; do not invent extra elimination rules. With budget_left=0,
-return hold unless the usable observations satisfy the deterministic confirm rule.
+Compute the deterministic evidence state mechanically from the public catalog:
+start with all six mechanisms. For each usable normal or abnormal observation,
+compare its outcome with each surviving mechanism's expectation for that probe.
+Keep a mechanism when its expectation is null or equals the observed outcome.
+Eliminate it only when a non-null expectation differs from the observed outcome.
+An unknown or unusable observation eliminates no mechanisms; after such a latest
+observation, return hold.
+Confirmation requires exactly one surviving mechanism, plus an abnormal usable
+observation of its confirming probe. A confirming probe is the first probe in the
+public catalog that expects abnormal for that mechanism and does not expect abnormal
+for any other mechanism. A normal result never supplies that confirmation.
+These rules constrain action=confirm; ranking remains your raw ranking of all six
+mechanisms, not a copy of the surviving mechanisms. With budget_left=0, return hold
+unless the usable observations satisfy this deterministic confirm rule.
 Treat configured or reference values as configuration/reference facts, not proof of
 runtime behavior. Use causal wording only when an actual runtime observation supports
 it. Values must be literal JSON scalars, never expressions or values with explanatory

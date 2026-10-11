@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "evals"))
 from rl_triage import active_diagnosis as D, probe_loop as L  # noqa: E402
+import brev_probe_backend as B  # noqa: E402
 
 TAG = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
 PROOF_GATES = (
@@ -101,6 +102,52 @@ def _strip_fence(text: str) -> str:
 
 def _spec(protocol: dict, case: str) -> dict | None:
     return next((item for item in protocol.get("cases", []) if isinstance(item, dict) and item.get("case") == case), None)
+
+
+def _cloud_binding_errors(root: Path, folder: Path, tag: str, case: str, spec: dict,
+                          protocol: dict, index: int, probe: str, binding: dict,
+                          backend_binding: object, expected_watchdog_s: object = None) -> list[str]:
+    errors = []
+    backend_config = protocol.get("probe_backend")
+    if not isinstance(backend_config, dict) or not isinstance(backend_binding, dict):
+        return ["cloud backend preflight binding 불일치"]
+    preflight = _load(folder / f"backend_preflight_{index}.json", errors, "backend preflight")
+    gpu = _load(folder / f"gpu_preflight_{index}.json", errors, "GPU preflight")
+    try:
+        report = _read(root / "evals/results" / tag / "probes" / f"{case}__{probe}.json")
+        report_name = report.get("checkpoint", {}).get("file")
+    except (OSError, json.JSONDecodeError, AttributeError):
+        report_name = None
+    expected_checkpoints = [{"role": "last", "file": report_name,
+                             "sha256": spec.get("checkpoint_sha256")}]
+    dependency = spec.get("checkpoint_dependencies", {}).get(probe)
+    if isinstance(dependency, dict):
+        expected_checkpoints.append({"role": probe + ":from", **dependency})
+    environment = backend_binding.get("environment")
+    ok = (
+        isinstance(preflight, dict) and preflight == backend_binding
+        and isinstance(gpu, dict) and backend_binding.get("gpu_snapshot_sha256_lf") == L.digest(gpu)
+        and backend_binding.get("name") == "brev"
+        and backend_binding.get("instance") == backend_config.get("instance")
+        and backend_binding.get("workspace_basename") == backend_config.get("workspace_basename")
+        and backend_binding.get("source_sha256_lf") == protocol.get("code_sha256_lf")
+        and backend_binding.get("source_set_digest") == L.digest(protocol.get("code_sha256_lf"))
+        and backend_binding.get("owner_binding_digest") == L.digest(binding)
+        and backend_binding.get("checkpoint_set") == expected_checkpoints
+        and isinstance(backend_binding.get("jobs_sha256"), str)
+        and re.fullmatch(r"[0-9a-f]{64}", backend_binding["jobs_sha256"]) is not None
+        and B.environment_matches(environment, backend_config.get("environment"))
+        and isinstance(environment, dict) and environment.get("owner_marker_sha256")
+            == backend_config.get("owner_marker_sha256")
+        and backend_binding.get("environment_digest") == L.digest(environment)
+        and _nonnegative_number(backend_binding.get("preapproval_transport_wall_s"))
+        and _nonnegative_number(backend_binding.get("launcher_watchdog_s"))
+        and (expected_watchdog_s is None
+             or backend_binding.get("launcher_watchdog_s") == expected_watchdog_s)
+    )
+    if not ok:
+        errors.append("cloud backend preflight binding 불일치")
+    return errors
 
 
 OUTCOME_STATUSES = {"valid", "semantic_invalid", "infra_exhausted", "harness_fatal"}
@@ -293,12 +340,15 @@ def _ledger_checks(root: Path, folder: Path, tag: str, result: dict, spec: dict,
     if set(by_id) != {item.get("request_id") for item in observed}:
         errors.append("ledger 요청 집합과 result receipt 집합이 다르다")
     prior_digests = []
+    prior_canonical_gpu_s = 0.0
     protocol_sha = protocol.get("_audit_sha256_lf")
+    controller = result.get("controller")
     for index, augmented in enumerate(observed, 1):
         if not isinstance(augmented, dict):
             continue
         rid, probe = augmented.get("request_id"), augmented.get("probe")
-        if not isinstance(rid, str) or probe not in L.PROBES or index > len(decisions):
+        if (not isinstance(rid, str) or probe not in L.PROBES
+                or (controller == "model" and index > len(decisions))):
             errors.append(f"{rid}: 알 수 없는 probe 또는 연결할 raw decision이 없다")
             continue
         chain = by_id.get(rid, [])
@@ -317,17 +367,34 @@ def _ledger_checks(root: Path, folder: Path, tag: str, result: dict, spec: dict,
         if not isinstance(binding, dict):
             errors.append(f"{rid}: binding이 객체가 아니다")
             continue
-        expected_binding = {
-            "controller": "model",
-            "packet_sha256_lf": _sha(packet_path),
-            "model_call_sha256_lf": _sha(attempts[-1]) if attempts else None,
-            "decision_sha256_lf": _sha(decision_path),
-            "protocol_sha256_lf": protocol_sha,
-        }
+        if controller == "model":
+            expected_binding = {
+                "controller": "model",
+                "packet_sha256_lf": _sha(packet_path),
+                "model_call_sha256_lf": _sha(attempts[-1]) if attempts else None,
+                "decision_sha256_lf": _sha(decision_path),
+                "protocol_sha256_lf": protocol_sha,
+            }
+            expected_probe = decisions[index - 1].get("probe")
+        else:
+            expected_binding = {
+                "controller": controller,
+                "initial_packet_sha256_lf": _sha(folder / "initial_packet.json"),
+                "protocol_sha256_lf": protocol_sha,
+            }
+            if controller == "fixed_order":
+                prior_probes = [item.get("probe") for item in observed[:index - 1]]
+                expected_probe = next((item for item in L.FIXED_ORDER if item not in prior_probes), None)
+            else:
+                budget_left = protocol.get("max_probes", 0) - (index - 1)
+                state = D.evidence_state(observed[:index - 1], budget_left)
+                expected_probe = L.next_probe(
+                    state["hypotheses"],
+                    {item["probe"]: item["outcome"] for item in observed[:index - 1]})
         checks = (
             (proposed.get("prereg_digest") == L.digest(envelope), "envelope digest"),
             (proposed.get("args_digest") == L.digest(L.PROBES.get(probe, {}).get("args")), "args digest"),
-            (proposed.get("probe") == probe == decisions[index - 1].get("probe") == envelope.get("probe"), "selected probe"),
+            (proposed.get("probe") == probe == expected_probe == envelope.get("probe"), "selected probe"),
             (envelope.get("args") == L.PROBES.get(probe, {}).get("args"), "canonical args"),
             (envelope.get("checkpoint_sha256") == spec.get("checkpoint_sha256"), "checkpoint"),
             (envelope.get("reference_source") == spec.get("sources", {}).get("probe_reference"), "reference source"),
@@ -347,6 +414,23 @@ def _ledger_checks(root: Path, folder: Path, tag: str, result: dict, spec: dict,
             errors.append(f"{rid}: envelope protocol SHA 불일치")
         if proposed.get("budget_gpu_s") != protocol.get("probe_execution_budget_s"):
             errors.append(f"{rid}: 실행 예산 불일치")
+        backend_binding = envelope.get("probe_backend")
+        backend_config = protocol.get("probe_backend", {"name": "native_windows"})
+        if "probe_backend" not in protocol:
+            backend_binding = None
+        elif not isinstance(backend_config, dict):
+            errors.append(f"{rid}: protocol backend 형식 오류")
+            backend_binding = None
+        elif backend_config.get("name") == "native_windows":
+            if backend_binding != {"name": "native_windows"}:
+                errors.append(f"{rid}: native backend binding 불일치")
+        else:
+            case_wall_limit = protocol.get("per_case_isaac_wall_limit_s")
+            expected_watchdog = (case_wall_limit - prior_canonical_gpu_s
+                                 if _nonnegative_number(case_wall_limit) else None)
+            errors.extend(f"{rid}: {error}" for error in _cloud_binding_errors(
+                root, folder, tag, result["case"], spec, protocol, index, probe, binding,
+                backend_binding, expected_watchdog))
         prereg_digest, args_digest = proposed.get("prereg_digest"), proposed.get("args_digest")
         if not isinstance(prereg_digest, str) or not isinstance(args_digest, str):
             errors.append(f"{rid}: 원장 digest 형식 오류")
@@ -356,12 +440,16 @@ def _ledger_checks(root: Path, folder: Path, tag: str, result: dict, spec: dict,
         if expected_effect is None or proposed.get("effect_key") != expected_effect:
             errors.append(f"{rid}: effect key 불일치")
         _artifact_checks(root, tag, result["case"], probe, augmented, canonical, spec,
-                         proposed.get("budget_gpu_s"), errors)
+                         proposed.get("budget_gpu_s"), backend_binding, errors)
+        canonical_gpu_s = canonical.get("gpu_s")
+        if _nonnegative_number(canonical_gpu_s):
+            prior_canonical_gpu_s += canonical_gpu_s
         prior_digests.append(augmented.get("receipt_digest"))
 
 
 def _artifact_checks(root: Path, tag: str, case: str, probe: str, augmented: dict,
-                     canonical: dict, spec: dict, budget_gpu_s: object, errors: list[str]) -> None:
+                     canonical: dict, spec: dict, budget_gpu_s: object,
+                     backend_binding: object, errors: list[str]) -> None:
     base = root / "evals" / "results" / tag
     report_path = base / "probes" / f"{case}__{probe}.json"
     report = _load(report_path, errors, f"{probe} report")
@@ -450,6 +538,80 @@ def _artifact_checks(root: Path, tag: str, case: str, probe: str, augmented: dic
         (execution["cpu_s"] == resources["cpu_s"] + execution.get("parent_cpu_s", 0)
          and execution_steps == resource_steps, "resource totals"),
     )
+    if isinstance(backend_binding, dict) and backend_binding.get("name") == "brev":
+        backend_digest = L.digest(backend_binding)
+        meter_path = base / "meters" / f"{case}__{probe}.json"
+        meter = _load(meter_path, errors, f"{probe} meter")
+        meter_sha = _sha(meter_path) if meter_path.is_file() else None
+        meter_rows = meter.get("measurements") if isinstance(meter, dict) else None
+        meter_row = meter_rows[0] if isinstance(meter_rows, list) and len(meter_rows) == 1 else None
+        meter_binding_ok = (
+            isinstance(meter, dict) and isinstance(meter_row, dict)
+            and resources.get("meter_sha256_lf") == meter_sha
+            and meter.get("schema") == "probe_process_metrics_v1"
+            and meter.get("completed") is True
+            and meter.get("phase") in {"before_app_close", "after_main"}
+            and meter.get("cpu_s") == resources.get("cpu_s")
+            and meter.get("cpu_scope") == resources.get("isaac_cpu_scope")
+            and (meter.get("phase") == "after_main") == resources.get("app_close_cpu_included")
+            and meter.get("simulator_steps_scope") == resources.get("simulator_steps_scope")
+            and meter.get("probes_sha256_lf") == resources.get("probes_sha256_lf")
+            and meter.get("jobs_sha256") == resources.get("jobs_sha256")
+                == backend_binding.get("jobs_sha256")
+            and all(meter_row.get(field) == resources.get(field) for field in (
+                "probe", "checkpoint_sha256", "num_envs", "successful_step_calls",
+                "simulator_steps", "completed"))
+        )
+        remote_launcher_wall = execution.get("remote_launcher_wall_s")
+        rounded_launcher_wall = (round(remote_launcher_wall, 1)
+                                 if _nonnegative_number(remote_launcher_wall) else None)
+        launcher_watchdog = backend_binding.get("launcher_watchdog_s")
+        cleanup_wall = execution.get("cleanup_wall_s")
+        timed_out = execution.get("timed_out")
+        exit_code = execution.get("exit_code")
+        launcher_timing_ok = (
+            _nonnegative_number(remote_launcher_wall)
+            and _nonnegative_number(launcher_watchdog)
+            and ((timed_out is False and exit_code != 124 and remote_launcher_wall <= launcher_watchdog)
+                 or (timed_out is True and exit_code == 124 and remote_launcher_wall >= launcher_watchdog))
+        )
+        cleanup_evidence_ok = (
+            _nonnegative_number(cleanup_wall)
+            and execution.get("cleanup_scope") == "owned_process_group_and_post_gpu_snapshot"
+            and execution.get("cleanup_group_alive") is False
+            and execution.get("cleanup_compute_pids") == []
+            and isinstance(execution.get("cleanup_memory_mib"), int)
+            and not isinstance(execution.get("cleanup_memory_mib"), bool)
+            and 0 <= execution["cleanup_memory_mib"] <= 2500
+            and execution.get("cleanup_check_error") is False
+        )
+        cloud_numbers = (remote_launcher_wall, cleanup_wall, execution.get("transport_wall_s"),
+                         execution.get("retrieval_wall_s"), execution.get("end_to_end_wall_s"))
+        preapproval_wall = backend_binding.get("preapproval_transport_wall_s")
+        transport_wall = execution.get("transport_wall_s")
+        retrieval_wall = execution.get("retrieval_wall_s")
+        end_to_end_wall = execution.get("end_to_end_wall_s")
+        cost_timing_ok = (
+            _nonnegative_number(preapproval_wall) and _nonnegative_number(transport_wall)
+            and _nonnegative_number(retrieval_wall) and _nonnegative_number(end_to_end_wall)
+            and _nonnegative_number(remote_launcher_wall) and _nonnegative_number(cleanup_wall)
+            and transport_wall + 1e-6 >= preapproval_wall
+            and end_to_end_wall + 1e-6 >= transport_wall + remote_launcher_wall + cleanup_wall + retrieval_wall
+        )
+        if (any(not _nonnegative_number(value) for value in cloud_numbers)
+                or execution.get("backend_binding_sha256") != backend_digest
+                or resources.get("backend_binding_sha256") != backend_digest
+                or execution.get("jobs_sha256") != backend_binding.get("jobs_sha256")
+                or resources.get("jobs_sha256") != backend_binding.get("jobs_sha256")
+                or execution.get("gpu_wall_s") != rounded_launcher_wall
+                or execution.get("execution_wall_s") != execution.get("gpu_wall_s")
+                or execution.get("launcher_watchdog_s") != backend_binding.get("launcher_watchdog_s")
+                or not launcher_timing_ok
+                or not cleanup_evidence_ok
+                or not meter_binding_ok
+                or not cost_timing_ok
+                or execution.get("cleanup_confirmed") is not True):
+            errors.append(f"{augmented.get('request_id')}: cloud artifact binding 불일치")
     for ok, label in checks:
         if not ok:
             errors.append(f"{augmented.get('request_id')}: {label} 불일치")
@@ -616,6 +778,22 @@ def _result_state_checks(result: dict, initial_outcome: dict | None, pairs: list
         errors.append("정상 종료 result에 raw outcome과 결속되지 않은 오류가 있다")
 
 
+def _baseline_state_checks(result: dict, observed: list[dict], cost_invalid: bool,
+                           errors: list[str]) -> None:
+    if cost_invalid and result.get("stop_reason") == "cost_artifact_invalid":
+        if (result.get("status") != "hold" or result.get("error_type") != "ModelHarnessError"
+                or result.get("error") != "Isaac cost sidecar validation failed"):
+            errors.append("baseline cost artifact HOLD 요약이 안전한 harness 오류 계약과 다르다")
+        return
+    expected_status = "hold" if any(item.get("outcome") == "unknown" for item in observed) else "completed"
+    expected_stop = ("unknown_receipt_metrics_not_used_for_decision"
+                     if expected_status == "hold" else "probe_budget_or_frozen_stop")
+    if result.get("status") != expected_status or result.get("stop_reason") != expected_stop:
+        errors.append("baseline result status/stop_reason 재계산 불일치")
+    if result.get("error_type") is not None or result.get("error") is not None:
+        errors.append("정상 baseline result에 오류가 있다")
+
+
 def audit_case(root: Path, tag: str, case: str, protocol: dict) -> dict:
     """Return a fail-closed audit record for one registered case."""
     root, errors = Path(root).resolve(), []
@@ -633,8 +811,9 @@ def audit_case(root: Path, tag: str, case: str, protocol: dict) -> dict:
     result_sha = _sha(folder / "result.json")
     if result.get("case") != case or result.get("tag") != tag or result.get("schema") != "active_diagnosis_case_v2":
         errors.append("result schema/case/tag 불일치")
-    if result.get("controller") != "model":
-        errors.append("active 감사 대상 controller가 model이 아니다")
+    controller = result.get("controller")
+    if controller not in {"model", "fixed_order", "cheapest_discrimination"}:
+        errors.append("active 감사 대상 controller가 등록값이 아니다")
     if result.get("protocol_sha256_lf") != protocol.get("_audit_sha256_lf"):
         errors.append("result protocol SHA 불일치")
     if result.get("approval_identity_attested") is not False or result.get("human_review_s") is not None:
@@ -657,6 +836,30 @@ def audit_case(root: Path, tag: str, case: str, protocol: dict) -> dict:
     expected_action = decisions[-1].get("action") if decisions else None
     if result.get("model_action") != expected_action:
         errors.append("result model_action이 마지막 raw decision과 다르다")
+    if controller in {"fixed_order", "cheapest_discrimination"}:
+        initial_packet = _load(folder / "initial_packet.json", errors, "initial packet")
+        if (not isinstance(initial_packet, dict) or initial_packet.get("phase") != "initial"
+                or initial_packet.get("observed") != []
+                or initial_packet.get("budget_left") != protocol.get("max_probes")
+                or initial_packet.get("execution_budget_s") != protocol.get("probe_execution_budget_s")):
+            errors.append("baseline initial packet 계약 불일치")
+        for field in ("pairs", "without_receipt", "contrasts"):
+            if result.get(field) != []:
+                errors.append(f"baseline result.{field}가 빈 목록이 아니다")
+        if decisions or result.get("initial_outcome") is not None or result.get("model_action") is not None:
+            errors.append("baseline result에 모델 판단 상태가 있다")
+        model_files = list((folder / "model").glob("*")) if (folder / "model").exists() else []
+        if model_files:
+            errors.append("baseline case에 모델 산출물이 있다")
+        for stage in range(1, len(observed) + 1):
+            _gpu_wait_checks(folder, stage, errors)
+        _ledger_checks(root, folder, tag, result, spec, protocol, decisions, errors)
+        cost_invalid = _cost_checks(folder, result, errors)
+        _baseline_state_checks(result, observed, cost_invalid, errors)
+        valid = not errors
+        return {"case": case, "valid": valid, "errors": _sanitize_errors(root, errors),
+                "proof_changed": False, "verified_stage_indices": [],
+                "result_sha256_lf": result_sha}
     verified: list[int] = []
     reconstructed: list[dict] = []
     expected_stages: set[str] = set()

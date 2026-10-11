@@ -263,6 +263,45 @@ def test_complete_public_chain_verifies_changed_judgment(tmp_path):
     }
 
 
+def test_fixed_order_baseline_uses_same_ledger_artifact_and_cost_audit(tmp_path, monkeypatch):
+    case = fixture(tmp_path)
+    folder, result = case["folder"], case["result"]
+    for path in (folder / "model").glob("*"):
+        path.unlink()
+    monkeypatch.setattr(A.L, "FIXED_ORDER", ("P_reward",))
+    initial_packet = {"phase": "initial", "observed": [], "budget_left": 2,
+                      "execution_budget_s": 120, "facts": {"telemetry:return": -1.0}}
+    initial_path = write(folder / "initial_packet.json", initial_packet)
+    binding = {"controller": "fixed_order", "initial_packet_sha256_lf": sha(initial_path),
+               "protocol_sha256_lf": case["protocol"]["_audit_sha256_lf"]}
+    old_approval = next((folder / "approvals").glob("*.json"))
+    envelope = json.loads(old_approval.read_text(encoding="utf-8"))
+    envelope["binding"] = binding
+    envelope["prior_receipt_digests"] = []
+    old_approval.unlink()
+    (folder / "ledger.jsonl").unlink()
+    ledger = L.Ledger(folder / "ledger.jsonl")
+    rid = ledger.propose(envelope, "P_reward", 120)["request_id"]
+    write(folder / "approvals" / f"{rid}.json", envelope)
+    ledger.approve(rid, case["protocol"]["approver"])
+    ledger.consume(rid, envelope, "P_reward")
+    prior = result["observed"][0]
+    canonical = ledger.receipt(rid, prior["outcome"], prior["measurement"], prior["gpu_s"], prior["exit_code"])
+    observed = [{**canonical, "receipt_digest": L.digest(canonical), "probe": "P_reward",
+                 "checkpoint_sha256": prior["checkpoint_sha256"],
+                 "report_sha256_lf": prior["report_sha256_lf"]}]
+    result.update(controller="fixed_order", status="completed", stop_reason="probe_budget_or_frozen_stop",
+                  decisions=[], observed=observed, pairs=[], contrasts=[],
+                  without_receipt=[], initial_outcome=None, model_action=None,
+                  evidence_state=D.evidence_state(observed, 1))
+    result["costs"].update(model_calls=0, input_tokens=0, output_tokens=0,
+                           model_wall_s=0, model_cpu_s=0)
+    write(folder / "result.json", result)
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"], audit["errors"]
+    assert audit["proof_changed"] is False
+
+
 def invalidate_stage(case, stage):
     folder = case["folder"]
     decision_path = folder / "model" / f"{stage}.decision.json"
@@ -683,6 +722,179 @@ def test_duplicate_ledger_transition_breaks_exactly_once_chain(tmp_path):
     audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
     assert not audit["valid"]
     assert any("exactly-once" in error for error in audit["errors"])
+
+
+def test_cloud_protocol_without_registered_preflight_binding_fails_closed(tmp_path):
+    case = fixture(tmp_path)
+    from evals import brev_probe_backend as B
+    case["protocol"]["probe_backend"] = B.backend_config(
+        "brev", owner_marker_sha256="9" * 64)
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False and audit["proof_changed"] is False
+    assert any("cloud backend preflight binding" in error for error in audit["errors"])
+
+
+def test_cloud_preflight_hash_chain_accepts_registered_public_binding(tmp_path):
+    tag, case, probe = "cloud", "h01_s2027", "P_value"
+    folder = tmp_path / "evals/results" / tag / "cases" / case
+    checkpoint = "c" * 64
+    dependency = {"file": "model_0.pt", "sha256": "d" * 64}
+    write(tmp_path / "evals/results" / tag / "probes" / f"{case}__{probe}.json",
+          {"checkpoint": {"file": "model_299.pt", "sha256": checkpoint}})
+    gpu = {"gpu_utilization_pct": 0, "memory_mib": 0, "memory_total_mib": 46068,
+           "other_compute_pids": [], "ready": True, "busy_reasons": []}
+    write(folder / "gpu_preflight_1.json", gpu)
+    owner = {"controller": "model", "protocol_sha256_lf": "e" * 64}
+    environment = {**A.B.EXPECTED_ENVIRONMENT, "owner_marker_sha256": "9" * 64}
+    sources = {"evals/probes.py": "a" * 64}
+    backend = A.B.backend_config("brev", owner_marker_sha256="9" * 64)
+    public = {"name": "brev", "instance": backend["instance"],
+              "workspace_basename": backend["workspace_basename"], "environment": environment,
+              "environment_digest": L.digest(environment), "source_sha256_lf": sources,
+              "source_set_digest": L.digest(sources),
+              "checkpoint_set": [{"role": "last", "file": "model_299.pt", "sha256": checkpoint},
+                                 {"role": "P_value:from", **dependency}],
+              "jobs_sha256": "b" * 64, "owner_binding_digest": L.digest(owner),
+              "preapproval_transport_wall_s": 1.25, "launcher_watchdog_s": 360,
+              "gpu_snapshot_sha256_lf": L.digest(gpu)}
+    write(folder / "backend_preflight_1.json", public)
+    protocol = {"probe_backend": backend, "code_sha256_lf": sources}
+    spec = {"checkpoint_sha256": checkpoint, "checkpoint_dependencies": {probe: dependency}}
+    assert A._cloud_binding_errors(tmp_path, folder, tag, case, spec, protocol, 1, probe, owner, public) == []
+    public["jobs_sha256"] = "0" * 63
+    assert A._cloud_binding_errors(tmp_path, folder, tag, case, spec, protocol, 1, probe, owner, public)
+
+
+def test_cloud_preflight_recomputes_remaining_launcher_watchdog(tmp_path):
+    tag, case, probe = "cloud", "h01_s2027", "P_value"
+    folder = tmp_path / "evals/results" / tag / "cases" / case
+    checkpoint = "c" * 64
+    write(tmp_path / "evals/results" / tag / "probes" / f"{case}__{probe}.json",
+          {"checkpoint": {"file": "model_299.pt", "sha256": checkpoint}})
+    gpu = {"ready": True}
+    write(folder / "gpu_preflight_2.json", gpu)
+    owner = {"controller": "model"}
+    environment = {**A.B.EXPECTED_ENVIRONMENT, "owner_marker_sha256": "9" * 64}
+    sources = {"evals/probes.py": "a" * 64}
+    backend = A.B.backend_config("brev", owner_marker_sha256="9" * 64)
+    public = {"name": "brev", "instance": backend["instance"],
+              "workspace_basename": backend["workspace_basename"], "environment": environment,
+              "environment_digest": L.digest(environment), "source_sha256_lf": sources,
+              "source_set_digest": L.digest(sources),
+              "checkpoint_set": [{"role": "last", "file": "model_299.pt", "sha256": checkpoint}],
+              "jobs_sha256": "b" * 64, "owner_binding_digest": L.digest(owner),
+              "preapproval_transport_wall_s": 1.0, "launcher_watchdog_s": 350.0,
+              "gpu_snapshot_sha256_lf": L.digest(gpu)}
+    write(folder / "backend_preflight_2.json", public)
+    protocol = {"probe_backend": backend, "code_sha256_lf": sources,
+                "per_case_isaac_wall_limit_s": 360}
+    spec = {"checkpoint_sha256": checkpoint}
+    assert A._cloud_binding_errors(tmp_path, folder, tag, case, spec, protocol, 2, probe,
+                                   owner, public, 350.0) == []
+    assert A._cloud_binding_errors(tmp_path, folder, tag, case, spec, protocol, 2, probe,
+                                   owner, public, 349.9)
+
+
+def test_cloud_artifact_rejects_launcher_wall_beyond_watchdog(tmp_path):
+    case = fixture(tmp_path)
+    base = case["root"] / "evals/results" / case["tag"]
+    execution_path = base / "execution" / f"{case['case']}__P_reward.json"
+    resources_path = base / "resources" / f"{case['case']}__P_reward.json"
+    execution = json.loads(execution_path.read_text(encoding="utf-8"))
+    resources = json.loads(resources_path.read_text(encoding="utf-8"))
+    checkpoint = case["protocol"]["cases"][0]["checkpoint_sha256"]
+    meter = {"schema": "probe_process_metrics_v1", "completed": True,
+             "phase": "after_main", "cpu_s": 2.0,
+             "cpu_scope": "isaac_python_lifetime_after_main",
+             "simulator_steps_scope": "successful_measure_env_step_calls_times_actual_num_envs",
+             "jobs_sha256": "b" * 64, "probes_sha256_lf": "a" * 64,
+             "measurements": [{"probe": "P_reward", "checkpoint_sha256": checkpoint,
+                               "num_envs": 256, "successful_step_calls": 2,
+                               "simulator_steps": 512, "completed": True}]}
+    meter_path = write(base / "meters" / f"{case['case']}__P_reward.json", meter)
+    backend_binding = {"name": "brev", "jobs_sha256": "b" * 64,
+                       "launcher_watchdog_s": 360.0, "preapproval_transport_wall_s": 1.0}
+    backend_digest = L.digest(backend_binding)
+    execution.update(remote_launcher_wall_s=10.0, transport_wall_s=1.0,
+                     retrieval_wall_s=1.0, end_to_end_wall_s=12.2,
+                     timed_out=False, cleanup_confirmed=True, launcher_watchdog_s=360.0,
+                     cleanup_scope="owned_process_group_and_post_gpu_snapshot",
+                     cleanup_wall_s=0.2, cleanup_group_alive=False,
+                     cleanup_compute_pids=[], cleanup_memory_mib=0,
+                     cleanup_check_error=False,
+                     backend_binding_sha256=backend_digest, jobs_sha256="b" * 64)
+    resources.update(backend_binding_sha256=backend_digest, jobs_sha256="b" * 64,
+                     meter_sha256_lf=sha(meter_path), cpu_s=2.0,
+                     isaac_cpu_scope=meter["cpu_scope"], app_close_cpu_included=True,
+                     simulator_steps_scope=meter["simulator_steps_scope"],
+                     probes_sha256_lf="a" * 64, num_envs=256,
+                     successful_step_calls=2, completed=True)
+    write(execution_path, execution)
+    write(resources_path, resources)
+    events = [json.loads(line) for line in (case["folder"] / "ledger.jsonl").read_text(
+        encoding="utf-8").splitlines()]
+    canonical = next(event for event in events if event["event"] == "receipt")
+    spec = case["protocol"]["cases"][0]
+    errors = []
+    A._artifact_checks(case["root"], case["tag"], case["case"], "P_reward",
+                       case["result"]["observed"][0], canonical, spec, 120,
+                       backend_binding, errors)
+    assert not any("cloud artifact binding" in error for error in errors)
+    meter_path.write_bytes(meter_path.read_bytes() + b" ")
+    errors = []
+    A._artifact_checks(case["root"], case["tag"], case["case"], "P_reward",
+                       case["result"]["observed"][0], canonical, spec, 120,
+                       backend_binding, errors)
+    assert any("cloud artifact binding" in error for error in errors)
+    write(meter_path, meter)
+    resources["meter_sha256_lf"] = sha(meter_path)
+    write(resources_path, resources)
+    mutations = [
+        ("cpu_s", 3.0, False),
+        ("simulator_steps_scope", "tampered", False),
+        ("completed", False, False),
+        ("probes_sha256_lf", "0" * 64, False),
+        ("jobs_sha256", "0" * 64, False),
+        ("simulator_steps", 999, True),
+    ]
+    for field, value, row_field in mutations:
+        changed = json.loads(json.dumps(meter))
+        target = changed["measurements"][0] if row_field else changed
+        target[field] = value
+        write(meter_path, changed)
+        resources["meter_sha256_lf"] = sha(meter_path)
+        write(resources_path, resources)
+        errors = []
+        A._artifact_checks(case["root"], case["tag"], case["case"], "P_reward",
+                           case["result"]["observed"][0], canonical, spec, 120,
+                           backend_binding, errors)
+        assert any("cloud artifact binding" in error for error in errors), field
+    write(meter_path, meter)
+    resources["meter_sha256_lf"] = sha(meter_path)
+    write(resources_path, resources)
+    for field, invalid_value in [("transport_wall_s", 0.0), ("end_to_end_wall_s", 0.0),
+                                 ("retrieval_wall_s", 100.0)]:
+        original = execution[field]
+        execution[field] = invalid_value
+        write(execution_path, execution)
+        errors = []
+        A._artifact_checks(case["root"], case["tag"], case["case"], "P_reward",
+                           case["result"]["observed"][0], canonical, spec, 120,
+                           backend_binding, errors)
+        assert any("cloud artifact binding" in error for error in errors), field
+        execution[field] = original
+    backend_binding["launcher_watchdog_s"] = 5.0
+    backend_digest = L.digest(backend_binding)
+    execution["launcher_watchdog_s"] = 5.0
+    execution["backend_binding_sha256"] = backend_digest
+    resources["backend_binding_sha256"] = backend_digest
+    write(execution_path, execution)
+    write(resources_path, resources)
+    errors = []
+    A._artifact_checks(case["root"], case["tag"], case["case"], "P_reward",
+                       case["result"]["observed"][0], canonical, spec, 120,
+                       backend_binding, errors)
+    assert any("cloud artifact binding" in error for error in errors)
 
 
 def test_malformed_optional_objects_fail_closed_without_type_crash(tmp_path):
