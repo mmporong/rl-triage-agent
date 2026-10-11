@@ -7,9 +7,11 @@ run은 Windows에서 수행하며 모델 호출만 기존 WSL 환경으로 보�
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 import shlex
@@ -33,6 +35,31 @@ CODE = ("src/rl_triage/active_diagnosis.py", "src/rl_triage/probe_loop.py",
         "evals/run_probes.py", "evals/probes.py", "evals/metered_probes.py",
         "evals/run_fixed_eval.py", "evals/audit_active_diagnosis.py", "evals/build_active_replay.py",
         "bench/hidden_faults.py", "bench/external_faults.py")
+
+
+class ModelSemanticError(ValueError):
+    """Model output was received but violated the public decision contract."""
+
+
+class ModelInfraError(RuntimeError):
+    """The bounded provider request attempts were exhausted."""
+
+
+class ModelHarnessError(RuntimeError):
+    """The local write-once/hash/worker-cleanup harness invariant failed."""
+
+    def __init__(self, message, pair=None, outcome=None):
+        self.pair = pair
+        self.outcome = outcome
+        super().__init__(message)
+
+
+class GPUWaitError(RuntimeError):
+    """The GPU has an existing owner/allocation that must be allowed to finish."""
+
+    def __init__(self, snapshot):
+        self.snapshot = snapshot
+        super().__init__(f"GPU 대기: {snapshot}")
 
 
 def now():
@@ -75,7 +102,7 @@ def prepare(path):
         if actual != spec["checkpoint_sha256"]:
             raise ValueError(f"{case}: checkpoint가 기존 동결 입력과 다르다")
         cases.append({"case": case, "checkpoint_sha256": actual, "sources": inputs})
-    protocol = {"schema": "active_diagnosis_protocol_v1", "prepared_at": now(),
+    protocol = {"schema": "active_diagnosis_protocol_v2", "prepared_at": now(),
                 "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
                 "cases": cases, "model": MODEL, "max_probes": 2, "max_infra_attempts": 2,
                 "probe_execution_budget_s": 180, "per_case_isaac_wall_limit_s": 360,
@@ -106,7 +133,7 @@ def prepare(path):
 
 def verify_protocol(path, protocol):
     cases = [*(f"h{i:02d}_s2027" for i in range(1, 7)), "baseline_p0c_s2027", "e01_s2027"]
-    if (protocol.get("schema") != "active_diagnosis_protocol_v1" or protocol.get("model") != MODEL
+    if (protocol.get("schema") != "active_diagnosis_protocol_v2" or protocol.get("model") != MODEL
             or protocol.get("max_probes") != 2 or protocol.get("max_infra_attempts") != 2
             or protocol.get("probe_execution_budget_s") != 180 or protocol.get("per_case_isaac_wall_limit_s") != 360
             or protocol.get("approver") != ACTOR or [c.get("case") for c in protocol.get("cases", [])] != cases
@@ -154,7 +181,7 @@ def input_packet(spec, protocol):
         for tag, values in sorted(summary.items()):
             if "mean_last_20pct" in values:
                 facts[f"telemetry:{prefix}:{tag}"] = values["mean_last_20pct"]
-    return {"schema": "active_decision_packet_v1", "phase": "initial", "facts": facts,
+    return {"schema": "active_decision_packet_v2", "phase": "initial", "facts": facts,
             "task": "Unitree Go2 flat RSL-RL PPO; run may be normal, outside supported faults, or failed",
             "mechanisms": list(L.MECHANISMS), "probe_catalog": L.PROBES,
             "thresholds": L.THRESHOLDS, "budget_left": protocol["max_probes"],
@@ -183,21 +210,95 @@ def stop_model_worker(output, packet_path):
     pid_path.unlink(missing_ok=True)
 
 
-def nullable_sum(values):
-    return sum(v for v in values if v is not None) if all(v is not None for v in values) else None
+def cost_value(paths, field, integer=False):
+    values = []
+    for path in paths:
+        try:
+            record = read(path)
+        except (OSError, ValueError, TypeError):
+            return None, True
+        if not isinstance(record, Mapping) or field not in record:
+            return None, True
+        value = record[field]
+        if value is None:
+            return None, False
+        if isinstance(value, bool) or not isinstance(value, int if integer else (int, float)):
+            return None, True
+        if value < 0 or (not integer and not math.isfinite(value)):
+            return None, True
+        values.append(value)
+    return sum(values), False
+
+
+def attempt_cost(paths, field, integer=False):
+    return cost_value(paths, field, integer)[0]
+
+
+def safe_error_message(stage, error):
+    message = f"{stage}: {type(error).__name__}"
+    errno = getattr(error, "errno", None)
+    return f"{message} errno={errno}" if isinstance(errno, int) else message
+
+
+def model_outcome(folder, stage):
+    return read(folder / "model" / f"{stage}.outcome.json")
+
+
+def _attempt_refs(folder, paths):
+    return [{"path": path.relative_to(folder).as_posix(), "sha256_lf": sha(path)} for path in paths]
+
+
+def _outcome_value(folder, stage, packet_digest, attempt_paths, status, decision=None, error=None):
+    decision_path = folder / "model" / f"{stage}.decision.json"
+    return {
+        "stage": stage,
+        "status": status,
+        "packet_sha256_lf": packet_digest,
+        "attempts": _attempt_refs(folder, attempt_paths),
+        "decision": decision,
+        "decision_sha256_lf": sha(decision_path) if decision is not None else None,
+        "error": ({"type": type(error).__name__, "message": str(error)} if error is not None else None),
+    }
+
+
+def _write_outcome(folder, stage, packet_digest, attempt_paths, status, decision=None, error=None):
+    outcome = _outcome_value(folder, stage, packet_digest, attempt_paths, status, decision, error)
+    try:
+        write_new(folder / "model" / f"{stage}.outcome.json", outcome)
+    except (OSError, ValueError, TypeError) as write_error:
+        harness = ModelHarnessError(safe_error_message("model outcome write-once 실패", write_error))
+        harness.outcome = _outcome_value(folder, stage, packet_digest, attempt_paths,
+                                         "harness_fatal", error=harness)
+        raise harness from write_error
+    return outcome
 
 
 def fresh_decision(folder, stage, packet, protocol):
     packet_path = folder / "model" / f"{stage}.packet.json"
-    write_new(packet_path, packet)
+    try:
+        write_new(packet_path, packet)
+    except (OSError, ValueError, TypeError) as error:
+        message = safe_error_message("model packet write-once 실패", error)
+        harness = ModelHarnessError(message)
+        if packet_path.exists():
+            _write_outcome(folder, stage, sha(packet_path), [], "harness_fatal", error=harness)
+        else:
+            outcome = _outcome_value(folder, stage, L.digest(packet), [], "harness_fatal", error=harness)
+            harness.outcome = outcome
+        raise harness from error
+    packet_digest = sha(packet_path)
+    expected_messages_digest = L.digest(D.decision_messages(packet))
     records = []
+    attempt_paths = []
     for attempt in range(1, protocol["max_infra_attempts"] + 1):
         output = folder / "model" / f"{stage}.attempt{attempt}.json"
+        attempt_paths.append(output)
         argv = [wsl_path(ROOT / "evals/active_model_call.py"), "--packet", wsl_path(packet_path),
                 "--output", wsl_path(output), "--model", protocol["model"]]
         command = '. "$HOME/.config/nvidia/env"; exec "$HOME/.venvs/rl-triage/bin/python" ' + shlex.join(argv)
         attempt_start, attempt_wall = now(), time.perf_counter()
         failed = None
+        launch_error_type = None
         try:
             proc = subprocess.run(["wsl", "-d", "Ubuntu", "--", "bash", "-lc", command], cwd=ROOT,
                                   capture_output=True, timeout=330)
@@ -209,46 +310,94 @@ def fresh_decision(folder, stage, packet, protocol):
                 cleanup_failed = True
             proc = None
             failed = "ModelWorkerTimeout"
+        except (OSError, subprocess.SubprocessError) as error:
+            proc = None
+            cleanup_failed = False
+            launch_error_type = type(error).__name__
         else:
             cleanup_failed = False
         if not output.exists():
-            write_new(output, {"schema": "active_model_call_v1", "packet_sha256": hashlib.sha256(packet_path.read_bytes()).hexdigest(),
-                               "messages_sha256": L.digest(D.decision_messages(packet)), "started_at": attempt_start,
-                               "finished_at": now(), "request": {"model": protocol["model"], "temperature": 0,
-                                                                         "max_tokens": 16384, "stream": False,
-                                                                         "extra_body": {"reasoning_effort": "none"}},
-                               "client_cache_used": False, "saved_response_cached": False,
-                               "response_id": None, "provider_model": None, "finish_reason": None,
-                               "reasoning_content": None, "input_tokens": None, "output_tokens": None,
-                               "total_tokens": None, "cpu_s": None, "execution_wall_s": time.perf_counter() - attempt_wall,
-                               "wall_scope": "parent_worker_attempt; provider_request_unobserved", "exit_code": 2,
-                               "error_type": failed or "ModelWorkerMissingArtifact", "retryable": bool(failed) and not cleanup_failed,
-                               "worker_cleanup_failed": cleanup_failed,
-                               **({"infra_error": failed} if failed and not cleanup_failed else {})})
-        record = read(output)
-        if record["packet_sha256"] != hashlib.sha256(packet_path.read_bytes()).hexdigest():
-            raise ValueError("모델 입력 해시 불일치")
+            try:
+                write_new(output, {"schema": "active_model_call_v1", "packet_sha256": packet_digest,
+                                   "messages_sha256": expected_messages_digest, "started_at": attempt_start,
+                                   "finished_at": now(), "request": {"model": protocol["model"], "temperature": 0,
+                                                                             "max_tokens": 16384, "stream": False,
+                                                                             "extra_body": {"reasoning_effort": "none"}},
+                                   "client_cache_used": False, "saved_response_cached": False,
+                                   "response_id": None, "provider_model": None, "finish_reason": None,
+                                   "reasoning_content": None, "input_tokens": None, "output_tokens": None,
+                                   "total_tokens": None, "cpu_s": None, "execution_wall_s": time.perf_counter() - attempt_wall,
+                                   "wall_scope": "parent_worker_attempt; provider_request_unobserved", "exit_code": 2,
+                                   "error_type": launch_error_type or failed or "ModelWorkerMissingArtifact",
+                                   "error_message": "model worker launch failed" if launch_error_type else None,
+                                   "retryable": bool(failed) and not cleanup_failed,
+                                   "worker_cleanup_failed": cleanup_failed,
+                                   **({"infra_error": failed} if failed and not cleanup_failed else {})})
+            except (OSError, ValueError, TypeError) as error:
+                harness = ModelHarnessError(safe_error_message("model attempt write-once 실패", error))
+                _write_outcome(folder, stage, packet_digest, [p for p in attempt_paths if p.exists()],
+                               "harness_fatal", error=harness)
+                raise harness from error
+        try:
+            record = read(output)
+        except (OSError, ValueError, TypeError) as error:
+            harness = ModelHarnessError(safe_error_message("model attempt artifact 판독 실패", error))
+            _write_outcome(folder, stage, packet_digest, [p for p in attempt_paths if p.exists()],
+                           "harness_fatal", error=harness)
+            raise harness from error
+        if not isinstance(record, Mapping):
+            harness = ModelHarnessError("model attempt artifact 형식 오류: non-object JSON")
+            _write_outcome(folder, stage, packet_digest, attempt_paths, "harness_fatal", error=harness)
+            raise harness
+        if record.get("packet_sha256") != packet_digest or record.get("messages_sha256") != expected_messages_digest:
+            harness = ModelHarnessError("모델 packet/messages 해시 불일치")
+            _write_outcome(folder, stage, packet_digest, attempt_paths, "harness_fatal", error=harness)
+            raise harness
         records.append(record)
+        if cleanup_failed or record.get("worker_cleanup_failed"):
+            harness = ModelHarnessError("모델 worker cleanup 실패")
+            _write_outcome(folder, stage, packet_digest, attempt_paths, "harness_fatal", error=harness)
+            raise harness
         if record.get("infra_error"):
             if attempt < protocol["max_infra_attempts"]:
                 time.sleep(2)
             continue
         if record.get("error_type"):
-            raise RuntimeError(f"모델 요청 오류: {record['error_type']}")
+            error_type = record.get("error_type")
+            safe_type = error_type if isinstance(error_type, str) and re.fullmatch(
+                r"[A-Za-z][A-Za-z0-9_.]{0,63}", error_type) else "UnknownWorkerError"
+            harness = ModelHarnessError(f"비재시도 model worker 오류: {safe_type}")
+            _write_outcome(folder, stage, packet_digest, attempt_paths, "harness_fatal", error=harness)
+            raise harness
         if proc is None or proc.returncode != 0:
-            raise RuntimeError("모델 worker 비정상 종료")
+            harness = ModelHarnessError("모델 worker 비정상 종료")
+            _write_outcome(folder, stage, packet_digest, attempt_paths, "harness_fatal", error=harness)
+            raise harness
         text = record.get("content") or ""
         if text.startswith("```json") and text.rstrip().endswith("```"):
             text = text[7:text.rfind("```")].strip()
-        decision = D.validate_decision(json.loads(text), packet)
-        write_new(folder / "model" / f"{stage}.decision.json", decision)
+        try:
+            decision = D.validate_decision(json.loads(text), packet)
+        except (json.JSONDecodeError, ValueError, TypeError) as error:
+            semantic = ModelSemanticError(str(error))
+            _write_outcome(folder, stage, packet_digest, attempt_paths, "semantic_invalid", error=semantic)
+            raise semantic from error
+        try:
+            write_new(folder / "model" / f"{stage}.decision.json", decision)
+        except (OSError, ValueError, TypeError) as error:
+            harness = ModelHarnessError(safe_error_message("model decision write-once 실패", error))
+            _write_outcome(folder, stage, packet_digest, attempt_paths, "harness_fatal", error=harness)
+            raise harness from error
+        _write_outcome(folder, stage, packet_digest, attempt_paths, "valid", decision=decision)
         return decision, records
-    raise RuntimeError("모델 infrastructure 오류 한도 도달")
+    infra = ModelInfraError("모델 infrastructure 오류 한도 도달")
+    _write_outcome(folder, stage, packet_digest, attempt_paths, "infra_exhausted", error=infra)
+    raise infra
 
 
 def approved_probe(folder, tag, spec, protocol, packet, probe, stage, ledger, binding):
     case = spec["case"]
-    snapshot = gpu_snapshot()
+    snapshot = wait_for_gpu(folder, stage)
     write_new(folder / f"gpu_preflight_{stage}.json", snapshot)
     checkpoint = last_checkpoint(find_run(Path.home() / "IsaacLab/logs/rsl_rl/unitree_go2_flat", case))
     if hashlib.sha256(checkpoint.read_bytes()).hexdigest() != spec["checkpoint_sha256"]:
@@ -300,13 +449,40 @@ def stage_pair(folder, index, before, packet, protocol):
               "facts": {k: v for k, v in packet["facts"].items() if not k.startswith(prefix)}}
     stage = len(packet["observed"])
     order = ("observed", "masked") if (index + stage) % 2 == 0 else ("masked", "observed")
-    decisions = {}
+    decisions = {"observed": None, "masked": None}
+    outcomes = {"observed": None, "masked": None}
+    fatal = None
     for kind in order:
         name = f"after_{stage}" if kind == "observed" else f"without_receipt_{stage}"
         chosen_packet = packet if kind == "observed" else masked
-        decisions[kind], _ = fresh_decision(folder, name, chosen_packet, protocol)
-    return decisions["observed"], decisions["masked"], D.contrast(
-        before, decisions["observed"], decisions["masked"], packet["observed"])
+        try:
+            decisions[kind], _ = fresh_decision(folder, name, chosen_packet, protocol)
+        except (ModelSemanticError, ModelInfraError):
+            pass
+        except ModelHarnessError as error:
+            fatal = error
+        outcomes[kind] = fatal.outcome if fatal is not None and fatal.outcome is not None else model_outcome(folder, name)
+        if fatal is not None:
+            break
+    actual_outcome, control_outcome = outcomes["observed"], outcomes["masked"]
+    actual_decision, control_decision = decisions["observed"], decisions["masked"]
+    proof_eligible = (
+        actual_outcome is not None and actual_outcome["status"] == "valid"
+        and control_outcome is not None and control_outcome["status"] == "valid"
+        and actual_decision is not None and control_decision is not None
+    )
+    comparison = (D.contrast(before, actual_decision, control_decision, packet["observed"])
+                  if proof_eligible and actual_decision is not None and control_decision is not None else None)
+    pair = {"stage": stage, "order": list(order), "actual": outcomes["observed"],
+            "control": outcomes["masked"], "contrast": comparison,
+            "proof_eligible": proof_eligible}
+    try:
+        write_new(folder / "model" / f"pair_{stage}.json", pair)
+    except (OSError, ValueError, TypeError) as error:
+        raise ModelHarnessError(safe_error_message("model pair write-once 실패", error), pair=pair) from error
+    if fatal is not None:
+        raise fatal
+    return decisions["observed"], decisions["masked"], comparison, pair
 
 
 def gpu_snapshot():
@@ -322,13 +498,44 @@ def gpu_snapshot():
             models = len(json.load(response)["models"])
     except URLError:
         models = 0
+    reasons = []
+    if pids:
+        reasons.append("isaac_process")
+    if models:
+        reasons.append("ollama_model")
+    if used > 2500:
+        reasons.append("unexplained_large_allocation")
     snap = {"at": now(), "gpu_utilization_pct": util, "memory_mib": used,
-            "memory_total_mib": total, "other_isaac_pids": pids, "ollama_models": models}
+            "memory_total_mib": total, "other_isaac_pids": pids, "ollama_models": models,
+            "ready": not reasons, "busy_reasons": reasons}
     # WDDM desktop utilization alone is not an Isaac job. A loaded model or unexplained
     # large allocation still blocks the new run; another session is never terminated.
-    if pids or models or used > 2500:
-        raise RuntimeError(f"GPU 대기: {snap}")
+    if reasons:
+        raise GPUWaitError(snap)
     return snap
+
+
+def wait_for_gpu(folder, stage, poll_s=2):
+    path = Path(folder) / f"gpu_wait_{stage}.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    heartbeat = time.monotonic()
+    with path.open("x", encoding="utf-8", newline="\n") as handle:
+        while True:
+            try:
+                snapshot = gpu_snapshot()
+            except GPUWaitError as error:
+                snapshot = error.snapshot
+                handle.write(json.dumps(snapshot, ensure_ascii=False, allow_nan=False) + "\n")
+                handle.flush()
+                if time.monotonic() - heartbeat >= 60:
+                    print(json.dumps({"stage": stage, "status": "waiting_for_gpu",
+                                      "snapshot": snapshot}, ensure_ascii=False), flush=True)
+                    heartbeat = time.monotonic()
+                time.sleep(poll_s)
+                continue
+            handle.write(json.dumps(snapshot, ensure_ascii=False, allow_nan=False) + "\n")
+            handle.flush()
+            return snapshot
 
 
 def run_case(protocol_path, tag, case, controller="model"):
@@ -341,7 +548,8 @@ def run_case(protocol_path, tag, case, controller="model"):
     folder.mkdir(parents=True, exist_ok=False)
     write_new(folder / "protocol.json", protocol)
     start, clock = now(), time.perf_counter()
-    decisions, observed, contrasts, shadows = [], [], [], []
+    decisions, observed, pairs = [], [], []
+    initial_outcome = None
     prereg = {"case": case, "checkpoint_sha256": spec["checkpoint_sha256"],
               "protocol_sha256_lf": sha(protocol_path), "hypotheses": list(L.MECHANISMS),
               "budget_probes": protocol["max_probes"], "thresholds": L.THRESHOLDS}
@@ -349,22 +557,34 @@ def run_case(protocol_path, tag, case, controller="model"):
     ledger = L.Ledger(folder / "ledger.jsonl")
     packet = input_packet(spec, protocol)
     write_new(folder / "initial_packet.json", packet)
-    result = {"schema": "active_diagnosis_case_v1", "case": case, "tag": tag,
+    result = {"schema": "active_diagnosis_case_v2", "case": case, "tag": tag,
               "scope": protocol["scope"], "started_at": start, "protocol_sha256_lf": sha(protocol_path),
               "checkpoint_sha256": spec["checkpoint_sha256"], "human_review_s": None,
               "approval_actor": ACTOR, "approval_identity_attested": False,
               "controller": controller, "gpu_device_busy_s": None}
     try:
         if controller == "model":
-            decision, _ = fresh_decision(folder, "initial", packet, protocol)
-            decisions.append(decision)
+            try:
+                decision, _ = fresh_decision(folder, "initial", packet, protocol)
+            except (ModelSemanticError, ModelInfraError, ModelHarnessError) as error:
+                initial_outcome = (error.outcome if isinstance(error, ModelHarnessError) and error.outcome is not None
+                                   else model_outcome(folder, "initial"))
+                decision = None
+                result.update(stop_reason="initial_model_invalid",
+                              error_type=initial_outcome["error"]["type"],
+                              error=initial_outcome["error"]["message"])
+                if initial_outcome["status"] == "harness_fatal":
+                    raise
+            else:
+                initial_outcome = model_outcome(folder, "initial")
+                decisions.append(decision)
         else:
             decision = None
         while packet["budget_left"] > 0:
             state = D.evidence_state(observed, packet["budget_left"])
             if controller == "model":
                 if decision is None:
-                    raise ValueError("모델 결정이 없다")
+                    break
                 if decision["action"] != "continue":
                     result["stop_reason"] = "model_" + decision["action"]
                     break
@@ -397,10 +617,22 @@ def run_case(protocol_path, tag, case, controller="model"):
                 break
             if controller == "model":
                 index = next(i for i, s in enumerate(protocol["cases"]) if s["case"] == case)
-                decision, shadow, contrast = stage_pair(folder, index, decision, packet, protocol)
-                decisions.append(decision)
-                contrasts.append(contrast)
-                shadows.append(shadow)
+                try:
+                    actual, _control, _comparison, pair = stage_pair(folder, index, decision, packet, protocol)
+                except ModelHarnessError as error:
+                    pair_path = folder / "model" / f"pair_{len(observed)}.json"
+                    pair = error.pair if error.pair is not None else read(pair_path)
+                    pairs.append(pair)
+                    raise
+                pairs.append(pair)
+                if actual is None:
+                    decision = None
+                    error = pair["actual"]["error"]
+                    result.update(stop_reason="actual_model_invalid",
+                                  error_type=error["type"], error=error["message"])
+                    break
+                decision = actual
+                decisions.append(actual)
             if L.status(D.evidence_state(observed)["hypotheses"],
                         {r["probe"]: r["outcome"] for r in observed}, packet["budget_left"]) == "confirmed":
                 break
@@ -408,30 +640,41 @@ def run_case(protocol_path, tag, case, controller="model"):
             result["stop_reason"] = "model_hold"
         elif not result.get("stop_reason"):
             result["stop_reason"] = "model_confirm" if controller == "model" and decision and decision["action"] == "confirm" else "probe_budget_or_frozen_stop"
-        result["status"] = "hold" if result["stop_reason"] in ("model_hold", "unknown_receipt_metrics_not_used_for_decision") else "completed"
+        result["status"] = "hold" if result["stop_reason"] in (
+            "model_hold", "unknown_receipt_metrics_not_used_for_decision",
+            "initial_model_invalid", "actual_model_invalid") else "completed"
     except (ValueError, RuntimeError, subprocess.SubprocessError, L.LedgerError) as error:
-        result.update(status="hold", error_type=type(error).__name__, error=str(error),
+        message = str(error) if isinstance(error, ModelHarnessError) else safe_error_message("진단 실행 중단", error)
+        result.update(status="hold", error_type=type(error).__name__, error=message,
                       orphan_requests=ledger.orphans())
     result.update(finished_at=now(), end_to_end_wall_s=time.perf_counter() - clock,
-                  decisions=decisions, observed=observed, contrasts=contrasts,
-                  without_receipt=shadows,
+                  initial_outcome=initial_outcome, decisions=decisions, observed=observed,
+                  pairs=pairs, contrasts=[pair["contrast"] for pair in pairs],
+                  without_receipt=[pair["control"]["decision"] if pair["control"] is not None else None
+                                   for pair in pairs],
                   budget_left=protocol["max_probes"] - len(observed),
                   model_action=decisions[-1]["action"] if decisions else None,
                   evidence_state=D.evidence_state(observed, protocol["max_probes"] - len(observed)))
     # Read every attempt from disk, including rejected responses and infra retries.
-    attempts = [read(p) for p in sorted((folder / "model").glob("*.attempt*.json"))]
-    result["costs"] = {"model_calls": len(attempts),
-                       "input_tokens": sum(c["input_tokens"] for c in attempts) if all(c["input_tokens"] is not None for c in attempts) else None,
-                       "output_tokens": sum(c["output_tokens"] for c in attempts) if all(c["output_tokens"] is not None for c in attempts) else None,
-                       "model_wall_s": sum(c["execution_wall_s"] for c in attempts),
-                       "model_cpu_s": nullable_sum([c["cpu_s"] for c in attempts]),
+    attempt_paths = sorted((folder / "model").glob("*.attempt*.json"))
+    result["costs"] = {"model_calls": len(attempt_paths),
+                       "input_tokens": attempt_cost(attempt_paths, "input_tokens", integer=True),
+                       "output_tokens": attempt_cost(attempt_paths, "output_tokens", integer=True),
+                       "model_wall_s": attempt_cost(attempt_paths, "execution_wall_s"),
+                       "model_cpu_s": attempt_cost(attempt_paths, "cpu_s"),
                        "isaac_wall_s": sum(r["gpu_s"] for r in observed), "human_review_s": None,
                        "gpu_device_busy_s": None}
+    invalid_sidecar = False
     for field in ("cpu_s", "simulator_steps"):
         source_folder = "execution" if field == "cpu_s" else "resources"
         paths = [ROOT / "evals/results" / tag / source_folder / f"{case}__{r['probe']}.json" for r in observed]
-        values = [read(p).get(field) if p.exists() else None for p in paths]
-        result["costs"][f"isaac_{field}"] = sum(v for v in values if v is not None) if values and all(v is not None for v in values) else (0 if not observed else None)
+        value, invalid = cost_value(paths, field, integer=field == "simulator_steps")
+        result["costs"][f"isaac_{field}"] = value
+        invalid_sidecar = invalid_sidecar or invalid
+    if invalid_sidecar:
+        result.update(status="hold", stop_reason="cost_artifact_invalid")
+        result.setdefault("error_type", "ModelHarnessError")
+        result.setdefault("error", "Isaac cost sidecar validation failed")
     if ledger.orphans():
         result["costs"].update(isaac_wall_s=None, isaac_cpu_s=None, isaac_simulator_steps=None)
     write_new(folder / "result.json", result)

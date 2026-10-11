@@ -28,10 +28,18 @@ Return one JSON object with exactly these fields:
 Every claim must copy an available evidence fact exactly. After an observation, cite
 at least one fact from the latest receipt. A receipt may support keeping the same
 ranking; never change a judgment merely because a new observation arrived.
+The previous_decision is only a prior proposal, not an observed outcome and not
+evidence that its requested probe ran. Without a usable observation, never confirm.
+An observed normal result eliminates only mechanisms whose public catalog expectation
+for that probe is abnormal; do not invent extra elimination rules. With budget_left=0,
+return hold unless the usable observations satisfy the deterministic confirm rule.
 Treat configured or reference values as configuration/reference facts, not proof of
 runtime behavior. Use causal wording only when an actual runtime observation supports
-it. Never infer hidden case labels. Confirm only when the deterministic evidence state
-is confirmed and its sole hypothesis is ranked first. Output JSON only.
+it. Values must be literal JSON scalars, never expressions or values with explanatory
+suffixes. For continue, expected_outcomes must exactly copy the selected probe's public
+catalog expectations for the top three ranked mechanisms. Never infer hidden case
+labels. Confirm only when the deterministic evidence state is confirmed and its sole
+hypothesis is ranked first. Output JSON only.
 """
 
 _ACTIONS = frozenset({"continue", "hold", "confirm"})

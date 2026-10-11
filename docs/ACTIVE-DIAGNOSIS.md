@@ -4,7 +4,7 @@
 
 ## 범위와 판정
 
-`bench/protocols/active_diagnosis_v1.json`은 기존 seed 2027의 결함 6사례, 정상 1사례, 외부 결함 1사례를 등록한다. 모두 이미 본 입력이다. 이 실행은 시스템 통합과 사례별 판단 변화를 확인하며, 정확도·일반화·새 고객 환경의 성공률을 평가하지 않는다. 원인 되돌리기 재학습이나 정책 회복까지 검증하는 실행도 아니다.
+`bench/protocols/active_diagnosis_v2.json`은 기존 seed 2027의 결함 6사례, 정상 1사례, 외부 결함 1사례를 등록한다. 모두 이미 본 입력이다. 이 실행은 시스템 통합과 사례별 판단 변화를 확인하며, 정확도·일반화·새 고객 환경의 성공률을 평가하지 않는다. 원인 되돌리기 재학습이나 정책 회복까지 검증하는 실행도 아니다. v1의 프로토콜과 결과는 보존한다.
 
 강한 장면은 다음 조건을 함께 만족해야 한다.
 
@@ -17,6 +17,14 @@
 관측 후 순위가 유지돼도 실패한 검사를 다시 돌리거나 답을 수정해 재시도하지 않는다. 결과가 불명, 실행 실패, 시간 예산 초과이면 원인을 확정하지 않고 보류한다. JSON 계약이나 근거 인용 오류도 보류한다. 재시도는 통신·시간 초과·429·5xx·빈 응답·잘림에만 최대 두 번의 총 시도를 허용한다.
 
 사례 순서는 고정하며, 발표용 기본 장면은 위 조건을 통과한 첫 사례다. 통과하지 않은 사례도 전체 표에 남긴다. 결과별 문구는 프로토콜에 평가 전에 고정한다. 한 번의 관측/가림 호출 쌍은 사례 증거다. 원격 모델 호출의 완전한 결정성이나 일반적인 인과 효과를 뜻하지 않는다.
+
+## 진단과 대조 검증
+
+실제 관측을 받은 호출과 최신 관측만 가린 호출은 독립적으로 기록한다. 실제 호출의 유효한 결정만 다음 승인과 검사 선택에 쓰인다. 가림 호출이 JSON·근거·행동 계약을 어겨도 실제 호출을 생략하거나 진단을 보류하지 않는다. 그 쌍은 판단 변화의 증거에서 제외한다. 실제 호출이 계약을 어기면 진단을 보류한다.
+
+각 호출은 유효 결정 또는 거절 기록, 입력 해시, 모든 시도 파일과 해시를 남긴다. 의미 오류는 재시도하지 않는다. 인프라 오류 한도를 소진한 호출도 기록한다. 입력·메시지 해시 불일치, 쓰기 충돌, worker 정리 실패는 실행 하네스 오류이며 다음 호출을 시작하지 않는다. 오류가 기록됐다는 사실만으로 증거가 유효해지지는 않는다. 감사기는 원문에서 같은 거절이 재현되는지와 비용·원장 결속을 검증한다.
+
+재생 화면은 진단 상태와 발표 증거 상태를 구분한다. 기록이 온전한 HOLD는 감사할 수 있지만 판단 변화의 성공 장면은 아니다. 대조 검증 실패를 제품 진단 실패로 합산하거나, 진단 완료를 대조 검증 통과로 바꾸지 않는다.
 
 ## 비교와 비용
 
@@ -34,12 +42,12 @@ Windows 저장소 루트에서 기존 Python 환경과 WSL NVIDIA API 환경을 
 
 ```powershell
 cd "$HOME/rl-triage-agent"
-.venv/Scripts/python.exe evals/run_active_diagnosis.py prepare --out bench/protocols/active_diagnosis_v1.json
+.venv/Scripts/python.exe evals/run_active_diagnosis.py prepare --out bench/protocols/active_diagnosis_v2.json
 # 위 프로토콜과 그 소스 파일을 검증·커밋한 뒤 실행한다.
-.venv/Scripts/python.exe evals/run_active_diagnosis.py run-all --protocol bench/protocols/active_diagnosis_v1.json --tag active_새이름
+.venv/Scripts/python.exe evals/run_active_diagnosis.py run-all --protocol bench/protocols/active_diagnosis_v2.json --tag active_새이름
 ```
 
-실행 태그는 영문·숫자·밑줄·하이픈만 허용한다. 같은 결과 파일이나 사례 폴더는 다시 사용하지 않는다. 실제 사례 이름은 native runner가 지원하는 기존 이름을 유지한다. GPU에 다른 Isaac 프로세스 또는 로드된 Ollama 모델이 있으면 실행을 막고 기록한다. 다른 작업을 종료하지 않는다.
+실행 태그는 영문·숫자·밑줄·하이픈만 허용한다. 같은 결과 파일이나 사례 폴더는 다시 사용하지 않는다. 실제 사례 이름은 native runner가 지원하는 기존 이름을 유지한다. GPU에 다른 Isaac 프로세스 또는 로드된 Ollama 모델이 있으면 대기 기록을 남기고, 비워진 뒤 승인·소비·검사를 진행한다. 앞선 Isaac 실행의 종료 잔여 프로세스에도 같은 기준을 적용한다. 다른 작업을 종료하지 않는다. 대기 시간은 Isaac launcher 예산 밖이며 전체 지연에는 포함된다.
 
 공개 결과는 `evals/results/<tag>/cases/<case>/`의 모델 호출, 승인 결속, 원장, 결과와 같은 태그의 `probes/`, `execution/`, `resources/`다. 규칙 비교는 `<tag>_fixed`, `<tag>_cheap`에 남는다. 저장된 산출물의 재생은 API나 GPU를 다시 호출하지 않는다.
 

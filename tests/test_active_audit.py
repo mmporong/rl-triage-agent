@@ -40,9 +40,10 @@ def model_files(folder, stage, packet, decision, model):
     decision_path = write(folder / "model" / f"{stage}.decision.json", decision)
     record = {
         "schema": "active_model_call_v1",
-        "packet_sha256": sha(packet_path, raw=True),
+        "packet_sha256": sha(packet_path),
         "messages_sha256": L.digest(D.decision_messages(packet)),
-        "request": {"model": model, "temperature": 0, "max_tokens": 16384},
+        "request": {"model": model, "temperature": 0, "max_tokens": 16384,
+                    "stream": False, "extra_body": {"reasoning_effort": "none"}},
         "saved_response_cached": False,
         "client_cache_used": False,
         "response_id": f"response-{stage}",
@@ -57,6 +58,12 @@ def model_files(folder, stage, packet, decision, model):
         "exit_code": 0,
     }
     attempt = write(folder / "model" / f"{stage}.attempt1.json", record)
+    outcome = {
+        "stage": stage, "status": "valid", "packet_sha256_lf": sha(packet_path),
+        "attempts": [{"path": attempt.relative_to(folder).as_posix(), "sha256_lf": sha(attempt)}],
+        "decision": decision, "decision_sha256_lf": sha(decision_path), "error": None,
+    }
+    write(folder / "model" / f"{stage}.outcome.json", outcome)
     return packet_path, decision_path, attempt, record
 
 
@@ -88,10 +95,11 @@ def fixture(tmp_path):
         cases.append({"case": f"missing{index}", "checkpoint_sha256": checkpoint,
                       "sources": cases[0]["sources"]})
     protocol = {
-        "schema": "active_diagnosis_protocol_v1",
+        "schema": "active_diagnosis_protocol_v2",
         "model": model,
         "approver": "operator-unverified",
         "max_probes": 2,
+        "max_infra_attempts": 2,
         "probe_execution_budget_s": 120,
         "cases": cases,
     }
@@ -205,18 +213,30 @@ def fixture(tmp_path):
     }
     write(base / "execution" / f"{case}__P_reward.json", execution)
     write(base / "resources" / f"{case}__P_reward.json", resources)
+    ready = {"at": "2026-10-11T00:00:00Z", "ready": True, "busy_reasons": [],
+             "gpu_utilization_pct": 0, "memory_mib": 1000, "memory_total_mib": 12000,
+             "other_isaac_pids": [], "ollama_models": 0}
+    (folder / "gpu_wait_1.jsonl").write_text(json.dumps(ready) + "\n", encoding="utf-8")
+    write(folder / "gpu_preflight_1.json", ready)
     augmented = {
         **canonical, "receipt_digest": L.digest(canonical), "probe": "P_reward",
         "checkpoint_sha256": checkpoint, "report_sha256_lf": report_sha,
     }
     contrast = D.contrast(before, after, shadow, [augmented])
+    initial_outcome = json.loads((folder / "model/initial.outcome.json").read_text(encoding="utf-8"))
+    after_outcome = json.loads((folder / "model/after_1.outcome.json").read_text(encoding="utf-8"))
+    control_outcome = json.loads((folder / "model/without_receipt_1.outcome.json").read_text(encoding="utf-8"))
+    pair = {"stage": 1, "order": ["observed", "masked"], "actual": after_outcome,
+            "control": control_outcome, "contrast": contrast, "proof_eligible": True}
+    write(folder / "model/pair_1.json", pair)
     records = [initial_files[3], after_files[3], masked_files[3]]
     result = {
-        "schema": "active_diagnosis_case_v1", "case": case, "tag": tag,
-        "status": "completed", "checkpoint_sha256": checkpoint,
+        "schema": "active_diagnosis_case_v2", "case": case, "tag": tag,
+        "status": "completed", "stop_reason": "model_confirm", "checkpoint_sha256": checkpoint,
         "controller": "model", "protocol_sha256_lf": bound["_audit_sha256_lf"],
         "approval_actor": protocol["approver"], "approval_identity_attested": False,
         "human_review_s": None, "gpu_device_busy_s": None,
+        "initial_outcome": initial_outcome, "pairs": [pair],
         "decisions": [before, after], "observed": [augmented],
         "contrasts": [contrast], "without_receipt": [shadow],
         "model_action": "confirm",
@@ -241,6 +261,328 @@ def test_complete_public_chain_verifies_changed_judgment(tmp_path):
         "case": "case0", "valid": True, "errors": [], "proof_changed": True,
         "verified_stage_indices": [0, 1], "result_sha256_lf": sha(case["folder"] / "result.json"),
     }
+
+
+def invalidate_stage(case, stage):
+    folder = case["folder"]
+    decision_path = folder / "model" / f"{stage}.decision.json"
+    decision_path.unlink()
+    attempt_path = folder / "model" / f"{stage}.attempt1.json"
+    attempt = json.loads(attempt_path.read_text(encoding="utf-8"))
+    attempt["content"] = '{"ranking": []}'
+    write(attempt_path, attempt)
+    packet_path = folder / "model" / f"{stage}.packet.json"
+    outcome = {
+        "stage": stage, "status": "semantic_invalid", "packet_sha256_lf": sha(packet_path),
+        "attempts": [{"path": attempt_path.relative_to(folder).as_posix(),
+                      "sha256_lf": sha(attempt_path)}],
+        "decision": None, "decision_sha256_lf": None,
+        "error": {"type": "ModelSemanticError", "message": "ranking 계약 위반"},
+    }
+    write(folder / "model" / f"{stage}.outcome.json", outcome)
+    return outcome
+
+
+def resync_control_attempt(case):
+    folder = case["folder"]
+    outcome_path = folder / "model/without_receipt_1.outcome.json"
+    outcome = json.loads(outcome_path.read_text(encoding="utf-8"))
+    for ref in outcome["attempts"]:
+        ref["sha256_lf"] = sha(folder / ref["path"])
+    write(outcome_path, outcome)
+    pair_path = folder / "model/pair_1.json"
+    pair = json.loads(pair_path.read_text(encoding="utf-8"))
+    pair["control"] = outcome
+    write(pair_path, pair)
+    result = case["result"]
+    result["pairs"] = [pair]
+    write(folder / "result.json", result)
+
+
+def test_semantic_invalid_control_is_valid_hold_evidence_not_changed_proof(tmp_path):
+    case = fixture(tmp_path)
+    outcome = invalidate_stage(case, "without_receipt_1")
+    pair_path = case["folder"] / "model/pair_1.json"
+    pair = json.loads(pair_path.read_text(encoding="utf-8"))
+    pair.update(control=outcome, contrast=None, proof_eligible=False)
+    write(pair_path, pair)
+    result = case["result"]
+    result.update(pairs=[pair], contrasts=[None], without_receipt=[None])
+    write(case["folder"] / "result.json", result)
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is True
+    assert audit["proof_changed"] is False
+
+
+def test_semantic_invalid_actual_requires_hold_but_remains_auditable(tmp_path):
+    case = fixture(tmp_path)
+    outcome = invalidate_stage(case, "after_1")
+    pair_path = case["folder"] / "model/pair_1.json"
+    pair = json.loads(pair_path.read_text(encoding="utf-8"))
+    pair.update(actual=outcome, contrast=None, proof_eligible=False)
+    write(pair_path, pair)
+    result = case["result"]
+    result.update(status="hold", stop_reason="actual_model_invalid",
+                  error_type="ModelSemanticError", error="ranking 계약 위반",
+                  decisions=[result["decisions"][0]], model_action="continue",
+                  pairs=[pair], contrasts=[None])
+    write(case["folder"] / "result.json", result)
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is True
+    assert audit["proof_changed"] is False
+
+
+def test_outcome_attempt_hash_and_gpu_ready_are_fail_closed(tmp_path):
+    case = fixture(tmp_path)
+    outcome_path = case["folder"] / "model/after_1.outcome.json"
+    outcome = json.loads(outcome_path.read_text(encoding="utf-8"))
+    outcome["attempts"][0]["sha256_lf"] = "0" * 64
+    write(outcome_path, outcome)
+    wait_path = case["folder"] / "gpu_wait_1.jsonl"
+    wait_path.write_text(json.dumps({"ready": False, "busy_reasons": ["isaac_process"]}) + "\n",
+                         encoding="utf-8")
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False
+    assert any("attempt 링크" in error for error in audit["errors"])
+    assert any("ready로 끝나지" in error for error in audit["errors"])
+
+
+def test_valid_outcome_cannot_exceed_registered_infra_attempt_limit(tmp_path):
+    case = fixture(tmp_path)
+    folder = case["folder"]
+    first_path = folder / "model/without_receipt_1.attempt1.json"
+    success = json.loads(first_path.read_text(encoding="utf-8"))
+    infra = {**success, "response_id": None, "exit_code": 2,
+             "infra_error": "provider overloaded", "retryable": True}
+    write(first_path, infra)
+    second_path = write(folder / "model/without_receipt_1.attempt2.json", infra)
+    third_path = write(folder / "model/without_receipt_1.attempt3.json", success)
+    outcome_path = folder / "model/without_receipt_1.outcome.json"
+    outcome = json.loads(outcome_path.read_text(encoding="utf-8"))
+    outcome["attempts"] = [
+        {"path": path.relative_to(folder).as_posix(), "sha256_lf": sha(path)}
+        for path in (first_path, second_path, third_path)
+    ]
+    write(outcome_path, outcome)
+    pair_path = folder / "model/pair_1.json"
+    pair = json.loads(pair_path.read_text(encoding="utf-8"))
+    pair["control"] = outcome
+    write(pair_path, pair)
+    result = case["result"]
+    result["pairs"] = [pair]
+    result["costs"].update(model_calls=5, input_tokens=500, output_tokens=100,
+                           model_wall_s=7.5, model_cpu_s=0.5)
+    write(folder / "result.json", result)
+
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False
+    assert audit["proof_changed"] is False
+    assert any("attempt 수" in error and "한도" in error for error in audit["errors"])
+
+
+@pytest.mark.parametrize("location", ["result", "outcome"])
+def test_raw_error_with_host_absolute_path_is_not_sanitized_into_valid_evidence(tmp_path, location):
+    case = fixture(tmp_path)
+    result = case["result"]
+    if location == "result":
+        result["error"] = r"C:\Users\alice\private\worker.log"
+    else:
+        outcome = invalidate_stage(case, "without_receipt_1")
+        outcome["error"]["message"] = r"C:\Users\alice\private\worker.log"
+        write(case["folder"] / "model/without_receipt_1.outcome.json", outcome)
+        pair_path = case["folder"] / "model/pair_1.json"
+        pair = json.loads(pair_path.read_text(encoding="utf-8"))
+        pair.update(control=outcome, contrast=None, proof_eligible=False)
+        write(pair_path, pair)
+        result.update(pairs=[pair], contrasts=[None], without_receipt=[None])
+    write(case["folder"] / "result.json", result)
+
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False
+    assert audit["proof_changed"] is False
+    assert any("raw" in error and "절대 경로" in error for error in audit["errors"])
+    assert "C:\\Users\\alice" not in "\n".join(audit["errors"])
+
+
+@pytest.mark.parametrize("mutation", ["max_tokens", "stream", "extra_body", "request_list"])
+def test_model_request_must_match_canonical_provider_contract(tmp_path, mutation):
+    case = fixture(tmp_path)
+    path = case["folder"] / "model/without_receipt_1.attempt1.json"
+    record = json.loads(path.read_text(encoding="utf-8"))
+    if mutation == "request_list":
+        record["request"] = []
+    elif mutation == "extra_body":
+        record["request"][mutation] = {"reasoning_effort": "high"}
+    else:
+        record["request"][mutation] = 1 if mutation == "max_tokens" else True
+    write(path, record)
+    resync_control_attempt(case)
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False and audit["proof_changed"] is False
+    assert any("provider 요청 계약" in error for error in audit["errors"])
+
+
+@pytest.mark.parametrize("mutation", ["token", "wall", "costs_list"])
+def test_malformed_cost_values_fail_closed_without_exception(tmp_path, mutation):
+    case = fixture(tmp_path)
+    result = case["result"]
+    if mutation == "costs_list":
+        result["costs"] = []
+        write(case["folder"] / "result.json", result)
+    else:
+        path = case["folder"] / "model/without_receipt_1.attempt1.json"
+        record = json.loads(path.read_text(encoding="utf-8"))
+        field = "input_tokens" if mutation == "token" else "execution_wall_s"
+        record[field] = "bad"
+        write(path, record)
+        result["costs"]["input_tokens" if mutation == "token" else "model_wall_s"] = None
+        resync_control_attempt(case)
+        write(case["folder"] / "result.json", result)
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False and audit["proof_changed"] is False
+    assert audit["errors"]
+
+
+@pytest.mark.parametrize("artifact", ["probes", "execution", "resources"])
+def test_non_object_probe_artifact_fails_closed(tmp_path, artifact):
+    case = fixture(tmp_path)
+    base = case["folder"].parents[1]
+    path = base / artifact / f"{case['case']}__P_reward.json"
+    write(path, [])
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False and audit["proof_changed"] is False
+    assert any("JSON 객체" in error for error in audit["errors"])
+
+
+def test_non_object_ledger_event_fails_closed_without_exception(tmp_path):
+    case = fixture(tmp_path)
+    (case["folder"] / "ledger.jsonl").write_text("[]\n", encoding="utf-8")
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False and audit["proof_changed"] is False
+    assert any("ledger event" in error for error in audit["errors"])
+
+
+@pytest.mark.parametrize("mutation", ["checkpoint_list", "resource_cpu_text"])
+def test_nested_probe_artifact_types_fail_closed_without_exception(tmp_path, mutation):
+    case = fixture(tmp_path)
+    base = case["folder"].parents[1]
+    if mutation == "checkpoint_list":
+        path = base / "probes" / f"{case['case']}__P_reward.json"
+        value = json.loads(path.read_text(encoding="utf-8"))
+        value["checkpoint"] = []
+    else:
+        path = base / "resources" / f"{case['case']}__P_reward.json"
+        value = json.loads(path.read_text(encoding="utf-8"))
+        value["cpu_s"] = "x"
+    write(path, value)
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False and audit["proof_changed"] is False
+    assert any("형식 오류" in error for error in audit["errors"])
+
+
+def test_initial_semantic_hold_accepts_absent_empty_ledger(tmp_path):
+    case = fixture(tmp_path)
+    folder = case["folder"]
+    initial = invalidate_stage(case, "initial")
+    for pattern in ("after_1.*.json", "without_receipt_1.*.json", "pair_1.json"):
+        for path in (folder / "model").glob(pattern):
+            path.unlink()
+    (folder / "ledger.jsonl").unlink()
+    result = case["result"]
+    result.update(status="hold", stop_reason="initial_model_invalid",
+                  error_type="ModelSemanticError", error="ranking 계약 위반",
+                  initial_outcome=initial, decisions=[], observed=[], pairs=[], contrasts=[],
+                  without_receipt=[], model_action=None, evidence_state=D.evidence_state([], 2),
+                  costs={"model_calls": 1, "input_tokens": 100, "output_tokens": 20,
+                         "model_wall_s": 1.5, "model_cpu_s": 0.1, "isaac_wall_s": 0,
+                         "isaac_cpu_s": 0, "isaac_simulator_steps": 0,
+                         "human_review_s": None, "gpu_device_busy_s": None})
+    write(folder / "result.json", result)
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is True
+    assert audit["proof_changed"] is False
+
+
+def test_actual_invalid_result_summary_cannot_be_fabricated(tmp_path):
+    case = fixture(tmp_path)
+    outcome = invalidate_stage(case, "after_1")
+    pair_path = case["folder"] / "model/pair_1.json"
+    pair = json.loads(pair_path.read_text(encoding="utf-8"))
+    pair.update(actual=outcome, contrast=None, proof_eligible=False)
+    write(pair_path, pair)
+    result = case["result"]
+    result.update(status="hold", stop_reason="probe_budget_or_frozen_stop",
+                  error_type="FabricatedError", error="fabricated",
+                  decisions=[result["decisions"][0]], model_action="continue",
+                  pairs=[pair], contrasts=[None])
+    write(case["folder"] / "result.json", result)
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False and audit["proof_changed"] is False
+    assert any("status/stop_reason" in error for error in audit["errors"])
+    assert any("raw outcome 오류" in error for error in audit["errors"])
+
+
+def test_valid_initial_hold_cannot_be_relabelled_completed_budget_stop(tmp_path):
+    case = fixture(tmp_path)
+    folder = case["folder"]
+    result = case["result"]
+    hold = {**result["decisions"][0], "probe": None, "action": "hold", "expected_outcomes": {}}
+    decision_path = write(folder / "model/initial.decision.json", hold)
+    attempt_path = folder / "model/initial.attempt1.json"
+    attempt = json.loads(attempt_path.read_text(encoding="utf-8"))
+    attempt["content"] = json.dumps(hold, ensure_ascii=False)
+    write(attempt_path, attempt)
+    outcome_path = folder / "model/initial.outcome.json"
+    outcome = json.loads(outcome_path.read_text(encoding="utf-8"))
+    outcome.update(decision=hold, decision_sha256_lf=sha(decision_path),
+                   attempts=[{"path": attempt_path.relative_to(folder).as_posix(),
+                              "sha256_lf": sha(attempt_path)}])
+    write(outcome_path, outcome)
+    for pattern in ("after_1.*.json", "without_receipt_1.*.json", "pair_1.json"):
+        for path in (folder / "model").glob(pattern):
+            path.unlink()
+    (folder / "ledger.jsonl").unlink()
+    result.update(status="completed", stop_reason="probe_budget_or_frozen_stop",
+                  initial_outcome=outcome, decisions=[hold], observed=[], pairs=[], contrasts=[],
+                  without_receipt=[], model_action="hold", evidence_state=D.evidence_state([], 2),
+                  costs={"model_calls": 1, "input_tokens": 100, "output_tokens": 20,
+                         "model_wall_s": 1.5, "model_cpu_s": 0.1, "isaac_wall_s": 0,
+                         "isaac_cpu_s": 0, "isaac_simulator_steps": 0,
+                         "human_review_s": None, "gpu_device_busy_s": None})
+    write(folder / "result.json", result)
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False and audit["proof_changed"] is False
+    assert any("status/stop_reason" in error for error in audit["errors"])
+
+
+def test_actual_harness_fatal_binds_safe_error_without_stop_reason(tmp_path):
+    case = fixture(tmp_path)
+    folder = case["folder"]
+    (folder / "model/after_1.decision.json").unlink()
+    attempt_path = folder / "model/after_1.attempt1.json"
+    attempt = json.loads(attempt_path.read_text(encoding="utf-8"))
+    attempt.update(response_id=None, exit_code=2, error_type="ModelWorkerMissingArtifact")
+    write(attempt_path, attempt)
+    packet_path = folder / "model/after_1.packet.json"
+    error = {"type": "ModelHarnessError", "message": "모델 worker 산출물 누락"}
+    outcome = {"stage": "after_1", "status": "harness_fatal",
+               "packet_sha256_lf": sha(packet_path),
+               "attempts": [{"path": attempt_path.relative_to(folder).as_posix(),
+                              "sha256_lf": sha(attempt_path)}],
+               "decision": None, "decision_sha256_lf": None, "error": error}
+    write(folder / "model/after_1.outcome.json", outcome)
+    pair_path = folder / "model/pair_1.json"
+    pair = json.loads(pair_path.read_text(encoding="utf-8"))
+    pair.update(actual=outcome, contrast=None, proof_eligible=False)
+    write(pair_path, pair)
+    result = case["result"]
+    result.update(status="hold", stop_reason=None, error_type=error["type"], error=error["message"],
+                  decisions=[result["decisions"][0]], model_action="continue",
+                  pairs=[pair], contrasts=[None])
+    write(folder / "result.json", result)
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is True
+    assert audit["proof_changed"] is False
 
 
 def test_execution_cpu_includes_outer_wrapper_and_resource_cpu(tmp_path):
@@ -293,6 +635,27 @@ def test_missing_case_is_preserved_as_hold_and_cli_output_is_exclusive(tmp_path,
     saved = json.loads(out.read_text(encoding="utf-8"))
     assert [row["case"] for row in saved["cases"]] == [item["case"] for item in case["protocol"]["cases"]]
     assert A.main(["--tag", case["tag"], "--protocol", str(case["protocol_path"]), "--out", str(out)]) == 2
+
+
+def test_public_errors_do_not_leak_absolute_workspace_path(tmp_path):
+    case = fixture(tmp_path)
+    (case["folder"] / "result.json").unlink()
+    audit = A.audit_case(case["root"], case["tag"], case["case"], case["protocol"])
+    assert audit["valid"] is False
+    assert str(case["root"]) not in "\n".join(audit["errors"])
+
+
+def test_public_error_sanitizer_handles_plain_doubled_and_foreign_absolute_paths(tmp_path):
+    root = tmp_path.resolve()
+    plain = str(root)
+    doubled = plain.replace("\\", "\\\\")
+    errors = A._sanitize_errors(root, [f"plain {plain}\\result.json",
+                                       f"repr {doubled}\\\\result.json",
+                                       "foreign D:\\private\\secret.json"])
+    public = "\n".join(errors)
+    assert plain not in public and doubled not in public
+    assert "D:\\private" not in public
+    assert "<absolute-path>" in public
 
 
 def test_masked_packet_or_model_prompt_hash_tampering_is_detected(tmp_path):

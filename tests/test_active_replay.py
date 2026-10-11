@@ -44,6 +44,10 @@ def model_stage(root: Path, case_dir: str, stage: str, value: dict) -> dict[str,
         "packet_sha256": hashlib.sha256(packet.read_bytes()).hexdigest(),
         "content": json.dumps(value, ensure_ascii=False), "infra_error": None, "exit_code": 0,
     })
+    outcome = {"stage": stage, "status": "valid", "packet_sha256_lf": sha_lf(packet),
+               "attempts": [{"path": f"model/{stage}.attempt1.json", "sha256_lf": sha_lf(call)}],
+               "decision": value, "decision_sha256_lf": sha_lf(parsed), "error": None}
+    write_json(root, f"{case_dir}/model/{stage}.outcome.json", outcome)
     return {"packet_sha256_lf": sha_lf(packet), "model_call_sha256_lf": sha_lf(call),
             "decision_sha256_lf": sha_lf(parsed)}
 
@@ -102,16 +106,28 @@ def make_case(root: Path, tag: str, case: str, protocol_sha: str, *, xss=False) 
     observed = [{**ledger_receipt, "receipt_digest": B.canonical_digest(ledger_receipt),
                  "probe": "P_reward", "checkpoint_sha256": "c" * 64,
                  "report_sha256_lf": report_sha}]
+    ready = {"ready": True, "busy_reasons": [], "at": "2026-01-01T00:00:00Z"}
+    wait = root / case_dir / "gpu_wait_1.jsonl"
+    wait.write_text(json.dumps(ready) + "\n", encoding="utf-8")
+    write_json(root, f"{case_dir}/gpu_preflight_1.json", ready)
+    initial_outcome = json.loads((root / case_dir / "model/initial.outcome.json").read_text(encoding="utf-8"))
+    after_outcome = json.loads((root / case_dir / "model/after_1.outcome.json").read_text(encoding="utf-8"))
+    control_outcome = json.loads((root / case_dir / "model/without_receipt_1.outcome.json").read_text(encoding="utf-8"))
+    contrast = {"leader_changed": True, "latest_receipt_cited": True,
+                "changed_leader_rejected_by_actual_observation": True,
+                "after_leader_survives_actual_observation": True,
+                "ablation_preserves_before_leader": True}
+    pair = {"stage": 1, "order": ["observed", "masked"], "actual": after_outcome,
+            "control": control_outcome, "contrast": contrast, "proof_eligible": True}
+    write_json(root, f"{case_dir}/model/pair_1.json", pair)
     result = {
         "schema": B.CASE_SCHEMA, "case": case, "tag": tag, "scope": "integration",
         "protocol_sha256_lf": protocol_sha, "checkpoint_sha256": "c" * 64,
         "approval_actor": "operator", "approval_identity_attested": False,
         "human_review_s": None, "gpu_device_busy_s": None, "controller": "model",
-        "status": "completed", "decisions": [before, after], "observed": observed,
-        "contrasts": [{"leader_changed": True, "latest_receipt_cited": True,
-                       "changed_leader_rejected_by_actual_observation": True,
-                       "after_leader_survives_actual_observation": True,
-                       "ablation_preserves_before_leader": True}],
+        "status": "completed", "initial_outcome": initial_outcome, "pairs": [pair],
+        "decisions": [before, after], "observed": observed,
+        "contrasts": [contrast],
         "without_receipt": [before], "evidence_state": {"hypotheses": ["reward"], "dropped": []},
         "costs": {"model_calls": 3, "input_tokens": 10, "output_tokens": 4,
                   "model_wall_s": 1.25, "model_cpu_s": 0.2, "isaac_wall_s": 2.5,
@@ -190,7 +206,7 @@ def public_snapshot(tmp_path, monkeypatch):
         frozen_code[relative] = sha_lf(path)
     registered_source = {"path": "bench/public/input.json", "sha256_lf": sha_lf(source)}
     protocol_path = write_json(tmp_path, B.PROTOCOL.as_posix(), {
-        "schema": "active_diagnosis_protocol_v1", "scope": "integration",
+        "schema": "active_diagnosis_protocol_v2", "scope": "integration",
         "approver": "operator", "probe_arguments": {"P_reward": PROBE_ARGS},
         "thresholds": THRESHOLDS, "max_probes": 2, "probe_execution_budget_s": 180,
         "code_sha256_lf": frozen_code,
@@ -205,7 +221,7 @@ def public_snapshot(tmp_path, monkeypatch):
         make_baseline(tmp_path, "run1_fixed", case, "fixed_order", protocol_sha)
         make_baseline(tmp_path, "run1_cheap", case, "cheapest_discrimination", protocol_sha)
     audit = write_json(tmp_path, "evals/results/run1/audit.json", {
-        "schema": "active_diagnosis_audit_v1", "tag": "run1", "protocol_sha256_lf": protocol_sha,
+        "schema": "active_diagnosis_audit_v2", "tag": "run1", "protocol_sha256_lf": protocol_sha,
         "cases": [{"case": case, "valid": index != 2, "proof_changed": index != 2,
                    "errors": [] if index != 2 else ["receipt mismatch"],
                    "verified_stage_indices": [1] if index != 2 else [],
@@ -240,6 +256,7 @@ def test_missing_independent_audit_keeps_claimed_success_on_hold(public_snapshot
     summary = B.build_summary("run1")
     assert not summary["spotlight_verified"]
     assert all(row["state"] == "hold" for row in summary["cases"])
+    assert summary["claim"] == "검사 결과와 판단 중단 사유를 재생한 실행 기록"
     assert any("auditor" in reason for reason in summary["cases"][0]["reasons"])
 
 
@@ -250,6 +267,75 @@ def test_missing_actual_report_overrides_claimed_audit_pass(public_snapshot):
     row = summary["cases"][0]
     assert row["state"] == "hold" and not row["proof"]
     assert any("공개 산출물이 없다" in reason for reason in row["reasons"])
+
+
+def test_model_artifact_changed_after_audit_fails_snapshot(public_snapshot):
+    root, audit = public_snapshot
+    attempt = root / f"evals/results/run1/cases/{CASES[0]}/model/after_1.attempt1.json"
+    value = json.loads(attempt.read_text(encoding="utf-8"))
+    value["content"] = "tampered"
+    attempt.write_text(json.dumps(value), encoding="utf-8")
+    row = B.build_summary("run1", audit)["cases"][0]
+    assert row["state"] == "hold" and row["proof"] is False
+    assert any("attempt SHA" in reason for reason in row["artifact_reasons"])
+
+
+def test_semantic_invalid_actual_is_verified_hold_with_visible_reason(public_snapshot):
+    root, audit_path = public_snapshot
+    case = CASES[0]
+    case_dir = root / f"evals/results/run1/cases/{case}"
+    result_path = case_dir / "result.json"
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    outcome = result["pairs"][0]["actual"]
+    outcome.update(status="semantic_invalid", decision=None, decision_sha256_lf=None,
+                   error={"type": "ModelSemanticError", "message": "ranking 계약 위반"})
+    (case_dir / "model/after_1.decision.json").unlink()
+    write_json(root, f"evals/results/run1/cases/{case}/model/after_1.outcome.json", outcome)
+    result["pairs"][0].update(actual=outcome, contrast=None, proof_eligible=False)
+    write_json(root, f"evals/results/run1/cases/{case}/model/pair_1.json", result["pairs"][0])
+    result.update(status="hold", decisions=result["decisions"][:1], contrasts=[None],
+                  model_action="continue", stop_reason="actual_model_invalid",
+                  error_type="ModelSemanticError", error="ranking 계약 위반")
+    write_json(root, f"evals/results/run1/cases/{case}/result.json", result)
+    audit = json.loads(audit_path.read_text(encoding="utf-8"))
+    audit["cases"][0].update(valid=True, proof_changed=False,
+                             result_sha256_lf=sha_lf(result_path))
+    write_json(root, "evals/results/run1/audit.json", audit)
+    summary = B.build_summary("run1", audit_path)
+    row = summary["cases"][0]
+    assert row["state"] == "verified" and row["proof"] is False
+    html = B.render_html(summary)
+    assert "ModelSemanticError" in html and "ranking 계약 위반" in html
+    assert "actual_model_invalid" in html
+
+
+def test_initial_semantic_hold_without_ledger_is_verified_but_not_proof(public_snapshot):
+    root, audit_path = public_snapshot
+    case = CASES[0]
+    case_dir = root / f"evals/results/run1/cases/{case}"
+    result_path = case_dir / "result.json"
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    outcome = result["initial_outcome"]
+    outcome.update(status="semantic_invalid", decision=None, decision_sha256_lf=None,
+                   error={"type": "ModelSemanticError", "message": "ranking 계약 위반"})
+    (case_dir / "model/initial.decision.json").unlink()
+    write_json(root, f"evals/results/run1/cases/{case}/model/initial.outcome.json", outcome)
+    for pattern in ("after_1.*.json", "without_receipt_1.*.json", "pair_1.json"):
+        for path in (case_dir / "model").glob(pattern):
+            path.unlink()
+    (case_dir / "ledger.jsonl").unlink()
+    result.update(status="hold", stop_reason="initial_model_invalid",
+                  error_type="ModelSemanticError", error="ranking 계약 위반",
+                  initial_outcome=outcome, decisions=[], observed=[], pairs=[], contrasts=[],
+                  without_receipt=[], model_action=None)
+    write_json(root, f"evals/results/run1/cases/{case}/result.json", result)
+    audit = json.loads(audit_path.read_text(encoding="utf-8"))
+    audit["cases"][0].update(valid=True, proof_changed=False, verified_stage_indices=[],
+                             result_sha256_lf=sha_lf(result_path))
+    write_json(root, "evals/results/run1/audit.json", audit)
+    row = B.build_summary("run1", audit_path)["cases"][0]
+    assert row["state"] == "verified" and row["proof"] is False
+    assert row["result"]["status"] == "hold"
 
 
 def test_baseline_extra_request_and_fabricated_cost_fail_closed(public_snapshot):

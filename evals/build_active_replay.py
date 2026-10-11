@@ -18,9 +18,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "evals"))
 from audit_active_diagnosis import code_integrity_errors  # noqa: E402
 
-PROTOCOL = Path("bench/protocols/active_diagnosis_v1.json")
+PROTOCOL = Path("bench/protocols/active_diagnosis_v2.json")
 TAG_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
-CASE_SCHEMA = "active_diagnosis_case_v1"
+CASE_SCHEMA = "active_diagnosis_case_v2"
 REQUIRED_COSTS = (
     "model_calls", "input_tokens", "output_tokens", "model_wall_s", "model_cpu_s",
     "isaac_wall_s", "isaac_cpu_s", "isaac_simulator_steps", "human_review_s",
@@ -208,13 +208,22 @@ def _verify_model_chain(case_dir: str, result: dict, snap: Snapshot) -> list[str
 def _verify_ledger(case_dir: str, result: dict, protocol: dict, snap: Snapshot) -> list[str]:
     failures: list[str] = []
     observed = result.get("observed")
-    if not isinstance(observed, list) or not observed:
-        return ["실제 관측 receipt가 없다"]
+    if not isinstance(observed, list):
+        return ["실제 관측 receipt가 목록이 아니다"]
     try:
         snap.read_json(f"{case_dir}/prereg.json")
-        events = snap.read_jsonl(f"{case_dir}/ledger.jsonl")
     except BuildError as exc:
         return [str(exc)]
+    ledger_rel = f"{case_dir}/ledger.jsonl"
+    ledger_path = _relative_path(ledger_rel)
+    if not observed and not ledger_path.is_file():
+        return failures
+    try:
+        events = snap.read_jsonl(ledger_rel)
+    except BuildError as exc:
+        return [str(exc)]
+    if not observed and events:
+        return ["관측이 없는데 원장 event가 있다"]
     checkpoint = result.get("checkpoint_sha256")
     spec = _case_spec(protocol, str(result.get("case")))
     by_request: dict[str, list[dict]] = {}
@@ -379,76 +388,148 @@ def _contrast(result: dict) -> tuple[int | None, dict]:
     return (0 if legacy else None), legacy
 
 
-def _public_case(case: str, tag: str, protocol: dict, snap: Snapshot,
+def _snapshot_model_artifacts(case_dir: str, result: dict, snap: Snapshot) -> list[str]:
+    failures: list[str] = []
+
+    def outcome(stage: str, value: object) -> None:
+        if not isinstance(value, dict):
+            return
+        try:
+            saved = snap.read_json(f"{case_dir}/model/{stage}.outcome.json")
+            if saved != value:
+                failures.append(f"{stage} outcome 파일과 result가 다르다")
+            packet_rel = f"{case_dir}/model/{stage}.packet.json"
+            snap.record_file(packet_rel)
+            if value.get("packet_sha256_lf") != snap.sources[packet_rel]:
+                failures.append(f"{stage} packet SHA가 outcome과 다르다")
+            refs = value.get("attempts")
+            if not isinstance(refs, list):
+                failures.append(f"{stage} attempt 링크가 목록이 아니다")
+            else:
+                for ref in refs:
+                    relative = ref.get("path") if isinstance(ref, dict) else None
+                    if not isinstance(relative, str):
+                        failures.append(f"{stage} attempt 경로가 없다")
+                    else:
+                        attempt_rel = f"{case_dir}/{relative}"
+                        snap.record_file(attempt_rel)
+                        if ref.get("sha256_lf") != snap.sources[attempt_rel]:
+                            failures.append(f"{stage} attempt SHA가 outcome과 다르다")
+            if value.get("status") == "valid":
+                decision_rel = f"{case_dir}/model/{stage}.decision.json"
+                snap.record_file(decision_rel)
+                if value.get("decision_sha256_lf") != snap.sources[decision_rel]:
+                    failures.append(f"{stage} decision SHA가 outcome과 다르다")
+        except BuildError as exc:
+            failures.append(str(exc))
+
+    outcome("initial", result.get("initial_outcome"))
+    pairs = result.get("pairs")
+    if not isinstance(pairs, list):
+        return failures + ["result.pairs가 목록이 아니다"]
+    for pair in pairs:
+        if not isinstance(pair, dict) or not isinstance(pair.get("stage"), int):
+            failures.append("pair stage 형식이 잘못됐다")
+            continue
+        stage = pair["stage"]
+        try:
+            saved = snap.read_json(f"{case_dir}/model/pair_{stage}.json")
+            if saved != pair:
+                failures.append(f"pair {stage} 파일과 result가 다르다")
+        except BuildError as exc:
+            failures.append(str(exc))
+        outcome(f"after_{stage}", pair.get("actual"))
+        outcome(f"without_receipt_{stage}", pair.get("control"))
+    observed = result.get("observed")
+    if isinstance(observed, list):
+        for stage in range(1, len(observed) + 1):
+            try:
+                snap.read_jsonl(f"{case_dir}/gpu_wait_{stage}.jsonl")
+                snap.read_json(f"{case_dir}/gpu_preflight_{stage}.json")
+            except BuildError as exc:
+                failures.append(str(exc))
+    return failures
+
+
+def _public_case(case: str, tag: str, protocol: dict, protocol_rel: str, snap: Snapshot,
                  audit: dict | None, audits: dict[str, dict]) -> dict:
     case_dir = f"evals/results/{tag}/cases/{case}"
     result_rel = f"{case_dir}/result.json"
-    reasons = _verify_registered_sources(_case_spec(protocol, case), snap)
+    artifact_reasons = _verify_registered_sources(_case_spec(protocol, case), snap)
     result = snap.read_json(result_rel, required=False)
     if not isinstance(result, dict):
         return {"case": case, "state": "hold", "proof": False,
-                "reasons": reasons + ["active result.json이 없다"], "result": None,
+                "reasons": artifact_reasons + ["active result.json이 없다"],
+                "artifact_reasons": artifact_reasons + ["active result.json이 없다"],
+                "proof_reasons": ["판단 변경 증명을 평가할 결과가 없다"], "result": None,
                 "baselines": {}}
     if result.get("schema") != CASE_SCHEMA:
-        reasons.append("active 결과 schema가 다르다")
+        artifact_reasons.append("active 결과 schema가 다르다")
     if result.get("case") != case or result.get("tag") != tag:
-        reasons.append("active 결과의 case 또는 tag가 경로와 다르다")
-    if result.get("status") != "completed":
-        reasons.append("active 실행 상태가 completed가 아니다")
+        artifact_reasons.append("active 결과의 case 또는 tag가 경로와 다르다")
+    if result.get("status") not in ("completed", "hold"):
+        artifact_reasons.append("active 실행 상태가 completed/HOLD가 아니다")
     if result.get("controller") != "model":
-        reasons.append("active 결과 controller가 model이 아니다")
+        artifact_reasons.append("active 결과 controller가 model이 아니다")
     for field in ("approval_actor", "human_review_s", "gpu_device_busy_s"):
         if field not in result:
-            reasons.append(f"{field}가 누락됐다")
+            artifact_reasons.append(f"{field}가 누락됐다")
     costs = result.get("costs")
     if not isinstance(costs, dict):
-        reasons.append("비용 객체가 없다")
+        artifact_reasons.append("비용 객체가 없다")
     else:
         for field in REQUIRED_COSTS:
             if field not in costs:
-                reasons.append(f"비용 필드 {field}가 누락됐다")
+                artifact_reasons.append(f"비용 필드 {field}가 누락됐다")
     decisions = result.get("decisions")
     if isinstance(decisions, list):
         for number, decision in enumerate(decisions, 1):
             if not isinstance(decision, dict) or not isinstance(decision.get("ranking"), list) or len(decision["ranking"]) != 6:
-                reasons.append(f"판단 {number}의 6개 가설 순위가 없다")
+                artifact_reasons.append(f"판단 {number}의 6개 가설 순위가 없다")
     contrast_index, contrast = _contrast(result)
-    for gate in CONTRAST_GATES:
-        if contrast.get(gate) is not True:
-            reasons.append(f"대조 gate {gate}가 true가 아니다")
-    protocol_sha = snap.sources[PROTOCOL.as_posix()]
+    protocol_sha = snap.sources[protocol_rel]
     if result.get("protocol_sha256_lf") != protocol_sha:
-        reasons.append("결과가 현재 사전등록 protocol에 묶이지 않았다")
-    reasons += _verify_ledger(case_dir, result, protocol, snap)
-    reasons += _verify_model_chain(case_dir, result, snap)
+        artifact_reasons.append("결과가 현재 사전등록 protocol에 묶이지 않았다")
+    artifact_reasons += _verify_ledger(case_dir, result, protocol, snap)
+    artifact_reasons += _snapshot_model_artifacts(case_dir, result, snap)
     audit_case = audits.get(case)
     if audit_case is None:
-        reasons.append("독립 auditor 사례 기록이 없다")
+        artifact_reasons.append("독립 auditor 사례 기록이 없다")
     else:
         if audit_case.get("valid") is not True:
-            reasons.append("독립 auditor가 사례 산출물을 유효하다고 판정하지 않았다")
-        if audit_case.get("proof_changed") is not True:
-            reasons.append("독립 auditor가 판단 변경 증명을 확인하지 않았다")
-        verified = audit_case.get("verified_stage_indices")
-        after_decision_index = None if contrast_index is None else contrast_index + 1
-        if after_decision_index is None or not isinstance(verified, list) or after_decision_index not in verified:
-            reasons.append("선택한 판단 변경 단계가 auditor 검증 목록에 없다")
+            artifact_reasons.append("독립 auditor가 사례 산출물을 유효하다고 판정하지 않았다")
         if audit_case.get("result_sha256_lf") != snap.sources[result_rel]:
-            reasons.append("독립 auditor의 result SHA256이 다르다")
+            artifact_reasons.append("독립 auditor의 result SHA256이 다르다")
     if isinstance(audit, dict):
-        if not str(audit.get("schema", "")).startswith("active_diagnosis_audit"):
-            reasons.append("독립 auditor schema가 다르다")
+        if audit.get("schema") != "active_diagnosis_audit_v2":
+            artifact_reasons.append("독립 auditor schema가 다르다")
         if audit.get("tag") not in (None, tag):
-            reasons.append("독립 auditor tag가 다르다")
+            artifact_reasons.append("독립 auditor tag가 다르다")
         if audit.get("protocol_sha256_lf") != protocol_sha:
-            reasons.append("독립 auditor의 protocol SHA256이 다르다")
-    reasons = list(dict.fromkeys(reasons))
-    return {"case": case, "state": "verified" if not reasons else "hold", "proof": not reasons,
-            "reasons": reasons, "result": result, "contrast": contrast,
+            artifact_reasons.append("독립 auditor의 protocol SHA256이 다르다")
+    artifact_reasons = list(dict.fromkeys(artifact_reasons))
+    proof_reasons: list[str] = []
+    if result.get("status") != "completed":
+        proof_reasons.append("실행이 HOLD라 판단 변경 증명 대상이 아니다")
+    if not isinstance(audit_case, dict) or audit_case.get("proof_changed") is not True:
+        proof_reasons.append("독립 auditor가 판단 변경 증명을 확인하지 않았다")
+    for gate in CONTRAST_GATES:
+        if contrast.get(gate) is not True:
+            proof_reasons.append(f"대조 gate {gate}가 true가 아니다")
+    verified = audit_case.get("verified_stage_indices") if isinstance(audit_case, dict) else None
+    after_decision_index = None if contrast_index is None else contrast_index + 1
+    if after_decision_index is None or not isinstance(verified, list) or after_decision_index not in verified:
+        proof_reasons.append("선택한 판단 변경 단계가 auditor 검증 목록에 없다")
+    proof_reasons = list(dict.fromkeys(proof_reasons))
+    proof = not artifact_reasons and not proof_reasons
+    return {"case": case, "state": "verified" if not artifact_reasons else "hold", "proof": proof,
+            "reasons": artifact_reasons + proof_reasons, "artifact_reasons": artifact_reasons,
+            "proof_reasons": proof_reasons, "result": result, "contrast": contrast,
             "contrast_index": contrast_index, "baselines": {}}
 
 
-def _baseline(case: str, tag: str, controller: str, protocol: dict, snap: Snapshot) -> dict:
+def _baseline(case: str, tag: str, controller: str, protocol: dict,
+              protocol_rel: str, snap: Snapshot) -> dict:
     rel = f"evals/results/{tag}/cases/{case}/result.json"
     result = snap.read_json(rel, required=False)
     reasons: list[str] = []
@@ -466,7 +547,7 @@ def _baseline(case: str, tag: str, controller: str, protocol: dict, snap: Snapsh
     for field in REQUIRED_COSTS:
         if not isinstance(costs, dict) or field not in costs:
             reasons.append(f"baseline 비용 필드 {field}가 누락됐다")
-    if result.get("protocol_sha256_lf") != snap.sources[PROTOCOL.as_posix()]:
+    if result.get("protocol_sha256_lf") != snap.sources[protocol_rel]:
         reasons.append("baseline이 현재 사전등록 protocol에 묶이지 않았다")
     reasons += _verify_registered_sources(_case_spec(protocol, case), snap)
     case_dir = f"evals/results/{tag}/cases/{case}"
@@ -526,13 +607,22 @@ def _audit_relative(path: Path | None) -> str | None:
     return resolved.relative_to(ROOT).as_posix()
 
 
-def build_summary(tag: str, audit_path: Path | None = None) -> dict:
+def _repo_relative(path: Path, option: str) -> str:
+    resolved = (ROOT / path).resolve() if not path.is_absolute() else path.resolve()
+    if not resolved.is_relative_to(ROOT.resolve()):
+        raise BuildError(f"{option}은 저장소 안의 공개 산출물이어야 한다")
+    return resolved.relative_to(ROOT).as_posix()
+
+
+def build_summary(tag: str, audit_path: Path | None = None,
+                  protocol_path: Path = PROTOCOL) -> dict:
     if not TAG_RE.fullmatch(tag):
         raise BuildError(f"--tag 형식이 잘못됐다: {tag!r}")
     snap = Snapshot()
-    protocol = snap.read_json(PROTOCOL.as_posix())
-    if not isinstance(protocol, dict) or protocol.get("schema") != "active_diagnosis_protocol_v1":
-        raise BuildError("active_diagnosis_v1 protocol schema가 아니다")
+    protocol_rel = _repo_relative(protocol_path, "--protocol")
+    protocol = snap.read_json(protocol_rel)
+    if not isinstance(protocol, dict) or protocol.get("schema") != "active_diagnosis_protocol_v2":
+        raise BuildError("active_diagnosis_v2 protocol schema가 아니다")
     integrity_errors = code_integrity_errors(ROOT, protocol)
     if integrity_errors:
         raise BuildError("; ".join(integrity_errors))
@@ -545,20 +635,22 @@ def build_summary(tag: str, audit_path: Path | None = None) -> dict:
     audits = _audit_records(audit)
     rows = []
     for case in cases:
-        row = _public_case(case, tag, protocol, snap, audit, audits)
+        row = _public_case(case, tag, protocol, protocol_rel, snap, audit, audits)
         row["baselines"] = {
-            "fixed_order": _baseline(case, f"{tag}_fixed", "fixed_order", protocol, snap),
+            "fixed_order": _baseline(case, f"{tag}_fixed", "fixed_order", protocol, protocol_rel, snap),
             "cheapest_discrimination": _baseline(
-                case, f"{tag}_cheap", "cheapest_discrimination", protocol, snap
+                case, f"{tag}_cheap", "cheapest_discrimination", protocol, protocol_rel, snap
             ),
         }
         rows.append(row)
     spotlight = next((row["case"] for row in rows if row["proof"]), cases[0])
+    changed_proof = any(row["proof"] for row in rows)
     return {
-        "schema": "active_replay_summary_v1", "tag": tag,
-        "claim": "검사 결과를 근거로 우선 가설을 바꾼 실행 기록",
+        "schema": "active_replay_summary_v2", "tag": tag,
+        "claim": ("검사 결과를 근거로 우선 가설을 바꾼 실행 기록" if changed_proof
+                  else "검사 결과와 판단 중단 사유를 재생한 실행 기록"),
         "scope": protocol.get("scope"), "registered_order": cases, "spotlight_case": spotlight,
-        "spotlight_verified": any(row["proof"] for row in rows), "audit": audit_rel, "cases": rows,
+        "spotlight_verified": changed_proof, "audit": audit_rel, "cases": rows,
         "disclaimers": [
             "한 사례의 판단 변경은 정확도나 일반화 성능을 뜻하지 않는다.",
             "approval_actor는 실행 승인 주체이며 사람 검토 시간을 뜻하지 않는다.",
@@ -597,7 +689,7 @@ table{{border-collapse:collapse;width:100%;font-size:14px}}th,td{{text-align:lef
 <div class=\"notice\" id=\"scope\"></div><section class=\"grid\" id=\"kpis\"></section>
 <h2>사례 재생</h2><div class=\"casebar\" id=\"casebar\"></div><div class=\"controls\"><button id=\"prev\">이전 단계</button><button id=\"next\">다음 단계</button><span class=\"muted\" id=\"position\"></span></div>
 <section class=\"stage\" id=\"stage\"></section><div class=\"actions\"><span class=\"muted\">개념 재생:</span><button data-action=\"검사 승인\">검사 승인</button><button data-action=\"보류\">보류</button><button data-action=\"추가 근거 요청\">추가 근거 요청</button><span id=\"actionState\" class=\"muted\">실제 실행은 일어나지 않습니다.</span></div>
-<h2>전체 8개 사례와 공정 baseline</h2><div class=\"tablewrap\"><table><thead><tr><th>사례</th><th>Active</th><th>모델 호출 / wall</th><th>Active Isaac wall</th><th>Fixed order / Isaac wall</th><th>Cheapest discrimination / Isaac wall</th><th>GPU busy</th></tr></thead><tbody id=\"cohort\"></tbody></table></div>
+<h2>전체 8개 사례와 같은 입력·검사 예산의 비교 경로</h2><div class=\"tablewrap\"><table><thead><tr><th>사례</th><th>Active</th><th>모델 호출 / wall</th><th>Active Isaac wall</th><th>Fixed order / Isaac wall</th><th>Cheapest discrimination / Isaac wall</th><th>GPU busy</th></tr></thead><tbody id=\"cohort\"></tbody></table></div>
 <div class=\"foot\" id=\"notes\"></div>
 <script id=\"snapshot\" type=\"application/json\">{data}</script><script>
 "use strict";
@@ -605,17 +697,17 @@ const S=JSON.parse(document.getElementById("snapshot").textContent);let ci=Math.
 const $=id=>document.getElementById(id),el=(tag,text,cls)=>{{const n=document.createElement(tag);if(text!==undefined)n.textContent=String(text);if(cls)n.className=cls;return n}};
 const fmt=v=>v===null||v===undefined?"미측정":typeof v==="number"?new Intl.NumberFormat("ko-KR",{{maximumFractionDigits:2}}).format(v):String(v);
 const sec=v=>v===null||v===undefined?"미측정":fmt(v)+" s";
-const state=b=>b&&b.state==="verified"?"VERIFIED":"HOLD";const current=()=>S.cases[ci];
-function renderKpis(){{const box=$("kpis");box.replaceChildren();const verified=S.cases.filter(x=>x.proof).length,calls=S.cases.reduce((n,x)=>n+(x.result?.costs?.model_calls||0),0);[["검증 사례",verified+" / 8"],["HOLD",8-verified],["기록된 모델 호출",calls],["spotlight",S.spotlight_verified?S.spotlight_case:"검증 사례 없음"]].forEach(([a,b])=>{{const c=el("div",undefined,"card kpi");c.append(el("span",a,"muted"),el("b",b));box.append(c)}})}}
-function renderCases(){{const bar=$("casebar");bar.replaceChildren();S.cases.forEach((row,i)=>{{const b=el("button",row.case+" · "+state(row));b.setAttribute("aria-pressed",String(i===ci));b.addEventListener("click",()=>{{ci=i;si=0;render()}});bar.append(b)}})}}
+const state=b=>b&&b.state==="verified"?"산출물 검증":"산출물 보류";const diagnosis=b=>!b||!b.result?"미실행":b.result.status==="completed"?"진단 완료":b.result.status==="hold"?"보류":"상태 미확인";const proof=b=>b&&b.proof?"변경 증명":"변경 미증명";const current=()=>S.cases[ci];
+function renderKpis(){{const box=$("kpis");box.replaceChildren();const verified=S.cases.filter(x=>x.state==="verified").length,proved=S.cases.filter(x=>x.proof).length,values=S.cases.map(x=>x.result?.costs?.model_calls),known=values.filter(Number.isFinite),calls=known.reduce((n,x)=>n+x,0);[["산출물 검증",verified+" / 8"],["판단 변경 증명",proved+" / 8"],["기록된 모델 호출",known.length===8?calls:calls+" (일부 미측정)"],["spotlight",S.spotlight_verified?S.spotlight_case:"변경 증명 사례 없음"]].forEach(([a,b])=>{{const c=el("div",undefined,"card kpi");c.append(el("span",a,"muted"),el("b",b));box.append(c)}})}}
+function renderCases(){{const bar=$("casebar");bar.replaceChildren();S.cases.forEach((row,i)=>{{const b=el("button",row.case+" · "+state(row)+" · "+proof(row));b.setAttribute("aria-pressed",String(i===ci));b.addEventListener("click",()=>{{ci=i;si=0;render()}});bar.append(b)}})}}
 function pair(dl,k,v){{dl.append(el("dt",k),el("dd",fmt(v)))}}function list(items){{const ol=el("ol");(items?.length?items:["기록 없음"]).forEach(x=>ol.append(el("li",x)));return ol}}
-function renderStage(){{const row=current(),r=row.result||{{}},d=r.decisions||[],o=r.observed||[],ix=row.contrast_index??0,before=d[ix],after=d[ix+1],obs=o[ix],box=$("stage");box.replaceChildren();const badge=el("span",state(row),"badge "+(row.proof?"ok":""));box.append(badge);const titles=["1. AI 검사 선택","2. 승인된 실행","3. 실제 측정","4. 판단 갱신"];box.append(el("h3",titles[si]));const dl=el("dl");
-if(si===0){{pair(dl,"측정 전 1위",before?.ranking?.[0]);pair(dl,"선택 검사",before?.probe);pair(dl,"행동",before?.action);pair(dl,"이유",before?.reason)}}
+function renderStage(){{const row=current(),r=row.result||{{}},d=r.decisions||[],o=r.observed||[],pairs=r.pairs||[],ix=row.contrast_index??0,p=pairs[ix],before=d[ix],after=p?.actual?.decision,control=p?.control,obs=o[ix],box=$("stage");box.replaceChildren();box.append(el("span",state(row),"badge "+(row.state==="verified"?"ok":"")),el("span"," · "+proof(row),"badge "+(row.proof?"ok":"")));const titles=["1. AI 검사 선택","2. 승인된 실행","3. 실제 측정","4. 판단 갱신"];box.append(el("h3",titles[si]));const dl=el("dl");
+if(si===0){{pair(dl,"원시 6개 순위",before?.ranking?.join(" → "));pair(dl,"규칙 생존 가설",r.evidence_state?.hypotheses?.join(", "));pair(dl,"선택 검사",before?.probe);pair(dl,"행동",before?.action);pair(dl,"이유",before?.reason)}}
 if(si===1){{pair(dl,"승인 주체",r.approval_actor);pair(dl,"승인 신원 검증",r.approval_identity_attested);pair(dl,"사람 검토 시간",r.human_review_s);pair(dl,"request",obs?.request_id);pair(dl,"실행 결과 코드",obs?.exit_code)}}
 if(si===2){{pair(dl,"검사",obs?.probe);pair(dl,"판정",obs?.outcome);pair(dl,"측정",obs?.measurement?JSON.stringify(obs.measurement):null);pair(dl,"Isaac wall (s)",r.costs?.isaac_wall_s);pair(dl,"GPU device busy (s)",r.costs?.gpu_device_busy_s)}}
-if(si===3){{pair(dl,"갱신 1위",after?.ranking?.[0]);pair(dl,"행동",after?.action);pair(dl,"receipt 인용",row.contrast?.latest_receipt_cited);pair(dl,"관측으로 이전 1위 기각",row.contrast?.changed_leader_rejected_by_actual_observation);box.append(el("p",row.proof?S.claim:"이 사례는 증명 조건을 충족하지 않아 HOLD입니다.","notice"));if(!row.proof)box.append(list(row.reasons))}}
+if(si===3){{pair(dl,"진단 상태",diagnosis(row));pair(dl,"중단 사유",r.stop_reason);pair(dl,"실행 오류",r.error_type?`${{r.error_type}}: ${{r.error}}`:null);pair(dl,"실제 관측 후 판단 상태",p?.actual?.status);pair(dl,"실제 관측 후 판단 오류",p?.actual?.error?.type?`${{p.actual.error.type}}: ${{p.actual.error.message}}`:null);pair(dl,"최신 관측을 가린 대조 상태",control?.status);pair(dl,"최신 관측을 가린 대조 오류",control?.error?.type?`${{control.error.type}}: ${{control.error.message}}`:null);pair(dl,"갱신 원시 1위",after?.ranking?.[0]);pair(dl,"갱신 행동",after?.action);pair(dl,"receipt 인용",row.contrast?.latest_receipt_cited);pair(dl,"관측으로 이전 1위 기각",row.contrast?.changed_leader_rejected_by_actual_observation);box.append(el("p",row.proof?S.claim:"산출물 유효성과 판단 변경 증명은 별도 판정입니다.","notice"));if(row.artifact_reasons?.length)box.append(el("h3","산출물 HOLD 사유"),list(row.artifact_reasons));if(row.proof_reasons?.length)box.append(el("h3","변경 미증명 사유"),list(row.proof_reasons))}}
 box.append(dl);$("position").textContent=(si+1)+" / 4 · "+row.case}}
-function renderTable(){{const body=$("cohort");body.replaceChildren();S.cases.forEach(row=>{{const r=row.result||{{}},f=row.baselines.fixed_order,c=row.baselines.cheapest_discrimination,tr=el("tr");[row.case,state(row),fmt(r.costs?.model_calls)+" / "+sec(r.costs?.model_wall_s),sec(r.costs?.isaac_wall_s),state(f)+" / "+sec(f.result?.costs?.isaac_wall_s),state(c)+" / "+sec(c.result?.costs?.isaac_wall_s),sec(r.costs?.gpu_device_busy_s)].forEach(v=>tr.append(el("td",v)));body.append(tr)}})}}
+function renderTable(){{const body=$("cohort");body.replaceChildren();S.cases.forEach(row=>{{const r=row.result||{{}},f=row.baselines.fixed_order,c=row.baselines.cheapest_discrimination,tr=el("tr");[row.case,diagnosis(row)+" / "+state(row)+" / "+proof(row),fmt(r.costs?.model_calls)+" / "+sec(r.costs?.model_wall_s),sec(r.costs?.isaac_wall_s),diagnosis(f)+" / "+state(f)+" / "+sec(f.result?.costs?.isaac_wall_s),diagnosis(c)+" / "+state(c)+" / "+sec(c.result?.costs?.isaac_wall_s),sec(r.costs?.gpu_device_busy_s)].forEach(v=>tr.append(el("td",v)));body.append(tr)}})}}
 function render(){{renderCases();renderStage()}}$("prev").addEventListener("click",()=>{{si=(si+3)%4;renderStage()}});$("next").addEventListener("click",()=>{{si=(si+1)%4;renderStage()}});document.querySelectorAll("[data-action]").forEach(b=>b.addEventListener("click",()=>$("actionState").textContent=b.dataset.action+"을 선택했습니다. 개념 재생이며 실행 요청은 보내지 않았습니다."));
 $("scope").textContent="표시 범위: "+fmt(S.scope)+" · "+S.claim;const notes=$("notes");S.disclaimers.forEach(x=>notes.append(el("p",x)));renderKpis();renderTable();render();
 </script></main></body></html>"""
@@ -646,9 +738,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--tag", required=True)
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--audit", type=Path, help="독립 auditor의 공개 JSON 산출물")
+    parser.add_argument("--protocol", type=Path, default=PROTOCOL,
+                        help="v2 사전등록 protocol 경로")
     args = parser.parse_args(argv)
     try:
-        summary = build_summary(args.tag, args.audit)
+        summary = build_summary(args.tag, args.audit, args.protocol)
         html_path, json_path = write_outputs(summary, args.out)
     except (BuildError, OSError) as exc:
         print(f"active replay 입력 오류: {exc}", file=sys.stderr)
