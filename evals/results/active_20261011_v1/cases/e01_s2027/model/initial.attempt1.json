@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "b1e1ad4b422af79be4c37e2f6cfc7e4fcd7175e7a7f5e6c8cc9a42c0be1cf1dd",
+  "messages_sha256": "7f039589651e67613d906514c15883d42bd79fa766ce9d280e3856b67f4e4652",
+  "started_at": "2026-10-11T01:26:00.754966+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-48b339eb-5b46-490c-bffd-b3585a6cf3c4",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2571,
+  "output_tokens": 208,
+  "total_tokens": 2779,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Reward tracking errors are elevated vs reference; P_reward directly tests if reward computation matches specification.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.3415915767351787},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.4141562740008036}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T01:26:03.608709+00:00",
+  "execution_wall_s": 2.853726611007005,
+  "cpu_s": 1.2976470420000004,
+  "exit_code": 0
+}

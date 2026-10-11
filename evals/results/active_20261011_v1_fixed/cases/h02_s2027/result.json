@@ -1,0 +1,85 @@
+{
+  "schema": "active_diagnosis_case_v1",
+  "case": "h02_s2027",
+  "tag": "active_20261011_v1_fixed",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "started_at": "2026-10-11T01:17:05.900381+00:00",
+  "protocol_sha256_lf": "bb499bf6416fe4dfccc7e4ee41fd789b4257680eb19d7520095b320d7e780320",
+  "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+  "human_review_s": null,
+  "approval_actor": "codex_operator_user_authorized_test",
+  "approval_identity_attested": false,
+  "controller": "fixed_order",
+  "gpu_device_busy_s": null,
+  "stop_reason": "probe_budget_or_frozen_stop",
+  "status": "completed",
+  "finished_at": "2026-10-11T01:18:57.101864+00:00",
+  "end_to_end_wall_s": 111.20172399980947,
+  "decisions": [],
+  "observed": [
+    {
+      "at": "2026-10-11T01:18:25+00:00",
+      "event": "receipt",
+      "request_id": "b8453f91bf38",
+      "outcome": "normal",
+      "measurement": {
+        "timeout_count": 64,
+        "median_timeout_step": 1000.0,
+        "timeout_ratio": 1.0
+      },
+      "gpu_s": 79.1,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "aaf16a2a87877a1f4985b860e71cf487e81d3aafd1312317b8de5fae68b4f8cd",
+      "probe": "P_episode",
+      "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+      "report_sha256_lf": "7bd23c56958589a91c40df277b6621102923ca5c4467cb837334f47606357f1e"
+    },
+    {
+      "at": "2026-10-11T01:18:57+00:00",
+      "event": "receipt",
+      "request_id": "0454393e6af6",
+      "outcome": "normal",
+      "measurement": {
+        "noise_ratio": 0.9998475909233093,
+        "logged_std_mean": 0.5190026760101318
+      },
+      "gpu_s": 30.3,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "e77d4f0f54594a2402b9e1e46f8f8db46bcfd32d278bf0d060c21889526e8dbf",
+      "probe": "P_noise",
+      "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+      "report_sha256_lf": "ded3fc4974385963b94504eb070399982de49ac9d1cda29c53449e180d7961a3"
+    }
+  ],
+  "contrasts": [],
+  "without_receipt": [],
+  "budget_left": 0,
+  "model_action": null,
+  "evidence_state": {
+    "hypotheses": [
+      "reward",
+      "actuator",
+      "optimizer",
+      "physics"
+    ],
+    "dropped": [
+      "termination",
+      "exploration"
+    ],
+    "status": "unidentifiable"
+  },
+  "costs": {
+    "model_calls": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "model_wall_s": 0,
+    "model_cpu_s": 0,
+    "isaac_wall_s": 109.39999999999999,
+    "human_review_s": null,
+    "gpu_device_busy_s": null,
+    "isaac_cpu_s": 131.328125,
+    "isaac_simulator_steps": 128000
+  }
+}

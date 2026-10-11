@@ -1,0 +1,98 @@
+{
+  "schema": "active_diagnosis_case_v1",
+  "case": "h06_s2027",
+  "tag": "active_20261011_v1",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "started_at": "2026-10-11T01:22:20.827185+00:00",
+  "protocol_sha256_lf": "bb499bf6416fe4dfccc7e4ee41fd789b4257680eb19d7520095b320d7e780320",
+  "checkpoint_sha256": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+  "human_review_s": null,
+  "approval_actor": "codex_operator_user_authorized_test",
+  "approval_identity_attested": false,
+  "controller": "model",
+  "gpu_device_busy_s": null,
+  "status": "hold",
+  "error_type": "ValueError",
+  "error": "continue probe는 미관측 public probe여야 한다",
+  "orphan_requests": [],
+  "finished_at": "2026-10-11T01:22:57.923164+00:00",
+  "end_to_end_wall_s": 37.095155500108376,
+  "decisions": [
+    {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "Train/mean_reward is 9.64 vs reference 33.81, indicating a significant reward deficit; P_reward directly measures reward computation correctness.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 9.63839819431305
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    }
+  ],
+  "observed": [
+    {
+      "at": "2026-10-11T01:22:51+00:00",
+      "event": "receipt",
+      "request_id": "047be7d5a57e",
+      "outcome": "normal",
+      "measurement": {
+        "track_lin_vel_xy_exp_rel_error": 1.7079443894729706e-08,
+        "track_ang_vel_z_exp_rel_error": 1.6647386806845076e-08
+      },
+      "gpu_s": 26.2,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "8ddf365ad44352c43530af695bda3fc9e0987318ed76edd4ff56978b41ec3f35",
+      "probe": "P_reward",
+      "checkpoint_sha256": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+      "report_sha256_lf": "f1e93c11dd2c0b8458df16999ca805a6a902334ce1d8a7114426f4095a27c634"
+    }
+  ],
+  "contrasts": [],
+  "without_receipt": [],
+  "budget_left": 1,
+  "model_action": "continue",
+  "evidence_state": {
+    "hypotheses": [
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "dropped": [
+      "reward"
+    ],
+    "status": "open"
+  },
+  "costs": {
+    "model_calls": 2,
+    "input_tokens": 5496,
+    "output_tokens": 389,
+    "model_wall_s": 6.757010560948402,
+    "model_cpu_s": 0.9290094059999999,
+    "isaac_wall_s": 26.2,
+    "human_review_s": null,
+    "gpu_device_busy_s": null,
+    "isaac_cpu_s": 34.171875,
+    "isaac_simulator_steps": 51200
+  }
+}

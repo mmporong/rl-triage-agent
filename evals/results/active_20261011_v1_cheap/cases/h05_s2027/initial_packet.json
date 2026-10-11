@@ -1,0 +1,195 @@
+{
+  "schema": "active_decision_packet_v1",
+  "phase": "initial",
+  "facts": {
+    "telemetry:case:Episode_Reward/action_rate_l2": -8.595747317870458,
+    "telemetry:case:Episode_Reward/ang_vel_xy_l2": -3.2090096602837246,
+    "telemetry:case:Episode_Reward/dof_acc_l2": -1.3322404362261295,
+    "telemetry:case:Episode_Reward/dof_pos_limits": 0.0,
+    "telemetry:case:Episode_Reward/dof_torques_l2": -0.5987321438888709,
+    "telemetry:case:Episode_Reward/feet_air_time": -0.01878740832520028,
+    "telemetry:case:Episode_Reward/flat_orientation_l2": -1.0431560734907785,
+    "telemetry:case:Episode_Reward/lin_vel_z_l2": -0.07548694877574841,
+    "telemetry:case:Episode_Reward/track_ang_vel_z_exp": 0.18196834363043307,
+    "telemetry:case:Episode_Reward/track_lin_vel_xy_exp": 0.2657112826903661,
+    "telemetry:case:Episode_Termination/base_contact": 1.0000000298023224,
+    "telemetry:case:Episode_Termination/time_out": 3.6770834664503735,
+    "telemetry:case:Loss/entropy": 16.99081500371297,
+    "telemetry:case:Loss/learning_rate": 1.1864583090452167e-05,
+    "telemetry:case:Loss/surrogate": -0.0018641207279870287,
+    "telemetry:case:Loss/value_function": 10.876787233352662,
+    "telemetry:case:Metrics/base_velocity/error_vel_xy": 1.362334773937861,
+    "telemetry:case:Metrics/base_velocity/error_vel_yaw": 1.5582940717538198,
+    "telemetry:case:Perf/collection time": 1.3281690001487731,
+    "telemetry:case:Perf/learning_time": 0.13980547984441122,
+    "telemetry:case:Perf/total_fps": 67164.66666666667,
+    "telemetry:case:Policy/mean_noise_std": 0.996941457192103,
+    "telemetry:case:Train/mean_episode_length": 869.9763356526693,
+    "telemetry:case:Train/mean_reward": -287.6339900970459,
+    "telemetry:reference:Episode_Reward/action_rate_l2": -0.06605322087804476,
+    "telemetry:reference:Episode_Reward/ang_vel_xy_l2": -0.0677886684735616,
+    "telemetry:reference:Episode_Reward/dof_acc_l2": -0.0605559545258681,
+    "telemetry:reference:Episode_Reward/dof_pos_limits": 0.0,
+    "telemetry:reference:Episode_Reward/dof_torques_l2": -0.09906881675124168,
+    "telemetry:reference:Episode_Reward/feet_air_time": -0.030133329952756565,
+    "telemetry:reference:Episode_Reward/flat_orientation_l2": -0.007842172790939609,
+    "telemetry:reference:Episode_Reward/lin_vel_z_l2": -0.023777520501365265,
+    "telemetry:reference:Episode_Reward/track_ang_vel_z_exp": 0.6328511099020641,
+    "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp": 1.413650377591451,
+    "telemetry:reference:Episode_Termination/base_contact": 0.01666666710128387,
+    "telemetry:reference:Episode_Termination/time_out": 4.250000127156576,
+    "telemetry:reference:Loss/entropy": 4.766028952598572,
+    "telemetry:reference:Loss/learning_rate": 0.00043209312255688325,
+    "telemetry:reference:Loss/surrogate": -0.004458194171699385,
+    "telemetry:reference:Loss/value_function": 0.0032322205137461425,
+    "telemetry:reference:Metrics/base_velocity/error_vel_xy": 0.19920970598856608,
+    "telemetry:reference:Metrics/base_velocity/error_vel_yaw": 0.35552814056475956,
+    "telemetry:reference:Perf/collection time": 2.0648918906847635,
+    "telemetry:reference:Perf/learning_time": 0.21594318946202595,
+    "telemetry:reference:Perf/total_fps": 44099.2,
+    "telemetry:reference:Policy/mean_noise_std": 0.36971601049105324,
+    "telemetry:reference:Train/mean_episode_length": 996.604667154948,
+    "telemetry:reference:Train/mean_reward": 33.80788917541504
+  },
+  "task": "Unitree Go2 flat RSL-RL PPO; run may be normal, outside supported faults, or failed",
+  "mechanisms": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "probe_catalog": {
+    "P_noise": {
+      "measures": "학습 경로 act() 샘플의 실제 표준편차 / 기록된 action_std",
+      "cost_gpu_s": 60,
+      "args": {
+        "rollout_steps": 200,
+        "num_envs": 256
+      },
+      "expect": {
+        "exploration": "abnormal",
+        "reward": "normal",
+        "actuator": "normal",
+        "optimizer": "normal",
+        "physics": "normal",
+        "termination": "normal"
+      }
+    },
+    "P_value": {
+      "measures": "첫 체크포인트 대비 마지막 체크포인트의 critic 파라미터 상대 변화(critic이 학습되는가)",
+      "cost_gpu_s": 5,
+      "args": {
+        "from": "model_0.pt",
+        "to": "last"
+      },
+      "expect": {
+        "optimizer": "abnormal",
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "normal",
+        "physics": "normal",
+        "termination": "normal"
+      }
+    },
+    "P_reward": {
+      "measures": "상태에서 문서 정의대로 다시 계산한 추종 보상 항(track_lin_vel_xy_exp, track_ang_vel_z_exp)과 보상 관리자 기록값의 상대 오차",
+      "cost_gpu_s": 60,
+      "args": {
+        "rollout_steps": 200,
+        "num_envs": 256
+      },
+      "expect": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal",
+        "optimizer": "normal",
+        "physics": "normal",
+        "termination": "normal"
+      }
+    },
+    "P_torque": {
+      "measures": "낮은 관절 속도에서 토크 포화 비율",
+      "cost_gpu_s": 60,
+      "args": {
+        "rollout_steps": 500,
+        "num_envs": 256
+      },
+      "expect": {
+        "actuator": "abnormal",
+        "reward": "normal",
+        "exploration": null,
+        "optimizer": "normal",
+        "physics": "normal",
+        "termination": "normal"
+      }
+    },
+    "P_physics": {
+      "measures": "시뮬레이터에서 읽은 재질 마찰·질량·물리 dt와 설정·무작위화 범위의 불일치 수",
+      "cost_gpu_s": 30,
+      "args": {
+        "num_envs": 64
+      },
+      "expect": {
+        "physics": "abnormal",
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "normal",
+        "optimizer": "normal",
+        "termination": "normal"
+      }
+    },
+    "P_episode": {
+      "measures": "시간 제한 종료 스텝 / (episode_length_s / step_dt)",
+      "cost_gpu_s": 60,
+      "args": {
+        "rollout_steps": 1200,
+        "num_envs": 64
+      },
+      "expect": {
+        "termination": "abnormal",
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "normal",
+        "optimizer": "normal",
+        "physics": "normal"
+      }
+    }
+  },
+  "thresholds": {
+    "P_noise": [
+      "noise_ratio",
+      "absolute_log2",
+      1.0
+    ],
+    "P_value": [
+      "critic_change",
+      "ratio_below",
+      0.1
+    ],
+    "P_reward": [
+      "track_lin_vel_xy_exp_rel_error",
+      "above",
+      0.05
+    ],
+    "P_torque": [
+      "low_speed_saturation",
+      "ratio_above",
+      3.0
+    ],
+    "P_physics": [
+      "mismatch_count",
+      "above",
+      0.5
+    ],
+    "P_episode": [
+      "timeout_ratio",
+      "below",
+      0.9
+    ]
+  },
+  "budget_left": 2,
+  "execution_budget_s": 180,
+  "observed": []
+}

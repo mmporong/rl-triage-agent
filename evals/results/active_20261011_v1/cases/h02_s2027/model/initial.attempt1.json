@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "b99c9adfb7d85171c610533b5aa4459228572a73a75a3b29d5533a591541ce16",
+  "messages_sha256": "e94fbc9f3352521fe8791d53a34c5f0fc25a804999f56a8dd7cd0a8041d9a808",
+  "started_at": "2026-10-11T01:19:34.108585+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-52e00014-71c6-478c-bdb0-88089cbc7bb9",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2573,
+  "output_tokens": 415,
+  "total_tokens": 2988,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": null,\n  \"action\": \"confirm\",\n  \"reason\": \"Deterministic evidence shows reward mechanism is abnormal: track_lin_vel_xy_exp is -129% below reference, track_ang_vel_z_exp is -0.5% below reference, and dof_torques_l2 is -33% above reference, indicating reward miscalculation. No other mechanism has deterministic evidence of abnormality.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.3123434710005919},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.413650377591451},\n    {\"id\": \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6299227565526963},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6328511099020641},\n    {\"id\": \"telemetry:case:Episode_Reward/dof_torques_l2\", \"value\": -0.06663612189392248},\n    {\"id\": \"telemetry:reference:Episode_Reward/dof_torques_l2\", \"value\": -0.09906881675124168}\n  ],\n  \"expected_outcomes\": {}\n}",
+  "finished_at": "2026-10-11T01:19:39.270565+00:00",
+  "execution_wall_s": 5.161977755022235,
+  "cpu_s": 0.5022790529999999,
+  "exit_code": 0
+}

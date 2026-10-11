@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "39a1571f7e5781e16ab662167a8e6cb800599d366babd097fd0e28b82910df06",
+  "messages_sha256": "c12b5c866c8b2499927ff9a305cc1840e1e59448b50436f194ab311aea1ca1e9",
+  "started_at": "2026-10-11T01:25:41.310868+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-80aa4318-fd2f-4d86-87f7-76349660c126",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2559,
+  "output_tokens": 293,
+  "total_tokens": 2852,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Initial diagnosis: prioritize reward mechanism due to high tracking rewards suggesting possible reward miscalculation; select P_reward to validate tracking reward components.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.413650377591451},\n    {\"id\": \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6328511099020641}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": {\"track_lin_vel_xy_exp_rel_error\": \"above\", \"track_ang_vel_z_exp_rel_error\": \"above\"},\n    \"actuator\": {\"track_lin_vel_xy_exp_rel_error\": \"normal\", \"track_ang_vel_z_exp_rel_error\": \"normal\"},\n    \"exploration\": {\"track_lin_vel_xy_exp_rel_error\": \"normal\", \"track_ang_vel_z_exp_rel_error\": \"normal\"}\n  }\n}",
+  "finished_at": "2026-10-11T01:25:47.612692+00:00",
+  "execution_wall_s": 3.712261645006947,
+  "cpu_s": 0.728807335,
+  "exit_code": 0
+}

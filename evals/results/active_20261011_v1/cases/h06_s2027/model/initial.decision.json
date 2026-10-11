@@ -1,0 +1,28 @@
+{
+  "ranking": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "probe": "P_reward",
+  "action": "continue",
+  "reason": "Train/mean_reward is 9.64 vs reference 33.81, indicating a significant reward deficit; P_reward directly measures reward computation correctness.",
+  "claims": [
+    {
+      "id": "telemetry:case:Train/mean_reward",
+      "value": 9.63839819431305
+    },
+    {
+      "id": "telemetry:reference:Train/mean_reward",
+      "value": 33.80788917541504
+    }
+  ],
+  "expected_outcomes": {
+    "reward": "abnormal",
+    "actuator": "normal",
+    "exploration": "normal"
+  }
+}

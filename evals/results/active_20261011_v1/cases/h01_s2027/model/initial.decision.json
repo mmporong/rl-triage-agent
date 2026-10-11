@@ -1,0 +1,28 @@
+{
+  "ranking": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "probe": "P_reward",
+  "action": "continue",
+  "reason": "Reward mechanism shows largest deviation from reference in track_lin_vel_xy_exp (0.3768 vs 1.4136) and track_ang_vel_z_exp (0.6394 vs 0.6329), suggesting reward miscalculation.",
+  "claims": [
+    {
+      "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+      "value": 0.3768112694223722
+    },
+    {
+      "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+      "value": 1.413650377591451
+    }
+  ],
+  "expected_outcomes": {
+    "reward": "abnormal",
+    "actuator": "normal",
+    "exploration": "normal"
+  }
+}

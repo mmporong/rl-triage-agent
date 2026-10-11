@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "377daedc6a759fa8f8d79544e7b7a19c74a09424b463ad375c0479218cc47e0c",
+  "messages_sha256": "a2e5ce8d7dd7bd77da14af5f6435c4701e3030016e1aa14777200e847ec9b4f5",
+  "started_at": "2026-10-11T01:21:39.826364+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-f4a5a4c1-beaa-4778-aff2-6716ebd50aa7",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2559,
+  "output_tokens": 230,
+  "total_tokens": 2789,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Reward mechanism shows largest deviation from reference in telemetry, particularly in tracking and episode reward terms, suggesting misconfiguration or bug in reward computation.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Train/mean_reward\", \"value\": \"-287.6339900970459\"},\n    {\"id\": \"telemetry:reference:Train/mean_reward\", \"value\": \"33.80788917541504\"}\n  ],\n  \"expected_outcomes\": {\n    \"P_reward\": {\n      \"reward\": \"abnormal\",\n      \"actuator\": \"normal\",\n      \"exploration\": \"normal\",\n      \"optimizer\": \"normal\",\n      \"physics\": \"normal\",\n      \"termination\": \"normal\"\n    }\n  }\n}",
+  "finished_at": "2026-10-11T01:21:46.885132+00:00",
+  "execution_wall_s": 4.51551733200904,
+  "cpu_s": 0.39309970799999994,
+  "exit_code": 0
+}

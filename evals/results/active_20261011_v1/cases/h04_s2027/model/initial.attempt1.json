@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "669bcb39364e37ad832f2df7391f19130486f2247a0e2176cb15e35ca9d6b084",
+  "messages_sha256": "e2be852171ed927da8d9a984e26732f2bfbd7c48d2457cab2193678bb005ef3c",
+  "started_at": "2026-10-11T01:21:30.272330+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-c4786191-63e2-489d-814b-f93d581b068e",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2565,
+  "output_tokens": 434,
+  "total_tokens": 2999,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": null,\n  \"action\": \"confirm\",\n  \"reason\": \"Deterministic evidence shows reward mechanism is abnormal: multiple reward components deviate significantly from reference values (track_lin_vel_xy_exp: 0.246 vs 1.414, track_ang_vel_z_exp: 0.189 vs 0.633, dof_acc_l2: -0.321 vs -0.061, etc.), while other mechanisms show normal or less severe deviations.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.24607460498809813},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.413650377591451},\n    {\"id\": \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.18946522797147433},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6328511099020641},\n    {\"id\": \"telemetry:case:Episode_Reward/dof_acc_l2\", \"value\": -0.3208297647535801},\n    {\"id\": \"telemetry:reference:Episode_Reward/dof_acc_l2\", \"value\": -0.0605559545258681}\n  ],\n  \"expected_outcomes\": {}\n}",
+  "finished_at": "2026-10-11T01:21:33.758792+00:00",
+  "execution_wall_s": 3.4864142190199345,
+  "cpu_s": 0.480820338,
+  "exit_code": 0
+}

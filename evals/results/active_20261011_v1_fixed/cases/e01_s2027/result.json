@@ -1,0 +1,50 @@
+{
+  "schema": "active_diagnosis_case_v1",
+  "case": "e01_s2027",
+  "tag": "active_20261011_v1_fixed",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "started_at": "2026-10-11T01:25:53.336199+00:00",
+  "protocol_sha256_lf": "bb499bf6416fe4dfccc7e4ee41fd789b4257680eb19d7520095b320d7e780320",
+  "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+  "human_review_s": null,
+  "approval_actor": "codex_operator_user_authorized_test",
+  "approval_identity_attested": false,
+  "controller": "fixed_order",
+  "gpu_device_busy_s": null,
+  "status": "hold",
+  "error_type": "RuntimeError",
+  "error": "GPU 대기: {'at': '2026-10-11T01:25:55.349879+00:00', 'gpu_utilization_pct': 56, 'memory_mib': 11303, 'memory_total_mib': 12288, 'other_isaac_pids': [], 'ollama_models': 1}",
+  "orphan_requests": [],
+  "finished_at": "2026-10-11T01:25:55.350400+00:00",
+  "end_to_end_wall_s": 2.0141473000403494,
+  "decisions": [],
+  "observed": [],
+  "contrasts": [],
+  "without_receipt": [],
+  "budget_left": 2,
+  "model_action": null,
+  "evidence_state": {
+    "hypotheses": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "dropped": [],
+    "status": "open"
+  },
+  "costs": {
+    "model_calls": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "model_wall_s": 0,
+    "model_cpu_s": 0,
+    "isaac_wall_s": 0,
+    "human_review_s": null,
+    "gpu_device_busy_s": null,
+    "isaac_cpu_s": 0,
+    "isaac_simulator_steps": 0
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "ranking": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "probe": "P_reward",
+  "action": "continue",
+  "reason": "Reward tracking errors are elevated vs reference; P_reward directly tests if reward computation matches specification.",
+  "claims": [
+    {
+      "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+      "value": 1.3415915767351787
+    },
+    {
+      "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+      "value": 1.4141562740008036
+    }
+  ],
+  "expected_outcomes": {
+    "reward": "abnormal",
+    "actuator": "normal",
+    "exploration": "normal"
+  }
+}

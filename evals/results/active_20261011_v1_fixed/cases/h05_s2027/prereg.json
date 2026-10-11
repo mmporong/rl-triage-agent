@@ -1,0 +1,46 @@
+{
+  "case": "h05_s2027",
+  "checkpoint_sha256": "3fdb3e2ffd052e1666affde46a5857956f8078cd3a1ecdedcb6f855dd8bf5c04",
+  "protocol_sha256_lf": "bb499bf6416fe4dfccc7e4ee41fd789b4257680eb19d7520095b320d7e780320",
+  "hypotheses": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "budget_probes": 2,
+  "thresholds": {
+    "P_noise": [
+      "noise_ratio",
+      "absolute_log2",
+      1.0
+    ],
+    "P_value": [
+      "critic_change",
+      "ratio_below",
+      0.1
+    ],
+    "P_reward": [
+      "track_lin_vel_xy_exp_rel_error",
+      "above",
+      0.05
+    ],
+    "P_torque": [
+      "low_speed_saturation",
+      "ratio_above",
+      3.0
+    ],
+    "P_physics": [
+      "mismatch_count",
+      "above",
+      0.5
+    ],
+    "P_episode": [
+      "timeout_ratio",
+      "below",
+      0.9
+    ]
+  }
+}

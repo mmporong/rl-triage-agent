@@ -1,0 +1,68 @@
+{
+  "schema": "active_diagnosis_case_v1",
+  "case": "h03_s2027",
+  "tag": "active_20261011_v1_fixed",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "started_at": "2026-10-11T01:20:20.203981+00:00",
+  "protocol_sha256_lf": "bb499bf6416fe4dfccc7e4ee41fd789b4257680eb19d7520095b320d7e780320",
+  "checkpoint_sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2",
+  "human_review_s": null,
+  "approval_actor": "codex_operator_user_authorized_test",
+  "approval_identity_attested": false,
+  "controller": "fixed_order",
+  "gpu_device_busy_s": null,
+  "stop_reason": "probe_budget_or_frozen_stop",
+  "status": "completed",
+  "finished_at": "2026-10-11T01:21:29.152981+00:00",
+  "end_to_end_wall_s": 68.94958289992064,
+  "decisions": [],
+  "observed": [
+    {
+      "at": "2026-10-11T01:21:29+00:00",
+      "event": "receipt",
+      "request_id": "f2b385775854",
+      "outcome": "abnormal",
+      "measurement": {
+        "timeout_count": 1536,
+        "median_timeout_step": 50.0,
+        "timeout_ratio": 0.05
+      },
+      "gpu_s": 68.1,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "ea837983c94c936a045254050031c32564039b2c1a2676e49cb05307a2e6278b",
+      "probe": "P_episode",
+      "checkpoint_sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2",
+      "report_sha256_lf": "7bc38e223b2205f59446d473ca5942c3fb32bf7442bcdc20a98c033781f1f641"
+    }
+  ],
+  "contrasts": [],
+  "without_receipt": [],
+  "budget_left": 1,
+  "model_action": null,
+  "evidence_state": {
+    "hypotheses": [
+      "termination"
+    ],
+    "dropped": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics"
+    ],
+    "status": "confirmed"
+  },
+  "costs": {
+    "model_calls": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "model_wall_s": 0,
+    "model_cpu_s": 0,
+    "isaac_wall_s": 68.1,
+    "human_review_s": null,
+    "gpu_device_busy_s": null,
+    "isaac_cpu_s": 88.265625,
+    "isaac_simulator_steps": 76800
+  }
+}

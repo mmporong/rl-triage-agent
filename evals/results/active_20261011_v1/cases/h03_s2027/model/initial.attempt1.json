@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "0d53b6f706552fe9f35054e0e56be276b8dd5c63ae200b36678cba967c8e891a",
+  "messages_sha256": "58badc701b84c6236adbc49b7fdfb8eaeacb911dc0f2405715a0c7df043c5314",
+  "started_at": "2026-10-11T01:20:13.048985+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-8a06c4dc-5de9-44b5-bc8f-8e4db548efa9",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2573,
+  "output_tokens": 888,
+  "total_tokens": 3461,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": null,\n  \"action\": \"confirm\",\n  \"reason\": \"Deterministic evidence confirms reward mechanism failure: all reward components are near zero while reference values show significant magnitude, indicating reward functions are not contributing to learning.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.05762796693791946},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.413650377591451},\n    {\"id\": \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.030661612221350273},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6328511099020641},\n    {\"id\": \"telemetry:case:Episode_Reward/dof_pos_limits\", \"value\": 0.0},\n    {\"id\": \"telemetry:reference:Episode_Reward/dof_pos_limits\", \"value\": 0.0},\n    {\"id\": \"telemetry:case:Episode_Reward/action_rate_l2\", \"value\": -0.003845500946044922},\n    {\"id\": \"telemetry:reference:Episode_Reward/action_rate_l2\", \"value\": -0.06605322087804476},\n    {\"id\": \"telemetry:case:Episode_Reward/dof_acc_l2\", \"value\": -0.006813962020290395},\n    {\"id\": \"telemetry:reference:Episode_Reward/dof_acc_l2\", \"value\": -0.0605559545258681},\n    {\"id\": \"telemetry:case:Episode_Reward/feet_air_time\", \"value\": -0.002401121302197377},\n    {\"id\": \"telemetry:reference:Episode_Reward/feet_air_time\", \"value\": -0.030133329952756565},\n    {\"id\": \"telemetry:case:Episode_Reward/flat_orientation_l2\", \"value\": -0.0009166325549207007},\n    {\"id\": \"telemetry:reference:Episode_Reward/flat_orientation_l2\", \"value\": -0.007842172790939609},\n    {\"id\": \"telemetry:case:Episode_Reward/lin_vel_z_l2\", \"value\": -0.0020022715034428984},\n    {\"id\": \"telemetry:reference:Episode_Reward/lin_vel_z_l2\", \"value\": -0.023777520501365265},\n    {\"id\": \"telemetry:case:Episode_Reward/dof_torques_l2\", \"value\": -0.0044754810088003675},\n    {\"id\": \"telemetry:reference:Episode_Reward/dof_torques_l2\", \"value\": -0.09906881675124168]\n  ],\n  \"expected_outcomes\": {}\n}",
+  "finished_at": "2026-10-11T01:20:19.621283+00:00",
+  "execution_wall_s": 6.572291791904718,
+  "cpu_s": 0.4238876279999999,
+  "exit_code": 0
+}

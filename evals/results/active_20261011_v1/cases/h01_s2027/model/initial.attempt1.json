@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "fff0f0e8780a4274e8bc9f7f2c631a4958cd82cb7dd584ca1f6b1bd8f0500ac1",
+  "messages_sha256": "9fa9acd2cd42734a8e947aac0ad916e34165e7c64694fa3e49f9868c9e53b89b",
+  "started_at": "2026-10-11T01:14:05.501799+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-4a468287-c496-4eef-b35d-4981deb74bf8",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2556,
+  "output_tokens": 250,
+  "total_tokens": 2806,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Reward mechanism shows largest deviation from reference in track_lin_vel_xy_exp (0.3768 vs 1.4136) and track_ang_vel_z_exp (0.6394 vs 0.6329), suggesting reward miscalculation.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.3768112694223722},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.413650377591451}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T01:14:08.552676+00:00",
+  "execution_wall_s": 3.050867500016466,
+  "cpu_s": 0.436446106,
+  "exit_code": 0
+}
