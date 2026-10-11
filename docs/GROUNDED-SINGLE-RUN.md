@@ -139,6 +139,34 @@ metadata는 기존 harness가 기록한 원본 파일을 사용한다. 각 실�
 
 초기 NAT와 두 판단 호출의 token·CPU·wall을 stage별로 기록한다. 누락된 비용은 `null`이며 token 합계는 세 stage의 usage가 모두 확인됐을 때만 계산한다. SDK parent wall은 GPU 시간과 다르고, 독점 GPU 성능 측정이나 금액 비용은 미측정이다. 현재 이 연결은 CPU 계약 검증 범위이며 새 모델 통합·정확성·원인·정책 회복은 미검증이다.
 
+## 같은 동결 정책의 조건부 행동 회복 평가
+
+[회복 실행기](../evals/run_grounded_recovery.py)는 초기 모델이 선택한 reset 검사가 유효하게 끝나고, 실제값을 받은 새 판단이 최신 receipt를 인용하며 1위 가설의 사전 예측을 충족할 때만 요청을 만든다. 원본 X1 입력과 고정 체크포인트 SHA를 확인하고 최대 Δxy `> 0.0501`, 범위 이탈 비율 `> 0`을 함께 요구한다. 판단 순위 변화는 별도 지표로 남긴다. 처음부터 적절한 가설을 골랐다면 순위가 유지돼도 행동 평가를 진행할 수 있다.
+
+교정은 host가 등록한 X1에서 X1_REF로의 콜백 교체다. 모델이 수정 코드를 만들거나 교정을 선택한 결과로 표현하지 않는다. 원래 학습 실패의 원인과 정책 가중치 회복도 판정하지 않는다.
+
+| 조건 | 고정한 내용 |
+|---|---|
+| 정책 | 원래 T1 X1의 `model_299.pt` 하나를 세 조건에서 사용하고 호출 전·후 SHA를 대조 |
+| 실행 순서 | 결함 유지 X1, 같은 콜백의 무변경 반복 대조 X1, 등록된 교정 X1_REF; 조건마다 새 프로세스 |
+| 행동 평가 | 기존 `fixed_eval_v1`의 seed·명령 격자·환경 수·horizon·첫 에피소드 집계를 유지 |
+| 설정 | 원래 action scale, 고정 관측·질량 조건과 상류 reset 범위; 실제 설정과 관측 설정 SHA를 대조 |
+| 계측 | 원래 평가의 환경 생성과 reset 호출을 기록하고, 완료된 control/physics 시계 원시 행을 부모가 전수 대조 |
+| 승인 | 별도 bundle 원장에서 세 effect를 허용하고 각 effect를 launch 전에 소비; 고아 실행과 이미 소비한 bundle 재실행 금지 |
+
+교정 조건이 기존 T1 보행 기준을 통과하고, 결함 유지와 반복 대조가 교정 대비 같은 비어 있지 않은 행동 지표 집합에서 실패해야 수치 조건을 충족한다. 반복 대조는 두 방향의 기존 self-band 비교를 모두 통과해야 한다. CPU 계산의 `summary`는 수치 조건만 판정하며 실행 출처를 검증하지 않는다. 부모가 세 조건의 원시 파일·프로세스 종료·출처를 다시 검증해야 최종 `recovery_observed`와 `recovery_proven=true`를 기록한다.
+
+결과는 실행 전에 정한 다섯 상태로 남긴다. 출처·계측·집계·종료가 맞지 않으면 `invalid`이며 다음 조건을 시작하지 않는다. 반복 대조의 동등성이나 실패 지표 일치가 깨지면 `control_invalid`다. 대조가 유효하지만 교정 조건이 보행 기준을 통과하지 못하면 `no_recovery`다. 교정 조건은 보행하지만 교정 대비 결함의 실패 차이가 확인되지 않으면 `no_failure_observed`다. 이 상태는 결함 조건이 절대적으로 건강하다는 뜻이 아니다. 어떤 상태에서도 reset·크기·임계값을 늘려 재시도하지 않는다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+& .venv/Scripts/python.exe evals/run_grounded_recovery.py request --tag demo_recovery --grounded-tag demo_run
+& .venv/Scripts/python.exe evals/run_grounded_recovery.py approve --tag demo_recovery --actor "등록된 콜백 평가 승인"
+& .venv/Scripts/python.exe evals/run_grounded_recovery.py execute --tag demo_recovery
+```
+
+source와 [결과별 문구를 포함한 프로토콜](../bench/protocols/grounded_recovery_v1.json)을 커밋한 뒤 사용한다. 요청 시점과 실행 시점에 원본 입력·새 모델 기록·측정 출처를 다시 확인한다. `bench/private/grounded_recovery/<tag>`에 승인 원장·조건별 설정·원시 평가·부모 receipt·최종 결과를 한 번 저장한다. 이 경로는 CPU 계약 검증 범위이며 실제 새 모델의 진입과 행동 회복은 아직 검증하지 않았다. 성공해도 같은 동결 정책의 이 고정 task·seed·격자에서 등록된 환경 콜백 교정 뒤 행동 기준을 통과했다는 범위로 해석한다.
+
 ## 참고한 연구와 코드
 
 [ReAct](https://arxiv.org/abs/2210.03629)의 행동·관측 연결과 [CRITIC](https://arxiv.org/abs/2305.11738)의 외부 도구 피드백을 참고해, 근거 조회와 코드 검증을 분리했다. [Reflexion](https://arxiv.org/abs/2303.11366)의 피드백은 문맥 갱신에 관한 방법이다. 고정 API 모델의 가중치가 자동으로 학습된다고 설명하지 않는다.
