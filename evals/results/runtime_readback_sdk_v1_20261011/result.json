@@ -1,0 +1,120 @@
+{
+  "schema": "runtime_readback_sdk_result_v1",
+  "scope": "actual_sdk_api_integration_not_diagnosis_or_recovery",
+  "status": "pass",
+  "source_commit": "724aefdfc765f0c8de385737fac656b201457cfa",
+  "protocol": {
+    "path": "bench/protocols/runtime_readback_smoke_v1.json",
+    "sha256": "76175c150b8357e350f991176198e6b9871d9f5002378f29c77f9465ed4033e8"
+  },
+  "artifact_sha256": {
+    "body": "606d99f5be76230eba6a9459700f59fe7d1ece77b95fd22b7c663840be2f621b",
+    "parent_receipt": "6054d2d43aa3247043eaa2f1763ef6fa073ecc0c08af2879e868ec36da486ac3",
+    "manifest": "1e835c67520e7242d9acf60736d2384eb1a1440d08017d129e6afc59d9a14647",
+    "configuration": "88df3ffdb7767a35f0ae8563d1e6ce7368a5a1c19392e858546d45d9b7dbe955"
+  },
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "seed": 20261011,
+  "num_envs": 16,
+  "checkpoint_sha256": "abc3223f0b8e4c14b93cb5db2f79b16d9cf63dff6dc142bc46822de89fb0a62f",
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "isaacsim_version": "4.5.0",
+  "completed_control_samples": 20,
+  "physics_steps": 80,
+  "observed_env_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "observed_environment_samples": 80,
+  "phase_counts": {
+    "completed_control_no_reset": 80,
+    "post_auto_reset": 0
+  },
+  "measurement_status": "complete",
+  "measurements": {
+    "com_position_z": {
+      "value": 0.2696593938395381,
+      "unit": "simulation_length_native",
+      "expected_value_count": 80,
+      "finite_value_count": 80,
+      "unavailable_value_count": 0,
+      "coverage_status": "complete"
+    },
+    "com_velocity_z": {
+      "value": -0.4950261976337061,
+      "unit": "simulation_velocity_native",
+      "expected_value_count": 80,
+      "finite_value_count": 80,
+      "unavailable_value_count": 0,
+      "coverage_status": "complete"
+    },
+    "body_com_local_position_max_abs": {
+      "value": 0.11500000208616257,
+      "unit": "simulation_length_native",
+      "expected_value_count": 80,
+      "finite_value_count": 80,
+      "unavailable_value_count": 0,
+      "coverage_status": "complete"
+    },
+    "reward_mean": {
+      "value": -0.0008673193828144578,
+      "unit": "reward_native",
+      "expected_value_count": 80,
+      "finite_value_count": 80,
+      "unavailable_value_count": 0,
+      "coverage_status": "complete"
+    },
+    "reward_min": {
+      "value": -0.06301426142454147,
+      "unit": "reward_native",
+      "expected_value_count": 80,
+      "finite_value_count": 80,
+      "unavailable_value_count": 0,
+      "coverage_status": "complete"
+    },
+    "contact_force_max": {
+      "value": 335.43325805664364,
+      "unit": "simulation_force_native",
+      "expected_value_count": 80,
+      "finite_value_count": 80,
+      "unavailable_value_count": 0,
+      "coverage_status": "complete"
+    },
+    "contact_event_fraction": {
+      "value": 0.7625,
+      "unit": "fraction",
+      "expected_value_count": 80,
+      "finite_value_count": 80,
+      "unavailable_value_count": 0,
+      "coverage_status": "complete"
+    }
+  },
+  "execution": {
+    "exit_code": 0,
+    "natural_exit": true,
+    "timed_out": false,
+    "owned_job_cleanup_verified": true,
+    "wall_s": 13.077999999979511,
+    "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+    "helper_cpu_s": 2.9375,
+    "helper_cpu_scope": "after_app_launcher_return_to_body_report_before_env_and_app_close"
+  },
+  "verification": {
+    "independent_artifact_audit": "pass",
+    "reaggregated_measurements": 7,
+    "current_owned_live_process_count": 0
+  },
+  "claims": {
+    "api_integration_observed": true,
+    "diagnosis_confirmed": false,
+    "policy_health_confirmed": false,
+    "cause_confirmed": false,
+    "recovery_confirmed": false,
+    "quality_comparison_performed": false,
+    "measurement_caused_ai_judgment_change": false,
+    "model_selected_check": false,
+    "gpu_savings_established": false
+  }
+}

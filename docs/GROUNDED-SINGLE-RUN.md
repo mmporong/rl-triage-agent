@@ -64,7 +64,7 @@ uv run nat run --config_file configs/triage_single_run_grounded.yml \
 | `runtime_reward_window` | 호출자가 완료된 `env.step` 반환값으로 제공한 reward 평균·최솟값 | reward term readback은 가중치가 적용되고 dt 적분 전인 별도 근거다 |
 | `runtime_contact_window` | contact force norm 최대, nonzero contact가 있는 env/sample 비율 | norm `> 0`은 접촉 존재이며 실패 임계값이 아니다. auto-reset 뒤 contact는 unavailable이다 |
 
-수집기는 자료 없음·비유한 값·읽기 오류를 0으로 채우지 않는다. 측정 phase와 유효/미제공 표본 수를 기록하며, 원인·정상성·회복·프로세스 정리 확정은 모두 false다. 실제 Isaac 실행, 승인 고리와 cleanup receipt 연결은 별도로 검증해야 한다. 이 문서의 수집기 구현과 CPU 회귀는 GPU 실행이나 새 진단 효과의 증거가 아니다.
+수집기는 자료 없음·비유한 값·읽기 오류를 0으로 채우지 않는다. 측정 phase와 유효/미제공 표본 수를 기록하며, 원인·정상성·회복·프로세스 정리 확정은 모두 false다. 종료 확인은 부모 receipt가 수행한다. 모델 선택을 소비하는 승인 고리와 새 진단 효과는 별도로 검증해야 한다.
 
 개발 입력의 CPU JSON/NAT round-trip은 무손실로 확인했다. provider의 context·token 수용과 새 모델 호출 완료는 아직 검증하지 않았다.
 
@@ -76,6 +76,8 @@ cd "$HOME/rl-triage-agent"
 ```
 
 새 tag의 `bench/private/runtime_readback/<tag>`에 manifest·설정 snapshot·body와 부모 receipt가 남는다. 실행기는 커밋된 소스·SDK·체크포인트 해시를 대조하고, Windows Job에 연결한 프로세스만 추적한다. SDK clock·완료 보상·재설정 phase·coverage와 PID 생성 시각을 대조한 뒤 종료를 확인한다. 이 smoke의 판정 범위는 API 연결이며, AI 판단 변화와 정책 회복 검증은 별도로 필요하다.
+
+[소스 커밋 `724aefd`의 실측 요약](../evals/results/runtime_readback_sdk_v1_20261011/result.json)과 [원시 body](../evals/results/runtime_readback_sdk_v1_20261011/body.json)는 20 control step·80 physics step·4개 env의 80표본을 보존한다. 7개 측정 모두 유효한 값 80개·미제공 0개였고, 부모 wall은 13.078초였다. 원시 재집계와 해시·프로세스 종료의 별도 검수도 통과했다. 이 실행은 모델이 검사를 선택한 사례가 아니며, 정책 건강·원인·회복은 판정하지 않았다.
 
 ## 참고한 연구와 코드
 
