@@ -26,8 +26,8 @@ DEFAULT_BASELINE_VIDEO = ROOT / "docs" / "media" / "baseline_s42_play.mp4"
 DEFAULT_FAILURE_VIDEO = ROOT / "docs" / "media" / "c04_s42_play.mp4"
 DEFAULT_BRIDGE = ROOT / "evals" / "results" / "bridge_smoke.json"
 DEFAULT_RELABEL = ROOT / "evals" / "results" / "p0b1_relabel_20261008" / "relabel.json"
-RECOVERY_PROTOCOL_SHA256_LF = "d2fef7de827c2b43d4348e4cfee590503102abd25b3de50a544b96a793c4e294"
-RECOVERY_RECORDER_SHA256_LF = "2184b11561ecb9edbd47c4df77a5350a27913d798b321297a76a3010e3ebd35f"
+RECOVERY_PROTOCOL_SHA256_LF = "0ad22b8b50aff6324ccdc9558cbb3777a9dad22a203a84fdaa29d5a68535f0bd"
+RECOVERY_RECORDER_SHA256_LF = "5ae82f044aaf824fe4e19abb606da383e5cd0857916132b21bd708e1f2e61d65"
 RECOVERY_PUBLIC_SOURCES = {
     "bench/runs/c01_s42.telemetry.json": "737ba46566d3ef0f956bc9e48a1bc3d852367261050119adcff0dd49e914b943",
     "bench/runs/c01_revert_ch3_s42.telemetry.json": "806b94f9610ceb93de68bfc16181b07944abcfc761e031a05c430a076a63344b",
@@ -236,6 +236,41 @@ def verify_recovery_media(root: Path, manifest_path: Path) -> VerifiedRecoveryMe
         raise EvidenceError("recovery 해석 범위 계약이 맞지 않습니다")
 
     canonical_clips = {clip["id"]: clip for clip in protocol.get("clips", [])}
+    admission = manifest.get("gpu_admission")
+    observations = manifest.get("gpu_observations_before_clips")
+    after_observations = manifest.get("gpu_observations_after_clips")
+    if (
+        admission != protocol.get("gpu_admission")
+        or not isinstance(admission, dict)
+        or admission.get("policy") != "desktop_shared_recording_v1"
+        or admission.get("gpu_exclusive") is not False
+        or admission.get("performance_measurement") is not False
+        or not isinstance(observations, list) or len(observations) != 3
+        or not isinstance(after_observations, list) or len(after_observations) != 3
+    ):
+        raise EvidenceError("recovery 공유 GPU 녹화 조건 기록이 맞지 않습니다")
+    for observations in (observations, after_observations):
+        if (
+            any(not isinstance(row, dict) for row in observations)
+            or {row.get("clip_id") for row in observations} != set(canonical_clips)
+            or any(row.get("busy") is not False or row.get("gpu_exclusive") is not False
+               or row.get("performance_measurement") is not False
+               or row.get("admission_policy") != admission["policy"]
+               or row.get("compute_process_count") != 0
+               or row.get("gpu_index") != 0
+               or row.get("c_plus_g_contexts_present") is not True
+               or not isinstance(row.get("utilization_percent"), int)
+               or not 0 <= row["utilization_percent"] <= 100
+               or not isinstance(row.get("memory_used_mib"), int)
+               or not 0 <= row["memory_used_mib"] < admission["memory_used_limit_mib"]
+               for row in observations)
+        ):
+            raise EvidenceError("recovery 공유 GPU 녹화 조건 기록이 맞지 않습니다")
+        try:
+            if any(datetime.fromisoformat(row["observed_at_utc"]).utcoffset() != timezone.utc.utcoffset(None) for row in observations):
+                raise ValueError("UTC timezone missing")
+        except (KeyError, TypeError, ValueError) as error:
+            raise EvidenceError("recovery GPU 관측 시각 기록이 맞지 않습니다") from error
     clips = manifest.get("clips")
     if not isinstance(clips, list) or len(clips) != 3 or {clip.get("id") for clip in clips} != set(canonical_clips):
         raise EvidenceError("recovery clipset은 before/true_rollback/benign_rollback 3개여야 합니다")

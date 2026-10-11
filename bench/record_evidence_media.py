@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import ctypes
 from ctypes import wintypes
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
@@ -15,6 +16,7 @@ import subprocess
 import sys
 import time
 from typing import Any, Callable
+import xml.etree.ElementTree as ET
 
 
 TAG_RE = re.compile(r"[a-z0-9](?:[a-z0-9_-]{0,47})\Z")
@@ -33,6 +35,29 @@ EXPECTED_VIDEO_CONTRACT = {
 }
 EXPECTED_DISALLOWED_CLAIMS = {
     "normal_walking_policy", "ai_improvement_completed", "fresh_v3_event", "retraining_event",
+}
+GPU_WORKLOAD_RE = re.compile(r"(?<![a-z0-9])(?:llama|ollama|python|isaac|cuda|kit(?=[^a-z0-9]|$))", re.IGNORECASE)
+PROTECTED_DISPLAY_NAMES = frozenset({"system", "dwm.exe", "tabtip.exe", "remoting_desktop.exe"})
+DISPLAY_PROCESS_NAMES = frozenset({
+    "system", "dwm.exe", "tabtip.exe", "remoting_desktop.exe", "explorer.exe",
+    "chrome.exe", "chatgpt.exe", "msedgewebview2.exe", "video.ui.exe", "discord.exe",
+    "slack.exe", "windowsterminal.exe", "shellhost.exe", "searchhost.exe",
+    "startmenuexperiencehost.exe", "textinputhost.exe", "shellexperiencehost.exe",
+    "crossdeviceresume.exe", "phoneexperiencehost.exe", "microsoft.cmdpal.ui.exe",
+    "asus_framework.exe", "lghub_system_tray.exe", "nvidia overlay.exe",
+    "powertoys.exe", "powertoys.peek.ui.exe", "powertoys.quickaccess.exe",
+    "powertoys.colorpickerui.exe", "powertoys.fancyzones.exe", "codex-computer-use-swift.exe",
+})
+EXPECTED_GPU_ADMISSION = {
+    "policy": "desktop_shared_recording_v1", "gpu_exclusive": False,
+    "performance_measurement": False, "memory_used_limit_mib": 4096,
+    "gpu_index": 0, "active_engine_min_percent": 1,
+    "protected_cim_name_only_process_names": sorted(PROTECTED_DISPLAY_NAMES),
+    "guard_phases": ["before_clip", "after_clip"],
+    "allowed_process_types": ["C+G", "G"],
+    "allowed_display_process_names": sorted(DISPLAY_PROCESS_NAMES),
+    "allowed_active_engine_types": ["3D", "Copy", "VideoDecode", "VideoEncode"],
+    "unclassified_activity": "block",
 }
 
 
@@ -57,7 +82,7 @@ def load_protocol(path: Path) -> dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
     required = {
         "schema_version", "protocol_id", "task", "seed", "num_envs", "video_length", "kit_args",
-        "play_py_sha256", "recorder_source", "video_contract", "clips", "public_sources", "interpretation",
+        "play_py_sha256", "recorder_source", "video_contract", "clips", "public_sources", "interpretation", "gpu_admission",
     }
     missing = sorted(required - data.keys())
     if missing:
@@ -71,6 +96,7 @@ def load_protocol(path: Path) -> dict[str, Any]:
         or data["video_length"] != 300
         or data["kit_args"] != "--/app/vulkan=false --/app/window/hideUi=true"
         or data["video_contract"] != EXPECTED_VIDEO_CONTRACT
+        or data["gpu_admission"] != EXPECTED_GPU_ADMISSION
     ):
         raise PreflightError("protocol recording invariants changed")
     if len(data["clips"]) != 3 or {clip.get("id") for clip in data["clips"]} != EXPECTED_CLIP_IDS:
@@ -142,33 +168,108 @@ def inspect_inputs(protocol: dict[str, Any], repo: Path, isaac_lab: Path) -> lis
     return resolved
 
 
-def query_gpu() -> dict[str, Any]:
-    summary = subprocess.run(
-        ["nvidia-smi", "--query-gpu=utilization.gpu,memory.used", "--format=csv,noheader,nounits"],
-        check=True,
-        capture_output=True,
-        text=True,
+def _gpu_command(args: list[str]) -> str:
+    return subprocess.run(
+        args, check=True, capture_output=True, text=True, timeout=30,
         creationflags=CREATE_NO_WINDOW if os.name == "nt" else 0,
-    )
-    apps = subprocess.run(
-        ["nvidia-smi", "--query-compute-apps=pid,process_name,used_memory", "--format=csv,noheader,nounits"],
-        check=True,
-        capture_output=True,
-        text=True,
-        creationflags=CREATE_NO_WINDOW if os.name == "nt" else 0,
-    )
-    rows = [row.strip() for row in summary.stdout.splitlines() if row.strip()]
-    if not rows:
-        raise PreflightError("nvidia-smi returned no GPU")
-    utilization, memory_used = (int(value.strip()) for value in rows[0].split(",", 1))
-    workload_pattern = re.compile(r"(?:llama|ollama|python|isaac|kit|cuda)", re.IGNORECASE)
-    compute_processes = sum(1 for row in apps.stdout.splitlines() if workload_pattern.search(row))
+    ).stdout
+
+
+def classify_gpu(xml_text: str, windows: dict[str, Any]) -> dict[str, Any]:
+    """허용된 화면 앱과 GPU를 공유하는 재생이며 계산 부재를 증명하지 않는다."""
+    try:
+        devices = ET.fromstring(xml_text).findall("gpu")
+        if len(devices) != 1:
+            raise ValueError("expected one GPU")
+        device = devices[0]
+        utilization = int(device.findtext("utilization/gpu_util", "").split()[0])
+        memory_used = int(device.findtext("fb_memory_usage/used", "").split()[0])
+        process_rows = windows["processes"]
+        processes = {int(row["ProcessId"]): row for row in process_rows}
+        engines = windows["engines"]
+        if (not isinstance(engines, list) or device.find("processes") is None
+                or len(process_rows) != len(processes) or not 0 <= utilization <= 100 or memory_used < 0):
+            raise ValueError("GPU process/engine inventory unavailable")
+    except (ET.ParseError, KeyError, TypeError, ValueError, IndexError) as error:
+        raise PreflightError("GPU process/engine inventory unavailable") from error
+    reasons: list[str] = []
+    observations: list[dict[str, Any]] = []
+    known_workloads = 0
+    seen_pids: set[int] = set()
+    for item in device.findall("processes/process_info"):
+        try:
+            pid = int(item.findtext("pid", ""))
+            process_type = item.findtext("type", "")
+            row = processes.get(pid, {})
+            name = str(row.get("Name", "")).casefold()
+            command = str(row.get("CommandLine") or "")
+            xml_path = (item.findtext("process_name") or "").replace("\\", "/").casefold()
+            xml_name = xml_path.rsplit("/", 1)[-1]
+            cim_path = str(row.get("ExecutablePath") or "").replace("\\", "/").casefold()
+            if pid <= 0 or pid in seen_pids:
+                raise ValueError("duplicate or invalid GPU PID")
+            seen_pids.add(pid)
+        except (TypeError, ValueError) as error:
+            raise PreflightError("GPU process inventory malformed") from error
+        known = bool(GPU_WORKLOAD_RE.search(name + " " + command + " " + xml_name))
+        known_workloads += int(known)
+        if known or name not in DISPLAY_PROCESS_NAMES or (xml_name and xml_name != name):
+            reasons.append(f"unapproved_gpu_process:{pid}")
+        if name not in PROTECTED_DISPLAY_NAMES and (not command or not cim_path or cim_path != xml_path):
+            reasons.append(f"unverified_process_identity:{pid}")
+        if process_type not in EXPECTED_GPU_ADMISSION["allowed_process_types"]:
+            reasons.append(f"unapproved_process_type:{pid}:{process_type}")
+        observations.append({"pid": pid, "name": name, "type": process_type, "known_workload": known})
+    active_engines: list[dict[str, Any]] = []
+    for engine in engines:
+        try:
+            raw_name = engine["Name"]
+            active = int(engine["UtilizationPercentage"])
+            match = re.fullmatch(r"pid_(\d+)_.*_phys_0_eng_\d+_engtype_(.+)", raw_name)
+            if match is None or not 1 <= active <= 100:
+                raise ValueError("unclassified active engine")
+            pid, engine_type = int(match[1]), match[2]
+            engine_process = processes.get(pid, {})
+            name = str(engine_process.get("Name", "")).casefold()
+        except (KeyError, TypeError, ValueError) as error:
+            raise PreflightError("GPU active engine inventory malformed") from error
+        if engine_type not in EXPECTED_GPU_ADMISSION["allowed_active_engine_types"] or name not in DISPLAY_PROCESS_NAMES:
+            reasons.append(f"unapproved_active_engine:{pid}:{engine_type}")
+        if pid not in seen_pids or GPU_WORKLOAD_RE.search(name + " " + str(engine_process.get("CommandLine") or "")):
+            reasons.append(f"unverified_active_engine_process:{pid}")
+        active_engines.append({"name": raw_name, "utilization_percent": active, "process_name": name})
+    if memory_used >= EXPECTED_GPU_ADMISSION["memory_used_limit_mib"]:
+        reasons.append("memory_headroom_insufficient")
     return {
-        "busy": compute_processes > 0 or utilization >= 10 or memory_used >= 4096,
-        "utilization_percent": utilization,
-        "memory_used_mib": memory_used,
-        "compute_process_count": compute_processes,
+        "busy": bool(reasons), "busy_reasons": reasons,
+        "admission_policy": EXPECTED_GPU_ADMISSION["policy"], "gpu_exclusive": False,
+        "performance_measurement": False, "observed_at_utc": datetime.now(timezone.utc).isoformat(),
+        "gpu_index": 0,
+        "utilization_percent": utilization, "memory_used_mib": memory_used,
+        "compute_process_count": known_workloads, "processes": observations, "active_engines": active_engines,
+        "c_plus_g_contexts_present": any(item["type"] == "C+G" for item in observations),
     }
+
+
+def query_gpu() -> dict[str, Any]:
+    xml_text = _gpu_command(["nvidia-smi", "-q", "-x"])
+    try:
+        pids = sorted({int(item.text or "") for item in ET.fromstring(xml_text).findall("gpu/processes/process_info/pid")})
+    except (ET.ParseError, ValueError) as error:
+        raise PreflightError("GPU process inventory malformed") from error
+    pid_literals = ",".join(str(pid) for pid in pids)
+    script = (
+        "$ErrorActionPreference='Stop'; "
+        "$engines=@(Get-CimInstance Win32_PerfFormattedData_GPUPerformanceCounters_GPUEngine | "
+        "Where-Object {$_.UtilizationPercentage -ge 1} | Select-Object Name,UtilizationPercentage); "
+        f"$taskGpuPids=@({pid_literals}); "
+        "$engines | ForEach-Object {if($_.Name -match '^pid_(\\d+)_') {$taskGpuPids += [int]$Matches[1]}}; "
+        "$processes=@(Get-CimInstance Win32_Process | Where-Object {$_.ProcessId -in $taskGpuPids} | "
+        "Select-Object ProcessId,Name,ExecutablePath,CommandLine); "
+        "ConvertTo-Json -InputObject @{processes=$processes; engines=$engines} -Depth 4 -Compress"
+    )
+    windows = json.loads(_gpu_command(["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script]))
+    return classify_gpu(xml_text, windows)
 
 
 def preflight(
@@ -292,7 +393,7 @@ class WindowsJob:
         self._accounting_type = BASIC_ACCOUNTING
 
     def assign(self, process: subprocess.Popen[Any]) -> None:
-        if not self._kernel32.AssignProcessToJobObject(self._handle, wintypes.HANDLE(process._handle)):
+        if not self._kernel32.AssignProcessToJobObject(self._handle, wintypes.HANDLE(getattr(process, "_handle"))):
             raise ctypes.WinError(ctypes.get_last_error())
 
     def active_processes(self) -> int:
@@ -478,6 +579,8 @@ def run_recording(
         return {"state": "waiting_gpu_idle", "reason": "gpu_busy"}
     public_dir, private_dir = reserved
     records = []
+    gpu_observations = []
+    gpu_observations_after = []
     for item in resolved:
         try:
             clip_gpu = (gpu_probe or query_gpu)()
@@ -498,7 +601,21 @@ def run_recording(
             return {"state": "waiting_gpu_idle", "reason": "gpu_busy"}
         if not private_dir.exists():
             private_dir.mkdir(parents=True, exist_ok=False)
+        gpu_observations.append({"clip_id": item["clip"]["id"], **clip_gpu})
+        _write_new_json(private_dir / f"gpu_before_{item['clip']['id']}.json", clip_gpu)
         records.append(_record_clip(protocol, item, isaac_lab, private_dir, timeout_s))
+        try:
+            after_gpu = (gpu_probe or query_gpu)()
+        except (OSError, subprocess.SubprocessError, ValueError) as error:
+            raise PreflightError("GPU status unavailable after clip") from error
+        _write_new_json(private_dir / f"gpu_after_{item['clip']['id']}.json", after_gpu)
+        if after_gpu["busy"]:
+            _set_status(public_dir / "status.json", {
+                "state": "aborted_gpu_busy", "reason": "gpu_busy_after_clip",
+                "partial_private_clips": len(records), "retry_requires_new_tag": True,
+            })
+            return {"state": "aborted_gpu_busy", "reason": "gpu_busy_after_clip"}
+        gpu_observations_after.append({"clip_id": item["clip"]["id"], **after_gpu})
 
     public_clips = []
     for record in records:
@@ -529,6 +646,21 @@ def run_recording(
         "same_case_as_active": False,
         "retraining_shown": False,
         "disallowed_claims": protocol["interpretation"]["disallowed_claims"],
+        "gpu_admission": protocol["gpu_admission"],
+        "gpu_observations_before_clips": [
+            {key: observation[key] for key in (
+                "clip_id", "admission_policy", "busy", "gpu_exclusive", "performance_measurement",
+                "observed_at_utc", "gpu_index", "utilization_percent", "memory_used_mib",
+                "compute_process_count", "c_plus_g_contexts_present",
+            )} for observation in gpu_observations
+        ],
+        "gpu_observations_after_clips": [
+            {key: observation[key] for key in (
+                "clip_id", "admission_policy", "busy", "gpu_exclusive", "performance_measurement",
+                "observed_at_utc", "gpu_index", "utilization_percent", "memory_used_mib",
+                "compute_process_count", "c_plus_g_contexts_present",
+            )} for observation in gpu_observations_after
+        ],
         "clips": public_clips,
         "source_bindings": protocol["public_sources"],
         "implementation_bindings": {

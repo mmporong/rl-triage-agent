@@ -9,7 +9,67 @@
   "play_py_sha256": "0966feac5a96812fca880e3731e96b001918b57fa372f69e4cf5fdca538bd7bd",
   "recorder_source": {
     "path": "bench/record_evidence_media.py",
-    "sha256_lf": "2184b11561ecb9edbd47c4df77a5350a27913d798b321297a76a3010e3ebd35f"
+    "sha256_lf": "5ae82f044aaf824fe4e19abb606da383e5cd0857916132b21bd708e1f2e61d65"
+  },
+  "gpu_admission": {
+    "policy": "desktop_shared_recording_v1",
+    "gpu_exclusive": false,
+    "performance_measurement": false,
+    "memory_used_limit_mib": 4096,
+    "gpu_index": 0,
+    "active_engine_min_percent": 1,
+    "protected_cim_name_only_process_names": [
+      "dwm.exe",
+      "remoting_desktop.exe",
+      "system",
+      "tabtip.exe"
+    ],
+    "guard_phases": [
+      "before_clip",
+      "after_clip"
+    ],
+    "allowed_process_types": [
+      "C+G",
+      "G"
+    ],
+    "allowed_display_process_names": [
+      "asus_framework.exe",
+      "chatgpt.exe",
+      "chrome.exe",
+      "codex-computer-use-swift.exe",
+      "crossdeviceresume.exe",
+      "discord.exe",
+      "dwm.exe",
+      "explorer.exe",
+      "lghub_system_tray.exe",
+      "microsoft.cmdpal.ui.exe",
+      "msedgewebview2.exe",
+      "nvidia overlay.exe",
+      "phoneexperiencehost.exe",
+      "powertoys.colorpickerui.exe",
+      "powertoys.exe",
+      "powertoys.fancyzones.exe",
+      "powertoys.peek.ui.exe",
+      "powertoys.quickaccess.exe",
+      "remoting_desktop.exe",
+      "searchhost.exe",
+      "shellexperiencehost.exe",
+      "shellhost.exe",
+      "slack.exe",
+      "startmenuexperiencehost.exe",
+      "system",
+      "tabtip.exe",
+      "textinputhost.exe",
+      "video.ui.exe",
+      "windowsterminal.exe"
+    ],
+    "allowed_active_engine_types": [
+      "3D",
+      "Copy",
+      "VideoDecode",
+      "VideoEncode"
+    ],
+    "unclassified_activity": "block"
   },
   "video_contract": {
     "width": 1280,

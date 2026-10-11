@@ -145,7 +145,7 @@ def test_gpu_busy_between_clips_marks_partial_tag_aborted(tmp_path, monkeypatch)
     second = copy.deepcopy(protocol["clips"][0])
     second["id"] = "second"
     protocol["clips"].append(second)
-    states = iter(({"busy": False}, {"busy": False}, {"busy": True}))
+    states = iter(({"busy": False}, {"busy": False}, {"busy": False}, {"busy": True}))
     monkeypatch.setattr(media, "_record_clip", lambda _protocol, item, *_args: {"clip": item["clip"]})
 
     result = media.run_recording(protocol, repo, isaac, "partial", 60, lambda: next(states))
@@ -170,6 +170,7 @@ def test_protocol_rejects_larger_evaluation(tmp_path):
         "task": media.EXPECTED_TASK, "seed": 42, "num_envs": 32, "video_length": 300,
         "kit_args": "--/app/vulkan=false --/app/window/hideUi=true", "play_py_sha256": "0" * 64,
         "recorder_source": {}, "video_contract": {},
+        "gpu_admission": media.EXPECTED_GPU_ADMISSION,
         "clips": [{"id": name} for name in media.EXPECTED_CLIP_IDS], "public_sources": [],
         "interpretation": {"scope": "old_checkpoint_playback", "same_case_as_active": False, "retraining_shown": False, "disallowed_claims": ["x"]},
     }), encoding="utf-8")
@@ -257,3 +258,105 @@ def test_job_assignment_failure_cleans_gated_wrapper_without_launching_child(tmp
     assert execution["own_pid_cleanup"] is True
     assert execution["residual_processes_observed"] == 0
     assert not (private / "before/videos").exists()
+
+
+def _gpu_fixture(*, name="chrome.exe", process_type="C+G", command=None, engine="3D", memory=1300, utilization=18):
+    path = f"C:/Program Files/App/{name}"
+    xml = (
+        f"<nvidia_smi_log><gpu><utilization><gpu_util>{utilization} %</gpu_util></utilization>"
+        f"<fb_memory_usage><used>{memory} MiB</used></fb_memory_usage><processes><process_info>"
+        f"<pid>42</pid><type>{process_type}</type><process_name>{path}</process_name>"
+        "</process_info></processes></gpu></nvidia_smi_log>"
+    )
+    windows = {
+        "processes": [{"ProcessId": 42, "Name": name, "ExecutablePath": path,
+                       "CommandLine": command or f'"{path}"'}],
+        "engines": [{"Name": f"pid_42_luid_0x00000000_0x000137F4_phys_0_eng_0_engtype_{engine}",
+                     "UtilizationPercentage": 2}],
+    }
+    return xml, windows
+
+
+def test_display_sharing_preserves_utilization_and_compute_context_limits():
+    result = media.classify_gpu(*_gpu_fixture(utilization=85))
+    assert result["busy"] is False
+    assert result["utilization_percent"] == 85
+    assert result["c_plus_g_contexts_present"] is True
+    assert result["gpu_exclusive"] is False
+    assert result["performance_measurement"] is False
+    assert result["admission_policy"] == "desktop_shared_recording_v1"
+    assert media.classify_gpu(*_gpu_fixture(name="msedgewebview2.exe", command="msedgewebview2.exe --user-agent=AppleWebKit/537.36"))["busy"] is False
+
+
+@pytest.mark.parametrize("kwargs", [
+    {"name": "unknown.exe"}, {"name": "python.exe"}, {"name": "ollama.exe"},
+    {"process_type": "C"}, {"process_type": "M"}, {"process_type": "O"}, {"process_type": "unknown"},
+    {"command": "chrome.exe --run=IsaacLab/python.exe"}, {"engine": "Compute_0"}, {"engine": "CUDA"},
+    {"engine": "unknown"}, {"memory": 4096},
+])
+def test_gpu_computing_or_unclassified_activity_blocks_shared_recording(kwargs):
+    result = media.classify_gpu(*_gpu_fixture(**kwargs))
+    assert result["busy"] is True
+    assert result["busy_reasons"]
+
+
+def test_gpu_memory_boundary_and_identity_checks():
+    assert media.classify_gpu(*_gpu_fixture(memory=4095))["busy"] is False
+    xml, windows = _gpu_fixture()
+    windows["processes"][0]["ExecutablePath"] = "C:/Different/chrome.exe"
+    assert media.classify_gpu(xml, windows)["busy"] is True
+    xml, windows = _gpu_fixture()
+    windows["processes"][0]["CommandLine"] = None
+    assert media.classify_gpu(xml, windows)["busy"] is True
+    xml, windows = _gpu_fixture()
+    xml = xml.replace("<process_name>C:/Program Files/App/chrome.exe</process_name>", "<process_name></process_name>")
+    assert media.classify_gpu(xml, windows)["busy"] is True
+
+
+@pytest.mark.parametrize("name", sorted(media.PROTECTED_DISPLAY_NAMES))
+def test_protected_display_identity_can_use_cim_name_when_xml_name_is_unavailable(name):
+    xml, windows = _gpu_fixture(name=name)
+    xml = xml.replace(f"<process_name>C:/Program Files/App/{name}</process_name>", "<process_name></process_name>")
+    windows["processes"][0].update(ExecutablePath=None, CommandLine=None)
+    assert media.classify_gpu(xml, windows)["busy"] is False
+    windows["processes"][0]["CommandLine"] = "python.exe"
+    assert media.classify_gpu(xml, windows)["busy"] is True
+    windows["processes"][0]["CommandLine"] = None
+    assert media.classify_gpu(xml.replace("<type>C+G</type>", "<type>C</type>"), windows)["busy"] is True
+    windows["engines"][0]["Name"] = windows["engines"][0]["Name"].replace("engtype_3D", "engtype_Compute_0")
+    assert media.classify_gpu(xml, windows)["busy"] is True
+    windows["engines"][0]["Name"] = windows["engines"][0]["Name"].replace("engtype_Compute_0", "engtype_3D")
+    mismatched = xml.replace("<process_name></process_name>", "<process_name>other.exe</process_name>")
+    assert media.classify_gpu(mismatched, windows)["busy"] is True
+    windows["processes"] = []
+    assert media.classify_gpu(xml, windows)["busy"] is True
+
+
+def test_busy_after_capture_preserves_private_clip_and_blocks_public_manifest(tmp_path, monkeypatch):
+    repo, isaac, protocol, _checkpoint = _fixture(tmp_path)
+    _tools(monkeypatch, tmp_path)
+    states = iter(({"busy": False}, {"busy": False}, {"busy": True}))
+    monkeypatch.setattr(media, "_record_clip", lambda _protocol, item, *_args: {"clip": item["clip"]})
+    result = media.run_recording(protocol, repo, isaac, "busy-after", 60, lambda: next(states))
+    assert result == {"state": "aborted_gpu_busy", "reason": "gpu_busy_after_clip"}
+    assert (repo / "bench/private/media_capture_busy-after/gpu_after_before.json").is_file()
+    assert not (repo / "docs/media/recovery-c01-busy-after/source_manifest.json").exists()
+
+
+@pytest.mark.parametrize("attack", ["bad_xml", "missing_cim", "duplicate_pid", "missing_engines", "bad_engine_pid", "second_gpu"])
+def test_gpu_inventory_faults_reject_before_recording(attack):
+    xml, windows = _gpu_fixture()
+    if attack == "bad_xml":
+        xml = "<broken"
+    elif attack == "missing_cim":
+        windows = {}
+    elif attack == "duplicate_pid":
+        windows["processes"].append(windows["processes"][0])
+    elif attack == "missing_engines":
+        del windows["engines"]
+    elif attack == "bad_engine_pid":
+        windows["engines"][0]["Name"] = "unclassified"
+    elif attack == "second_gpu":
+        xml = xml.replace("</nvidia_smi_log>", "<gpu/></nvidia_smi_log>")
+    with pytest.raises(media.PreflightError):
+        media.classify_gpu(xml, windows)

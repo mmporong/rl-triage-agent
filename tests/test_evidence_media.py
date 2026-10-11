@@ -68,11 +68,19 @@ def recovery_repo(tmp_path_factory):
         "same_case_as_active": False, "retraining_shown": False,
         "disallowed_claims": protocol["interpretation"]["disallowed_claims"],
         "clips": clips, "source_bindings": protocol["public_sources"],
+        "gpu_admission": protocol["gpu_admission"],
+        "gpu_observations_before_clips": [{
+            "clip_id": clip["id"], "admission_policy": "desktop_shared_recording_v1", "busy": False,
+            "gpu_exclusive": False, "performance_measurement": False, "gpu_index": 0,
+            "compute_process_count": 0, "memory_used_mib": 1300, "utilization_percent": 15,
+            "c_plus_g_contexts_present": True, "observed_at_utc": "2026-10-11T06:30:00+00:00",
+        } for clip in clips],
         "implementation_bindings": {
             "protocol": {"path": protocol_relative.as_posix(), "sha256_lf": media.RECOVERY_PROTOCOL_SHA256_LF},
             "recorder": protocol["recorder_source"], "play_py_sha256": protocol["play_py_sha256"],
         },
     }
+    manifest["gpu_observations_after_clips"] = [dict(row) for row in manifest["gpu_observations_before_clips"]]
     (output / "source_manifest.json").write_text(json.dumps(manifest, ensure_ascii=False), encoding="utf-8")
     (output / "status.json").write_text(json.dumps({"state": "complete", "clips": 3}), encoding="utf-8")
     (output / "overlay.ppm").write_bytes(b"P6\n1280 720\n255\n" + b"\xff\xff\xff" * (1280 * 720))
@@ -289,7 +297,8 @@ def test_recovery_pair_renders_one_chapter_below_source_duration(recovery_repo, 
 @pytest.mark.parametrize("attack", [
     "missing_clip", "partial_status", "wrong_clipset", "video_tamper",
     "source_binding", "embedded_probe", "cleanup", "unsafe_path", "protocol_tamper",
-    "manifest_symlink", "video_symlink", "parent_symlink",
+    "manifest_symlink", "video_symlink", "parent_symlink", "gpu_exclusive", "gpu_busy", "gpu_memory",
+    "gpu_timestamp", "gpu_contexts", "gpu_after_busy",
 ])
 def test_recovery_manifest_rejects_partial_or_tampered_capture(recovery_repo, tmp_path, monkeypatch, attack):
     fixture_root, fixture_manifest = recovery_repo
@@ -320,6 +329,18 @@ def test_recovery_manifest_rejects_partial_or_tampered_capture(recovery_repo, tm
         protocol = media.load_json(protocol_path)
         protocol["video_length"] = 301
         protocol_path.write_text(json.dumps(protocol), encoding="utf-8")
+    elif attack == "gpu_exclusive":
+        manifest["gpu_admission"]["gpu_exclusive"] = True
+    elif attack == "gpu_busy":
+        manifest["gpu_observations_before_clips"][0]["busy"] = True
+    elif attack == "gpu_memory":
+        manifest["gpu_observations_before_clips"][0]["memory_used_mib"] = 4096
+    elif attack == "gpu_timestamp":
+        manifest["gpu_observations_before_clips"][0]["observed_at_utc"] = "2026-10-11T06:30:00"
+    elif attack == "gpu_contexts":
+        del manifest["gpu_observations_before_clips"][0]["c_plus_g_contexts_present"]
+    elif attack == "gpu_after_busy":
+        manifest["gpu_observations_after_clips"][0]["busy"] = True
     elif attack == "manifest_symlink":
         original = media._is_reparse
         monkeypatch.setattr(media, "_is_reparse", lambda path: path == manifest_path or original(path))
