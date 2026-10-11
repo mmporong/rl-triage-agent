@@ -16,6 +16,12 @@ The [active diagnosis host driver](docs/ACTIVE-DIAGNOSIS.md) connects a fresh Ne
 
 The [current active integration results](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md) contain 8 audited model cases and two independently executed rule baselines. All model records pass integrity checks, but **0/8 pass the measurement-dependent judgment-change criterion**. Seven model cases remain on HOLD. The recorded costs therefore do not establish diagnosis or savings superiority.
 
+The [evidence video](docs/media/evidence-v2-20261011-review3/evidence.mp4) and [short GIF](docs/media/evidence-v2-20261011-review3/evidence-summary.gif) show failure observation, probe selection, measurement and the resulting HOLD. Separate chapters identify earlier policy replay and a different rollback experiment. The [source manifest](docs/media/evidence-v2-20261011-review3/manifest.json) binds the footage, recorded measurements and rendered artifacts. The separate rollback improved the recorded survival interval; this edition does not contain its recovery playback or establish an AI-caused policy improvement.
+
+[![15-second evidence replay: failure observation, chosen measurement, HOLD and separate rollback results](docs/media/evidence-v2-20261011-review3/evidence-summary.gif)](docs/media/evidence-v2-20261011-review3/evidence.mp4)
+
+An [additional Brev integration attempt](docs/ACTIVE-DIAGNOSIS-V3-RESULT.md) preserves all 24 terminal records, including infrastructure failures. Both full rule-baseline audits failed, so that attempt is excluded from performance comparisons.
+
 > 한국어 요약은 [아래](#한국어-요약)에 있습니다.
 
 ## Screenshot
@@ -261,5 +267,7 @@ This re-derives past numbers; it is not new performance evidence. Two early file
 [관측 후 판단 갱신 드라이버](docs/ACTIVE-DIAGNOSIS.md)는 새 Nemotron 호출이 고른 검사를 승인 원장과 실제 Isaac 실행에 연결합니다. 측정값을 받은 모델의 원문 순위와 규칙 판정은 따로 남기고, 최신 결과를 가린 호출 및 단순 규칙 두 방식의 실행과 비교합니다. 진단과 가림 검증의 상태를 구분해 대조 호출이 잘못돼도 유효한 실제 판단을 이어가며, 해당 쌍은 발표 증거에서 제외합니다. 이미 본 입력의 통합 기록이며 정확도 향상이나 GPU 절감으로 해석하지 않습니다.
 
 [현재 통합 결과](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md)는 모델 8사례와 별도 실행한 규칙 두 방식을 포함합니다. 모델 기록 감사는 8/8 통과했지만, 측정 때문에 판단이 바뀌었다는 기준은 **0/8**입니다. 모델 7사례가 HOLD이며 진단 우위나 절감은 입증하지 못했습니다.
+
+[영상](docs/media/evidence-v2-20261011-review3/evidence.mp4)과 [GIF](docs/media/evidence-v2-20261011-review3/evidence-summary.gif)는 실패 관찰부터 검사 선택·측정·보류까지 보여줍니다. 과거 정책 재생과 별도 원복 실험의 개선 수치는 구분해 표시하고, [manifest](docs/media/evidence-v2-20261011-review3/manifest.json)에서 출처와 산출물 해시를 확인할 수 있습니다. 별도 원복의 생존 구간은 개선됐지만, 이 판본에는 개선 후 정책의 재생 영상이 없습니다. [추가 Brev 실행](docs/ACTIVE-DIAGNOSIS-V3-RESULT.md)은 인프라 실패를 포함한 24건의 종료 기록을 보존하며, 전체 성능 비교에는 사용하지 않습니다.
 
 에이전트는 OpenShell 샌드박스 안에서 설정·안전 게이트·보상을 건드릴 수 없고, 권한 요청은 openshell-prover가 현장 경계와 비교해 증명되지 않으면 자동 거절합니다. 별도 T2 게이트는 사전등록된 행동 평가가 healthy이면 추가 고리를 열지 않습니다. 실제 실행 기록과 실패 판정은 위 결과와 연결된 문서에 보존합니다.

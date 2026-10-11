@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "protocol_id": "evidence_media_c01_v1",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+  "seed": 42,
+  "num_envs": 16,
+  "video_length": 300,
+  "kit_args": "--/app/vulkan=false --/app/window/hideUi=true",
+  "play_py_sha256": "0966feac5a96812fca880e3731e96b001918b57fa372f69e4cf5fdca538bd7bd",
+  "recorder_source": {
+    "path": "bench/record_evidence_media.py",
+    "sha256_lf": "2184b11561ecb9edbd47c4df77a5350a27913d798b321297a76a3010e3ebd35f"
+  },
+  "video_contract": {
+    "width": 1280,
+    "height": 720,
+    "frame_rate": "50/1",
+    "frame_count": 299,
+    "duration_s": 5.98,
+    "duration_tolerance_s": 0.02
+  },
+  "clips": [
+    {
+      "id": "before",
+      "run_basename": "2026-09-26_11-45-52_c01_s42",
+      "checkpoint": "model_99.pt",
+      "checkpoint_sha256": "9457e8692bc9d5aacd72c992da558a1d6a92c15c9e8dde6d94ce985466ca888b",
+      "params_env_sha256": "839b63be705ed0f2868e9afbefb74d21541ef8a1afdf3edb0da749f49c8ae38d",
+      "params_agent_sha256": "35efc1b902067fb2cc4820adbf335a0ba354b3011dcb8859eff25619030b22d6",
+      "episode_length_s": 1.0,
+      "overrides": [
+        "env.rewards.action_rate_l2.weight=-0.012",
+        "env.rewards.dof_acc_l2.weight=-3.0e-07",
+        "env.episode_length_s=1.0"
+      ]
+    },
+    {
+      "id": "true_rollback",
+      "run_basename": "2026-09-26_14-21-21_c01_revert_ch3_s42",
+      "checkpoint": "model_99.pt",
+      "checkpoint_sha256": "28bd8dcf430e1a6a7e406a50ceb475e540f84c111dd1b6cf66de328a991f4dbd",
+      "params_env_sha256": "c45a8ef5e529a899539f2aeb556f9da3a05cb22f7555b057c1f5248421716b55",
+      "params_agent_sha256": "c357095d12d460f8a95f4d17081701b2e3692d0d9f69577cf429e0a028bd5b1d",
+      "episode_length_s": 20.0,
+      "overrides": [
+        "env.rewards.action_rate_l2.weight=-0.012",
+        "env.rewards.dof_acc_l2.weight=-3.0e-07",
+        "env.episode_length_s=20.0"
+      ]
+    },
+    {
+      "id": "benign_rollback",
+      "run_basename": "2026-09-26_14-23-41_c01_revert_ch1_s42",
+      "checkpoint": "model_99.pt",
+      "checkpoint_sha256": "513aace1f47ddf40f0a96f8b7661a79871c645c64460ed95c3e0d068a814989a",
+      "params_env_sha256": "afea059ad135c3e0c50cfa127a53186ddf38f05b0c6e73d1465c9eb08147457b",
+      "params_agent_sha256": "909b41a541b9575884742b6816e9404ba3b17bb5b28a33ccb9891b667b49d461",
+      "episode_length_s": 1.0,
+      "overrides": [
+        "env.rewards.action_rate_l2.weight=-0.01",
+        "env.rewards.dof_acc_l2.weight=-3.0e-07",
+        "env.episode_length_s=1.0"
+      ]
+    }
+  ],
+  "public_sources": [
+    {"path": "bench/runs/c01_s42.telemetry.json", "sha256_lf": "737ba46566d3ef0f956bc9e48a1bc3d852367261050119adcff0dd49e914b943"},
+    {"path": "bench/runs/c01_revert_ch3_s42.telemetry.json", "sha256_lf": "806b94f9610ceb93de68bfc16181b07944abcfc761e031a05c430a076a63344b"},
+    {"path": "bench/runs/c01_revert_ch1_s42.telemetry.json", "sha256_lf": "a0889387855c8934f28de19d18e24c4a47a3f2894253ed340a00f1016fb7d69d"},
+    {"path": "evals/results/bridge_smoke.json", "sha256_lf": "2a2885fd8bff0c13cc3ca6531374ca0e139ea8f14afe5bd099527a2ae2d53706"},
+    {"path": "evals/results/p0b1_relabel_20261008/relabel.json", "sha256_lf": "5df664ca32f51dc6a5397302ee24a4b322d6a3615869e3b081de85fe406a061c"}
+  ],
+  "interpretation": {
+    "true_rollback": {"survival_s": 19.9446, "horizon_s": 20.0, "fall_frac": 0.0024, "label": "healthy"},
+    "benign_rollback": {"survival_s": 1.0, "horizon_s": 1.0, "fall_frac": 0.0, "label": "undetermined"},
+    "scope": "old_checkpoint_playback",
+    "same_case_as_active": false,
+    "retraining_shown": false,
+    "disallowed_claims": ["normal_walking_policy", "ai_improvement_completed", "fresh_v3_event", "retraining_event"]
+  }
+}

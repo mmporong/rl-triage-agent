@@ -1,0 +1,124 @@
+{
+  "schema": "evidence_media_v1",
+  "created_at": "2026-10-11T05:28:03.249947+00:00",
+  "frozen_replay_commit": "d0a9bfe51a86ca0f837ef23b2b06133ddadb9053",
+  "selected_case": "h01_s2027",
+  "selection": "first_registered_honest_hold_fallback",
+  "primary_verified": 0,
+  "primary_total": 8,
+  "chapters": [
+    {
+      "name": "기존 기준/결함 재생",
+      "kind": "actual_video_replay",
+      "scope": "legacy_100_iter_reference_only",
+      "recovery_video": false
+    },
+    {
+      "name": "V2 active 진단",
+      "kind": "frozen_record_replay",
+      "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+      "recovery_measured": false
+    },
+    {
+      "name": "별도 원복·재학습 검증",
+      "kind": "measured_separate_run",
+      "same_case_as_active": false,
+      "recovery_video": false
+    }
+  ],
+  "sources": {
+    "active_snapshot": {
+      "path": "docs/demo/active-diagnosis-v2.json",
+      "sha256_lf": "f1f3a9833a7f571663d11facdb4538515c6511b4b90c862ebe4c3ab140375060",
+      "verified_entries": 345
+    },
+    "bridge_smoke": {
+      "path": "evals/results/bridge_smoke.json",
+      "sha256_lf": "2a2885fd8bff0c13cc3ca6531374ca0e139ea8f14afe5bd099527a2ae2d53706"
+    },
+    "recovery_relabel": {
+      "path": "evals/results/p0b1_relabel_20261008/relabel.json",
+      "sha256_lf": "5df664ca32f51dc6a5397302ee24a4b322d6a3615869e3b081de85fe406a061c"
+    },
+    "baseline_video": {
+      "path": "docs/media/baseline_s42_play.mp4",
+      "sha256": "592441aac403b9c6d5199a2788577884e8c22a30245952fe0b5dcaba85c4d539",
+      "classification": "actual_replay_reference_only"
+    },
+    "failure_video": {
+      "path": "docs/media/c04_s42_play.mp4",
+      "sha256": "168b91ee973286a0ce78918752845b8c03e56edb9da27649c016923cb6f4ad14",
+      "classification": "actual_replay_failure_only"
+    }
+  },
+  "artifacts": {
+    "evidence.mp4": {
+      "path": "evidence.mp4",
+      "sha256": "dd3de733c862e2693dfb65d4048dc5db8a6a4e5c027727a58eea77b844a1eef6",
+      "bytes": 2231281,
+      "duration_s": 55.0,
+      "width": 1280,
+      "height": 720,
+      "codec": "h264"
+    },
+    "evidence-summary.gif": {
+      "path": "evidence-summary.gif",
+      "sha256": "3d2d5707d269c910894d33f230f11025c2db8fb6c314810c3f0e8fc722660446",
+      "bytes": 709143,
+      "duration_s": 15.0,
+      "width": 640,
+      "height": 360,
+      "codec": "gif"
+    },
+    "poster.png": {
+      "path": "poster.png",
+      "sha256": "2c050aceac111a45b0e07b11a1b86eaa2f623648b27af64b43bcf0e8bbf11c5b",
+      "bytes": 27441
+    },
+    "00_title.png": {
+      "path": "00_title.png",
+      "sha256": "e06f89576693db2e001c076d2b62c9c1de815f907e240898a4a1a591d59f71be",
+      "bytes": 28216
+    },
+    "01_reference_overlay.png": {
+      "path": "01_reference_overlay.png",
+      "sha256": "543a9ddaf7be3e24ac40c0af910f528948750b403a879fe2416127dbb133b024",
+      "bytes": 21994
+    },
+    "02_inspect.png": {
+      "path": "02_inspect.png",
+      "sha256": "f69ca10d1f8ae6a24d22240d6e2a1f3934a9f9ac143374aa02e4449d49e4b689",
+      "bytes": 31424
+    },
+    "03_measure.png": {
+      "path": "03_measure.png",
+      "sha256": "5fe0d27385ebf5f4da0d1d534a6b03dcad4678eccde0fd3f973ea298dc570eae",
+      "bytes": 32479
+    },
+    "04_decision.png": {
+      "path": "04_decision.png",
+      "sha256": "f7112a63fe7f427e5f7c0203dc8bd4bd9c985bd68574e47aefc5b8cc40a326f9",
+      "bytes": 30827
+    },
+    "05_audit.png": {
+      "path": "05_audit.png",
+      "sha256": "b62cd5217a11c1a657931b4337fdf6d536e7540cf6f1cff73916fa089dc5c90b",
+      "bytes": 29205
+    },
+    "06_recovery.png": {
+      "path": "06_recovery.png",
+      "sha256": "0f4913b0a2ce9bcc55b78c04f785d98aff305fdf357a8318593010c4eaf84547",
+      "bytes": 34005
+    },
+    "07_control.png": {
+      "path": "07_control.png",
+      "sha256": "5d00f308f150e8e1658268318354d637af6d5991a8ddfdece50d8168939a6e89",
+      "bytes": 31864
+    }
+  },
+  "disclosures": [
+    "V2 active 사례의 회복은 미측정",
+    "별도 재학습 회복은 수치로 확인했지만 회복 로봇 영상은 미확보",
+    "판단 갱신, 정답, 회복은 서로 다른 판정"
+  ]
+}
