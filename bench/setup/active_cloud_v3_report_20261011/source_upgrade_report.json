@@ -1,0 +1,56 @@
+{
+  "schema": "cloud_source_upgrade_v1",
+  "created_at": "2026-10-11T04:16:47.632945+00:00",
+  "source_commit": "be556ec2c384f5cd9390bc177ff9374dfb83e3d9",
+  "protocol_sha256_lf": "e67c8739f82f24dbf6a8ceb67fab2c07aec1ad0fdda2bed7b68d8b113312308e",
+  "scope": "source_and_metadata_setup_no_model_or_Isaac",
+  "instance": "marked-lavender-warbler",
+  "workspace_basename": "rl-triage-active-evidence-20261011",
+  "environment": {
+    "ubuntu": "22.04",
+    "ubuntu_version": "22.04.5 LTS (Jammy Jellyfish)",
+    "python": "3.10.12",
+    "isaac_sim": "4.5.0.0",
+    "isaac_lab_sha": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "torch": "2.7.0+cu128",
+    "cuda": "12.8.57",
+    "rsl_rl": "2.3.3",
+    "gymnasium": "1.2.0",
+    "python_relpath": "venv/bin/python",
+    "isaaclab_relpath": "IsaacLab",
+    "owner_marker_basename": ".rl-triage-active-evidence-owner.json",
+    "owner_marker_sha256": "9e58fc24ffb586a4dd7fa0a0265bc5441c7959dcb3dfb871a147a017f17e2f72"
+  },
+  "upgrade": {
+    "ok": true,
+    "previous_sha256_lf": "ed3aa4f4a77607508f541be993686679bec4467095a59eb1651c7b29b270972b",
+    "current_sha256_lf": "6804e20b8aa219478ebe8effe87095de62b3de5f7ef0c578a853404d8a47b3e9"
+  },
+  "verified": true,
+  "source_sha256_lf": {
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "evals/run_active_diagnosis.py": "18d729db731fb72728d165456f590e3149b4d670c88eba3e0de1964c514eeaa5",
+    "evals/brev_probe_backend.py": "065b4aa864085e93f0d2f091c5b86d6b090983e35fdc79588ad1f1884662c393",
+    "evals/active_model_call.py": "10349545f07071226213e10bcbaf617609bdb32e8f29b734e064fe760356ae3e",
+    "evals/loop.py": "270b9986a66ac1c7570693ed8d5dfe2ca0f5d1067cbfdedfb7b86be019dbb26d",
+    "evals/run_probes.py": "574139012a872eb5f42fef9282ae15bf7c626823b86e1553730e8717fc4db116",
+    "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+    "evals/metered_probes.py": "8f938e7b0d4d3317136d45348f43326b74dd3b4ab315143e542cac26c1f13252",
+    "evals/run_fixed_eval.py": "6a822fbdbc7cc93c8b77dce9391195d4859edab7573f7c7644f39427e01c0675",
+    "evals/audit_active_diagnosis.py": "8cf62ad6072f7d8a759451857853eaa6fa5df2fb39e65c91ceca3db2fd679cf9",
+    "evals/build_active_replay.py": "f896e37924414439cf47d5aba867cb07d0e0bad218f501e3c9c99c29983807ed",
+    "bench/cloud_runtime_smoke.py": "6804e20b8aa219478ebe8effe87095de62b3de5f7ef0c578a853404d8a47b3e9",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/external_faults.py": "33e0bcb7b4b5db8669bf1aaccd96f4eefe5b542fb5b564f69c1822081f18955d"
+  },
+  "gpu_readiness": {
+    "gpu_utilization_pct": 0,
+    "memory_mib": 0,
+    "memory_total_mib": 46068,
+    "other_compute_pids": [],
+    "ready": true,
+    "busy_reasons": []
+  }
+}
