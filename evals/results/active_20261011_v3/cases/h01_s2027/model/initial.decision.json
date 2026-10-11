@@ -1,0 +1,28 @@
+{
+  "ranking": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "probe": "P_reward",
+  "action": "continue",
+  "reason": "Initial decision: highest mean reward deviation from reference suggests reward mechanism as top suspect.",
+  "claims": [
+    {
+      "id": "telemetry:case:Train/mean_reward",
+      "value": 12.917047500610352
+    },
+    {
+      "id": "telemetry:reference:Train/mean_reward",
+      "value": 33.80788917541504
+    }
+  ],
+  "expected_outcomes": {
+    "reward": "abnormal",
+    "actuator": "normal",
+    "exploration": "normal"
+  }
+}

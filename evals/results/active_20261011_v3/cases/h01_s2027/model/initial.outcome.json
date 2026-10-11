@@ -1,0 +1,41 @@
+{
+  "stage": "initial",
+  "status": "valid",
+  "packet_sha256_lf": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636",
+  "attempts": [
+    {
+      "path": "model/initial.attempt1.json",
+      "sha256_lf": "665bc2a49c9e097038386767da7695a7f504f0619decbdc509f446ddbaafaca2"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_reward",
+    "action": "continue",
+    "reason": "Initial decision: highest mean reward deviation from reference suggests reward mechanism as top suspect.",
+    "claims": [
+      {
+        "id": "telemetry:case:Train/mean_reward",
+        "value": 12.917047500610352
+      },
+      {
+        "id": "telemetry:reference:Train/mean_reward",
+        "value": 33.80788917541504
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "abnormal",
+      "actuator": "normal",
+      "exploration": "normal"
+    }
+  },
+  "decision_sha256_lf": "4164265868f0c8b8c1b7e732e6a63321171c01193be094a694b67b389b801ab1",
+  "error": null
+}

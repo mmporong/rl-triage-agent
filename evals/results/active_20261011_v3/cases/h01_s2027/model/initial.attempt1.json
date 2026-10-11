@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636",
+  "messages_sha256": "cc1b4feb44f2718539dbd49e5a1c5e8a4ea173445f3dad980f2f5435696861b8",
+  "started_at": "2026-10-11T04:19:05.097887+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-c9a07240-fe32-4355-8e1e-c33d0c85b828",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2826,
+  "output_tokens": 198,
+  "total_tokens": 3024,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Initial decision: highest mean reward deviation from reference suggests reward mechanism as top suspect.\",\n  \"claims\": [\n    {\n      \"id\": \"telemetry:case:Train/mean_reward\",\n      \"value\": 12.917047500610352\n    },\n    {\n      \"id\": \"telemetry:reference:Train/mean_reward\",\n      \"value\": 33.80788917541504\n    }\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T04:19:07.485206+00:00",
+  "execution_wall_s": 2.387316177948378,
+  "cpu_s": 0.8145630430000002,
+  "exit_code": 0
+}

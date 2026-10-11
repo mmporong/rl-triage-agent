@@ -1,0 +1,49 @@
+{
+  "schema": "active_cohort_status_v1",
+  "created_at": "2026-10-11T04:41:41.391704+00:00",
+  "status": "aborted_common_infrastructure_error",
+  "source_commit": "be556ec2c384f5cd9390bc177ff9374dfb83e3d9",
+  "protocol_sha256_lf": "e67c8739f82f24dbf6a8ceb67fab2c07aec1ad0fdda2bed7b68d8b113312308e",
+  "registered_executions": 24,
+  "finished_records": 4,
+  "hold_records": 4,
+  "unfinished_folders": [
+    "evals/results/active_20261011_v3_cheap/cases/h02_s2027"
+  ],
+  "completed_records": [
+    {
+      "tag": "active_20261011_v3",
+      "case": "h01_s2027",
+      "status": "hold",
+      "stop_reason": "cost_artifact_invalid",
+      "result_sha256_lf": "813ae1fd0de57e0a2750fc08f359f32b68af656da91761eb652c92921008bf71"
+    },
+    {
+      "tag": "active_20261011_v3_fixed",
+      "case": "h01_s2027",
+      "status": "hold",
+      "stop_reason": "cost_artifact_invalid",
+      "result_sha256_lf": "d6cc2eea8ef70b2e17337f0df62945474ad211f429095266e67a9f0a90b60728"
+    },
+    {
+      "tag": "active_20261011_v3_fixed",
+      "case": "h02_s2027",
+      "status": "hold",
+      "stop_reason": "cost_artifact_invalid",
+      "result_sha256_lf": "985c07976283090fc1a423ed83dd01380388b9b799cbbb131a70025ea0634f4f"
+    },
+    {
+      "tag": "active_20261011_v3_cheap",
+      "case": "h01_s2027",
+      "status": "hold",
+      "stop_reason": "cost_artifact_invalid",
+      "result_sha256_lf": "6e43f4e34615032556258e5f65b8a382e1f8fe6fa375fca289b10c4b6cd1853c"
+    }
+  ],
+  "confirmed_failure": "noninteractive_EULA_input_EOF_before_Isaac_initialization",
+  "successful_measurements": 0,
+  "causal_scene_evaluation": "not_run_no_valid_receipts",
+  "controller_comparison": "not_run_incomplete_24_case_cohort",
+  "practicality_grade": "not_run",
+  "retry_protocol": "bench/protocols/active_diagnosis_v3_eula.json"
+}

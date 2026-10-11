@@ -1,0 +1,108 @@
+{
+  "case": "h01_s2027",
+  "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+  "protocol_sha256_lf": "e67c8739f82f24dbf6a8ceb67fab2c07aec1ad0fdda2bed7b68d8b113312308e",
+  "stage": "1",
+  "reference_source": {
+    "path": "evals/results/p1a_probes_holdout_20261009/probes/baseline_p0c_s2027.json",
+    "sha256_lf": "d66fd6fd03c2442ed8f541736dafb0e87c566f9476e428cc367ba87f20b793fb"
+  },
+  "prior_receipt_digests": [],
+  "binding": {
+    "controller": "model",
+    "packet_sha256_lf": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636",
+    "model_call_sha256_lf": "665bc2a49c9e097038386767da7695a7f504f0619decbdc509f446ddbaafaca2",
+    "decision_sha256_lf": "4164265868f0c8b8c1b7e732e6a63321171c01193be094a694b67b389b801ab1",
+    "protocol_sha256_lf": "e67c8739f82f24dbf6a8ceb67fab2c07aec1ad0fdda2bed7b68d8b113312308e"
+  },
+  "budget_probes": 2,
+  "probe_backend": {
+    "name": "brev",
+    "instance": "marked-lavender-warbler",
+    "workspace_basename": "rl-triage-active-evidence-20261011",
+    "environment": {
+      "ubuntu": "22.04",
+      "ubuntu_version": "22.04.5 LTS (Jammy Jellyfish)",
+      "python": "3.10.12",
+      "isaac_sim": "4.5.0.0",
+      "isaac_lab_sha": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+      "torch": "2.7.0+cu128",
+      "cuda": "12.8.57",
+      "rsl_rl": "2.3.3",
+      "gymnasium": "1.2.0",
+      "python_relpath": "venv/bin/python",
+      "isaaclab_relpath": "IsaacLab",
+      "owner_marker_basename": ".rl-triage-active-evidence-owner.json",
+      "owner_marker_sha256": "9e58fc24ffb586a4dd7fa0a0265bc5441c7959dcb3dfb871a147a017f17e2f72"
+    },
+    "environment_digest": "0bd10902ac128081bf608c21caff1ab7f8895362e8290fb77ea28d36d3b44445",
+    "source_sha256_lf": {
+      "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+      "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+      "evals/run_active_diagnosis.py": "18d729db731fb72728d165456f590e3149b4d670c88eba3e0de1964c514eeaa5",
+      "evals/brev_probe_backend.py": "065b4aa864085e93f0d2f091c5b86d6b090983e35fdc79588ad1f1884662c393",
+      "evals/active_model_call.py": "10349545f07071226213e10bcbaf617609bdb32e8f29b734e064fe760356ae3e",
+      "evals/loop.py": "270b9986a66ac1c7570693ed8d5dfe2ca0f5d1067cbfdedfb7b86be019dbb26d",
+      "evals/run_probes.py": "574139012a872eb5f42fef9282ae15bf7c626823b86e1553730e8717fc4db116",
+      "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+      "evals/metered_probes.py": "8f938e7b0d4d3317136d45348f43326b74dd3b4ab315143e542cac26c1f13252",
+      "evals/run_fixed_eval.py": "6a822fbdbc7cc93c8b77dce9391195d4859edab7573f7c7644f39427e01c0675",
+      "evals/audit_active_diagnosis.py": "8cf62ad6072f7d8a759451857853eaa6fa5df2fb39e65c91ceca3db2fd679cf9",
+      "evals/build_active_replay.py": "f896e37924414439cf47d5aba867cb07d0e0bad218f501e3c9c99c29983807ed",
+      "bench/cloud_runtime_smoke.py": "6804e20b8aa219478ebe8effe87095de62b3de5f7ef0c578a853404d8a47b3e9",
+      "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+      "bench/external_faults.py": "33e0bcb7b4b5db8669bf1aaccd96f4eefe5b542fb5b564f69c1822081f18955d"
+    },
+    "source_set_digest": "f82739a1b1cebabbefb1d0cd95e5d6028b73c9badd82decb1f32a413932b30d1",
+    "checkpoint_set": [
+      {
+        "role": "last",
+        "file": "model_299.pt",
+        "sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531"
+      }
+    ],
+    "jobs_sha256": "3caad0bb9776301e6f4dc368ae34c1470eddea2242c152c4e8d64e98e4cba6c2",
+    "owner_binding_digest": "8e0aa65a3a03a3b872abd2439090793d7cdef755710fd65fda6f5bf7afb3daae",
+    "preapproval_transport_wall_s": 90.88400890002958,
+    "launcher_watchdog_s": 360,
+    "gpu_snapshot_sha256_lf": "1b58c71b3573bbc9242dc76ad15d6c984c277eca52965e5b31c6084941180b0f"
+  },
+  "probe": "P_reward",
+  "args": {
+    "rollout_steps": 200,
+    "num_envs": 256
+  },
+  "thresholds": {
+    "P_noise": [
+      "noise_ratio",
+      "absolute_log2",
+      1.0
+    ],
+    "P_value": [
+      "critic_change",
+      "ratio_below",
+      0.1
+    ],
+    "P_reward": [
+      "track_lin_vel_xy_exp_rel_error",
+      "above",
+      0.05
+    ],
+    "P_torque": [
+      "low_speed_saturation",
+      "ratio_above",
+      3.0
+    ],
+    "P_physics": [
+      "mismatch_count",
+      "above",
+      0.5
+    ],
+    "P_episode": [
+      "timeout_ratio",
+      "below",
+      0.9
+    ]
+  }
+}
