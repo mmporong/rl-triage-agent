@@ -493,12 +493,17 @@ def card_spec(evidence: VerifiedEvidence, recovery_media: VerifiedRecoveryMedia 
         {"filename": "poster.png", "eyebrow": "RL Triage Agent · 근거 영상", "title": "실패 → 검사 → 측정 → HOLD", "body": [f"active 판단 갱신 증거 {evidence.primary_count}/{total}", f"등록 첫 사례 {selected['case']}: {result.get('status', '').upper()}", "별도 재학습 회복 수치는 확인, 회복 영상은 미확보"], "badge": "검증된 범위만", "badge_kind": "info", "accent": "blue", "footer": "실제 재생 · 동결 기록 재생 · 미측정을 화면에서 구분"},
     ]
     if recovery_media is not None:
+        before_protocol = next(clip for clip in recovery_media.protocol["clips"] if clip["id"] == "before")
         cards[0] = {**cards[0], "badge": f"판단 변화 {evidence.primary_count}/{total}"}
         cards[6] = {
             "filename": "06_recovery.png", "layout": "reference_overlay",
             "eyebrow": "별도 C01 체크포인트 재생 · V2와 다른 사례",
-            "title": "원복 전과 원인 변경 원복", "body": [],
+            "title": "관찰 구간 원복 후 생존 확인", "body": [],
             "left_label": "원복 전 기존 체크포인트", "right_label": "원인 변경 원복 체크포인트",
+            "left_metric": f"관찰창 {before_protocol['episode_length_s']:g}초",
+            "left_metric_note": "원복 전 설정값",
+            "right_metric": f"생존 {recovered['behavior']['survival_s']:.2f}초",
+            "right_metric_note": f"과거 {recovered['behavior']['horizon_s']:g}초 평가 기록 · 새 측정 아님",
             "badge": "별도 실제 재생", "badge_kind": "success", "accent": "green",
             "footer": "원본 5.98초 중 5.9초를 한 번 재생합니다. 20초는 당시 평가 구간입니다.",
         }
@@ -507,6 +512,10 @@ def card_spec(evidence: VerifiedEvidence, recovery_media: VerifiedRecoveryMedia 
             "eyebrow": "별도 C01 대조 재생 · V2와 다른 사례",
             "title": "원복 전과 무해 변경 원복", "body": [],
             "left_label": "원복 전 기존 체크포인트", "right_label": "무해 변경 원복 체크포인트",
+            "left_metric": f"관찰창 {before_protocol['episode_length_s']:g}초",
+            "left_metric_note": "원복 전 설정값",
+            "right_metric": f"행동 관찰 {unresolved['behavior']['horizon_s']:g}초",
+            "right_metric_note": "과거 대조 평가 · 짧은 관찰로 회복 여부 미결정",
             "badge": "회복 여부 미결정", "badge_kind": "warning", "accent": "orange",
             "footer": "원본 5.98초 중 5.9초를 한 번 재생합니다. 당시 행동 관찰은 1초입니다.",
         }

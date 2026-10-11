@@ -16,9 +16,9 @@ The [active diagnosis host driver](docs/ACTIVE-DIAGNOSIS.md) connects a fresh Ne
 
 The [current active integration results](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md) contain 8 audited model cases and two independently executed rule baselines. All model records pass integrity checks, but **0/8 pass the measurement-dependent judgment-change criterion**. Seven model cases remain on HOLD. The recorded costs therefore do not establish diagnosis or savings superiority.
 
-The [evidence video](docs/media/evidence-v2-20261011-review3/evidence.mp4) and [short GIF](docs/media/evidence-v2-20261011-review3/evidence-summary.gif) show failure observation, probe selection, measurement and the resulting HOLD. Separate chapters identify earlier policy replay and a different rollback experiment. The [source manifest](docs/media/evidence-v2-20261011-review3/manifest.json) binds the footage, recorded measurements and rendered artifacts. The separate rollback improved the recorded survival interval; this edition does not contain its recovery playback or establish an AI-caused policy improvement.
+The [evidence video](docs/media/evidence-v2-20261011-recovery-q4/evidence.mp4) and [short GIF](docs/media/evidence-v2-20261011-recovery-q4/evidence-summary.gif) show failure observation, probe selection, measurement, the resulting HOLD, and a separate before/after checkpoint comparison. The [source manifest](docs/media/evidence-v2-20261011-recovery-q4/manifest.json) binds the footage, recorded measurements and rendered artifacts. The C01 rollback chapter pairs actual 5.9-second replay with its historical 19.9446/20-second survival measurement. It is a separate case from V2, whose measurement-driven judgment-change criterion remains 0/8.
 
-[![15-second evidence replay: failure observation, chosen measurement, HOLD and separate rollback results](docs/media/evidence-v2-20261011-review3/evidence-summary.gif)](docs/media/evidence-v2-20261011-review3/evidence.mp4)
+[![18-second evidence replay: failure observation, chosen measurement, HOLD and separate rollback results](docs/media/evidence-v2-20261011-recovery-q4/evidence-summary.gif)](docs/media/evidence-v2-20261011-recovery-q4/evidence.mp4)
 
 The [media builder](docs/demo/build_evidence_media.py) accepts `--recovery-manifest` to add verified C01 playback: before/rollback and before/control side by side. It checks the complete three-clip recording, pinned source and checkpoint bindings, cleanup and actual video metadata before rendering into a new output directory. These are replays of older policies; the 20-second survival result comes from the earlier evaluation.
 
@@ -270,7 +270,7 @@ This re-derives past numbers; it is not new performance evidence. Two early file
 
 [현재 통합 결과](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md)는 모델 8사례와 별도 실행한 규칙 두 방식을 포함합니다. 모델 기록 감사는 8/8 통과했지만, 측정 때문에 판단이 바뀌었다는 기준은 **0/8**입니다. 모델 7사례가 HOLD이며 진단 우위나 절감은 입증하지 못했습니다.
 
-[영상](docs/media/evidence-v2-20261011-review3/evidence.mp4)과 [GIF](docs/media/evidence-v2-20261011-review3/evidence-summary.gif)는 실패 관찰부터 검사 선택·측정·보류까지 보여줍니다. 과거 정책 재생과 별도 원복 실험의 개선 수치는 구분해 표시하고, [manifest](docs/media/evidence-v2-20261011-review3/manifest.json)에서 출처와 산출물 해시를 확인할 수 있습니다. 별도 원복의 생존 구간은 개선됐지만, 이 판본에는 개선 후 정책의 재생 영상이 없습니다. [추가 Brev 실행](docs/ACTIVE-DIAGNOSIS-V3-RESULT.md)은 인프라 실패를 포함한 24건의 종료 기록을 보존하며, 전체 성능 비교에는 사용하지 않습니다.
+[영상](docs/media/evidence-v2-20261011-recovery-q4/evidence.mp4)과 [GIF](docs/media/evidence-v2-20261011-recovery-q4/evidence-summary.gif)는 실패 관찰부터 검사 선택·측정·보류까지, 그리고 별도 C01의 원복 전·후 모습을 나란히 보여줍니다. 원복 후 생존 19.9446/20초는 과거 평가 기록이며 각 영상은 5.9초를 재생합니다. C01 원복은 V2 진단과 다른 사례입니다. [manifest](docs/media/evidence-v2-20261011-recovery-q4/manifest.json)에서 출처와 산출물 해시를 확인할 수 있습니다. [추가 Brev 실행](docs/ACTIVE-DIAGNOSIS-V3-RESULT.md)은 인프라 실패를 포함한 24건의 종료 기록을 보존하며, 전체 성능 비교에는 사용하지 않습니다.
 
 [미디어 생성기](docs/demo/build_evidence_media.py)의 `--recovery-manifest` 옵션은 검수된 C01 녹화를 받아 원복 전·후와 대조 정책을 나란히 보여줍니다. 녹화 3개의 완료 상태, 소스·체크포인트 결속, 프로세스 정리와 영상 정보를 확인한 뒤 새 출력 폴더에 합성합니다. 과거 정책을 다시 재생하는 기능이며, 20초 생존 수치는 이전 평가 기록에서 가져옵니다. 녹화기는 등록된 화면 앱과 GPU를 공유할 수 있으며, 각 영상 전·후에 계산 작업과 자원 상태를 확인합니다. 이 재생은 GPU 성능 측정에 사용하지 않습니다.
 

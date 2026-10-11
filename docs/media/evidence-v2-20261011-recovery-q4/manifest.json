@@ -1,0 +1,155 @@
+{
+  "schema": "evidence_media_v1",
+  "created_at": "2026-10-11T07:01:07.564275+00:00",
+  "frozen_replay_commit": "d0a9bfe51a86ca0f837ef23b2b06133ddadb9053",
+  "selected_case": "h01_s2027",
+  "selection": "first_registered_honest_hold_fallback",
+  "primary_verified": 0,
+  "primary_total": 8,
+  "chapters": [
+    {
+      "name": "기존 기준/결함 재생",
+      "kind": "actual_video_replay",
+      "scope": "legacy_100_iter_reference_only",
+      "recovery_video": false
+    },
+    {
+      "name": "V2 active 진단",
+      "kind": "frozen_record_replay",
+      "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+      "recovery_measured": false
+    },
+    {
+      "name": "별도 C01 원복 검증",
+      "kind": "actual_video_replay",
+      "scope": "old_checkpoint_playback",
+      "same_case_as_active": false,
+      "retraining_shown": false,
+      "source_duration_s": 5.98,
+      "chapter_display_duration_s": 5.9,
+      "historical_assessment": {
+        "true_rollback_horizon_s": 20.0,
+        "benign_rollback_horizon_s": 1.0
+      }
+    }
+  ],
+  "sources": {
+    "active_snapshot": {
+      "path": "docs/demo/active-diagnosis-v2.json",
+      "sha256_lf": "f1f3a9833a7f571663d11facdb4538515c6511b4b90c862ebe4c3ab140375060",
+      "verified_entries": 345
+    },
+    "bridge_smoke": {
+      "path": "evals/results/bridge_smoke.json",
+      "sha256_lf": "2a2885fd8bff0c13cc3ca6531374ca0e139ea8f14afe5bd099527a2ae2d53706"
+    },
+    "recovery_relabel": {
+      "path": "evals/results/p0b1_relabel_20261008/relabel.json",
+      "sha256_lf": "5df664ca32f51dc6a5397302ee24a4b322d6a3615869e3b081de85fe406a061c"
+    },
+    "baseline_video": {
+      "path": "docs/media/baseline_s42_play.mp4",
+      "sha256": "592441aac403b9c6d5199a2788577884e8c22a30245952fe0b5dcaba85c4d539",
+      "classification": "actual_replay_reference_only"
+    },
+    "failure_video": {
+      "path": "docs/media/c04_s42_play.mp4",
+      "sha256": "168b91ee973286a0ce78918752845b8c03e56edb9da27649c016923cb6f4ad14",
+      "classification": "actual_replay_failure_only"
+    },
+    "recovery_source_manifest": {
+      "path": "docs/media/recovery-c01-20261011_q2/source_manifest.json",
+      "sha256_lf": "534f61d5b998cb364ae210ae59ab85801714be9b77de743f305fda5af52daca7",
+      "classification": "verified_old_checkpoint_playback_manifest"
+    },
+    "recovery_video_before": {
+      "path": "docs/media/recovery-c01-20261011_q2/before.mp4",
+      "sha256": "fff6c15663c59e4d731c27121f04ca0435287f022bb2429b9ddca9596c81e7d2",
+      "bytes": 1324025,
+      "classification": "actual_old_checkpoint_playback"
+    },
+    "recovery_video_true_rollback": {
+      "path": "docs/media/recovery-c01-20261011_q2/true_rollback.mp4",
+      "sha256": "35c44a8def081bdb954fd5891fb1320c2c5736a2ac5cadd61a84304b743ae396",
+      "bytes": 820165,
+      "classification": "actual_old_checkpoint_playback"
+    },
+    "recovery_video_benign_rollback": {
+      "path": "docs/media/recovery-c01-20261011_q2/benign_rollback.mp4",
+      "sha256": "6f246e3f6bf9dc2893a903cf8e7b2ac95e503425aed2307ca7643f2ea36701f0",
+      "bytes": 1328067,
+      "classification": "actual_old_checkpoint_playback"
+    }
+  },
+  "artifacts": {
+    "evidence.mp4": {
+      "path": "evidence.mp4",
+      "sha256": "98b2c2a17de3306979992116dfd3747aa275d29f1d1e1fd85cac32066ef36e03",
+      "bytes": 4207184,
+      "duration_s": 54.8,
+      "width": 1280,
+      "height": 720,
+      "codec": "h264"
+    },
+    "evidence-summary.gif": {
+      "path": "evidence-summary.gif",
+      "sha256": "fa60f458e01c32c44cda84c6a4924762cf39c64539ae29cce3b80b14befade76",
+      "bytes": 1742587,
+      "duration_s": 18.0,
+      "width": 640,
+      "height": 360,
+      "codec": "gif"
+    },
+    "poster.png": {
+      "path": "poster.png",
+      "sha256": "8288c0231993882312c081e393c4b15e8798d70ad79777536e8c96f02aeb7572",
+      "bytes": 30231
+    },
+    "00_title.png": {
+      "path": "00_title.png",
+      "sha256": "aa0caf88574bee7826d46c0046d36c8d6bdc2d997cde43b887e293e5ef589d79",
+      "bytes": 27913
+    },
+    "01_reference_overlay.png": {
+      "path": "01_reference_overlay.png",
+      "sha256": "543a9ddaf7be3e24ac40c0af910f528948750b403a879fe2416127dbb133b024",
+      "bytes": 21994
+    },
+    "02_inspect.png": {
+      "path": "02_inspect.png",
+      "sha256": "f69ca10d1f8ae6a24d22240d6e2a1f3934a9f9ac143374aa02e4449d49e4b689",
+      "bytes": 31424
+    },
+    "03_measure.png": {
+      "path": "03_measure.png",
+      "sha256": "5fe0d27385ebf5f4da0d1d534a6b03dcad4678eccde0fd3f973ea298dc570eae",
+      "bytes": 32479
+    },
+    "04_decision.png": {
+      "path": "04_decision.png",
+      "sha256": "f7112a63fe7f427e5f7c0203dc8bd4bd9c985bd68574e47aefc5b8cc40a326f9",
+      "bytes": 30827
+    },
+    "05_audit.png": {
+      "path": "05_audit.png",
+      "sha256": "b62cd5217a11c1a657931b4337fdf6d536e7540cf6f1cff73916fa089dc5c90b",
+      "bytes": 29205
+    },
+    "06_recovery.png": {
+      "path": "06_recovery.png",
+      "sha256": "6da2716aa18168430e61732bbcf740148d771e9b28aa0b557566a0cf09b9cb24",
+      "bytes": 31257
+    },
+    "07_control.png": {
+      "path": "07_control.png",
+      "sha256": "f9bcd8496f9b352e99f796a37a729386d191a1e22ada5bc5eb54f04ba0efe633",
+      "bytes": 30397
+    }
+  },
+  "disclosures": [
+    "V2 active 사례의 회복은 미측정이며 판단 변화 근거는 0/8",
+    "세 영상은 V2와 다른 과거 C01 체크포인트이며 원본 5.98초 중 5.9초를 한 번 재생",
+    "20초 생존 평가는 영상 길이가 아닌 별도 역사적 측정이며 무해 변경 원복의 행동 관찰은 1초",
+    "새 재학습 장면은 포함하지 않으며 판단 갱신, 정답, 회복은 서로 다른 판정"
+  ]
+}

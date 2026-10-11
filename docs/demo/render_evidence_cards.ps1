@@ -109,6 +109,12 @@ foreach ($card in $spec.cards) {
     if ($card.evidence) {
         Draw-FittedTextBlock $graphics ([string]$card.evidence) 76 572 1120 40 18 15 ([System.Drawing.FontStyle]::Regular) $muted
     }
+    if ($card.left_metric) {
+        Draw-FittedTextBlock $graphics ([string]$card.left_metric) 64 545 555 55 36 28 ([System.Drawing.FontStyle]::Bold) $blue
+        Draw-FittedTextBlock $graphics ([string]$card.right_metric) 694 545 555 55 36 28 ([System.Drawing.FontStyle]::Bold) $accentBrush
+        Draw-FittedTextBlock $graphics ([string]$card.left_metric_note) 64 605 555 36 23 18 ([System.Drawing.FontStyle]::Regular) $muted
+        Draw-FittedTextBlock $graphics ([string]$card.right_metric_note) 694 605 555 36 23 18 ([System.Drawing.FontStyle]::Regular) $muted
+    }
     if ($card.badge) {
         $badgeBrush = switch ($card.badge_kind) { "danger" { $red } "warning" { $orange } "success" { $green } default { $blue } }
         $badgeRect = [System.Drawing.RectangleF]::new(932, 32, 286, 54)
