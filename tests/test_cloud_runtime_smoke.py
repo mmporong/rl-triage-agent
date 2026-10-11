@@ -9,7 +9,8 @@ import pytest
 
 
 @pytest.mark.parametrize("step_error", [False, True])
-def test_cloud_smoke_unsubscribes_context_before_app_close(monkeypatch, tmp_path, step_error):
+@pytest.mark.parametrize("close_exits", [False, True])
+def test_cloud_smoke_unsubscribes_context_before_app_close(monkeypatch, tmp_path, capsys, step_error, close_exits):
     spec = importlib.util.spec_from_file_location(
         "cloud_runtime_smoke_test", Path(__file__).parents[1] / "bench/cloud_runtime_smoke.py"
     )
@@ -54,6 +55,8 @@ def test_cloud_smoke_unsubscribes_context_before_app_close(monkeypatch, tmp_path
             assert not SimulationContext.instance_active
             assert not SimulationContext.callbacks_active
             events.append("app_closed")
+            if close_exits:
+                raise SystemExit(0)
 
     class AppLauncher:
         def __init__(self, *, headless):
@@ -70,11 +73,19 @@ def test_cloud_smoke_unsubscribes_context_before_app_close(monkeypatch, tmp_path
     monkeypatch.setattr(smoke, "version", lambda _name: "test-only")
     report = tmp_path / "report.json"
     monkeypatch.setattr(sys, "argv", ["cloud_runtime_smoke.py", "--out", str(report)])
-    if step_error:
+    if close_exits:
+        with pytest.raises(SystemExit) as error:
+            smoke.main()
+        assert error.value.code == 0
+    elif step_error:
         with pytest.raises(RuntimeError, match="injected step failure"):
             smoke.main()
-        assert not report.exists()
     else:
         smoke.main()
+    if step_error:
+        assert not report.exists()
+        assert "RL_TRIAGE_CLOUD_SMOKE_ERROR RuntimeError" in capsys.readouterr().out
+    else:
         assert json.loads(report.read_text(encoding="utf-8"))["completed"] is True
+        assert "before_app_close" in json.loads(report.read_text(encoding="utf-8"))["cpu_scope"]
     assert events == ["context", "reset", "step", "callbacks_cleared", "instance_cleared", "app_closed"]
