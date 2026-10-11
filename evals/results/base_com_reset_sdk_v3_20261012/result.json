@@ -1,0 +1,155 @@
+{
+  "schema": "base_com_reset_sdk_calibration_result_v1",
+  "scope": "actual_sdk_reset_mechanism_calibration_not_model_judgment_or_policy_recovery",
+  "evaluation_role": "development_integration_calibration",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "seed": 20261012,
+  "protocol": "bench/protocols/base_com_reset_observation_v3.json",
+  "source_protocol_commit": "0572debf8ee30b7b3e16ef1a0c9a7afe80b50088",
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "isaacsim_version": "4.5.0",
+  "num_envs": 64,
+  "reset_sequences": 20,
+  "resets_per_env": 10,
+  "outside_range_threshold": 0.0501,
+  "threshold_comparison": ">",
+  "threshold_unit": "simulation_length_native",
+  "arms": [
+    {
+      "arm": "X1_REF",
+      "parent_status": "pass",
+      "project_commit_sha": "0572debf8ee30b7b3e16ef1a0c9a7afe80b50088",
+      "protocol_sha256": "2b55277c95562a19b418becb0ad6d81a717594f7ffe9775e015905c3fed4a634",
+      "manifest_sha256": "c66bcc5429403962005f38b3c961666cca57c0c8d1e3ecf0095e36c5ae4b83e8",
+      "body_sha256": "ea7fb5d1c992639f31dce6abbb6ccb540ccb062070b733cd0470662921a1742c",
+      "parent_receipt_sha256": "ab88d619a734cbdb427a8203e08dce38392b14c1b1bff57c8c855222288e8280",
+      "configuration_sha256": "474518eab8aade5cd95640e0496907fd526258ed31c433c71392c0d868fa772d",
+      "baseline_snapshot_sha256": "c95e641641a80ba9ac25ab0ebe86f0b1aa756f261f95f0043e53563873aceef4",
+      "coverage": {
+        "expected_reset_sequence_count": 20,
+        "observed_reset_sequence_count": 20,
+        "expected_resets_per_env": 10,
+        "expected_reset_measurement_count": 640,
+        "finite_reset_measurement_count": 640,
+        "unavailable_reset_sequences": [],
+        "status": "complete"
+      },
+      "measurements": {
+        "base_com_max_abs_delta_xy": {
+          "measurement_id": "base_com_max_abs_delta_xy",
+          "unit": "simulation_length_native",
+          "state": "present",
+          "value": 0.049966905266046524,
+          "coverage_status": "complete"
+        },
+        "base_com_outside_range_fraction": {
+          "measurement_id": "base_com_outside_range_fraction",
+          "unit": "fraction",
+          "state": "present",
+          "value": 0.0,
+          "numerator": 0,
+          "denominator": 64,
+          "aggregation": "fraction_of_environments_whose_worst_max_abs_delta_xy_exceeds_threshold",
+          "coverage_status": "complete"
+        }
+      },
+      "natural_exit": true,
+      "cleanup_verified": true,
+      "exit_code": 0,
+      "parent_wall_s": 13.140999999828637,
+      "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+      "gpu_admission_profile": "base_com_reset_readback_v2",
+      "gpu_exclusive": false,
+      "performance_measurement": false,
+      "model_selected": false,
+      "cause_confirmed": false,
+      "diagnosis_or_recovery_evidence": false,
+      "policy_recovery": false
+    },
+    {
+      "arm": "X1",
+      "parent_status": "pass",
+      "project_commit_sha": "0572debf8ee30b7b3e16ef1a0c9a7afe80b50088",
+      "protocol_sha256": "2b55277c95562a19b418becb0ad6d81a717594f7ffe9775e015905c3fed4a634",
+      "manifest_sha256": "7ab59c18649150d66c86942f6ac1898dcc0f5ca6e32b9cf592a049ddf5bbf796",
+      "body_sha256": "4d807650a71f64f9ed8aa3924f21e36a3d30350ec685220856db3fa25763e181",
+      "parent_receipt_sha256": "7c2bec8a7ebd7929adf11f88dc53155b1745c7a5a2487beb6177ad72d120c04d",
+      "configuration_sha256": "474518eab8aade5cd95640e0496907fd526258ed31c433c71392c0d868fa772d",
+      "baseline_snapshot_sha256": "c95e641641a80ba9ac25ab0ebe86f0b1aa756f261f95f0043e53563873aceef4",
+      "coverage": {
+        "expected_reset_sequence_count": 20,
+        "observed_reset_sequence_count": 20,
+        "expected_resets_per_env": 10,
+        "expected_reset_measurement_count": 640,
+        "finite_reset_measurement_count": 640,
+        "unavailable_reset_sequences": [],
+        "status": "complete"
+      },
+      "measurements": {
+        "base_com_max_abs_delta_xy": {
+          "measurement_id": "base_com_max_abs_delta_xy",
+          "unit": "simulation_length_native",
+          "state": "present",
+          "value": 0.2376471310853958,
+          "coverage_status": "complete"
+        },
+        "base_com_outside_range_fraction": {
+          "measurement_id": "base_com_outside_range_fraction",
+          "unit": "fraction",
+          "state": "present",
+          "value": 1.0,
+          "numerator": 64,
+          "denominator": 64,
+          "aggregation": "fraction_of_environments_whose_worst_max_abs_delta_xy_exceeds_threshold",
+          "coverage_status": "complete"
+        }
+      },
+      "natural_exit": true,
+      "cleanup_verified": true,
+      "exit_code": 0,
+      "parent_wall_s": 17.781999999890104,
+      "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+      "gpu_admission_profile": "base_com_reset_readback_v2",
+      "gpu_exclusive": false,
+      "performance_measurement": false,
+      "model_selected": false,
+      "cause_confirmed": false,
+      "diagnosis_or_recovery_evidence": false,
+      "policy_recovery": false
+    }
+  ],
+  "independent_artifact_review": {
+    "role": "code-reviewer",
+    "recommendation": "APPROVE",
+    "findings": 0,
+    "checks": [
+      "baseline_canonical_sha",
+      "raw_640_sample_reaggregation_each_arm",
+      "even_odd_reset_coverage",
+      "configuration_and_resolved_event_binding",
+      "project_7_and_sdk_20_source_bindings",
+      "unchanged_control_physics_clocks",
+      "episode_reset_state",
+      "owned_process_identity_cleanup",
+      "v2_invalid_preserved"
+    ]
+  },
+  "claim_limits": {
+    "model_selected": false,
+    "measurement_dependent_judgment_verified": false,
+    "original_training_failure_cause_confirmed": false,
+    "policy_recovery_verified": false,
+    "held_out_generalization_evidence": false,
+    "performance_comparison": false
+  },
+  "raw_artifact_publication": "aggregate_numbers_and_source_hashes_only",
+  "previous_invalid_attempt": {
+    "protocol_version": 2,
+    "arm": "X1_REF",
+    "status": "invalid",
+    "validation_reasons": [
+      "configuration_base_com_contract_mismatch"
+    ],
+    "preserved_without_reclassification": true
+  }
+}

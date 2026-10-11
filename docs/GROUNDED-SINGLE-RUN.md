@@ -88,6 +88,15 @@ cd "$HOME/rl-triage-agent"
 
 base COM 계측의 v2 게이트는 기존에 등록한 화면 앱에 Antigravity 편집기를 추가한 `base_com_reset_readback_v2`를 사용한다. 프로세스 이름과 이미지 경로의 일치, 알려진 계산 작업과 Compute 엔진의 차단, GPU 메모리 여유 기준을 유지한다. GPU를 독점하지 않으므로 성능·비용 비교에 쓰지 않는다. 기존 녹화기의 기본 v1 게이트와 원래 프로토콜은 보존한다.
 
+[v3 SDK 계측 결과](../evals/results/base_com_reset_sdk_v3_20261012/result.json)는 소스·프로토콜 커밋 `0572debf8ee30b7b3e16ef1a0c9a7afe80b50088`의 기준과 결함 실행을 보존한다. 각 arm은 640/640 유효 표본, env별 reset 10회, 정상 종료·소유 프로세스 정리를 확인했다. 초기 COM snapshot과 설정 SHA는 두 arm에서 같았다.
+
+| reset readback | 최대 절대 Δxy | 고정 범위 밖 env |
+|---|---:|---:|
+| X1_REF | 0.049966905266046524 | 0/64 |
+| X1 | 0.2376471310853958 | 64/64 |
+
+범위 판정은 native simulation length의 `> 0.05 + 0.0001`이다. 별도 검수에서 원시 재집계·SDK clock 불변·원본 설정과 해결된 body binding·소스 결속·종료를 대조했다. 앞선 v2 실행은 설정 adapter 검증 실패로 `invalid` 상태를 보존한다. 이 개발 계측은 reset 동작의 차이를 확인한 결과이며, 기존 학습 실패의 원인·AI 선택·판단 변화·정책 회복을 입증하지 않는다.
+
 개발 입력의 CPU JSON/NAT round-trip은 무손실로 확인했다. provider의 context·token 수용과 새 모델 호출 완료는 아직 검증하지 않았다.
 
 현재 소스의 SDK 연결 계약은 별도 `bench/protocols/runtime_readback_smoke_v3.json`에 고정한다. 이전 프로토콜은 보존하고 새 소스 해시를 새 버전에 결속한다. schema와 측정 크기·기준·결과 문구는 유지하며, 이 smoke는 녹화기의 기본 v1 게이트를 사용한다. stock Go2의 기존 체크포인트로 16개 env를 20 control step 실행하며, 그중 4개 env의 값을 읽는다. 새 학습이나 결함 주입은 포함하지 않는다.
