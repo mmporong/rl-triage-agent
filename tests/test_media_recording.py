@@ -288,6 +288,53 @@ def test_display_sharing_preserves_utilization_and_compute_context_limits():
     assert media.classify_gpu(*_gpu_fixture(name="msedgewebview2.exe", command="msedgewebview2.exe --user-agent=AppleWebKit/537.36"))["busy"] is False
 
 
+def test_base_com_profile_alone_allows_verified_antigravity_desktop_process():
+    xml, windows = _gpu_fixture(
+        name="Antigravity.exe", command='"C:/Program Files/App/Antigravity.exe" --type=gpu-process',
+        memory=1392,
+    )
+    windows["engines"] = []
+    assert media.classify_gpu(xml, windows)["busy"] is True
+
+    result = media.classify_gpu(xml, windows, "base_com_reset_readback_v2")
+    assert result["busy"] is False
+    assert result["admission_policy"] == "base_com_reset_readback_v2"
+    assert result["gpu_exclusive"] is False
+    assert result["performance_measurement"] is False
+    assert result["compute_process_count"] == 0
+    assert result["active_engines"] == []
+
+
+def test_gpu_profile_rejects_unknown_name():
+    with pytest.raises(media.PreflightError, match="unknown GPU admission profile"):
+        media.classify_gpu(*_gpu_fixture(), "unknown_profile")
+
+
+@pytest.mark.parametrize("command", [
+    "python.exe worker.py", "IsaacLab/kit.exe", "ollama serve",
+])
+def test_base_com_profile_still_blocks_compute_commands(command):
+    result = media.classify_gpu(
+        *_gpu_fixture(name="Antigravity.exe", command=command),
+        "base_com_reset_readback_v2",
+    )
+    assert result["busy"] is True
+
+
+def test_base_com_profile_still_blocks_path_mismatch_active_compute_and_memory_limit():
+    xml, windows = _gpu_fixture(name="Antigravity.exe")
+    windows["processes"][0]["ExecutablePath"] = "C:/Different/Antigravity.exe"
+    assert media.classify_gpu(xml, windows, "base_com_reset_readback_v2")["busy"] is True
+
+    xml, windows = _gpu_fixture(name="Antigravity.exe", engine="Compute_0")
+    assert media.classify_gpu(xml, windows, "base_com_reset_readback_v2")["busy"] is True
+
+    assert media.classify_gpu(
+        *_gpu_fixture(name="Antigravity.exe", memory=4096),
+        "base_com_reset_readback_v2",
+    )["busy"] is True
+
+
 @pytest.mark.parametrize("kwargs", [
     {"name": "unknown.exe"}, {"name": "python.exe"}, {"name": "ollama.exe"},
     {"process_type": "C"}, {"process_type": "M"}, {"process_type": "O"}, {"process_type": "unknown"},

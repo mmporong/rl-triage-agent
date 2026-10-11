@@ -1,0 +1,74 @@
+{
+  "schema": "base_com_reset_observation_protocol_v2",
+  "scope": "actual_sdk_base_com_reset_mechanism_readback_not_diagnosis_or_recovery",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "seed": 20261012,
+  "num_envs": 64,
+  "reset_sequences": 20,
+  "resets_per_env": 10,
+  "reset_pattern": "alternating_even_odd",
+  "device": "cuda:0",
+  "allowed_xy_range": 0.05,
+  "tolerance": 0.0001,
+  "arms": [
+    "X1",
+    "X1_REF"
+  ],
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "isaacsim_version": "4.5.0",
+  "launcher_watchdog_s": 360,
+  "semantic_retries": 0,
+  "model_selected": false,
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "execution": {
+    "arm_scope": "one_of_X1_or_X1_REF_per_process",
+    "reset_call": "base._reset_idx(alternating_even_odd_env_ids)",
+    "extra_env_reset": false,
+    "policy_inference": false,
+    "training": false,
+    "cleanup": "parent_owned_windows_job_must_exit_naturally_and_be_empty"
+  },
+  "result_wording": {
+    "pass": "고정한 arm과 SDK에서 base COM reset readback의 출처·coverage·종료를 확인했다. 원인 판정이나 회복 증거는 아니다.",
+    "invalid": "실행·출처·reset coverage·종료 검증 중 하나가 실패했다. 원인 판정이나 회복 결과로 집계하지 않는다."
+  },
+  "excluded_claims": [
+    "model_selected_measurement",
+    "diagnosis_accuracy",
+    "confirmed_cause",
+    "policy_health",
+    "policy_recovery",
+    "gpu_savings"
+  ],
+  "source_binding_revision": 2,
+  "measurement_definitions_sha256": "2225226e5454cb2c9cfec5e27dfa1b7459edd2c165c0e3011161ae78f0dea602",
+  "source_files": {
+    "bench/external_faults.py": "33e0bcb7b4b5db8669bf1aaccd96f4eefe5b542fb5b564f69c1822081f18955d",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/record_evidence_media.py": "72fe5aff0682441a45e25d54918c1087683f6c28057bf9c0557cbd7698c0c270",
+    "bench/run_base_com_reset.py": "3bf2ee29a92fd15e0d12c643bf7a52468d32b981fd28c0dbdd681fd16d978d6d",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "src/rl_triage/reset_com_observer.py": "255fdbe93ad535663cef984d1f1a3305f2095bd7c09a9ecadfc57b8a3af34ab5"
+  },
+  "isaaclab_source_files": {
+    "source/isaaclab/isaaclab/app/app_launcher.py": "956159e5cba72993540157aa8f1d450b8f68262586b7043eebe7049e5aaf386b",
+    "source/isaaclab/isaaclab/assets/articulation/articulation.py": "f4a59244f59971103b1c2092a16b8baea0c8918052a506d4f50bd82149cabd99",
+    "source/isaaclab/isaaclab/assets/articulation/articulation_data.py": "9a31ef13ccccb380859291317f2b41581a3e767a99db17ce9a9ac6c58331e1ab",
+    "source/isaaclab/isaaclab/envs/manager_based_env.py": "236f808e7792dcdba31ec37dd1c9ce18be14a9531a84a4648d34341d8ce8cdec",
+    "source/isaaclab/isaaclab/envs/manager_based_rl_env.py": "d699f2d0467e851cdfb16b5c8e7aab3eb0d00ba7f1f13ba54d52f5e459743485",
+    "source/isaaclab/isaaclab/envs/mdp/events.py": "fe99b97a43b0d2e5e806a06110bb80b3863e80967aa4089a1ee63046f24f159f",
+    "source/isaaclab/isaaclab/managers/reward_manager.py": "f16d868c1afcbd1e4f04f63464b182fd92f96e18bc82505876df09a1ad696b05",
+    "source/isaaclab/isaaclab/managers/scene_entity_cfg.py": "7c80e38153e8739b8ae7d5e48886998fa8b2f5a0a216ebf369af42f94d549fa9",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor.py": "4726658626f79c527a510e30a5fd5d07f551716110b84180a8d48d917c2d674d",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor_data.py": "58c13462cd40e43bfcc4b72605a212003e24f7d002b53f4a2467a8d313ae61fa",
+    "source/isaaclab/isaaclab/utils/io/yaml.py": "d67fe8abce2efb3c2c5c533140141e35d17e4d08db57ecb701bdadfcc6d5924d",
+    "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d7f05f288fb70292d5bddf5884916f7d28d458a0c7be1fb0f22b17b90c5f4287",
+    "source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py": "df54debea2947b1905a0b25db80eb5344d0cf27b136d98378c09af8a87e34869",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "7fb099196b457ffc5e056163529ba8a195c8b2cc2b348feac6bf694b717cea5f",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "de69d2baa50bb35e8ade96e7d1ef4cc7c7a2f2e2ac1bbebbe05bbf29a19acc43",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "a0985003cf4d0e15e9427ffc69f519f9446fee6bee3803d416d32d55fea9a39e",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "e6a160450fcab16089464763866142cb136df1ecc7b6c0d1809c8325b498b6c7",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "425b63cc332d1aaec762a153b8b2a7efc4297d550eb00508c158d1799b6e8cbf"
+  }
+}

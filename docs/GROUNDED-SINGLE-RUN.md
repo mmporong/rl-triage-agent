@@ -76,28 +76,30 @@ uv run nat run --config_file configs/triage_single_run_grounded.yml \
 
 별도 [base COM reset 관측기](../src/rl_triage/reset_com_observer.py)는 유일한 `base` body의 초기 COM snapshot을 저장하고, 호출자가 완료한 reset 뒤 fresh PhysX 값을 읽는다. x·y 편차는 원시 표본으로, 최대 절댓값과 허용 범위 이탈 env 비율은 집계 측정으로 구분한다. 다른 body의 정상 COM offset이 base 변화를 가리지 않게 한다. 샘플의 단위·reset ID·유효 수와 부분 coverage를 보존한다. 이 관측기는 reset이나 step을 실행하지 않으며, 초기 snapshot 시점과 reset 완료 여부는 caller 주장이다.
 
-[SDK 실행기](../bench/run_base_com_reset.py)는 [고정 프로토콜](../bench/protocols/base_com_reset_observation_v1.json)의 64개 env에서 짝수·홀수 ID를 번갈아 20회 reset한다. 각 env의 reset은 10회다. X1과 X1_REF는 별도 프로세스에서 실행하며, 학습·정책 추론·추가 `env.reset()`은 하지 않는다. 부모가 전체 초기 COM snapshot의 해시, 원시 편차 재집계, 설정의 reset event, SDK clock·episode buffer의 연속성과 프로세스 종료를 대조한다. 고정 SDK는 첫 `step()` 전에 `reset_buf`를 만들지 않으므로, 이 절차에서는 그 속성의 부재를 명시해 검증한다.
+[SDK 실행기](../bench/run_base_com_reset.py)는 [고정 프로토콜](../bench/protocols/base_com_reset_observation_v2.json)의 64개 env에서 짝수·홀수 ID를 번갈아 20회 reset한다. 각 env의 reset은 10회다. X1과 X1_REF는 별도 프로세스에서 실행하며, 학습·정책 추론·추가 `env.reset()`은 하지 않는다. 부모가 전체 초기 COM snapshot의 해시, 원시 편차 재집계, 설정의 reset event, SDK clock·episode buffer의 연속성과 프로세스 종료를 대조한다. 고정 SDK는 첫 `step()` 전에 `reset_buf`를 만들지 않으므로, 이 절차에서는 그 속성의 부재를 명시해 검증한다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"
-& .venv/Scripts/python.exe bench/run_base_com_reset.py --tag base_com_ref_v1 --arm X1_REF
-& .venv/Scripts/python.exe bench/run_base_com_reset.py --tag base_com_fault_v1 --arm X1
+& .venv/Scripts/python.exe bench/run_base_com_reset.py --tag base_com_ref_v2 --arm X1_REF
+& .venv/Scripts/python.exe bench/run_base_com_reset.py --tag base_com_fault_v2 --arm X1
 ```
 
 소스와 프로토콜을 커밋한 뒤 실행하며, tag마다 `bench/private/base_com_reset/<tag>`에 설정·원시 표본·부모 receipt를 한 번 저장한다. 실행 중인 계산 작업이 있으면 시작을 거절한다. 이 실행은 reset 동작을 읽는 계측 검증이며, 기존 세 registry의 실행 스텝 수집과 별개다. 모델의 검사 선택·원인 판정·정책 회복 효과는 아직 검증하지 않았다.
 
+base COM 계측의 v2 게이트는 기존에 등록한 화면 앱에 Antigravity 편집기를 추가한 `base_com_reset_readback_v2`를 사용한다. 프로세스 이름과 이미지 경로의 일치, 알려진 계산 작업과 Compute 엔진의 차단, GPU 메모리 여유 기준을 유지한다. GPU를 독점하지 않으므로 성능·비용 비교에 쓰지 않는다. 기존 녹화기의 기본 v1 게이트와 원래 프로토콜은 보존한다.
+
 개발 입력의 CPU JSON/NAT round-trip은 무손실로 확인했다. provider의 context·token 수용과 새 모델 호출 완료는 아직 검증하지 않았다.
 
-현재 소스의 SDK 연결 계약은 별도 `bench/protocols/runtime_readback_smoke_v2.json`에 고정한다. v1을 실행한 뒤 조회 도구와 프로토콜 선택 코드가 바뀌어, 원래 v1은 보존하고 새 소스 해시를 v2에 결속했다. schema와 측정 크기·기준·결과 문구는 유지한다. stock Go2의 기존 체크포인트로 16개 env를 20 control step 실행하며, 그중 4개 env의 값을 읽는다. 새 학습이나 결함 주입은 포함하지 않는다.
+현재 소스의 SDK 연결 계약은 별도 `bench/protocols/runtime_readback_smoke_v3.json`에 고정한다. 이전 프로토콜은 보존하고 새 소스 해시를 새 버전에 결속한다. schema와 측정 크기·기준·결과 문구는 유지하며, 이 smoke는 녹화기의 기본 v1 게이트를 사용한다. stock Go2의 기존 체크포인트로 16개 env를 20 control step 실행하며, 그중 4개 env의 값을 읽는다. 새 학습이나 결함 주입은 포함하지 않는다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"
-& .venv/Scripts/python.exe bench/run_runtime_readback_smoke.py --tag readback_sdk_v2 --protocol-version 2
+& .venv/Scripts/python.exe bench/run_runtime_readback_smoke.py --tag readback_sdk_v3 --protocol-version 3
 ```
 
 새 tag의 `bench/private/runtime_readback/<tag>`에 manifest·설정 snapshot·body와 부모 receipt가 남는다. 실행기는 커밋된 소스·SDK·체크포인트 해시를 대조하고, Windows Job에 연결한 프로세스만 추적한다. SDK clock·완료 보상·재설정 phase·coverage와 PID 생성 시각을 대조한 뒤 종료를 확인한다. 이 smoke의 판정 범위는 API 연결이며, AI 판단 변화와 정책 회복 검증은 별도로 필요하다.
 
-과거 v1 재현은 소스 커밋 `724aefdfc765f0c8de385737fac656b201457cfa`의 checkout과 새 tag를 사용한다. 현재 소스에서 옛 프로토콜을 선택해도 해시가 다르면 실행을 거절한다. v2 소스 결속은 실행 준비이며, 아래 v1 실측을 v2의 새 실행 결과로 세지 않는다.
+과거 v1 재현은 소스 커밋 `724aefdfc765f0c8de385737fac656b201457cfa`의 checkout과 새 tag를 사용한다. 현재 소스에서 옛 프로토콜을 선택해도 해시가 다르면 실행을 거절한다. 현재 소스 결속은 실행 준비이며, 아래 v1 실측을 새 버전의 실행 결과로 세지 않는다.
 
 [소스 커밋 `724aefd`의 실측 요약](../evals/results/runtime_readback_sdk_v1_20261011/result.json)과 [원시 body](../evals/results/runtime_readback_sdk_v1_20261011/body.json)는 20 control step·80 physics step·4개 env의 80표본을 보존한다. 7개 측정 모두 유효한 값 80개·미제공 0개였고, 부모 wall은 13.078초였다. 원시 재집계와 해시·프로세스 종료의 별도 검수도 통과했다. 이 실행은 모델이 검사를 선택한 사례가 아니며, 정책 건강·원인·회복은 판정하지 않았다.
 

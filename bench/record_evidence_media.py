@@ -20,7 +20,7 @@ import xml.etree.ElementTree as ET
 
 
 TAG_RE = re.compile(r"[a-z0-9](?:[a-z0-9_-]{0,47})\Z")
-DEFAULT_PROTOCOL = Path(__file__).with_name("protocols") / "evidence_media_c01_v1.json"
+DEFAULT_PROTOCOL = Path(__file__).with_name("protocols") / "evidence_media_c01_v2.json"
 CREATE_NO_WINDOW = 0x08000000
 EXPECTED_TASK = "Isaac-Velocity-Flat-Unitree-Go2-Play-v0"
 EXPECTED_CLIP_IDS = {"before", "true_rollback", "benign_rollback"}
@@ -58,6 +58,15 @@ EXPECTED_GPU_ADMISSION = {
     "allowed_display_process_names": sorted(DISPLAY_PROCESS_NAMES),
     "allowed_active_engine_types": ["3D", "Copy", "VideoDecode", "VideoEncode"],
     "unclassified_activity": "block",
+}
+BASE_COM_RESET_GPU_ADMISSION = {
+    **EXPECTED_GPU_ADMISSION,
+    "policy": "base_com_reset_readback_v2",
+    "allowed_display_process_names": sorted(DISPLAY_PROCESS_NAMES | {"antigravity.exe"}),
+}
+GPU_ADMISSION_PROFILES = {
+    EXPECTED_GPU_ADMISSION["policy"]: EXPECTED_GPU_ADMISSION,
+    BASE_COM_RESET_GPU_ADMISSION["policy"]: BASE_COM_RESET_GPU_ADMISSION,
 }
 
 
@@ -175,8 +184,17 @@ def _gpu_command(args: list[str]) -> str:
     ).stdout
 
 
-def classify_gpu(xml_text: str, windows: dict[str, Any]) -> dict[str, Any]:
+def _gpu_admission_profile(profile: str) -> dict[str, Any]:
+    if type(profile) is not str or profile not in GPU_ADMISSION_PROFILES:
+        raise PreflightError("unknown GPU admission profile")
+    return GPU_ADMISSION_PROFILES[profile]
+
+
+def classify_gpu(xml_text: str, windows: dict[str, Any],
+                 profile: str = EXPECTED_GPU_ADMISSION["policy"]) -> dict[str, Any]:
     """허용된 화면 앱과 GPU를 공유하는 재생이며 계산 부재를 증명하지 않는다."""
+    admission = _gpu_admission_profile(profile)
+    allowed_names = frozenset(admission["allowed_display_process_names"])
     try:
         devices = ET.fromstring(xml_text).findall("gpu")
         if len(devices) != 1:
@@ -213,11 +231,11 @@ def classify_gpu(xml_text: str, windows: dict[str, Any]) -> dict[str, Any]:
             raise PreflightError("GPU process inventory malformed") from error
         known = bool(GPU_WORKLOAD_RE.search(name + " " + command + " " + xml_name))
         known_workloads += int(known)
-        if known or name not in DISPLAY_PROCESS_NAMES or (xml_name and xml_name != name):
+        if known or name not in allowed_names or (xml_name and xml_name != name):
             reasons.append(f"unapproved_gpu_process:{pid}")
         if name not in PROTECTED_DISPLAY_NAMES and (not command or not cim_path or cim_path != xml_path):
             reasons.append(f"unverified_process_identity:{pid}")
-        if process_type not in EXPECTED_GPU_ADMISSION["allowed_process_types"]:
+        if process_type not in admission["allowed_process_types"]:
             reasons.append(f"unapproved_process_type:{pid}:{process_type}")
         observations.append({"pid": pid, "name": name, "type": process_type, "known_workload": known})
     active_engines: list[dict[str, Any]] = []
@@ -233,16 +251,16 @@ def classify_gpu(xml_text: str, windows: dict[str, Any]) -> dict[str, Any]:
             name = str(engine_process.get("Name", "")).casefold()
         except (KeyError, TypeError, ValueError) as error:
             raise PreflightError("GPU active engine inventory malformed") from error
-        if engine_type not in EXPECTED_GPU_ADMISSION["allowed_active_engine_types"] or name not in DISPLAY_PROCESS_NAMES:
+        if engine_type not in admission["allowed_active_engine_types"] or name not in allowed_names:
             reasons.append(f"unapproved_active_engine:{pid}:{engine_type}")
         if pid not in seen_pids or GPU_WORKLOAD_RE.search(name + " " + str(engine_process.get("CommandLine") or "")):
             reasons.append(f"unverified_active_engine_process:{pid}")
         active_engines.append({"name": raw_name, "utilization_percent": active, "process_name": name})
-    if memory_used >= EXPECTED_GPU_ADMISSION["memory_used_limit_mib"]:
+    if memory_used >= admission["memory_used_limit_mib"]:
         reasons.append("memory_headroom_insufficient")
     return {
         "busy": bool(reasons), "busy_reasons": reasons,
-        "admission_policy": EXPECTED_GPU_ADMISSION["policy"], "gpu_exclusive": False,
+        "admission_policy": admission["policy"], "gpu_exclusive": False,
         "performance_measurement": False, "observed_at_utc": datetime.now(timezone.utc).isoformat(),
         "gpu_index": 0,
         "utilization_percent": utilization, "memory_used_mib": memory_used,
@@ -251,7 +269,8 @@ def classify_gpu(xml_text: str, windows: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def query_gpu() -> dict[str, Any]:
+def query_gpu(profile: str = EXPECTED_GPU_ADMISSION["policy"]) -> dict[str, Any]:
+    _gpu_admission_profile(profile)
     xml_text = _gpu_command(["nvidia-smi", "-q", "-x"])
     try:
         pids = sorted({int(item.text or "") for item in ET.fromstring(xml_text).findall("gpu/processes/process_info/pid")})
@@ -269,7 +288,7 @@ def query_gpu() -> dict[str, Any]:
         "ConvertTo-Json -InputObject @{processes=$processes; engines=$engines} -Depth 4 -Compress"
     )
     windows = json.loads(_gpu_command(["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script]))
-    return classify_gpu(xml_text, windows)
+    return classify_gpu(xml_text, windows, profile)
 
 
 def preflight(
@@ -664,7 +683,7 @@ def run_recording(
         "clips": public_clips,
         "source_bindings": protocol["public_sources"],
         "implementation_bindings": {
-            "protocol": {"path": "bench/protocols/evidence_media_c01_v1.json", "sha256_lf": sha256_lf_file(DEFAULT_PROTOCOL)},
+            "protocol": {"path": f"bench/protocols/{DEFAULT_PROTOCOL.name}", "sha256_lf": sha256_lf_file(DEFAULT_PROTOCOL)},
             "recorder": protocol["recorder_source"],
             "play_py_sha256": protocol["play_py_sha256"],
         },

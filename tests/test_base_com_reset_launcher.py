@@ -115,6 +115,8 @@ def test_fixed_contract_includes_fault_observer_launcher_and_sdk_mechanism_sourc
     assert L.FIXED_PROTOCOL_VALUES["reset_sequences"] == 20
     assert L.FIXED_PROTOCOL_VALUES["resets_per_env"] == 10
     assert L.FIXED_PROTOCOL_VALUES["model_selected"] is False
+    assert L.FIXED_PROTOCOL_VALUES["gpu_admission_profile"] == "base_com_reset_readback_v2"
+    assert L.FIXED_PROTOCOL_VALUES["source_binding_revision"] == 2
 
 
 def test_collect_resets_uses_exact_twenty_alternating_subsets_and_records_sdk_state():
@@ -225,7 +227,7 @@ def manifest_fixture(tmp_path, monkeypatch):
     repo = tmp_path / "repo"
     run = repo / "bench/private/base_com_reset/tag1"
     run.mkdir(parents=True)
-    protocol_path = repo / "bench/protocols/base_com_reset_observation_v1.json"
+    protocol_path = repo / "bench/protocols/base_com_reset_observation_v2.json"
     protocol_path.parent.mkdir(parents=True)
     protocol_path.write_text("{}", encoding="utf-8")
     manifest = run / "manifest.json"
@@ -263,8 +265,8 @@ def test_manifest_rejects_protocol_copy_and_output_escape(tmp_path, monkeypatch)
     with pytest.raises(ValueError, match="fixed repository"):
         L.validate_manifest(manifest.resolve(), repo_root=repo, isaaclab_root=tmp_path)
 
-    body["protocol_path"] = str((repo / "bench/protocols/base_com_reset_observation_v1.json").resolve())
-    body["protocol_sha256"] = digest(repo / "bench/protocols/base_com_reset_observation_v1.json")
+    body["protocol_path"] = str((repo / "bench/protocols/base_com_reset_observation_v2.json").resolve())
+    body["protocol_sha256"] = digest(repo / "bench/protocols/base_com_reset_observation_v2.json")
     body["output_path"] = str((tmp_path / "escaped.json").resolve())
     manifest.write_text(json.dumps(body), encoding="utf-8")
     with pytest.raises(ValueError, match="output_path"):
@@ -569,21 +571,31 @@ def test_post_init_yaml_resolved_base_binding_and_safe_python_sequence_tags(tmp_
 def test_parent_missing_output_writes_invalid_receipt_without_quality_claim(tmp_path, monkeypatch):
     repo = tmp_path / "repo"
     isaac = tmp_path / "isaac"
-    protocol = repo / "bench/protocols/base_com_reset_observation_v1.json"
+    protocol = repo / "bench/protocols/base_com_reset_observation_v2.json"
     protocol.parent.mkdir(parents=True)
-    protocol.write_text(json.dumps({"scope": "scope", "launcher_watchdog_s": 1}), encoding="utf-8")
+    protocol.write_text(json.dumps({
+        "scope": "scope", "launcher_watchdog_s": 1,
+        "gpu_admission_profile": "base_com_reset_readback_v2",
+    }), encoding="utf-8")
     monkeypatch.setattr(L, "ROOT", repo)
     monkeypatch.setattr(L, "protocol_location", lambda path, repo_root=repo: protocol.resolve())
     monkeypatch.setattr(L, "validate_protocol", lambda *args, **kwargs: {"source": "ok"})
     monkeypatch.setattr(L.P, "verify_committed", lambda *args: "f" * 40)
     gpu = {"busy": False, "processes": []}
-    monkeypatch.setattr(L.M, "query_gpu", lambda: deepcopy(gpu))
+    queried_profiles = []
+    monkeypatch.setattr(
+        L.M, "query_gpu",
+        lambda profile: queried_profiles.append(profile) or deepcopy(gpu),
+    )
 
     def validate(manifest_path, **kwargs):
         manifest = L.S._read_json(manifest_path)
         folder = manifest_path.parent
         return {
-            "protocol": {"scope": "scope", "launcher_watchdog_s": 1},
+            "protocol": {
+                "scope": "scope", "launcher_watchdog_s": 1,
+                "gpu_admission_profile": "base_com_reset_readback_v2",
+            },
             "protocol_sha256": manifest["protocol_sha256"], "manifest": manifest,
             "manifest_path": manifest_path,
             "paths": {"output_path": folder / "body.json", "configuration_path": folder / "configuration.yaml"},
@@ -600,6 +612,7 @@ def test_parent_missing_output_writes_invalid_receipt_without_quality_claim(tmp_
     receipt = L.run("missing_body", "X1", isaac, protocol)
 
     assert receipt["status"] == "invalid"
+    assert queried_profiles == ["base_com_reset_readback_v2", "base_com_reset_readback_v2"]
     assert receipt["validation_reasons"] == ["body_validation_FileNotFoundError"]
     assert receipt["diagnosis_or_recovery_evidence"] is False
     stored = json.loads((repo / "bench/private/base_com_reset/missing_body/parent_receipt.json").read_text())

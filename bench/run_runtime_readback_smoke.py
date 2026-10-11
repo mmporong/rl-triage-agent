@@ -16,7 +16,7 @@ import record_evidence_media as M
 import runtime_readback_smoke as S
 
 ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = ROOT / "bench/protocols/runtime_readback_smoke_v2.json"
+PROTOCOL = ROOT / "bench/protocols/runtime_readback_smoke_v3.json"
 SOURCE_FILES = S.PROJECT_SOURCE_FILES
 
 
@@ -275,7 +275,7 @@ def main() -> int:
     parser.add_argument("--tag", required=True)
     parser.add_argument("--isaaclab", type=Path, default=Path.home() / "IsaacLab")
     parser.add_argument("--checkpoint", type=Path)
-    parser.add_argument("--protocol-version", type=int, default=2)
+    parser.add_argument("--protocol-version", type=int, default=3)
     args = parser.parse_args()
     checkpoint = args.checkpoint or args.isaaclab / (
         "logs/rsl_rl/unitree_go2_flat/2026-09-26_11-31-54_s02_baseline_s42/model_99.pt")

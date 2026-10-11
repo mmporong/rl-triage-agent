@@ -21,7 +21,7 @@ import runtime_readback_smoke as S
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-PROTOCOL = ROOT / "bench/protocols/base_com_reset_observation_v1.json"
+PROTOCOL = ROOT / "bench/protocols/base_com_reset_observation_v2.json"
 TASK = "Isaac-Velocity-Flat-Unitree-Go2-v0"
 ARMS = ("X1", "X1_REF")
 ISAACLAB_COMMIT = "90b79bb2d44feb8d833f260f2bf37da3487180ba"
@@ -79,7 +79,7 @@ EXECUTION_CONTRACT = {
     "cleanup": "parent_owned_windows_job_must_exit_naturally_and_be_empty",
 }
 FIXED_PROTOCOL_VALUES = {
-    "schema": "base_com_reset_observation_protocol_v1",
+    "schema": "base_com_reset_observation_protocol_v2",
     "scope": "actual_sdk_base_com_reset_mechanism_readback_not_diagnosis_or_recovery",
     "task": TASK,
     "seed": 20261012,
@@ -96,10 +96,11 @@ FIXED_PROTOCOL_VALUES = {
     "launcher_watchdog_s": 360,
     "semantic_retries": 0,
     "model_selected": False,
+    "gpu_admission_profile": "base_com_reset_readback_v2",
     "execution": EXECUTION_CONTRACT,
     "result_wording": RESULT_WORDING,
     "excluded_claims": EXCLUDED_CLAIMS,
-    "source_binding_revision": 1,
+    "source_binding_revision": 2,
 }
 PROTOCOL_FIELDS = set(FIXED_PROTOCOL_VALUES) | {
     "measurement_definitions_sha256", "source_files", "isaaclab_source_files",
@@ -121,7 +122,7 @@ def _load_observer():
 
 def protocol_location(path: Path, repo_root: Path = ROOT) -> Path:
     resolved = path.resolve()
-    expected = (repo_root / "bench/protocols/base_com_reset_observation_v1.json").resolve()
+    expected = (repo_root / "bench/protocols/base_com_reset_observation_v2.json").resolve()
     if resolved != expected:
         raise ValueError("manifest must bind the fixed repository base COM reset protocol")
     return resolved
@@ -856,7 +857,7 @@ def run(tag: str, arm: str, isaaclab: Path, protocol_path: Path = PROTOCOL) -> d
     for argument in (str(isaaclab), str(ROOT)):
         if any(char in argument for char in '\r\n"%&^'):
             raise ValueError("path contains unsafe Windows batch characters")
-    gpu = M.query_gpu()
+    gpu = M.query_gpu(protocol["gpu_admission_profile"])
     if gpu["busy"]:
         raise RuntimeError("GPU workload or unclassified activity present; no process was stopped")
     folder = ROOT / "bench/private/base_com_reset" / tag
@@ -897,7 +898,7 @@ def run(tag: str, arm: str, isaaclab: Path, protocol_path: Path = PROTOCOL) -> d
         reasons.append("owned_execution_did_not_complete_naturally")
     gpu_after = None
     try:
-        gpu_after = M.query_gpu()
+        gpu_after = M.query_gpu(protocol["gpu_admission_profile"])
         owned = set(execution["owned_process_identities"])
         if any(str(row["pid"]) in owned for row in gpu_after["processes"]):
             reasons.append("owned_gpu_process_remaining")
