@@ -1,8 +1,14 @@
 """Brev probe backend의 transport·privacy·binding 경계를 실제 cloud 호출 없이 검증한다."""
 import importlib.util
+import ast
+import base64
 import hashlib
 import json
+import os
 from pathlib import Path
+import signal
+import subprocess
+import sys
 from types import SimpleNamespace
 
 import pytest
@@ -275,3 +281,59 @@ def test_transport_decodes_brev_utf8_independently_of_windows_locale(tmp_path):
     result = backend._run([sys.executable, "-c", "import sys; sys.stdout.buffer.write('전송✓'.encode('utf-8'))"],
                           "utf8 transport")
     assert result.stdout == "전송✓"
+
+
+@pytest.mark.parametrize("parent_eula", [None, "NO"])
+def test_remote_launcher_passes_registered_eula_to_cpu_child(tmp_path, monkeypatch, capsys, parent_eula):
+    """Execute the trusted launcher with a CPU child; GPU queries are simulated."""
+    tree = ast.parse((ROOT / "evals/brev_probe_backend.py").read_text(encoding="utf-8"))
+    code = next(ast.literal_eval(node.value) for node in ast.walk(tree)
+                if isinstance(node, ast.Assign)
+                and any(isinstance(target, ast.Name) and target.id == "run_code" for target in node.targets))
+    if parent_eula is None:
+        monkeypatch.delenv("OMNI_KIT_ACCEPT_EULA", raising=False)
+    else:
+        monkeypatch.setenv("OMNI_KIT_ACCEPT_EULA", parent_eula)
+    monkeypatch.setenv("RL_TRIAGE_CPU_SENTINEL", "preserved")
+    report, meter, log, jobs = (tmp_path / name for name in ("report.json", "meter.json", "runtime.log", "jobs.json"))
+    jobs.write_bytes(b"{}")
+    # Reproduce the SDK's noninteractive EULA boundary without importing Isaac.
+    child = (
+        "import json,os,pathlib,sys; "
+        "accepted=os.environ.get('OMNI_KIT_ACCEPT_EULA','').lower() in ('y','yes','1'); "
+        "answer='yes' if accepted else input('Do you accept the EULA?'); "
+        "assert answer.lower()=='yes'; "
+        "pathlib.Path(sys.argv[1]).write_text(json.dumps({'eula':os.environ.get('OMNI_KIT_ACCEPT_EULA'),"
+        "'inherited':os.environ.get('RL_TRIAGE_CPU_SENTINEL')})); "
+        "pathlib.Path(sys.argv[2]).write_text('{}')"
+    )
+    encode = lambda value: base64.urlsafe_b64encode(json.dumps(value).encode()).decode()
+    manifest = {"root": str(tmp_path), "sources": {}, "checkpoints": [], "checkpoint_dir": str(tmp_path),
+                "jobs": str(jobs), "jobs_sha256": hashlib.sha256(jobs.read_bytes()).hexdigest()}
+    monkeypatch.setattr(sys, "argv", ["cpu-test", encode([sys.executable, "-c", child, str(report), str(meter)]),
+                                    str(log), str(report), str(meter), str(tmp_path), encode(manifest), "10"])
+    original_popen, children = subprocess.Popen, []
+
+    def spawn_cpu(argv, **kwargs):
+        process = original_popen(argv, stdin=subprocess.DEVNULL, **kwargs)
+        children.append(process)
+        return process
+
+    def metadata_only(argv, **kwargs):
+        assert argv[0] == "nvidia-smi"
+        return "0\n"
+
+    def group_gone(_pid, _sig):
+        raise ProcessLookupError
+
+    monkeypatch.setattr(subprocess, "Popen", spawn_cpu)
+    monkeypatch.setattr(subprocess, "check_output", metadata_only)
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: SimpleNamespace(stdout="", returncode=0))
+    monkeypatch.setattr(signal, "signal", lambda *a: None)
+    monkeypatch.setattr(signal, "SIGHUP", signal.SIGTERM, raising=False)
+    monkeypatch.setattr(os, "killpg", group_gone, raising=False)
+    exec(compile(code, "<trusted-remote-launcher>", "exec"), {"__name__": "__main__"})
+    outcome = B.parse_marker(capsys.readouterr().out)
+    assert len(children) == 1 and children[0].poll() is not None
+    assert outcome["exit_code"] == 0 and outcome["report"] is True and outcome["metrics"] is True
+    assert json.loads(report.read_text()) == {"eula": "YES", "inherited": "preserved"}
