@@ -74,7 +74,17 @@ uv run nat run --config_file configs/triage_single_run_grounded.yml \
 
 수집기는 자료 없음·비유한 값·읽기 오류를 0으로 채우지 않는다. 측정 phase와 유효/미제공 표본 수를 기록하며, 원인·정상성·회복·프로세스 정리 확정은 모두 false다. 종료 확인은 부모 receipt가 수행한다. 모델 선택을 소비하는 승인 고리와 새 진단 효과는 별도로 검증해야 한다.
 
-별도 [base COM reset 관측기](../src/rl_triage/reset_com_observer.py)는 유일한 `base` body의 초기 COM snapshot을 저장하고, 호출자가 완료한 reset 뒤 fresh PhysX 값을 읽는다. x·y 편차는 원시 표본으로, 최대 절댓값과 허용 범위 이탈 env 비율은 집계 측정으로 구분한다. 다른 body의 정상 COM offset이 base 변화를 가리지 않게 한다. 샘플의 단위·reset ID·유효 수와 부분 coverage를 보존한다. 이 관측기는 reset이나 step을 실행하지 않으며, 초기 snapshot 시점과 reset 완료 여부는 caller 주장이다. 새 SDK 실행기가 그 시점·출처·절차를 대조해야 한다. 기존 세 registry의 실행 스텝 수집과 별개이며, 새 모델 선택·원인·회복 효과는 아직 검증하지 않았다.
+별도 [base COM reset 관측기](../src/rl_triage/reset_com_observer.py)는 유일한 `base` body의 초기 COM snapshot을 저장하고, 호출자가 완료한 reset 뒤 fresh PhysX 값을 읽는다. x·y 편차는 원시 표본으로, 최대 절댓값과 허용 범위 이탈 env 비율은 집계 측정으로 구분한다. 다른 body의 정상 COM offset이 base 변화를 가리지 않게 한다. 샘플의 단위·reset ID·유효 수와 부분 coverage를 보존한다. 이 관측기는 reset이나 step을 실행하지 않으며, 초기 snapshot 시점과 reset 완료 여부는 caller 주장이다.
+
+[SDK 실행기](../bench/run_base_com_reset.py)는 [고정 프로토콜](../bench/protocols/base_com_reset_observation_v1.json)의 64개 env에서 짝수·홀수 ID를 번갈아 20회 reset한다. 각 env의 reset은 10회다. X1과 X1_REF는 별도 프로세스에서 실행하며, 학습·정책 추론·추가 `env.reset()`은 하지 않는다. 부모가 전체 초기 COM snapshot의 해시, 원시 편차 재집계, 설정의 reset event, SDK clock·episode buffer의 연속성과 프로세스 종료를 대조한다. 고정 SDK는 첫 `step()` 전에 `reset_buf`를 만들지 않으므로, 이 절차에서는 그 속성의 부재를 명시해 검증한다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+& .venv/Scripts/python.exe bench/run_base_com_reset.py --tag base_com_ref_v1 --arm X1_REF
+& .venv/Scripts/python.exe bench/run_base_com_reset.py --tag base_com_fault_v1 --arm X1
+```
+
+소스와 프로토콜을 커밋한 뒤 실행하며, tag마다 `bench/private/base_com_reset/<tag>`에 설정·원시 표본·부모 receipt를 한 번 저장한다. 실행 중인 계산 작업이 있으면 시작을 거절한다. 이 실행은 reset 동작을 읽는 계측 검증이며, 기존 세 registry의 실행 스텝 수집과 별개다. 모델의 검사 선택·원인 판정·정책 회복 효과는 아직 검증하지 않았다.
 
 개발 입력의 CPU JSON/NAT round-trip은 무손실로 확인했다. provider의 context·token 수용과 새 모델 호출 완료는 아직 검증하지 않았다.
 

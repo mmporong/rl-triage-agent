@@ -90,6 +90,12 @@ def test_constructor_captures_immutable_all_env_all_body_baseline_and_source_bin
     second = collector.aggregate()
 
     assert view.get_calls == 1
+    assert first["baseline_snapshot"] == {
+        "body_names": ["base", "leg"], "shape": [4, 2, 7], "coms": initial,
+    }
+    assert R._canonical_sha(first["baseline_snapshot"]) == first["source_binding"]["baseline_all_env_all_body_com_sha256"]
+    first["baseline_snapshot"]["coms"][0][0][0] = 999.0
+    assert second["baseline_snapshot"]["coms"] == initial
     assert first["source_binding"] == second["source_binding"]
     assert first["source_binding"]["baseline_all_env_all_body_com_sha256"] == R._canonical_sha({
         "body_names": ("base", "leg"), "shape": (4, 2, 7), "coms": initial,

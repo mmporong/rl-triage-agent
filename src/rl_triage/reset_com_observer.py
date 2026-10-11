@@ -331,6 +331,10 @@ class BaseComResetObserver:
                 "read_source": "robot.root_physx_view.get_coms()",
                 "cached_body_com_pose_b_used": False,
             },
+            "baseline_snapshot": {
+                "body_names": list(self._body_names),
+                "shape": list(self._baseline_shape), "coms": self._baseline,
+            },
             "measurement_definitions": deepcopy(MEASUREMENT_DEFINITIONS),
             "sample_field_definitions": deepcopy(SAMPLE_FIELD_DEFINITIONS),
             "caller_provenance": {
