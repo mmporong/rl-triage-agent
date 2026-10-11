@@ -1,0 +1,37 @@
+{
+  "stage": "after_1",
+  "status": "valid",
+  "packet_sha256_lf": "abf8b51059f5e1273c1bae9fbce2c707c2427a201073ba53139fd843c0bca07d",
+  "attempts": [
+    {
+      "path": "model/after_1.attempt1.json",
+      "sha256_lf": "a22bfacd93c6d3dd03108d349644b87d02930a4b3417cfbf5ec0a07e4643a12e"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "termination",
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics"
+    ],
+    "probe": "P_reward",
+    "action": "continue",
+    "reason": "Observation from P_episode shows abnormal timeout_ratio (0.05 << 0.9), confirming termination mechanism is faulty; next, probe reward to validate reward function integrity.",
+    "claims": [
+      {
+        "id": "receipt:9b889b425c60:timeout_ratio",
+        "value": 0.05
+      }
+    ],
+    "expected_outcomes": {
+      "termination": "normal",
+      "reward": "abnormal",
+      "actuator": "normal"
+    }
+  },
+  "decision_sha256_lf": "c944fbcccff2660f16a04e55862422bfb16b1bb78e876a04a2109e7beabd1fa6",
+  "error": null
+}

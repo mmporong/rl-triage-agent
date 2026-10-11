@@ -1,0 +1,36 @@
+{
+  "ranking": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "probe": "P_reward",
+  "action": "continue",
+  "reason": "Prioritize checking reward mechanism first as multiple reward-related telemetry values deviate from reference, suggesting possible miscalculation or misconfiguration in reward components.",
+  "claims": [
+    {
+      "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+      "value": 1.3415915767351787
+    },
+    {
+      "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+      "value": 1.4141562740008036
+    },
+    {
+      "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+      "value": 0.5857793996731441
+    },
+    {
+      "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+      "value": 0.6309353162844976
+    }
+  ],
+  "expected_outcomes": {
+    "reward": "abnormal",
+    "actuator": "normal",
+    "exploration": "normal"
+  }
+}

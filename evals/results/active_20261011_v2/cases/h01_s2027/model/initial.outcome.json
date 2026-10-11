@@ -1,0 +1,41 @@
+{
+  "stage": "initial",
+  "status": "valid",
+  "packet_sha256_lf": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636",
+  "attempts": [
+    {
+      "path": "model/initial.attempt1.json",
+      "sha256_lf": "ab3603a8b1c8ac7ef87452101c6c73ef38af25707c87bb1234c45cbf3d0bd628"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_reward",
+    "action": "continue",
+    "reason": "Initial decision: highest uncertainty in reward mechanism due to large deviation in track_lin_vel_xy_exp from reference; P_reward is best suited to detect reward miscalculation.",
+    "claims": [
+      {
+        "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+        "value": 0.3768112694223722
+      },
+      {
+        "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+        "value": 1.413650377591451
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "abnormal",
+      "actuator": "normal",
+      "exploration": "normal"
+    }
+  },
+  "decision_sha256_lf": "3ebefd9f8d17738913b3bcc8c77d86bfcd0991633afe41fbab856cb5f136a076",
+  "error": null
+}

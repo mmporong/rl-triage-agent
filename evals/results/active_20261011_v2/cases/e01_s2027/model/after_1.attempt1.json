@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "ad1f8218ff2c365167d903fd15f61e7a0263618c3bf2903c6cd2e9e4c5ca1921",
+  "messages_sha256": "f1b549e7668b4db14ff0529c9326f641a752c421f27fe661622ff23d7c60849b",
+  "started_at": "2026-10-11T03:20:02.594686+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-7252d416-b0d5-4a83-ab59-ed21a390788d",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 3149,
+  "output_tokens": 227,
+  "total_tokens": 3376,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_episode\",\n  \"action\": \"continue\",\n  \"reason\": \"Reward mechanism remains top suspect after normal P_reward observation; next probe P_episode isolates termination mechanism which is currently ranked lowest but needs verification.\",\n  \"claims\": [\n    {\n      \"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\",\n      \"value\": 1.3415915767351787\n    },\n    {\n      \"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\",\n      \"value\": 1.4141562740008036\n    }\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"normal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T03:20:04.981886+00:00",
+  "execution_wall_s": 2.3871947979787365,
+  "cpu_s": 0.3654651739999999,
+  "exit_code": 0
+}

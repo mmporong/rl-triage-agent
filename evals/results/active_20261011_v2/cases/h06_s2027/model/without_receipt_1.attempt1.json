@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "6389ba4496495b7f1f0e153590359798483e8ccc093f01058f10cd8fb41c25e1",
+  "messages_sha256": "63999978b5197a1ffcbeb4330f1b5843cd068ddab6446ac6ad4dbaaead5f3c2a",
+  "started_at": "2026-10-11T03:14:39.073404+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-55d05da8-1bf7-4a05-b83c-ccd75fefaf3a",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2860,
+  "output_tokens": 179,
+  "total_tokens": 3039,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": null,\n  \"action\": \"confirm\",\n  \"reason\": \"Train/mean_reward is 9.64 vs reference 33.81, indicating a significant reward deficit; no further probes needed as reward mechanism is confirmed as the sole issue.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Train/mean_reward\", \"value\": 9.63839819431305},\n    {\"id\": \"telemetry:reference:Train/mean_reward\", \"value\": 33.80788917541504}\n  ],\n  \"expected_outcomes\": {}\n}",
+  "finished_at": "2026-10-11T03:14:40.555268+00:00",
+  "execution_wall_s": 1.4818557060789317,
+  "cpu_s": 0.3628605329999999,
+  "exit_code": 0
+}

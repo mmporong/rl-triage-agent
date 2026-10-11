@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "abf8b51059f5e1273c1bae9fbce2c707c2427a201073ba53139fd843c0bca07d",
+  "messages_sha256": "522b1dc7255bfb15df704756875d037811dedccb964ec3292cb4e77e56783d99",
+  "started_at": "2026-10-11T02:58:36.046537+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-aca34396-3a6c-4f10-80f5-cded01780978",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2972,
+  "output_tokens": 165,
+  "total_tokens": 3137,
+  "content": "{\n  \"ranking\": [\"termination\", \"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Observation from P_episode shows abnormal timeout_ratio (0.05 << 0.9), confirming termination mechanism is faulty; next, probe reward to validate reward function integrity.\",\n  \"claims\": [\n    {\"id\": \"receipt:9b889b425c60:timeout_ratio\", \"value\": 0.05}\n  ],\n  \"expected_outcomes\": {\n    \"termination\": \"normal\",\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T02:58:38.496794+00:00",
+  "execution_wall_s": 2.450257939985022,
+  "cpu_s": 0.39037960799999993,
+  "exit_code": 0
+}

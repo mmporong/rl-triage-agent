@@ -1,0 +1,43 @@
+{
+  "stage": 1,
+  "order": [
+    "observed",
+    "masked"
+  ],
+  "actual": {
+    "stage": "after_1",
+    "status": "semantic_invalid",
+    "packet_sha256_lf": "cd44fef78f3b9cc8a214bb79d95571d075db0ff0e3eae92eaa47dd1bd12fe065",
+    "attempts": [
+      {
+        "path": "model/after_1.attempt1.json",
+        "sha256_lf": "4e8fcb76e005b1738329643a17ade48acfe15206db27b0770abfe7867a3fd1b5"
+      }
+    ],
+    "decision": null,
+    "decision_sha256_lf": null,
+    "error": {
+      "type": "ModelSemanticError",
+      "message": "post decision은 최신 receipt fact를 인용해야 한다"
+    }
+  },
+  "control": {
+    "stage": "without_receipt_1",
+    "status": "semantic_invalid",
+    "packet_sha256_lf": "95809a4df36dce037efadba17d6e99192f89f1f575d45ea2050cb5a3dd9d5e9f",
+    "attempts": [
+      {
+        "path": "model/without_receipt_1.attempt1.json",
+        "sha256_lf": "b9df67a8ff186adb295094e2535c3bc872a310fc50b4557491c50aeec2a85e81"
+      }
+    ],
+    "decision": null,
+    "decision_sha256_lf": null,
+    "error": {
+      "type": "ModelSemanticError",
+      "message": "초기 판단은 confirm할 수 없다"
+    }
+  },
+  "contrast": null,
+  "proof_eligible": false
+}

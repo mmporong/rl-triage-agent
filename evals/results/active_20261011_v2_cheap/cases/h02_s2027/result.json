@@ -1,0 +1,92 @@
+{
+  "schema": "active_diagnosis_case_v2",
+  "case": "h02_s2027",
+  "tag": "active_20261011_v2_cheap",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "started_at": "2026-10-11T02:56:04.997212+00:00",
+  "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+  "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+  "human_review_s": null,
+  "approval_actor": "codex_operator_user_authorized_test",
+  "approval_identity_attested": false,
+  "controller": "cheapest_discrimination",
+  "gpu_device_busy_s": null,
+  "stop_reason": "probe_budget_or_frozen_stop",
+  "status": "completed",
+  "finished_at": "2026-10-11T02:56:33.588698+00:00",
+  "end_to_end_wall_s": 28.590628300094977,
+  "initial_outcome": null,
+  "decisions": [],
+  "observed": [
+    {
+      "at": "2026-10-11T02:56:19+00:00",
+      "event": "receipt",
+      "request_id": "1d8c48666f8b",
+      "outcome": "normal",
+      "measurement": {
+        "critic_change": 1.519335084448163,
+        "actor_change": 1.9338718414685443,
+        "from": "model_0.pt"
+      },
+      "gpu_s": 13.5,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "bf7b200de1b275984b2c190257667cc6d0a70d185fa3f440135e48bc1055696e",
+      "probe": "P_value",
+      "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+      "report_sha256_lf": "189cb1359863baf4466de8d489647661cf1dc2bb915329907c790cbfad323537"
+    },
+    {
+      "at": "2026-10-11T02:56:33+00:00",
+      "event": "receipt",
+      "request_id": "c2c659093519",
+      "outcome": "normal",
+      "measurement": {
+        "mismatch_count": 0,
+        "mismatches": [],
+        "static_friction_mean": 0.8000000715255737,
+        "dynamic_friction_mean": 0.6000000238418579,
+        "mass_delta_min": -0.9980754852294922,
+        "mass_delta_max": 2.939188003540039,
+        "physics_dt": 0.005
+      },
+      "gpu_s": 13.4,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "f854767c7fc2c8978390b9a3f6b86af7adc9f058badaa48b2eabf70a3dcff820",
+      "probe": "P_physics",
+      "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+      "report_sha256_lf": "80e0d94145a7b5f2c942e086ba5a77732c403f4757c26d9d9ce029ac5f6df3e2"
+    }
+  ],
+  "pairs": [],
+  "contrasts": [],
+  "without_receipt": [],
+  "budget_left": 0,
+  "model_action": null,
+  "evidence_state": {
+    "hypotheses": [
+      "reward",
+      "actuator",
+      "exploration",
+      "termination"
+    ],
+    "dropped": [
+      "optimizer",
+      "physics"
+    ],
+    "status": "unidentifiable"
+  },
+  "costs": {
+    "model_calls": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "model_wall_s": 0,
+    "model_cpu_s": 0,
+    "isaac_wall_s": 26.9,
+    "human_review_s": null,
+    "gpu_device_busy_s": null,
+    "isaac_cpu_s": 27.515625,
+    "isaac_simulator_steps": 0
+  }
+}

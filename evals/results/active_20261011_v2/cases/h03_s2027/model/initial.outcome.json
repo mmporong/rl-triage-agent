@@ -1,0 +1,41 @@
+{
+  "stage": "initial",
+  "status": "valid",
+  "packet_sha256_lf": "479a2f596b1236395e7e2ea231ce5b8471ea915e81eace41e283ca5639b58625",
+  "attempts": [
+    {
+      "path": "model/initial.attempt1.json",
+      "sha256_lf": "90a03c6b901e51d846bc30a768189145e840d0388ea5f9a80e0dc969a963d0c8"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_episode",
+    "action": "continue",
+    "reason": "Initial decision: prioritize probing termination due to its abnormal expectation in P_episode, which may explain low episode reward and mean episode length.",
+    "claims": [
+      {
+        "id": "telemetry:case:Train/mean_episode_length",
+        "value": 50.0
+      },
+      {
+        "id": "telemetry:reference:Train/mean_episode_length",
+        "value": 996.604667154948
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "normal",
+      "actuator": "normal",
+      "exploration": "normal"
+    }
+  },
+  "decision_sha256_lf": "b9af803af881cb1788c0cb6370450565b4e8a89c4b135fdc8304bd938ec626a5",
+  "error": null
+}

@@ -1,0 +1,28 @@
+{
+  "ranking": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "probe": "P_reward",
+  "action": "continue",
+  "reason": "Initial decision: highest uncertainty in reward mechanism due to large deviation in track_lin_vel_xy_exp from reference; P_reward is best suited to detect reward miscalculation.",
+  "claims": [
+    {
+      "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+      "value": 0.3768112694223722
+    },
+    {
+      "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+      "value": 1.413650377591451
+    }
+  ],
+  "expected_outcomes": {
+    "reward": "abnormal",
+    "actuator": "normal",
+    "exploration": "normal"
+  }
+}

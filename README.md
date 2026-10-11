@@ -14,6 +14,8 @@ When a healthy reference is unavailable, `configs/triage_single_run.yml` reads o
 
 The [active diagnosis host driver](docs/ACTIVE-DIAGNOSIS.md) connects a fresh Nemotron probe choice to an approval ledger, a fixed Isaac measurement and a fresh model reassessment. It preserves the model's raw ranking separately from the frozen evidence rules, compares each reassessment with a fresh call that lacks the latest receipt, and records independent executions of two rule baselines. Diagnosis and masked validation have separate outcomes: an invalid control excludes that pair from the evidence without blocking a valid actual decision. Its registered cases demonstrate integration on previously seen inputs; they do not establish accuracy, generalization or savings.
 
+The [current active integration results](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md) contain 8 audited model cases and two independently executed rule baselines. All model records pass integrity checks, but **0/8 pass the measurement-dependent judgment-change criterion**. Seven model cases remain on HOLD. The recorded costs therefore do not establish diagnosis or savings superiority.
+
 > 한국어 요약은 [아래](#한국어-요약)에 있습니다.
 
 ## Screenshot
@@ -257,5 +259,7 @@ This re-derives past numbers; it is not new performance evidence. Two early file
 **Isaac Lab 학습 실패 원인 추적 에이전트.** 학습 로그를 읽고 원인 후보와 다음 측정 또는 실험 하나를 제안합니다. 정상 기준 실행이 있으면 텔레메트리를 비교하고 검증 실험을 사전등록합니다. 사람이 승인하면 probe를 실행하거나 재평가 브리지로 변수 하나만 바꿔 다시 학습해 가설을 확인합니다. 정상 기준이 없으면 단일 실행의 수치·가설·한계·다음 측정을 `hypotheses_only` 평가로 저장하며 원인을 확정하지 않습니다. 설정 근거를 제공하면 파일 해시와 인용 값도 대조합니다. 이 검사는 제공된 파일끼리의 일관성을 확인하며, 시뮬레이터에서 나온 자료인지는 인증하지 않습니다.
 
 [관측 후 판단 갱신 드라이버](docs/ACTIVE-DIAGNOSIS.md)는 새 Nemotron 호출이 고른 검사를 승인 원장과 실제 Isaac 실행에 연결합니다. 측정값을 받은 모델의 원문 순위와 규칙 판정은 따로 남기고, 최신 결과를 가린 호출 및 단순 규칙 두 방식의 실행과 비교합니다. 진단과 가림 검증의 상태를 구분해 대조 호출이 잘못돼도 유효한 실제 판단을 이어가며, 해당 쌍은 발표 증거에서 제외합니다. 이미 본 입력의 통합 기록이며 정확도 향상이나 GPU 절감으로 해석하지 않습니다.
+
+[현재 통합 결과](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md)는 모델 8사례와 별도 실행한 규칙 두 방식을 포함합니다. 모델 기록 감사는 8/8 통과했지만, 측정 때문에 판단이 바뀌었다는 기준은 **0/8**입니다. 모델 7사례가 HOLD이며 진단 우위나 절감은 입증하지 못했습니다.
 
 에이전트는 OpenShell 샌드박스 안에서 설정·안전 게이트·보상을 건드릴 수 없고, 권한 요청은 openshell-prover가 현장 경계와 비교해 증명되지 않으면 자동 거절합니다. 별도 T2 게이트는 사전등록된 행동 평가가 healthy이면 추가 고리를 열지 않습니다. 실제 실행 기록과 실패 판정은 위 결과와 연결된 문서에 보존합니다.

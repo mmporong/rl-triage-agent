@@ -1,0 +1,204 @@
+{
+  "schema": "active_diagnosis_case_v2",
+  "case": "e01_s2027",
+  "tag": "active_20261011_v2",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "started_at": "2026-10-11T03:19:32.720646+00:00",
+  "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+  "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+  "human_review_s": null,
+  "approval_actor": "codex_operator_user_authorized_test",
+  "approval_identity_attested": false,
+  "controller": "model",
+  "gpu_device_busy_s": null,
+  "stop_reason": "actual_model_invalid",
+  "error_type": "ModelSemanticError",
+  "error": "post decision은 최신 receipt fact를 인용해야 한다",
+  "status": "hold",
+  "finished_at": "2026-10-11T03:20:08.333282+00:00",
+  "end_to_end_wall_s": 35.6123492999468,
+  "initial_outcome": {
+    "stage": "initial",
+    "status": "valid",
+    "packet_sha256_lf": "92cae091dd6076e4c572ab560b3762736e24f68852219e28f7fb605d5dfd1ac4",
+    "attempts": [
+      {
+        "path": "model/initial.attempt1.json",
+        "sha256_lf": "0e5b5fb988046574d71db9138e8c3c1d0e2b3a026737f1c9ab9cc17c6fdf8baf"
+      }
+    ],
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "Prioritize checking reward mechanism first as multiple reward-related telemetry values deviate from reference, suggesting possible miscalculation or misconfiguration in reward components.",
+      "claims": [
+        {
+          "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 1.3415915767351787
+        },
+        {
+          "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 1.4141562740008036
+        },
+        {
+          "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+          "value": 0.5857793996731441
+        },
+        {
+          "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+          "value": 0.6309353162844976
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    },
+    "decision_sha256_lf": "66e7193acc9e61819d623a6b9f06b71757f5ecfbce6431bb5cc05b995ca92cf4",
+    "error": null
+  },
+  "decisions": [
+    {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "Prioritize checking reward mechanism first as multiple reward-related telemetry values deviate from reference, suggesting possible miscalculation or misconfiguration in reward components.",
+      "claims": [
+        {
+          "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 1.3415915767351787
+        },
+        {
+          "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 1.4141562740008036
+        },
+        {
+          "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+          "value": 0.5857793996731441
+        },
+        {
+          "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+          "value": 0.6309353162844976
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    }
+  ],
+  "observed": [
+    {
+      "at": "2026-10-11T03:20:00+00:00",
+      "event": "receipt",
+      "request_id": "7fd19df2d60a",
+      "outcome": "normal",
+      "measurement": {
+        "track_lin_vel_xy_exp_rel_error": 1.7083833587783203e-08,
+        "track_ang_vel_z_exp_rel_error": 1.6689492690069586e-08
+      },
+      "gpu_s": 22.2,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "bb8dfdb21633855c254d369bf43cb1150506acf9269a5c0e763cd0ae25c832af",
+      "probe": "P_reward",
+      "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+      "report_sha256_lf": "f00297e6d48af614ba6b746f89fb495b9114157af1a4e5f31111df7b025d74f3"
+    }
+  ],
+  "pairs": [
+    {
+      "stage": 1,
+      "order": [
+        "observed",
+        "masked"
+      ],
+      "actual": {
+        "stage": "after_1",
+        "status": "semantic_invalid",
+        "packet_sha256_lf": "ad1f8218ff2c365167d903fd15f61e7a0263618c3bf2903c6cd2e9e4c5ca1921",
+        "attempts": [
+          {
+            "path": "model/after_1.attempt1.json",
+            "sha256_lf": "c9939d332e3bdc255c1a6dbbd5e6869bc4b042f2c63ea49091c82a22de2fe566"
+          }
+        ],
+        "decision": null,
+        "decision_sha256_lf": null,
+        "error": {
+          "type": "ModelSemanticError",
+          "message": "post decision은 최신 receipt fact를 인용해야 한다"
+        }
+      },
+      "control": {
+        "stage": "without_receipt_1",
+        "status": "semantic_invalid",
+        "packet_sha256_lf": "86a0fe98739eb57fe2d75188d0ee9344cc546df3a5d8fff29942fa28c7677f0b",
+        "attempts": [
+          {
+            "path": "model/without_receipt_1.attempt1.json",
+            "sha256_lf": "c468451db206d0775b5fa5c626a34078761ad39423de3d98e2a00ab541112ed9"
+          }
+        ],
+        "decision": null,
+        "decision_sha256_lf": null,
+        "error": {
+          "type": "ModelSemanticError",
+          "message": "초기 판단은 confirm할 수 없다"
+        }
+      },
+      "contrast": null,
+      "proof_eligible": false
+    }
+  ],
+  "contrasts": [
+    null
+  ],
+  "without_receipt": [
+    null
+  ],
+  "budget_left": 1,
+  "model_action": "continue",
+  "evidence_state": {
+    "hypotheses": [
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "dropped": [
+      "reward"
+    ],
+    "status": "open"
+  },
+  "costs": {
+    "model_calls": 3,
+    "input_tokens": 8799,
+    "output_tokens": 824,
+    "model_wall_s": 7.669608997995965,
+    "model_cpu_s": 1.1537521859999997,
+    "isaac_wall_s": 22.2,
+    "human_review_s": null,
+    "gpu_device_busy_s": null,
+    "isaac_cpu_s": 29.96875,
+    "isaac_simulator_steps": 51200
+  }
+}

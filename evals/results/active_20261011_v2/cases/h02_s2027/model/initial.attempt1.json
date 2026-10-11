@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "e2cb38745419a209220848f4a44a78a98a456d7db288e6dd874a0386489530d9",
+  "messages_sha256": "67e489373422d1969dcc497fdc2ad20914f5613623b1bf393d1209a8995e68a6",
+  "started_at": "2026-10-11T02:56:34.716772+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-2f0a37a9-3989-4004-8ab3-c115e96c89be",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2695,
+  "output_tokens": 228,
+  "total_tokens": 2923,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Prioritizing reward mechanism due to significant deviation in track_lin_vel_xy_exp from reference (0.312 vs 1.414), suggesting reward miscalculation.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.3123434710005919},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.413650377591451}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T02:56:39.660209+00:00",
+  "execution_wall_s": 2.5437801190419123,
+  "cpu_s": 0.4204757229999998,
+  "exit_code": 0
+}

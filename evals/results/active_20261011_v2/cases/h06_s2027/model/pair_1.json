@@ -1,0 +1,43 @@
+{
+  "stage": 1,
+  "order": [
+    "observed",
+    "masked"
+  ],
+  "actual": {
+    "stage": "after_1",
+    "status": "semantic_invalid",
+    "packet_sha256_lf": "6145365079d2a7487edf714fcb22ade24e7b7d633bacf0944498fa0874d37c5e",
+    "attempts": [
+      {
+        "path": "model/after_1.attempt1.json",
+        "sha256_lf": "4445c44fcc9dfeb1ec08678af4a41796c5609ad41d0a05ac3ac81ffbfb5681e5"
+      }
+    ],
+    "decision": null,
+    "decision_sha256_lf": null,
+    "error": {
+      "type": "ModelSemanticError",
+      "message": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+    }
+  },
+  "control": {
+    "stage": "without_receipt_1",
+    "status": "semantic_invalid",
+    "packet_sha256_lf": "6389ba4496495b7f1f0e153590359798483e8ccc093f01058f10cd8fb41c25e1",
+    "attempts": [
+      {
+        "path": "model/without_receipt_1.attempt1.json",
+        "sha256_lf": "1c7cc1a85ebaa5fb4806a2e06c11bdca9db9dbe72b1ac3462e212ca21fae9695"
+      }
+    ],
+    "decision": null,
+    "decision_sha256_lf": null,
+    "error": {
+      "type": "ModelSemanticError",
+      "message": "초기 판단은 confirm할 수 없다"
+    }
+  },
+  "contrast": null,
+  "proof_eligible": false
+}

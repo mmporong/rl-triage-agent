@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "479a2f596b1236395e7e2ea231ce5b8471ea915e81eace41e283ca5639b58625",
+  "messages_sha256": "41a2c497e0bcfba5b58ebccc2033341f34bd638dd41155dabf23ea544b51b512",
+  "started_at": "2026-10-11T02:57:34.129785+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-99c8251f-38f6-4d07-a7da-12ce93f04634",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2695,
+  "output_tokens": 186,
+  "total_tokens": 2881,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_episode\",\n  \"action\": \"continue\",\n  \"reason\": \"Initial decision: prioritize probing termination due to its abnormal expectation in P_episode, which may explain low episode reward and mean episode length.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Train/mean_episode_length\", \"value\": 50.0},\n    {\"id\": \"telemetry:reference:Train/mean_episode_length\", \"value\": 996.604667154948}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"normal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T02:57:35.580757+00:00",
+  "execution_wall_s": 1.4509687450481579,
+  "cpu_s": 0.36047929600000006,
+  "exit_code": 0
+}

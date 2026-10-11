@@ -1,0 +1,104 @@
+{
+  "stage": 1,
+  "order": [
+    "masked",
+    "observed"
+  ],
+  "actual": {
+    "stage": "after_1",
+    "status": "valid",
+    "packet_sha256_lf": "abf8b51059f5e1273c1bae9fbce2c707c2427a201073ba53139fd843c0bca07d",
+    "attempts": [
+      {
+        "path": "model/after_1.attempt1.json",
+        "sha256_lf": "a22bfacd93c6d3dd03108d349644b87d02930a4b3417cfbf5ec0a07e4643a12e"
+      }
+    ],
+    "decision": {
+      "ranking": [
+        "termination",
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "Observation from P_episode shows abnormal timeout_ratio (0.05 << 0.9), confirming termination mechanism is faulty; next, probe reward to validate reward function integrity.",
+      "claims": [
+        {
+          "id": "receipt:9b889b425c60:timeout_ratio",
+          "value": 0.05
+        }
+      ],
+      "expected_outcomes": {
+        "termination": "normal",
+        "reward": "abnormal",
+        "actuator": "normal"
+      }
+    },
+    "decision_sha256_lf": "c944fbcccff2660f16a04e55862422bfb16b1bb78e876a04a2109e7beabd1fa6",
+    "error": null
+  },
+  "control": {
+    "stage": "without_receipt_1",
+    "status": "valid",
+    "packet_sha256_lf": "7f21e3f6dcaa7f76e4cefecaf8c16f9a553a4e5546e6d6e9fd6757fde5b52455",
+    "attempts": [
+      {
+        "path": "model/without_receipt_1.attempt1.json",
+        "sha256_lf": "7e17fdad0f40cb0e865b4a45e5a07319f6d6b9df88b4a34fb14468157016d7db"
+      }
+    ],
+    "decision": {
+      "ranking": [
+        "termination",
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "Low mean episode length (50.0 vs reference 996.6) and low mean reward (1.257 vs reference 33.808) suggest reward mechanism issues; P_reward is unobserved and can detect reward miscalculation.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_episode_length",
+          "value": 50.0
+        },
+        {
+          "id": "telemetry:reference:Train/mean_episode_length",
+          "value": 996.604667154948
+        },
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 1.2573569695154825
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+        }
+      ],
+      "expected_outcomes": {
+        "termination": "normal",
+        "reward": "abnormal",
+        "actuator": "normal"
+      }
+    },
+    "decision_sha256_lf": "d1acb27bd27fe830c732e240a17504d5ea9452926f0566e2aa6cc0c25b10c54a",
+    "error": null
+  },
+  "contrast": {
+    "leader_changed": true,
+    "ranking_changed": true,
+    "latest_receipt_cited": true,
+    "changed_leader_rejected_by_actual_observation": true,
+    "after_leader_survives_actual_observation": true,
+    "ablation_leader_diff": false,
+    "ablation_preserves_before_leader": false,
+    "safe_confirm": false
+  },
+  "proof_eligible": true
+}

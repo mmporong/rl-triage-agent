@@ -1,0 +1,56 @@
+{
+  "case": "h02_s2027",
+  "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+  "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+  "stage": "1",
+  "reference_source": {
+    "path": "evals/results/p1a_probes_holdout_20261009/probes/baseline_p0c_s2027.json",
+    "sha256_lf": "d66fd6fd03c2442ed8f541736dafb0e87c566f9476e428cc367ba87f20b793fb"
+  },
+  "prior_receipt_digests": [],
+  "binding": {
+    "controller": "model",
+    "packet_sha256_lf": "e2cb38745419a209220848f4a44a78a98a456d7db288e6dd874a0386489530d9",
+    "model_call_sha256_lf": "d9f0a1b91f6c96be3ee3859073159d3767ee5ef5dd30d73d683d5079b126ff03",
+    "decision_sha256_lf": "46a571f5cd6072ead2c504097ad7717826f1f72ef1551944f4605860d6c9a324",
+    "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369"
+  },
+  "budget_probes": 2,
+  "probe": "P_reward",
+  "args": {
+    "rollout_steps": 200,
+    "num_envs": 256
+  },
+  "thresholds": {
+    "P_noise": [
+      "noise_ratio",
+      "absolute_log2",
+      1.0
+    ],
+    "P_value": [
+      "critic_change",
+      "ratio_below",
+      0.1
+    ],
+    "P_reward": [
+      "track_lin_vel_xy_exp_rel_error",
+      "above",
+      0.05
+    ],
+    "P_torque": [
+      "low_speed_saturation",
+      "ratio_above",
+      3.0
+    ],
+    "P_physics": [
+      "mismatch_count",
+      "above",
+      0.5
+    ],
+    "P_episode": [
+      "timeout_ratio",
+      "below",
+      0.9
+    ]
+  }
+}

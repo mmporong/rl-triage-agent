@@ -1,0 +1,41 @@
+{
+  "stage": "initial",
+  "status": "valid",
+  "packet_sha256_lf": "4bd4693b05abdbe754fe72b32c37ef8a4b144bf5fa9cfe463f7401bbbd0a3d58",
+  "attempts": [
+    {
+      "path": "model/initial.attempt1.json",
+      "sha256_lf": "6220ba93ecc3b6136e965fb594e021a67c1708d98809b28527285f8316eabcc1"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_reward",
+    "action": "continue",
+    "reason": "Prioritizing reward mechanism due to large negative deviations in tracking rewards vs reference; P_reward is cheapest unobserved probe that can confirm/reject reward dysfunction.",
+    "claims": [
+      {
+        "id": "telemetry:case:Train/mean_reward",
+        "value": -12.153841352462768
+      },
+      {
+        "id": "telemetry:reference:Train/mean_reward",
+        "value": 33.80788917541504
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "abnormal",
+      "actuator": "normal",
+      "exploration": "normal"
+    }
+  },
+  "decision_sha256_lf": "1bee53ef9dd9aaad401ced8112861e1a1ae8c104fe1befc0c5a4dfe522ae29d2",
+  "error": null
+}

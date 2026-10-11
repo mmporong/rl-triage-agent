@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "5f7ba378a95ae4eb2e9bbb77f7e7f133220e9150a13f402a6c4eb3b9ea8709d6",
+  "messages_sha256": "5ab105a9a009fa6a79593a462b84a4fbd5a8291a3adcc71506d517df1efd95c2",
+  "started_at": "2026-10-11T02:20:59.549942+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-1f6c1bee-cab8-4442-b361-af8bb5f1c718",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 3052,
+  "output_tokens": 249,
+  "total_tokens": 3301,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": null,\n  \"action\": \"confirm\",\n  \"reason\": \"Reward mechanism confirmed as sole hypothesis: P_reward observation normal eliminates all but reward; reward ranked first.\",\n  \"claims\": [\n    {\n      \"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\",\n      \"value\": 0.3768112694223722\n    },\n    {\n      \"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\",\n      \"value\": 1.413650377591451\n    },\n    {\n      \"id\": \"receipt:fda5774acaf7:track_lin_vel_xy_exp_rel_error\",\n      \"value\": 1.7401774496939027e-08\n    }\n  ],\n  \"expected_outcomes\": {}\n}",
+  "finished_at": "2026-10-11T02:21:01.869736+00:00",
+  "execution_wall_s": 2.319799527991563,
+  "cpu_s": 0.6670970359999999,
+  "exit_code": 0
+}

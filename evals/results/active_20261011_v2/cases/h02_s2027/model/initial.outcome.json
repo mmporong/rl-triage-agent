@@ -1,0 +1,41 @@
+{
+  "stage": "initial",
+  "status": "valid",
+  "packet_sha256_lf": "e2cb38745419a209220848f4a44a78a98a456d7db288e6dd874a0386489530d9",
+  "attempts": [
+    {
+      "path": "model/initial.attempt1.json",
+      "sha256_lf": "d9f0a1b91f6c96be3ee3859073159d3767ee5ef5dd30d73d683d5079b126ff03"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_reward",
+    "action": "continue",
+    "reason": "Prioritizing reward mechanism due to significant deviation in track_lin_vel_xy_exp from reference (0.312 vs 1.414), suggesting reward miscalculation.",
+    "claims": [
+      {
+        "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+        "value": 0.3123434710005919
+      },
+      {
+        "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+        "value": 1.413650377591451
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "abnormal",
+      "actuator": "normal",
+      "exploration": "normal"
+    }
+  },
+  "decision_sha256_lf": "46a571f5cd6072ead2c504097ad7717826f1f72ef1551944f4605860d6c9a324",
+  "error": null
+}

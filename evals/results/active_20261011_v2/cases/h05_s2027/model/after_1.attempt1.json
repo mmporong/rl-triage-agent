@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "8f91f7f840fdac624c5b01d2a3452fcdda9c31022309e2636fa48e57349efa56",
+  "messages_sha256": "081ccfde5e07201682ce8546b4fe33010387801987bb98fd5913f11c82a76e29",
+  "started_at": "2026-10-11T03:13:38.600317+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-7c87dd3a-f500-4c6a-8fcb-b9a2d1a60697",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 3204,
+  "output_tokens": 185,
+  "total_tokens": 3389,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_episode\",\n  \"action\": \"continue\",\n  \"reason\": \"Reward mechanism remains top hypothesis; need to rule out termination via episode timeout observation.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Train/mean_reward\", \"value\": -287.6339900970459},\n    {\"id\": \"telemetry:reference:Train/mean_reward\", \"value\": 33.80788917541504}\n  ],\n  \"expected_outcomes\": {\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\",\n    \"optimizer\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T03:13:40.705609+00:00",
+  "execution_wall_s": 2.1052906499244273,
+  "cpu_s": 0.370132978,
+  "exit_code": 0
+}

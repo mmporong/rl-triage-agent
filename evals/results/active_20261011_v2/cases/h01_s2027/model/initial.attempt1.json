@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636",
+  "messages_sha256": "b875afcfd580b2cb6ecb3e3f0234b5be587af5e020deeca4b8323c41f5fd7204",
+  "started_at": "2026-10-11T02:17:05.221988+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-f8b02373-02f2-4cbd-b8aa-3bc2608207f9",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2678,
+  "output_tokens": 225,
+  "total_tokens": 2903,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Initial decision: highest uncertainty in reward mechanism due to large deviation in track_lin_vel_xy_exp from reference; P_reward is best suited to detect reward miscalculation.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.3768112694223722},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.413650377591451}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T02:17:08.286262+00:00",
+  "execution_wall_s": 3.0642505580326542,
+  "cpu_s": 0.8220237169999998,
+  "exit_code": 0
+}

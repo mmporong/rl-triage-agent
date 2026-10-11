@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "dac34831849e655da037b97c5c7e5b16fb2698f83bbd60cd3c81be0c99824a18",
+  "messages_sha256": "6eef1c6e20da280aeaed558d11979cc66e62a70fe9b84c5afe652ccfef3f09e1",
+  "started_at": "2026-10-11T03:13:08.475034+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-88fb9e6a-a732-441e-ad7c-31d38b6799ed",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2681,
+  "output_tokens": 385,
+  "total_tokens": 3066,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Reward mechanism shows largest deviation from reference in telemetry, particularly in tracking rewards and episode reward, suggesting misconfiguration or bug in reward computation.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Train/mean_reward\", \"value\": -287.6339900970459},\n    {\"id\": \"telemetry:reference:Train/mean_reward\", \"value\": 33.80788917541504},\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.2657112826903661},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.413650377591451},\n    {\"id\": \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.18196834363043307},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6328511099020641}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T03:13:11.313610+00:00",
+  "execution_wall_s": 2.8385733760660514,
+  "cpu_s": 0.376420552,
+  "exit_code": 0
+}

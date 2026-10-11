@@ -1,0 +1,57 @@
+{
+  "stage": "initial",
+  "status": "valid",
+  "packet_sha256_lf": "dac34831849e655da037b97c5c7e5b16fb2698f83bbd60cd3c81be0c99824a18",
+  "attempts": [
+    {
+      "path": "model/initial.attempt1.json",
+      "sha256_lf": "8e91668a5176fafdd116a7185b3bf0c4699d8e4501e1f5c08fda7bb366d09674"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_reward",
+    "action": "continue",
+    "reason": "Reward mechanism shows largest deviation from reference in telemetry, particularly in tracking rewards and episode reward, suggesting misconfiguration or bug in reward computation.",
+    "claims": [
+      {
+        "id": "telemetry:case:Train/mean_reward",
+        "value": -287.6339900970459
+      },
+      {
+        "id": "telemetry:reference:Train/mean_reward",
+        "value": 33.80788917541504
+      },
+      {
+        "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+        "value": 0.2657112826903661
+      },
+      {
+        "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+        "value": 1.413650377591451
+      },
+      {
+        "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+        "value": 0.18196834363043307
+      },
+      {
+        "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+        "value": 0.6328511099020641
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "abnormal",
+      "actuator": "normal",
+      "exploration": "normal"
+    }
+  },
+  "decision_sha256_lf": "84cdcfcc9036d1149bbdab33358e0bc866298bcebede81ad84b4409b00b7a24a",
+  "error": null
+}

@@ -1,0 +1,188 @@
+{
+  "schema": "active_diagnosis_case_v2",
+  "case": "h01_s2027",
+  "tag": "active_20261011_v2",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "started_at": "2026-10-11T02:17:02.933125+00:00",
+  "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+  "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+  "human_review_s": null,
+  "approval_actor": "codex_operator_user_authorized_test",
+  "approval_identity_attested": false,
+  "controller": "model",
+  "gpu_device_busy_s": null,
+  "stop_reason": "actual_model_invalid",
+  "error_type": "ModelSemanticError",
+  "error": "confirm은 frozen evidence의 유일한 가설이 raw ranking 1위일 때만 가능하다",
+  "status": "hold",
+  "finished_at": "2026-10-11T02:21:02.750105+00:00",
+  "end_to_end_wall_s": 239.81711770012043,
+  "initial_outcome": {
+    "stage": "initial",
+    "status": "valid",
+    "packet_sha256_lf": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636",
+    "attempts": [
+      {
+        "path": "model/initial.attempt1.json",
+        "sha256_lf": "ab3603a8b1c8ac7ef87452101c6c73ef38af25707c87bb1234c45cbf3d0bd628"
+      }
+    ],
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "Initial decision: highest uncertainty in reward mechanism due to large deviation in track_lin_vel_xy_exp from reference; P_reward is best suited to detect reward miscalculation.",
+      "claims": [
+        {
+          "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 0.3768112694223722
+        },
+        {
+          "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 1.413650377591451
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    },
+    "decision_sha256_lf": "3ebefd9f8d17738913b3bcc8c77d86bfcd0991633afe41fbab856cb5f136a076",
+    "error": null
+  },
+  "decisions": [
+    {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "Initial decision: highest uncertainty in reward mechanism due to large deviation in track_lin_vel_xy_exp from reference; P_reward is best suited to detect reward miscalculation.",
+      "claims": [
+        {
+          "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 0.3768112694223722
+        },
+        {
+          "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 1.413650377591451
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    }
+  ],
+  "observed": [
+    {
+      "at": "2026-10-11T02:20:49+00:00",
+      "event": "receipt",
+      "request_id": "fda5774acaf7",
+      "outcome": "normal",
+      "measurement": {
+        "track_lin_vel_xy_exp_rel_error": 1.7401774496939027e-08,
+        "track_ang_vel_z_exp_rel_error": 1.6668534881247866e-08
+      },
+      "gpu_s": 52.5,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "385d54dffe032db167562b8796e1cd137ad57afff6e864711b28408dba5f874c",
+      "probe": "P_reward",
+      "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+      "report_sha256_lf": "c6fc22a1c14fcd4fa80e1cd47af5fd101d3002ed8f292c3d4bc1089a2cdb0678"
+    }
+  ],
+  "pairs": [
+    {
+      "stage": 1,
+      "order": [
+        "masked",
+        "observed"
+      ],
+      "actual": {
+        "stage": "after_1",
+        "status": "semantic_invalid",
+        "packet_sha256_lf": "5f7ba378a95ae4eb2e9bbb77f7e7f133220e9150a13f402a6c4eb3b9ea8709d6",
+        "attempts": [
+          {
+            "path": "model/after_1.attempt1.json",
+            "sha256_lf": "4b1e7456291a7fd2002999baedfe5ec3ee650086350b9d7127f17b65d7e9c9c1"
+          }
+        ],
+        "decision": null,
+        "decision_sha256_lf": null,
+        "error": {
+          "type": "ModelSemanticError",
+          "message": "confirm은 frozen evidence의 유일한 가설이 raw ranking 1위일 때만 가능하다"
+        }
+      },
+      "control": {
+        "stage": "without_receipt_1",
+        "status": "semantic_invalid",
+        "packet_sha256_lf": "02a33b203d9bfdb708e562168e48f99f638e10ae07f31f8e973124fe3a9451fc",
+        "attempts": [
+          {
+            "path": "model/without_receipt_1.attempt1.json",
+            "sha256_lf": "09904ebb58e1b1f525895480c7232278cd1cbfbe5b061eda8b8f7aadef7006f7"
+          }
+        ],
+        "decision": null,
+        "decision_sha256_lf": null,
+        "error": {
+          "type": "ModelSemanticError",
+          "message": "초기 판단은 confirm할 수 없다"
+        }
+      },
+      "contrast": null,
+      "proof_eligible": false
+    }
+  ],
+  "contrasts": [
+    null
+  ],
+  "without_receipt": [
+    null
+  ],
+  "budget_left": 1,
+  "model_action": "continue",
+  "evidence_state": {
+    "hypotheses": [
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "dropped": [
+      "reward"
+    ],
+    "status": "open"
+  },
+  "costs": {
+    "model_calls": 3,
+    "input_tokens": 8593,
+    "output_tokens": 688,
+    "model_wall_s": 9.098864339990541,
+    "model_cpu_s": 2.0840617729999993,
+    "isaac_wall_s": 52.5,
+    "human_review_s": null,
+    "gpu_device_busy_s": null,
+    "isaac_cpu_s": 64.703125,
+    "isaac_simulator_steps": 51200
+  }
+}

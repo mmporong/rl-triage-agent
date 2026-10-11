@@ -1,0 +1,33 @@
+{
+  "stage": "initial",
+  "status": "valid",
+  "packet_sha256_lf": "4066b410f98465a452a1241aac661397453e4e8392827ab8b7e06a7dde1731cc",
+  "attempts": [
+    {
+      "path": "model/initial.attempt1.json",
+      "sha256_lf": "8e2461ff173b371b544d5417329a186129ca023bd7e1d7cb0532fe2714aae7b9"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "termination",
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics"
+    ],
+    "probe": null,
+    "action": "hold",
+    "reason": "No observations yet; need data to eliminate mechanisms. Budget allows two probes.",
+    "claims": [
+      {
+        "id": "telemetry:case:Episode_Termination/time_out",
+        "value": 4.250000127156576
+      }
+    ],
+    "expected_outcomes": {}
+  },
+  "decision_sha256_lf": "a12e1330f9a3d64afd77f4564b2843a74a64f74972bc0f0949d4c874b5f6ab39",
+  "error": null
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "0a9a9c246fdf7f645fd796fa72607eda343b0fe1d9287a9dd68dc370ca60a72a",
+  "messages_sha256": "05f1923766cac4a493c0b2cd8e608dbaff6f980e18f4038becc4dcbae3e0ad05",
+  "started_at": "2026-10-11T03:14:09.582960+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-5f967cde-b1f8-41a5-83ff-079091d9f2c8",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2690,
+  "output_tokens": 210,
+  "total_tokens": 2900,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Train/mean_reward is 9.64 vs reference 33.81, indicating a significant reward deficit; P_reward is the most targeted probe to diagnose reward mechanism issues.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Train/mean_reward\", \"value\": 9.63839819431305},\n    {\"id\": \"telemetry:reference:Train/mean_reward\", \"value\": 33.80788917541504}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T03:14:11.132885+00:00",
+  "execution_wall_s": 1.5499179710168391,
+  "cpu_s": 0.335516276,
+  "exit_code": 0
+}

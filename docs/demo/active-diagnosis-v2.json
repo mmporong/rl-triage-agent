@@ -1,0 +1,4701 @@
+{
+  "schema": "active_replay_summary_v2",
+  "tag": "active_20261011_v2",
+  "claim": "검사 결과와 판단 중단 사유를 재생한 실행 기록",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "registered_order": [
+    "h01_s2027",
+    "h02_s2027",
+    "h03_s2027",
+    "h04_s2027",
+    "h05_s2027",
+    "h06_s2027",
+    "baseline_p0c_s2027",
+    "e01_s2027"
+  ],
+  "spotlight_case": "h01_s2027",
+  "spotlight_verified": false,
+  "audit": "evals/results/active_20261011_v2/audit.json",
+  "cases": [
+    {
+      "case": "h01_s2027",
+      "state": "verified",
+      "proof": false,
+      "reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "artifact_reasons": [],
+      "proof_reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "result": {
+        "schema": "active_diagnosis_case_v2",
+        "case": "h01_s2027",
+        "tag": "active_20261011_v2",
+        "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+        "started_at": "2026-10-11T02:17:02.933125+00:00",
+        "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+        "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+        "human_review_s": null,
+        "approval_actor": "codex_operator_user_authorized_test",
+        "approval_identity_attested": false,
+        "controller": "model",
+        "gpu_device_busy_s": null,
+        "stop_reason": "actual_model_invalid",
+        "error_type": "ModelSemanticError",
+        "error": "confirm은 frozen evidence의 유일한 가설이 raw ranking 1위일 때만 가능하다",
+        "status": "hold",
+        "finished_at": "2026-10-11T02:21:02.750105+00:00",
+        "end_to_end_wall_s": 239.81711770012043,
+        "initial_outcome": {
+          "stage": "initial",
+          "status": "valid",
+          "packet_sha256_lf": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636",
+          "attempts": [
+            {
+              "path": "model/initial.attempt1.json",
+              "sha256_lf": "ab3603a8b1c8ac7ef87452101c6c73ef38af25707c87bb1234c45cbf3d0bd628"
+            }
+          ],
+          "decision": {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Initial decision: highest uncertainty in reward mechanism due to large deviation in track_lin_vel_xy_exp from reference; P_reward is best suited to detect reward miscalculation.",
+            "claims": [
+              {
+                "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 0.3768112694223722
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 1.413650377591451
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          },
+          "decision_sha256_lf": "3ebefd9f8d17738913b3bcc8c77d86bfcd0991633afe41fbab856cb5f136a076",
+          "error": null
+        },
+        "decisions": [
+          {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Initial decision: highest uncertainty in reward mechanism due to large deviation in track_lin_vel_xy_exp from reference; P_reward is best suited to detect reward miscalculation.",
+            "claims": [
+              {
+                "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 0.3768112694223722
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 1.413650377591451
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          }
+        ],
+        "observed": [
+          {
+            "at": "2026-10-11T02:20:49+00:00",
+            "event": "receipt",
+            "request_id": "fda5774acaf7",
+            "outcome": "normal",
+            "measurement": {
+              "track_lin_vel_xy_exp_rel_error": 1.7401774496939027e-08,
+              "track_ang_vel_z_exp_rel_error": 1.6668534881247866e-08
+            },
+            "gpu_s": 52.5,
+            "exit_code": 0,
+            "over_budget": false,
+            "receipt_digest": "385d54dffe032db167562b8796e1cd137ad57afff6e864711b28408dba5f874c",
+            "probe": "P_reward",
+            "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+            "report_sha256_lf": "c6fc22a1c14fcd4fa80e1cd47af5fd101d3002ed8f292c3d4bc1089a2cdb0678"
+          }
+        ],
+        "pairs": [
+          {
+            "stage": 1,
+            "order": [
+              "masked",
+              "observed"
+            ],
+            "actual": {
+              "stage": "after_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "5f7ba378a95ae4eb2e9bbb77f7e7f133220e9150a13f402a6c4eb3b9ea8709d6",
+              "attempts": [
+                {
+                  "path": "model/after_1.attempt1.json",
+                  "sha256_lf": "4b1e7456291a7fd2002999baedfe5ec3ee650086350b9d7127f17b65d7e9c9c1"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "confirm은 frozen evidence의 유일한 가설이 raw ranking 1위일 때만 가능하다"
+              }
+            },
+            "control": {
+              "stage": "without_receipt_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "02a33b203d9bfdb708e562168e48f99f638e10ae07f31f8e973124fe3a9451fc",
+              "attempts": [
+                {
+                  "path": "model/without_receipt_1.attempt1.json",
+                  "sha256_lf": "09904ebb58e1b1f525895480c7232278cd1cbfbe5b061eda8b8f7aadef7006f7"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "초기 판단은 confirm할 수 없다"
+              }
+            },
+            "contrast": null,
+            "proof_eligible": false
+          }
+        ],
+        "contrasts": [
+          null
+        ],
+        "without_receipt": [
+          null
+        ],
+        "budget_left": 1,
+        "model_action": "continue",
+        "evidence_state": {
+          "hypotheses": [
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics",
+            "termination"
+          ],
+          "dropped": [
+            "reward"
+          ],
+          "status": "open"
+        },
+        "costs": {
+          "model_calls": 3,
+          "input_tokens": 8593,
+          "output_tokens": 688,
+          "model_wall_s": 9.098864339990541,
+          "model_cpu_s": 2.0840617729999993,
+          "isaac_wall_s": 52.5,
+          "human_review_s": null,
+          "gpu_device_busy_s": null,
+          "isaac_cpu_s": 64.703125,
+          "isaac_simulator_steps": 51200
+        }
+      },
+      "contrast": {},
+      "contrast_index": 0,
+      "baselines": {
+        "fixed_order": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h01_s2027",
+            "tag": "active_20261011_v2_fixed",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T02:21:03.039037+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "fixed_order",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T02:35:49.854880+00:00",
+            "end_to_end_wall_s": 886.8173041001428,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T02:29:52+00:00",
+                "event": "receipt",
+                "request_id": "c867abc9236d",
+                "outcome": "normal",
+                "measurement": {
+                  "timeout_count": 64,
+                  "median_timeout_step": 1000.0,
+                  "timeout_ratio": 1.0
+                },
+                "gpu_s": 137.5,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "c98d2e26e568f3523289a6d98a50b908587a547502a9cc7c80e125f8069daeb4",
+                "probe": "P_episode",
+                "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+                "report_sha256_lf": "71fe10d3dd236f76d0c4aa05102d857a2854cf7e3663f43cbdbe7c0a28d8a13a"
+              },
+              {
+                "at": "2026-10-11T02:35:49+00:00",
+                "event": "receipt",
+                "request_id": "b8acf616d4f5",
+                "outcome": "normal",
+                "measurement": {
+                  "noise_ratio": 0.9995942115783691,
+                  "logged_std_mean": 0.5514878034591675
+                },
+                "gpu_s": 42.8,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "192b6ac820a5b219835043dbbd5cee9013766bd2cbb79759c130fe2a3fbf66da",
+                "probe": "P_noise",
+                "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+                "report_sha256_lf": "37f9f02d545d0d0bd0634656f6bafc2b3d9ff9cca532b560c218414841857fae"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "optimizer",
+                "physics"
+              ],
+              "dropped": [
+                "termination",
+                "exploration"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 180.3,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 244.625,
+              "isaac_simulator_steps": 128000
+            }
+          }
+        },
+        "cheapest_discrimination": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h01_s2027",
+            "tag": "active_20261011_v2_cheap",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T02:35:50.046304+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "cheapest_discrimination",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T02:44:19.305029+00:00",
+            "end_to_end_wall_s": 509.25886639999226,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T02:37:17+00:00",
+                "event": "receipt",
+                "request_id": "8d147caf6cb8",
+                "outcome": "normal",
+                "measurement": {
+                  "critic_change": 1.4414801006760354,
+                  "actor_change": 1.8603592893945866,
+                  "from": "model_0.pt"
+                },
+                "gpu_s": 18.6,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "816a28b1078936908d184ad6ad0394a269116b025b7f112a4132595d2c4dbd05",
+                "probe": "P_value",
+                "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+                "report_sha256_lf": "648afd663c26e40f6f2aa5216519487e593f8047c087841712493a1a31d77f52"
+              },
+              {
+                "at": "2026-10-11T02:44:19+00:00",
+                "event": "receipt",
+                "request_id": "f978d19f8763",
+                "outcome": "abnormal",
+                "measurement": {
+                  "mismatch_count": 2,
+                  "mismatches": [
+                    "static_friction 0.200 not in [0.8, 0.8]",
+                    "dynamic_friction 0.150 not in [0.6, 0.6]"
+                  ],
+                  "static_friction_mean": 0.20000001788139343,
+                  "dynamic_friction_mean": 0.15000000596046448,
+                  "mass_delta_min": -0.9980754852294922,
+                  "mass_delta_max": 2.939188003540039,
+                  "physics_dt": 0.005
+                },
+                "gpu_s": 18.6,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "f891cbeb081cd081f1aa4a4c32d8f0ffad59708e64c2286b09b56c31f8ca2930",
+                "probe": "P_physics",
+                "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+                "report_sha256_lf": "75d5c7261de6ade8c230bea5b3f73adc2b060ef5bf46be7ccd99ba61f31d494e"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "physics"
+              ],
+              "dropped": [
+                "optimizer",
+                "reward",
+                "actuator",
+                "exploration",
+                "termination"
+              ],
+              "status": "confirmed"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 37.2,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 35.875,
+              "isaac_simulator_steps": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "case": "h02_s2027",
+      "state": "verified",
+      "proof": false,
+      "reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "artifact_reasons": [],
+      "proof_reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "result": {
+        "schema": "active_diagnosis_case_v2",
+        "case": "h02_s2027",
+        "tag": "active_20261011_v2",
+        "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+        "started_at": "2026-10-11T02:56:33.855853+00:00",
+        "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+        "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+        "human_review_s": null,
+        "approval_actor": "codex_operator_user_authorized_test",
+        "approval_identity_attested": false,
+        "controller": "model",
+        "gpu_device_busy_s": null,
+        "stop_reason": "actual_model_invalid",
+        "error_type": "ModelSemanticError",
+        "error": "post decision은 최신 receipt fact를 인용해야 한다",
+        "status": "hold",
+        "finished_at": "2026-10-11T02:57:06.561894+00:00",
+        "end_to_end_wall_s": 32.706037800060585,
+        "initial_outcome": {
+          "stage": "initial",
+          "status": "valid",
+          "packet_sha256_lf": "e2cb38745419a209220848f4a44a78a98a456d7db288e6dd874a0386489530d9",
+          "attempts": [
+            {
+              "path": "model/initial.attempt1.json",
+              "sha256_lf": "d9f0a1b91f6c96be3ee3859073159d3767ee5ef5dd30d73d683d5079b126ff03"
+            }
+          ],
+          "decision": {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Prioritizing reward mechanism due to significant deviation in track_lin_vel_xy_exp from reference (0.312 vs 1.414), suggesting reward miscalculation.",
+            "claims": [
+              {
+                "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 0.3123434710005919
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 1.413650377591451
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          },
+          "decision_sha256_lf": "46a571f5cd6072ead2c504097ad7717826f1f72ef1551944f4605860d6c9a324",
+          "error": null
+        },
+        "decisions": [
+          {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Prioritizing reward mechanism due to significant deviation in track_lin_vel_xy_exp from reference (0.312 vs 1.414), suggesting reward miscalculation.",
+            "claims": [
+              {
+                "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 0.3123434710005919
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 1.413650377591451
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          }
+        ],
+        "observed": [
+          {
+            "at": "2026-10-11T02:57:00+00:00",
+            "event": "receipt",
+            "request_id": "001a31acb823",
+            "outcome": "abnormal",
+            "measurement": {
+              "track_lin_vel_xy_exp_rel_error": 0.24274299286305903,
+              "track_ang_vel_z_exp_rel_error": 1.64641968192214e-08
+            },
+            "gpu_s": 21.2,
+            "exit_code": 0,
+            "over_budget": false,
+            "receipt_digest": "59debc556ef36921c5948893a049dfedd0f48204d89983b1ac32a8b45973163e",
+            "probe": "P_reward",
+            "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+            "report_sha256_lf": "52525aa23ac52f4c9f84c6f79e39bd6a084b1a67bf58b25ea9f8776f9203eb63"
+          }
+        ],
+        "pairs": [
+          {
+            "stage": 1,
+            "order": [
+              "observed",
+              "masked"
+            ],
+            "actual": {
+              "stage": "after_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "cd44fef78f3b9cc8a214bb79d95571d075db0ff0e3eae92eaa47dd1bd12fe065",
+              "attempts": [
+                {
+                  "path": "model/after_1.attempt1.json",
+                  "sha256_lf": "4e8fcb76e005b1738329643a17ade48acfe15206db27b0770abfe7867a3fd1b5"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "post decision은 최신 receipt fact를 인용해야 한다"
+              }
+            },
+            "control": {
+              "stage": "without_receipt_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "95809a4df36dce037efadba17d6e99192f89f1f575d45ea2050cb5a3dd9d5e9f",
+              "attempts": [
+                {
+                  "path": "model/without_receipt_1.attempt1.json",
+                  "sha256_lf": "b9df67a8ff186adb295094e2535c3bc872a310fc50b4557491c50aeec2a85e81"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "초기 판단은 confirm할 수 없다"
+              }
+            },
+            "contrast": null,
+            "proof_eligible": false
+          }
+        ],
+        "contrasts": [
+          null
+        ],
+        "without_receipt": [
+          null
+        ],
+        "budget_left": 1,
+        "model_action": "continue",
+        "evidence_state": {
+          "hypotheses": [
+            "reward"
+          ],
+          "dropped": [
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics",
+            "termination"
+          ],
+          "status": "confirmed"
+        },
+        "costs": {
+          "model_calls": 3,
+          "input_tokens": 8647,
+          "output_tokens": 614,
+          "model_wall_s": 6.101441722013988,
+          "model_cpu_s": 1.0849042679999998,
+          "isaac_wall_s": 21.2,
+          "human_review_s": null,
+          "gpu_device_busy_s": null,
+          "isaac_cpu_s": 27.328125,
+          "isaac_simulator_steps": 51200
+        }
+      },
+      "contrast": {},
+      "contrast_index": 0,
+      "baselines": {
+        "fixed_order": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h02_s2027",
+            "tag": "active_20261011_v2_fixed",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T02:44:19.471728+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "fixed_order",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T02:56:04.849027+00:00",
+            "end_to_end_wall_s": 705.3768533000257,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T02:55:39+00:00",
+                "event": "receipt",
+                "request_id": "fd85cbfa4fb4",
+                "outcome": "normal",
+                "measurement": {
+                  "timeout_count": 64,
+                  "median_timeout_step": 1000.0,
+                  "timeout_ratio": 1.0
+                },
+                "gpu_s": 55.7,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "00a378344842dde16a98fc76ca20b788870b9267b3ff0107444e278551e7d163",
+                "probe": "P_episode",
+                "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+                "report_sha256_lf": "43cf74d934060abf1a2aee47020e4a0bad43ce03f15ba612f1cf838bf057d3fd"
+              },
+              {
+                "at": "2026-10-11T02:56:04+00:00",
+                "event": "receipt",
+                "request_id": "9f913cfbf549",
+                "outcome": "normal",
+                "measurement": {
+                  "noise_ratio": 0.9998475909233093,
+                  "logged_std_mean": 0.5190026760101318
+                },
+                "gpu_s": 24.2,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "fe7d417f96a442525c27998829acd55eda932f7da900ace59b468bf2acee0b21",
+                "probe": "P_noise",
+                "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+                "report_sha256_lf": "b9852f4bda37e7a418d38ea5be3605409402f9bb44a20247c87aeec109bcc3db"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "optimizer",
+                "physics"
+              ],
+              "dropped": [
+                "termination",
+                "exploration"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 79.9,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 107.015625,
+              "isaac_simulator_steps": 128000
+            }
+          }
+        },
+        "cheapest_discrimination": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h02_s2027",
+            "tag": "active_20261011_v2_cheap",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T02:56:04.997212+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "cheapest_discrimination",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T02:56:33.588698+00:00",
+            "end_to_end_wall_s": 28.590628300094977,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T02:56:19+00:00",
+                "event": "receipt",
+                "request_id": "1d8c48666f8b",
+                "outcome": "normal",
+                "measurement": {
+                  "critic_change": 1.519335084448163,
+                  "actor_change": 1.9338718414685443,
+                  "from": "model_0.pt"
+                },
+                "gpu_s": 13.5,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "bf7b200de1b275984b2c190257667cc6d0a70d185fa3f440135e48bc1055696e",
+                "probe": "P_value",
+                "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+                "report_sha256_lf": "189cb1359863baf4466de8d489647661cf1dc2bb915329907c790cbfad323537"
+              },
+              {
+                "at": "2026-10-11T02:56:33+00:00",
+                "event": "receipt",
+                "request_id": "c2c659093519",
+                "outcome": "normal",
+                "measurement": {
+                  "mismatch_count": 0,
+                  "mismatches": [],
+                  "static_friction_mean": 0.8000000715255737,
+                  "dynamic_friction_mean": 0.6000000238418579,
+                  "mass_delta_min": -0.9980754852294922,
+                  "mass_delta_max": 2.939188003540039,
+                  "physics_dt": 0.005
+                },
+                "gpu_s": 13.4,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "f854767c7fc2c8978390b9a3f6b86af7adc9f058badaa48b2eabf70a3dcff820",
+                "probe": "P_physics",
+                "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+                "report_sha256_lf": "80e0d94145a7b5f2c942e086ba5a77732c403f4757c26d9d9ce029ac5f6df3e2"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "exploration",
+                "termination"
+              ],
+              "dropped": [
+                "optimizer",
+                "physics"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 26.9,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 27.515625,
+              "isaac_simulator_steps": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "case": "h03_s2027",
+      "state": "verified",
+      "proof": false,
+      "reasons": [
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다"
+      ],
+      "artifact_reasons": [],
+      "proof_reasons": [
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다"
+      ],
+      "result": {
+        "schema": "active_diagnosis_case_v2",
+        "case": "h03_s2027",
+        "tag": "active_20261011_v2",
+        "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+        "started_at": "2026-10-11T02:57:33.219339+00:00",
+        "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+        "checkpoint_sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2",
+        "human_review_s": null,
+        "approval_actor": "codex_operator_user_authorized_test",
+        "approval_identity_attested": false,
+        "controller": "model",
+        "gpu_device_busy_s": null,
+        "stop_reason": "probe_budget_or_frozen_stop",
+        "status": "completed",
+        "finished_at": "2026-10-11T02:58:38.282903+00:00",
+        "end_to_end_wall_s": 65.06377210002393,
+        "initial_outcome": {
+          "stage": "initial",
+          "status": "valid",
+          "packet_sha256_lf": "479a2f596b1236395e7e2ea231ce5b8471ea915e81eace41e283ca5639b58625",
+          "attempts": [
+            {
+              "path": "model/initial.attempt1.json",
+              "sha256_lf": "90a03c6b901e51d846bc30a768189145e840d0388ea5f9a80e0dc969a963d0c8"
+            }
+          ],
+          "decision": {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_episode",
+            "action": "continue",
+            "reason": "Initial decision: prioritize probing termination due to its abnormal expectation in P_episode, which may explain low episode reward and mean episode length.",
+            "claims": [
+              {
+                "id": "telemetry:case:Train/mean_episode_length",
+                "value": 50.0
+              },
+              {
+                "id": "telemetry:reference:Train/mean_episode_length",
+                "value": 996.604667154948
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "normal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          },
+          "decision_sha256_lf": "b9af803af881cb1788c0cb6370450565b4e8a89c4b135fdc8304bd938ec626a5",
+          "error": null
+        },
+        "decisions": [
+          {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_episode",
+            "action": "continue",
+            "reason": "Initial decision: prioritize probing termination due to its abnormal expectation in P_episode, which may explain low episode reward and mean episode length.",
+            "claims": [
+              {
+                "id": "telemetry:case:Train/mean_episode_length",
+                "value": 50.0
+              },
+              {
+                "id": "telemetry:reference:Train/mean_episode_length",
+                "value": 996.604667154948
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "normal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          },
+          {
+            "ranking": [
+              "termination",
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Observation from P_episode shows abnormal timeout_ratio (0.05 << 0.9), confirming termination mechanism is faulty; next, probe reward to validate reward function integrity.",
+            "claims": [
+              {
+                "id": "receipt:9b889b425c60:timeout_ratio",
+                "value": 0.05
+              }
+            ],
+            "expected_outcomes": {
+              "termination": "normal",
+              "reward": "abnormal",
+              "actuator": "normal"
+            }
+          }
+        ],
+        "observed": [
+          {
+            "at": "2026-10-11T02:58:29+00:00",
+            "event": "receipt",
+            "request_id": "9b889b425c60",
+            "outcome": "abnormal",
+            "measurement": {
+              "timeout_count": 1536,
+              "median_timeout_step": 50.0,
+              "timeout_ratio": 0.05
+            },
+            "gpu_s": 52.6,
+            "exit_code": 0,
+            "over_budget": false,
+            "receipt_digest": "e03d37faab18be1998a91ecf36486167476ecb69eeadbf3a0434ea847e6c29bb",
+            "probe": "P_episode",
+            "checkpoint_sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2",
+            "report_sha256_lf": "991757e15e8063134c2d945214b0cc2ff0e51ac043b5279a8215e0e69f80ba42"
+          }
+        ],
+        "pairs": [
+          {
+            "stage": 1,
+            "order": [
+              "masked",
+              "observed"
+            ],
+            "actual": {
+              "stage": "after_1",
+              "status": "valid",
+              "packet_sha256_lf": "abf8b51059f5e1273c1bae9fbce2c707c2427a201073ba53139fd843c0bca07d",
+              "attempts": [
+                {
+                  "path": "model/after_1.attempt1.json",
+                  "sha256_lf": "a22bfacd93c6d3dd03108d349644b87d02930a4b3417cfbf5ec0a07e4643a12e"
+                }
+              ],
+              "decision": {
+                "ranking": [
+                  "termination",
+                  "reward",
+                  "actuator",
+                  "exploration",
+                  "optimizer",
+                  "physics"
+                ],
+                "probe": "P_reward",
+                "action": "continue",
+                "reason": "Observation from P_episode shows abnormal timeout_ratio (0.05 << 0.9), confirming termination mechanism is faulty; next, probe reward to validate reward function integrity.",
+                "claims": [
+                  {
+                    "id": "receipt:9b889b425c60:timeout_ratio",
+                    "value": 0.05
+                  }
+                ],
+                "expected_outcomes": {
+                  "termination": "normal",
+                  "reward": "abnormal",
+                  "actuator": "normal"
+                }
+              },
+              "decision_sha256_lf": "c944fbcccff2660f16a04e55862422bfb16b1bb78e876a04a2109e7beabd1fa6",
+              "error": null
+            },
+            "control": {
+              "stage": "without_receipt_1",
+              "status": "valid",
+              "packet_sha256_lf": "7f21e3f6dcaa7f76e4cefecaf8c16f9a553a4e5546e6d6e9fd6757fde5b52455",
+              "attempts": [
+                {
+                  "path": "model/without_receipt_1.attempt1.json",
+                  "sha256_lf": "7e17fdad0f40cb0e865b4a45e5a07319f6d6b9df88b4a34fb14468157016d7db"
+                }
+              ],
+              "decision": {
+                "ranking": [
+                  "termination",
+                  "reward",
+                  "actuator",
+                  "exploration",
+                  "optimizer",
+                  "physics"
+                ],
+                "probe": "P_reward",
+                "action": "continue",
+                "reason": "Low mean episode length (50.0 vs reference 996.6) and low mean reward (1.257 vs reference 33.808) suggest reward mechanism issues; P_reward is unobserved and can detect reward miscalculation.",
+                "claims": [
+                  {
+                    "id": "telemetry:case:Train/mean_episode_length",
+                    "value": 50.0
+                  },
+                  {
+                    "id": "telemetry:reference:Train/mean_episode_length",
+                    "value": 996.604667154948
+                  },
+                  {
+                    "id": "telemetry:case:Train/mean_reward",
+                    "value": 1.2573569695154825
+                  },
+                  {
+                    "id": "telemetry:reference:Train/mean_reward",
+                    "value": 33.80788917541504
+                  }
+                ],
+                "expected_outcomes": {
+                  "termination": "normal",
+                  "reward": "abnormal",
+                  "actuator": "normal"
+                }
+              },
+              "decision_sha256_lf": "d1acb27bd27fe830c732e240a17504d5ea9452926f0566e2aa6cc0c25b10c54a",
+              "error": null
+            },
+            "contrast": {
+              "leader_changed": true,
+              "ranking_changed": true,
+              "latest_receipt_cited": true,
+              "changed_leader_rejected_by_actual_observation": true,
+              "after_leader_survives_actual_observation": true,
+              "ablation_leader_diff": false,
+              "ablation_preserves_before_leader": false,
+              "safe_confirm": false
+            },
+            "proof_eligible": true
+          }
+        ],
+        "contrasts": [
+          {
+            "leader_changed": true,
+            "ranking_changed": true,
+            "latest_receipt_cited": true,
+            "changed_leader_rejected_by_actual_observation": true,
+            "after_leader_survives_actual_observation": true,
+            "ablation_leader_diff": false,
+            "ablation_preserves_before_leader": false,
+            "safe_confirm": false
+          }
+        ],
+        "without_receipt": [
+          {
+            "ranking": [
+              "termination",
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Low mean episode length (50.0 vs reference 996.6) and low mean reward (1.257 vs reference 33.808) suggest reward mechanism issues; P_reward is unobserved and can detect reward miscalculation.",
+            "claims": [
+              {
+                "id": "telemetry:case:Train/mean_episode_length",
+                "value": 50.0
+              },
+              {
+                "id": "telemetry:reference:Train/mean_episode_length",
+                "value": 996.604667154948
+              },
+              {
+                "id": "telemetry:case:Train/mean_reward",
+                "value": 1.2573569695154825
+              },
+              {
+                "id": "telemetry:reference:Train/mean_reward",
+                "value": 33.80788917541504
+              }
+            ],
+            "expected_outcomes": {
+              "termination": "normal",
+              "reward": "abnormal",
+              "actuator": "normal"
+            }
+          }
+        ],
+        "budget_left": 1,
+        "model_action": "continue",
+        "evidence_state": {
+          "hypotheses": [
+            "termination"
+          ],
+          "dropped": [
+            "reward",
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics"
+          ],
+          "status": "confirmed"
+        },
+        "costs": {
+          "model_calls": 3,
+          "input_tokens": 8508,
+          "output_tokens": 645,
+          "model_wall_s": 6.416471385047771,
+          "model_cpu_s": 1.371698166,
+          "isaac_wall_s": 52.6,
+          "human_review_s": null,
+          "gpu_device_busy_s": null,
+          "isaac_cpu_s": 70.390625,
+          "isaac_simulator_steps": 76800
+        }
+      },
+      "contrast": {
+        "leader_changed": true,
+        "ranking_changed": true,
+        "latest_receipt_cited": true,
+        "changed_leader_rejected_by_actual_observation": true,
+        "after_leader_survives_actual_observation": true,
+        "ablation_leader_diff": false,
+        "ablation_preserves_before_leader": false,
+        "safe_confirm": false
+      },
+      "contrast_index": 0,
+      "baselines": {
+        "fixed_order": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h03_s2027",
+            "tag": "active_20261011_v2_fixed",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T02:58:38.390819+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "fixed_order",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T03:00:51.509703+00:00",
+            "end_to_end_wall_s": 133.11885620001704,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T03:00:51+00:00",
+                "event": "receipt",
+                "request_id": "7f7badaafd4c",
+                "outcome": "abnormal",
+                "measurement": {
+                  "timeout_count": 1536,
+                  "median_timeout_step": 50.0,
+                  "timeout_ratio": 0.05
+                },
+                "gpu_s": 132.4,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "4a5221b54bd3e330e6f5a8c9cc14777b235df9a425f44a3b3ab11d6b2d077516",
+                "probe": "P_episode",
+                "checkpoint_sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2",
+                "report_sha256_lf": "b915cd0b2aa23713f11a929b23e79dd644f793fed542b8b5dad9b037ba6c6826"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 1,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "termination"
+              ],
+              "dropped": [
+                "reward",
+                "actuator",
+                "exploration",
+                "optimizer",
+                "physics"
+              ],
+              "status": "confirmed"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 132.4,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 176.296875,
+              "isaac_simulator_steps": 76800
+            }
+          }
+        },
+        "cheapest_discrimination": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h03_s2027",
+            "tag": "active_20261011_v2_cheap",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T02:57:06.651441+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "cheapest_discrimination",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T02:57:33.104966+00:00",
+            "end_to_end_wall_s": 26.454864700092003,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T02:57:19+00:00",
+                "event": "receipt",
+                "request_id": "dc913498b957",
+                "outcome": "normal",
+                "measurement": {
+                  "critic_change": 1.5854769527396515,
+                  "actor_change": 1.9657808684926945,
+                  "from": "model_0.pt"
+                },
+                "gpu_s": 12.3,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "8f3ff04c303c3311be7c7ea73d9caabf24f8590fd6ee7a7a1bc73e749ac90fdc",
+                "probe": "P_value",
+                "checkpoint_sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2",
+                "report_sha256_lf": "b0efe413cb0e5ab5eb663d60aaef7275b3be5511d90954ae0d364395f2e78c25"
+              },
+              {
+                "at": "2026-10-11T02:57:33+00:00",
+                "event": "receipt",
+                "request_id": "53fe1062a450",
+                "outcome": "normal",
+                "measurement": {
+                  "mismatch_count": 0,
+                  "mismatches": [],
+                  "static_friction_mean": 0.8000000715255737,
+                  "dynamic_friction_mean": 0.6000000238418579,
+                  "mass_delta_min": -0.9980754852294922,
+                  "mass_delta_max": 2.939188003540039,
+                  "physics_dt": 0.005
+                },
+                "gpu_s": 12.7,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "ba54bfdc8ce335407327e89126064b537ebe20faa8c19c0034df3a56957a19e2",
+                "probe": "P_physics",
+                "checkpoint_sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2",
+                "report_sha256_lf": "45e28eb38791d4086569c5dd02ce20216e34ef1e629df96dd7e187b272307e12"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "exploration",
+                "termination"
+              ],
+              "dropped": [
+                "optimizer",
+                "physics"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 25.0,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 26.25,
+              "isaac_simulator_steps": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "case": "h04_s2027",
+      "state": "verified",
+      "proof": false,
+      "reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "artifact_reasons": [],
+      "proof_reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "result": {
+        "schema": "active_diagnosis_case_v2",
+        "case": "h04_s2027",
+        "tag": "active_20261011_v2",
+        "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+        "started_at": "2026-10-11T03:00:51.701487+00:00",
+        "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+        "checkpoint_sha256": "b8124e7e482bd6bb1f82d89268094c16caddb91e46a877edb5d046861a128b0d",
+        "human_review_s": null,
+        "approval_actor": "codex_operator_user_authorized_test",
+        "approval_identity_attested": false,
+        "controller": "model",
+        "gpu_device_busy_s": null,
+        "stop_reason": "actual_model_invalid",
+        "error_type": "ModelSemanticError",
+        "error": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+        "status": "hold",
+        "finished_at": "2026-10-11T03:09:41.337029+00:00",
+        "end_to_end_wall_s": 529.6359414998442,
+        "initial_outcome": {
+          "stage": "initial",
+          "status": "valid",
+          "packet_sha256_lf": "4bd4693b05abdbe754fe72b32c37ef8a4b144bf5fa9cfe463f7401bbbd0a3d58",
+          "attempts": [
+            {
+              "path": "model/initial.attempt1.json",
+              "sha256_lf": "6220ba93ecc3b6136e965fb594e021a67c1708d98809b28527285f8316eabcc1"
+            }
+          ],
+          "decision": {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Prioritizing reward mechanism due to large negative deviations in tracking rewards vs reference; P_reward is cheapest unobserved probe that can confirm/reject reward dysfunction.",
+            "claims": [
+              {
+                "id": "telemetry:case:Train/mean_reward",
+                "value": -12.153841352462768
+              },
+              {
+                "id": "telemetry:reference:Train/mean_reward",
+                "value": 33.80788917541504
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          },
+          "decision_sha256_lf": "1bee53ef9dd9aaad401ced8112861e1a1ae8c104fe1befc0c5a4dfe522ae29d2",
+          "error": null
+        },
+        "decisions": [
+          {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Prioritizing reward mechanism due to large negative deviations in tracking rewards vs reference; P_reward is cheapest unobserved probe that can confirm/reject reward dysfunction.",
+            "claims": [
+              {
+                "id": "telemetry:case:Train/mean_reward",
+                "value": -12.153841352462768
+              },
+              {
+                "id": "telemetry:reference:Train/mean_reward",
+                "value": 33.80788917541504
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          }
+        ],
+        "observed": [
+          {
+            "at": "2026-10-11T03:09:34+00:00",
+            "event": "receipt",
+            "request_id": "84615ff2787e",
+            "outcome": "normal",
+            "measurement": {
+              "track_lin_vel_xy_exp_rel_error": 1.7640323246581602e-08,
+              "track_ang_vel_z_exp_rel_error": 1.6930164876693966e-08
+            },
+            "gpu_s": 24.2,
+            "exit_code": 0,
+            "over_budget": false,
+            "receipt_digest": "3d87abb195b678e36777e55f37b70771f906f1292a9043bc3043e75001678c06",
+            "probe": "P_reward",
+            "checkpoint_sha256": "b8124e7e482bd6bb1f82d89268094c16caddb91e46a877edb5d046861a128b0d",
+            "report_sha256_lf": "1159704c62ebdfd2bee3c85a614389c2cadd2c62fb4f5399810fa5de4bd64563"
+          }
+        ],
+        "pairs": [
+          {
+            "stage": 1,
+            "order": [
+              "observed",
+              "masked"
+            ],
+            "actual": {
+              "stage": "after_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "ef06905559c57e86b01b92b2486b8e1a35c40da07b14c220ab3d9c94bd101872",
+              "attempts": [
+                {
+                  "path": "model/after_1.attempt1.json",
+                  "sha256_lf": "4c606c052711b4cce359347ddd62c79227eeeab526c8925592352fb066032022"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+              }
+            },
+            "control": {
+              "stage": "without_receipt_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "f7f98bfe0db5e528e8e0eaaa6df0ddd03b31f599c8168b0df3e5f8f609cc5693",
+              "attempts": [
+                {
+                  "path": "model/without_receipt_1.attempt1.json",
+                  "sha256_lf": "0b141ce5da4eed69a6ade3b52096cb19ad81923445009da7c78f3f82fd3cc6c2"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "초기 판단은 confirm할 수 없다"
+              }
+            },
+            "contrast": null,
+            "proof_eligible": false
+          }
+        ],
+        "contrasts": [
+          null
+        ],
+        "without_receipt": [
+          null
+        ],
+        "budget_left": 1,
+        "model_action": "continue",
+        "evidence_state": {
+          "hypotheses": [
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics",
+            "termination"
+          ],
+          "dropped": [
+            "reward"
+          ],
+          "status": "open"
+        },
+        "costs": {
+          "model_calls": 3,
+          "input_tokens": 8590,
+          "output_tokens": 574,
+          "model_wall_s": 6.06344299193006,
+          "model_cpu_s": 1.670308448,
+          "isaac_wall_s": 24.2,
+          "human_review_s": null,
+          "gpu_device_busy_s": null,
+          "isaac_cpu_s": 30.875,
+          "isaac_simulator_steps": 51200
+        }
+      },
+      "contrast": {},
+      "contrast_index": 0,
+      "baselines": {
+        "fixed_order": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h04_s2027",
+            "tag": "active_20261011_v2_fixed",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T03:09:41.476450+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "b8124e7e482bd6bb1f82d89268094c16caddb91e46a877edb5d046861a128b0d",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "fixed_order",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T03:11:04.584432+00:00",
+            "end_to_end_wall_s": 83.10795089998282,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T03:10:41+00:00",
+                "event": "receipt",
+                "request_id": "c85a9598f6c8",
+                "outcome": "normal",
+                "measurement": {
+                  "timeout_count": 61,
+                  "median_timeout_step": 1000.0,
+                  "timeout_ratio": 1.0
+                },
+                "gpu_s": 59.1,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "23de6af3053100adf302c41f4153f2ead7c83974119400f759cda41f46f28fd0",
+                "probe": "P_episode",
+                "checkpoint_sha256": "b8124e7e482bd6bb1f82d89268094c16caddb91e46a877edb5d046861a128b0d",
+                "report_sha256_lf": "a3aa88ad8b3e085df8b75b204a18360097c5201c7b5c2cc3e911351fa62236ee"
+              },
+              {
+                "at": "2026-10-11T03:11:04+00:00",
+                "event": "receipt",
+                "request_id": "4fc638495f50",
+                "outcome": "normal",
+                "measurement": {
+                  "noise_ratio": 1.0000046491622925,
+                  "logged_std_mean": 1.0393927097320557
+                },
+                "gpu_s": 22.2,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "e699f046a4b3c017e21776e4892eda6d39f8a61a6bd8effd837b0679003c7f40",
+                "probe": "P_noise",
+                "checkpoint_sha256": "b8124e7e482bd6bb1f82d89268094c16caddb91e46a877edb5d046861a128b0d",
+                "report_sha256_lf": "f8c30e253af529b4d23307da3295ba062790af4b6b752b6b8c44ef50833d109a"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "optimizer",
+                "physics"
+              ],
+              "dropped": [
+                "termination",
+                "exploration"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 81.3,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 108.234375,
+              "isaac_simulator_steps": 128000
+            }
+          }
+        },
+        "cheapest_discrimination": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h04_s2027",
+            "tag": "active_20261011_v2_cheap",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T03:11:04.689749+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "b8124e7e482bd6bb1f82d89268094c16caddb91e46a877edb5d046861a128b0d",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "cheapest_discrimination",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T03:11:19.148248+00:00",
+            "end_to_end_wall_s": 14.45901899994351,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T03:11:19+00:00",
+                "event": "receipt",
+                "request_id": "3b2beb6e0cb9",
+                "outcome": "abnormal",
+                "measurement": {
+                  "critic_change": 0.0,
+                  "actor_change": 2.810290355416471,
+                  "from": "model_0.pt"
+                },
+                "gpu_s": 13.7,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "102ce11af424a6b04c70d1cad7129c83ba37fcca331130e6a2a038c0741b14b0",
+                "probe": "P_value",
+                "checkpoint_sha256": "b8124e7e482bd6bb1f82d89268094c16caddb91e46a877edb5d046861a128b0d",
+                "report_sha256_lf": "ce69f8d3898b70c669192ce1d780807917be81c3be6b1faa4972abce8d521d42"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 1,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "optimizer"
+              ],
+              "dropped": [
+                "reward",
+                "actuator",
+                "exploration",
+                "physics",
+                "termination"
+              ],
+              "status": "confirmed"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 13.7,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 13.8125,
+              "isaac_simulator_steps": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "case": "h05_s2027",
+      "state": "verified",
+      "proof": false,
+      "reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "artifact_reasons": [],
+      "proof_reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "result": {
+        "schema": "active_diagnosis_case_v2",
+        "case": "h05_s2027",
+        "tag": "active_20261011_v2",
+        "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+        "started_at": "2026-10-11T03:13:06.852383+00:00",
+        "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+        "checkpoint_sha256": "3fdb3e2ffd052e1666affde46a5857956f8078cd3a1ecdedcb6f855dd8bf5c04",
+        "human_review_s": null,
+        "approval_actor": "codex_operator_user_authorized_test",
+        "approval_identity_attested": false,
+        "controller": "model",
+        "gpu_device_busy_s": null,
+        "stop_reason": "actual_model_invalid",
+        "error_type": "ModelSemanticError",
+        "error": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+        "status": "hold",
+        "finished_at": "2026-10-11T03:13:40.422737+00:00",
+        "end_to_end_wall_s": 33.569259099895135,
+        "initial_outcome": {
+          "stage": "initial",
+          "status": "valid",
+          "packet_sha256_lf": "dac34831849e655da037b97c5c7e5b16fb2698f83bbd60cd3c81be0c99824a18",
+          "attempts": [
+            {
+              "path": "model/initial.attempt1.json",
+              "sha256_lf": "8e91668a5176fafdd116a7185b3bf0c4699d8e4501e1f5c08fda7bb366d09674"
+            }
+          ],
+          "decision": {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Reward mechanism shows largest deviation from reference in telemetry, particularly in tracking rewards and episode reward, suggesting misconfiguration or bug in reward computation.",
+            "claims": [
+              {
+                "id": "telemetry:case:Train/mean_reward",
+                "value": -287.6339900970459
+              },
+              {
+                "id": "telemetry:reference:Train/mean_reward",
+                "value": 33.80788917541504
+              },
+              {
+                "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 0.2657112826903661
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 1.413650377591451
+              },
+              {
+                "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+                "value": 0.18196834363043307
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+                "value": 0.6328511099020641
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          },
+          "decision_sha256_lf": "84cdcfcc9036d1149bbdab33358e0bc866298bcebede81ad84b4409b00b7a24a",
+          "error": null
+        },
+        "decisions": [
+          {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Reward mechanism shows largest deviation from reference in telemetry, particularly in tracking rewards and episode reward, suggesting misconfiguration or bug in reward computation.",
+            "claims": [
+              {
+                "id": "telemetry:case:Train/mean_reward",
+                "value": -287.6339900970459
+              },
+              {
+                "id": "telemetry:reference:Train/mean_reward",
+                "value": 33.80788917541504
+              },
+              {
+                "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 0.2657112826903661
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 1.413650377591451
+              },
+              {
+                "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+                "value": 0.18196834363043307
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+                "value": 0.6328511099020641
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          }
+        ],
+        "observed": [
+          {
+            "at": "2026-10-11T03:13:33+00:00",
+            "event": "receipt",
+            "request_id": "c00029db7b76",
+            "outcome": "normal",
+            "measurement": {
+              "track_lin_vel_xy_exp_rel_error": 1.7579903102138417e-08,
+              "track_ang_vel_z_exp_rel_error": 1.746520149392694e-08
+            },
+            "gpu_s": 21.7,
+            "exit_code": 0,
+            "over_budget": false,
+            "receipt_digest": "15cb46b05be2981b3ba44befc2f5bd95bf43cc68bec653b10ba53656e9d41f83",
+            "probe": "P_reward",
+            "checkpoint_sha256": "3fdb3e2ffd052e1666affde46a5857956f8078cd3a1ecdedcb6f855dd8bf5c04",
+            "report_sha256_lf": "cffc662293e0f4fd18026e2505b7876bbe596a0760c32a48631eb15c80df8d61"
+          }
+        ],
+        "pairs": [
+          {
+            "stage": 1,
+            "order": [
+              "masked",
+              "observed"
+            ],
+            "actual": {
+              "stage": "after_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "8f91f7f840fdac624c5b01d2a3452fcdda9c31022309e2636fa48e57349efa56",
+              "attempts": [
+                {
+                  "path": "model/after_1.attempt1.json",
+                  "sha256_lf": "5f9b24b5cc9bc9059bd17e91f4eac58e79507e5d30a345088fba23545bd15f16"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+              }
+            },
+            "control": {
+              "stage": "without_receipt_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "906e294c4f72c3566943cadb09b362b829a144c2cc9e39758568a13a9d719b93",
+              "attempts": [
+                {
+                  "path": "model/without_receipt_1.attempt1.json",
+                  "sha256_lf": "dd386edc7add20b00c2f71184556e9faaecb19926ba2287c6cdddccbfeb7c3ad"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+              }
+            },
+            "contrast": null,
+            "proof_eligible": false
+          }
+        ],
+        "contrasts": [
+          null
+        ],
+        "without_receipt": [
+          null
+        ],
+        "budget_left": 1,
+        "model_action": "continue",
+        "evidence_state": {
+          "hypotheses": [
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics",
+            "termination"
+          ],
+          "dropped": [
+            "reward"
+          ],
+          "status": "open"
+        },
+        "costs": {
+          "model_calls": 3,
+          "input_tokens": 8896,
+          "output_tokens": 769,
+          "model_wall_s": 6.752622914966196,
+          "model_cpu_s": 1.176047987,
+          "isaac_wall_s": 21.7,
+          "human_review_s": null,
+          "gpu_device_busy_s": null,
+          "isaac_cpu_s": 28.453125,
+          "isaac_simulator_steps": 51200
+        }
+      },
+      "contrast": {},
+      "contrast_index": 0,
+      "baselines": {
+        "fixed_order": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h05_s2027",
+            "tag": "active_20261011_v2_fixed",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T03:11:19.248559+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "3fdb3e2ffd052e1666affde46a5857956f8078cd3a1ecdedcb6f855dd8bf5c04",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "fixed_order",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T03:12:40.207772+00:00",
+            "end_to_end_wall_s": 80.95776899997145,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T03:12:17+00:00",
+                "event": "receipt",
+                "request_id": "d680fbbf7581",
+                "outcome": "normal",
+                "measurement": {
+                  "timeout_count": 63,
+                  "median_timeout_step": 1000.0,
+                  "timeout_ratio": 1.0
+                },
+                "gpu_s": 57.3,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "4fe50538fb9209350138bb51a0b0b5dbb99568646a13bdbd40ece91adc945e23",
+                "probe": "P_episode",
+                "checkpoint_sha256": "3fdb3e2ffd052e1666affde46a5857956f8078cd3a1ecdedcb6f855dd8bf5c04",
+                "report_sha256_lf": "e9bda14593979c930abe949e45114d0422ab9a9cff7721e4411afb76e23c0469"
+              },
+              {
+                "at": "2026-10-11T03:12:40+00:00",
+                "event": "receipt",
+                "request_id": "397277637f37",
+                "outcome": "abnormal",
+                "measurement": {
+                  "noise_ratio": 0.05025530606508255,
+                  "logged_std_mean": 0.99498051404953
+                },
+                "gpu_s": 21.9,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "62f2b7ce4dd7b640dd7a2e27d1b4449390ee5f3a85e77d63df587faa3986f179",
+                "probe": "P_noise",
+                "checkpoint_sha256": "3fdb3e2ffd052e1666affde46a5857956f8078cd3a1ecdedcb6f855dd8bf5c04",
+                "report_sha256_lf": "61aebcbe2360a164f1b0210572754c0569565df57c33b742bffcaa0c5633cd98"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "exploration"
+              ],
+              "dropped": [
+                "termination",
+                "reward",
+                "actuator",
+                "optimizer",
+                "physics"
+              ],
+              "status": "confirmed"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 79.19999999999999,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 104.1875,
+              "isaac_simulator_steps": 128000
+            }
+          }
+        },
+        "cheapest_discrimination": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h05_s2027",
+            "tag": "active_20261011_v2_cheap",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T03:12:40.453258+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "3fdb3e2ffd052e1666affde46a5857956f8078cd3a1ecdedcb6f855dd8bf5c04",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "cheapest_discrimination",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T03:13:06.758192+00:00",
+            "end_to_end_wall_s": 26.303471199935302,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T03:12:53+00:00",
+                "event": "receipt",
+                "request_id": "aae0e5c432bf",
+                "outcome": "normal",
+                "measurement": {
+                  "critic_change": 0.6042485681790845,
+                  "actor_change": 0.30168380902259234,
+                  "from": "model_0.pt"
+                },
+                "gpu_s": 12.4,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "6a88a545e276909dbfaabb6eb0216a6b42914fc0f0592fed1968b4d270555e6c",
+                "probe": "P_value",
+                "checkpoint_sha256": "3fdb3e2ffd052e1666affde46a5857956f8078cd3a1ecdedcb6f855dd8bf5c04",
+                "report_sha256_lf": "bc89a5d482f4f57fc4769697a5dcf1a42347ae915e296ca567d3158d1fb5c5a1"
+              },
+              {
+                "at": "2026-10-11T03:13:06+00:00",
+                "event": "receipt",
+                "request_id": "d97eb64c46e6",
+                "outcome": "normal",
+                "measurement": {
+                  "mismatch_count": 0,
+                  "mismatches": [],
+                  "static_friction_mean": 0.8000000715255737,
+                  "dynamic_friction_mean": 0.6000000238418579,
+                  "mass_delta_min": -0.9980754852294922,
+                  "mass_delta_max": 2.939188003540039,
+                  "physics_dt": 0.005
+                },
+                "gpu_s": 12.4,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "cd8294b389974f8248866a944a638dd1ea546ea3357d9a1d57ac4646ea0b2ed2",
+                "probe": "P_physics",
+                "checkpoint_sha256": "3fdb3e2ffd052e1666affde46a5857956f8078cd3a1ecdedcb6f855dd8bf5c04",
+                "report_sha256_lf": "f3b50e7d56543d98d478cd508181f182a72b6f61bc901797990b194e69591085"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "exploration",
+                "termination"
+              ],
+              "dropped": [
+                "optimizer",
+                "physics"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 24.8,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 26.984375,
+              "isaac_simulator_steps": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "case": "h06_s2027",
+      "state": "verified",
+      "proof": false,
+      "reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "artifact_reasons": [],
+      "proof_reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "result": {
+        "schema": "active_diagnosis_case_v2",
+        "case": "h06_s2027",
+        "tag": "active_20261011_v2",
+        "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+        "started_at": "2026-10-11T03:14:07.711900+00:00",
+        "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+        "checkpoint_sha256": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+        "human_review_s": null,
+        "approval_actor": "codex_operator_user_authorized_test",
+        "approval_identity_attested": false,
+        "controller": "model",
+        "gpu_device_busy_s": null,
+        "stop_reason": "actual_model_invalid",
+        "error_type": "ModelSemanticError",
+        "error": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+        "status": "hold",
+        "finished_at": "2026-10-11T03:14:39.606093+00:00",
+        "end_to_end_wall_s": 31.893561499891803,
+        "initial_outcome": {
+          "stage": "initial",
+          "status": "valid",
+          "packet_sha256_lf": "0a9a9c246fdf7f645fd796fa72607eda343b0fe1d9287a9dd68dc370ca60a72a",
+          "attempts": [
+            {
+              "path": "model/initial.attempt1.json",
+              "sha256_lf": "cc6d7716b59805cca4bcd59af846c1e3a1e542280b65e1341d3086017438352d"
+            }
+          ],
+          "decision": {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Train/mean_reward is 9.64 vs reference 33.81, indicating a significant reward deficit; P_reward is the most targeted probe to diagnose reward mechanism issues.",
+            "claims": [
+              {
+                "id": "telemetry:case:Train/mean_reward",
+                "value": 9.63839819431305
+              },
+              {
+                "id": "telemetry:reference:Train/mean_reward",
+                "value": 33.80788917541504
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          },
+          "decision_sha256_lf": "0dc40e2e5cd9f4aba9f7af7e5bcff6848a3c0c3b7a65eb6b56b40b0f0bdb9dc8",
+          "error": null
+        },
+        "decisions": [
+          {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Train/mean_reward is 9.64 vs reference 33.81, indicating a significant reward deficit; P_reward is the most targeted probe to diagnose reward mechanism issues.",
+            "claims": [
+              {
+                "id": "telemetry:case:Train/mean_reward",
+                "value": 9.63839819431305
+              },
+              {
+                "id": "telemetry:reference:Train/mean_reward",
+                "value": 33.80788917541504
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          }
+        ],
+        "observed": [
+          {
+            "at": "2026-10-11T03:14:32+00:00",
+            "event": "receipt",
+            "request_id": "2fd993860902",
+            "outcome": "normal",
+            "measurement": {
+              "track_lin_vel_xy_exp_rel_error": 1.7079443894729706e-08,
+              "track_ang_vel_z_exp_rel_error": 1.6647386806845076e-08
+            },
+            "gpu_s": 21.3,
+            "exit_code": 0,
+            "over_budget": false,
+            "receipt_digest": "9e808c034a7e12938dce42b05dfc8985e47303aa423aa6c51fdb07de8feac50b",
+            "probe": "P_reward",
+            "checkpoint_sha256": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+            "report_sha256_lf": "2348991b2c1134d3b61af638644f70f8a42d4b36a0661169603600da6cbf3046"
+          }
+        ],
+        "pairs": [
+          {
+            "stage": 1,
+            "order": [
+              "observed",
+              "masked"
+            ],
+            "actual": {
+              "stage": "after_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "6145365079d2a7487edf714fcb22ade24e7b7d633bacf0944498fa0874d37c5e",
+              "attempts": [
+                {
+                  "path": "model/after_1.attempt1.json",
+                  "sha256_lf": "4445c44fcc9dfeb1ec08678af4a41796c5609ad41d0a05ac3ac81ffbfb5681e5"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+              }
+            },
+            "control": {
+              "stage": "without_receipt_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "6389ba4496495b7f1f0e153590359798483e8ccc093f01058f10cd8fb41c25e1",
+              "attempts": [
+                {
+                  "path": "model/without_receipt_1.attempt1.json",
+                  "sha256_lf": "1c7cc1a85ebaa5fb4806a2e06c11bdca9db9dbe72b1ac3462e212ca21fae9695"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "초기 판단은 confirm할 수 없다"
+              }
+            },
+            "contrast": null,
+            "proof_eligible": false
+          }
+        ],
+        "contrasts": [
+          null
+        ],
+        "without_receipt": [
+          null
+        ],
+        "budget_left": 1,
+        "model_action": "continue",
+        "evidence_state": {
+          "hypotheses": [
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics",
+            "termination"
+          ],
+          "dropped": [
+            "reward"
+          ],
+          "status": "open"
+        },
+        "costs": {
+          "model_calls": 3,
+          "input_tokens": 8605,
+          "output_tokens": 579,
+          "model_wall_s": 4.857008219114505,
+          "model_cpu_s": 1.0969618929999998,
+          "isaac_wall_s": 21.3,
+          "human_review_s": null,
+          "gpu_device_busy_s": null,
+          "isaac_cpu_s": 27.5,
+          "isaac_simulator_steps": 51200
+        }
+      },
+      "contrast": {},
+      "contrast_index": 0,
+      "baselines": {
+        "fixed_order": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h06_s2027",
+            "tag": "active_20261011_v2_fixed",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T03:14:39.800529+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "fixed_order",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T03:15:59.283138+00:00",
+            "end_to_end_wall_s": 79.48062100005336,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T03:15:36+00:00",
+                "event": "receipt",
+                "request_id": "0ff7857669ed",
+                "outcome": "normal",
+                "measurement": {
+                  "timeout_count": 64,
+                  "median_timeout_step": 1000.0,
+                  "timeout_ratio": 1.0
+                },
+                "gpu_s": 56.2,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "52d923034f1c6f010875e68284087138988862671103f1feb4334286ee1beeac",
+                "probe": "P_episode",
+                "checkpoint_sha256": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+                "report_sha256_lf": "bbeb047c8a4c480bdf8215f61a91ca436e671c1e6985916285cf7cf83aaea058"
+              },
+              {
+                "at": "2026-10-11T03:15:59+00:00",
+                "event": "receipt",
+                "request_id": "6c6a48672251",
+                "outcome": "normal",
+                "measurement": {
+                  "noise_ratio": 0.9997994899749756,
+                  "logged_std_mean": 0.5446557998657227
+                },
+                "gpu_s": 21.9,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "a305b0602be41f5e8f15f40e3e7e2ebc650cfad04c999e74e461056f8c93ccb0",
+                "probe": "P_noise",
+                "checkpoint_sha256": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+                "report_sha256_lf": "febd06f77653a7a4674c71d18eb30243933da7a2a830a736a6ca79bc453351a4"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "optimizer",
+                "physics"
+              ],
+              "dropped": [
+                "termination",
+                "exploration"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 78.1,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 104.421875,
+              "isaac_simulator_steps": 128000
+            }
+          }
+        },
+        "cheapest_discrimination": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "h06_s2027",
+            "tag": "active_20261011_v2_cheap",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T03:13:40.522833+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "cheapest_discrimination",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T03:14:07.623033+00:00",
+            "end_to_end_wall_s": 27.101403400069103,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T03:13:54+00:00",
+                "event": "receipt",
+                "request_id": "f5bf44824d09",
+                "outcome": "normal",
+                "measurement": {
+                  "critic_change": 1.5483899321277321,
+                  "actor_change": 1.8264085421529235,
+                  "from": "model_0.pt"
+                },
+                "gpu_s": 12.6,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "95e42611e4665b9a1774b5d7f0af1997af55b03fed43c550e34eb7dec903e883",
+                "probe": "P_value",
+                "checkpoint_sha256": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+                "report_sha256_lf": "ee2ec070bf79cdb3ca0064fe143ca93a0e0e6d60a5e3150a76648f75cdaba5b8"
+              },
+              {
+                "at": "2026-10-11T03:14:07+00:00",
+                "event": "receipt",
+                "request_id": "f4cddc1f3394",
+                "outcome": "normal",
+                "measurement": {
+                  "mismatch_count": 0,
+                  "mismatches": [],
+                  "static_friction_mean": 0.8000000715255737,
+                  "dynamic_friction_mean": 0.6000000238418579,
+                  "mass_delta_min": -0.9980754852294922,
+                  "mass_delta_max": 2.939188003540039,
+                  "physics_dt": 0.005
+                },
+                "gpu_s": 12.1,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "3d260620b4fa1c94778a12c8c93afe9d0d6af7d69cd6d85aa0a5e1fea54716a9",
+                "probe": "P_physics",
+                "checkpoint_sha256": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+                "report_sha256_lf": "a2ba674b188843d1c13e984fe8e62721ec082a43af7732f37abbb32a146fa614"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "exploration",
+                "termination"
+              ],
+              "dropped": [
+                "optimizer",
+                "physics"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 24.7,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 25.890625,
+              "isaac_simulator_steps": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "case": "baseline_p0c_s2027",
+      "state": "verified",
+      "proof": false,
+      "reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "artifact_reasons": [],
+      "proof_reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "result": {
+        "schema": "active_diagnosis_case_v2",
+        "case": "baseline_p0c_s2027",
+        "tag": "active_20261011_v2",
+        "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+        "started_at": "2026-10-11T03:15:59.596325+00:00",
+        "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+        "checkpoint_sha256": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+        "human_review_s": null,
+        "approval_actor": "codex_operator_user_authorized_test",
+        "approval_identity_attested": false,
+        "controller": "model",
+        "gpu_device_busy_s": null,
+        "stop_reason": "model_hold",
+        "status": "hold",
+        "finished_at": "2026-10-11T03:16:02.649485+00:00",
+        "end_to_end_wall_s": 3.052594499895349,
+        "initial_outcome": {
+          "stage": "initial",
+          "status": "valid",
+          "packet_sha256_lf": "4066b410f98465a452a1241aac661397453e4e8392827ab8b7e06a7dde1731cc",
+          "attempts": [
+            {
+              "path": "model/initial.attempt1.json",
+              "sha256_lf": "8e2461ff173b371b544d5417329a186129ca023bd7e1d7cb0532fe2714aae7b9"
+            }
+          ],
+          "decision": {
+            "ranking": [
+              "termination",
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics"
+            ],
+            "probe": null,
+            "action": "hold",
+            "reason": "No observations yet; need data to eliminate mechanisms. Budget allows two probes.",
+            "claims": [
+              {
+                "id": "telemetry:case:Episode_Termination/time_out",
+                "value": 4.250000127156576
+              }
+            ],
+            "expected_outcomes": {}
+          },
+          "decision_sha256_lf": "a12e1330f9a3d64afd77f4564b2843a74a64f74972bc0f0949d4c874b5f6ab39",
+          "error": null
+        },
+        "decisions": [
+          {
+            "ranking": [
+              "termination",
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics"
+            ],
+            "probe": null,
+            "action": "hold",
+            "reason": "No observations yet; need data to eliminate mechanisms. Budget allows two probes.",
+            "claims": [
+              {
+                "id": "telemetry:case:Episode_Termination/time_out",
+                "value": 4.250000127156576
+              }
+            ],
+            "expected_outcomes": {}
+          }
+        ],
+        "observed": [],
+        "pairs": [],
+        "contrasts": [],
+        "without_receipt": [],
+        "budget_left": 2,
+        "model_action": "hold",
+        "evidence_state": {
+          "hypotheses": [
+            "reward",
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics",
+            "termination"
+          ],
+          "dropped": [],
+          "status": "open"
+        },
+        "costs": {
+          "model_calls": 1,
+          "input_tokens": 2681,
+          "output_tokens": 118,
+          "model_wall_s": 1.4535105630056933,
+          "model_cpu_s": 0.417636519,
+          "isaac_wall_s": 0,
+          "human_review_s": null,
+          "gpu_device_busy_s": null,
+          "isaac_cpu_s": 0,
+          "isaac_simulator_steps": 0
+        }
+      },
+      "contrast": {},
+      "contrast_index": null,
+      "baselines": {
+        "fixed_order": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "baseline_p0c_s2027",
+            "tag": "active_20261011_v2_fixed",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T03:16:02.752128+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "fixed_order",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T03:17:20.794154+00:00",
+            "end_to_end_wall_s": 78.04238750017248,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T03:16:58+00:00",
+                "event": "receipt",
+                "request_id": "c8e90970fb68",
+                "outcome": "normal",
+                "measurement": {
+                  "timeout_count": 64,
+                  "median_timeout_step": 1000.0,
+                  "timeout_ratio": 1.0
+                },
+                "gpu_s": 55.3,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "f4e86a40815e0c1ee71d636dca7d8ef6ff8a4223725f7007710353d7ce82bac5",
+                "probe": "P_episode",
+                "checkpoint_sha256": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+                "report_sha256_lf": "2c9b8d5d80c31f3785ffc96ae79c34971a2d1df41f13757edd685f15790e8140"
+              },
+              {
+                "at": "2026-10-11T03:17:20+00:00",
+                "event": "receipt",
+                "request_id": "4df19bf77294",
+                "outcome": "normal",
+                "measurement": {
+                  "noise_ratio": 0.9998475909233093,
+                  "logged_std_mean": 0.36084312200546265
+                },
+                "gpu_s": 21.1,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "5fb544e49c5a1cf7e91639250d2e26367a2eade68e9b509ce7381279cda3faa6",
+                "probe": "P_noise",
+                "checkpoint_sha256": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+                "report_sha256_lf": "6e3e66003df46f3cb2b3201f94ab82a5ced648439f3ad4c062cac68ea4881e63"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "optimizer",
+                "physics"
+              ],
+              "dropped": [
+                "termination",
+                "exploration"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 76.4,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 103.234375,
+              "isaac_simulator_steps": 128000
+            }
+          }
+        },
+        "cheapest_discrimination": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "baseline_p0c_s2027",
+            "tag": "active_20261011_v2_cheap",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T03:17:20.897686+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "cheapest_discrimination",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T03:17:46.847514+00:00",
+            "end_to_end_wall_s": 25.951609200099483,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T03:17:34+00:00",
+                "event": "receipt",
+                "request_id": "47765a649e8d",
+                "outcome": "normal",
+                "measurement": {
+                  "critic_change": 1.468763972131927,
+                  "actor_change": 2.0383610513760444,
+                  "from": "model_0.pt"
+                },
+                "gpu_s": 12.2,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "d9c0ca0e6de3174fdf2451b516816d822b34c062e9ec5aea4671d3da6e7096dc",
+                "probe": "P_value",
+                "checkpoint_sha256": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+                "report_sha256_lf": "72d2ee21fc18a8a487fb9e7324fa49c196bf83842cfe69c48d0a1fc334e6b468"
+              },
+              {
+                "at": "2026-10-11T03:17:46+00:00",
+                "event": "receipt",
+                "request_id": "b6ae941b710b",
+                "outcome": "normal",
+                "measurement": {
+                  "mismatch_count": 0,
+                  "mismatches": [],
+                  "static_friction_mean": 0.8000000715255737,
+                  "dynamic_friction_mean": 0.6000000238418579,
+                  "mass_delta_min": -0.9980754852294922,
+                  "mass_delta_max": 2.939188003540039,
+                  "physics_dt": 0.005
+                },
+                "gpu_s": 12.0,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "3a72f841f49938a7e9bdec7e4961872f11db71ae4055578289935305d7e9e38b",
+                "probe": "P_physics",
+                "checkpoint_sha256": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+                "report_sha256_lf": "7a7225116708448e62377a465cc9ba9424019d8a242f51e936e3d672c37a716e"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "exploration",
+                "termination"
+              ],
+              "dropped": [
+                "optimizer",
+                "physics"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 24.2,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 26.546875,
+              "isaac_simulator_steps": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "case": "e01_s2027",
+      "state": "verified",
+      "proof": false,
+      "reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "artifact_reasons": [],
+      "proof_reasons": [
+        "실행이 HOLD라 판단 변경 증명 대상이 아니다",
+        "독립 auditor가 판단 변경 증명을 확인하지 않았다",
+        "대조 gate leader_changed가 true가 아니다",
+        "대조 gate latest_receipt_cited가 true가 아니다",
+        "대조 gate changed_leader_rejected_by_actual_observation가 true가 아니다",
+        "대조 gate after_leader_survives_actual_observation가 true가 아니다",
+        "대조 gate ablation_preserves_before_leader가 true가 아니다",
+        "선택한 판단 변경 단계가 auditor 검증 목록에 없다"
+      ],
+      "result": {
+        "schema": "active_diagnosis_case_v2",
+        "case": "e01_s2027",
+        "tag": "active_20261011_v2",
+        "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+        "started_at": "2026-10-11T03:19:32.720646+00:00",
+        "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+        "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+        "human_review_s": null,
+        "approval_actor": "codex_operator_user_authorized_test",
+        "approval_identity_attested": false,
+        "controller": "model",
+        "gpu_device_busy_s": null,
+        "stop_reason": "actual_model_invalid",
+        "error_type": "ModelSemanticError",
+        "error": "post decision은 최신 receipt fact를 인용해야 한다",
+        "status": "hold",
+        "finished_at": "2026-10-11T03:20:08.333282+00:00",
+        "end_to_end_wall_s": 35.6123492999468,
+        "initial_outcome": {
+          "stage": "initial",
+          "status": "valid",
+          "packet_sha256_lf": "92cae091dd6076e4c572ab560b3762736e24f68852219e28f7fb605d5dfd1ac4",
+          "attempts": [
+            {
+              "path": "model/initial.attempt1.json",
+              "sha256_lf": "0e5b5fb988046574d71db9138e8c3c1d0e2b3a026737f1c9ab9cc17c6fdf8baf"
+            }
+          ],
+          "decision": {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Prioritize checking reward mechanism first as multiple reward-related telemetry values deviate from reference, suggesting possible miscalculation or misconfiguration in reward components.",
+            "claims": [
+              {
+                "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 1.3415915767351787
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 1.4141562740008036
+              },
+              {
+                "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+                "value": 0.5857793996731441
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+                "value": 0.6309353162844976
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          },
+          "decision_sha256_lf": "66e7193acc9e61819d623a6b9f06b71757f5ecfbce6431bb5cc05b995ca92cf4",
+          "error": null
+        },
+        "decisions": [
+          {
+            "ranking": [
+              "reward",
+              "actuator",
+              "exploration",
+              "optimizer",
+              "physics",
+              "termination"
+            ],
+            "probe": "P_reward",
+            "action": "continue",
+            "reason": "Prioritize checking reward mechanism first as multiple reward-related telemetry values deviate from reference, suggesting possible miscalculation or misconfiguration in reward components.",
+            "claims": [
+              {
+                "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 1.3415915767351787
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+                "value": 1.4141562740008036
+              },
+              {
+                "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+                "value": 0.5857793996731441
+              },
+              {
+                "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+                "value": 0.6309353162844976
+              }
+            ],
+            "expected_outcomes": {
+              "reward": "abnormal",
+              "actuator": "normal",
+              "exploration": "normal"
+            }
+          }
+        ],
+        "observed": [
+          {
+            "at": "2026-10-11T03:20:00+00:00",
+            "event": "receipt",
+            "request_id": "7fd19df2d60a",
+            "outcome": "normal",
+            "measurement": {
+              "track_lin_vel_xy_exp_rel_error": 1.7083833587783203e-08,
+              "track_ang_vel_z_exp_rel_error": 1.6689492690069586e-08
+            },
+            "gpu_s": 22.2,
+            "exit_code": 0,
+            "over_budget": false,
+            "receipt_digest": "bb8dfdb21633855c254d369bf43cb1150506acf9269a5c0e763cd0ae25c832af",
+            "probe": "P_reward",
+            "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+            "report_sha256_lf": "f00297e6d48af614ba6b746f89fb495b9114157af1a4e5f31111df7b025d74f3"
+          }
+        ],
+        "pairs": [
+          {
+            "stage": 1,
+            "order": [
+              "observed",
+              "masked"
+            ],
+            "actual": {
+              "stage": "after_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "ad1f8218ff2c365167d903fd15f61e7a0263618c3bf2903c6cd2e9e4c5ca1921",
+              "attempts": [
+                {
+                  "path": "model/after_1.attempt1.json",
+                  "sha256_lf": "c9939d332e3bdc255c1a6dbbd5e6869bc4b042f2c63ea49091c82a22de2fe566"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "post decision은 최신 receipt fact를 인용해야 한다"
+              }
+            },
+            "control": {
+              "stage": "without_receipt_1",
+              "status": "semantic_invalid",
+              "packet_sha256_lf": "86a0fe98739eb57fe2d75188d0ee9344cc546df3a5d8fff29942fa28c7677f0b",
+              "attempts": [
+                {
+                  "path": "model/without_receipt_1.attempt1.json",
+                  "sha256_lf": "c468451db206d0775b5fa5c626a34078761ad39423de3d98e2a00ab541112ed9"
+                }
+              ],
+              "decision": null,
+              "decision_sha256_lf": null,
+              "error": {
+                "type": "ModelSemanticError",
+                "message": "초기 판단은 confirm할 수 없다"
+              }
+            },
+            "contrast": null,
+            "proof_eligible": false
+          }
+        ],
+        "contrasts": [
+          null
+        ],
+        "without_receipt": [
+          null
+        ],
+        "budget_left": 1,
+        "model_action": "continue",
+        "evidence_state": {
+          "hypotheses": [
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics",
+            "termination"
+          ],
+          "dropped": [
+            "reward"
+          ],
+          "status": "open"
+        },
+        "costs": {
+          "model_calls": 3,
+          "input_tokens": 8799,
+          "output_tokens": 824,
+          "model_wall_s": 7.669608997995965,
+          "model_cpu_s": 1.1537521859999997,
+          "isaac_wall_s": 22.2,
+          "human_review_s": null,
+          "gpu_device_busy_s": null,
+          "isaac_cpu_s": 29.96875,
+          "isaac_simulator_steps": 51200
+        }
+      },
+      "contrast": {},
+      "contrast_index": 0,
+      "baselines": {
+        "fixed_order": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "e01_s2027",
+            "tag": "active_20261011_v2_fixed",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T03:17:46.946400+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "fixed_order",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T03:19:03.622792+00:00",
+            "end_to_end_wall_s": 76.67628509993665,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T03:18:41+00:00",
+                "event": "receipt",
+                "request_id": "dbd3c12587d7",
+                "outcome": "normal",
+                "measurement": {
+                  "timeout_count": 64,
+                  "median_timeout_step": 1000.0,
+                  "timeout_ratio": 1.0
+                },
+                "gpu_s": 54.0,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "fd570c6b988a9ee2481ef17c136afad736bd474be6c07c2c93eb2444038d681c",
+                "probe": "P_episode",
+                "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+                "report_sha256_lf": "989afc491431f4de3610504796ae720e5943b84e570d743d39230e603836be2a"
+              },
+              {
+                "at": "2026-10-11T03:19:03+00:00",
+                "event": "receipt",
+                "request_id": "52b2870b1513",
+                "outcome": "normal",
+                "measurement": {
+                  "noise_ratio": 0.9998476505279541,
+                  "logged_std_mean": 0.47278451919555664
+                },
+                "gpu_s": 20.9,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "f0c0bc0870e9051d444557c535da6891ac7333d05ced28d49bce41623ad69ec9",
+                "probe": "P_noise",
+                "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+                "report_sha256_lf": "30182708f59226ed447937b078370fdd7892eadf20224abe7e324154856bf9b5"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "optimizer",
+                "physics"
+              ],
+              "dropped": [
+                "termination",
+                "exploration"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 74.9,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 101.5625,
+              "isaac_simulator_steps": 128000
+            }
+          }
+        },
+        "cheapest_discrimination": {
+          "state": "verified",
+          "reasons": [],
+          "result": {
+            "schema": "active_diagnosis_case_v2",
+            "case": "e01_s2027",
+            "tag": "active_20261011_v2_cheap",
+            "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+            "started_at": "2026-10-11T03:19:03.711481+00:00",
+            "protocol_sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369",
+            "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+            "human_review_s": null,
+            "approval_actor": "codex_operator_user_authorized_test",
+            "approval_identity_attested": false,
+            "controller": "cheapest_discrimination",
+            "gpu_device_busy_s": null,
+            "stop_reason": "probe_budget_or_frozen_stop",
+            "status": "completed",
+            "finished_at": "2026-10-11T03:19:32.556802+00:00",
+            "end_to_end_wall_s": 28.847571599995717,
+            "initial_outcome": null,
+            "decisions": [],
+            "observed": [
+              {
+                "at": "2026-10-11T03:19:16+00:00",
+                "event": "receipt",
+                "request_id": "7a286e428011",
+                "outcome": "normal",
+                "measurement": {
+                  "critic_change": 1.8468578912258624,
+                  "actor_change": 2.2131667880566304,
+                  "from": "model_0.pt"
+                },
+                "gpu_s": 12.6,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "e4d4f6e349cb11fa0a648eede5e3aa0b9f78ffd05b54de8bb3928f595b88f13c",
+                "probe": "P_value",
+                "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+                "report_sha256_lf": "5487fad94d879dca9ba9662a5f24f71bc50eafcdf2363a07c1b967e3c36605e0"
+              },
+              {
+                "at": "2026-10-11T03:19:32+00:00",
+                "event": "receipt",
+                "request_id": "e7d7a72425d8",
+                "outcome": "normal",
+                "measurement": {
+                  "mismatch_count": 0,
+                  "mismatches": [],
+                  "static_friction_mean": 0.8000000715255737,
+                  "dynamic_friction_mean": 0.6000000238418579,
+                  "mass_delta_min": -0.9980754852294922,
+                  "mass_delta_max": 2.939188003540039,
+                  "physics_dt": 0.005
+                },
+                "gpu_s": 14.8,
+                "exit_code": 0,
+                "over_budget": false,
+                "receipt_digest": "04eb86f8f85e7ca7fd154b64e000e925886b084eb141044b0a5be18e58015c57",
+                "probe": "P_physics",
+                "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+                "report_sha256_lf": "1a0d5c41bf7437ece205a14c296ce2846c31c7cd106cb303b02646371d5a180f"
+              }
+            ],
+            "pairs": [],
+            "contrasts": [],
+            "without_receipt": [],
+            "budget_left": 0,
+            "model_action": null,
+            "evidence_state": {
+              "hypotheses": [
+                "reward",
+                "actuator",
+                "exploration",
+                "termination"
+              ],
+              "dropped": [
+                "optimizer",
+                "physics"
+              ],
+              "status": "unidentifiable"
+            },
+            "costs": {
+              "model_calls": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "model_wall_s": 0,
+              "model_cpu_s": 0,
+              "isaac_wall_s": 27.4,
+              "human_review_s": null,
+              "gpu_device_busy_s": null,
+              "isaac_cpu_s": 28.390625,
+              "isaac_simulator_steps": 0
+            }
+          }
+        }
+      }
+    }
+  ],
+  "disclaimers": [
+    "한 사례의 판단 변경은 정확도나 일반화 성능을 뜻하지 않는다.",
+    "approval_actor는 실행 승인 주체이며 사람 검토 시간을 뜻하지 않는다.",
+    "wall time과 GPU device busy time은 다른 값이다. 미측정값은 0으로 바꾸지 않았다.",
+    "같은 조건의 새 보류 세트 비교 전에는 AI 우월성이나 비용 절감을 주장하지 않는다."
+  ],
+  "sources": [
+    {
+      "path": "bench/protocols/active_diagnosis_v2.json",
+      "sha256_lf": "8b15ef8f6ed9cb3030dcb5d30e3462c0e8ab1817ea99c1cbd0db72f330784369"
+    },
+    {
+      "path": "bench/runs_p0c/baseline_p0c_s2027.telemetry.json",
+      "sha256_lf": "a2c4d9b9971e2d3b335a542dcb14637f084aedef5ce10e3adfc6e91f4cc8217f"
+    },
+    {
+      "path": "bench/runs_p0c/h01_s2027.telemetry.json",
+      "sha256_lf": "f4b3a44b674689112380a8f2774c9760a51d2b011acff4d840ebb0e86b8089d9"
+    },
+    {
+      "path": "bench/runs_p0c/h02_s2027.telemetry.json",
+      "sha256_lf": "4ad5317ac27a668e0799b9c894a25f2f11565d47edee734cf3b6e6c9b10ba67f"
+    },
+    {
+      "path": "bench/runs_p0c/h03_s2027.telemetry.json",
+      "sha256_lf": "381b26ba5c70686ecccbd578da0800460f486466b847537c7cc0b5a7fcd6e912"
+    },
+    {
+      "path": "bench/runs_p0c/h04_s2027.telemetry.json",
+      "sha256_lf": "e4bbf1793b2d2928ee6dce60a3b916dff784b7cc2a1601660a2ddd49d44e7d4c"
+    },
+    {
+      "path": "bench/runs_p0c/h05_s2027.telemetry.json",
+      "sha256_lf": "59aa51d13c0cd831a74387df5c97915ed21f477ae05bf11285c3aafc9ca68a1d"
+    },
+    {
+      "path": "bench/runs_p0c/h06_s2027.telemetry.json",
+      "sha256_lf": "a8f7f13e3d69cb1345138bcbcb386bf377cf5b3cbf4798324da3b25b7539f1e8"
+    },
+    {
+      "path": "bench/runs_t1/e01_s2027.telemetry.json",
+      "sha256_lf": "be9d967256670502558a9fd788102c4f6f3bfa485f7913b25fa1049110b4ad13"
+    },
+    {
+      "path": "bench/runs_t1/ref_e01_s2027.telemetry.json",
+      "sha256_lf": "b49bb456fb2dd8e6ac0e326454f60eed51aa4b69ac64dd7939486ca71c514f21"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/audit.json",
+      "sha256_lf": "338acf7de55957c2605ca191d0071bbac4958182f9b6081ab72dea5a8447941d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/baseline_p0c_s2027/model/initial.attempt1.json",
+      "sha256_lf": "8e2461ff173b371b544d5417329a186129ca023bd7e1d7cb0532fe2714aae7b9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/baseline_p0c_s2027/model/initial.decision.json",
+      "sha256_lf": "a12e1330f9a3d64afd77f4564b2843a74a64f74972bc0f0949d4c874b5f6ab39"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/baseline_p0c_s2027/model/initial.outcome.json",
+      "sha256_lf": "eb106da70009858f544770f34bb0cbaefffa6ac185a893d5a42e0c660b0d6fbd"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/baseline_p0c_s2027/model/initial.packet.json",
+      "sha256_lf": "4066b410f98465a452a1241aac661397453e4e8392827ab8b7e06a7dde1731cc"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/baseline_p0c_s2027/prereg.json",
+      "sha256_lf": "e63338ca0240d2926f286fd9689091cb6e931e12cfefb06f827630d4c165917e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/baseline_p0c_s2027/result.json",
+      "sha256_lf": "db5d7b049d8da819dc242148a809a8c90463595028b6894bbaed0ec10de17387"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/approvals/7fd19df2d60a.json",
+      "sha256_lf": "93f2915caa4e1391737b5bb9aa53ddb210d3c429551fb6b733bbd08594d66ecd"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/gpu_preflight_1.json",
+      "sha256_lf": "58ee2c68e2e246d1e833647731b8a428a61bde8c1402f953e229d69aacaac194"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/gpu_wait_1.jsonl",
+      "sha256_lf": "242f39f0b0c0c5703264f45b89e6c036ea9f677a18ab7f59b69483f7d5ecab36"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/ledger.jsonl",
+      "sha256_lf": "767346cfb1a5461eb5d2ad36e604d282286db9304789ede24ba2218bd75f5519"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/model/after_1.attempt1.json",
+      "sha256_lf": "c9939d332e3bdc255c1a6dbbd5e6869bc4b042f2c63ea49091c82a22de2fe566"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/model/after_1.outcome.json",
+      "sha256_lf": "89070dfaffa08269d1d78de6fdd80fda3131e62aa02e9f3a994e535e05c1aa61"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/model/after_1.packet.json",
+      "sha256_lf": "ad1f8218ff2c365167d903fd15f61e7a0263618c3bf2903c6cd2e9e4c5ca1921"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/model/initial.attempt1.json",
+      "sha256_lf": "0e5b5fb988046574d71db9138e8c3c1d0e2b3a026737f1c9ab9cc17c6fdf8baf"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/model/initial.decision.json",
+      "sha256_lf": "66e7193acc9e61819d623a6b9f06b71757f5ecfbce6431bb5cc05b995ca92cf4"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/model/initial.outcome.json",
+      "sha256_lf": "48db1381f81a1f53c275434ff7c9d5b6b20809d99d020542e676753f73e460a9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/model/initial.packet.json",
+      "sha256_lf": "92cae091dd6076e4c572ab560b3762736e24f68852219e28f7fb605d5dfd1ac4"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/model/pair_1.json",
+      "sha256_lf": "69f51cfee223c080fee785f4893164723436e7744375209ec299f5a41a2888fa"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/model/without_receipt_1.attempt1.json",
+      "sha256_lf": "c468451db206d0775b5fa5c626a34078761ad39423de3d98e2a00ab541112ed9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/model/without_receipt_1.outcome.json",
+      "sha256_lf": "279ce10e96b53d5d885b0d3a3ef1f23e4bf8c83c94283f5bac822e2e62c49ddd"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/model/without_receipt_1.packet.json",
+      "sha256_lf": "86a0fe98739eb57fe2d75188d0ee9344cc546df3a5d8fff29942fa28c7677f0b"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/prereg.json",
+      "sha256_lf": "db21ee9c100d7eb6c760a3b9dcce779e4f0acf5ec69d35c2f8ba481a28e99a8f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/e01_s2027/result.json",
+      "sha256_lf": "d74187e479c5d04b5434e913f5f9c07ec287d8da1fab928073ff063f7dcab7d1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/approvals/fda5774acaf7.json",
+      "sha256_lf": "139472aa5285bf2fa767db28130de43c0920b73c1a1f8846e1a1b839f552e91d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/gpu_preflight_1.json",
+      "sha256_lf": "d0cd17cc7b01f9ef212fba1ded218422e928f9ede392d5fb424ee8e2c704cb25"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/gpu_wait_1.jsonl",
+      "sha256_lf": "50b7f7aaf832fa357001637955d68a15b696be02e27f7397c9cdc53e7e95ec4c"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/ledger.jsonl",
+      "sha256_lf": "ff0f182c7a7f11cbeb8a1362ca3e6cc6f725e42bf0b6daa0ab5ddc394923c58e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/model/after_1.attempt1.json",
+      "sha256_lf": "4b1e7456291a7fd2002999baedfe5ec3ee650086350b9d7127f17b65d7e9c9c1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/model/after_1.outcome.json",
+      "sha256_lf": "eaddc8327af4532e04fd0e061083ed4326d460bf0cb30d3648ae9125910dc3d0"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/model/after_1.packet.json",
+      "sha256_lf": "5f7ba378a95ae4eb2e9bbb77f7e7f133220e9150a13f402a6c4eb3b9ea8709d6"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/model/initial.attempt1.json",
+      "sha256_lf": "ab3603a8b1c8ac7ef87452101c6c73ef38af25707c87bb1234c45cbf3d0bd628"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/model/initial.decision.json",
+      "sha256_lf": "3ebefd9f8d17738913b3bcc8c77d86bfcd0991633afe41fbab856cb5f136a076"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/model/initial.outcome.json",
+      "sha256_lf": "e8be083cd16ec4d2f058f8bb5462de8ba769349b77381d3143553b8e566769c1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/model/initial.packet.json",
+      "sha256_lf": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/model/pair_1.json",
+      "sha256_lf": "2112089f72de155b08bfa1c9b02fe5cecb33deeedaa514509a0e2eab9af95f58"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/model/without_receipt_1.attempt1.json",
+      "sha256_lf": "09904ebb58e1b1f525895480c7232278cd1cbfbe5b061eda8b8f7aadef7006f7"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/model/without_receipt_1.outcome.json",
+      "sha256_lf": "5524f90b29ac20844ddd3f3448191b1f8883e09b18a6fd6333ba20ee101caa54"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/model/without_receipt_1.packet.json",
+      "sha256_lf": "02a33b203d9bfdb708e562168e48f99f638e10ae07f31f8e973124fe3a9451fc"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/prereg.json",
+      "sha256_lf": "70f968b949e635b7cef9f4a5b90c1631c805835fd563d172c14669227317c2b3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h01_s2027/result.json",
+      "sha256_lf": "4752318c5f350b2e369e67e5df76ddd1d9c55d630717b9138f2bd24349d74e3e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/approvals/001a31acb823.json",
+      "sha256_lf": "82e585a378c23e62d1f9d6bc9e364c80078aa82195fc4470f90ca922f6067acb"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/gpu_preflight_1.json",
+      "sha256_lf": "af8b0e48b3e723eaec356394d385d0576da238915a5c4dba4948fe53da75ea21"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/gpu_wait_1.jsonl",
+      "sha256_lf": "56abe970e023cf4e529bba1ee06d3086b86a72fae59b8ae5ae93cbdb537cc331"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/ledger.jsonl",
+      "sha256_lf": "e4ac64674bc25b7755627ec3688577ac2ed6b4708af0e0bdabd8177d4b1676b4"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/model/after_1.attempt1.json",
+      "sha256_lf": "4e8fcb76e005b1738329643a17ade48acfe15206db27b0770abfe7867a3fd1b5"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/model/after_1.outcome.json",
+      "sha256_lf": "81babbd62dc27864527addb887d9219d239f69d9509de866eecdb5255167e645"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/model/after_1.packet.json",
+      "sha256_lf": "cd44fef78f3b9cc8a214bb79d95571d075db0ff0e3eae92eaa47dd1bd12fe065"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/model/initial.attempt1.json",
+      "sha256_lf": "d9f0a1b91f6c96be3ee3859073159d3767ee5ef5dd30d73d683d5079b126ff03"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/model/initial.decision.json",
+      "sha256_lf": "46a571f5cd6072ead2c504097ad7717826f1f72ef1551944f4605860d6c9a324"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/model/initial.outcome.json",
+      "sha256_lf": "eaa2713bed6df3dd888e22d9d6044ed2be77c4641877616f4d8e7d46de9604fb"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/model/initial.packet.json",
+      "sha256_lf": "e2cb38745419a209220848f4a44a78a98a456d7db288e6dd874a0386489530d9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/model/pair_1.json",
+      "sha256_lf": "31fed61e535259a008f27bb48a361a8ec10fceab5ab87d41f0070b4c43335491"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/model/without_receipt_1.attempt1.json",
+      "sha256_lf": "b9df67a8ff186adb295094e2535c3bc872a310fc50b4557491c50aeec2a85e81"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/model/without_receipt_1.outcome.json",
+      "sha256_lf": "e7222b4ce5eab90d66a53748b0298ff177be0aea61bcf367bafd0644fb89aaea"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/model/without_receipt_1.packet.json",
+      "sha256_lf": "95809a4df36dce037efadba17d6e99192f89f1f575d45ea2050cb5a3dd9d5e9f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/prereg.json",
+      "sha256_lf": "a51a8d0645558ef37c7af85ba6ed6e2d4b223bd67503459809871ec71f5e50ff"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h02_s2027/result.json",
+      "sha256_lf": "f38e59593aac3e5a066162fb990cf803787b49b4f08dfec1630d5fa6ce8cdd7f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/approvals/9b889b425c60.json",
+      "sha256_lf": "a9838b0489859819fe6a811b23e06cdf2e9940ccb23a1d05c8f2d180614ee157"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/gpu_preflight_1.json",
+      "sha256_lf": "d6106c31c80b84e296ca42bb1ec8d3463407b6ed468d2203eb484bfc44d1fc05"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/gpu_wait_1.jsonl",
+      "sha256_lf": "c5673ae5420a4840ec0e706c7316f5a64f33da0d8d9abf3c85eaef22c1ae7f3c"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/ledger.jsonl",
+      "sha256_lf": "6696467d04605909c9206bd4f57128500da6d8879cd186f7108ff5590d195ea8"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/after_1.attempt1.json",
+      "sha256_lf": "a22bfacd93c6d3dd03108d349644b87d02930a4b3417cfbf5ec0a07e4643a12e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/after_1.decision.json",
+      "sha256_lf": "c944fbcccff2660f16a04e55862422bfb16b1bb78e876a04a2109e7beabd1fa6"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/after_1.outcome.json",
+      "sha256_lf": "6050f0d55f8808d69c1451128d9b96a782777cfb574d16998d7e524f5a2733ee"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/after_1.packet.json",
+      "sha256_lf": "abf8b51059f5e1273c1bae9fbce2c707c2427a201073ba53139fd843c0bca07d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/initial.attempt1.json",
+      "sha256_lf": "90a03c6b901e51d846bc30a768189145e840d0388ea5f9a80e0dc969a963d0c8"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/initial.decision.json",
+      "sha256_lf": "b9af803af881cb1788c0cb6370450565b4e8a89c4b135fdc8304bd938ec626a5"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/initial.outcome.json",
+      "sha256_lf": "d5d7fc7126d7f0158c3456890f0b5bb0a3e98a11ee1b624fc4066f3503877ff6"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/initial.packet.json",
+      "sha256_lf": "479a2f596b1236395e7e2ea231ce5b8471ea915e81eace41e283ca5639b58625"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/pair_1.json",
+      "sha256_lf": "b784c7822aed249a7daf3713ef6462e5e005499e193f86a5c21ac5bece8feabf"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/without_receipt_1.attempt1.json",
+      "sha256_lf": "7e17fdad0f40cb0e865b4a45e5a07319f6d6b9df88b4a34fb14468157016d7db"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/without_receipt_1.decision.json",
+      "sha256_lf": "d1acb27bd27fe830c732e240a17504d5ea9452926f0566e2aa6cc0c25b10c54a"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/without_receipt_1.outcome.json",
+      "sha256_lf": "34010e82ddcbc4efa5e750b94bd98fcfe373a6ab4a46524845e0dd507d5d0b61"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/model/without_receipt_1.packet.json",
+      "sha256_lf": "7f21e3f6dcaa7f76e4cefecaf8c16f9a553a4e5546e6d6e9fd6757fde5b52455"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/prereg.json",
+      "sha256_lf": "ecd55624ba4556a7852579daf4609702aee83d16a6eeaf9eaa1f9a0b4b0a1f87"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h03_s2027/result.json",
+      "sha256_lf": "71f911473bd33805e5bb223edcad690ed09893d8a6dd89b7656cf7d11c857a5c"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/approvals/84615ff2787e.json",
+      "sha256_lf": "bc82dd4f60130edd480bf4503dabf78ca3f5f9f78b4783aa2252db844958b2fa"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/gpu_preflight_1.json",
+      "sha256_lf": "a44df0ce2294ee829adf12175e5c669fbd3034f9032ec1988a0580cfeae70f36"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/gpu_wait_1.jsonl",
+      "sha256_lf": "fa970db80d078be2fb94a3e8a6c66e7ea1f01c4dc1ab38efd3d942f66e59993c"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/ledger.jsonl",
+      "sha256_lf": "c7f79b90e440153325d4f6f9a045d453df9fb1d89f4bf94a5b8e0d80a3b242a3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/model/after_1.attempt1.json",
+      "sha256_lf": "4c606c052711b4cce359347ddd62c79227eeeab526c8925592352fb066032022"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/model/after_1.outcome.json",
+      "sha256_lf": "aaaf2ee8579a2e34f62fe4063564ff93e65dd068376b0eccdf3c2fd9e1f7a96d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/model/after_1.packet.json",
+      "sha256_lf": "ef06905559c57e86b01b92b2486b8e1a35c40da07b14c220ab3d9c94bd101872"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/model/initial.attempt1.json",
+      "sha256_lf": "6220ba93ecc3b6136e965fb594e021a67c1708d98809b28527285f8316eabcc1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/model/initial.decision.json",
+      "sha256_lf": "1bee53ef9dd9aaad401ced8112861e1a1ae8c104fe1befc0c5a4dfe522ae29d2"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/model/initial.outcome.json",
+      "sha256_lf": "a7bbca14634e66c4bb726a0c1ea8d979d63a778f7292a2a75cdedc49c05c5671"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/model/initial.packet.json",
+      "sha256_lf": "4bd4693b05abdbe754fe72b32c37ef8a4b144bf5fa9cfe463f7401bbbd0a3d58"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/model/pair_1.json",
+      "sha256_lf": "66d1a0eae4a46131d0183281a8a66ff7231a620ad498060cbd3fb67a9a2ca7af"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/model/without_receipt_1.attempt1.json",
+      "sha256_lf": "0b141ce5da4eed69a6ade3b52096cb19ad81923445009da7c78f3f82fd3cc6c2"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/model/without_receipt_1.outcome.json",
+      "sha256_lf": "db250fd958cc628c6ace8de62bb34ea3f91d607f64c0c02f136f9c0e0ebed79d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/model/without_receipt_1.packet.json",
+      "sha256_lf": "f7f98bfe0db5e528e8e0eaaa6df0ddd03b31f599c8168b0df3e5f8f609cc5693"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/prereg.json",
+      "sha256_lf": "adce3cfeacfcea1da7edfbe7e6bed94132a5c9b19eb1d478b350e64098d9d57d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h04_s2027/result.json",
+      "sha256_lf": "851168662625dbb6e2537fcd1d4bbcd14bef26da163db6fb02f9c795dbf1ee13"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/approvals/c00029db7b76.json",
+      "sha256_lf": "f28c04bc00b622fdfee7e5f4a61f8e4f803ad062818c2fb5bcfa10cc336c914b"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/gpu_preflight_1.json",
+      "sha256_lf": "ae2cbba2a9f89209d82025a39ea5e9f77bbbdd8931fcc04d5f1f57778770b889"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/gpu_wait_1.jsonl",
+      "sha256_lf": "a7ae46f3461fd51c1b7e8352e3c5790fd4bc430562f56dc39b80cd1271a75595"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/ledger.jsonl",
+      "sha256_lf": "b6404809715acd8c87435a73cbece56ae54d744fd9b7216b34987090015197f1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/model/after_1.attempt1.json",
+      "sha256_lf": "5f9b24b5cc9bc9059bd17e91f4eac58e79507e5d30a345088fba23545bd15f16"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/model/after_1.outcome.json",
+      "sha256_lf": "c5b957eaa5fb052904e4469809588e1e72078c41ab1cf2317e1f45babea4b974"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/model/after_1.packet.json",
+      "sha256_lf": "8f91f7f840fdac624c5b01d2a3452fcdda9c31022309e2636fa48e57349efa56"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/model/initial.attempt1.json",
+      "sha256_lf": "8e91668a5176fafdd116a7185b3bf0c4699d8e4501e1f5c08fda7bb366d09674"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/model/initial.decision.json",
+      "sha256_lf": "84cdcfcc9036d1149bbdab33358e0bc866298bcebede81ad84b4409b00b7a24a"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/model/initial.outcome.json",
+      "sha256_lf": "4da52ed0757d7ec93cdf6523938d1a2eaa74aac2830402cf3547dd343ca43e84"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/model/initial.packet.json",
+      "sha256_lf": "dac34831849e655da037b97c5c7e5b16fb2698f83bbd60cd3c81be0c99824a18"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/model/pair_1.json",
+      "sha256_lf": "4360f55eef38f0ffbf51b941b68a6fc65c785de7920aa6e7a8f2456b14e8e072"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/model/without_receipt_1.attempt1.json",
+      "sha256_lf": "dd386edc7add20b00c2f71184556e9faaecb19926ba2287c6cdddccbfeb7c3ad"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/model/without_receipt_1.outcome.json",
+      "sha256_lf": "356cc5a97ab227720e55dafc2f2d079d1956b293c6eb670ffb8ca206b5e64ced"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/model/without_receipt_1.packet.json",
+      "sha256_lf": "906e294c4f72c3566943cadb09b362b829a144c2cc9e39758568a13a9d719b93"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/prereg.json",
+      "sha256_lf": "ee6588de023abebb39fa40e14a2a387268f9713955e1a2bf4028570a5c8629b1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h05_s2027/result.json",
+      "sha256_lf": "d5cb0c09f452464a8d780cd4f22774cdc5368c6d1de225ff09d7101db2995f4e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/approvals/2fd993860902.json",
+      "sha256_lf": "6a76d8cba9d45881e459b7f33e3d4de3e38413a15757bb4edf99460714c4959c"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/gpu_preflight_1.json",
+      "sha256_lf": "0f69eee3f2a2ec35851fd517e14ad0d6210493949aadf0a13f779a8c4099c415"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/gpu_wait_1.jsonl",
+      "sha256_lf": "fd5ad969d6a00c092932453a11fd10f3522b4bb0e7cc103e8ce3da6b1d2f74a1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/ledger.jsonl",
+      "sha256_lf": "72f3b6525370ff17978423b6fe4a1b8d1b646632a2c869f8bc8760f7c73ae49b"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/model/after_1.attempt1.json",
+      "sha256_lf": "4445c44fcc9dfeb1ec08678af4a41796c5609ad41d0a05ac3ac81ffbfb5681e5"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/model/after_1.outcome.json",
+      "sha256_lf": "efd3af7126f58681262fca719be6b02f986fad6f6515dc324ad9288870cf274e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/model/after_1.packet.json",
+      "sha256_lf": "6145365079d2a7487edf714fcb22ade24e7b7d633bacf0944498fa0874d37c5e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/model/initial.attempt1.json",
+      "sha256_lf": "cc6d7716b59805cca4bcd59af846c1e3a1e542280b65e1341d3086017438352d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/model/initial.decision.json",
+      "sha256_lf": "0dc40e2e5cd9f4aba9f7af7e5bcff6848a3c0c3b7a65eb6b56b40b0f0bdb9dc8"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/model/initial.outcome.json",
+      "sha256_lf": "baa1e8b17aa2785b06f458a6848f0752127a574d54bd6e0d5e0d21b82a25ee51"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/model/initial.packet.json",
+      "sha256_lf": "0a9a9c246fdf7f645fd796fa72607eda343b0fe1d9287a9dd68dc370ca60a72a"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/model/pair_1.json",
+      "sha256_lf": "b63c5f22d014dba26a9fb91d2eda1e19b798fb3bdeecf48ad30de1de099f10c6"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/model/without_receipt_1.attempt1.json",
+      "sha256_lf": "1c7cc1a85ebaa5fb4806a2e06c11bdca9db9dbe72b1ac3462e212ca21fae9695"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/model/without_receipt_1.outcome.json",
+      "sha256_lf": "31fb262ef6bf867a59ce634932f1fe9a8a2a6fda49d4e5c8ca12bdb38aa7c469"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/model/without_receipt_1.packet.json",
+      "sha256_lf": "6389ba4496495b7f1f0e153590359798483e8ccc093f01058f10cd8fb41c25e1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/prereg.json",
+      "sha256_lf": "0d2cb3ef6ba06cca6a77a7ec898df07c3a3103c2a18bab5b4de4697dd04420e0"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/cases/h06_s2027/result.json",
+      "sha256_lf": "5ea6e9677e50b9d89fa542f40fac72c649ed1f0e4796f99b727a8bd4503c5814"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/execution/e01_s2027__P_reward.json",
+      "sha256_lf": "29584b806dbaa163d59a3664943b9627276aed46c9d1f4a1fc87a09ff7eec113"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/execution/h01_s2027__P_reward.json",
+      "sha256_lf": "042f92dac8cad6dd11af82c18641db8d9b1d4f11911edcd4c5f381727b63c741"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/execution/h02_s2027__P_reward.json",
+      "sha256_lf": "a5616c3f0a8943fa530a564a3c5ccb7433ccf7391b5fa0cd497998a84eb6f9e6"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/execution/h03_s2027__P_episode.json",
+      "sha256_lf": "e3479718976ddf6876ee344df515ae7d1e3596d0fcf015e4053b121385dc989e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/execution/h04_s2027__P_reward.json",
+      "sha256_lf": "8d5b147a29de7c0b0fbaf9318a402c97eca16c0c9023dbac408ceb92302352f3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/execution/h05_s2027__P_reward.json",
+      "sha256_lf": "f774c67f15094ad11135e96cfa1e6426fe81491b989a0c3dbdce93e1503b4fb3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/execution/h06_s2027__P_reward.json",
+      "sha256_lf": "6148f39cdf9e901c806532e155ecb91b5e8ca741260bdc9bca94784f56db3637"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/probes/e01_s2027__P_reward.json",
+      "sha256_lf": "f00297e6d48af614ba6b746f89fb495b9114157af1a4e5f31111df7b025d74f3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/probes/h01_s2027__P_reward.json",
+      "sha256_lf": "c6fc22a1c14fcd4fa80e1cd47af5fd101d3002ed8f292c3d4bc1089a2cdb0678"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/probes/h02_s2027__P_reward.json",
+      "sha256_lf": "52525aa23ac52f4c9f84c6f79e39bd6a084b1a67bf58b25ea9f8776f9203eb63"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/probes/h03_s2027__P_episode.json",
+      "sha256_lf": "991757e15e8063134c2d945214b0cc2ff0e51ac043b5279a8215e0e69f80ba42"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/probes/h04_s2027__P_reward.json",
+      "sha256_lf": "1159704c62ebdfd2bee3c85a614389c2cadd2c62fb4f5399810fa5de4bd64563"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/probes/h05_s2027__P_reward.json",
+      "sha256_lf": "cffc662293e0f4fd18026e2505b7876bbe596a0760c32a48631eb15c80df8d61"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/probes/h06_s2027__P_reward.json",
+      "sha256_lf": "2348991b2c1134d3b61af638644f70f8a42d4b36a0661169603600da6cbf3046"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/resources/e01_s2027__P_reward.json",
+      "sha256_lf": "ce87a415da7399062456bba23b684b58b54a503731d6c570c5ceec9bcaca35e8"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/resources/h01_s2027__P_reward.json",
+      "sha256_lf": "cc754b58339435b7484f052a85052b54acc96c8b246e509430d75117463c1a51"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/resources/h02_s2027__P_reward.json",
+      "sha256_lf": "5e1dbebf587c0fc731b48acdab629fbf2d0247b65c7b83c8b3cadc82079d5d2d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/resources/h03_s2027__P_episode.json",
+      "sha256_lf": "5f1168ee03ff534f2057c0d98dec0164f328c7724f152177e82f4aaef60f94fe"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/resources/h04_s2027__P_reward.json",
+      "sha256_lf": "6790682499f4ff93a10512b0a21f208796a4dc79ebbe4077916ad174e857ecae"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/resources/h05_s2027__P_reward.json",
+      "sha256_lf": "01de6354f8be16f2a6b84c18804b32bce47ef81f24d3f7b6a52d00453b0bb16f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2/resources/h06_s2027__P_reward.json",
+      "sha256_lf": "b706134125a03108ebd0e6447d6a90508e71d6730fe47c9e2ac743d5c98e4587"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/baseline_p0c_s2027/approvals/47765a649e8d.json",
+      "sha256_lf": "dcbe1b954c5b96527f6e136a2547298eebfff4fe6efe80631a9978071ed595ee"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/baseline_p0c_s2027/approvals/b6ae941b710b.json",
+      "sha256_lf": "f2ea9f3022f0d3ff864739a06d21066c50acc9b8ae122d4ba58602edf474295f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/baseline_p0c_s2027/initial_packet.json",
+      "sha256_lf": "4066b410f98465a452a1241aac661397453e4e8392827ab8b7e06a7dde1731cc"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/baseline_p0c_s2027/ledger.jsonl",
+      "sha256_lf": "1160021b4e4f0cc87379e7fd0e5a7b0f5298f02987b2e9fe164237d709160d8e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/baseline_p0c_s2027/prereg.json",
+      "sha256_lf": "e63338ca0240d2926f286fd9689091cb6e931e12cfefb06f827630d4c165917e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/baseline_p0c_s2027/result.json",
+      "sha256_lf": "ecd25ef65aac282c279c3d7193b37100e9db1ee7fd07526a26b221628b3be080"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/e01_s2027/approvals/7a286e428011.json",
+      "sha256_lf": "c6fbbabac0dbc1e2f97435d28a8cf57601c2f38917a4ae4d32279dc3ac9afdb2"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/e01_s2027/approvals/e7d7a72425d8.json",
+      "sha256_lf": "2c6bf427f99773889024b4eea91af0257d5e1479aa5106d7eb210104657e79d3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/e01_s2027/initial_packet.json",
+      "sha256_lf": "92cae091dd6076e4c572ab560b3762736e24f68852219e28f7fb605d5dfd1ac4"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/e01_s2027/ledger.jsonl",
+      "sha256_lf": "c81be2fad31acda742c57ff8a60afc491568e3ea493777a3e7353441c301d00d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/e01_s2027/prereg.json",
+      "sha256_lf": "db21ee9c100d7eb6c760a3b9dcce779e4f0acf5ec69d35c2f8ba481a28e99a8f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/e01_s2027/result.json",
+      "sha256_lf": "267a0b7d397cf7a4e68a8a8fd2aba22a38e00388b530ca0b9c5137a8cb3440d9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h01_s2027/approvals/8d147caf6cb8.json",
+      "sha256_lf": "0592a047c9c8f26f5e54f754cb492b91689793e8db87491b9af6b47bb097cfa1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h01_s2027/approvals/f978d19f8763.json",
+      "sha256_lf": "89f6015ee191a90cc4c828439ef463c2f1aa46168c35e7e75efd9121c204041f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h01_s2027/initial_packet.json",
+      "sha256_lf": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h01_s2027/ledger.jsonl",
+      "sha256_lf": "e5f7024bfbc210e0d514a68cdd81d161bd18b514940ef03a2e46912ebb01d48b"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h01_s2027/prereg.json",
+      "sha256_lf": "70f968b949e635b7cef9f4a5b90c1631c805835fd563d172c14669227317c2b3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h01_s2027/result.json",
+      "sha256_lf": "be5f481513be096daf94a62cc46c4a4028436e67d3afac70dc6c3387bef6ee42"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h02_s2027/approvals/1d8c48666f8b.json",
+      "sha256_lf": "8a58d48e2afd612a312c3a0fbe84f840eac330bed8919c73cee93455bdb54734"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h02_s2027/approvals/c2c659093519.json",
+      "sha256_lf": "3753944f5273e0714d2a9fba4b4bf67a133dc9d15e3f78f717e0864e38774550"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h02_s2027/initial_packet.json",
+      "sha256_lf": "e2cb38745419a209220848f4a44a78a98a456d7db288e6dd874a0386489530d9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h02_s2027/ledger.jsonl",
+      "sha256_lf": "aeba7d2a916114c061f11bb31d9a95bd9ad2212fe8ffe9ffb78875dd9bb0e0c0"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h02_s2027/prereg.json",
+      "sha256_lf": "a51a8d0645558ef37c7af85ba6ed6e2d4b223bd67503459809871ec71f5e50ff"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h02_s2027/result.json",
+      "sha256_lf": "6e27eea89f199184b0649b0b5f621fca96f0590456be0ebad622a58db484c299"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h03_s2027/approvals/53fe1062a450.json",
+      "sha256_lf": "46087963162e9dc494b663a7943205b9a2a46b41877e4e1dbea928d42b059fc6"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h03_s2027/approvals/dc913498b957.json",
+      "sha256_lf": "4a4cce83734e1eb9d58a1424f87f9621605a7c7759c78a7be4a3256be27f3164"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h03_s2027/initial_packet.json",
+      "sha256_lf": "479a2f596b1236395e7e2ea231ce5b8471ea915e81eace41e283ca5639b58625"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h03_s2027/ledger.jsonl",
+      "sha256_lf": "986949a1977ba3d420ef1ab13bbfa39aa8fa7e39bfae831648395afd70e599b3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h03_s2027/prereg.json",
+      "sha256_lf": "ecd55624ba4556a7852579daf4609702aee83d16a6eeaf9eaa1f9a0b4b0a1f87"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h03_s2027/result.json",
+      "sha256_lf": "b8127c4b29a1b1538d262968a5e6eb4f42728c23d9771be1ce8bb8935128021c"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h04_s2027/approvals/3b2beb6e0cb9.json",
+      "sha256_lf": "e8a22ae1b26984871729f5a58479f5d495c256415c438c7633f235c77ba7c412"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h04_s2027/initial_packet.json",
+      "sha256_lf": "4bd4693b05abdbe754fe72b32c37ef8a4b144bf5fa9cfe463f7401bbbd0a3d58"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h04_s2027/ledger.jsonl",
+      "sha256_lf": "f47a17cebb571afad3bb795cdc00be60e222cf445ca3df264ad807f6256d3d33"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h04_s2027/prereg.json",
+      "sha256_lf": "adce3cfeacfcea1da7edfbe7e6bed94132a5c9b19eb1d478b350e64098d9d57d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h04_s2027/result.json",
+      "sha256_lf": "8bad8451fe85f746b505934c5328868332e794ed814e300cc11a2358708a87b9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h05_s2027/approvals/aae0e5c432bf.json",
+      "sha256_lf": "55283785771698c3988b2347a42a63eb34342fb46713edd659f521313ea200be"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h05_s2027/approvals/d97eb64c46e6.json",
+      "sha256_lf": "5d6132b71aff47a8b7b775a732b10caf177f6126d1bb727e8fe080ad7394c266"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h05_s2027/initial_packet.json",
+      "sha256_lf": "dac34831849e655da037b97c5c7e5b16fb2698f83bbd60cd3c81be0c99824a18"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h05_s2027/ledger.jsonl",
+      "sha256_lf": "05e109f1c97a1ca6599f8ab131e881ad1d0ead2489eee919c1fc140b644c05bd"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h05_s2027/prereg.json",
+      "sha256_lf": "ee6588de023abebb39fa40e14a2a387268f9713955e1a2bf4028570a5c8629b1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h05_s2027/result.json",
+      "sha256_lf": "d508ab570142da7d86f99410b2d61bc45f2122d77e1e233be9503382b925b80f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h06_s2027/approvals/f4cddc1f3394.json",
+      "sha256_lf": "d3a5cd4b4f159c0e62f3d76090d913e7b62fa5f01dde1c0ed3812ae00d8c003a"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h06_s2027/approvals/f5bf44824d09.json",
+      "sha256_lf": "075704690117eb9e7cfed74316120475887ca5b53343998ff99fe9e44a8ffa85"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h06_s2027/initial_packet.json",
+      "sha256_lf": "0a9a9c246fdf7f645fd796fa72607eda343b0fe1d9287a9dd68dc370ca60a72a"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h06_s2027/ledger.jsonl",
+      "sha256_lf": "7f9a9de6974fb5a576e6640dd6bcb7781accb5b020aed1efc72764f9978f1470"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h06_s2027/prereg.json",
+      "sha256_lf": "0d2cb3ef6ba06cca6a77a7ec898df07c3a3103c2a18bab5b4de4697dd04420e0"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/cases/h06_s2027/result.json",
+      "sha256_lf": "2ecbb6a0068930ee807d9bb3c92a28be4957745d90dd002b1fc624769a7b2adb"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/baseline_p0c_s2027__P_physics.json",
+      "sha256_lf": "31f2cbb3e16ce3ada5b58f491f5740f6096ad9a6bef8dd31ff82c9b1d80bde8d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/baseline_p0c_s2027__P_value.json",
+      "sha256_lf": "6a703104e09b7f800de76278260f0458875d9d2749ace21c9e00eba1593ed075"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/e01_s2027__P_physics.json",
+      "sha256_lf": "72416bda88f2d5cff599d27b97e19f0b70ba95b0abd96e54953fe03ed7781dce"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/e01_s2027__P_value.json",
+      "sha256_lf": "77fff5819b6c5c99442f91030c7aa5933455b092b55ea5ad1a29039d7d702f96"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/h01_s2027__P_physics.json",
+      "sha256_lf": "b4c60d7633a7529d5d4200d09074a614cae2b25908ebb3cd2af05a8fce857cb3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/h01_s2027__P_value.json",
+      "sha256_lf": "ebf24f07e4d2fe314a784d743af795d6ca2bf21b860f155ce52ac95c3b526b0e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/h02_s2027__P_physics.json",
+      "sha256_lf": "5e0ed69a8c890adf2d16a419a0964b3ecb6ecbd13e6f025a2d72e54e27433d00"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/h02_s2027__P_value.json",
+      "sha256_lf": "f1a6f867b42b5ac7923664430d5acafdd59ba03dbf17206c72c2c07c832e7184"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/h03_s2027__P_physics.json",
+      "sha256_lf": "f037f1c010393bb74771ad3a7012349701c209675463860df64b1b07678c8992"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/h03_s2027__P_value.json",
+      "sha256_lf": "1c9bf8b8f5c4c6b8b9ca6daac0b3fe467b8498756faa70a2b060482afd83e69b"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/h04_s2027__P_value.json",
+      "sha256_lf": "418f953e7d981515f26763368f60bcec7e241920bb1916bec8f3feec32324c50"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/h05_s2027__P_physics.json",
+      "sha256_lf": "96af2c6ba5af64eed0fb737ac875f7568ba24c4754f6d550bc8caede286b8e44"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/h05_s2027__P_value.json",
+      "sha256_lf": "e53cb60f39e7720d047f602b5fcc16757904d09e55c3fa950c1b8766a89fd4e3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/h06_s2027__P_physics.json",
+      "sha256_lf": "4fa572ce0e44876f2a123522bb4d019448178c9d2007060048da73da77dd4a6d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/execution/h06_s2027__P_value.json",
+      "sha256_lf": "565e6f1e2ccaacc30a5453e4a4f1d89150dc489ccf3bf7523fc8575edd531e67"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/baseline_p0c_s2027__P_physics.json",
+      "sha256_lf": "7a7225116708448e62377a465cc9ba9424019d8a242f51e936e3d672c37a716e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/baseline_p0c_s2027__P_value.json",
+      "sha256_lf": "72d2ee21fc18a8a487fb9e7324fa49c196bf83842cfe69c48d0a1fc334e6b468"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/e01_s2027__P_physics.json",
+      "sha256_lf": "1a0d5c41bf7437ece205a14c296ce2846c31c7cd106cb303b02646371d5a180f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/e01_s2027__P_value.json",
+      "sha256_lf": "5487fad94d879dca9ba9662a5f24f71bc50eafcdf2363a07c1b967e3c36605e0"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/h01_s2027__P_physics.json",
+      "sha256_lf": "75d5c7261de6ade8c230bea5b3f73adc2b060ef5bf46be7ccd99ba61f31d494e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/h01_s2027__P_value.json",
+      "sha256_lf": "648afd663c26e40f6f2aa5216519487e593f8047c087841712493a1a31d77f52"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/h02_s2027__P_physics.json",
+      "sha256_lf": "80e0d94145a7b5f2c942e086ba5a77732c403f4757c26d9d9ce029ac5f6df3e2"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/h02_s2027__P_value.json",
+      "sha256_lf": "189cb1359863baf4466de8d489647661cf1dc2bb915329907c790cbfad323537"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/h03_s2027__P_physics.json",
+      "sha256_lf": "45e28eb38791d4086569c5dd02ce20216e34ef1e629df96dd7e187b272307e12"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/h03_s2027__P_value.json",
+      "sha256_lf": "b0efe413cb0e5ab5eb663d60aaef7275b3be5511d90954ae0d364395f2e78c25"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/h04_s2027__P_value.json",
+      "sha256_lf": "ce69f8d3898b70c669192ce1d780807917be81c3be6b1faa4972abce8d521d42"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/h05_s2027__P_physics.json",
+      "sha256_lf": "f3b50e7d56543d98d478cd508181f182a72b6f61bc901797990b194e69591085"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/h05_s2027__P_value.json",
+      "sha256_lf": "bc89a5d482f4f57fc4769697a5dcf1a42347ae915e296ca567d3158d1fb5c5a1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/h06_s2027__P_physics.json",
+      "sha256_lf": "a2ba674b188843d1c13e984fe8e62721ec082a43af7732f37abbb32a146fa614"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/probes/h06_s2027__P_value.json",
+      "sha256_lf": "ee2ec070bf79cdb3ca0064fe143ca93a0e0e6d60a5e3150a76648f75cdaba5b8"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/baseline_p0c_s2027__P_physics.json",
+      "sha256_lf": "aed0b8de057b1841a32a40ae667f684f912f6fe43b31bb7ca5c93bc895eb3fae"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/baseline_p0c_s2027__P_value.json",
+      "sha256_lf": "b1ce9543dc6dc6c8a7c926706ab27840ab773aef67eec34b31fb1d511c5643b9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/e01_s2027__P_physics.json",
+      "sha256_lf": "d7ed9b0d7c477a1623ce1f590a0867461c6d1c8cdc3d437ca1748f4a0600ad3c"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/e01_s2027__P_value.json",
+      "sha256_lf": "58ecf56364b109baefa70e1a6ba7cf94923a9b6c11c4b2283570022a380bf5b8"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/h01_s2027__P_physics.json",
+      "sha256_lf": "71228e11e8906f5e1ad1761d4b7951b4859126f16cc6b162c5eaa89a7a13a7da"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/h01_s2027__P_value.json",
+      "sha256_lf": "ca5b16642875a9f080e26a316b670dd9ee59bba5bd279bd9fc17bb72b692f0d5"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/h02_s2027__P_physics.json",
+      "sha256_lf": "c48d64cae53ae81fefa98fd08b1973549c732ba8339c44734f0d102475ff08b4"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/h02_s2027__P_value.json",
+      "sha256_lf": "4c7eeb0a3875b0fae3c76df1e58438de835d0c48c592dba599a0710c49934cf6"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/h03_s2027__P_physics.json",
+      "sha256_lf": "ed9e78c927031def6a1e2d9c3c48dcf27d1e89b8d7064d84a396c1b720814514"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/h03_s2027__P_value.json",
+      "sha256_lf": "7b03f9212ec127d8e5abe6475062646e1c499f2b230e58596c68253ad28d512f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/h04_s2027__P_value.json",
+      "sha256_lf": "406005bae005b1ad9beb0894c1213b7c77e2221fade4a670a3f7d9317bf1de7d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/h05_s2027__P_physics.json",
+      "sha256_lf": "e06be86f3ea5334f28b0032e42d730b3b274ccf00dd474e395daa5be9086146f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/h05_s2027__P_value.json",
+      "sha256_lf": "d7bc39c912ed95f19f5f196a148ad56c5969c2b90140049080052cc0b686c493"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/h06_s2027__P_physics.json",
+      "sha256_lf": "080867cb8ef7a95b322c5be8a7d42767829be74a76343e3e0ccbd105ba3e8f36"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_cheap/resources/h06_s2027__P_value.json",
+      "sha256_lf": "8b47c501454e1c08561df3e18574d9b702cf1cffe4441487c1e2feefb603a26e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/baseline_p0c_s2027/approvals/4df19bf77294.json",
+      "sha256_lf": "4633beb155405e6e29dd08a91a56e3b536c4b834f983aecbd69ae87edc3ac2c0"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/baseline_p0c_s2027/approvals/c8e90970fb68.json",
+      "sha256_lf": "49de72a91aeadbc66c9ad016f38b7ab4d78941d51e815dc15ab9e7bc8a4e6f42"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/baseline_p0c_s2027/initial_packet.json",
+      "sha256_lf": "4066b410f98465a452a1241aac661397453e4e8392827ab8b7e06a7dde1731cc"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/baseline_p0c_s2027/ledger.jsonl",
+      "sha256_lf": "ef2d9c20fe4ca88a2f60016bfa68f600055a9d1e6df4f8fe09f3506c92926e8d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/baseline_p0c_s2027/prereg.json",
+      "sha256_lf": "e63338ca0240d2926f286fd9689091cb6e931e12cfefb06f827630d4c165917e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/baseline_p0c_s2027/result.json",
+      "sha256_lf": "88ec97f4a4f41a5ce2a7ea0b12136d675b7db21fc360d193af865a8b1c7476d3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/e01_s2027/approvals/52b2870b1513.json",
+      "sha256_lf": "979a2b996e7c610f1eda5e4939d574fdbd8f2367433a992b6143a56db99754a8"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/e01_s2027/approvals/dbd3c12587d7.json",
+      "sha256_lf": "af1ba136a0ef532156fd6e103602341557f8546020ad529d2866cd351789243e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/e01_s2027/initial_packet.json",
+      "sha256_lf": "92cae091dd6076e4c572ab560b3762736e24f68852219e28f7fb605d5dfd1ac4"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/e01_s2027/ledger.jsonl",
+      "sha256_lf": "35ffe1179a237c27dfab8cb8357e0987ca6b859312592270d9774669f3a0a91c"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/e01_s2027/prereg.json",
+      "sha256_lf": "db21ee9c100d7eb6c760a3b9dcce779e4f0acf5ec69d35c2f8ba481a28e99a8f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/e01_s2027/result.json",
+      "sha256_lf": "4f75e9e2ffebc66b196d4535f9458591b38e613d631360cb0f80b0ef90a6bfc8"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h01_s2027/approvals/b8acf616d4f5.json",
+      "sha256_lf": "4b667bd0fd2e40d2c69b9a0096566119edb733c92ca73d9196036a409db5d7f9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h01_s2027/approvals/c867abc9236d.json",
+      "sha256_lf": "40571d037fdd371c81bc1e986e2a25580817da2b99a4411395e153c237e693ff"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h01_s2027/initial_packet.json",
+      "sha256_lf": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h01_s2027/ledger.jsonl",
+      "sha256_lf": "d0cd9632dc8f690d2e5d43d99505626184448fd651c6e4cca36f01885bf5e775"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h01_s2027/prereg.json",
+      "sha256_lf": "70f968b949e635b7cef9f4a5b90c1631c805835fd563d172c14669227317c2b3"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h01_s2027/result.json",
+      "sha256_lf": "84ce7b6251469f109b9380feeda7d913c61548f77031a339332a464ae4287066"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h02_s2027/approvals/9f913cfbf549.json",
+      "sha256_lf": "af0e4df5039f29a589c57c4749865106fbc8e88dcb8b038b00cdbe4b45a62f73"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h02_s2027/approvals/fd85cbfa4fb4.json",
+      "sha256_lf": "98ce3d244a0e3b72fe1a96a3361d64f7484676ec7824f6a2c262afe254dfe80a"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h02_s2027/initial_packet.json",
+      "sha256_lf": "e2cb38745419a209220848f4a44a78a98a456d7db288e6dd874a0386489530d9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h02_s2027/ledger.jsonl",
+      "sha256_lf": "4e3e1887388514fbdf31e76cb259f7d374b56faf7592cb38151d030dd6fed6f8"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h02_s2027/prereg.json",
+      "sha256_lf": "a51a8d0645558ef37c7af85ba6ed6e2d4b223bd67503459809871ec71f5e50ff"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h02_s2027/result.json",
+      "sha256_lf": "02b808446a463c54fc319be93fdfe416a4baef93a98bffeab11a9548bbc69d51"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h03_s2027/approvals/7f7badaafd4c.json",
+      "sha256_lf": "95bb65a9c762fb64ed146974b1bb3be80749f5e37bfcd2f5272b6ce8308f0915"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h03_s2027/initial_packet.json",
+      "sha256_lf": "479a2f596b1236395e7e2ea231ce5b8471ea915e81eace41e283ca5639b58625"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h03_s2027/ledger.jsonl",
+      "sha256_lf": "2f36e6bf070267b66e4afb23457256b0691dfc12cf16ef05156fa89520d88105"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h03_s2027/prereg.json",
+      "sha256_lf": "ecd55624ba4556a7852579daf4609702aee83d16a6eeaf9eaa1f9a0b4b0a1f87"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h03_s2027/result.json",
+      "sha256_lf": "548d86468bbd39bbc4672efd7aa2ca74035ab60742b89c587135dba31abdfa8d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h04_s2027/approvals/4fc638495f50.json",
+      "sha256_lf": "3e939e9c86f8ef32a7ef488f4f75a83b068e76b83146c4cfc8774c95ea2c5024"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h04_s2027/approvals/c85a9598f6c8.json",
+      "sha256_lf": "3901472f1f557b9ddfc448ede6fa3e032fc3d7f76eebf88b0b169989f13acc70"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h04_s2027/initial_packet.json",
+      "sha256_lf": "4bd4693b05abdbe754fe72b32c37ef8a4b144bf5fa9cfe463f7401bbbd0a3d58"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h04_s2027/ledger.jsonl",
+      "sha256_lf": "98902bd622221e07fd892173db63aebfde671c7ef60a2538a0d0b958c7311441"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h04_s2027/prereg.json",
+      "sha256_lf": "adce3cfeacfcea1da7edfbe7e6bed94132a5c9b19eb1d478b350e64098d9d57d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h04_s2027/result.json",
+      "sha256_lf": "306a4e56457813c6a2320ad836f8444088ee0305c15a5afd0b0af056e9636fe9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h05_s2027/approvals/397277637f37.json",
+      "sha256_lf": "bedff2bafaa81e1c15e828feb6ba2f424d9a93d9ea4334bcaeddcaf964e0f32e"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h05_s2027/approvals/d680fbbf7581.json",
+      "sha256_lf": "e7f2b1396a57bede055c8e46a54a0317d4185d4fa42c57dbc63273ad2e5eb19c"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h05_s2027/initial_packet.json",
+      "sha256_lf": "dac34831849e655da037b97c5c7e5b16fb2698f83bbd60cd3c81be0c99824a18"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h05_s2027/ledger.jsonl",
+      "sha256_lf": "85170830989168a361192e43393efd7c689822814ee46678419154763632b816"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h05_s2027/prereg.json",
+      "sha256_lf": "ee6588de023abebb39fa40e14a2a387268f9713955e1a2bf4028570a5c8629b1"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h05_s2027/result.json",
+      "sha256_lf": "f7f924cbfb38f8f00c6e864287197580c95f7ced649cdc659b4ba90095dd1bea"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h06_s2027/approvals/0ff7857669ed.json",
+      "sha256_lf": "6149d6451288e98a415e08d8f8190704e07b31c748133359028af2284e4fc32c"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h06_s2027/approvals/6c6a48672251.json",
+      "sha256_lf": "61267560d3c7bd4a3be7cff6061bafde3ace3bc691e8f64c2e8bea895699b485"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h06_s2027/initial_packet.json",
+      "sha256_lf": "0a9a9c246fdf7f645fd796fa72607eda343b0fe1d9287a9dd68dc370ca60a72a"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h06_s2027/ledger.jsonl",
+      "sha256_lf": "904860544dfbef12931af038bf7c4ba0b4e43e9b11c9aa147de018feba82f894"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h06_s2027/prereg.json",
+      "sha256_lf": "0d2cb3ef6ba06cca6a77a7ec898df07c3a3103c2a18bab5b4de4697dd04420e0"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/cases/h06_s2027/result.json",
+      "sha256_lf": "28b2fe3d32b821991395e73ee912e975c16f2e1482390845a7149f5e1494eaec"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/baseline_p0c_s2027__P_episode.json",
+      "sha256_lf": "c6e752b0a4fe7ff6ed095b16191dcb2af2e7d0987961e4956508fc1dc50036ba"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/baseline_p0c_s2027__P_noise.json",
+      "sha256_lf": "02977a6c8b290b1282e57933e44fbc5de2c7282726db3f606da10efa6a052e12"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/e01_s2027__P_episode.json",
+      "sha256_lf": "206a897fdea11f86d5c7158156d4f5b6b108af28499981ca5ce22e889b8b3c8d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/e01_s2027__P_noise.json",
+      "sha256_lf": "556c2304f6fb177a79cbf7a77d58d4278c2e196d99b00d37682418a70e83f460"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/h01_s2027__P_episode.json",
+      "sha256_lf": "cf99c3e7593332e0ab6c3d538447c1da815b034e6821c2a24d1fd1824a046ae9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/h01_s2027__P_noise.json",
+      "sha256_lf": "2982b95dcc027b8b2752a7eed8d39c7e756775977f65e61a0725e054f89bec7b"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/h02_s2027__P_episode.json",
+      "sha256_lf": "015bac5e71bbbabf3465c222f669b68fa729fc9150bb8f1bf1350030a3c09151"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/h02_s2027__P_noise.json",
+      "sha256_lf": "9a6cbbe7ccbc55718e00c04c2c22dbfb48c32f73779c4a91cf2246e3cbdb0783"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/h03_s2027__P_episode.json",
+      "sha256_lf": "904fb858958f9776a1474a2a3c7385bf0c4639f3e41d4c8ad220e8654e660b8b"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/h04_s2027__P_episode.json",
+      "sha256_lf": "37d66bb7ae111ae5222d296de56e5c43f99fbaf16535ef05131acdaa0837d752"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/h04_s2027__P_noise.json",
+      "sha256_lf": "8b3050be2294b611d7c634148f8a056f46327041785cf9e93635f1fcd02442a0"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/h05_s2027__P_episode.json",
+      "sha256_lf": "3a423c93f762316ff29c8f1ed921ca99ae3f0813d57bf3dd725d395643d066fe"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/h05_s2027__P_noise.json",
+      "sha256_lf": "6b7be7b69dd5ed7cf9b5a1170d38ebc9adcbe91b8722cdb3512b84acf270087f"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/h06_s2027__P_episode.json",
+      "sha256_lf": "fd13804e35e6d40f75289ba02c18cc58fbbe2413bd131b6595421501cc2d671a"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/execution/h06_s2027__P_noise.json",
+      "sha256_lf": "89fc7a7ff548ebb7e1321ff7266f1b471e448e9a678a5ccc3f3b4f9cf3106831"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/baseline_p0c_s2027__P_episode.json",
+      "sha256_lf": "2c9b8d5d80c31f3785ffc96ae79c34971a2d1df41f13757edd685f15790e8140"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/baseline_p0c_s2027__P_noise.json",
+      "sha256_lf": "6e3e66003df46f3cb2b3201f94ab82a5ced648439f3ad4c062cac68ea4881e63"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/e01_s2027__P_episode.json",
+      "sha256_lf": "989afc491431f4de3610504796ae720e5943b84e570d743d39230e603836be2a"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/e01_s2027__P_noise.json",
+      "sha256_lf": "30182708f59226ed447937b078370fdd7892eadf20224abe7e324154856bf9b5"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/h01_s2027__P_episode.json",
+      "sha256_lf": "71fe10d3dd236f76d0c4aa05102d857a2854cf7e3663f43cbdbe7c0a28d8a13a"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/h01_s2027__P_noise.json",
+      "sha256_lf": "37f9f02d545d0d0bd0634656f6bafc2b3d9ff9cca532b560c218414841857fae"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/h02_s2027__P_episode.json",
+      "sha256_lf": "43cf74d934060abf1a2aee47020e4a0bad43ce03f15ba612f1cf838bf057d3fd"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/h02_s2027__P_noise.json",
+      "sha256_lf": "b9852f4bda37e7a418d38ea5be3605409402f9bb44a20247c87aeec109bcc3db"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/h03_s2027__P_episode.json",
+      "sha256_lf": "b915cd0b2aa23713f11a929b23e79dd644f793fed542b8b5dad9b037ba6c6826"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/h04_s2027__P_episode.json",
+      "sha256_lf": "a3aa88ad8b3e085df8b75b204a18360097c5201c7b5c2cc3e911351fa62236ee"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/h04_s2027__P_noise.json",
+      "sha256_lf": "f8c30e253af529b4d23307da3295ba062790af4b6b752b6b8c44ef50833d109a"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/h05_s2027__P_episode.json",
+      "sha256_lf": "e9bda14593979c930abe949e45114d0422ab9a9cff7721e4411afb76e23c0469"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/h05_s2027__P_noise.json",
+      "sha256_lf": "61aebcbe2360a164f1b0210572754c0569565df57c33b742bffcaa0c5633cd98"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/h06_s2027__P_episode.json",
+      "sha256_lf": "bbeb047c8a4c480bdf8215f61a91ca436e671c1e6985916285cf7cf83aaea058"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/probes/h06_s2027__P_noise.json",
+      "sha256_lf": "febd06f77653a7a4674c71d18eb30243933da7a2a830a736a6ca79bc453351a4"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/baseline_p0c_s2027__P_episode.json",
+      "sha256_lf": "5b2fa002c9c90136ca09a1e1f0eaaf1261e4dc50a6fd912dbfc29d564fd33d01"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/baseline_p0c_s2027__P_noise.json",
+      "sha256_lf": "f9260990e4da407fd233eb6b0d4763bbf0a88d9dfdc4c27f6ee05954a310b453"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/e01_s2027__P_episode.json",
+      "sha256_lf": "87e994b7ea11c336e3db1d935b1049324ce526813ead45f635a29fed750cf9d0"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/e01_s2027__P_noise.json",
+      "sha256_lf": "cdf55ab02b8e47eb3432371bbe7e2d3eeaa05e7918578dd56c8ae4d3d8b4d10d"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/h01_s2027__P_episode.json",
+      "sha256_lf": "d8e70daae561dca3916691f4ec640bd7d808cf33a3bcd5fee2acc639c300e6c0"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/h01_s2027__P_noise.json",
+      "sha256_lf": "c0b7f30d10a4f34deff72100cd1f9852c3aa569765bcb256e3275e3f84d96113"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/h02_s2027__P_episode.json",
+      "sha256_lf": "5deef8800f7c42e3c8f36886d2c257d6b4e801f3ae14539f67521b6a5914cd01"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/h02_s2027__P_noise.json",
+      "sha256_lf": "04f6028c06c61ef213827d915ce3e5f4b023905cd41096906353f174fa6f0711"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/h03_s2027__P_episode.json",
+      "sha256_lf": "5ece4515c40ecb4c60ca9fc628599ffd01f0cacc18cd70d32022d9e7f8bf0de4"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/h04_s2027__P_episode.json",
+      "sha256_lf": "ab58556e99c3b45639f51d9059be76471d7b356023f79c7e3bf9f5f11a162c56"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/h04_s2027__P_noise.json",
+      "sha256_lf": "e44e7836a6faa34b9e915476001640449adb4e86f51a7f8d90857a1fbe6718b9"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/h05_s2027__P_episode.json",
+      "sha256_lf": "3af247473ad4f4781c79b2c756c12fbde0e77e8309e71577321d8d36955c2619"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/h05_s2027__P_noise.json",
+      "sha256_lf": "11e7453bcb3a10540d2c3edd7c05e68e8201dbf1cd8c8ccecf4e3169b4cc9e89"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/h06_s2027__P_episode.json",
+      "sha256_lf": "ed365b676d0bb4b0e00a9bd12722b701965830fc5babb5f1ba55beb39aed3e05"
+    },
+    {
+      "path": "evals/results/active_20261011_v2_fixed/resources/h06_s2027__P_noise.json",
+      "sha256_lf": "82378d3b97aff046e6650456244fccbbd510235145bb36e18415bca4d1e39de0"
+    },
+    {
+      "path": "evals/results/p1a_probes_holdout_20261009/probes/baseline_p0c_s2027.json",
+      "sha256_lf": "d66fd6fd03c2442ed8f541736dafb0e87c566f9476e428cc367ba87f20b793fb"
+    },
+    {
+      "path": "evals/results/t1_probes_20261009/probes/ref_e01_s2027.json",
+      "sha256_lf": "c8656af006913a393e479cddab534a989fd8204e665f211f36033aef441f0f84"
+    }
+  ]
+}

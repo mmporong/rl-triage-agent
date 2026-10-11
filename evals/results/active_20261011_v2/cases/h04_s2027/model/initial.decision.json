@@ -1,0 +1,28 @@
+{
+  "ranking": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "probe": "P_reward",
+  "action": "continue",
+  "reason": "Prioritizing reward mechanism due to large negative deviations in tracking rewards vs reference; P_reward is cheapest unobserved probe that can confirm/reject reward dysfunction.",
+  "claims": [
+    {
+      "id": "telemetry:case:Train/mean_reward",
+      "value": -12.153841352462768
+    },
+    {
+      "id": "telemetry:reference:Train/mean_reward",
+      "value": 33.80788917541504
+    }
+  ],
+  "expected_outcomes": {
+    "reward": "abnormal",
+    "actuator": "normal",
+    "exploration": "normal"
+  }
+}

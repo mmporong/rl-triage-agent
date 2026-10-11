@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "4bd4693b05abdbe754fe72b32c37ef8a4b144bf5fa9cfe463f7401bbbd0a3d58",
+  "messages_sha256": "d481ae844fde89a212883d471b792dd0c086f4999885c7cfe6573a5c14e205d8",
+  "started_at": "2026-10-11T03:00:54.871960+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-581c14a8-908c-4389-b95b-65aaef59b85d",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2687,
+  "output_tokens": 206,
+  "total_tokens": 2893,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Prioritizing reward mechanism due to large negative deviations in tracking rewards vs reference; P_reward is cheapest unobserved probe that can confirm/reject reward dysfunction.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Train/mean_reward\", \"value\": -12.153841352462768},\n    {\"id\": \"telemetry:reference:Train/mean_reward\", \"value\": 33.80788917541504}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T03:00:57.520809+00:00",
+  "execution_wall_s": 2.6488296559546143,
+  "cpu_s": 0.9611636099999998,
+  "exit_code": 0
+}

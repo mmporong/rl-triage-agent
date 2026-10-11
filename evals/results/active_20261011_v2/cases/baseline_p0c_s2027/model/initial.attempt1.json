@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "4066b410f98465a452a1241aac661397453e4e8392827ab8b7e06a7dde1731cc",
+  "messages_sha256": "96f2f927923bba350f8de4b05be293c4d4d89aa4e026fb83f6e5fc82d071e899",
+  "started_at": "2026-10-11T03:16:01.073322+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-4138b27e-0712-47d7-bf17-b0a7476bfffa",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2681,
+  "output_tokens": 118,
+  "total_tokens": 2799,
+  "content": "{\n  \"ranking\": [\"termination\", \"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\"],\n  \"probe\": null,\n  \"action\": \"hold\",\n  \"reason\": \"No observations yet; need data to eliminate mechanisms. Budget allows two probes.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Termination/time_out\", \"value\": 4.250000127156576}\n  ],\n  \"expected_outcomes\": {}\n}",
+  "finished_at": "2026-10-11T03:16:02.526838+00:00",
+  "execution_wall_s": 1.4535105630056933,
+  "cpu_s": 0.417636519,
+  "exit_code": 0
+}

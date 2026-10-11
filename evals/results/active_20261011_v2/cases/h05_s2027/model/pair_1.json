@@ -1,0 +1,43 @@
+{
+  "stage": 1,
+  "order": [
+    "masked",
+    "observed"
+  ],
+  "actual": {
+    "stage": "after_1",
+    "status": "semantic_invalid",
+    "packet_sha256_lf": "8f91f7f840fdac624c5b01d2a3452fcdda9c31022309e2636fa48e57349efa56",
+    "attempts": [
+      {
+        "path": "model/after_1.attempt1.json",
+        "sha256_lf": "5f9b24b5cc9bc9059bd17e91f4eac58e79507e5d30a345088fba23545bd15f16"
+      }
+    ],
+    "decision": null,
+    "decision_sha256_lf": null,
+    "error": {
+      "type": "ModelSemanticError",
+      "message": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+    }
+  },
+  "control": {
+    "stage": "without_receipt_1",
+    "status": "semantic_invalid",
+    "packet_sha256_lf": "906e294c4f72c3566943cadb09b362b829a144c2cc9e39758568a13a9d719b93",
+    "attempts": [
+      {
+        "path": "model/without_receipt_1.attempt1.json",
+        "sha256_lf": "dd386edc7add20b00c2f71184556e9faaecb19926ba2287c6cdddccbfeb7c3ad"
+      }
+    ],
+    "decision": null,
+    "decision_sha256_lf": null,
+    "error": {
+      "type": "ModelSemanticError",
+      "message": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+    }
+  },
+  "contrast": null,
+  "proof_eligible": false
+}

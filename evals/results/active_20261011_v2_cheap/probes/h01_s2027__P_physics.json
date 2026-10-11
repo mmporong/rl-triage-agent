@@ -1,0 +1,28 @@
+{
+ "name": "h01_s2027",
+ "checkpoint": {
+  "file": "model_299.pt",
+  "sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531"
+ },
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "seed": 2027,
+ "num_envs": 64,
+ "probes": {
+  "P_physics": {
+   "measurement": {
+    "mismatch_count": 2,
+    "mismatches": [
+     "static_friction 0.200 not in [0.8, 0.8]",
+     "dynamic_friction 0.150 not in [0.6, 0.6]"
+    ],
+    "static_friction_mean": 0.20000001788139343,
+    "dynamic_friction_mean": 0.15000000596046448,
+    "mass_delta_min": -0.9980754852294922,
+    "mass_delta_max": 2.939188003540039,
+    "physics_dt": 0.005
+   },
+   "exit": 0,
+   "elapsed_s": 0.0
+  }
+ }
+}

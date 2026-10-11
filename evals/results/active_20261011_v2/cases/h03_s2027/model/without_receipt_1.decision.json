@@ -1,0 +1,36 @@
+{
+  "ranking": [
+    "termination",
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics"
+  ],
+  "probe": "P_reward",
+  "action": "continue",
+  "reason": "Low mean episode length (50.0 vs reference 996.6) and low mean reward (1.257 vs reference 33.808) suggest reward mechanism issues; P_reward is unobserved and can detect reward miscalculation.",
+  "claims": [
+    {
+      "id": "telemetry:case:Train/mean_episode_length",
+      "value": 50.0
+    },
+    {
+      "id": "telemetry:reference:Train/mean_episode_length",
+      "value": 996.604667154948
+    },
+    {
+      "id": "telemetry:case:Train/mean_reward",
+      "value": 1.2573569695154825
+    },
+    {
+      "id": "telemetry:reference:Train/mean_reward",
+      "value": 33.80788917541504
+    }
+  ],
+  "expected_outcomes": {
+    "termination": "normal",
+    "reward": "abnormal",
+    "actuator": "normal"
+  }
+}

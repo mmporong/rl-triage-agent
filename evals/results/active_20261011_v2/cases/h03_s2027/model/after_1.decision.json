@@ -1,0 +1,24 @@
+{
+  "ranking": [
+    "termination",
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics"
+  ],
+  "probe": "P_reward",
+  "action": "continue",
+  "reason": "Observation from P_episode shows abnormal timeout_ratio (0.05 << 0.9), confirming termination mechanism is faulty; next, probe reward to validate reward function integrity.",
+  "claims": [
+    {
+      "id": "receipt:9b889b425c60:timeout_ratio",
+      "value": 0.05
+    }
+  ],
+  "expected_outcomes": {
+    "termination": "normal",
+    "reward": "abnormal",
+    "actuator": "normal"
+  }
+}

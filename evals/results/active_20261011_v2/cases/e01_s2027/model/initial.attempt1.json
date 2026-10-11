@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "92cae091dd6076e4c572ab560b3762736e24f68852219e28f7fb605d5dfd1ac4",
+  "messages_sha256": "cf8ed89750313f3978b99fb7bf03687dfc1d74e7344c0e631cae9fc4f6a166d8",
+  "started_at": "2026-10-11T03:19:33.925962+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-7f54ed98-3edf-42e4-b237-aa067e78b1cb",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2693,
+  "output_tokens": 312,
+  "total_tokens": 3005,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"Prioritize checking reward mechanism first as multiple reward-related telemetry values deviate from reference, suggesting possible miscalculation or misconfiguration in reward components.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.3415915767351787},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.4141562740008036},\n    {\"id\": \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.5857793996731441},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6309353162844976}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T03:19:37.235407+00:00",
+  "execution_wall_s": 3.3094386090524495,
+  "cpu_s": 0.45603114599999994,
+  "exit_code": 0
+}

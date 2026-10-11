@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "6145365079d2a7487edf714fcb22ade24e7b7d633bacf0944498fa0874d37c5e",
+  "messages_sha256": "b5cd967b0e538a334ae5a6eab33f47ee00ad534de0dcc8176a859ed5de4ebf59",
+  "started_at": "2026-10-11T03:14:33.682056+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-9e6c4ce9-a194-42a2-a304-69ecde04985b",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 3055,
+  "output_tokens": 190,
+  "total_tokens": 3245,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_episode\",\n  \"action\": \"continue\",\n  \"reason\": \"P_reward observation normal eliminates only reward; reward still most likely given large mean_reward deficit vs reference.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Train/mean_reward\", \"value\": 9.63839819431305},\n    {\"id\": \"telemetry:reference:Train/mean_reward\", \"value\": 33.80788917541504}\n  ],\n  \"expected_outcomes\": {\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\",\n    \"optimizer\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T03:14:37.910808+00:00",
+  "execution_wall_s": 1.825234542018734,
+  "cpu_s": 0.3985850839999999,
+  "exit_code": 0
+}

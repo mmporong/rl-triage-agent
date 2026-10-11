@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "ef06905559c57e86b01b92b2486b8e1a35c40da07b14c220ab3d9c94bd101872",
+  "messages_sha256": "b8f47bfbd67e30ec6ab3c4e1cd428ce39247dc7d98062a5eb89f266808c4ffb5",
+  "started_at": "2026-10-11T03:09:36.533667+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-50ec6be7-e6d8-44b5-b266-e91627f6e804",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 3049,
+  "output_tokens": 198,
+  "total_tokens": 3247,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_noise\",\n  \"action\": \"continue\",\n  \"reason\": \"Reward mechanism remains top hypothesis after normal P_reward observation; P_noise is lowest-cost unobserved probe to test exploration mechanism.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Train/mean_reward\", \"value\": -12.153841352462768},\n    {\"id\": \"telemetry:reference:Train/mean_reward\", \"value\": 33.80788917541504}\n  ],\n  \"expected_outcomes\": {\n    \"actuator\": \"normal\",\n    \"exploration\": \"abnormal\",\n    \"optimizer\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T03:09:38.226704+00:00",
+  "execution_wall_s": 1.6930285040289164,
+  "cpu_s": 0.342556246,
+  "exit_code": 0
+}

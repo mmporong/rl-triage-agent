@@ -1,0 +1,43 @@
+{
+  "stage": 1,
+  "order": [
+    "masked",
+    "observed"
+  ],
+  "actual": {
+    "stage": "after_1",
+    "status": "semantic_invalid",
+    "packet_sha256_lf": "5f7ba378a95ae4eb2e9bbb77f7e7f133220e9150a13f402a6c4eb3b9ea8709d6",
+    "attempts": [
+      {
+        "path": "model/after_1.attempt1.json",
+        "sha256_lf": "4b1e7456291a7fd2002999baedfe5ec3ee650086350b9d7127f17b65d7e9c9c1"
+      }
+    ],
+    "decision": null,
+    "decision_sha256_lf": null,
+    "error": {
+      "type": "ModelSemanticError",
+      "message": "confirm은 frozen evidence의 유일한 가설이 raw ranking 1위일 때만 가능하다"
+    }
+  },
+  "control": {
+    "stage": "without_receipt_1",
+    "status": "semantic_invalid",
+    "packet_sha256_lf": "02a33b203d9bfdb708e562168e48f99f638e10ae07f31f8e973124fe3a9451fc",
+    "attempts": [
+      {
+        "path": "model/without_receipt_1.attempt1.json",
+        "sha256_lf": "09904ebb58e1b1f525895480c7232278cd1cbfbe5b061eda8b8f7aadef7006f7"
+      }
+    ],
+    "decision": null,
+    "decision_sha256_lf": null,
+    "error": {
+      "type": "ModelSemanticError",
+      "message": "초기 판단은 confirm할 수 없다"
+    }
+  },
+  "contrast": null,
+  "proof_eligible": false
+}

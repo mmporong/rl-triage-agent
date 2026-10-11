@@ -1,0 +1,251 @@
+{
+  "schema": "active_decision_packet_v2",
+  "phase": "after_receipt",
+  "facts": {
+    "telemetry:case:Episode_Reward/action_rate_l2": -0.09160878720382849,
+    "telemetry:case:Episode_Reward/ang_vel_xy_l2": -0.10046063115199406,
+    "telemetry:case:Episode_Reward/dof_acc_l2": -0.09791482252379259,
+    "telemetry:case:Episode_Reward/dof_pos_limits": 0.0,
+    "telemetry:case:Episode_Reward/dof_torques_l2": -0.11081229299306869,
+    "telemetry:case:Episode_Reward/feet_air_time": -0.03674609437584877,
+    "telemetry:case:Episode_Reward/flat_orientation_l2": -0.02443627982089917,
+    "telemetry:case:Episode_Reward/lin_vel_z_l2": -0.04023364335298538,
+    "telemetry:case:Episode_Reward/track_ang_vel_z_exp": 0.5857793996731441,
+    "telemetry:case:Episode_Reward/track_lin_vel_xy_exp": 1.3415915767351787,
+    "telemetry:case:Episode_Termination/base_contact": 0.13263889228304226,
+    "telemetry:case:Episode_Termination/time_out": 4.2340278784434,
+    "telemetry:case:Loss/entropy": 7.904715379079183,
+    "telemetry:case:Loss/learning_rate": 0.0005755220253680211,
+    "telemetry:case:Loss/surrogate": -0.0059734629777570564,
+    "telemetry:case:Loss/value_function": 0.008082822694753607,
+    "telemetry:case:Metrics/base_velocity/error_vel_xy": 0.2529697361091773,
+    "telemetry:case:Metrics/base_velocity/error_vel_yaw": 0.4172866667310397,
+    "telemetry:case:Perf/collection time": 2.2021274089813234,
+    "telemetry:case:Perf/learning_time": 0.2170252323150635,
+    "telemetry:case:Perf/total_fps": 41092.066666666666,
+    "telemetry:case:Policy/mean_noise_std": 0.4794183572133382,
+    "telemetry:case:Train/mean_episode_length": 978.7773325602213,
+    "telemetry:case:Train/mean_reward": 28.625103251139322,
+    "telemetry:reference:Episode_Reward/action_rate_l2": -0.068107312793533,
+    "telemetry:reference:Episode_Reward/ang_vel_xy_l2": -0.0752823284516732,
+    "telemetry:reference:Episode_Reward/dof_acc_l2": -0.06536732818931341,
+    "telemetry:reference:Episode_Reward/dof_pos_limits": 0.0,
+    "telemetry:reference:Episode_Reward/dof_torques_l2": -0.09688430664439997,
+    "telemetry:reference:Episode_Reward/feet_air_time": -0.032319844048470256,
+    "telemetry:reference:Episode_Reward/flat_orientation_l2": -0.009892967840035757,
+    "telemetry:reference:Episode_Reward/lin_vel_z_l2": -0.025900993527223668,
+    "telemetry:reference:Episode_Reward/track_ang_vel_z_exp": 0.6309353162844976,
+    "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp": 1.4141562740008036,
+    "telemetry:reference:Episode_Termination/base_contact": 0.01666666710128387,
+    "telemetry:reference:Episode_Termination/time_out": 4.344444541136424,
+    "telemetry:reference:Loss/entropy": 5.296907424926758,
+    "telemetry:reference:Loss/learning_rate": 0.0005104912866954692,
+    "telemetry:reference:Loss/surrogate": -0.004912704353531202,
+    "telemetry:reference:Loss/value_function": 0.0033710057672578842,
+    "telemetry:reference:Metrics/base_velocity/error_vel_xy": 0.19597646767894428,
+    "telemetry:reference:Metrics/base_velocity/error_vel_yaw": 0.3582758332292239,
+    "telemetry:reference:Perf/collection time": 1.92130446434021,
+    "telemetry:reference:Perf/learning_time": 0.2324220856030782,
+    "telemetry:reference:Perf/total_fps": 46558.666666666664,
+    "telemetry:reference:Policy/mean_noise_std": 0.3863876312971115,
+    "telemetry:reference:Train/mean_episode_length": 996.4954986572266,
+    "telemetry:reference:Train/mean_reward": 33.41594905853272,
+    "receipt:7fd19df2d60a:track_lin_vel_xy_exp_rel_error": 1.7083833587783203e-08,
+    "receipt:7fd19df2d60a:track_ang_vel_z_exp_rel_error": 1.6689492690069586e-08
+  },
+  "task": "Unitree Go2 flat RSL-RL PPO; run may be normal, outside supported faults, or failed",
+  "mechanisms": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "probe_catalog": {
+    "P_noise": {
+      "measures": "학습 경로 act() 샘플의 실제 표준편차 / 기록된 action_std",
+      "cost_gpu_s": 60,
+      "args": {
+        "rollout_steps": 200,
+        "num_envs": 256
+      },
+      "expect": {
+        "exploration": "abnormal",
+        "reward": "normal",
+        "actuator": "normal",
+        "optimizer": "normal",
+        "physics": "normal",
+        "termination": "normal"
+      }
+    },
+    "P_value": {
+      "measures": "첫 체크포인트 대비 마지막 체크포인트의 critic 파라미터 상대 변화(critic이 학습되는가)",
+      "cost_gpu_s": 5,
+      "args": {
+        "from": "model_0.pt",
+        "to": "last"
+      },
+      "expect": {
+        "optimizer": "abnormal",
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "normal",
+        "physics": "normal",
+        "termination": "normal"
+      }
+    },
+    "P_reward": {
+      "measures": "상태에서 문서 정의대로 다시 계산한 추종 보상 항(track_lin_vel_xy_exp, track_ang_vel_z_exp)과 보상 관리자 기록값의 상대 오차",
+      "cost_gpu_s": 60,
+      "args": {
+        "rollout_steps": 200,
+        "num_envs": 256
+      },
+      "expect": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal",
+        "optimizer": "normal",
+        "physics": "normal",
+        "termination": "normal"
+      }
+    },
+    "P_torque": {
+      "measures": "낮은 관절 속도에서 토크 포화 비율",
+      "cost_gpu_s": 60,
+      "args": {
+        "rollout_steps": 500,
+        "num_envs": 256
+      },
+      "expect": {
+        "actuator": "abnormal",
+        "reward": "normal",
+        "exploration": null,
+        "optimizer": "normal",
+        "physics": "normal",
+        "termination": "normal"
+      }
+    },
+    "P_physics": {
+      "measures": "시뮬레이터에서 읽은 재질 마찰·질량·물리 dt와 설정·무작위화 범위의 불일치 수",
+      "cost_gpu_s": 30,
+      "args": {
+        "num_envs": 64
+      },
+      "expect": {
+        "physics": "abnormal",
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "normal",
+        "optimizer": "normal",
+        "termination": "normal"
+      }
+    },
+    "P_episode": {
+      "measures": "시간 제한 종료 스텝 / (episode_length_s / step_dt)",
+      "cost_gpu_s": 60,
+      "args": {
+        "rollout_steps": 1200,
+        "num_envs": 64
+      },
+      "expect": {
+        "termination": "abnormal",
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "normal",
+        "optimizer": "normal",
+        "physics": "normal"
+      }
+    }
+  },
+  "thresholds": {
+    "P_noise": [
+      "noise_ratio",
+      "absolute_log2",
+      1.0
+    ],
+    "P_value": [
+      "critic_change",
+      "ratio_below",
+      0.1
+    ],
+    "P_reward": [
+      "track_lin_vel_xy_exp_rel_error",
+      "above",
+      0.05
+    ],
+    "P_torque": [
+      "low_speed_saturation",
+      "ratio_above",
+      3.0
+    ],
+    "P_physics": [
+      "mismatch_count",
+      "above",
+      0.5
+    ],
+    "P_episode": [
+      "timeout_ratio",
+      "below",
+      0.9
+    ]
+  },
+  "budget_left": 1,
+  "execution_budget_s": 180,
+  "observed": [
+    {
+      "at": "2026-10-11T03:20:00+00:00",
+      "event": "receipt",
+      "request_id": "7fd19df2d60a",
+      "outcome": "normal",
+      "measurement": {
+        "track_lin_vel_xy_exp_rel_error": 1.7083833587783203e-08,
+        "track_ang_vel_z_exp_rel_error": 1.6689492690069586e-08
+      },
+      "gpu_s": 22.2,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "bb8dfdb21633855c254d369bf43cb1150506acf9269a5c0e763cd0ae25c832af",
+      "probe": "P_reward",
+      "checkpoint_sha256": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+      "report_sha256_lf": "f00297e6d48af614ba6b746f89fb495b9114157af1a4e5f31111df7b025d74f3"
+    }
+  ],
+  "previous_decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_reward",
+    "action": "continue",
+    "reason": "Prioritize checking reward mechanism first as multiple reward-related telemetry values deviate from reference, suggesting possible miscalculation or misconfiguration in reward components.",
+    "claims": [
+      {
+        "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+        "value": 1.3415915767351787
+      },
+      {
+        "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+        "value": 1.4141562740008036
+      },
+      {
+        "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+        "value": 0.5857793996731441
+      },
+      {
+        "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+        "value": 0.6309353162844976
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "abnormal",
+      "actuator": "normal",
+      "exploration": "normal"
+    }
+  }
+}

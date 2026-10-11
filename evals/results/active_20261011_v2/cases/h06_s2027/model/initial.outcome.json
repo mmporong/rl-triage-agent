@@ -1,0 +1,41 @@
+{
+  "stage": "initial",
+  "status": "valid",
+  "packet_sha256_lf": "0a9a9c246fdf7f645fd796fa72607eda343b0fe1d9287a9dd68dc370ca60a72a",
+  "attempts": [
+    {
+      "path": "model/initial.attempt1.json",
+      "sha256_lf": "cc6d7716b59805cca4bcd59af846c1e3a1e542280b65e1341d3086017438352d"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_reward",
+    "action": "continue",
+    "reason": "Train/mean_reward is 9.64 vs reference 33.81, indicating a significant reward deficit; P_reward is the most targeted probe to diagnose reward mechanism issues.",
+    "claims": [
+      {
+        "id": "telemetry:case:Train/mean_reward",
+        "value": 9.63839819431305
+      },
+      {
+        "id": "telemetry:reference:Train/mean_reward",
+        "value": 33.80788917541504
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "abnormal",
+      "actuator": "normal",
+      "exploration": "normal"
+    }
+  },
+  "decision_sha256_lf": "0dc40e2e5cd9f4aba9f7af7e5bcff6848a3c0c3b7a65eb6b56b40b0f0bdb9dc8",
+  "error": null
+}
