@@ -6,6 +6,7 @@ from nat.data_models.function import FunctionBaseConfig
 
 from rl_triage import single_run as S
 from rl_triage import grounded_evidence as G
+from rl_triage import grounded_active_profile as A
 from rl_triage.nat_functions import _dump, _trace
 
 
@@ -155,3 +156,36 @@ async def write_grounded_assessment_fn(config: WriteGroundedAssessmentConfig, bu
         "host가 발급한 selection_binding에 포함된 근거 ID의 값 관계만 검증해 복수 가설과 read-only 다음 측정을 "
         "저장한다. 자유 서술과 사전 예측의 "
         "과학적 타당성은 검증하지 않으며, 측정은 실행하지 않고 approval_pending으로 등록한다."))
+
+
+class GroundedActiveRegistryConfig(FunctionBaseConfig, name="triage_grounded_active_registry"):
+    pass
+
+
+@register_function(config_type=GroundedActiveRegistryConfig)
+async def grounded_active_registry_fn(config: GroundedActiveRegistryConfig, builder: Builder):
+    async def _run() -> str:
+        return _trace("grounded_active_registry", {}, _dump(A.active_registry_profile()))
+    yield FunctionInfo.from_fn(_run, description=(
+        "기존 read-only 3개와 승인된 simulation reset 검사 하나의 고정 registry를 반환한다. "
+        "도구는 승인·실행·GPU 접근을 수행하지 않는다."))
+
+
+class WriteGroundedActiveAssessmentConfig(
+        FunctionBaseConfig, name="triage_write_grounded_active_assessment"):
+    pass
+
+
+@register_function(config_type=WriteGroundedActiveAssessmentConfig)
+async def write_grounded_active_assessment_fn(
+        config: WriteGroundedActiveAssessmentConfig, builder: Builder):
+    async def _run(case_id: str, catalog_sha256: str, selection_binding: dict,
+                   hypotheses: list[dict], next_check: dict) -> str:
+        args = {"case_id": case_id, "catalog_sha256": catalog_sha256,
+                "selection_binding": selection_binding, "hypotheses": hypotheses,
+                "next_check": next_check}
+        return _trace("write_grounded_active_assessment", args, _dump(
+            A.write_grounded_active_assessment(**args)))
+    yield FunctionInfo.from_fn(_run, description=(
+        "host selection 근거에 묶인 초기 가설과 사전 prediction을 active profile로 write-once 저장한다. "
+        "승인·소비·실행·receipt 생성은 모델 도구로 제공하지 않는다."))

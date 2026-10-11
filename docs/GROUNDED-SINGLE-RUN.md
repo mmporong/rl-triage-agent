@@ -112,6 +112,33 @@ cd "$HOME/rl-triage-agent"
 
 [소스 커밋 `724aefd`의 실측 요약](../evals/results/runtime_readback_sdk_v1_20261011/result.json)과 [원시 body](../evals/results/runtime_readback_sdk_v1_20261011/body.json)는 20 control step·80 physics step·4개 env의 80표본을 보존한다. 7개 측정 모두 유효한 값 80개·미제공 0개였고, 부모 wall은 13.078초였다. 원시 재집계와 해시·프로세스 종료의 별도 검수도 통과했다. 이 실행은 모델이 검사를 선택한 사례가 아니며, 정책 건강·원인·회복은 판정하지 않았다.
 
+## 별도 승인 reset 검사와 판단 비교
+
+`configs/triage_single_run_grounded_active.yml`은 기존 네 도구와 active registry 조회를 사용한다. 기존 read-only 세 검사는 유지하고, `reset_base_com_stability`를 `approved_simulation_reset`으로 별도 등록한다. 모델 도구에는 승인·소비·SDK 실행 기능이 없다. host가 초기 모델 선택과 입력 출처를 검증하고 승인한 뒤, 실행 한도 1회를 소비해 고정 SDK 검사를 시작한다.
+
+`evals/run_grounded_active.py`는 기존 T1 metadata, telemetry, 저장된 `env.yaml`의 task·seed·환경 수·해시를 대조한다. 모델에는 중립 case alias와 등록한 telemetry·설정 근거만 제공하고 arm과 원본 경로는 host 기록에 둔다. 원래 학습과 별도 seed의 reset 계측은 서로 다른 실행이다. 원래 학습 코드의 SHA가 기록돼 있지 않은 경우 그 한계도 보존한다. 기존 학습의 원인 재현이나 정책 회복으로 표현하지 않는다.
+
+실행 source와 결과별 문구는 [grounded-active 프로토콜](../bench/protocols/grounded_active_v1.json)에 사전등록하고 커밋한다. task는 stock Go2, 검사 크기는 64 env·20 reset sequence·env별 10 reset, probe seed는 `20261012`다. 모델이 실행 미지원 검사를 선택하면 `HOLD`로 끝내며 GPU를 사용하지 않는다. 도구 오류와 잘못된 응답은 재시도하지 않는다. 승인 소비 후 중단된 실행도 다시 측정하지 않으며 기존 기록을 보존한다.
+
+유효한 parent·body·manifest와 소유 프로세스 종료를 확인한 뒤 같은 receipt에서 두 판단 packet을 만든다. 한쪽은 측정값을 받으며 다른 쪽은 값 필드만 `null`로 바꾼다. 지시·근거·사전 예측·최신 원본 receipt citation은 같고, 초기 순위·자유 서술·arm은 포함하지 않는다. case hash로 호출 순서를 고정하고, 두 호출의 요청 예산과 반환 model이 같고 provider response ID가 서로 다른지 확인한다. provider 내부 cache 상태는 확인하지 않는다.
+
+판단 변화 조건은 초기 1위가 사전 예측에서 기각되고, 실제값 호출의 새 1위는 살아남으며, 값 가림 호출은 초기 1위를 유지하는 경우다. 규칙 갱신과 초기 순위 고정 대조도 같은 초기 가설과 receipt를 사용한다. 이 대조는 재순위 단계의 비교이며, 모델 없이 처음부터 진단하는 대안의 우월성 비교가 아니다. 기존 0/8 결과와 새 개발 통합 결과를 합치지 않는다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+& .venv/Scripts/python.exe evals/run_grounded_active.py inputs --tag demo_input --case case_demo `
+  --source-metadata "$HOME/rl-triage-agent/bench/private/<원본학습>.meta.json"
+& .venv/Scripts/python.exe evals/run_grounded_active.py initial --tag demo_run --case case_demo `
+  --workspace "$HOME/rl-triage-agent/bench/private/grounded_active/inputs_demo_input" `
+  --source-metadata "$HOME/rl-triage-agent/bench/private/<원본학습>.meta.json"
+& .venv/Scripts/python.exe evals/run_grounded_active.py approve --tag demo_run --actor "개발 검사 승인"
+& .venv/Scripts/python.exe evals/run_grounded_active.py execute --tag demo_run
+```
+
+metadata는 기존 harness가 기록한 원본 파일을 사용한다. 각 실행은 새 tag로 남기고 `bench/private/grounded_active/<tag>`의 packet·model record·승인·receipt·규칙 대조·최종 결과를 덮어쓰지 않는다. 모델 호출은 기존 WSL 환경을 사용하며 키를 복사하지 않는다. actor 문자열은 승인 기록이며 사용자 신원 인증을 뜻하지 않는다.
+
+초기 NAT와 두 판단 호출의 token·CPU·wall을 stage별로 기록한다. 누락된 비용은 `null`이며 token 합계는 세 stage의 usage가 모두 확인됐을 때만 계산한다. SDK parent wall은 GPU 시간과 다르고, 독점 GPU 성능 측정이나 금액 비용은 미측정이다. 현재 이 연결은 CPU 계약 검증 범위이며 새 모델 통합·정확성·원인·정책 회복은 미검증이다.
+
 ## 참고한 연구와 코드
 
 [ReAct](https://arxiv.org/abs/2210.03629)의 행동·관측 연결과 [CRITIC](https://arxiv.org/abs/2305.11738)의 외부 도구 피드백을 참고해, 근거 조회와 코드 검증을 분리했다. [Reflexion](https://arxiv.org/abs/2303.11366)의 피드백은 문맥 갱신에 관한 방법이다. 고정 API 모델의 가중치가 자동으로 학습된다고 설명하지 않는다.

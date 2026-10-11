@@ -1,0 +1,75 @@
+{
+  "schema": "grounded_active_protocol_v1",
+  "scope": "development_model_measurement_integration_not_causal_or_policy_recovery_evaluation",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "temperature": 0,
+  "semantic_retries": 0,
+  "transport_retries": 0,
+  "nat_version": "1.9.0",
+  "post_max_output_tokens": 16384,
+  "post_reasoning_effort": "none",
+  "provider_cache_status": "not_attested",
+  "initial_llm_call_limit": 7,
+  "post_llm_calls": 2,
+  "initial_tool_limits": {
+    "grounded_active_registry": 1,
+    "grounded_evidence_group_index": 1,
+    "grounded_evidence_group_page": 2,
+    "grounded_evidence_details": 1,
+    "write_grounded_active_assessment": 1
+  },
+  "registry_id": "grounded_active_v1",
+  "executable_registry_ids": [
+    "reset_base_com_stability"
+  ],
+  "unsupported_check_result": "HOLD_without_execution",
+  "execution_limit": 1,
+  "execution_arguments": {
+    "num_envs": 64,
+    "reset_sequences": 20,
+    "resets_per_env": 10,
+    "seed": 20261012,
+    "allowed_xy_range": 0.05,
+    "tolerance": 0.0001
+  },
+  "supported_probe_task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "case_and_probe_relationship": "separate_reset_mechanism_replay_not_original_training_run",
+  "post_call_order": "case_id_canonical_sha_first_hex_digit_parity",
+  "post_masking": "measurement_values_only_original_receipt_digest_preserved",
+  "post_previous_rank_or_decision_included": false,
+  "controls": [
+    "same_receipt_preregistered_rule_update",
+    "fixed_initial_ranking"
+  ],
+  "control_scope": "ranking_update_with_same_initial_hypotheses_and_receipt_not_full_diagnosis",
+  "policy_recovery_verified": false,
+  "result_wording": {
+    "judgment_influence": "측정값을 전달한 새 모델 판단에서만 사전 가설 순위가 바뀌었다. 원인·정확성·정책 회복·우위는 미검증이다.",
+    "no_judgment_influence": "측정값에 의한 판단 변화 조건을 충족하지 못했다. 원인·정확성·정책 회복·우위는 미검증이다.",
+    "invalid": "호출·승인·실행·출처·종료·판단 계약을 충족하지 못했다. 효과로 집계하지 않는다."
+  },
+  "registry_sha256": "2db19b207ec25498173adf766f3ce2ba81b39d46df781114f54f5c97dc25b562",
+  "base_com_protocol": {
+    "path": "bench/protocols/base_com_reset_observation_v3.json",
+    "sha256": "2b55277c95562a19b418becb0ad6d81a717594f7ffe9775e015905c3fed4a634"
+  },
+  "source_files": {
+    "bench/external_faults.py": "33e0bcb7b4b5db8669bf1aaccd96f4eefe5b542fb5b564f69c1822081f18955d",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/record_evidence_media.py": "72fe5aff0682441a45e25d54918c1087683f6c28057bf9c0557cbd7698c0c270",
+    "bench/run_base_com_reset.py": "4947abc85a5123ded049b31353aaa37dccf66366ec7d4660f609744339f61c20",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "configs/triage_single_run_grounded_active.yml": "6b4628306536ef08133b7dd38027afe60fd76c873d4854589beee25a758eddcb",
+    "evals/grounded_active_model_call.py": "e0fc31f89bc4b28527b2b3d87f3c83002d360871bd251799b5712258bf43cd36",
+    "evals/run_grounded_active.py": "f113bc9d55be67f80530051c55ddc708f20f036d773f3168d30e50d7f9d7e1e9",
+    "src/rl_triage/grounded_active_profile.py": "841f8ec7a538bf4c60113268943490690d10fbaf32d7f8114b9035ca2bca0358",
+    "src/rl_triage/grounded_evidence.py": "e5f2d23057594d5fc897b384d5726fdcbcf58e24af4129385b5eeaa214674b1a",
+    "src/rl_triage/nat_functions.py": "2c27a4eb58a9f92685ccf1e0f7b5b7fbb8171a2c9334c98269141a367f919cc8",
+    "src/rl_triage/nat_single_run.py": "e808fc4631bad728caaf53ac8080b5b0b958c46d6f6554b27c5b871336c9b16b",
+    "src/rl_triage/process_diagnostics.py": "06e4479b49047817660a22e223ffcb0cf558ad7abfe4c4c63661b89da073787d",
+    "src/rl_triage/reset_com_observer.py": "255fdbe93ad535663cef984d1f1a3305f2095bd7c09a9ecadfc57b8a3af34ab5",
+    "src/rl_triage/single_run.py": "2c5946f90e1d14f3cbc5727198d606aaae5b7ce3acf166c75f09b8fae91a2d16",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af"
+  }
+}

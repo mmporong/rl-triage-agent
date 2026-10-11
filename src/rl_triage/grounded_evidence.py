@@ -541,17 +541,19 @@ def _exclusive_predictions(left: dict, right: dict) -> bool:
     )
 
 
-def _checked_next_check(next_check: object, hypothesis_ids: set[str]) -> dict:
+def _checked_next_check(next_check: object, hypothesis_ids: set[str],
+                        registry: dict | None = None) -> dict:
+    registry = READ_ONLY_CHECKS if registry is None else registry
     if not isinstance(next_check, dict) or set(next_check) != NEXT_CHECK_KEYS:
         raise ValueError("next_check는 registry_id와 hypothesis_predictions만 가져야 합니다")
     registry_id = next_check["registry_id"]
-    if not isinstance(registry_id, str) or registry_id not in READ_ONLY_CHECKS:
+    if not isinstance(registry_id, str) or registry_id not in registry:
         raise ValueError(f"등록되지 않은 read-only next check입니다: {registry_id}")
     predictions = next_check["hypothesis_predictions"]
     if not isinstance(predictions, list) or len(predictions) < 2:
         raise ValueError("next_check에는 두 가설 이상의 사전 prediction이 필요합니다")
-    registry = READ_ONLY_CHECKS[registry_id]
-    measurements = registry["measurements"]
+    check_definition = registry[registry_id]
+    measurements = check_definition["measurements"]
     seen_hypotheses, checked = set(), []
     prediction_map: dict[str, dict[str, dict]] = {}
     for item in predictions:
@@ -588,8 +590,8 @@ def _checked_next_check(next_check: object, hypothesis_ids: set[str]) -> dict:
             ) for measurement_id in measurements):
                 raise ValueError(f"가설 {left_id}와 {right_id}의 prediction이 서로 배타적이지 않습니다")
     return {
-        "registry_id": registry_id, "safety": registry["safety"],
-        "adapter_id": registry["adapter_id"],
+        "registry_id": registry_id, "safety": check_definition["safety"],
+        "adapter_id": check_definition["adapter_id"],
         "registered_not_executed": True, "execution_status": "approval_pending",
         "measurement_status": "not_observed", "assessment_status": "hold",
         "hypothesis_predictions": checked,
