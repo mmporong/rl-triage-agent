@@ -1,0 +1,24 @@
+{
+  "ranking": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "probe": "P_noise",
+  "action": "continue",
+  "reason": "Observation from P_episode shows timeout_ratio=1.0 (abnormal), implicating termination. Next highest-unranked probe is P_noise to test exploration.",
+  "claims": [
+    {
+      "id": "receipt:b6cdb93e5579:timeout_ratio",
+      "value": 1.0
+    }
+  ],
+  "expected_outcomes": {
+    "reward": "normal",
+    "actuator": "normal",
+    "exploration": "abnormal"
+  }
+}

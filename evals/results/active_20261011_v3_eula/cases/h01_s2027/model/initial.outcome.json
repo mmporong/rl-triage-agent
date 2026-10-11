@@ -1,0 +1,41 @@
+{
+  "stage": "initial",
+  "status": "valid",
+  "packet_sha256_lf": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636",
+  "attempts": [
+    {
+      "path": "model/initial.attempt1.json",
+      "sha256_lf": "a9d6d79d3d2eca684c0156d1a2b3cfe242e779a48fd0e58c984f85723544b637"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_episode",
+    "action": "continue",
+    "reason": "No observations yet; starting with highest-cost probe to maximize information gain about termination mechanism.",
+    "claims": [
+      {
+        "id": "telemetry:case:Train/mean_reward",
+        "value": 12.917047500610352
+      },
+      {
+        "id": "telemetry:reference:Train/mean_reward",
+        "value": 33.80788917541504
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "normal",
+      "actuator": "normal",
+      "exploration": "normal"
+    }
+  },
+  "decision_sha256_lf": "b3923bc7ee1335b884bd0cf7428e61861ca6be0139355d957251f7c73f10239d",
+  "error": null
+}

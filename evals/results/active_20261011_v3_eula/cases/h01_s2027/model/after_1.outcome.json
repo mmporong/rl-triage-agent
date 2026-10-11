@@ -1,0 +1,37 @@
+{
+  "stage": "after_1",
+  "status": "valid",
+  "packet_sha256_lf": "225384084f7ba653b894c8fe97219bf44800a17ee49030355ea3aa2c5f228eb9",
+  "attempts": [
+    {
+      "path": "model/after_1.attempt1.json",
+      "sha256_lf": "360a3cd2ffbf5c68bff917237397f8b3ee4c7e117c27eacfc803ff0e3bc9c49a"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_noise",
+    "action": "continue",
+    "reason": "Observation from P_episode shows timeout_ratio=1.0 (abnormal), implicating termination. Next highest-unranked probe is P_noise to test exploration.",
+    "claims": [
+      {
+        "id": "receipt:b6cdb93e5579:timeout_ratio",
+        "value": 1.0
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "normal",
+      "actuator": "normal",
+      "exploration": "abnormal"
+    }
+  },
+  "decision_sha256_lf": "a1b82077cd010758d6393e69d4b2dbd9718aa7e8f78c329d7d0a0a91b04714f8",
+  "error": null
+}

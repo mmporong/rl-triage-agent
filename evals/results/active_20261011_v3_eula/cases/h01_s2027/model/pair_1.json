@@ -1,0 +1,96 @@
+{
+  "stage": 1,
+  "order": [
+    "masked",
+    "observed"
+  ],
+  "actual": {
+    "stage": "after_1",
+    "status": "valid",
+    "packet_sha256_lf": "225384084f7ba653b894c8fe97219bf44800a17ee49030355ea3aa2c5f228eb9",
+    "attempts": [
+      {
+        "path": "model/after_1.attempt1.json",
+        "sha256_lf": "360a3cd2ffbf5c68bff917237397f8b3ee4c7e117c27eacfc803ff0e3bc9c49a"
+      }
+    ],
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_noise",
+      "action": "continue",
+      "reason": "Observation from P_episode shows timeout_ratio=1.0 (abnormal), implicating termination. Next highest-unranked probe is P_noise to test exploration.",
+      "claims": [
+        {
+          "id": "receipt:b6cdb93e5579:timeout_ratio",
+          "value": 1.0
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "abnormal"
+      }
+    },
+    "decision_sha256_lf": "a1b82077cd010758d6393e69d4b2dbd9718aa7e8f78c329d7d0a0a91b04714f8",
+    "error": null
+  },
+  "control": {
+    "stage": "without_receipt_1",
+    "status": "valid",
+    "packet_sha256_lf": "407da7fe8f64038a3b7024476433ca5c49f640f9752b8c14e54acf5b0c8173c2",
+    "attempts": [
+      {
+        "path": "model/without_receipt_1.attempt1.json",
+        "sha256_lf": "6b2e82485f0211b6d6919ac1afb1499d961f8e4ef4d6a7d91c879d0941fc5307"
+      }
+    ],
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_noise",
+      "action": "continue",
+      "reason": "No observations yet; selected lowest-cost unobserved probe to efficiently discriminate exploration mechanism.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 12.917047500610352
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "abnormal"
+      }
+    },
+    "decision_sha256_lf": "ce55293a47b8aa50e80aced88e97f6d2dcebe5cdab52a4a77827a8c88eaf6f41",
+    "error": null
+  },
+  "contrast": {
+    "leader_changed": false,
+    "ranking_changed": false,
+    "latest_receipt_cited": true,
+    "changed_leader_rejected_by_actual_observation": false,
+    "after_leader_survives_actual_observation": true,
+    "ablation_leader_diff": false,
+    "ablation_preserves_before_leader": true,
+    "safe_confirm": false
+  },
+  "proof_eligible": true
+}

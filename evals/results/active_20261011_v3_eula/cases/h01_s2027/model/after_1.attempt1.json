@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "225384084f7ba653b894c8fe97219bf44800a17ee49030355ea3aa2c5f228eb9",
+  "messages_sha256": "6d6e8dba2d1db84d9f042c9b2575011ad1844cfec193b0b61942f0207bd69f39",
+  "started_at": "2026-10-11T04:42:37.980151+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-5c1c4849-c23f-4e76-8289-f6a20d7e6e41",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 3098,
+  "output_tokens": 166,
+  "total_tokens": 3264,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_noise\",\n  \"action\": \"continue\",\n  \"reason\": \"Observation from P_episode shows timeout_ratio=1.0 (abnormal), implicating termination. Next highest-unranked probe is P_noise to test exploration.\",\n  \"claims\": [\n    {\n      \"id\": \"receipt:b6cdb93e5579:timeout_ratio\",\n      \"value\": 1.0\n    }\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"normal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"abnormal\"\n  }\n}",
+  "finished_at": "2026-10-11T04:42:43.563274+00:00",
+  "execution_wall_s": 3.064905278966762,
+  "cpu_s": 1.3859014510000003,
+  "exit_code": 0
+}

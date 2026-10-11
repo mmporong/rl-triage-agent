@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "d89a894850436780cd0ec9e3ffbf4eefb95499e8c3f1f990a9d4da1dbcc580df",
+  "messages_sha256": "2d481cbe432368ce23e44bd3b1c8cfac8700606f9deb8ddd93f1b0d6047bcd61",
+  "started_at": "2026-10-11T04:45:09.555180+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-7f44123a-945e-4ea1-997e-79c3fd3236df",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 3075,
+  "output_tokens": 121,
+  "total_tokens": 3196,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": null,\n  \"action\": \"hold\",\n  \"reason\": \"No usable observation to update evidence; deterministic state requires hold when budget_left=0 and no confirmation possible.\",\n  \"claims\": [\n    {\n      \"id\": \"receipt:b6cdb93e5579:timeout_ratio\",\n      \"value\": 1.0\n    }\n  ],\n  \"expected_outcomes\": {}\n}",
+  "finished_at": "2026-10-11T04:45:11.081444+00:00",
+  "execution_wall_s": 1.5262626999756321,
+  "cpu_s": 0.4564648629999999,
+  "exit_code": 0
+}

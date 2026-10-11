@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "b141e6402007fb8ce673b7493c1e39b469c6118976cbbc3c637f952293dae6a5",
+  "messages_sha256": "1ffb39fa2b7526ea2e0855389426208fa36a6d21f2cc39fda85e2232e0b53c7f",
+  "started_at": "2026-10-11T05:03:42.986971+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-d6f044bd-61f8-4627-bff5-a46c06e3507e",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 3182,
+  "output_tokens": 188,
+  "total_tokens": 3370,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_episode\",\n  \"action\": \"continue\",\n  \"reason\": \"Reward mechanism confirmed abnormal by P_reward; next highest uncertainty is termination via timeout.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Train/mean_reward\", \"value\": 12.570486783981323},\n    {\"id\": \"telemetry:reference:Train/mean_reward\", \"value\": 33.80788917541504}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"normal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T05:03:45.806866+00:00",
+  "execution_wall_s": 2.8198624990181997,
+  "cpu_s": 0.907554543,
+  "exit_code": 0
+}

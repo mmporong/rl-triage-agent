@@ -1,0 +1,33 @@
+{
+  "stage": "without_receipt_2",
+  "status": "valid",
+  "packet_sha256_lf": "d89a894850436780cd0ec9e3ffbf4eefb95499e8c3f1f990a9d4da1dbcc580df",
+  "attempts": [
+    {
+      "path": "model/without_receipt_2.attempt1.json",
+      "sha256_lf": "cc90c97d19f0f48fccc3946db0ebdc9793f9f766dadbe7e90bbb3e8b2232d943"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": null,
+    "action": "hold",
+    "reason": "No usable observation to update evidence; deterministic state requires hold when budget_left=0 and no confirmation possible.",
+    "claims": [
+      {
+        "id": "receipt:b6cdb93e5579:timeout_ratio",
+        "value": 1.0
+      }
+    ],
+    "expected_outcomes": {}
+  },
+  "decision_sha256_lf": "b20feeefcbc6ae1415e3bcb23f8eaf5b39b5ae669f3b219c53ed7a5b2d68e4ab",
+  "error": null
+}

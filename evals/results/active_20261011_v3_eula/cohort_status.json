@@ -1,0 +1,226 @@
+{
+  "schema": "active_cohort_status_v1",
+  "source_commit": "272e91e790523930a49047eb54eb4ed5bb62c5b3",
+  "protocol_sha256_lf": "005b1b390b57f5ad7d1a8a49ddd276767cdbba83a0a7666e20e636fca4098a30",
+  "registered_arms": 24,
+  "terminal_records": 24,
+  "comparison_accepted": false,
+  "comparison_rejection": "incomplete_execution_and_invalid_baseline_audits",
+  "measurement_dependent_judgment_change_verified": 0,
+  "private_answer_key_grading": "not_run_invalid_baseline_audits",
+  "controllers": [
+    {
+      "tag": "active_20261011_v3_eula",
+      "terminal_records": 8,
+      "completed": 0,
+      "hold": 8,
+      "successful_probe_receipts": 3,
+      "isaac_launcher_wall_s": 47.0,
+      "simulator_steps": 179200,
+      "audited_valid_cases": 8,
+      "audit_valid": true,
+      "cases": [
+        {
+          "case": "baseline_p0c_s2027",
+          "status": "hold",
+          "stop_reason": "initial_model_invalid",
+          "error_type": "ModelHarnessError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "e01_s2027",
+          "status": "hold",
+          "stop_reason": "initial_model_invalid",
+          "error_type": "ModelHarnessError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h01_s2027",
+          "status": "hold",
+          "stop_reason": "model_hold",
+          "error_type": null,
+          "successful_probe_receipts": 2
+        },
+        {
+          "case": "h02_s2027",
+          "status": "hold",
+          "stop_reason": "actual_model_invalid",
+          "error_type": "ModelSemanticError",
+          "successful_probe_receipts": 1
+        },
+        {
+          "case": "h03_s2027",
+          "status": "hold",
+          "stop_reason": "initial_model_invalid",
+          "error_type": "ModelHarnessError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h04_s2027",
+          "status": "hold",
+          "stop_reason": "initial_model_invalid",
+          "error_type": "ModelHarnessError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h05_s2027",
+          "status": "hold",
+          "stop_reason": "initial_model_invalid",
+          "error_type": "ModelHarnessError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h06_s2027",
+          "status": "hold",
+          "stop_reason": "initial_model_invalid",
+          "error_type": "ModelHarnessError",
+          "successful_probe_receipts": 0
+        }
+      ]
+    },
+    {
+      "tag": "active_20261011_v3_eula_fixed",
+      "terminal_records": 8,
+      "completed": 2,
+      "hold": 6,
+      "successful_probe_receipts": 4,
+      "isaac_launcher_wall_s": 68.6,
+      "simulator_steps": 256000,
+      "audited_valid_cases": 2,
+      "audit_valid": false,
+      "cases": [
+        {
+          "case": "baseline_p0c_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "e01_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h01_s2027",
+          "status": "completed",
+          "stop_reason": "probe_budget_or_frozen_stop",
+          "error_type": null,
+          "successful_probe_receipts": 2
+        },
+        {
+          "case": "h02_s2027",
+          "status": "completed",
+          "stop_reason": "probe_budget_or_frozen_stop",
+          "error_type": null,
+          "successful_probe_receipts": 2
+        },
+        {
+          "case": "h03_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h04_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h05_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h06_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        }
+      ]
+    },
+    {
+      "tag": "active_20261011_v3_eula_cheap",
+      "terminal_records": 8,
+      "completed": 1,
+      "hold": 7,
+      "successful_probe_receipts": 3,
+      "isaac_launcher_wall_s": 22.9,
+      "simulator_steps": 0,
+      "audited_valid_cases": 1,
+      "audit_valid": false,
+      "cases": [
+        {
+          "case": "baseline_p0c_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "e01_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h01_s2027",
+          "status": "completed",
+          "stop_reason": "probe_budget_or_frozen_stop",
+          "error_type": null,
+          "successful_probe_receipts": 2
+        },
+        {
+          "case": "h02_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h03_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 1
+        },
+        {
+          "case": "h04_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h05_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        },
+        {
+          "case": "h06_s2027",
+          "status": "hold",
+          "stop_reason": null,
+          "error_type": "BrevBackendError",
+          "successful_probe_receipts": 0
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Terminal infrastructure HOLD is not a completed diagnosis.",
+    "Source stderr was not preserved; current WSL failure does not authenticate historic worker stderr.",
+    "Previously seen seed2027 integration only; no accuracy, generalization, superiority or savings claim.",
+    "Recovery and human review time remain unmeasured."
+  ]
+}

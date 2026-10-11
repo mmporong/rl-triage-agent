@@ -1,0 +1,188 @@
+{
+  "schema": "active_diagnosis_case_v2",
+  "case": "h02_s2027",
+  "tag": "active_20261011_v3_eula",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "started_at": "2026-10-11T05:00:36.361845+00:00",
+  "protocol_sha256_lf": "005b1b390b57f5ad7d1a8a49ddd276767cdbba83a0a7666e20e636fca4098a30",
+  "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+  "human_review_s": null,
+  "approval_actor": "codex_operator_user_authorized_test",
+  "approval_identity_attested": false,
+  "controller": "model",
+  "gpu_device_busy_s": null,
+  "stop_reason": "actual_model_invalid",
+  "error_type": "ModelSemanticError",
+  "error": "post decision은 최신 receipt fact를 인용해야 한다",
+  "status": "hold",
+  "finished_at": "2026-10-11T05:03:51.918432+00:00",
+  "end_to_end_wall_s": 195.55677170003764,
+  "initial_outcome": {
+    "stage": "initial",
+    "status": "valid",
+    "packet_sha256_lf": "e2cb38745419a209220848f4a44a78a98a456d7db288e6dd874a0386489530d9",
+    "attempts": [
+      {
+        "path": "model/initial.attempt1.json",
+        "sha256_lf": "82d1a64bd011a7d39b3affcf07a07eeae828c14671ac385d992744d8dfff9a1a"
+      }
+    ],
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "No observations yet; starting with highest-cost abnormal-expectation probe to discriminate reward mechanism.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 12.570486783981323
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    },
+    "decision_sha256_lf": "84a3c10eda8b13683cf1eeab21364fb2fc375d79800e49448a1dd4a50a73a5a8",
+    "error": null
+  },
+  "decisions": [
+    {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "No observations yet; starting with highest-cost abnormal-expectation probe to discriminate reward mechanism.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 12.570486783981323
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    }
+  ],
+  "observed": [
+    {
+      "at": "2026-10-11T05:03:39+00:00",
+      "event": "receipt",
+      "request_id": "a1b19098a471",
+      "outcome": "abnormal",
+      "measurement": {
+        "track_lin_vel_xy_exp_rel_error": 0.24250214520841837,
+        "track_ang_vel_z_exp_rel_error": 1.679647165353515e-08
+      },
+      "gpu_s": 10.5,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "7ecf7868769ebafb61822b4285b821d9e84a69d41dce8e6a5b319c26a9feca22",
+      "probe": "P_reward",
+      "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+      "report_sha256_lf": "f90484887d252794a297698ad2aa5e205192c6cc209bd7bc43f4dd066bd264d5"
+    }
+  ],
+  "pairs": [
+    {
+      "stage": 1,
+      "order": [
+        "observed",
+        "masked"
+      ],
+      "actual": {
+        "stage": "after_1",
+        "status": "semantic_invalid",
+        "packet_sha256_lf": "b141e6402007fb8ce673b7493c1e39b469c6118976cbbc3c637f952293dae6a5",
+        "attempts": [
+          {
+            "path": "model/after_1.attempt1.json",
+            "sha256_lf": "73ac758bcb3097b76dd0df93e81c92e69e5ef488232b951bb219427a2ec68794"
+          }
+        ],
+        "decision": null,
+        "decision_sha256_lf": null,
+        "error": {
+          "type": "ModelSemanticError",
+          "message": "post decision은 최신 receipt fact를 인용해야 한다"
+        }
+      },
+      "control": {
+        "stage": "without_receipt_1",
+        "status": "semantic_invalid",
+        "packet_sha256_lf": "9da82ab2b3bbb0b2170ac96d205c3a560a1cc8f5448b694f17073ed3400c8e59",
+        "attempts": [
+          {
+            "path": "model/without_receipt_1.attempt1.json",
+            "sha256_lf": "e9eb9c3570742c8a2a7fda5f14fa98e2e4625dfb36edfcb291ea13394a85461c"
+          }
+        ],
+        "decision": null,
+        "decision_sha256_lf": null,
+        "error": {
+          "type": "ModelSemanticError",
+          "message": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+        }
+      },
+      "contrast": null,
+      "proof_eligible": false
+    }
+  ],
+  "contrasts": [
+    null
+  ],
+  "without_receipt": [
+    null
+  ],
+  "budget_left": 1,
+  "model_action": "continue",
+  "evidence_state": {
+    "hypotheses": [
+      "reward"
+    ],
+    "dropped": [
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "status": "confirmed"
+  },
+  "costs": {
+    "model_calls": 3,
+    "input_tokens": 9018,
+    "output_tokens": 568,
+    "model_wall_s": 8.22711877792608,
+    "model_cpu_s": 2.8938050730000002,
+    "isaac_wall_s": 10.5,
+    "human_review_s": null,
+    "gpu_device_busy_s": null,
+    "isaac_cpu_s": 16.284441204,
+    "isaac_simulator_steps": 51200
+  }
+}

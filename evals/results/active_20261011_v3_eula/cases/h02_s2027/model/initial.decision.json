@@ -1,0 +1,28 @@
+{
+  "ranking": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+  ],
+  "probe": "P_reward",
+  "action": "continue",
+  "reason": "No observations yet; starting with highest-cost abnormal-expectation probe to discriminate reward mechanism.",
+  "claims": [
+    {
+      "id": "telemetry:case:Train/mean_reward",
+      "value": 12.570486783981323
+    },
+    {
+      "id": "telemetry:reference:Train/mean_reward",
+      "value": 33.80788917541504
+    }
+  ],
+  "expected_outcomes": {
+    "reward": "abnormal",
+    "actuator": "normal",
+    "exploration": "normal"
+  }
+}

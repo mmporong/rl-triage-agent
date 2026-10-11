@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "e2cb38745419a209220848f4a44a78a98a456d7db288e6dd874a0386489530d9",
+  "messages_sha256": "d8c7f2a8c0614a6ec71cd63aa91d915582a007c720c9b387491a55ce18b477db",
+  "started_at": "2026-10-11T05:01:04.774100+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-a077b926-5ebc-4118-80ba-9bd681012fcb",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2843,
+  "output_tokens": 190,
+  "total_tokens": 3033,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"No observations yet; starting with highest-cost abnormal-expectation probe to discriminate reward mechanism.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Train/mean_reward\", \"value\": 12.570486783981323},\n    {\"id\": \"telemetry:reference:Train/mean_reward\", \"value\": 33.80788917541504}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+  "finished_at": "2026-10-11T05:01:07.729932+00:00",
+  "execution_wall_s": 2.9558245199732482,
+  "cpu_s": 1.2156916640000004,
+  "exit_code": 0
+}

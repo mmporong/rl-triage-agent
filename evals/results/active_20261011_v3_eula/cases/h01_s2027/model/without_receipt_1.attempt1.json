@@ -1,0 +1,29 @@
+{
+  "schema": "active_model_call_v1",
+  "packet_sha256": "407da7fe8f64038a3b7024476433ca5c49f640f9752b8c14e54acf5b0c8173c2",
+  "messages_sha256": "bd31d742d49b34015ed4e36131b8c7374f600a3c512b94c93942e0d0e8e608bc",
+  "started_at": "2026-10-11T04:42:31.897730+00:00",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "client_cache_used": false,
+  "saved_response_cached": false,
+  "response_id": "chatcmpl-30517005-40ee-4afc-8cde-d7d33a238bb1",
+  "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+  "finish_reason": "stop",
+  "reasoning_content": null,
+  "input_tokens": 2974,
+  "output_tokens": 199,
+  "total_tokens": 3173,
+  "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_noise\",\n  \"action\": \"continue\",\n  \"reason\": \"No observations yet; selected lowest-cost unobserved probe to efficiently discriminate exploration mechanism.\",\n  \"claims\": [\n    {\n      \"id\": \"telemetry:case:Train/mean_reward\",\n      \"value\": 12.917047500610352\n    },\n    {\n      \"id\": \"telemetry:reference:Train/mean_reward\",\n      \"value\": 33.80788917541504\n    }\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"normal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"abnormal\"\n  }\n}",
+  "finished_at": "2026-10-11T04:42:34.457640+00:00",
+  "execution_wall_s": 2.5599809900159016,
+  "cpu_s": 0.7630402839999999,
+  "exit_code": 0
+}

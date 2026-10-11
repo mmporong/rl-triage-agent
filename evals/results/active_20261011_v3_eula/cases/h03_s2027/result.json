@@ -1,0 +1,69 @@
+{
+  "schema": "active_diagnosis_case_v2",
+  "case": "h03_s2027",
+  "tag": "active_20261011_v3_eula",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "started_at": "2026-10-11T05:08:05.870891+00:00",
+  "protocol_sha256_lf": "005b1b390b57f5ad7d1a8a49ddd276767cdbba83a0a7666e20e636fca4098a30",
+  "checkpoint_sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2",
+  "human_review_s": null,
+  "approval_actor": "codex_operator_user_authorized_test",
+  "approval_identity_attested": false,
+  "controller": "model",
+  "gpu_device_busy_s": null,
+  "stop_reason": "initial_model_invalid",
+  "error_type": "ModelHarnessError",
+  "error": "비재시도 model worker 오류: ModelWorkerMissingArtifact",
+  "status": "hold",
+  "orphan_requests": [],
+  "finished_at": "2026-10-11T05:08:06.267795+00:00",
+  "end_to_end_wall_s": 0.39856970007531345,
+  "initial_outcome": {
+    "stage": "initial",
+    "status": "harness_fatal",
+    "packet_sha256_lf": "479a2f596b1236395e7e2ea231ce5b8471ea915e81eace41e283ca5639b58625",
+    "attempts": [
+      {
+        "path": "model/initial.attempt1.json",
+        "sha256_lf": "e5cda52bcaf99b00356f86f1b409038907101c85b8126cb93585a05484795ceb"
+      }
+    ],
+    "decision": null,
+    "decision_sha256_lf": null,
+    "error": {
+      "type": "ModelHarnessError",
+      "message": "비재시도 model worker 오류: ModelWorkerMissingArtifact"
+    }
+  },
+  "decisions": [],
+  "observed": [],
+  "pairs": [],
+  "contrasts": [],
+  "without_receipt": [],
+  "budget_left": 2,
+  "model_action": null,
+  "evidence_state": {
+    "hypotheses": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "dropped": [],
+    "status": "open"
+  },
+  "costs": {
+    "model_calls": 1,
+    "input_tokens": null,
+    "output_tokens": null,
+    "model_wall_s": 0.35101119987666607,
+    "model_cpu_s": null,
+    "isaac_wall_s": 0,
+    "human_review_s": null,
+    "gpu_device_busy_s": null,
+    "isaac_cpu_s": 0,
+    "isaac_simulator_steps": 0
+  }
+}

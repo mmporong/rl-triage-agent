@@ -1,0 +1,95 @@
+{
+  "schema": "active_diagnosis_case_v2",
+  "case": "h01_s2027",
+  "tag": "active_20261011_v3_eula_cheap",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "started_at": "2026-10-11T04:49:47.071231+00:00",
+  "protocol_sha256_lf": "005b1b390b57f5ad7d1a8a49ddd276767cdbba83a0a7666e20e636fca4098a30",
+  "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+  "human_review_s": null,
+  "approval_actor": "codex_operator_user_authorized_test",
+  "approval_identity_attested": false,
+  "controller": "cheapest_discrimination",
+  "gpu_device_busy_s": null,
+  "stop_reason": "probe_budget_or_frozen_stop",
+  "status": "completed",
+  "finished_at": "2026-10-11T04:54:22.685224+00:00",
+  "end_to_end_wall_s": 275.61295390012674,
+  "initial_outcome": null,
+  "decisions": [],
+  "observed": [
+    {
+      "at": "2026-10-11T04:51:59+00:00",
+      "event": "receipt",
+      "request_id": "5ff7134c7ec9",
+      "outcome": "normal",
+      "measurement": {
+        "critic_change": 1.4414801011686036,
+        "actor_change": 1.860359315911491,
+        "from": "model_0.pt"
+      },
+      "gpu_s": 8.1,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "11da662231f482b7320f8b6115485486bc2626f0c8807eb08c8c7d2772aaaf28",
+      "probe": "P_value",
+      "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+      "report_sha256_lf": "3462e03b479d1e8745e6d833b9bf3a2667c2d91fb8fa71173317d8b9c1d12996"
+    },
+    {
+      "at": "2026-10-11T04:54:22+00:00",
+      "event": "receipt",
+      "request_id": "27cba0d5e759",
+      "outcome": "abnormal",
+      "measurement": {
+        "mismatch_count": 2,
+        "mismatches": [
+          "static_friction 0.200 not in [0.8, 0.8]",
+          "dynamic_friction 0.150 not in [0.6, 0.6]"
+        ],
+        "static_friction_mean": 0.20000001788139343,
+        "dynamic_friction_mean": 0.15000000596046448,
+        "mass_delta_min": -0.9980754852294922,
+        "mass_delta_max": 2.939188003540039,
+        "physics_dt": 0.005
+      },
+      "gpu_s": 7.2,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "b1fa935bbac7d17c8b18147b57b6939d455ba6f4a930fad743f8e7de28773a0e",
+      "probe": "P_physics",
+      "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+      "report_sha256_lf": "75d5c7261de6ade8c230bea5b3f73adc2b060ef5bf46be7ccd99ba61f31d494e"
+    }
+  ],
+  "pairs": [],
+  "contrasts": [],
+  "without_receipt": [],
+  "budget_left": 0,
+  "model_action": null,
+  "evidence_state": {
+    "hypotheses": [
+      "physics"
+    ],
+    "dropped": [
+      "optimizer",
+      "reward",
+      "actuator",
+      "exploration",
+      "termination"
+    ],
+    "status": "confirmed"
+  },
+  "costs": {
+    "model_calls": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "model_wall_s": 0,
+    "model_cpu_s": 0,
+    "isaac_wall_s": 15.3,
+    "human_review_s": null,
+    "gpu_device_busy_s": null,
+    "isaac_cpu_s": 20.971373084,
+    "isaac_simulator_steps": 0
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "stage": "without_receipt_1",
+  "status": "valid",
+  "packet_sha256_lf": "407da7fe8f64038a3b7024476433ca5c49f640f9752b8c14e54acf5b0c8173c2",
+  "attempts": [
+    {
+      "path": "model/without_receipt_1.attempt1.json",
+      "sha256_lf": "6b2e82485f0211b6d6919ac1afb1499d961f8e4ef4d6a7d91c879d0941fc5307"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_noise",
+    "action": "continue",
+    "reason": "No observations yet; selected lowest-cost unobserved probe to efficiently discriminate exploration mechanism.",
+    "claims": [
+      {
+        "id": "telemetry:case:Train/mean_reward",
+        "value": 12.917047500610352
+      },
+      {
+        "id": "telemetry:reference:Train/mean_reward",
+        "value": 33.80788917541504
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "normal",
+      "actuator": "normal",
+      "exploration": "abnormal"
+    }
+  },
+  "decision_sha256_lf": "ce55293a47b8aa50e80aced88e97f6d2dcebe5cdab52a4a77827a8c88eaf6f41",
+  "error": null
+}

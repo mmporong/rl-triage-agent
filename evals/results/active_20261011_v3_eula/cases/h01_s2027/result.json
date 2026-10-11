@@ -1,0 +1,451 @@
+{
+  "schema": "active_diagnosis_case_v2",
+  "case": "h01_s2027",
+  "tag": "active_20261011_v3_eula",
+  "scope": "seen_seed2027_integration_not_accuracy_or_generalization",
+  "started_at": "2026-10-11T04:39:22.419850+00:00",
+  "protocol_sha256_lf": "005b1b390b57f5ad7d1a8a49ddd276767cdbba83a0a7666e20e636fca4098a30",
+  "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+  "human_review_s": null,
+  "approval_actor": "codex_operator_user_authorized_test",
+  "approval_identity_attested": false,
+  "controller": "model",
+  "gpu_device_busy_s": null,
+  "stop_reason": "model_hold",
+  "status": "hold",
+  "finished_at": "2026-10-11T04:45:10.553973+00:00",
+  "end_to_end_wall_s": 348.13483070000075,
+  "initial_outcome": {
+    "stage": "initial",
+    "status": "valid",
+    "packet_sha256_lf": "e48bafe7cc4e5113f45b44a5b1d45c8f46884e93f0785717940fa72ac4450636",
+    "attempts": [
+      {
+        "path": "model/initial.attempt1.json",
+        "sha256_lf": "a9d6d79d3d2eca684c0156d1a2b3cfe242e779a48fd0e58c984f85723544b637"
+      }
+    ],
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_episode",
+      "action": "continue",
+      "reason": "No observations yet; starting with highest-cost probe to maximize information gain about termination mechanism.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 12.917047500610352
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    },
+    "decision_sha256_lf": "b3923bc7ee1335b884bd0cf7428e61861ca6be0139355d957251f7c73f10239d",
+    "error": null
+  },
+  "decisions": [
+    {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_episode",
+      "action": "continue",
+      "reason": "No observations yet; starting with highest-cost probe to maximize information gain about termination mechanism.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 12.917047500610352
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    },
+    {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_noise",
+      "action": "continue",
+      "reason": "Observation from P_episode shows timeout_ratio=1.0 (abnormal), implicating termination. Next highest-unranked probe is P_noise to test exploration.",
+      "claims": [
+        {
+          "id": "receipt:b6cdb93e5579:timeout_ratio",
+          "value": 1.0
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "abnormal"
+      }
+    },
+    {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": null,
+      "action": "hold",
+      "reason": "No usable observation after P_noise; budget exhausted; cannot confirm.",
+      "claims": [
+        {
+          "id": "receipt:289b975ccb18:noise_ratio",
+          "value": 0.9995942115783691
+        }
+      ],
+      "expected_outcomes": {}
+    }
+  ],
+  "observed": [
+    {
+      "at": "2026-10-11T04:42:30+00:00",
+      "event": "receipt",
+      "request_id": "b6cdb93e5579",
+      "outcome": "normal",
+      "measurement": {
+        "timeout_count": 64,
+        "median_timeout_step": 1000.0,
+        "timeout_ratio": 1.0
+      },
+      "gpu_s": 25.1,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "fdb886b6e008e324ba6b958bcbc79efabbd07aacb97416131892c22f29df9ec5",
+      "probe": "P_episode",
+      "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+      "report_sha256_lf": "ed3b7c1b6e5e4b9fc8981a173ab2b166f898b26a2c87f2a6aeb6f8f892b177b6"
+    },
+    {
+      "at": "2026-10-11T04:44:57+00:00",
+      "event": "receipt",
+      "request_id": "289b975ccb18",
+      "outcome": "normal",
+      "measurement": {
+        "noise_ratio": 0.9995942115783691,
+        "logged_std_mean": 0.5514878034591675
+      },
+      "gpu_s": 11.4,
+      "exit_code": 0,
+      "over_budget": false,
+      "receipt_digest": "3e6ea27b6bde5e908212cbef6c7d15610fec6d6334bc03b636aace5f3bbf041a",
+      "probe": "P_noise",
+      "checkpoint_sha256": "6e6d1f916e34a10ffdcc36c95190e8f1bd2872d9e3c8961db9e220d308c9b531",
+      "report_sha256_lf": "b93e662d73bd2f9e0b952f0accb1ff14cefcc5d98af1b6a1b192ad534caddd0b"
+    }
+  ],
+  "pairs": [
+    {
+      "stage": 1,
+      "order": [
+        "masked",
+        "observed"
+      ],
+      "actual": {
+        "stage": "after_1",
+        "status": "valid",
+        "packet_sha256_lf": "225384084f7ba653b894c8fe97219bf44800a17ee49030355ea3aa2c5f228eb9",
+        "attempts": [
+          {
+            "path": "model/after_1.attempt1.json",
+            "sha256_lf": "360a3cd2ffbf5c68bff917237397f8b3ee4c7e117c27eacfc803ff0e3bc9c49a"
+          }
+        ],
+        "decision": {
+          "ranking": [
+            "reward",
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics",
+            "termination"
+          ],
+          "probe": "P_noise",
+          "action": "continue",
+          "reason": "Observation from P_episode shows timeout_ratio=1.0 (abnormal), implicating termination. Next highest-unranked probe is P_noise to test exploration.",
+          "claims": [
+            {
+              "id": "receipt:b6cdb93e5579:timeout_ratio",
+              "value": 1.0
+            }
+          ],
+          "expected_outcomes": {
+            "reward": "normal",
+            "actuator": "normal",
+            "exploration": "abnormal"
+          }
+        },
+        "decision_sha256_lf": "a1b82077cd010758d6393e69d4b2dbd9718aa7e8f78c329d7d0a0a91b04714f8",
+        "error": null
+      },
+      "control": {
+        "stage": "without_receipt_1",
+        "status": "valid",
+        "packet_sha256_lf": "407da7fe8f64038a3b7024476433ca5c49f640f9752b8c14e54acf5b0c8173c2",
+        "attempts": [
+          {
+            "path": "model/without_receipt_1.attempt1.json",
+            "sha256_lf": "6b2e82485f0211b6d6919ac1afb1499d961f8e4ef4d6a7d91c879d0941fc5307"
+          }
+        ],
+        "decision": {
+          "ranking": [
+            "reward",
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics",
+            "termination"
+          ],
+          "probe": "P_noise",
+          "action": "continue",
+          "reason": "No observations yet; selected lowest-cost unobserved probe to efficiently discriminate exploration mechanism.",
+          "claims": [
+            {
+              "id": "telemetry:case:Train/mean_reward",
+              "value": 12.917047500610352
+            },
+            {
+              "id": "telemetry:reference:Train/mean_reward",
+              "value": 33.80788917541504
+            }
+          ],
+          "expected_outcomes": {
+            "reward": "normal",
+            "actuator": "normal",
+            "exploration": "abnormal"
+          }
+        },
+        "decision_sha256_lf": "ce55293a47b8aa50e80aced88e97f6d2dcebe5cdab52a4a77827a8c88eaf6f41",
+        "error": null
+      },
+      "contrast": {
+        "leader_changed": false,
+        "ranking_changed": false,
+        "latest_receipt_cited": true,
+        "changed_leader_rejected_by_actual_observation": false,
+        "after_leader_survives_actual_observation": true,
+        "ablation_leader_diff": false,
+        "ablation_preserves_before_leader": true,
+        "safe_confirm": false
+      },
+      "proof_eligible": true
+    },
+    {
+      "stage": 2,
+      "order": [
+        "observed",
+        "masked"
+      ],
+      "actual": {
+        "stage": "after_2",
+        "status": "valid",
+        "packet_sha256_lf": "0dcdd93ca44bb6e64a6dbc7f7725db2c3f30172f008a483953321b3332ef416d",
+        "attempts": [
+          {
+            "path": "model/after_2.attempt1.json",
+            "sha256_lf": "5865c29a1e8584c289aeb321d01af55ea8f39e368045ecb0508f91394ce229e0"
+          }
+        ],
+        "decision": {
+          "ranking": [
+            "reward",
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics",
+            "termination"
+          ],
+          "probe": null,
+          "action": "hold",
+          "reason": "No usable observation after P_noise; budget exhausted; cannot confirm.",
+          "claims": [
+            {
+              "id": "receipt:289b975ccb18:noise_ratio",
+              "value": 0.9995942115783691
+            }
+          ],
+          "expected_outcomes": {}
+        },
+        "decision_sha256_lf": "92996f6e649c35a6eca210a8c88e528928ebce0941e27d94e8180048124f0e6f",
+        "error": null
+      },
+      "control": {
+        "stage": "without_receipt_2",
+        "status": "valid",
+        "packet_sha256_lf": "d89a894850436780cd0ec9e3ffbf4eefb95499e8c3f1f990a9d4da1dbcc580df",
+        "attempts": [
+          {
+            "path": "model/without_receipt_2.attempt1.json",
+            "sha256_lf": "cc90c97d19f0f48fccc3946db0ebdc9793f9f766dadbe7e90bbb3e8b2232d943"
+          }
+        ],
+        "decision": {
+          "ranking": [
+            "reward",
+            "actuator",
+            "exploration",
+            "optimizer",
+            "physics",
+            "termination"
+          ],
+          "probe": null,
+          "action": "hold",
+          "reason": "No usable observation to update evidence; deterministic state requires hold when budget_left=0 and no confirmation possible.",
+          "claims": [
+            {
+              "id": "receipt:b6cdb93e5579:timeout_ratio",
+              "value": 1.0
+            }
+          ],
+          "expected_outcomes": {}
+        },
+        "decision_sha256_lf": "b20feeefcbc6ae1415e3bcb23f8eaf5b39b5ae669f3b219c53ed7a5b2d68e4ab",
+        "error": null
+      },
+      "contrast": {
+        "leader_changed": false,
+        "ranking_changed": false,
+        "latest_receipt_cited": true,
+        "changed_leader_rejected_by_actual_observation": false,
+        "after_leader_survives_actual_observation": true,
+        "ablation_leader_diff": false,
+        "ablation_preserves_before_leader": true,
+        "safe_confirm": false
+      },
+      "proof_eligible": true
+    }
+  ],
+  "contrasts": [
+    {
+      "leader_changed": false,
+      "ranking_changed": false,
+      "latest_receipt_cited": true,
+      "changed_leader_rejected_by_actual_observation": false,
+      "after_leader_survives_actual_observation": true,
+      "ablation_leader_diff": false,
+      "ablation_preserves_before_leader": true,
+      "safe_confirm": false
+    },
+    {
+      "leader_changed": false,
+      "ranking_changed": false,
+      "latest_receipt_cited": true,
+      "changed_leader_rejected_by_actual_observation": false,
+      "after_leader_survives_actual_observation": true,
+      "ablation_leader_diff": false,
+      "ablation_preserves_before_leader": true,
+      "safe_confirm": false
+    }
+  ],
+  "without_receipt": [
+    {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_noise",
+      "action": "continue",
+      "reason": "No observations yet; selected lowest-cost unobserved probe to efficiently discriminate exploration mechanism.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 12.917047500610352
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "abnormal"
+      }
+    },
+    {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": null,
+      "action": "hold",
+      "reason": "No usable observation to update evidence; deterministic state requires hold when budget_left=0 and no confirmation possible.",
+      "claims": [
+        {
+          "id": "receipt:b6cdb93e5579:timeout_ratio",
+          "value": 1.0
+        }
+      ],
+      "expected_outcomes": {}
+    }
+  ],
+  "budget_left": 0,
+  "model_action": "hold",
+  "evidence_state": {
+    "hypotheses": [
+      "reward",
+      "actuator",
+      "optimizer",
+      "physics"
+    ],
+    "dropped": [
+      "termination",
+      "exploration"
+    ],
+    "status": "unidentifiable"
+  },
+  "costs": {
+    "model_calls": 5,
+    "input_tokens": 15201,
+    "output_tokens": 804,
+    "model_wall_s": 11.08610667497851,
+    "model_cpu_s": 4.2939444710000005,
+    "isaac_wall_s": 36.5,
+    "human_review_s": null,
+    "gpu_device_busy_s": null,
+    "isaac_cpu_s": 58.677347651999995,
+    "isaac_simulator_steps": 128000
+  }
+}

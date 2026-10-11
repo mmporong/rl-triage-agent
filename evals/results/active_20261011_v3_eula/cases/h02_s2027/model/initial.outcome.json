@@ -1,0 +1,41 @@
+{
+  "stage": "initial",
+  "status": "valid",
+  "packet_sha256_lf": "e2cb38745419a209220848f4a44a78a98a456d7db288e6dd874a0386489530d9",
+  "attempts": [
+    {
+      "path": "model/initial.attempt1.json",
+      "sha256_lf": "82d1a64bd011a7d39b3affcf07a07eeae828c14671ac385d992744d8dfff9a1a"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": "P_reward",
+    "action": "continue",
+    "reason": "No observations yet; starting with highest-cost abnormal-expectation probe to discriminate reward mechanism.",
+    "claims": [
+      {
+        "id": "telemetry:case:Train/mean_reward",
+        "value": 12.570486783981323
+      },
+      {
+        "id": "telemetry:reference:Train/mean_reward",
+        "value": 33.80788917541504
+      }
+    ],
+    "expected_outcomes": {
+      "reward": "abnormal",
+      "actuator": "normal",
+      "exploration": "normal"
+    }
+  },
+  "decision_sha256_lf": "84a3c10eda8b13683cf1eeab21364fb2fc375d79800e49448a1dd4a50a73a5a8",
+  "error": null
+}

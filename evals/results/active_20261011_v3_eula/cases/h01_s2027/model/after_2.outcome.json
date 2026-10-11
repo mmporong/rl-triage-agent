@@ -1,0 +1,33 @@
+{
+  "stage": "after_2",
+  "status": "valid",
+  "packet_sha256_lf": "0dcdd93ca44bb6e64a6dbc7f7725db2c3f30172f008a483953321b3332ef416d",
+  "attempts": [
+    {
+      "path": "model/after_2.attempt1.json",
+      "sha256_lf": "5865c29a1e8584c289aeb321d01af55ea8f39e368045ecb0508f91394ce229e0"
+    }
+  ],
+  "decision": {
+    "ranking": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "probe": null,
+    "action": "hold",
+    "reason": "No usable observation after P_noise; budget exhausted; cannot confirm.",
+    "claims": [
+      {
+        "id": "receipt:289b975ccb18:noise_ratio",
+        "value": 0.9995942115783691
+      }
+    ],
+    "expected_outcomes": {}
+  },
+  "decision_sha256_lf": "92996f6e649c35a6eca210a8c88e528928ebce0941e27d94e8180048124f0e6f",
+  "error": null
+}
