@@ -86,11 +86,12 @@ foreach ($card in $spec.cards) {
         $graphics.FillRectangle($top, 0, 0, 1280, 165)
         $graphics.FillRectangle($bottom, 0, 535, 1280, 185)
         $graphics.FillRectangle($blue, 30, 172, 590, 52)
-        $graphics.FillRectangle($red, 660, 172, 590, 52)
-        $labelFont = New-Font 28 ([System.Drawing.FontStyle]::Bold)
-        Draw-TextBlock $graphics "기존 기준 재생 · 100 iter" 50 179 550 45 $labelFont $white
-        Draw-TextBlock $graphics "결함 재생 · 100 iter" 680 179 550 45 $labelFont $white
-        $labelFont.Dispose()
+        $rightLabelBrush = if ($card.right_label) { $accentBrush } else { $red }
+        $graphics.FillRectangle($rightLabelBrush, 660, 172, 590, 52)
+        $leftLabel = if ($card.left_label) { [string]$card.left_label } else { "기존 기준 재생 · 100 iter" }
+        $rightLabel = if ($card.right_label) { [string]$card.right_label } else { "결함 재생 · 100 iter" }
+        Draw-FittedTextBlock $graphics $leftLabel 50 179 550 45 28 20 ([System.Drawing.FontStyle]::Bold) $white
+        Draw-FittedTextBlock $graphics $rightLabel 680 179 550 45 28 20 ([System.Drawing.FontStyle]::Bold) $white
     } else {
         $graphics.FillRectangle($accentBrush, 0, 0, 18, 720)
         $graphics.FillRectangle($panel, 62, 245, 1156, 375)
