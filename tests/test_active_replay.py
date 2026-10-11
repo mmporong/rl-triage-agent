@@ -260,6 +260,29 @@ def test_missing_independent_audit_keeps_claimed_success_on_hold(public_snapshot
     assert any("auditor" in reason for reason in summary["cases"][0]["reasons"])
 
 
+def test_cloud_baseline_rejects_failed_execution_audit_and_binds_preflight(public_snapshot, monkeypatch):
+    root, _ = public_snapshot
+    snap = B.Snapshot()
+    protocol_rel = B.PROTOCOL.as_posix()
+    protocol = snap.read_json(protocol_rel)
+    protocol["probe_backend"] = {"name": "brev"}
+    case = CASES[0]
+    preflight_rel = f"evals/results/run1_fixed/cases/{case}/backend_preflight_1.json"
+    write_json(root, preflight_rel, {"jobs_sha256": "tampered"})
+    calls = []
+
+    def reject(remote_root, tag, case_name, bound):
+        calls.append((remote_root, tag, case_name, bound["_audit_sha256_lf"]))
+        return {"valid": False, "errors": ["jobs SHA 불일치"]}
+
+    monkeypatch.setattr(B, "audit_execution_case", reject)
+    row = B._baseline(case, "run1_fixed", "fixed_order", protocol, protocol_rel, snap)
+    assert row["state"] == "hold"
+    assert any("jobs SHA" in reason for reason in row["reasons"])
+    assert calls == [(root, "run1_fixed", case, snap.sources[protocol_rel])]
+    assert snap.sources[preflight_rel] == sha_lf(root / preflight_rel)
+
+
 def test_missing_actual_report_overrides_claimed_audit_pass(public_snapshot):
     root, audit = public_snapshot
     (root / f"evals/results/run1/probes/{CASES[0]}__P_reward.json").unlink()

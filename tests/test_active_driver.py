@@ -742,3 +742,45 @@ def test_case_subprocess_failure_does_not_publish_command_paths(driver, tmp_path
     assert "private-user" not in json.dumps(result)
     assert result["costs"]["model_calls"] == 0
     assert (tmp_path / "evals/results/subprocess_failure/cases/h01_s2027/result.json").exists()
+
+
+def test_cleanup_unverified_preserves_case_result_and_stops_batch(driver, tmp_path, monkeypatch):
+    protocol = {"max_probes": 1, "scope": "integration", "per_case_isaac_wall_limit_s": 360,
+                "cases": [{"case": "h01_s2027", "checkpoint_sha256": "a" * 64}]}
+    path = tmp_path / "protocol.json"
+    driver.write_new(path, protocol)
+    monkeypatch.setattr(driver, "verify_protocol", lambda *args: None)
+    monkeypatch.setattr(driver, "input_packet", lambda *args: {
+        "facts": {"x": 1}, "observed": [], "budget_left": 1})
+
+    def cleanup_failed(*args, **kwargs):
+        raise driver.B.BrevCleanupUnverified("probe execution", "CleanupUnverified")
+
+    monkeypatch.setattr(driver, "approved_probe", cleanup_failed)
+    with pytest.raises(driver.B.BrevCleanupUnverified):
+        driver.run_case(path, "cleanup_failed", "h01_s2027", controller="fixed_order")
+    result_path = tmp_path / "evals/results/cleanup_failed/cases/h01_s2027/result.json"
+    result = driver.read(result_path)
+    assert result["status"] == "hold"
+    assert result["error_type"] == "BrevCleanupUnverified"
+
+    calls = []
+
+    def batch_case(*args, **kwargs):
+        calls.append((args, kwargs))
+        raise driver.B.BrevCleanupUnverified("probe execution", "CleanupUnverified")
+
+    monkeypatch.setattr(driver, "run_case", batch_case)
+    monkeypatch.setattr(driver.sys, "argv", ["run_active_diagnosis.py", "run-all",
+                                             "--protocol", str(path), "--tag", "batch"])
+    with pytest.raises(driver.B.BrevCleanupUnverified):
+        driver.main()
+    assert len(calls) == 1
+def test_secondary_commitment_requires_complete_valid_hash_pair(driver):
+    assert driver.validate_secondary_commitment(None) is None
+    value = {"contract_sha256_lf": "a" * 64, "grader_sha256_lf": "b" * 64}
+    assert driver.validate_secondary_commitment(value) == value
+    for invalid in ({"contract_sha256_lf": "a" * 64}, {**value, "grader_sha256_lf": None},
+                    {**value, "grader_sha256_lf": "bad"}, {**value, "extra": "c" * 64}):
+        with pytest.raises(ValueError):
+            driver.validate_secondary_commitment(invalid)
