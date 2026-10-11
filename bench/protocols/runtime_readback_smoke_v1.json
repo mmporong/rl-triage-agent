@@ -1,0 +1,70 @@
+{
+  "schema": "runtime_readback_smoke_protocol_v1",
+  "scope": "actual_sdk_api_integration_not_diagnosis_or_recovery",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "seed": 20261011,
+  "num_envs": 16,
+  "completed_control_steps": 20,
+  "observed_env_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "device": "cuda:0",
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "isaacsim_version": "4.5.0",
+  "checkpoint_sha256": "abc3223f0b8e4c14b93cb5db2f79b16d9cf63dff6dc142bc46822de89fb0a62f",
+  "registry_sha256": "3d1d4327fbe38ab2f1f45de126a1554bd5f8cbd5fd572a2e73bb12eb3387583f",
+  "launcher_watchdog_s": 360,
+  "semantic_retries": 0,
+  "source_files": {
+    "bench/record_evidence_media.py": "5ae82f044aaf824fe4e19abb606da383e5cd0857916132b21bd708e1f2e61d65",
+    "bench/run_runtime_readback_smoke.py": "17e812da1afe9b746190b1eefe44af55f11a0442bb640ce0d33e46c077be8c3b",
+    "bench/runtime_readback_smoke.py": "f5c43758d452059f7980a0f4624cb0722a326dd50aac734a69f006b8d6a8e0c9",
+    "src/rl_triage/grounded_evidence.py": "7d1d1ac0eaabb840f605552ee69e2de94e4dea9d33de42de94d10ad50390faa1",
+    "src/rl_triage/runtime_observers.py": "cd1d65375065cef5812eadd874990e19f00acde062524587da19b3892f0188a0",
+    "src/rl_triage/single_run.py": "2c5946f90e1d14f3cbc5727198d606aaae5b7ce3acf166c75f09b8fae91a2d16",
+    "src/rl_triage/triage_tools.py": "74bd2b4fd3afaeb7cad2939fe23168cf1de425fdb268356eb2642b4f2b340902"
+  },
+  "isaaclab_source_files": {
+    "source/isaaclab/isaaclab/app/app_launcher.py": "956159e5cba72993540157aa8f1d450b8f68262586b7043eebe7049e5aaf386b",
+    "source/isaaclab/isaaclab/assets/articulation/articulation_data.py": "9a31ef13ccccb380859291317f2b41581a3e767a99db17ce9a9ac6c58331e1ab",
+    "source/isaaclab/isaaclab/envs/manager_based_env.py": "236f808e7792dcdba31ec37dd1c9ce18be14a9531a84a4648d34341d8ce8cdec",
+    "source/isaaclab/isaaclab/envs/manager_based_rl_env.py": "d699f2d0467e851cdfb16b5c8e7aab3eb0d00ba7f1f13ba54d52f5e459743485",
+    "source/isaaclab/isaaclab/managers/reward_manager.py": "f16d868c1afcbd1e4f04f63464b182fd92f96e18bc82505876df09a1ad696b05",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor.py": "4726658626f79c527a510e30a5fd5d07f551716110b84180a8d48d917c2d674d",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor_data.py": "58c13462cd40e43bfcc4b72605a212003e24f7d002b53f4a2467a8d313ae61fa",
+    "source/isaaclab/isaaclab/utils/io/yaml.py": "d67fe8abce2efb3c2c5c533140141e35d17e4d08db57ecb701bdadfcc6d5924d",
+    "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d7f05f288fb70292d5bddf5884916f7d28d458a0c7be1fb0f22b17b90c5f4287",
+    "source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py": "df54debea2947b1905a0b25db80eb5344d0cf27b136d98378c09af8a87e34869",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "7fb099196b457ffc5e056163529ba8a195c8b2cc2b348feac6bf694b717cea5f",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "de69d2baa50bb35e8ade96e7d1ef4cc7c7a2f2e2ac1bbebbe05bbf29a19acc43",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "a0985003cf4d0e15e9427ffc69f519f9446fee6bee3803d416d32d55fea9a39e",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "e6a160450fcab16089464763866142cb136df1ecc7b6c0d1809c8325b498b6c7",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "425b63cc332d1aaec762a153b8b2a7efc4297d550eb00508c158d1799b6e8cbf"
+  },
+  "execution": {
+    "policy": "frozen_checkpoint_inference_no_training_or_fault_injection",
+    "gpu_admission": "existing_desktop_shared_recording_v1_guard_reused_for_api_integration",
+    "gpu_exclusive": false,
+    "performance_comparison": false,
+    "clocks": "SDK common_step_counter and _sim_step_counter; require +1 and +decimation per env.step",
+    "reward": "completed RSL wrapper env.step return; no reward recomputation",
+    "done_phase": "post_auto_reset; completed reward remains a transition value; contact unavailable",
+    "cleanup": "GO worker released only after owned Windows Job assignment; parent verifies empty Job"
+  },
+  "result_wording": {
+    "pass": "고정한 체크포인트와 SDK에서 COM·보상·접촉 API 및 스텝 결속을 확인했다. 진단 효과나 정책 회복의 증거는 아니다.",
+    "partial_or_unavailable": "유효한 값과 미제공 값을 함께 보존했다. 재설정 뒤 접촉 값은 원인 판단 근거로 사용하지 않는다.",
+    "invalid": "실행·출처·스텝·coverage·종료 검증 중 하나가 실패했다. 새 진단 효과나 회복 결과로 집계하지 않는다."
+  },
+  "excluded_claims": [
+    "diagnosis_accuracy",
+    "measurement_caused_ai_judgment_change",
+    "confirmed_cause",
+    "policy_health",
+    "policy_recovery",
+    "gpu_savings"
+  ]
+}

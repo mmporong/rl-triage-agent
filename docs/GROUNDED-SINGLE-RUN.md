@@ -68,6 +68,15 @@ uv run nat run --config_file configs/triage_single_run_grounded.yml \
 
 개발 입력의 CPU JSON/NAT round-trip은 무손실로 확인했다. provider의 context·token 수용과 새 모델 호출 완료는 아직 검증하지 않았다.
 
+실제 SDK 연결은 별도 `bench/protocols/runtime_readback_smoke_v1.json`으로 고정한다. stock Go2의 기존 체크포인트로 16개 env를 20 control step 실행하며, 그중 4개 env의 값을 읽는다. 새 학습이나 결함 주입은 포함하지 않는다. 결과별 문구도 실행 전에 프로토콜에 기록한다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+& .venv/Scripts/python.exe bench/run_runtime_readback_smoke.py --tag readback_sdk_v1
+```
+
+새 tag의 `bench/private/runtime_readback/<tag>`에 manifest·설정 snapshot·body와 부모 receipt가 남는다. 실행기는 커밋된 소스·SDK·체크포인트 해시를 대조하고, Windows Job에 연결한 프로세스만 추적한다. SDK clock·완료 보상·재설정 phase·coverage와 PID 생성 시각을 대조한 뒤 종료를 확인한다. 이 smoke의 판정 범위는 API 연결이며, AI 판단 변화와 정책 회복 검증은 별도로 필요하다.
+
 ## 참고한 연구와 코드
 
 [ReAct](https://arxiv.org/abs/2210.03629)의 행동·관측 연결과 [CRITIC](https://arxiv.org/abs/2305.11738)의 외부 도구 피드백을 참고해, 근거 조회와 코드 검증을 분리했다. [Reflexion](https://arxiv.org/abs/2303.11366)의 피드백은 문맥 갱신에 관한 방법이다. 고정 API 모델의 가중치가 자동으로 학습된다고 설명하지 않는다.
