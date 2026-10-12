@@ -1,0 +1,449 @@
+{
+  "schema": "training_correction_protocol_v2",
+  "revision": 4,
+  "question": "보상 결함을 고친 뒤 이어 학습·탐색 재설정 이어 학습·처음부터 재학습 중 무엇이 같은 300회 예산으로 정상 범위에 돌아오는가",
+  "scope": "seen_two_seed_reward_fault_recovery_mode_development",
+  "previous_protocol": {
+    "path": "bench/protocols/training_correction_v3.json",
+    "protocol_sha256_lf": "abff34132c0f2fbbcfde9d4dee44c4cbd97871fb370cdf7c37d8584882d761d7",
+    "tag": "reward_resume_dev3_20261013",
+    "case": "case_01",
+    "status": "no_recovery"
+  },
+  "excluded_seeds": {
+    "2027": "v3 stop rule: no semantic retry or budget increase after no_recovery"
+  },
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "seeds": [
+    2026,
+    2028
+  ],
+  "num_envs": 4096,
+  "max_iterations": 300,
+  "num_steps_per_env": 24,
+  "action_scale": 0.25,
+  "resume_iteration": 299,
+  "final_iteration_by_mode": {
+    "resume": 598,
+    "resume_std_reset": 598,
+    "restart": 299
+  },
+  "fault": "F1",
+  "fault_mechanism": "reward",
+  "correction": "restore_body_frame_reward",
+  "input_runs": {
+    "2026": {
+      "NONE": "baseline_p0c_s2026",
+      "F1": "h02_s2026"
+    },
+    "2028": {
+      "NONE": "baseline_p0c_s2028",
+      "F1": "h02_s2028"
+    }
+  },
+  "source_cohort_already_seen": true,
+  "arms": [
+    "clean_resume_reference",
+    "resume_corrected",
+    "resume_corrected_std_reset",
+    "restart_corrected"
+  ],
+  "arm_specs": {
+    "clean_resume_reference": {
+      "recovery_mode": "resume",
+      "fault": "NONE",
+      "correction": null,
+      "role": "resume_reference"
+    },
+    "resume_corrected": {
+      "recovery_mode": "resume",
+      "fault": "F1",
+      "correction": "restore_body_frame_reward",
+      "role": "treatment",
+      "primary_reference": "clean_resume_reference"
+    },
+    "resume_corrected_std_reset": {
+      "recovery_mode": "resume_std_reset",
+      "fault": "F1",
+      "correction": "restore_body_frame_reward",
+      "role": "treatment",
+      "primary_reference": "clean_resume_reference"
+    },
+    "restart_corrected": {
+      "recovery_mode": "restart",
+      "fault": "F1",
+      "correction": "restore_body_frame_reward",
+      "role": "treatment",
+      "primary_reference": "original_none",
+      "sham_counterpart": "original_fault_reused"
+    }
+  },
+  "recovery_modes": {
+    "resume": "실패 체크포인트의 정책과 optimizer 상태를 불러와 같은 seed로 300회 이어 학습한다",
+    "resume_std_reset": "resume과 같고, 체크포인트를 불러와 지문을 검증한 직후 정책 action noise std만 agent 설정의 init_noise_std로 채우고 그 파라미터의 Adam 모멘트를 지운다. 다른 파라미터의 optimizer 상태와 param_groups(lr 포함)는 재설정 시점에 바꾸지 않는다",
+    "restart": "체크포인트 없이 같은 seed로 처음부터 300회 학습한다. 환경 생성 전 결함 주입 뒤 교정 하나를 복원하는 hook 순서는 v3와 같다"
+  },
+  "std_reset": {
+    "parameter": "std",
+    "noise_std_type": "scalar",
+    "value_source": "source_agent_config.policy.init_noise_std",
+    "timing": "after_checkpoint_load_and_state_verification_before_learn",
+    "method": "in_place_fill_under_no_grad_same_parameter_object",
+    "optimizer_state": "std_adam_moments_removed_other_parameter_states_and_param_groups_preserved",
+    "readback": "before_after_values_std_mean_std_moment_presence_and_state_digests"
+  },
+  "known_confounders": [
+    "RSL-RL 2.3.3 PPO는 resume 뒤 learning_rate를 cfg 값에서 다시 시작하고 adaptive schedule이 첫 update에서 optimizer lr을 덮어쓴다(rsl_rl #221, 상류 v5.4.2 수정). 모든 resume arm에 같게 적용되어 arm 간 차이를 만들지 않는다",
+    "actor·critic·std가 Adam 하나와 전역 clip_grad_norm(max_grad_norm 1.0)을 공유한다"
+  ],
+  "std_reset_prior_note": "v3 학습 로그에서 F1 교정·대조 arm의 std는 0.38~0.55로 정상 기준 0.27~0.36보다 높았다. std가 낮아 탐색이 부족하다는 설명은 약하므로 이 arm은 예측 없는 탐색 arm이다",
+  "references": {
+    "resume_primary": "same_seed_clean_reference_resumed_same_updates",
+    "resume_secondary": "original_same_seed_clean_checkpoint",
+    "restart_primary": "original_same_seed_none_300_iterations_from_scratch_existing_fixed_eval",
+    "restart_sham_counterpart": "original_same_seed_f1_300_iterations_from_scratch_existing_fixed_eval_reused_not_rerun",
+    "reference_validity": "기준 정책은 고정 평가에서 제자리 대비 걷고(WALK_FRACTION) 낙상률 REF_FALL_MAX 이하여야 한다. 이어 학습 기준은 원본 정상 정책 대비 healthy여야 한다"
+  },
+  "restart_initial_state_binding": "seeded_fresh_initialization_recorded_original_initial_state_unrecorded",
+  "resume_scope": "policy_optimizer_warm_start_not_environment_or_rng_restore",
+  "require_resume_treatment_initial_match": true,
+  "predictions": {
+    "resume_corrected": "not_recovered",
+    "resume_corrected_std_reset": null,
+    "restart_corrected": "recovered"
+  },
+  "prediction_wording": "restart_corrected는 두 seed 모두 recovered, resume_corrected는 두 seed 모두 not_recovered, resume_corrected_std_reset은 예측 없음(탐색)",
+  "labels": [
+    "recovered",
+    "not_recovered",
+    "invalid"
+  ],
+  "label_rule": "treatment arm의 고정 평가가 등록 기준 대비 healthy면 recovered, unhealthy면 not_recovered, 기준 무효·실행 실패·미실행·그 밖은 invalid",
+  "mechanical_signal": {
+    "name": "standstill_ratio",
+    "definition": "metrics.lin_vel_rmse_mps / standstill.lin_vel_rmse_mps in the same fixed_eval_v1 report",
+    "new_measurement": false,
+    "predictions": {
+      "original_fault_min": 0.9,
+      "original_none_max": 0.3
+    },
+    "used_for_labels": false
+  },
+  "recovery_mode_rule": {
+    "rule": "fault_mechanism == reward and original_fault_standstill_ratio >= 0.9 -> restart, otherwise resume",
+    "threshold": 0.9,
+    "arms": {
+      "restart": "restart_corrected",
+      "resume": "resume_corrected"
+    },
+    "outcomes": {
+      "hit": "권고 arm recovered이고 대안 arm not_recovered",
+      "both_recovered": "권고 arm과 대안 arm 모두 recovered",
+      "recommended_not_recovered": "권고 arm이 not_recovered",
+      "undetermined": "권고 또는 대안 arm이 invalid"
+    },
+    "derived_from": "seed 2027 단일 관찰(v3 reward_resume_dev3_20261013 no_recovery)",
+    "used_for_labels": false
+  },
+  "python_runtime": {
+    "implementation": "CPython",
+    "version": [
+      3,
+      10,
+      15
+    ],
+    "cache_tag": "cpython-310"
+  },
+  "torch_version": "2.7.0+cu128",
+  "bands_source": "evals/results/p0c_fixed_eval_20261009/summary.json",
+  "allowed_agent_config_changes": {
+    "resume": [
+      "run_name",
+      "resume",
+      "load_run",
+      "load_checkpoint",
+      "max_iterations"
+    ],
+    "resume_std_reset": [
+      "run_name",
+      "resume",
+      "load_run",
+      "load_checkpoint",
+      "max_iterations"
+    ],
+    "restart": [
+      "run_name"
+    ]
+  },
+  "train_watchdog_s": 1800,
+  "eval_watchdog_s": 360,
+  "semantic_retries": 0,
+  "train_limit_per_arm": 1,
+  "eval_limit_per_arm": 1,
+  "execution_unit": "one_seed_four_arms_in_registered_order_stop_on_first_failure",
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "rsl_rl_version": "2.3.3",
+  "cpu_evidence_reuse": "v1~v3와 같은 교정 표적의 CPU 행렬을 SHA로 재결합한다",
+  "approval_actor": "claude_operator_user_authorized_test",
+  "model_calls": 0,
+  "model_selected_correction": false,
+  "result_wording": {
+    "recovered": "보상 결함을 고친 뒤 이 회복 방식으로 300회 학습한 단일 실행이 등록 기준 대비 고정 행동 허용 범위를 통과했다. 이미 본 seed의 합성 결함 개발 결과이며 일반화·AI 교정 선택·GPU 절감을 주장하지 않는다.",
+    "not_recovered": "보상 결함을 고친 뒤 이 회복 방식으로 300회 학습한 단일 실행이 등록 기준 대비 고정 행동 허용 범위를 통과하지 못했다. 이미 본 seed의 합성 결함 개발 결과이며 일반화·AI 교정 선택·GPU 절감을 주장하지 않는다.",
+    "invalid": "출처·개입·초기 상태·예산·평가·종료 계약이나 기준 정책 검증이 맞지 않거나 실행되지 않아 이 arm의 회복 판정을 보류한다.",
+    "seed_summary": "이미 본 seed의 합성 결함(F1) 개발 결과다. arm마다 단일 실행이며 일반화·AI 교정 선택·GPU 절감 주장이 아니다.",
+    "standstill_ratio": "standstill_ratio는 같은 고정 평가의 선속도 RMSE를 제자리 정책의 RMSE로 나눈 값이다. 1에 가까우면 명령 추종이 없다는 뜻이며 정지 자체를 증명하지 않는다.",
+    "recovery_mode_rule": "seed 2027 단일 관찰에서 만든 규칙이다. v4 결과로 적중 여부만 기록하며 판정 라벨에 쓰지 않는다."
+  },
+  "source_files": {
+    "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+    "bench/correction_adapter.py": "71224801d07a136c999770a6296e017165579377ee96ab98fa36fc70aa11aaa8",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/train_with_correction.py": "f93cc2a81bc8903b4b9ba3df61d7865d6bef9917a6f8dab207f38d147aa9d13b",
+    "bench/train_with_recovery_mode.py": "a9629ffbd34f4e344ecec84d4d42f3a08c575ad82250af8bf74d7282e667f29d",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/run_training_correction.py": "5473f030f357c7cec06861c1e33c8147d3960021f959956666531c9241da0bd1",
+    "evals/run_training_correction_v4.py": "2cfbe60120e904062f73697e62e6128216a92110192a2ed4667adf1d7ab8f98b",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af"
+  },
+  "sdk_sources": {
+    "scripts/reinforcement_learning/rsl_rl/cli_args.py": "9b21e1106599d91a9881a79b0564518afc6e45ac6f7fb8b957b16bba12310cb1",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_cfg.py": "a83599520494f7066c3729d279585654ca72d9eaac12d6cac2536f07147d8b1f",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/app/app_launcher.py": "5424f2b4a7b1d967fe51017dfc5d47c2ec8ff09ddd190e184fead6d51fdd0502",
+    "source/isaaclab/isaaclab/assets/articulation/articulation_data.py": "662394fea5fb5a93b333937cad71d59ad74563d6d4fee823057cb5ebb7a6bf52",
+    "source/isaaclab/isaaclab/envs/manager_based_env.py": "6ac4ec08175d2df87b489867b99239b02d106863384f73a7610fb4015ceda0d6",
+    "source/isaaclab/isaaclab/envs/manager_based_rl_env.py": "b13e9106b98666b33637841f100589731aa4e24ce3ca133ff99dddb43f11b1f2",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab/isaaclab/managers/reward_manager.py": "5d41d6a376cfb456849d861c3232694ea5662cc38970e2e2c7e5152f156d88d7",
+    "source/isaaclab/isaaclab/managers/termination_manager.py": "ea239d8fd57e87010b74b358a91b1ae8b2487e5edc621da01468456ea92fa71f",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor.py": "926158c959e5aa65651ead836965637be45517d8538cadc3a93067d76ebb6990",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor_data.py": "c02606ab91acd0eeb29cd76bdb58e7cba217c62e18d55e4cfdecefd83aba15bc",
+    "source/isaaclab/isaaclab/utils/dict.py": "68a424ae35f84fcf5157e2d0402ad95ec1475e13095ff8cbf39432673f9eda1c",
+    "source/isaaclab/isaaclab/utils/io/yaml.py": "cdd6a95aa348b6ab3af7cf07d071c5829c2ae1de8147d49ec5bc23fcd155de71",
+    "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+    "source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py": "fcc844cf95bd3145713476b41fcd0a33b87967c2f409016196b7bcb2ecc4475b",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "8b37eb407af8629f350bba43d17746f4536b6d67449935556af26314619b1162",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "59d95358724d0a4a58f9aa49d887b84d12d37d7ba5f781d615d6468ac37f243e",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+  },
+  "rsl_sources": {
+    "__init__.py": "eca880a726873a075dc37aba1c4da3bfa8f7a19df45ed963964e864b48c6bfcc",
+    "algorithms/__init__.py": "82800dabead2a8e8fbc22162d34358cbafefefa81e620bbe1fbfea4b034e1205",
+    "algorithms/distillation.py": "9aedcf086771d1bd1e7eebcc53637e7f1cb2e97b2b2f497aa087090a8fa984aa",
+    "algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "env/__init__.py": "8b187dca6d7ca5f9f4ab6a8c30218ca7bd6d3f952706526cad4ae156d1541870",
+    "env/vec_env.py": "4cea1f22d498d76d00ef34facbf0abec256ce4266f679fb9dd185641bdca778b",
+    "modules/__init__.py": "9cdaae9b6823ca0019dcb317f3ab136d588d79259db00ebf437598625dfc20df",
+    "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "modules/actor_critic_recurrent.py": "965a3f1db386fb58fe277761a4db8cda967c4a51ad5735e2bc5dccf10a49d710",
+    "modules/normalizer.py": "f52677617f729c21c7440fd52d69b7e570313836a9deb21519425b806043a311",
+    "modules/rnd.py": "957fd599dd19c579e1c83f37d253d0ff45d789f5965ed4d3b3b4c235ec00386c",
+    "modules/student_teacher.py": "f44d6cbd5ddc18f109b6a914e0c6dd80107f6b71bffef60d26cf695c7ee60d04",
+    "modules/student_teacher_recurrent.py": "6342ebeb80768d97a6bc8bd4792fd96f947b5d58c0cbab59b71cb8b735520e34",
+    "networks/__init__.py": "57d38865f66dcff63a419f962de32ef07919fdfc40ccad96ee4713e7bdaa87b8",
+    "networks/memory.py": "dada928b14ebd32a1f47c9185f2b94e2ff799faa698ca519f0d78ec92531cebe",
+    "runners/__init__.py": "661b14b7160ee0d7f30c234e9885875ac5d5686897c5bc22bdec875189d27075",
+    "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "storage/__init__.py": "599a712105321c64423e65777d709ace050ef46d5f98b8791d697b9c4e55106e",
+    "storage/rollout_storage.py": "456450bbba03f9f5818f9ec43d2f3bd5d14d2d27f4bf2308838dd580f32ffcf0",
+    "utils/__init__.py": "2e407f50cb40043ab4b9690c10465a59ed4bbba714ff18670ac0aca8552a39b6",
+    "utils/neptune_utils.py": "1a30b7fe45ce1ba9be52c07d050678a23fe57e61ae25465af4159c93af195d40",
+    "utils/utils.py": "db99cd0877488809d73332f05670e9c72da9bd0292aa554121c503e61544588e",
+    "utils/wandb_utils.py": "875443f672af864930aee511c4dfd8b362b0b066c9cd54bd57b0513dd10336b2"
+  },
+  "correction_source_contract": {
+    "runtime": {
+      "cache_tag": "cpython-310",
+      "implementation": "CPython",
+      "version": [
+        3,
+        10,
+        15
+      ]
+    },
+    "schema": "correction_source_contract_v1",
+    "targets": {
+      "restore_body_frame_reward": {
+        "clean_fingerprint": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.rewards",
+        "qualname": "track_lin_vel_xy_exp",
+        "source": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+        "source_sha256": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76"
+      },
+      "restore_configured_timeout": {
+        "clean_fingerprint": "c59f0aa40f3a4c460d9f146d17db4a56fcf9a4783ee39dd237d3ce7ea8cb6b7d",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.terminations",
+        "qualname": "time_out",
+        "source": "source/isaaclab/isaaclab/envs/mdp/terminations.py",
+        "source_sha256": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762"
+      },
+      "restore_motor_torque_speed": {
+        "clean_fingerprint": "bf37f452239be21ec97ee61654f416abcafeb995c2e60fa509156f6d0e26aad3",
+        "mode": "attribute",
+        "module": "isaaclab.actuators.actuator_pd",
+        "qualname": "DCMotor._clip_effort",
+        "source": "source/isaaclab/isaaclab/actuators/actuator_pd.py",
+        "source_sha256": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012"
+      }
+    }
+  },
+  "fixed_eval_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "resume_inputs": {
+    "summary_sha256_lf": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+    "bands": {
+      "survival_ratio_min": 0.9,
+      "err_xy_ratio_max": 1.1513,
+      "err_yaw_ratio_max": 1.1719,
+      "fall_frac_max": 0.05
+    },
+    "seeds": {
+      "2026": {
+        "runs": {
+          "NONE": {
+            "run": "baseline_p0c_s2026",
+            "hashes": {
+              "metadata": "5456ec305e4d664fcf67603dcf515c5afa33a25fb0d472d3b010114b9ae87bf6",
+              "checkpoint": "2e1e84cdbe5b348d1b6c3fe99c4894c95029ab5a18d3ebde69cd1e1743e80b2f",
+              "environment": "d153ee695f877bf4d99e0ef81358ff7886c9e9a25f117eaf7187f490150acc36",
+              "agent": "82377e2081ed4a768dcc77a1627e6344089607a39c9f1d7a4a09a2c8e87127c8",
+              "fixed_report": "33d4fb81d975520063b0ea091bf4a86f396fd0b4e7706e41c1023f67bd95c596"
+            },
+            "original_label": "healthy",
+            "original_failed": [],
+            "standstill_ratio": 0.1255953876333965
+          },
+          "F1": {
+            "run": "h02_s2026",
+            "hashes": {
+              "metadata": "e4e63dc5edf037a0327c0e85824e4edd5fd2eaa12295afca2f93a66c0a23739e",
+              "checkpoint": "d1621a289b31d883f2d0da825689ecd10998ee2d3a53c8c4cf2d887fb866546c",
+              "environment": "d153ee695f877bf4d99e0ef81358ff7886c9e9a25f117eaf7187f490150acc36",
+              "agent": "3d1feff19b87ed990508acaafb25f201d29c7e878bd527e4596adb5ae2c287fb",
+              "fixed_report": "f7e2ebab9a78488e7ef37e8a90e415b93ee095242b92163edade06a5cb283827"
+            },
+            "original_label": "unhealthy",
+            "original_failed": [
+              "err_xy_ratio",
+              "err_yaw_ratio"
+            ],
+            "standstill_ratio": 0.996710572588678
+          }
+        },
+        "original_none_walks": true,
+        "standstill_prediction_met": {
+          "original_fault": true,
+          "original_none": true
+        },
+        "rule_recommendation": "restart"
+      },
+      "2028": {
+        "runs": {
+          "NONE": {
+            "run": "baseline_p0c_s2028",
+            "hashes": {
+              "metadata": "57339286037f856392f77bf8a1e31ce941d7a997cfc68bc1217d97bedac59e99",
+              "checkpoint": "d8c67eec0b8108b7e7092a80a3efcdc0338285c06c87ca8b9f7b8c65641024e3",
+              "environment": "2ec1e42b47231ec33d5a91135b63a20912a75de6c1067faf5f3ecff018599638",
+              "agent": "4f8ed66fede1f583705762f2e844b77a794de168af991b28912bcf8d7ee94c3d",
+              "fixed_report": "3c37d160a6267a334e8df676965cd5c7a57cc83635a566c0e20bd9e792f090e0"
+            },
+            "original_label": "healthy",
+            "original_failed": [],
+            "standstill_ratio": 0.11946874740428846
+          },
+          "F1": {
+            "run": "h02_s2028",
+            "hashes": {
+              "metadata": "da7a6185ac677700df9693db812df920a7dc06e5414b88d9e6e19d2ad7427e13",
+              "checkpoint": "e63f4b0cddb0213e1f124ee6f0349218237511af0bdf0e75e12386b9d1856b2e",
+              "environment": "2ec1e42b47231ec33d5a91135b63a20912a75de6c1067faf5f3ecff018599638",
+              "agent": "22f0903edb6b4a363c68c3963c281e2cc5527110b6e38a561fdbe90fd10335c9",
+              "fixed_report": "9a70f99717c5107245787812bfb4ff6276a345c7a94635ecd3a90cb43d38e5e3"
+            },
+            "original_label": "unhealthy",
+            "original_failed": [
+              "err_xy_ratio",
+              "err_yaw_ratio"
+            ],
+            "standstill_ratio": 0.9889124553767873
+          }
+        },
+        "original_none_walks": true,
+        "standstill_prediction_met": {
+          "original_fault": true,
+          "original_none": true
+        },
+        "rule_recommendation": "restart"
+      }
+    },
+    "runtime_versions": {
+      "torch": "2.7.0+cu128",
+      "gpu": "NVIDIA GeForce RTX 3060",
+      "isaaclab": "0.41.3",
+      "isaaclab_tasks": "0.10.36",
+      "isaaclab_rl": "0.1.8",
+      "rsl-rl-lib": "2.3.3",
+      "isaacsim": null
+    },
+    "init_noise_std": 1.0
+  },
+  "rule_derivation": {
+    "seed": 2027,
+    "v3_status": "no_recovery",
+    "files": {
+      "original_fault": {
+        "path": "evals/results/p0c_fixed_eval_20261009/runs/h02_s2027.json",
+        "sha256_lf": "26181e79cfe05f7909ce4af4a3965e83fe8da523f77b7ad750c7b56a0dc03e2d"
+      },
+      "original_none": {
+        "path": "evals/results/p0c_fixed_eval_20261009/runs/baseline_p0c_s2027.json",
+        "sha256_lf": "0415e9a0803eb4fde4e404d17a2b096f8b8da579372b8f8a2ca8fdaa75548372"
+      },
+      "v3_clean_reference": {
+        "path": "evals/results/reward_resume_dev3_20261013/reports/clean_reference.json",
+        "sha256_lf": "535081bf1689f0d0ccd95ac67252938496bd592b1d8f182de8c44d25f65abe84"
+      },
+      "v3_fault_sham": {
+        "path": "evals/results/reward_resume_dev3_20261013/reports/fault_sham.json",
+        "sha256_lf": "d3a71f0d167fe3851b3113781b2f7d91a92f81f02d6f26651e0f35d901330d00"
+      },
+      "v3_corrected": {
+        "path": "evals/results/reward_resume_dev3_20261013/reports/corrected.json",
+        "sha256_lf": "3c3af3990f883fb9ecb98104426742d3d26b0067069093b153d1a6838123300e"
+      }
+    },
+    "standstill_ratio": {
+      "original_fault": 1.012161452596287,
+      "original_none": 0.12421551754515729,
+      "v3_clean_reference": 0.11206090747458496,
+      "v3_fault_sham": 1.0201467943213423,
+      "v3_corrected": 0.9866042150459337
+    }
+  },
+  "cpu_checks": {
+    "folder": "bench/private/correction_development_20261013/cpu_matrix",
+    "sha256": {
+      "f1_match.json": "a5c3eef9349d3907da54d4bff2bfd340c477bf6c92c27db1d2ac414f8c9b58fe",
+      "f1_wrong.json": "e45bc4d40b1a83c0a84a21283beb0c40c36dbbcb6d690ffc171c33b30f123aa7",
+      "f2_match.json": "cb89a9f17d42815638cc191ffa8d31a89084869fc38029770bc2a7e332557433",
+      "f2_wrong.json": "873e4a5564c83fc0af2eda7126ebabddab925422a7e70c1daaa803ffe18533aa",
+      "f6_match.json": "d2d85a36a5c3c2d57b6e904cc5b361ad1c23c5bee4d8c754a639369401cf2d13",
+      "f6_wrong.json": "96fca8bb68cdc4c4eeb2b548341f4a40a38b6d51c2194fbb009294ab478f5e49"
+    },
+    "passed_count": 6
+  }
+}
