@@ -226,7 +226,7 @@ def test_method_transition_rejects_each_partial_or_cross_signal_change(tmp_path)
         before, cross_signal, "F2", contract)
 
 
-def test_success_publish_occurs_only_after_both_closes(monkeypatch, tmp_path):
+def test_pending_body_after_environment_close_requires_parent_shutdown_confirmation(monkeypatch, tmp_path):
     events = []
 
     class Resource:
@@ -238,20 +238,20 @@ def test_success_publish_occurs_only_after_both_closes(monkeypatch, tmp_path):
 
     monkeypatch.setattr(B.S, "_publish_bytes_no_overwrite", lambda *_: events.append("publish"))
     monkeypatch.setattr(B.gc, "collect", lambda: events.append("gc"))
-    B._publish_success(tmp_path / "body.json", {"ok": True}, {"env": Resource("env")}, Resource("app"))
-    assert events == ["env", "gc", "app", "publish"]
+    B._publish_pending_shutdown(tmp_path / "body.json", {"condition": "NONE", "manifest_sha256": "a" * 64}, {"env": Resource("env")}, Resource("app"))
+    assert events == ["env", "gc", "publish", "app"]
 
     events.clear()
     with pytest.raises(RuntimeError, match="close failed"):
-        B._publish_success(tmp_path / "body.json", {"ok": True},
+        B._publish_pending_shutdown(tmp_path / "body.json", {"condition": "NONE", "manifest_sha256": "a" * 64},
                            {"env": Resource("env", RuntimeError("close failed"))}, Resource("app"))
     assert events == ["env", "gc", "app"]
 
     events.clear()
     with pytest.raises(RuntimeError, match="SystemExit: 0"):
-        B._publish_success(tmp_path / "body.json", {"ok": True}, {"env": Resource("env")},
+        B._publish_pending_shutdown(tmp_path / "body.json", {"condition": "NONE", "manifest_sha256": "a" * 64}, {"env": Resource("env")},
                            Resource("app", SystemExit(0)))
-    assert events == ["env", "gc", "app"]
+    assert events == ["env", "gc", "publish", "app"]
 
 
 @pytest.mark.parametrize("outcome", ["readback_error", "nan", "object", "success"])
@@ -312,7 +312,7 @@ def test_child_releases_sdk_and_environment_before_plugin_shutdown(monkeypatch, 
     assert target.exists() is (outcome == "success")
 
 
-@pytest.mark.parametrize("report", [{"ok": True}, {"bad": float("nan")}, {"bad": object()}])
+@pytest.mark.parametrize("report", [{"condition": "NONE", "manifest_sha256": "a" * 64}, {"bad": float("nan")}, {"bad": object()}])
 def test_success_or_serialization_failure_releases_environment_before_app_close(tmp_path, report):
     import weakref
 
@@ -330,16 +330,16 @@ def test_success_or_serialization_failure_releases_environment_before_app_close(
     holder = {"env": Env()}
     target = tmp_path / "body.json"
     if "bad" in report:
-        with pytest.raises((TypeError, ValueError)):
-            B._publish_success(target, report, holder, App())
+        with pytest.raises(RuntimeError, match="measurement handoff failed"):
+            B._publish_pending_shutdown(target, report, holder, App())
         assert not target.exists()
     else:
-        B._publish_success(target, report, holder, App())
+        B._publish_pending_shutdown(target, report, holder, App())
         assert target.exists()
     assert holder == {} and events == ["env", "app"]
 
 
-def test_app_launcher_disables_fast_shutdown():
+def test_app_launcher_uses_standard_sdk_fast_shutdown():
     observed = {}
 
     class Launcher:
@@ -348,4 +348,4 @@ def test_app_launcher_disables_fast_shutdown():
             self.app = object()
 
     assert B._launch_app(Launcher) is not None
-    assert observed == {"headless": True, "fast_shutdown": False}
+    assert observed == {"headless": True, "fast_shutdown": True}

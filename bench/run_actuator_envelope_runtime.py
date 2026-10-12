@@ -26,7 +26,7 @@ import runtime_readback_smoke as S  # noqa: E402
 from rl_triage import actuator_envelope as E  # noqa: E402
 
 
-PROTOCOL_RELATIVE = "bench/protocols/actuator_envelope_runtime_v2.json"
+PROTOCOL_RELATIVE = "bench/protocols/actuator_envelope_runtime_v3.json"
 PROTOCOL = ROOT / PROTOCOL_RELATIVE
 PRIVATE_ROOT = ROOT / "bench/private/actuator_envelope_runtime"
 PROJECT_SOURCE_FILES = {
@@ -80,7 +80,9 @@ FIXED = {
     "execution": {
         "fresh_owned_process_per_condition": True, "policy_inference": False,
         "runner_creation": False, "env_step": False, "helper_calls_per_process": 1,
-        "app_launcher": {"headless": True, "fast_shutdown": False},
+        "app_launcher": {"headless": True, "fast_shutdown": True},
+        "body_publish_phase": "after_env_close_and_gc_before_simulation_app_close",
+        "shutdown_acceptance": "parent_natural_exit_zero_fatal_free_owned_job_empty",
     },
     "interpretation": {
         "development_expectation_only": True, "cause_confirmed": False,
@@ -271,7 +273,10 @@ def protocol_location(path: Path, repo_root: Path = ROOT) -> Path:
 
 
 def validate_manifest(path: Path, *, repo_root: Path = ROOT,
-                      isaaclab_root: Path | None = None) -> dict[str, Any]:
+                      isaaclab_root: Path | None = None,
+                      completed_output: bool = False) -> dict[str, Any]:
+    if type(completed_output) is not bool:
+        raise ValueError("completed_output must be a boolean")
     path = path.resolve()
     private = (repo_root / "bench/private/actuator_envelope_runtime").resolve()
     condition_folder = path.parent
@@ -293,7 +298,10 @@ def validate_manifest(path: Path, *, repo_root: Path = ROOT,
     consumption = S._absolute_path(manifest["consumption_path"], "consumption_path")
     if output != condition_folder / "body.json" or request != tag_folder / "request.json" or consumption != tag_folder / "consumed.json":
         raise ValueError("manifest paths differ from fixed run layout")
-    if output.exists():
+    if completed_output:
+        if not output.is_file():
+            raise FileNotFoundError("completed body output is missing")
+    elif output.exists():
         raise FileExistsError("body output already exists")
     protocol_sha = S._require_sha(manifest["protocol_sha256"], "protocol_sha256")
     if S._sha256_file(protocol_path) != protocol_sha:
@@ -511,6 +519,7 @@ def verify_body(body: object, validated: Mapping[str, Any], execution: Mapping[s
 def _owned_execution_reasons(execution: Mapping[str, Any]) -> list[str]:
     if (execution.get("job_assigned_before_release") is True
             and execution.get("natural_exit") is True
+            and type(execution.get("exit_code")) is int
             and execution.get("exit_code") == 0
             and execution.get("cleanup_verified") is True
             and execution.get("timed_out") is False
@@ -530,6 +539,28 @@ def _execution_log_reasons(folder: Path) -> list[str]:
         if re.search(r"Windows fatal exception|Fatal Python error|Traceback \(most recent call last\)|\[Fatal\]", content):
             reasons.append(f"runtime_failure_in_{name}")
     return reasons
+
+
+def _shutdown_handoff_reasons(folder: Path, body: Mapping[str, Any], body_sha256: str) -> list[str]:
+    path = folder / "stdout.log"
+    if not path.is_file():
+        return ["shutdown_handoff_log_missing"]
+    lines = [line for line in path.read_text(encoding="utf-8", errors="replace").splitlines()
+             if line.startswith(B.SHUTDOWN_PREFIX)]
+    if len(lines) != 1:
+        return ["shutdown_handoff_count_mismatch"]
+    try:
+        marker = json.loads(lines[0][len(B.SHUTDOWN_PREFIX):],
+                            object_pairs_hook=S._unique_object,
+                            parse_constant=S._reject_constant)
+    except (ValueError, TypeError):
+        return ["shutdown_handoff_invalid_json"]
+    expected = {"condition": body.get("condition"), "manifest_sha256": body.get("manifest_sha256"),
+                "body_sha256": body_sha256}
+    if (not isinstance(marker, dict) or set(marker) != set(expected)
+            or any(type(marker[key]) is not str or marker[key] != value for key, value in expected.items())):
+        return ["shutdown_handoff_binding_mismatch"]
+    return []
 
 
 def execute(tag: str, isaaclab: Path, protocol_path: Path = PROTOCOL) -> dict[str, Any]:
@@ -580,6 +611,7 @@ def execute(tag: str, isaaclab: Path, protocol_path: Path = PROTOCOL) -> dict[st
                 body = S._read_json(validated["paths"]["output_path"])
                 body_sha = S._sha256_file(validated["paths"]["output_path"])
                 reasons.extend(verify_body(body, validated, execution))
+                reasons.extend(_shutdown_handoff_reasons(condition_folder, body, body_sha))
             except Exception as error:
                 reasons.append("body_validation_" + type(error).__name__)
             reasons.extend(_owned_execution_reasons(execution))

@@ -376,6 +376,40 @@ def test_runtime_log_validation_requires_both_files(tmp_path):
     assert R._execution_log_reasons(tmp_path) == ["missing_stdout.log", "missing_stderr.log"]
 
 
+@pytest.mark.parametrize("mutation", ["missing", "duplicate", "duplicate_key", "nonfinite", "json", "condition", "hash", "extra", "bool"])
+def test_shutdown_handoff_binds_exactly_one_marker_to_the_published_body(tmp_path, mutation):
+    body = {"condition": "NONE", "manifest_sha256": "a" * 64}
+    marker = {**body, "body_sha256": "b" * 64}
+    valid = R.B.SHUTDOWN_PREFIX + json.dumps(marker)
+    (tmp_path / "stdout.log").write_text("ordinary SDK log\n" + valid + "\n", encoding="utf-8")
+    assert R._shutdown_handoff_reasons(tmp_path, body, "b" * 64) == []
+    if mutation == "missing":
+        content = "ordinary SDK log\n"
+    elif mutation == "duplicate":
+        content = valid + "\n" + valid
+    elif mutation == "json":
+        content = R.B.SHUTDOWN_PREFIX + "not-json"
+    elif mutation == "duplicate_key":
+        content = R.B.SHUTDOWN_PREFIX + '{"condition":"F2",' + json.dumps(marker)[1:]
+    elif mutation == "nonfinite":
+        content = R.B.SHUTDOWN_PREFIX + '{"bad":NaN}'
+    else:
+        if mutation == "condition": marker["condition"] = "F2"
+        if mutation == "hash": marker["body_sha256"] = "c" * 64
+        if mutation == "extra": marker["extra"] = True
+        if mutation == "bool": marker["condition"] = False
+        content = R.B.SHUTDOWN_PREFIX + json.dumps(marker)
+    (tmp_path / "stdout.log").write_text(content, encoding="utf-8")
+    assert R._shutdown_handoff_reasons(tmp_path, body, "b" * 64)
+
+
+@pytest.mark.parametrize("code", [False, True, None, "0", 1, -1])
+def test_owned_execution_rejects_noninteger_or_nonzero_exit(code):
+    execution = {"job_assigned_before_release": True, "natural_exit": True, "exit_code": code,
+                 "cleanup_verified": True, "timed_out": False, "error_type": None}
+    assert R._owned_execution_reasons(execution)
+
+
 def test_manifest_rejects_request_consumption_tamper(tmp_path, monkeypatch):
     repo = tmp_path / "repo"
     tag = repo / "bench/private/actuator_envelope_runtime/tag"
@@ -410,10 +444,21 @@ def test_manifest_rejects_request_consumption_tamper(tmp_path, monkeypatch):
     validated = R.validate_manifest(manifest_path, repo_root=repo, isaaclab_root=tmp_path / "isaac")
     assert validated["request_lineage"]["request_id"] == request["request_id"]
 
+    with pytest.raises(FileNotFoundError, match="completed body output is missing"):
+        R.validate_manifest(manifest_path, repo_root=repo, isaaclab_root=tmp_path / "isaac", completed_output=True)
+    body_path = condition_folder / "body.json"
+    body_path.write_text("{}", encoding="utf-8")
+    with pytest.raises(FileExistsError, match="body output already exists"):
+        R.validate_manifest(manifest_path, repo_root=repo, isaaclab_root=tmp_path / "isaac")
+    completed = R.validate_manifest(manifest_path, repo_root=repo, isaaclab_root=tmp_path / "isaac", completed_output=True)
+    assert completed["request_lineage"] == validated["request_lineage"]
+    with pytest.raises(ValueError, match="completed_output must be a boolean"):
+        R.validate_manifest(manifest_path, repo_root=repo, isaaclab_root=tmp_path / "isaac", completed_output=1)
+
     consumption["request_sha256"] = "0" * 64
     (tag / "consumed.json").write_text(json.dumps(consumption), encoding="utf-8")
     with pytest.raises(ValueError, match="consumption"):
-        R.validate_manifest(manifest_path, repo_root=repo, isaaclab_root=tmp_path / "isaac")
+        R.validate_manifest(manifest_path, repo_root=repo, isaaclab_root=tmp_path / "isaac", completed_output=True)
 
 
 @pytest.mark.skipif(os.name != "nt", reason="Windows Job Object integration")

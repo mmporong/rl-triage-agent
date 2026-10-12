@@ -30,6 +30,7 @@ TASK = "Isaac-Velocity-Flat-Unitree-Go2-v0"
 ISAACLAB_COMMIT = "90b79bb2d44feb8d833f260f2bf37da3487180ba"
 CONDITIONS = ("NONE", "F2", "F3", "F4")
 EXPECTED_MATCH = {"NONE": True, "F2": False, "F3": True, "F4": True}
+SHUTDOWN_PREFIX = "ACTUATOR_SHUTDOWN_HANDOFF "
 TARGET_METHODS = {
     "F2": ("isaaclab.actuators.actuator_pd", "DCMotor", "_clip_effort"),
     "F3": ("rsl_rl.modules.actor_critic", "ActorCritic", "act"),
@@ -496,7 +497,7 @@ def _report_failure(error: BaseException) -> str:
     return detail
 
 
-def _close_resources(lifecycle: dict[str, Any], app: Any) -> None:
+def _close_environment(lifecycle: dict[str, Any]) -> None:
     first_error: str | None = None
     env = lifecycle.pop("env", None)
     lifecycle.clear()
@@ -512,26 +513,58 @@ def _close_resources(lifecycle: dict[str, Any], app: Any) -> None:
     except BaseException as error:
         detail = _report_failure(error)
         first_error = first_error or detail
+    if first_error is not None:
+        raise RuntimeError(f"resource cleanup failed: {first_error}")
+
+
+def _close_app(app: Any) -> None:
     if app is not None:
         try:
             app.close()
         except BaseException as error:
             detail = _report_failure(error)
-            first_error = first_error or detail
-    if first_error is not None:
-        raise RuntimeError(f"resource cleanup failed: {first_error}")
+            raise RuntimeError(f"application shutdown failed: {detail}") from None
+
+
+def _close_resources(lifecycle: dict[str, Any], app: Any) -> None:
+    failure = None
+    try:
+        _close_environment(lifecycle)
+    except BaseException as error:
+        failure = _report_failure(error)
+    _close_app(app)
+    if failure is not None:
+        raise RuntimeError(failure)
 
 
 def _launch_app(app_launcher_class: Any) -> Any:
-    return app_launcher_class(headless=True, fast_shutdown=False).app
+    return app_launcher_class(headless=True, fast_shutdown=True).app
 
 
-def _publish_success(path: Path, report: Mapping[str, Any], lifecycle: dict[str, Any], app: Any) -> None:
+def _publish_pending_shutdown(path: Path, report: Mapping[str, Any], lifecycle: dict[str, Any], app: Any) -> None:
+    failure = None
     try:
         raw = (json.dumps(report, ensure_ascii=False, indent=1, allow_nan=False) + "\n").encode("utf-8")
-    finally:
-        _close_resources(lifecycle, app)
-    S._publish_bytes_no_overwrite(path, raw)
+    except BaseException as error:
+        failure = _report_failure(error)
+    try:
+        _close_environment(lifecycle)
+    except BaseException as error:
+        detail = _report_failure(error)
+        failure = failure or detail
+    if failure is None:
+        try:
+            S._publish_bytes_no_overwrite(path, raw)
+            marker = {"condition": report["condition"],
+                      "manifest_sha256": report["manifest_sha256"],
+                      "body_sha256": S._sha256_bytes(raw)}
+            print(SHUTDOWN_PREFIX + json.dumps(marker, sort_keys=True), flush=True)
+        except BaseException as error:
+            failure = _report_failure(error)
+    # The SDK default may end the process here. Only the parent can finalize it.
+    _close_app(app)
+    if failure is not None:
+        raise RuntimeError(f"measurement handoff failed: {failure}")
 
 
 def child_main(manifest: Path) -> int:
@@ -565,7 +598,7 @@ def child_main(manifest: Path) -> int:
             "wall_elapsed_s": round(time.perf_counter() - wall, 6),
         }
         cleanup_attempted = True
-        _publish_success(validated["paths"]["output_path"], report, lifecycle, app)
+        _publish_pending_shutdown(validated["paths"]["output_path"], report, lifecycle, app)
         app = None
         print(json.dumps({"completed": True, "condition": report["condition"],
                           "measurement_status": report["measurement_status"],
