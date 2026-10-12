@@ -334,6 +334,17 @@ def test_gpu_busy_launches_zero_and_consumes_nothing(tmp_path, monkeypatch):
     assert profiles == [R.GPU_PROFILE]
 
 
+def test_protocol_location_accepts_default_and_preserves_old_protocol(tmp_path):
+    assert R.protocol_location(R.PROTOCOL) == R.PROTOCOL.resolve()
+    assert R.protocol_location(tmp_path / R.PROTOCOL_RELATIVE, tmp_path) == (tmp_path / R.PROTOCOL_RELATIVE).resolve()
+    old = tmp_path / "bench/protocols/actuator_envelope_runtime_v1.json"
+    old.parent.mkdir(parents=True)
+    old.write_bytes(b"original protocol")
+    with pytest.raises(ValueError, match="fixed repository protocol"):
+        R.protocol_location(old, tmp_path)
+    assert old.read_bytes() == b"original protocol"
+
+
 def test_request_consumption_is_global_write_once(tmp_path, monkeypatch):
     monkeypatch.setattr(R, "PRIVATE_ROOT", tmp_path / "private")
     first = tmp_path / "private/first"
@@ -345,6 +356,24 @@ def test_request_consumption_is_global_write_once(tmp_path, monkeypatch):
     with pytest.raises(FileExistsError):
         R._consume(second, {**request, "tag": "second"})
     assert not (second / "consumed.json").exists()
+
+
+@pytest.mark.parametrize("message", [
+    "Windows fatal exception: access violation",
+    "Fatal Python error: Segmentation fault",
+    "Traceback (most recent call last):",
+    "[Fatal] SDK shutdown failed",
+])
+def test_runtime_failure_log_cannot_be_hidden_by_successful_wrapper_exit(tmp_path, message):
+    (tmp_path / "stdout.log").write_text("[Warning] benign SDK warning\n", encoding="utf-8")
+    (tmp_path / "stderr.log").write_text("", encoding="utf-8")
+    assert R._execution_log_reasons(tmp_path) == []
+    (tmp_path / "stderr.log").write_text(message, encoding="utf-8")
+    assert R._execution_log_reasons(tmp_path) == ["runtime_failure_in_stderr.log"]
+
+
+def test_runtime_log_validation_requires_both_files(tmp_path):
+    assert R._execution_log_reasons(tmp_path) == ["missing_stdout.log", "missing_stderr.log"]
 
 
 def test_manifest_rejects_request_consumption_tamper(tmp_path, monkeypatch):

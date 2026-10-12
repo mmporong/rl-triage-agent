@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import argparse
+import gc
+import hashlib
 import inspect
 from importlib import metadata
 import json
@@ -397,6 +399,10 @@ def run_sdk(validated: Mapping[str, Any], lifecycle: dict[str, Any] | None = Non
     )
     if current_runtime != protocol["runtime_binding"]:
         raise ValueError("loaded SDK Python or distribution versions differ from protocol")
+    asset_path = (validated["isaaclab_root"] / GO2_SOURCE).resolve()
+    asset_sha = _asset_source_sha(asset_path)
+    if asset_sha != protocol["asset_binding"]["source_sha256"]:
+        raise ValueError("fresh Go2 asset source hash mismatch")
     before_methods = _method_snapshot()
     hidden_faults._before_env(condition)
     after_methods = _method_snapshot()
@@ -453,9 +459,6 @@ def run_sdk(validated: Mapping[str, Any], lifecycle: dict[str, Any] | None = Non
         class_file = Path(inspect.getsourcefile(cls) or "").resolve()
         if not class_file.is_file():
             raise FileNotFoundError("DCMotor class source is missing")
-        asset_path = (validated["isaaclab_root"] / GO2_SOURCE).resolve()
-        if S._sha256_file(asset_path) != protocol["asset_binding"]["source_sha256"]:
-            raise ValueError("fresh Go2 asset source hash mismatch")
         return {
             "sdk_versions": {"isaaclab_commit": ISAACLAB_COMMIT, "isaacsim": sim_version,
                              "isaacsim_raw_components": version,
@@ -467,7 +470,7 @@ def run_sdk(validated: Mapping[str, Any], lifecycle: dict[str, Any] | None = Non
                 "class_source": {"path": str(class_file), "sha256": S._sha256_file(class_file)},
                 "joint_count": len(joint_names), "joint_velocity_shape": shape,
                 "device": str(actuator._joint_vel.device), "runtime_config": runtime_config,
-                "asset_source": {"path": GO2_SOURCE, "sha256": S._sha256_file(asset_path)},
+                "asset_source": {"path": GO2_SOURCE, "sha256": asset_sha},
             },
             "state_before": before_state, "state_after": after_state, "state_restoration": restoration,
             "helper_result": helper, "measurement_validation_reasons": validation_reasons,
@@ -478,29 +481,56 @@ def run_sdk(validated: Mapping[str, Any], lifecycle: dict[str, Any] | None = Non
         raise
 
 
-def _close_resources(env: Any, app: Any) -> None:
-    first_error: BaseException | None = None
+def _asset_source_sha(path: Path) -> str:
+    """AST 설정 바인딩과 같은 LF 정규화 소스 지문을 계산한다."""
+    raw = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _report_failure(error: BaseException) -> str:
+    detail = f"{type(error).__name__}: {error}"
+    traceback.print_exception(type(error), error, error.__traceback__)
+    if error.__traceback__ is not None:
+        traceback.clear_frames(error.__traceback__)
+        error.__traceback__ = None
+    return detail
+
+
+def _close_resources(lifecycle: dict[str, Any], app: Any) -> None:
+    first_error: str | None = None
+    env = lifecycle.pop("env", None)
+    lifecycle.clear()
     if env is not None:
         try:
             env.close()
         except BaseException as error:
-            first_error = error
+            first_error = _report_failure(error)
+    env = None
+    # PhysX-backed objects must be collected before the SDK unloads its plugins.
+    try:
+        gc.collect()
+    except BaseException as error:
+        detail = _report_failure(error)
+        first_error = first_error or detail
     if app is not None:
         try:
             app.close()
         except BaseException as error:
-            first_error = first_error or error
+            detail = _report_failure(error)
+            first_error = first_error or detail
     if first_error is not None:
-        raise first_error
+        raise RuntimeError(f"resource cleanup failed: {first_error}")
 
 
 def _launch_app(app_launcher_class: Any) -> Any:
     return app_launcher_class(headless=True, fast_shutdown=False).app
 
 
-def _publish_success(path: Path, report: Mapping[str, Any], env: Any, app: Any) -> None:
-    raw = (json.dumps(report, ensure_ascii=False, indent=1, allow_nan=False) + "\n").encode("utf-8")
-    _close_resources(env, app)
+def _publish_success(path: Path, report: Mapping[str, Any], lifecycle: dict[str, Any], app: Any) -> None:
+    try:
+        raw = (json.dumps(report, ensure_ascii=False, indent=1, allow_nan=False) + "\n").encode("utf-8")
+    finally:
+        _close_resources(lifecycle, app)
     S._publish_bytes_no_overwrite(path, raw)
 
 
@@ -515,8 +545,10 @@ def child_main(manifest: Path) -> int:
     lifecycle: dict[str, Any] = {}
     started = _utc_now()
     wall = time.perf_counter()
+    failure = None
+    cleanup_attempted = False
     try:
-        result, env = run_sdk(validated, lifecycle)
+        result = run_sdk(validated, lifecycle)[0]
         report = {
             "schema": "actuator_envelope_runtime_body_v1", "completed": True, **identity,
             "scope": validated["protocol"]["scope"], "task": TASK,
@@ -532,19 +564,22 @@ def child_main(manifest: Path) -> int:
             "started_at": started, "finished_at": _utc_now(),
             "wall_elapsed_s": round(time.perf_counter() - wall, 6),
         }
-        _publish_success(validated["paths"]["output_path"], report, env, app)
-        lifecycle.clear()
+        cleanup_attempted = True
+        _publish_success(validated["paths"]["output_path"], report, lifecycle, app)
         app = None
         print(json.dumps({"completed": True, "condition": report["condition"],
                           "measurement_status": report["measurement_status"],
                           "protocol_status": report["protocol_status"]}), flush=True)
-    except BaseException:
-        traceback.print_exc()
-        try:
-            _close_resources(lifecycle.get("env"), app)
-        except BaseException:
-            traceback.print_exc()
-        raise
+    except BaseException as error:
+        failure = _report_failure(error)
+    if failure is not None:
+        # Leave the except block so its exception cannot retain failed SDK frames.
+        if not cleanup_attempted:
+            try:
+                _close_resources(lifecycle, app)
+            except BaseException as error:
+                _report_failure(error)
+        raise RuntimeError(f"actuator inspection failed: {failure}") from None
     return 0
 
 

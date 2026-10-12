@@ -26,7 +26,8 @@ import runtime_readback_smoke as S  # noqa: E402
 from rl_triage import actuator_envelope as E  # noqa: E402
 
 
-PROTOCOL = ROOT / "bench/protocols/actuator_envelope_runtime_v1.json"
+PROTOCOL_RELATIVE = "bench/protocols/actuator_envelope_runtime_v2.json"
+PROTOCOL = ROOT / PROTOCOL_RELATIVE
 PRIVATE_ROOT = ROOT / "bench/private/actuator_envelope_runtime"
 PROJECT_SOURCE_FILES = {
     "bench/actuator_envelope_runtime.py", "bench/run_actuator_envelope_runtime.py",
@@ -264,7 +265,7 @@ def validate_protocol(protocol: dict, *, repo_root: Path, isaaclab_root: Path) -
 
 def protocol_location(path: Path, repo_root: Path = ROOT) -> Path:
     resolved = path.resolve()
-    if resolved != (repo_root / "bench/protocols/actuator_envelope_runtime_v1.json").resolve():
+    if resolved != (repo_root / PROTOCOL_RELATIVE).resolve():
         raise ValueError("execute requires the fixed repository protocol")
     return resolved
 
@@ -518,6 +519,19 @@ def _owned_execution_reasons(execution: Mapping[str, Any]) -> list[str]:
     return ["owned_execution_did_not_complete_naturally"]
 
 
+def _execution_log_reasons(folder: Path) -> list[str]:
+    reasons = []
+    for name in ("stdout.log", "stderr.log"):
+        path = folder / name
+        if not path.is_file():
+            reasons.append(f"missing_{name}")
+            continue
+        content = path.read_text(encoding="utf-8", errors="replace")
+        if re.search(r"Windows fatal exception|Fatal Python error|Traceback \(most recent call last\)|\[Fatal\]", content):
+            reasons.append(f"runtime_failure_in_{name}")
+    return reasons
+
+
 def execute(tag: str, isaaclab: Path, protocol_path: Path = PROTOCOL) -> dict[str, Any]:
     if os.name != "nt":
         raise RuntimeError("native Windows launcher required")
@@ -569,6 +583,7 @@ def execute(tag: str, isaaclab: Path, protocol_path: Path = PROTOCOL) -> dict[st
             except Exception as error:
                 reasons.append("body_validation_" + type(error).__name__)
             reasons.extend(_owned_execution_reasons(execution))
+            reasons.extend(_execution_log_reasons(condition_folder))
             parents.append({"condition": condition, "status": "invalid" if reasons else "pass",
                             "validation_reasons": reasons, "body_sha256": body_sha,
                             "measurement_status": body.get("measurement_status") if isinstance(body, Mapping) else None,

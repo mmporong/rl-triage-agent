@@ -45,6 +45,20 @@ def curve(matches=True):
 CONFIG = {"effort_limit": 23.5, "saturation_effort": 23.5, "velocity_limit": 30.0}
 
 
+@pytest.mark.parametrize("newline", [b"\n", b"\r\n", b"\r"])
+def test_live_asset_hash_matches_ast_binding_with_platform_line_endings(tmp_path, newline):
+    import check_correction_cpu as cpu
+
+    path = tmp_path / B.GO2_SOURCE
+    path.parent.mkdir(parents=True)
+    source = b"# Go2 motor\nUNITREE_GO2_CFG = DCMotorCfg(\n effort_limit=23.5, saturation_effort=23.5, velocity_limit=30.0\n)\n"
+    path.write_bytes(source.replace(b"\n", newline))
+    expected = cpu._go2_motor_binding(tmp_path)["source_sha256"]
+    assert B._asset_source_sha(path) == expected
+    path.write_bytes(path.read_bytes().replace(b"# Go2 motor", b"# altered source"))
+    assert B._asset_source_sha(path) != expected
+
+
 @pytest.mark.parametrize("matches", [True, False])
 def test_curve_contract_accepts_complete_signed_13_by_12_grid(matches):
     assert B.validate_curve(curve(matches), CONFIG) == []
@@ -223,20 +237,106 @@ def test_success_publish_occurs_only_after_both_closes(monkeypatch, tmp_path):
                 raise self.error
 
     monkeypatch.setattr(B.S, "_publish_bytes_no_overwrite", lambda *_: events.append("publish"))
-    B._publish_success(tmp_path / "body.json", {"ok": True}, Resource("env"), Resource("app"))
-    assert events == ["env", "app", "publish"]
+    monkeypatch.setattr(B.gc, "collect", lambda: events.append("gc"))
+    B._publish_success(tmp_path / "body.json", {"ok": True}, {"env": Resource("env")}, Resource("app"))
+    assert events == ["env", "gc", "app", "publish"]
 
     events.clear()
     with pytest.raises(RuntimeError, match="close failed"):
         B._publish_success(tmp_path / "body.json", {"ok": True},
-                           Resource("env", RuntimeError("close failed")), Resource("app"))
-    assert events == ["env", "app"]
+                           {"env": Resource("env", RuntimeError("close failed"))}, Resource("app"))
+    assert events == ["env", "gc", "app"]
 
     events.clear()
-    with pytest.raises(SystemExit) as stopped:
-        B._publish_success(tmp_path / "body.json", {"ok": True}, Resource("env"),
+    with pytest.raises(RuntimeError, match="SystemExit: 0"):
+        B._publish_success(tmp_path / "body.json", {"ok": True}, {"env": Resource("env")},
                            Resource("app", SystemExit(0)))
-    assert stopped.value.code == 0 and events == ["env", "app"]
+    assert events == ["env", "gc", "app"]
+
+
+@pytest.mark.parametrize("outcome", ["readback_error", "nan", "object", "success"])
+def test_child_releases_sdk_and_environment_before_plugin_shutdown(monkeypatch, tmp_path, outcome):
+    from types import ModuleType
+    import weakref
+    import run_actuator_envelope_runtime as parent
+
+    events, references = [], []
+    target = tmp_path / "body.json"
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text("{}", encoding="utf-8")
+    validated = {"paths": {"output_path": target}, "protocol": {"scope": "test"},
+                 "manifest": {"condition": "NONE"}, "protocol_sha256": "a" * 64,
+                 "manifest_path": manifest, "project_commit_sha": "b" * 40,
+                 "source_receipt": {}, "request_lineage": {}}
+    monkeypatch.setattr(parent, "validate_manifest", lambda _: validated)
+    monkeypatch.setattr(B.S, "process_identity", lambda: {})
+    sdk = ModuleType("isaaclab.app")
+    sdk.AppLauncher = object
+    monkeypatch.setitem(sys.modules, "isaaclab.app", sdk)
+
+    class RetainedResource:
+        pass
+
+    class Env:
+        def __init__(self):
+            self.cycle = self
+            references.append(weakref.ref(self))
+        def close(self):
+            events.append("env")
+
+    class App:
+        def close(self):
+            assert all(reference() is None for reference in references)
+            events.append("app")
+
+    def fail_after_environment_creation(validated, lifecycle):
+        resource = RetainedResource()
+        resource.cycle = resource
+        references.append(weakref.ref(resource))
+        lifecycle["env"] = Env()
+        if outcome == "readback_error":
+            raise ValueError("SDK readback failed")
+        result = {"measurement_status": "valid", "protocol_status": "expected"}
+        if outcome in {"nan", "object"}:
+            result["bad"] = float("nan") if outcome == "nan" else object()
+        return result, lifecycle["env"]
+
+    monkeypatch.setattr(B, "_launch_app", lambda _: App())
+    monkeypatch.setattr(B, "run_sdk", fail_after_environment_creation)
+    if outcome == "success":
+        assert B.child_main(manifest) == 0
+    else:
+        with pytest.raises(RuntimeError, match="actuator inspection failed"):
+            B.child_main(manifest)
+    assert events == ["env", "app"]
+    assert target.exists() is (outcome == "success")
+
+
+@pytest.mark.parametrize("report", [{"ok": True}, {"bad": float("nan")}, {"bad": object()}])
+def test_success_or_serialization_failure_releases_environment_before_app_close(tmp_path, report):
+    import weakref
+
+    events, references = [], []
+    class Env:
+        def __init__(self):
+            self.cycle = self
+            references.append(weakref.ref(self))
+        def close(self):
+            events.append("env")
+    class App:
+        def close(self):
+            assert references[0]() is None
+            events.append("app")
+    holder = {"env": Env()}
+    target = tmp_path / "body.json"
+    if "bad" in report:
+        with pytest.raises((TypeError, ValueError)):
+            B._publish_success(target, report, holder, App())
+        assert not target.exists()
+    else:
+        B._publish_success(target, report, holder, App())
+        assert target.exists()
+    assert holder == {} and events == ["env", "app"]
 
 
 def test_app_launcher_disables_fast_shutdown():
