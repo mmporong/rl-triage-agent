@@ -42,6 +42,47 @@ Isaac Lab v2.1.1, Isaac Sim 4.5, RSL-RL 2.3.3을 사용한다. 원본은 P0-C에
 
 마지막 상태도 이미 본 단일 seed의 합성 결함 개발 결과다. AI의 진단·교정 선택, 실제 사용자 실패의 해결, 통계적 일반화, GPU 비용 절감을 증명하지 않는다.
 
+## 첫 실행 결과
+
+`case_01`의 등록 실행 `reward_resume_dev3_20261013`은 `no_recovery`였다. 세 조건 모두 20초 생존, 낙상률 0이었지만 등록 교정 후 정책의 선속도·회전속도 오차가 정상 기준의 허용 범위를 통과하지 못했다.
+
+| 조건 | 선속도 RMSE (m/s) | 회전속도 RMSE (rad/s) | 생존 (s) | 낙상률 |
+|---|---:|---:|---:|---:|
+| 정상 기준 | 0.13186171244395944 | 0.1721144763503927 | 20.0 | 0.0 |
+| 잘못된 교정 | 1.2004034794554577 | 0.537657828779045 | 20.0 | 0.0 |
+| 등록 교정 | 1.160934033395102 | 0.6699384014437818 | 20.0 | 0.0 |
+
+학습과 고정 평가를 합친 세 조건의 parent wall time은 1606.500999999931초다. 이 값의 범위는 각 프로세스의 parent launch부터 종료와 소유 작업 정리 확인까지다. GPU 커널 시간이나 다른 방법 대비 GPU 절감량이 아니다. 공개 결과는 `evals/results/reward_resume_dev3_20261013/`에 있으며, 원본 검증 자료는 `bench/private/training_correction/reward_resume_dev3_20261013/`에 보존한다. `case_02`와 `case_03`은 아직 측정하지 않았다.
+
+## 공개 결과와 미디어 순서
+
+공개본은 절대 경로, PID, stdout·stderr 같은 비공개 실행 정보를 제외하고 원시 고정 평가, 초기 상태 지문 요약, 체크포인트·설정 SHA, 검증된 parent wall time을 담는다. `replay`는 공개 파일 SHA와 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다. `source_commit_sha`는 실험 실행과 판정 코드의 커밋이며, 후속 재생 코드는 별도의 `publisher_sources` LF-SHA 집합으로 결합한다.
+
+미디어 프로토콜은 실험 HEAD를 유지한 상태에서 준비한다. 그 뒤 공개 결과·publisher·기록기·프로토콜을 커밋하고, 변경된 HEAD에서 `record`를 실행한다. 기록기는 고정된 공개 artifact와 실험 커밋의 Git blob을 검증하므로 실험 커밋과 기록기 커밋이 같을 필요는 없다. 순서를 바꾸면 `prepare` 또는 `record`의 소스 결합 검사가 실패한다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+$tag = 'reward_resume_dev3_20261013'
+
+# 실험 HEAD를 유지한 채 공개본을 새 폴더에 한 번만 생성하고 수치 재생을 확인한다.
+.\.venv\Scripts\python.exe evals/publish_training_correction.py export $tag --isaaclab "$HOME/IsaacLab"
+.\.venv\Scripts\python.exe evals/publish_training_correction.py replay "evals/results/$tag"
+
+# 같은 실험 HEAD에서 미디어 프로토콜을 준비한다.
+.\.venv\Scripts\python.exe bench/record_correction_media.py prepare $tag --isaaclab "$HOME/IsaacLab"
+
+# 여기서 코드·공개 결과·프로토콜을 검증하고 커밋한다. record는 그 커밋 뒤에 실행한다.
+.\.venv\Scripts\python.exe bench/record_correction_media.py record $tag --isaaclab "$HOME/IsaacLab"
+```
+
+`record`는 GPU를 사용하는 Isaac Play 재생이다. 다른 GPU 작업이 있으면 기다리고, 기존 공개 결과나 미디어 프로토콜을 덮어쓰지 않는다. 생성된 영상은 정책 재생 자료이며 `no_recovery` 결과를 성공 사례처럼 바꾸지 않는다.
+
+## 액추에이터 곡선 CPU readback
+
+`src/rl_triage/actuator_envelope.py`의 `inspect_actuator_envelope`는 정책 rollout 없이 등록 속도 격자에서 DC motor `_clip_effort`의 양·음 포화 출력을 읽고 설정에서 계산한 토크–속도 곡선과 비교한다. 측정 중 교체한 `_joint_vel`은 `finally`에서 원 객체로 복원한다. 설정·shape·유한성 검증이 실패하면 곡선 이상으로 확정하지 않고 `invalid`를 반환한다.
+
+이 함수는 device 중립의 제한된 곡선 readback이다. 현재 회귀 검증은 CPU fake tensor에서 수행했으며 실제 Isaac actuator 측정, probe registry, 측정 프로토콜, 결함 판정 임계값에는 아직 연결하지 않았다. 반환하는 source SHA도 호출자가 제시한 값이며 함수가 파일 결합을 검증하지 않는다. 따라서 곡선 차이는 등록 입력 격자의 코드 수준 관찰이고, 원인 확정이나 LLM 우위 근거가 아니다.
+
 ## 실행
 
 아래 명령은 Windows의 저장소와 Isaac Lab 설치를 전제로 한다. 프로토콜에 묶인 기존 체크포인트와 원본 학습 기록이 로컬에 있어야 한다.

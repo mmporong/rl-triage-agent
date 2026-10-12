@@ -1,0 +1,104 @@
+{
+  "schema": "training_correction_public_v1",
+  "arms": {
+    "clean_reference": {
+      "policy_state": {
+        "sha256": "de83645b0071d6146996a5bbaaed81b2ef3efa2c539a3b6b9083215627ee1015",
+        "tensor_count": 17,
+        "scalar_count": 0
+      },
+      "optimizer_state": {
+        "sha256": "8c8286cf7a0a9141bc8547a4d896f54f5fc87972dfed9a53330b23c5ef9d4978",
+        "tensor_count": 51,
+        "scalar_count": 29
+      },
+      "rng_state_before_learn": {
+        "cpu_sha256": "2428c118eb5c18a2c3e9908decb25e6cd187745c9fe649e1215a3ccc18355540",
+        "cuda_all_sha256": [
+          "21d1d5862ecc6b5120ecf8dcf4b3580c2ebe8ab90a05d760a8e82ba5a871e2e0"
+        ],
+        "cuda_device_count": 1
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+        "load_optimizer": true
+      },
+      "resume_iteration": 299
+    },
+    "fault_sham": {
+      "policy_state": {
+        "sha256": "bb6525eb256b6443e459f114a7d1b685416afc95558e77f987340353502b74fa",
+        "tensor_count": 17,
+        "scalar_count": 0
+      },
+      "optimizer_state": {
+        "sha256": "8c1426dd60c7cf0bd6645038b434e018a1b1b197e16d0164a5095d59e7d833e4",
+        "tensor_count": 51,
+        "scalar_count": 29
+      },
+      "rng_state_before_learn": {
+        "cpu_sha256": "2428c118eb5c18a2c3e9908decb25e6cd187745c9fe649e1215a3ccc18355540",
+        "cuda_all_sha256": [
+          "21d1d5862ecc6b5120ecf8dcf4b3580c2ebe8ab90a05d760a8e82ba5a871e2e0"
+        ],
+        "cuda_device_count": 1
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+        "load_optimizer": true
+      },
+      "resume_iteration": 299
+    },
+    "corrected": {
+      "policy_state": {
+        "sha256": "bb6525eb256b6443e459f114a7d1b685416afc95558e77f987340353502b74fa",
+        "tensor_count": 17,
+        "scalar_count": 0
+      },
+      "optimizer_state": {
+        "sha256": "8c1426dd60c7cf0bd6645038b434e018a1b1b197e16d0164a5095d59e7d833e4",
+        "tensor_count": 51,
+        "scalar_count": 29
+      },
+      "rng_state_before_learn": {
+        "cpu_sha256": "2428c118eb5c18a2c3e9908decb25e6cd187745c9fe649e1215a3ccc18355540",
+        "cuda_all_sha256": [
+          "21d1d5862ecc6b5120ecf8dcf4b3580c2ebe8ab90a05d760a8e82ba5a871e2e0"
+        ],
+        "cuda_device_count": 1
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+        "load_optimizer": true
+      },
+      "resume_iteration": 299
+    }
+  }
+}
