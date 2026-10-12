@@ -1,0 +1,3213 @@
+{
+  "schema": "actuator_envelope_public_v1",
+  "replay_scope": "numeric_replay_only_not_execution_identity_attestation",
+  "tag": "actuator_envelope_dev3_20261013",
+  "execution_source_commit_sha": "a55ae2e403e1b747303de41c818296b4cef8a603",
+  "protocol_sha256": "e87b3737f378667e7fd56a72794b780c3cb1b9e5a3b77ee40765b7d5c8128c19",
+  "parent_receipt_sha256": "a6d579e86708574f7fce64e00200fe7b14568ddad70094352eadc2365c52c58d",
+  "private_lineage_sha256": {
+    "request": "99dfb4302da3cbaa759af97c5e4075da770a231ba369a21b8bc1228b61f90b44",
+    "consumption": "59e6a03c0834205bbea602012819e89676e0ae1d7874a114028facf483833a5e"
+  },
+  "publisher_sources": {
+    "bench/actuator_envelope_runtime.py": "214bc957f303584c4af45453cd506f7db823532707d7d76e8c76506327c2a9c1",
+    "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/run_actuator_envelope_runtime.py": "91215416650d88e9eb628cfecc22b01d35ceb6b9954288e969ab2a6f62c6e73e",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "evals/publish_actuator_envelope.py": "a80310a2abfa4f31423171cdc668eee9fad6f08050a923808e9c507cda4575ab",
+    "src/rl_triage/actuator_envelope.py": "42d0cac4fc2a67074d7b9f31e4516f793b88477d37da4ecc87c81cb78f1d311f"
+  },
+  "conditions": {
+    "NONE": {
+      "condition": "NONE",
+      "development_expected_curve_matches": true,
+      "development_expected_assessment": "normal",
+      "curve_matches_expected": true,
+      "curve_assessment": "normal",
+      "protocol_status": "expected",
+      "expectation_met": true,
+      "helper_result": {
+        "schema": "actuator_envelope_readback_v1",
+        "status": "valid",
+        "curve_matches_expected": true,
+        "invalid_reason": null,
+        "requested_efforts": {
+          "positive": 23500.0,
+          "negative": -23500.0
+        },
+        "measurements": [
+          {
+            "velocity_rad_s": 0.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 3.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 21.150000000000002,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -3.0,
+            "expected_min_effort": -21.150000000000002,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 6.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 18.8,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -6.0,
+            "expected_min_effort": -18.8,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 9.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 16.45,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -9.0,
+            "expected_min_effort": -16.45,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 12.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 14.1,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -12.0,
+            "expected_min_effort": -14.1,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 18.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 9.4,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -18.0,
+            "expected_min_effort": -9.4,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 30.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 0.0,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -30.0,
+            "expected_min_effort": 0.0,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          }
+        ],
+        "config_provenance": {
+          "caller_asserted_source_sha256": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+          "source_binding_verified": false,
+          "expected_config": {
+            "effort_limit": 23.5,
+            "saturation_effort": 23.5,
+            "velocity_limit": 30.0
+          },
+          "velocity_grid_rad_s": [
+            0.0,
+            3.0,
+            -3.0,
+            6.0,
+            -6.0,
+            9.0,
+            -9.0,
+            12.0,
+            -12.0,
+            18.0,
+            -18.0,
+            30.0,
+            -30.0
+          ],
+          "runtime_config_readback": {
+            "effort_limit": 23.5,
+            "saturation_effort": 23.5,
+            "velocity_limit": 30.0
+          }
+        },
+        "limitations": {
+          "policy_rollout_used": false,
+          "cause_confirmed": false,
+          "llm_superiority_claimed": false,
+          "scope": "device_agnostic_policy_free_bounded_curve_readback",
+          "agreement_scope": "registered_input_grid_only",
+          "current_regression_coverage": "cpu_fake_tensor_only"
+        }
+      },
+      "state_before": {
+        "schema": "actuator_envelope_state_v1",
+        "buffers": {
+          "_joint_vel": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "computed_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "applied_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "_zeros_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "common_step_counter": 0,
+        "sim_step_counter": 0
+      },
+      "state_after": {
+        "schema": "actuator_envelope_state_v1",
+        "buffers": {
+          "_joint_vel": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "computed_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "applied_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "_zeros_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "common_step_counter": 0,
+        "sim_step_counter": 0
+      },
+      "state_restoration": {
+        "checks": {
+          "_joint_vel": true,
+          "computed_effort": true,
+          "applied_effort": true,
+          "_zeros_effort": true,
+          "common_step_counter": true,
+          "sim_step_counter": true
+        },
+        "all_restored": true
+      },
+      "sdk_versions": {
+        "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+        "isaacsim": "4.5.0",
+        "isaacsim_raw_components": [
+          "4.5.0",
+          "rc.36",
+          "4",
+          "5",
+          "0",
+          "rc",
+          "36",
+          "release.19112.f59b3005.gl"
+        ],
+        "runtime_binding": {
+          "python": {
+            "implementation": "CPython",
+            "version": [
+              3,
+              10,
+              15
+            ],
+            "cache_tag": "cpython-310",
+            "executable": "kit/python/kit.exe"
+          },
+          "distributions": {
+            "torch": "2.7.0+cu128",
+            "rsl-rl-lib": "2.3.3",
+            "isaaclab": "0.41.3"
+          },
+          "modules": {
+            "torch": "2.7.0+cu128"
+          }
+        }
+      },
+      "actuator_binding": {
+        "class_name": "DCMotor",
+        "class_module": "isaaclab.actuators.actuator_pd",
+        "joint_names": [
+          "FL_hip_joint",
+          "FR_hip_joint",
+          "RL_hip_joint",
+          "RR_hip_joint",
+          "FL_thigh_joint",
+          "FR_thigh_joint",
+          "RL_thigh_joint",
+          "RR_thigh_joint",
+          "FL_calf_joint",
+          "FR_calf_joint",
+          "RL_calf_joint",
+          "RR_calf_joint"
+        ],
+        "joint_count": 12,
+        "joint_velocity_shape": [
+          1,
+          12
+        ],
+        "device": "cuda:0",
+        "runtime_config": {
+          "effort_limit": 23.5,
+          "saturation_effort": 23.5,
+          "velocity_limit": 30.0
+        }
+      },
+      "source_sha256": {
+        "project": {
+          "bench/actuator_envelope_runtime.py": "214bc957f303584c4af45453cd506f7db823532707d7d76e8c76506327c2a9c1",
+          "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+          "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+          "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+          "bench/run_actuator_envelope_runtime.py": "91215416650d88e9eb628cfecc22b01d35ceb6b9954288e969ab2a6f62c6e73e",
+          "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+          "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+          "src/rl_triage/actuator_envelope.py": "42d0cac4fc2a67074d7b9f31e4516f793b88477d37da4ecc87c81cb78f1d311f"
+        },
+        "isaaclab": {
+          "source/isaaclab/isaaclab/actuators/actuator_pd.py": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+          "source/isaaclab/isaaclab/app/app_launcher.py": "956159e5cba72993540157aa8f1d450b8f68262586b7043eebe7049e5aaf386b",
+          "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d7f05f288fb70292d5bddf5884916f7d28d458a0c7be1fb0f22b17b90c5f4287",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "7fb099196b457ffc5e056163529ba8a195c8b2cc2b348feac6bf694b717cea5f",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "a0985003cf4d0e15e9427ffc69f519f9446fee6bee3803d416d32d55fea9a39e",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "e6a160450fcab16089464763866142cb136df1ecc7b6c0d1809c8325b498b6c7"
+        },
+        "rsl_rl": {
+          "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+          "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d"
+        },
+        "actuator_class": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+        "clip_effort_file": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+        "clip_effort_code": "ea235e843b217ac7c92ab87e6586f5432b26423b4f8aab94361e353b62ee3d9d",
+        "asset": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2"
+      },
+      "private_input_sha256": {
+        "manifest": "e86427c54cf1ade6e3f4916afe6d21100ec2cbc9dbde8b68a8c9cd739227058a",
+        "body": "1511f04c0e4cb3e378117f2eb4715a83975c091d2b0594c6c0284bc7cca405c2",
+        "stdout_log": "687949be8f212eda006f22ea1017b5d1d77fefa5c8f5537cebe7e0d753c9b22c",
+        "stderr_log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "process_time": {
+        "started_at": "2026-10-12T19:49:28+00:00",
+        "finished_at": "2026-10-12T19:49:31+00:00",
+        "wall_elapsed_s": 2.100847
+      },
+      "owned_execution": {
+        "cleanup_verified": true,
+        "natural_exit": true,
+        "exit_code": 0,
+        "error_type": null,
+        "timed_out": false,
+        "job_assigned_before_release": true,
+        "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "wall_s": 11.75
+      }
+    },
+    "F2": {
+      "condition": "F2",
+      "development_expected_curve_matches": false,
+      "development_expected_assessment": "curve_difference",
+      "curve_matches_expected": false,
+      "curve_assessment": "curve_difference",
+      "protocol_status": "expected",
+      "expectation_met": true,
+      "helper_result": {
+        "schema": "actuator_envelope_readback_v1",
+        "status": "valid",
+        "curve_matches_expected": false,
+        "invalid_reason": null,
+        "requested_efforts": {
+          "positive": 23500.0,
+          "negative": -23500.0
+        },
+        "measurements": [
+          {
+            "velocity_rad_s": 0.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 3.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 21.150000000000002,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75
+            ],
+            "matches_expected": false
+          },
+          {
+            "velocity_rad_s": -3.0,
+            "expected_min_effort": -21.150000000000002,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": false
+          },
+          {
+            "velocity_rad_s": 6.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 18.8,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "matches_expected": false
+          },
+          {
+            "velocity_rad_s": -6.0,
+            "expected_min_effort": -18.8,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": false
+          },
+          {
+            "velocity_rad_s": 9.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 16.45,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75,
+              -11.75
+            ],
+            "matches_expected": false
+          },
+          {
+            "velocity_rad_s": -9.0,
+            "expected_min_effort": -16.45,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75,
+              11.75
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": false
+          },
+          {
+            "velocity_rad_s": 12.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 14.1,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "matches_expected": false
+          },
+          {
+            "velocity_rad_s": -12.0,
+            "expected_min_effort": -14.1,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": false
+          },
+          {
+            "velocity_rad_s": 18.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 9.4,
+            "measured_min_effort": [
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0
+            ],
+            "measured_max_effort": [
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0,
+              -47.0
+            ],
+            "matches_expected": false
+          },
+          {
+            "velocity_rad_s": -18.0,
+            "expected_min_effort": -9.4,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": false
+          },
+          {
+            "velocity_rad_s": 30.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 0.0,
+            "measured_min_effort": [
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0
+            ],
+            "measured_max_effort": [
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0,
+              -94.0
+            ],
+            "matches_expected": false
+          },
+          {
+            "velocity_rad_s": -30.0,
+            "expected_min_effort": 0.0,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": false
+          }
+        ],
+        "config_provenance": {
+          "caller_asserted_source_sha256": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+          "source_binding_verified": false,
+          "expected_config": {
+            "effort_limit": 23.5,
+            "saturation_effort": 23.5,
+            "velocity_limit": 30.0
+          },
+          "velocity_grid_rad_s": [
+            0.0,
+            3.0,
+            -3.0,
+            6.0,
+            -6.0,
+            9.0,
+            -9.0,
+            12.0,
+            -12.0,
+            18.0,
+            -18.0,
+            30.0,
+            -30.0
+          ],
+          "runtime_config_readback": {
+            "effort_limit": 23.5,
+            "saturation_effort": 23.5,
+            "velocity_limit": 30.0
+          }
+        },
+        "limitations": {
+          "policy_rollout_used": false,
+          "cause_confirmed": false,
+          "llm_superiority_claimed": false,
+          "scope": "device_agnostic_policy_free_bounded_curve_readback",
+          "agreement_scope": "registered_input_grid_only",
+          "current_regression_coverage": "cpu_fake_tensor_only"
+        }
+      },
+      "state_before": {
+        "schema": "actuator_envelope_state_v1",
+        "buffers": {
+          "_joint_vel": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "computed_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "applied_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "_zeros_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "common_step_counter": 0,
+        "sim_step_counter": 0
+      },
+      "state_after": {
+        "schema": "actuator_envelope_state_v1",
+        "buffers": {
+          "_joint_vel": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "computed_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "applied_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "_zeros_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "common_step_counter": 0,
+        "sim_step_counter": 0
+      },
+      "state_restoration": {
+        "checks": {
+          "_joint_vel": true,
+          "computed_effort": true,
+          "applied_effort": true,
+          "_zeros_effort": true,
+          "common_step_counter": true,
+          "sim_step_counter": true
+        },
+        "all_restored": true
+      },
+      "sdk_versions": {
+        "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+        "isaacsim": "4.5.0",
+        "isaacsim_raw_components": [
+          "4.5.0",
+          "rc.36",
+          "4",
+          "5",
+          "0",
+          "rc",
+          "36",
+          "release.19112.f59b3005.gl"
+        ],
+        "runtime_binding": {
+          "python": {
+            "implementation": "CPython",
+            "version": [
+              3,
+              10,
+              15
+            ],
+            "cache_tag": "cpython-310",
+            "executable": "kit/python/kit.exe"
+          },
+          "distributions": {
+            "torch": "2.7.0+cu128",
+            "rsl-rl-lib": "2.3.3",
+            "isaaclab": "0.41.3"
+          },
+          "modules": {
+            "torch": "2.7.0+cu128"
+          }
+        }
+      },
+      "actuator_binding": {
+        "class_name": "DCMotor",
+        "class_module": "isaaclab.actuators.actuator_pd",
+        "joint_names": [
+          "FL_hip_joint",
+          "FR_hip_joint",
+          "RL_hip_joint",
+          "RR_hip_joint",
+          "FL_thigh_joint",
+          "FR_thigh_joint",
+          "RL_thigh_joint",
+          "RR_thigh_joint",
+          "FL_calf_joint",
+          "FR_calf_joint",
+          "RL_calf_joint",
+          "RR_calf_joint"
+        ],
+        "joint_count": 12,
+        "joint_velocity_shape": [
+          1,
+          12
+        ],
+        "device": "cuda:0",
+        "runtime_config": {
+          "effort_limit": 23.5,
+          "saturation_effort": 23.5,
+          "velocity_limit": 30.0
+        }
+      },
+      "source_sha256": {
+        "project": {
+          "bench/actuator_envelope_runtime.py": "214bc957f303584c4af45453cd506f7db823532707d7d76e8c76506327c2a9c1",
+          "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+          "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+          "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+          "bench/run_actuator_envelope_runtime.py": "91215416650d88e9eb628cfecc22b01d35ceb6b9954288e969ab2a6f62c6e73e",
+          "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+          "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+          "src/rl_triage/actuator_envelope.py": "42d0cac4fc2a67074d7b9f31e4516f793b88477d37da4ecc87c81cb78f1d311f"
+        },
+        "isaaclab": {
+          "source/isaaclab/isaaclab/actuators/actuator_pd.py": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+          "source/isaaclab/isaaclab/app/app_launcher.py": "956159e5cba72993540157aa8f1d450b8f68262586b7043eebe7049e5aaf386b",
+          "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d7f05f288fb70292d5bddf5884916f7d28d458a0c7be1fb0f22b17b90c5f4287",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "7fb099196b457ffc5e056163529ba8a195c8b2cc2b348feac6bf694b717cea5f",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "a0985003cf4d0e15e9427ffc69f519f9446fee6bee3803d416d32d55fea9a39e",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "e6a160450fcab16089464763866142cb136df1ecc7b6c0d1809c8325b498b6c7"
+        },
+        "rsl_rl": {
+          "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+          "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d"
+        },
+        "actuator_class": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+        "clip_effort_file": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+        "clip_effort_code": "e4865ba13bdc1126e0fa12f97bc1933d72ec3ee1ce19275b977860aa11d5f309",
+        "asset": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2"
+      },
+      "private_input_sha256": {
+        "manifest": "8d9fc1681cce2b8c54417c906d59a6ef3234205366e476fc45b59efbacdf00db",
+        "body": "c49b51e86064925f1ff8abbbca78ecb304c3cb2c80ba47ff710ed9ebd58e7b4f",
+        "stdout_log": "117133be229d159383872be219fd70470be83043d12743e890283326d6f5bed5",
+        "stderr_log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "process_time": {
+        "started_at": "2026-10-12T19:49:40+00:00",
+        "finished_at": "2026-10-12T19:49:42+00:00",
+        "wall_elapsed_s": 1.989589
+      },
+      "owned_execution": {
+        "cleanup_verified": true,
+        "natural_exit": true,
+        "exit_code": 0,
+        "error_type": null,
+        "timed_out": false,
+        "job_assigned_before_release": true,
+        "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "wall_s": 11.391000000061467
+      }
+    },
+    "F3": {
+      "condition": "F3",
+      "development_expected_curve_matches": true,
+      "development_expected_assessment": "normal",
+      "curve_matches_expected": true,
+      "curve_assessment": "normal",
+      "protocol_status": "expected",
+      "expectation_met": true,
+      "helper_result": {
+        "schema": "actuator_envelope_readback_v1",
+        "status": "valid",
+        "curve_matches_expected": true,
+        "invalid_reason": null,
+        "requested_efforts": {
+          "positive": 23500.0,
+          "negative": -23500.0
+        },
+        "measurements": [
+          {
+            "velocity_rad_s": 0.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 3.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 21.150000000000002,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -3.0,
+            "expected_min_effort": -21.150000000000002,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 6.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 18.8,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -6.0,
+            "expected_min_effort": -18.8,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 9.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 16.45,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -9.0,
+            "expected_min_effort": -16.45,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 12.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 14.1,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -12.0,
+            "expected_min_effort": -14.1,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 18.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 9.4,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -18.0,
+            "expected_min_effort": -9.4,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 30.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 0.0,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -30.0,
+            "expected_min_effort": 0.0,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          }
+        ],
+        "config_provenance": {
+          "caller_asserted_source_sha256": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+          "source_binding_verified": false,
+          "expected_config": {
+            "effort_limit": 23.5,
+            "saturation_effort": 23.5,
+            "velocity_limit": 30.0
+          },
+          "velocity_grid_rad_s": [
+            0.0,
+            3.0,
+            -3.0,
+            6.0,
+            -6.0,
+            9.0,
+            -9.0,
+            12.0,
+            -12.0,
+            18.0,
+            -18.0,
+            30.0,
+            -30.0
+          ],
+          "runtime_config_readback": {
+            "effort_limit": 23.5,
+            "saturation_effort": 23.5,
+            "velocity_limit": 30.0
+          }
+        },
+        "limitations": {
+          "policy_rollout_used": false,
+          "cause_confirmed": false,
+          "llm_superiority_claimed": false,
+          "scope": "device_agnostic_policy_free_bounded_curve_readback",
+          "agreement_scope": "registered_input_grid_only",
+          "current_regression_coverage": "cpu_fake_tensor_only"
+        }
+      },
+      "state_before": {
+        "schema": "actuator_envelope_state_v1",
+        "buffers": {
+          "_joint_vel": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "computed_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "applied_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "_zeros_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "common_step_counter": 0,
+        "sim_step_counter": 0
+      },
+      "state_after": {
+        "schema": "actuator_envelope_state_v1",
+        "buffers": {
+          "_joint_vel": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "computed_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "applied_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "_zeros_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "common_step_counter": 0,
+        "sim_step_counter": 0
+      },
+      "state_restoration": {
+        "checks": {
+          "_joint_vel": true,
+          "computed_effort": true,
+          "applied_effort": true,
+          "_zeros_effort": true,
+          "common_step_counter": true,
+          "sim_step_counter": true
+        },
+        "all_restored": true
+      },
+      "sdk_versions": {
+        "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+        "isaacsim": "4.5.0",
+        "isaacsim_raw_components": [
+          "4.5.0",
+          "rc.36",
+          "4",
+          "5",
+          "0",
+          "rc",
+          "36",
+          "release.19112.f59b3005.gl"
+        ],
+        "runtime_binding": {
+          "python": {
+            "implementation": "CPython",
+            "version": [
+              3,
+              10,
+              15
+            ],
+            "cache_tag": "cpython-310",
+            "executable": "kit/python/kit.exe"
+          },
+          "distributions": {
+            "torch": "2.7.0+cu128",
+            "rsl-rl-lib": "2.3.3",
+            "isaaclab": "0.41.3"
+          },
+          "modules": {
+            "torch": "2.7.0+cu128"
+          }
+        }
+      },
+      "actuator_binding": {
+        "class_name": "DCMotor",
+        "class_module": "isaaclab.actuators.actuator_pd",
+        "joint_names": [
+          "FL_hip_joint",
+          "FR_hip_joint",
+          "RL_hip_joint",
+          "RR_hip_joint",
+          "FL_thigh_joint",
+          "FR_thigh_joint",
+          "RL_thigh_joint",
+          "RR_thigh_joint",
+          "FL_calf_joint",
+          "FR_calf_joint",
+          "RL_calf_joint",
+          "RR_calf_joint"
+        ],
+        "joint_count": 12,
+        "joint_velocity_shape": [
+          1,
+          12
+        ],
+        "device": "cuda:0",
+        "runtime_config": {
+          "effort_limit": 23.5,
+          "saturation_effort": 23.5,
+          "velocity_limit": 30.0
+        }
+      },
+      "source_sha256": {
+        "project": {
+          "bench/actuator_envelope_runtime.py": "214bc957f303584c4af45453cd506f7db823532707d7d76e8c76506327c2a9c1",
+          "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+          "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+          "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+          "bench/run_actuator_envelope_runtime.py": "91215416650d88e9eb628cfecc22b01d35ceb6b9954288e969ab2a6f62c6e73e",
+          "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+          "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+          "src/rl_triage/actuator_envelope.py": "42d0cac4fc2a67074d7b9f31e4516f793b88477d37da4ecc87c81cb78f1d311f"
+        },
+        "isaaclab": {
+          "source/isaaclab/isaaclab/actuators/actuator_pd.py": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+          "source/isaaclab/isaaclab/app/app_launcher.py": "956159e5cba72993540157aa8f1d450b8f68262586b7043eebe7049e5aaf386b",
+          "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d7f05f288fb70292d5bddf5884916f7d28d458a0c7be1fb0f22b17b90c5f4287",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "7fb099196b457ffc5e056163529ba8a195c8b2cc2b348feac6bf694b717cea5f",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "a0985003cf4d0e15e9427ffc69f519f9446fee6bee3803d416d32d55fea9a39e",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "e6a160450fcab16089464763866142cb136df1ecc7b6c0d1809c8325b498b6c7"
+        },
+        "rsl_rl": {
+          "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+          "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d"
+        },
+        "actuator_class": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+        "clip_effort_file": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+        "clip_effort_code": "ea235e843b217ac7c92ab87e6586f5432b26423b4f8aab94361e353b62ee3d9d",
+        "asset": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2"
+      },
+      "private_input_sha256": {
+        "manifest": "d77885acd6bcab7813b6c22c681a1179dbad5e351b99776ee3db4fc1cd592a3d",
+        "body": "136841b32532a701bdbfcf02af08f344bf9efd6ad3301c8540cbbf15c81f58e5",
+        "stdout_log": "d6553728c12caca9d9b99301bcbaf03e36a6342e9016b4d6f606bc87e8677f95",
+        "stderr_log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "process_time": {
+        "started_at": "2026-10-12T19:49:52+00:00",
+        "finished_at": "2026-10-12T19:49:54+00:00",
+        "wall_elapsed_s": 2.02204
+      },
+      "owned_execution": {
+        "cleanup_verified": true,
+        "natural_exit": true,
+        "exit_code": 0,
+        "error_type": null,
+        "timed_out": false,
+        "job_assigned_before_release": true,
+        "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "wall_s": 11.547000000020489
+      }
+    },
+    "F4": {
+      "condition": "F4",
+      "development_expected_curve_matches": true,
+      "development_expected_assessment": "normal",
+      "curve_matches_expected": true,
+      "curve_assessment": "normal",
+      "protocol_status": "expected",
+      "expectation_met": true,
+      "helper_result": {
+        "schema": "actuator_envelope_readback_v1",
+        "status": "valid",
+        "curve_matches_expected": true,
+        "invalid_reason": null,
+        "requested_efforts": {
+          "positive": 23500.0,
+          "negative": -23500.0
+        },
+        "measurements": [
+          {
+            "velocity_rad_s": 0.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 3.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 21.150000000000002,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273,
+              21.149999618530273
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -3.0,
+            "expected_min_effort": -21.150000000000002,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273,
+              -21.149999618530273
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 6.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 18.8,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918,
+              18.80000114440918
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -6.0,
+            "expected_min_effort": -18.8,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918,
+              -18.80000114440918
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 9.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 16.45,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082,
+              16.44999885559082
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -9.0,
+            "expected_min_effort": -16.45,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082,
+              -16.44999885559082
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 12.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 14.1,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727,
+              14.100000381469727
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -12.0,
+            "expected_min_effort": -14.1,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727,
+              -14.100000381469727
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 18.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 9.4,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273,
+              9.399999618530273
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -18.0,
+            "expected_min_effort": -9.4,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273,
+              -9.399999618530273
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": 30.0,
+            "expected_min_effort": -23.5,
+            "expected_max_effort": 0.0,
+            "measured_min_effort": [
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5,
+              -23.5
+            ],
+            "measured_max_effort": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "matches_expected": true
+          },
+          {
+            "velocity_rad_s": -30.0,
+            "expected_min_effort": 0.0,
+            "expected_max_effort": 23.5,
+            "measured_min_effort": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "measured_max_effort": [
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5,
+              23.5
+            ],
+            "matches_expected": true
+          }
+        ],
+        "config_provenance": {
+          "caller_asserted_source_sha256": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+          "source_binding_verified": false,
+          "expected_config": {
+            "effort_limit": 23.5,
+            "saturation_effort": 23.5,
+            "velocity_limit": 30.0
+          },
+          "velocity_grid_rad_s": [
+            0.0,
+            3.0,
+            -3.0,
+            6.0,
+            -6.0,
+            9.0,
+            -9.0,
+            12.0,
+            -12.0,
+            18.0,
+            -18.0,
+            30.0,
+            -30.0
+          ],
+          "runtime_config_readback": {
+            "effort_limit": 23.5,
+            "saturation_effort": 23.5,
+            "velocity_limit": 30.0
+          }
+        },
+        "limitations": {
+          "policy_rollout_used": false,
+          "cause_confirmed": false,
+          "llm_superiority_claimed": false,
+          "scope": "device_agnostic_policy_free_bounded_curve_readback",
+          "agreement_scope": "registered_input_grid_only",
+          "current_regression_coverage": "cpu_fake_tensor_only"
+        }
+      },
+      "state_before": {
+        "schema": "actuator_envelope_state_v1",
+        "buffers": {
+          "_joint_vel": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "computed_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "applied_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "_zeros_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "common_step_counter": 0,
+        "sim_step_counter": 0
+      },
+      "state_after": {
+        "schema": "actuator_envelope_state_v1",
+        "buffers": {
+          "_joint_vel": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "computed_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "applied_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "_zeros_effort": {
+            "shape": [
+              1,
+              12
+            ],
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "common_step_counter": 0,
+        "sim_step_counter": 0
+      },
+      "state_restoration": {
+        "checks": {
+          "_joint_vel": true,
+          "computed_effort": true,
+          "applied_effort": true,
+          "_zeros_effort": true,
+          "common_step_counter": true,
+          "sim_step_counter": true
+        },
+        "all_restored": true
+      },
+      "sdk_versions": {
+        "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+        "isaacsim": "4.5.0",
+        "isaacsim_raw_components": [
+          "4.5.0",
+          "rc.36",
+          "4",
+          "5",
+          "0",
+          "rc",
+          "36",
+          "release.19112.f59b3005.gl"
+        ],
+        "runtime_binding": {
+          "python": {
+            "implementation": "CPython",
+            "version": [
+              3,
+              10,
+              15
+            ],
+            "cache_tag": "cpython-310",
+            "executable": "kit/python/kit.exe"
+          },
+          "distributions": {
+            "torch": "2.7.0+cu128",
+            "rsl-rl-lib": "2.3.3",
+            "isaaclab": "0.41.3"
+          },
+          "modules": {
+            "torch": "2.7.0+cu128"
+          }
+        }
+      },
+      "actuator_binding": {
+        "class_name": "DCMotor",
+        "class_module": "isaaclab.actuators.actuator_pd",
+        "joint_names": [
+          "FL_hip_joint",
+          "FR_hip_joint",
+          "RL_hip_joint",
+          "RR_hip_joint",
+          "FL_thigh_joint",
+          "FR_thigh_joint",
+          "RL_thigh_joint",
+          "RR_thigh_joint",
+          "FL_calf_joint",
+          "FR_calf_joint",
+          "RL_calf_joint",
+          "RR_calf_joint"
+        ],
+        "joint_count": 12,
+        "joint_velocity_shape": [
+          1,
+          12
+        ],
+        "device": "cuda:0",
+        "runtime_config": {
+          "effort_limit": 23.5,
+          "saturation_effort": 23.5,
+          "velocity_limit": 30.0
+        }
+      },
+      "source_sha256": {
+        "project": {
+          "bench/actuator_envelope_runtime.py": "214bc957f303584c4af45453cd506f7db823532707d7d76e8c76506327c2a9c1",
+          "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+          "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+          "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+          "bench/run_actuator_envelope_runtime.py": "91215416650d88e9eb628cfecc22b01d35ceb6b9954288e969ab2a6f62c6e73e",
+          "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+          "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+          "src/rl_triage/actuator_envelope.py": "42d0cac4fc2a67074d7b9f31e4516f793b88477d37da4ecc87c81cb78f1d311f"
+        },
+        "isaaclab": {
+          "source/isaaclab/isaaclab/actuators/actuator_pd.py": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+          "source/isaaclab/isaaclab/app/app_launcher.py": "956159e5cba72993540157aa8f1d450b8f68262586b7043eebe7049e5aaf386b",
+          "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d7f05f288fb70292d5bddf5884916f7d28d458a0c7be1fb0f22b17b90c5f4287",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "7fb099196b457ffc5e056163529ba8a195c8b2cc2b348feac6bf694b717cea5f",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "a0985003cf4d0e15e9427ffc69f519f9446fee6bee3803d416d32d55fea9a39e",
+          "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "e6a160450fcab16089464763866142cb136df1ecc7b6c0d1809c8325b498b6c7"
+        },
+        "rsl_rl": {
+          "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+          "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d"
+        },
+        "actuator_class": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+        "clip_effort_file": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+        "clip_effort_code": "ea235e843b217ac7c92ab87e6586f5432b26423b4f8aab94361e353b62ee3d9d",
+        "asset": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2"
+      },
+      "private_input_sha256": {
+        "manifest": "29215341e7b8028447fd7dc0871f7e72312e33a28432558a6970c659e1a4dc08",
+        "body": "760a68b0caaaef6347db21accf27651aa95dbd32ee438dba65cb40e4ee8368b5",
+        "stdout_log": "408d21b6fad7b46c8caf1918b4e83b38283b05e21ba9e56c6f22aaff20c62fad",
+        "stderr_log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "process_time": {
+        "started_at": "2026-10-12T19:50:04+00:00",
+        "finished_at": "2026-10-12T19:50:06+00:00",
+        "wall_elapsed_s": 2.01166
+      },
+      "owned_execution": {
+        "cleanup_verified": true,
+        "natural_exit": true,
+        "exit_code": 0,
+        "error_type": null,
+        "timed_out": false,
+        "job_assigned_before_release": true,
+        "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "wall_s": 11.655999999959022
+      }
+    }
+  }
+}

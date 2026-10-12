@@ -107,7 +107,27 @@ $tag = 'reward_resume_dev3_20261013'
 
 이 함수는 device 중립의 제한된 곡선 readback이다. 반환하는 source SHA는 호출자가 제시한 값이며 함수가 파일 결합을 검증하지 않는다.
 
-`bench/actuator_envelope_runtime.py`와 `bench/run_actuator_envelope_runtime.py`는 이 함수를 실제 Go2 actuator에 연결하는 별도 실행기다. 정책 rollout 없이 13개 속도점과 12개 관절을 읽으며, NONE·F2·F3·F4 조건의 소스·런타임·상태 복원·자연 종료를 검증한다. 부모 프로세스가 측정 곡선과 판정을 다시 계산한다. 코드는 CPU 회귀 검증과 검토를 마쳤으며 유효한 실제 Isaac 측정 결과는 아직 없다. Isaac Sim 4.5.0 버전을 확인하지만 정확히 같은 rc/build 바이너리까지 보증하지 않는다.
+`bench/actuator_envelope_runtime.py`와 `bench/run_actuator_envelope_runtime.py`는 이 함수를 Isaac Sim에서 생성한 Go2 DCMotor 객체에 연결하는 별도 실행기다. 정책 rollout 없이 13개 속도점과 12개 관절을 읽으며, NONE·F2·F3·F4 조건의 소스·런타임·상태 복원·자연 종료를 검증한다. 부모 프로세스가 측정 곡선과 판정을 다시 계산한다. Isaac Sim 4.5.0 버전을 확인하지만 정확히 같은 rc/build 바이너리까지 보증하지 않는다.
+
+`actuator_envelope_dev3_20261013`은 네 조건 모두 유효한 측정과 실행 검증을 통과했다. 등록된 합성 결함의 개발 검사이며, 학습된 정책이나 모델을 호출하지 않았다.
+
+| 조건 | 곡선 판정 | 사전 예상 일치 | parent wall (s) |
+|---|---|---|---:|
+| NONE: 순정 | `normal` | 예 | 11.750 |
+| F2: 모터 곡선 결함 | `curve_difference` | 예 | 11.391 |
+| F3: 탐색 결함 | `normal` | 예 | 11.547 |
+| F4: 최적화 결함 | `normal` | 예 | 11.656 |
+
+예를 들어 +6 rad/s의 양(+) 방향 최대 토크는 순정·F3·F4에서 약 18.8 N·m, F2에서는 0 N·m였다. +18 rad/s의 F2 출력은 양·음 포화 요청 모두 −47 N·m로, 설정된 절댓값 제한 23.5 N·m를 벗어났다. 이 값은 실제 런타임 함수의 등록 격자 출력이며 실물 모터 측정이 아니다. 네 조건의 실행·소유 작업 정리 시간 합은 46.344초다. GPU 커널 시간이나 GPU 절감량으로 해석하지 않는다.
+
+[프로토콜 v3](../bench/protocols/actuator_envelope_runtime_v3.json)는 환경 종료·GC·body 발행 뒤 Isaac Sim의 기본 fast shutdown을 호출하도록 고정한다. body는 측정 완료와 종료 대기만 나타낸다. 부모가 자연 종료, 정수 exit code 0, 소유 Job 비어 있음, fatal/traceback 부재, body·manifest SHA가 결합된 종료 인계 marker를 모두 확인해야 최종 통과다. 확장 모듈 각각의 정상 종료를 증명하는 계약은 아니다. 앞선 v1·v2의 인프라 오류 기록은 `invalid`로 보존했다.
+
+[공개 측정 결과](../evals/results/actuator_envelope_dev3_20261013/result.json)는 PID·절대 경로·로그 원문을 제외한 네 조건의 곡선, 상태, 소스 해시와 시간을 담는다. 아래 명령은 공개 파일의 해시·수치·판정을 재계산하며 원래 실행 프로세스의 신원을 재인증하지 않는다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+.\.venv\Scripts\python.exe evals/publish_actuator_envelope.py replay evals/results/actuator_envelope_dev3_20261013
+```
 
 `src/rl_triage/mechanism_registry.py`는 기존 검사를 보존하면서 별도 레지스트리와 승인 원장에 digest를 결합한다. 정책에 따라 달라지는 `P_torque`를 메커니즘 확정에서 제외하는 구성을 제공한다. 새 곡선 검사는 아직 에이전트의 검사 선택 경로에 연결하지 않았다. 곡선 차이는 등록 입력 격자의 관찰이며 원인 확정이나 LLM 우위 근거가 아니다.
 
