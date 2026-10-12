@@ -1,0 +1,213 @@
+{
+  "schema": "actuator_envelope_runtime_protocol_v1",
+  "scope": "actual_sdk_live_dcmotor_policy_free_registered_grid_readback",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "seed": 2027,
+  "num_envs": 1,
+  "device": "cuda:0",
+  "conditions": [
+    "NONE",
+    "F2",
+    "F3",
+    "F4"
+  ],
+  "velocity_grid_rad_s": [
+    0.0,
+    3.0,
+    -3.0,
+    6.0,
+    -6.0,
+    9.0,
+    -9.0,
+    12.0,
+    -12.0,
+    18.0,
+    -18.0,
+    30.0,
+    -30.0
+  ],
+  "development_expectations": {
+    "NONE": true,
+    "F2": false,
+    "F3": true,
+    "F4": true
+  },
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "isaacsim_version": "4.5.0",
+  "launcher_watchdog_s": 360,
+  "semantic_retries": 0,
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "gpu_admission": {
+    "policy": "base_com_reset_readback_v2",
+    "gpu_exclusive": false,
+    "performance_measurement": false,
+    "memory_used_limit_mib": 4096,
+    "gpu_index": 0,
+    "active_engine_min_percent": 1,
+    "protected_cim_name_only_process_names": [
+      "dwm.exe",
+      "remoting_desktop.exe",
+      "system",
+      "tabtip.exe"
+    ],
+    "guard_phases": [
+      "before_clip",
+      "after_clip"
+    ],
+    "allowed_process_types": [
+      "C+G",
+      "G"
+    ],
+    "allowed_display_process_names": [
+      "antigravity.exe",
+      "asus_framework.exe",
+      "chatgpt.exe",
+      "chrome.exe",
+      "codex-computer-use-swift.exe",
+      "crossdeviceresume.exe",
+      "discord.exe",
+      "dwm.exe",
+      "explorer.exe",
+      "lghub_system_tray.exe",
+      "microsoft.cmdpal.ui.exe",
+      "msedgewebview2.exe",
+      "nvidia overlay.exe",
+      "phoneexperiencehost.exe",
+      "powertoys.colorpickerui.exe",
+      "powertoys.exe",
+      "powertoys.fancyzones.exe",
+      "powertoys.peek.ui.exe",
+      "powertoys.quickaccess.exe",
+      "remoting_desktop.exe",
+      "searchhost.exe",
+      "shellexperiencehost.exe",
+      "shellhost.exe",
+      "slack.exe",
+      "startmenuexperiencehost.exe",
+      "system",
+      "tabtip.exe",
+      "textinputhost.exe",
+      "video.ui.exe",
+      "windowsterminal.exe"
+    ],
+    "allowed_active_engine_types": [
+      "3D",
+      "Copy",
+      "VideoDecode",
+      "VideoEncode"
+    ],
+    "unclassified_activity": "block"
+  },
+  "runtime_binding": {
+    "python": {
+      "implementation": "CPython",
+      "version": [
+        3,
+        10,
+        15
+      ],
+      "cache_tag": "cpython-310",
+      "executable": "kit/python/kit.exe"
+    },
+    "distributions": {
+      "torch": "2.7.0+cu128",
+      "rsl-rl-lib": "2.3.3",
+      "isaaclab": "0.41.3"
+    },
+    "modules": {
+      "torch": "2.7.0+cu128"
+    }
+  },
+  "execution": {
+    "fresh_owned_process_per_condition": true,
+    "policy_inference": false,
+    "runner_creation": false,
+    "env_step": false,
+    "helper_calls_per_process": 1,
+    "app_launcher": {
+      "headless": true,
+      "fast_shutdown": false
+    }
+  },
+  "interpretation": {
+    "development_expectation_only": true,
+    "cause_confirmed": false,
+    "recovery_confirmed": false,
+    "agreement_scope": "registered_input_grid_only"
+  },
+  "prepared_source_commit_sha": "1bb278f3a11d4b0f58988bee96e396ca7be27010",
+  "expected_config": {
+    "effort_limit": 23.5,
+    "saturation_effort": 23.5,
+    "velocity_limit": 30.0
+  },
+  "asset_binding": {
+    "source": "source/isaaclab_assets/isaaclab_assets/robots/unitree.py",
+    "source_sha256": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+    "values": {
+      "effort_limit": 23.5,
+      "saturation_effort": 23.5,
+      "velocity_limit": 30.0
+    }
+  },
+  "method_binding_contract": {
+    "F2": {
+      "before": {
+        "path": "C:\\Users\\LIMMM\\IsaacLab\\source\\isaaclab\\isaaclab\\actuators\\actuator_pd.py",
+        "source_sha256": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+        "code_sha256": "ea235e843b217ac7c92ab87e6586f5432b26423b4f8aab94361e353b62ee3d9d"
+      },
+      "patched": {
+        "path": "C:\\Users\\LIMMM\\rl-triage-agent\\bench\\hidden_faults.py",
+        "source_sha256": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+        "code_sha256": "e4865ba13bdc1126e0fa12f97bc1933d72ec3ee1ce19275b977860aa11d5f309"
+      }
+    },
+    "F3": {
+      "before": {
+        "path": "E:\\IsaacSim\\isaac-sim-4.5.0\\kit\\python\\Lib\\site-packages\\rsl_rl\\modules\\actor_critic.py",
+        "source_sha256": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+        "code_sha256": "b239175a7cd769c3e733164a7e6e1422997baffa4e8d82b7db7e7b0b97d267f8"
+      },
+      "patched": {
+        "path": "C:\\Users\\LIMMM\\rl-triage-agent\\bench\\hidden_faults.py",
+        "source_sha256": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+        "code_sha256": "19e2af907443c9f9bff0d4adcc327ea5e00bc92544f1b887b9c7e6a3426cabb9"
+      }
+    },
+    "F4": {
+      "before": {
+        "path": "E:\\IsaacSim\\isaac-sim-4.5.0\\kit\\python\\Lib\\site-packages\\rsl_rl\\runners\\on_policy_runner.py",
+        "source_sha256": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+        "code_sha256": "dd9a86e7474d77ff952ad228e90ccde95fe76163a0c593176a61974126ceea58"
+      },
+      "patched": {
+        "path": "C:\\Users\\LIMMM\\rl-triage-agent\\bench\\hidden_faults.py",
+        "source_sha256": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+        "code_sha256": "07e938f159e5ea35242f4a33c23ad9fcf01d122c57aa211717de5af8c77bae94"
+      }
+    }
+  },
+  "source_files": {
+    "bench/actuator_envelope_runtime.py": "d15d18eed08452a2de109f39ab2e76a572c40d230f376668b922c300f276965f",
+    "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/run_actuator_envelope_runtime.py": "8cc3414a60b8c8ca42adbab93342315a3be8a76d890d84eb580f5cdda0f369b3",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "src/rl_triage/actuator_envelope.py": "42d0cac4fc2a67074d7b9f31e4516f793b88477d37da4ecc87c81cb78f1d311f"
+  },
+  "isaaclab_source_files": {
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "88302cb167e941b1c80066517413c436e083e3d8a573898eb6ca73a6d36aadd7",
+    "source/isaaclab/isaaclab/app/app_launcher.py": "956159e5cba72993540157aa8f1d450b8f68262586b7043eebe7049e5aaf386b",
+    "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d7f05f288fb70292d5bddf5884916f7d28d458a0c7be1fb0f22b17b90c5f4287",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "7fb099196b457ffc5e056163529ba8a195c8b2cc2b348feac6bf694b717cea5f",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "a0985003cf4d0e15e9427ffc69f519f9446fee6bee3803d416d32d55fea9a39e",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "e6a160450fcab16089464763866142cb136df1ecc7b6c0d1809c8325b498b6c7"
+  },
+  "rsl_rl_source_files": {
+    "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d"
+  }
+}
