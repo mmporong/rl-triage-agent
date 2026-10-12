@@ -36,9 +36,9 @@ An [additional Brev integration attempt](docs/ACTIVE-DIAGNOSIS-V3-RESULT.md) pre
 
 ## Isaac simulation
 
-[![Go2 policy replay recorded in Isaac Sim](docs/media/go2-policy-20261012_t1_v3/simulation-focus.gif)](docs/media/go2-policy-20261012_t1_v3/simulation.mp4)
+[![Go2 policies before correction, after correction and after control training in Isaac Sim](docs/media/go2-correction-reward_resume_dev3_20261013/comparison.gif)](docs/media/go2-correction-reward_resume_dev3_20261013/comparison.mp4)
 
-New off-screen recording of the existing 300-iteration T1 policy in the stock Go2 Play environment. The GIF crops the same simulation sequence to keep the robot visible; the linked video preserves all 299 frames over 5.98 seconds. [Recording provenance](docs/media/go2-policy-20261012_t1_v3/manifest.json) and [display settings](docs/media/go2-policy-20261012_t1_v3/display_manifest.json) bind the checkpoint, capture and crop. This shows policy playback; AI diagnosis and recovery remain unverified. The agent reads TensorBoard scalars and selected configuration facts.
+Actual off-screen Isaac recordings of the failed reward-frame policy, the policy after registered correction and continued training, and the control policy. All three use the same stock Go2 Play settings and seed. The linked video preserves 299 frames over 5.98 seconds; the GIF samples the same footage. This development case returned **`no_recovery`** in the separate 26-command fixed evaluation. [Recording provenance](docs/media/go2-correction-reward_resume_dev3_20261013/source_manifest.json) binds all three checkpoints, source code, original clips and process cleanup to the [measured result](evals/results/reward_resume_dev3_20261013/result.json). The preview is policy playback, not a new evaluation or an AI-selected recovery.
 
 ## At A Glance
 
@@ -284,7 +284,7 @@ This re-derives past numbers; it is not new performance evidence. Two early file
 
 [현재 통합 결과](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md)는 모델 8사례와 별도 실행한 규칙 두 방식을 포함합니다. 모델 기록 감사는 8/8 통과했지만, 측정 때문에 판단이 바뀌었다는 기준은 **0/8**입니다. 모델 7사례가 HOLD이며 진단 우위나 절감은 입증하지 못했습니다.
 
-상단 [시뮬레이션 GIF](docs/media/go2-policy-20261012_t1_v3/simulation-focus.gif)는 기존 T1 동결 정책을 새로 녹화한 Isaac 장면입니다. 같은 장면의 로봇 영역을 잘랐으며, [원본 영상](docs/media/go2-policy-20261012_t1_v3/simulation.mp4)은 5.98초·299프레임을 보존합니다. [출처](docs/media/go2-policy-20261012_t1_v3/manifest.json)에서 체크포인트와 녹화·종료를 대조할 수 있습니다. 이 재생은 AI 진단이나 회복 효과의 증거가 아닙니다.
+상단 [시뮬레이션 GIF](docs/media/go2-correction-reward_resume_dev3_20261013/comparison.gif)는 실패 정책, 교정 후 이어 학습한 정책, 대조 정책을 같은 조건으로 녹화한 Isaac 장면입니다. [비교 영상](docs/media/go2-correction-reward_resume_dev3_20261013/comparison.mp4)은 5.98초·299프레임을 보존합니다. 별도 고정 행동 평가의 판정은 **`no_recovery`**이며, 이 영상을 회복 성공으로 해석하지 않습니다. [출처](docs/media/go2-correction-reward_resume_dev3_20261013/source_manifest.json)에 체크포인트와 코드, 원본 영상, 프로세스 종료 검증을 묶었습니다.
 
 보존한 [영상](docs/media/evidence-v2-20261011-recovery-q4/evidence.mp4)은 실패 관찰부터 검사 선택·측정·보류까지, 그리고 별도 C01의 원복 전·후 모습을 나란히 보여줍니다. 원복 후 생존 19.9446/20초는 과거 평가 기록이며 각 영상은 5.9초를 재생합니다. C01 원복은 V2 진단과 다른 사례입니다. [manifest](docs/media/evidence-v2-20261011-recovery-q4/manifest.json)에서 출처와 산출물 해시를 확인할 수 있습니다. [추가 Brev 실행](docs/ACTIVE-DIAGNOSIS-V3-RESULT.md)은 인프라 실패를 포함한 24건의 종료 기록을 보존하며, 전체 성능 비교에는 사용하지 않습니다.
 

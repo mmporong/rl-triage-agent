@@ -77,6 +77,8 @@ $tag = 'reward_resume_dev3_20261013'
 
 `record`는 GPU를 사용하는 Isaac Play 재생이다. 다른 GPU 작업이 있으면 기다리고, 기존 공개 결과나 미디어 프로토콜을 덮어쓰지 않는다. 생성된 영상은 정책 재생 자료이며 `no_recovery` 결과를 성공 사례처럼 바꾸지 않는다.
 
+첫 사례의 [비교 영상](media/go2-correction-reward_resume_dev3_20261013/comparison.mp4)과 [GIF](media/go2-correction-reward_resume_dev3_20261013/comparison.gif)는 교정 전·등록 교정 후·대조 정책을 같은 조건으로 재생한다. 각 원본은 5.98초·299프레임이며, GIF는 같은 장면에서 90프레임을 사용한다. [출처 기록](media/go2-correction-reward_resume_dev3_20261013/source_manifest.json)에 세 체크포인트, 소스, 실행 종료 검증, 파일 해시가 있다. 행동 판정은 이 재생 화면이 아닌 위 고정 평가의 원시 수치로 계산한다.
+
 ## 액추에이터 곡선 CPU readback
 
 `src/rl_triage/actuator_envelope.py`의 `inspect_actuator_envelope`는 정책 rollout 없이 등록 속도 격자에서 DC motor `_clip_effort`의 양·음 포화 출력을 읽고 설정에서 계산한 토크–속도 곡선과 비교한다. 측정 중 교체한 `_joint_vel`은 `finally`에서 원 객체로 복원한다. 설정·shape·유한성 검증이 실패하면 곡선 이상으로 확정하지 않고 `invalid`를 반환한다.
