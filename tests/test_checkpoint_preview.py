@@ -41,3 +41,16 @@ def test_used_tag_never_queries_gpu_or_overwrites_artifacts(monkeypatch, tmp_pat
     with pytest.raises(FileExistsError, match="already used"):
         R.record("fresh", tmp_path)
     assert marker.read_text(encoding="utf-8") == "existing evidence"
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="owned Windows Job process boundary")
+def test_owned_worker_preserves_child_stdout_stderr_and_cleans_process_tree(tmp_path):
+    execution = R.P.run_owned(tmp_path, [sys.executable, "-c",
+        'import sys; print("stdout-marker",flush=True); print("stderr-marker",file=sys.stderr,flush=True)'],
+        Path.cwd(), 30)
+    assert execution["exit_code"] == 0
+    assert execution["job_assigned_before_release"] is True
+    assert execution["natural_exit"] is True and execution["timed_out"] is False
+    assert execution["cleanup_verified"] is True
+    assert "stdout-marker" in (tmp_path / "stdout.log").read_text()
+    assert "stderr-marker" in (tmp_path / "stderr.log").read_text()

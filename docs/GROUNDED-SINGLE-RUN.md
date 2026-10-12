@@ -118,7 +118,7 @@ cd "$HOME/rl-triage-agent"
 
 `evals/run_grounded_active.py`는 기존 T1 metadata, telemetry, 저장된 `env.yaml`의 task·seed·환경 수·해시를 대조한다. 모델에는 중립 case alias와 등록한 telemetry·설정 근거만 제공하고 arm과 원본 경로는 host 기록에 둔다. 원래 학습과 별도 seed의 reset 계측은 서로 다른 실행이다. 원래 학습 코드의 SHA가 기록돼 있지 않은 경우 그 한계도 보존한다. 기존 학습의 원인 재현이나 정책 회복으로 표현하지 않는다.
 
-실행 source와 결과별 문구는 [현재 grounded-active 프로토콜](../bench/protocols/grounded_active_v3.json)에 사전등록하고 커밋한다. 이전 v1·v2 프로토콜과 결과는 보존한다. NAT 1.9의 검사 목록은 빈 입력 `{}`를 받으며 가설 저장 도구는 검증기에 맞춘 중첩 입력 스키마를 공개한다. 저장 검증기가 반환한 오류와 근거 부족 보류는 trace에 남긴 뒤 예외로 중단해 다음 모델 턴을 시작하지 않는다. 입력 스키마 거절은 함수 진입 전에 중단되므로 도구 trace가 남지 않는다. 실패 기록에는 단계·코드 위치를 저장하고 예외 메시지·소스 줄·환경변수는 복사하지 않는다. task는 stock Go2, 검사 크기는 64 env·20 reset sequence·env별 10 reset, probe seed는 `20261012`다. 모델이 실행 미지원 검사를 선택하면 `HOLD`로 끝내며 GPU를 사용하지 않는다. 도구 오류와 잘못된 응답은 재시도하지 않는다. 승인 소비 후 중단된 실행도 다시 측정하지 않으며 기존 기록을 보존한다.
+실행 source와 결과별 문구는 [현재 grounded-active 프로토콜](../bench/protocols/grounded_active_v4.json)에 사전등록하고 커밋한다. 이전 프로토콜과 결과는 보존한다. NAT 1.9의 검사 목록은 빈 입력 `{}`를 받으며 가설 저장 도구는 검증기에 맞춘 중첩 입력 스키마를 공개한다. 저장 검증기가 반환한 오류와 근거 부족 보류는 trace에 남긴 뒤 예외로 중단해 다음 모델 턴을 시작하지 않는다. 입력 스키마 거절은 함수 진입 전에 중단되므로 도구 trace가 남지 않는다. 실패 기록에는 단계·코드 위치를 저장하고 예외 메시지·소스 줄·환경변수는 복사하지 않는다. task는 stock Go2, 검사 크기는 64 env·20 reset sequence·env별 10 reset, probe seed는 `20261012`다. 모델이 실행 미지원 검사를 선택하면 `HOLD`로 끝내며 GPU를 사용하지 않는다. 도구 오류와 잘못된 응답은 재시도하지 않는다. 승인 소비 후 중단된 실행도 다시 측정하지 않으며 기존 기록을 보존한다.
 
 LLM 계측은 설치된 NAT의 LangChain 콜백을 모델 구성에 결합해 사용한다. 실제 시작·종료 UUID와 토큰 usage만 별도 원시 파일로 저장한다. 부모는 SHA·호출 순서·실행 진입값·토큰 합계를 대조하고, 도구 원문 trace에서 호출 예산과 저장 거절 여부를 다시 계산한다. workflow 실행에 들어갔는데 이벤트가 없으면 호출 수를 `null`로 남긴다. 완료된 호출에서 토큰 usage를 받지 못한 경우에도 비용과 토큰 합계를 만들지 않는다.
 
@@ -167,7 +167,7 @@ cd "$HOME/rl-triage-agent"
 & .venv/Scripts/python.exe evals/run_grounded_recovery.py execute --tag demo_recovery
 ```
 
-source와 [현재 결과별 문구를 포함한 프로토콜](../bench/protocols/grounded_recovery_v3.json)을 커밋한 뒤 사용한다. 이전 v1·v2 프로토콜은 보존한다. v3는 원래 seed `2028`·4096 env·300 iteration으로 학습한 X1 체크포인트 하나를 평가하며 평가 크기·reset·보행 기준은 유지한다. 요청 시점과 실행 시점에 원본 입력·새 모델 기록·측정 출처를 다시 확인한다. `bench/private/grounded_recovery/<tag>`에 승인 원장·조건별 설정·원시 평가·부모 receipt·최종 결과를 한 번 저장한다. 이 경로는 CPU 계약 검증 범위이며 실제 새 모델의 진입과 행동 회복은 아직 검증하지 않았다. 성공해도 같은 동결 정책의 이 고정 task·seed·격자에서 등록된 환경 콜백 교정 뒤 행동 기준을 통과했다는 범위로 해석한다.
+source와 [현재 결과별 문구를 포함한 프로토콜](../bench/protocols/grounded_recovery_v4.json)을 커밋한 뒤 사용한다. 이전 프로토콜은 보존한다. 현재 계약은 원래 seed `2028`·4096 env·300 iteration으로 학습한 X1 체크포인트 하나를 평가하며 평가 크기·reset·보행 기준은 유지한다. 요청 시점과 실행 시점에 원본 입력·새 모델 기록·측정 출처를 다시 확인한다. `bench/private/grounded_recovery/<tag>`에 승인 원장·조건별 설정·원시 평가·부모 receipt·최종 결과를 한 번 저장한다. 이 경로는 CPU 계약 검증 범위이며 실제 새 모델의 진입과 행동 회복은 아직 검증하지 않았다. 성공해도 같은 동결 정책의 이 고정 task·seed·격자에서 등록된 환경 콜백 교정 뒤 행동 기준을 통과했다는 범위로 해석한다.
 
 ## 참고한 연구와 코드
 

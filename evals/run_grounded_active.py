@@ -21,7 +21,7 @@ from rl_triage.process_diagnostics import launch_diagnostics  # noqa: E402
 import run_base_com_reset as B  # noqa: E402
 import grounded_active_model_call as W  # noqa: E402
 
-PROTOCOL = ROOT / "bench/protocols/grounded_active_v3.json"
+PROTOCOL = ROOT / "bench/protocols/grounded_active_v4.json"
 PRIVATE_ROOT = ROOT / "bench/private/grounded_active"
 CODE = {
     "src/rl_triage/grounded_active_profile.py", "src/rl_triage/grounded_evidence.py",

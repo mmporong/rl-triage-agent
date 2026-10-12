@@ -12,7 +12,7 @@ import record_evidence_media as M
 import run_runtime_readback_smoke as P
 
 ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = ROOT / "bench/protocols/checkpoint_preview_t1_v1.json"
+PROTOCOL = ROOT / "bench/protocols/checkpoint_preview_t1_v2.json"
 METADATA = ROOT / "bench/private/e01_s2028.meta.json"
 CODE = {"bench/record_checkpoint_preview.py", "bench/record_evidence_media.py",
         "bench/run_runtime_readback_smoke.py"}

@@ -20,7 +20,7 @@ import xml.etree.ElementTree as ET
 
 
 TAG_RE = re.compile(r"[a-z0-9](?:[a-z0-9_-]{0,47})\Z")
-DEFAULT_PROTOCOL = Path(__file__).with_name("protocols") / "evidence_media_c01_v2.json"
+DEFAULT_PROTOCOL = Path(__file__).with_name("protocols") / "evidence_media_c01_v3.json"
 CREATE_NO_WINDOW = 0x08000000
 EXPECTED_TASK = "Isaac-Velocity-Flat-Unitree-Go2-Play-v0"
 EXPECTED_CLIP_IDS = {"before", "true_rollback", "benign_rollback"}
@@ -475,6 +475,8 @@ def _worker_main(command_file: Path) -> int:
     completed = subprocess.run(
         command["args"],
         cwd=command["cwd"],
+        stdout=sys.stdout,
+        stderr=sys.stderr,
         creationflags=CREATE_NO_WINDOW,
     )
     return completed.returncode
