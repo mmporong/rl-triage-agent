@@ -28,7 +28,7 @@ from rl_triage import grounded_recovery as C
 from rl_triage import recovery as RC
 from rl_triage.triage_tools import _TolerantLoader
 
-PROTOCOL = ROOT / "bench/protocols/training_correction_v1.json"
+PROTOCOL = ROOT / "bench/protocols/training_correction_v2.json"
 FIXED_EVAL = ROOT / "bench/protocols/fixed_eval_v1.json"
 PRIVATE = ROOT / "bench/private/training_correction"
 ORIGINAL = ROOT / "evals/results/p0c_fixed_eval_20261009"
@@ -62,6 +62,10 @@ SDK_FILES = S.ISAACLAB_SOURCE_FILES | {row["source"] for row in A.TARGETS.values
 }
 FIXED = {
     "schema": "training_correction_protocol_v1",
+    "revision": 2,
+    "infrastructure_retry_of": {"tag": "reward_resume_dev_20261013",
+        "protocol_sha256_lf": "7cfbc48ddf32e2655b57b26494e9361a8d0517949fc217e4295c33a8f80ee70d",
+        "reason": "upstream_sibling_import_failed_before_isaac_app_or_training"},
     "scope": "seen_single_seed_resume_feasibility",
     "task": C.TASK, "seed": 2027, "num_envs": 4096, "max_iterations": 300,
     "num_steps_per_env": 24, "action_scale": 0.25,
@@ -407,6 +411,8 @@ def execution_valid(row: dict) -> bool:
 
 def verify_training(folder: Path, arm: str, execution: dict) -> dict:
     training = folder / arm / "train"
+    if not execution_valid(execution):
+        raise ValueError(f"training execution failed (exit={execution.get('exit_code')}); inspect its stderr.log")
     manifest, protocol = validate_manifest(training / "manifest.json")
     receipt = read(training / "receipt.json")
     initial = read(training / "initial.json")

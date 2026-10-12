@@ -368,3 +368,9 @@ def test_gpu_busy_returns_before_sdk_launch(monkeypatch, tmp_path):
     result = H.execute("busy_tag", "case_01", isaaclab)
     assert result == {"status": "gpu_busy_no_launch", "sdk_jobs_launched": 0}
     assert not output.exists()
+
+
+def test_failed_training_reports_execution_failure_before_missing_receipt(monkeypatch, tmp_path):
+    monkeypatch.setattr(H, "validate_manifest", lambda path: pytest.fail("failed process must be rejected first"))
+    with pytest.raises(ValueError, match="training execution failed.*exit=1"):
+        H.verify_training(tmp_path, "clean_reference", {"exit_code": 1})

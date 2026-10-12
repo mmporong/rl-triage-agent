@@ -356,11 +356,14 @@ def execute(manifest_path: Path, H) -> dict[str, Any]:
 
     gymnasium.make = one_environment_make
     old_argv = sys.argv
+    old_path = sys.path[:]
     sys.argv = _upstream_argv(upstream, manifest)
+    sys.path.insert(0, str(upstream.parent))
     try:
         runpy.run_path(str(upstream), run_name="__main__")
     finally:
         sys.argv = old_argv
+        sys.path[:] = old_path
         gymnasium.make = armed_make
         hidden_faults._before_env = original_before
         if runner_hooks is not None:

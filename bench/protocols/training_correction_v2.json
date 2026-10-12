@@ -1,0 +1,285 @@
+{
+  "schema": "training_correction_protocol_v1",
+  "revision": 2,
+  "infrastructure_retry_of": {
+    "tag": "reward_resume_dev_20261013",
+    "protocol_sha256_lf": "7cfbc48ddf32e2655b57b26494e9361a8d0517949fc217e4295c33a8f80ee70d",
+    "reason": "upstream_sibling_import_failed_before_isaac_app_or_training"
+  },
+  "scope": "seen_single_seed_resume_feasibility",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "seed": 2027,
+  "num_envs": 4096,
+  "max_iterations": 300,
+  "num_steps_per_env": 24,
+  "action_scale": 0.25,
+  "resume_iteration": 299,
+  "final_iteration": 598,
+  "input_runs": {
+    "NONE": "baseline_p0c_s2027",
+    "F1": "h02_s2027",
+    "F2": "h06_s2027",
+    "F6": "h03_s2027"
+  },
+  "source_cohort_already_seen": true,
+  "cases": {
+    "case_01": {
+      "fault": "F1",
+      "sham": "restore_motor_torque_speed"
+    },
+    "case_02": {
+      "fault": "F2",
+      "sham": "restore_configured_timeout"
+    },
+    "case_03": {
+      "fault": "F6",
+      "sham": "restore_body_frame_reward"
+    }
+  },
+  "arms": [
+    "clean_reference",
+    "fault_sham",
+    "corrected"
+  ],
+  "initial_match_arms": [
+    "fault_sham",
+    "corrected"
+  ],
+  "resume_scope": "policy_optimizer_warm_start_not_environment_or_rng_restore",
+  "require_sham_corrected_initial_rng_match": true,
+  "python_runtime": {
+    "implementation": "CPython",
+    "version": [
+      3,
+      10,
+      15
+    ],
+    "cache_tag": "cpython-310"
+  },
+  "torch_version": "2.7.0+cu128",
+  "bands_source": "evals/results/p0c_fixed_eval_20261009/summary.json",
+  "primary_reference": "same_seed_clean_reference_resumed_same_updates",
+  "secondary_reference": "original_same_seed_clean_checkpoint",
+  "require_original_sham_failed_metric_overlap": true,
+  "allowed_agent_config_changes": [
+    "run_name",
+    "resume",
+    "load_run",
+    "load_checkpoint",
+    "max_iterations"
+  ],
+  "train_watchdog_s": 1800,
+  "eval_watchdog_s": 360,
+  "semantic_retries": 0,
+  "train_limit_per_case": 3,
+  "eval_limit_per_case": 3,
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "rsl_rl_version": "2.3.3",
+  "approval_actor": "codex_operator_user_authorized_test",
+  "model_calls": 0,
+  "model_selected_correction": false,
+  "baseline_reuse_between_cases": false,
+  "result_wording": {
+    "restoration_observed_single_run": "실패한 정책에서 등록 코드 하나를 복원하고 이어 학습한 단일 실행이 고정 행동 기준을 통과했다. 같은 체크포인트·추가 학습량의 잘못된 교정은 원래 실패 지표 중 적어도 하나를 유지했다. 이미 본 seed의 합성 결함 개발 결과이며 AI 진단·일반화·실사용 수리를 입증하지 않는다.",
+    "source_failure_absent": "원본 체크포인트에서 등록한 행동 실패가 확인되지 않아 회복 효과로 집계하지 않는다.",
+    "baseline_invalid": "같은 예산으로 이어 학습한 정상 기준 정책이 보행 기준을 충족하지 못해 교정 효과를 판정하지 않는다.",
+    "no_failure_observed": "결함을 유지한 대조에서 등록한 행동 실패가 관찰되지 않아 회복 효과로 집계하지 않는다.",
+    "sham_shifted": "결함 대조가 실패했지만 원래 실패 지표와 겹치지 않아 교정 효과로 집계하지 않는다.",
+    "no_recovery": "교정 후 이어 학습한 정책이 정상 기준의 행동 허용 범위를 통과하지 못했다.",
+    "invalid": "출처·개입·초기 상태·예산·평가·종료 계약이 맞지 않아 효과 판정을 보류한다."
+  },
+  "source_files": {
+    "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+    "bench/correction_adapter.py": "71224801d07a136c999770a6296e017165579377ee96ab98fa36fc70aa11aaa8",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/train_with_correction.py": "050f2d4394d32e79c7326d7d8b32aff3f818825693a650d020b5651993e82e99",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/run_training_correction.py": "15bdfaf929133bb44b3bed6619652a3bf230ef0bca8883707bdcdf121affa314",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af"
+  },
+  "sdk_sources": {
+    "scripts/reinforcement_learning/rsl_rl/cli_args.py": "9b21e1106599d91a9881a79b0564518afc6e45ac6f7fb8b957b16bba12310cb1",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_cfg.py": "a83599520494f7066c3729d279585654ca72d9eaac12d6cac2536f07147d8b1f",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/app/app_launcher.py": "5424f2b4a7b1d967fe51017dfc5d47c2ec8ff09ddd190e184fead6d51fdd0502",
+    "source/isaaclab/isaaclab/assets/articulation/articulation_data.py": "662394fea5fb5a93b333937cad71d59ad74563d6d4fee823057cb5ebb7a6bf52",
+    "source/isaaclab/isaaclab/envs/manager_based_env.py": "6ac4ec08175d2df87b489867b99239b02d106863384f73a7610fb4015ceda0d6",
+    "source/isaaclab/isaaclab/envs/manager_based_rl_env.py": "b13e9106b98666b33637841f100589731aa4e24ce3ca133ff99dddb43f11b1f2",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab/isaaclab/managers/reward_manager.py": "5d41d6a376cfb456849d861c3232694ea5662cc38970e2e2c7e5152f156d88d7",
+    "source/isaaclab/isaaclab/managers/termination_manager.py": "ea239d8fd57e87010b74b358a91b1ae8b2487e5edc621da01468456ea92fa71f",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor.py": "926158c959e5aa65651ead836965637be45517d8538cadc3a93067d76ebb6990",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor_data.py": "c02606ab91acd0eeb29cd76bdb58e7cba217c62e18d55e4cfdecefd83aba15bc",
+    "source/isaaclab/isaaclab/utils/dict.py": "68a424ae35f84fcf5157e2d0402ad95ec1475e13095ff8cbf39432673f9eda1c",
+    "source/isaaclab/isaaclab/utils/io/yaml.py": "cdd6a95aa348b6ab3af7cf07d071c5829c2ae1de8147d49ec5bc23fcd155de71",
+    "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+    "source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py": "fcc844cf95bd3145713476b41fcd0a33b87967c2f409016196b7bcb2ecc4475b",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "8b37eb407af8629f350bba43d17746f4536b6d67449935556af26314619b1162",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "59d95358724d0a4a58f9aa49d887b84d12d37d7ba5f781d615d6468ac37f243e",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+  },
+  "rsl_sources": {
+    "__init__.py": "eca880a726873a075dc37aba1c4da3bfa8f7a19df45ed963964e864b48c6bfcc",
+    "algorithms/__init__.py": "82800dabead2a8e8fbc22162d34358cbafefefa81e620bbe1fbfea4b034e1205",
+    "algorithms/distillation.py": "9aedcf086771d1bd1e7eebcc53637e7f1cb2e97b2b2f497aa087090a8fa984aa",
+    "algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "env/__init__.py": "8b187dca6d7ca5f9f4ab6a8c30218ca7bd6d3f952706526cad4ae156d1541870",
+    "env/vec_env.py": "4cea1f22d498d76d00ef34facbf0abec256ce4266f679fb9dd185641bdca778b",
+    "modules/__init__.py": "9cdaae9b6823ca0019dcb317f3ab136d588d79259db00ebf437598625dfc20df",
+    "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "modules/actor_critic_recurrent.py": "965a3f1db386fb58fe277761a4db8cda967c4a51ad5735e2bc5dccf10a49d710",
+    "modules/normalizer.py": "f52677617f729c21c7440fd52d69b7e570313836a9deb21519425b806043a311",
+    "modules/rnd.py": "957fd599dd19c579e1c83f37d253d0ff45d789f5965ed4d3b3b4c235ec00386c",
+    "modules/student_teacher.py": "f44d6cbd5ddc18f109b6a914e0c6dd80107f6b71bffef60d26cf695c7ee60d04",
+    "modules/student_teacher_recurrent.py": "6342ebeb80768d97a6bc8bd4792fd96f947b5d58c0cbab59b71cb8b735520e34",
+    "networks/__init__.py": "57d38865f66dcff63a419f962de32ef07919fdfc40ccad96ee4713e7bdaa87b8",
+    "networks/memory.py": "dada928b14ebd32a1f47c9185f2b94e2ff799faa698ca519f0d78ec92531cebe",
+    "runners/__init__.py": "661b14b7160ee0d7f30c234e9885875ac5d5686897c5bc22bdec875189d27075",
+    "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "storage/__init__.py": "599a712105321c64423e65777d709ace050ef46d5f98b8791d697b9c4e55106e",
+    "storage/rollout_storage.py": "456450bbba03f9f5818f9ec43d2f3bd5d14d2d27f4bf2308838dd580f32ffcf0",
+    "utils/__init__.py": "2e407f50cb40043ab4b9690c10465a59ed4bbba714ff18670ac0aca8552a39b6",
+    "utils/neptune_utils.py": "1a30b7fe45ce1ba9be52c07d050678a23fe57e61ae25465af4159c93af195d40",
+    "utils/utils.py": "db99cd0877488809d73332f05670e9c72da9bd0292aa554121c503e61544588e",
+    "utils/wandb_utils.py": "875443f672af864930aee511c4dfd8b362b0b066c9cd54bd57b0513dd10336b2"
+  },
+  "correction_source_contract": {
+    "runtime": {
+      "cache_tag": "cpython-310",
+      "implementation": "CPython",
+      "version": [
+        3,
+        10,
+        15
+      ]
+    },
+    "schema": "correction_source_contract_v1",
+    "targets": {
+      "restore_body_frame_reward": {
+        "clean_fingerprint": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.rewards",
+        "qualname": "track_lin_vel_xy_exp",
+        "source": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+        "source_sha256": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76"
+      },
+      "restore_configured_timeout": {
+        "clean_fingerprint": "c59f0aa40f3a4c460d9f146d17db4a56fcf9a4783ee39dd237d3ce7ea8cb6b7d",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.terminations",
+        "qualname": "time_out",
+        "source": "source/isaaclab/isaaclab/envs/mdp/terminations.py",
+        "source_sha256": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762"
+      },
+      "restore_motor_torque_speed": {
+        "clean_fingerprint": "bf37f452239be21ec97ee61654f416abcafeb995c2e60fa509156f6d0e26aad3",
+        "mode": "attribute",
+        "module": "isaaclab.actuators.actuator_pd",
+        "qualname": "DCMotor._clip_effort",
+        "source": "source/isaaclab/isaaclab/actuators/actuator_pd.py",
+        "source_sha256": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012"
+      }
+    }
+  },
+  "fixed_eval_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "resume_inputs": {
+    "summary_sha256_lf": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+    "bands": {
+      "survival_ratio_min": 0.9,
+      "err_xy_ratio_max": 1.1513,
+      "err_yaw_ratio_max": 1.1719,
+      "fall_frac_max": 0.05
+    },
+    "runs": {
+      "NONE": {
+        "run": "baseline_p0c_s2027",
+        "hashes": {
+          "metadata": "8e1e2e25421118a557f69a2de886e73e079cf5e08d13f71b035b0ccf74d7d581",
+          "checkpoint": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+          "environment": "614711ac8d5c7b72359efbb7e6ef502f4c14d0204f9c320f1d119982e6385a8a",
+          "agent": "e821536f238909e57de9e33fef48246537f99dc4fdaf8128281b87f21c301172",
+          "fixed_report": "9237d034d0c7be7775fa8330baeb0d08b63583ca301d1d83758d0776dce0cc73"
+        },
+        "original_label": "healthy",
+        "original_failed": []
+      },
+      "F1": {
+        "run": "h02_s2027",
+        "hashes": {
+          "metadata": "776bbcb3c99cdadf52ce90c6054656019eb4983c78779d367d5dfac6c0f7a579",
+          "checkpoint": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+          "environment": "614711ac8d5c7b72359efbb7e6ef502f4c14d0204f9c320f1d119982e6385a8a",
+          "agent": "1398838d19902daeca0562d49e7c75d05575b53e06c22dc2fa3fccaa054ab0fc",
+          "fixed_report": "7668039f7f21f55500a41b27336d92e0c3eaaa2e11c099e0c3d43afbfdb1481c"
+        },
+        "original_label": "unhealthy",
+        "original_failed": [
+          "fall_frac",
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ]
+      },
+      "F2": {
+        "run": "h06_s2027",
+        "hashes": {
+          "metadata": "bd6a38f03dd19eee365ac3b47a5bd6f7ec156759a8b565bd02696e4150ad7735",
+          "checkpoint": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+          "environment": "614711ac8d5c7b72359efbb7e6ef502f4c14d0204f9c320f1d119982e6385a8a",
+          "agent": "38e8eee3bbd0fbdb14163951217cbee8ed4247c27273e65144da90555e47ef13",
+          "fixed_report": "6a9496d9564a6ad3a65ca9ea637c5f9527673dfbca7fe4ce44ddc172a5a6a058"
+        },
+        "original_label": "unhealthy",
+        "original_failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ]
+      },
+      "F6": {
+        "run": "h03_s2027",
+        "hashes": {
+          "metadata": "ba38a0194baa9e0b2b706cf6acba3de975f66eed71edf136362510502d6bb147",
+          "checkpoint": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2",
+          "environment": "614711ac8d5c7b72359efbb7e6ef502f4c14d0204f9c320f1d119982e6385a8a",
+          "agent": "c082481b087701cb1d0803b156213c4d411cc9d0ab2d2ea788d8049dffcd3aed",
+          "fixed_report": "6b784b91742d1658a4774b4d196db7a8703ea912600f18907acabd00fdbe9938"
+        },
+        "original_label": "unhealthy",
+        "original_failed": [
+          "err_xy_ratio"
+        ]
+      }
+    },
+    "runtime_versions": {
+      "torch": "2.7.0+cu128",
+      "gpu": "NVIDIA GeForce RTX 3060",
+      "isaaclab": "0.41.3",
+      "isaaclab_tasks": "0.10.36",
+      "isaaclab_rl": "0.1.8",
+      "rsl-rl-lib": "2.3.3",
+      "isaacsim": null
+    }
+  },
+  "cpu_checks": {
+    "folder": "bench/private/correction_development_20261013/cpu_matrix",
+    "sha256": {
+      "f1_match.json": "a5c3eef9349d3907da54d4bff2bfd340c477bf6c92c27db1d2ac414f8c9b58fe",
+      "f1_wrong.json": "e45bc4d40b1a83c0a84a21283beb0c40c36dbbcb6d690ffc171c33b30f123aa7",
+      "f2_match.json": "cb89a9f17d42815638cc191ffa8d31a89084869fc38029770bc2a7e332557433",
+      "f2_wrong.json": "873e4a5564c83fc0af2eda7126ebabddab925422a7e70c1daaa803ffe18533aa",
+      "f6_match.json": "d2d85a36a5c3c2d57b6e904cc5b361ad1c23c5bee4d8c754a639369401cf2d13",
+      "f6_wrong.json": "96fca8bb68cdc4c4eeb2b548341f4a40a38b6d51c2194fbb009294ab478f5e49"
+    },
+    "passed_count": 6
+  }
+}

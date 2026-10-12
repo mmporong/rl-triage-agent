@@ -401,6 +401,30 @@ def test_execute_never_writes_receipt_when_upstream_fails(tmp_path, monkeypatch)
     assert not (tmp_path / "evidence" / "receipt.json").exists()
 
 
+def test_execute_imports_upstream_sibling_and_restores_module_search_path(tmp_path, monkeypatch):
+    module = _module()
+    manifest, events = _manifest(tmp_path), []
+    H = FullH(manifest, {"correction_source_contract": {"schema": "portable"},
+                       "action_scale": 0.25, "rsl_rl_version": "unavailable"}, events)
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text("{}", encoding="utf-8")
+    upstream = tmp_path / "scripts/reinforcement_learning/rsl_rl/train.py"
+    upstream.parent.mkdir(parents=True)
+    (upstream.parent / "resume_sibling_test.py").write_text("VALUE = 'sibling import reached'\n", encoding="utf-8")
+    upstream.write_text("import resume_sibling_test\nraise RuntimeError(resume_sibling_test.VALUE)\n", encoding="utf-8")
+    _full_fake_modules(monkeypatch, tmp_path, events)
+    monkeypatch.chdir(tmp_path)
+    before = sys.path[:]
+    try:
+        with pytest.raises(RuntimeError, match="sibling import reached"):
+            module.execute(manifest_path, H)
+        assert sys.path == before
+        assert events == []
+        assert not (tmp_path / "evidence" / "receipt.json").exists()
+    finally:
+        sys.modules.pop("resume_sibling_test", None)
+
+
 def test_execute_preserves_wrong_target_readback_instead_of_forcing_matching_restore(tmp_path, monkeypatch):
     module = _module()
     manifest, events = _manifest(tmp_path), []
