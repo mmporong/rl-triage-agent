@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import runpy
 import sys
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -155,7 +155,8 @@ def _runner_observations(runner: Any, train_cfg: Any, manifest: dict,
 def _install_runner_hooks(manifest: dict, H, runtime: dict[str, Any], *,
                           expected_action_scale: float | None = None,
                           expected_rsl_version: str | None = None,
-                          expected_isaaclab_commit: str | None = None) -> tuple[Any, Any, Any, type]:
+                          expected_isaaclab_commit: str | None = None,
+                          on_learning_complete: Callable[[], None] | None = None) -> tuple[Any, Any, Any, type]:
     runners = importlib.import_module("rsl_rl.runners")
     runner_class = runners.OnPolicyRunner
     original_init = runner_class.__init__
@@ -272,6 +273,8 @@ def _install_runner_hooks(manifest: dict, H, runtime: dict[str, Any], *,
             "learning_completed": True, "actual_control_steps": counter["successful"],
             "expected_control_steps": expected_steps,
         })
+        if on_learning_complete is not None:
+            on_learning_complete()
         return result
 
     runner_class.__init__ = measured_init
@@ -326,6 +329,11 @@ def execute(manifest_path: Path, H) -> dict[str, Any]:
     runtime: dict[str, Any] = {"environment_make_calls": 0}
     runner_hooks = None
 
+    def record_learning_complete() -> None:
+        # Isaac fast shutdown can end the process without returning from runpy.
+        # The parent separately requires a clean process exit and owned-job cleanup.
+        runtime["receipt"] = _write_receipt(manifest, manifest_path, runtime, H)
+
     def corrected_before(fault: str) -> None:
         nonlocal runner_hooks
         if runtime.get("correction_applied"):
@@ -340,6 +348,7 @@ def execute(manifest_path: Path, H) -> dict[str, Any]:
             expected_action_scale=protocol["action_scale"],
             expected_rsl_version=protocol["rsl_rl_version"],
             expected_isaaclab_commit=protocol["isaaclab_commit"],
+            on_learning_complete=record_learning_complete,
         )
         runtime["correction_applied"] = True
 
@@ -372,9 +381,24 @@ def execute(manifest_path: Path, H) -> dict[str, Any]:
             runner_class.load = original_load
             runner_class.learn = original_learn
 
+    if "receipt" not in runtime:
+        raise RuntimeError("upstream training returned without a completion receipt")
+    return runtime["receipt"]
+
+
+def _write_receipt(manifest: dict, manifest_path: Path, runtime: dict[str, Any], H) -> dict[str, Any]:
+    """학습과 최종 저장을 검증한 뒤 Isaac 종료 전에 기록한다."""
     if (not runtime.get("correction_applied") or not runtime.get("runner_initialized")
             or not runtime.get("checkpoint_loaded") or not runtime.get("learning_completed")):
-        raise RuntimeError("upstream training returned without completing correction and learning")
+        raise RuntimeError("training did not complete correction and learning")
+    output_dir = Path(manifest["output_dir"]).resolve()
+    protocol_path = Path(manifest["protocol_path"]).resolve()
+    protocol_sha = H.sha(protocol_path, lf=True)
+    if protocol_sha != manifest["protocol_sha256_lf"]:
+        raise ValueError("protocol changed during learning")
+    initial_path = output_dir / "initial.json"
+    correction_path = output_dir / "correction.json"
+    receipt_path = output_dir / "receipt.json"
     log_dir = runtime["log_dir"]
     final_iteration = manifest["resume_iteration"] + manifest["max_iterations"] - 1
     checkpoint = log_dir / f"model_{final_iteration}.pt"

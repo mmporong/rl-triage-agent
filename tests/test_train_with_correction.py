@@ -287,7 +287,8 @@ class FullH:
         self.events.append(("validate", "configuration"))
 
 
-def _full_fake_modules(monkeypatch, tmp_path, events, *, fail_upstream=False):
+def _full_fake_modules(monkeypatch, tmp_path, events, *, fail_upstream=False,
+                       omit_final_checkpoint=False):
     gym = types.ModuleType("gymnasium")
     base_env, step_calls = _env()
     gym.make = lambda *args, **kwargs: events.append(("env", "create")) or base_env
@@ -338,7 +339,8 @@ def _full_fake_modules(monkeypatch, tmp_path, events, *, fail_upstream=False):
         (log_dir / "params").mkdir(parents=True)
         (log_dir / "params" / "env.yaml").write_text("env", encoding="utf-8")
         (log_dir / "params" / "agent.yaml").write_text("agent", encoding="utf-8")
-        (log_dir / "model_300.pt").write_bytes(b"checkpoint")
+        if not omit_final_checkpoint:
+            (log_dir / "model_300.pt").write_bytes(b"checkpoint")
         runner.learn(num_learning_iterations=2, init_at_random_ep_len=True)
     return fake_run, step_calls
 
@@ -399,6 +401,58 @@ def test_execute_never_writes_receipt_when_upstream_fails(tmp_path, monkeypatch)
     with pytest.raises(RuntimeError, match="upstream failed"):
         module.execute(manifest_path, H)
     assert not (tmp_path / "evidence" / "receipt.json").exists()
+
+
+@pytest.mark.parametrize("shutdown_error", [SystemExit(0), RuntimeError("shutdown failed")])
+def test_execute_writes_learning_receipt_before_upstream_shutdown(tmp_path, monkeypatch, shutdown_error):
+    module = _module()
+    manifest, events = _manifest(tmp_path), []
+    H = FullH(manifest, {
+        "correction_source_contract": {"schema": "portable"},
+        "action_scale": 0.25, "rsl_rl_version": "unavailable", "isaaclab_commit": "sdk-commit",
+    }, events)
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text("{}", encoding="utf-8")
+    upstream = tmp_path / "scripts/reinforcement_learning/rsl_rl/train.py"
+    upstream.parent.mkdir(parents=True)
+    upstream.write_text("# fake", encoding="utf-8")
+    fake_run, _ = _full_fake_modules(monkeypatch, tmp_path, events)
+
+    def shutdown_without_return(path, run_name):
+        fake_run(path, run_name)
+        receipt = json.loads((tmp_path / "evidence/receipt.json").read_text(encoding="utf-8"))
+        assert receipt["actual_control_steps"] == 4
+        assert receipt["final_checkpoint_state"]["iteration"] == 300
+        events.append(("app", "shutdown"))
+        raise shutdown_error
+
+    monkeypatch.setattr(module.runpy, "run_path", shutdown_without_return)
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(type(shutdown_error)):
+        module.execute(manifest_path, H)
+    assert events.index(("write", "receipt.json")) < events.index(("app", "shutdown"))
+    # A receipt records learning only; shutdown errors still propagate to the
+    # parent, which rejects nonzero exits even when a receipt exists.
+
+
+def test_execute_rejects_missing_final_checkpoint_before_shutdown(tmp_path, monkeypatch):
+    module = _module()
+    manifest, events = _manifest(tmp_path), []
+    H = FullH(manifest, {
+        "correction_source_contract": {"schema": "portable"},
+        "action_scale": 0.25, "rsl_rl_version": "unavailable", "isaaclab_commit": "sdk-commit",
+    }, events)
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text("{}", encoding="utf-8")
+    upstream = tmp_path / "scripts/reinforcement_learning/rsl_rl/train.py"
+    upstream.parent.mkdir(parents=True)
+    upstream.write_text("# fake", encoding="utf-8")
+    fake_run, _ = _full_fake_modules(monkeypatch, tmp_path, events, omit_final_checkpoint=True)
+    monkeypatch.setattr(module.runpy, "run_path", fake_run)
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(FileNotFoundError):
+        module.execute(manifest_path, H)
+    assert not (tmp_path / "evidence/receipt.json").exists()
 
 
 def test_execute_imports_upstream_sibling_and_restores_module_search_path(tmp_path, monkeypatch):
