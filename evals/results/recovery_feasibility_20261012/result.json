@@ -1,0 +1,245 @@
+{
+  "schema": "recovery_feasibility_public_result_v1",
+  "attempt": "callback_triplet_20261012_c",
+  "scope": "known_development_input_host_selected_callback_feasibility",
+  "source_commit_sha": "322f49de39bc4b3f5211cf6c5812629198d0009f",
+  "protocol_path": "bench/protocols/recovery_feasibility_v3.json",
+  "protocol_sha256_lf": "156594261fa181e1e3e036c6ef57d61d9db813cccaa2289f623b46808ab63eb8",
+  "checkpoint_sha256": "ed28e874db3e984b6946aea7fe2a193f5f0661cb3799e0f6aacc04cbecc9f647",
+  "status": "no_failure_observed",
+  "summary": {
+    "status": "no_failure_observed",
+    "recovery_conditions_met": false,
+    "execution_provenance_verified": false,
+    "control_valid": true,
+    "corrected_walks": true,
+    "faults_both_unhealthy": false,
+    "same_nonempty_failed_metrics": false,
+    "sham_equivalent": true,
+    "failed_metrics": {
+      "fault_before": [],
+      "fault_sham": []
+    },
+    "relative_to_corrected": {
+      "fault_before": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "fault_sham": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      }
+    },
+    "sham_equivalence_checks": {
+      "sham_vs_before": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "before_vs_sham": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      }
+    },
+    "behavior": {
+      "fault_before": {
+        "survival_s": 19.98173095703125,
+        "horizon_s": 20.0,
+        "fall_frac": 0.000961538462433964,
+        "err_xy": 0.16138714456623238,
+        "err_yaw": 0.3054080414996136
+      },
+      "fault_sham": {
+        "survival_s": 19.98173095703125,
+        "horizon_s": 20.0,
+        "fall_frac": 0.000961538462433964,
+        "err_xy": 0.16138714456623238,
+        "err_yaw": 0.3054080414996136
+      },
+      "callback_fixed": {
+        "survival_s": 20.0,
+        "horizon_s": 20.0,
+        "fall_frac": 0.0,
+        "err_xy": 0.16002517663231988,
+        "err_yaw": 0.3039612796258051
+      }
+    },
+    "bands": {
+      "survival_ratio_min": 0.9,
+      "err_xy_ratio_max": 1.1,
+      "err_yaw_ratio_max": 1.1,
+      "fall_frac_max": 0.05
+    },
+    "claims": {
+      "policy_weights_repaired": false,
+      "cause_confirmed": false,
+      "model_selected_intervention": false,
+      "superiority_proven": false,
+      "generalization_proven": false,
+      "statistical_significance_proven": false
+    },
+    "scope": "동일 동결 정책·한 고정 task/seed/grid의 등록 콜백 교정 후 행동 회복"
+  },
+  "reports": {
+    "fault_before": {
+      "path": "runs/fault_before.json",
+      "sha256_lf": "6141466c7a1f9f0e3142c75f8eec16903f0cb3a2c89475fc2f0de89f4fc495b7"
+    },
+    "fault_sham": {
+      "path": "runs/fault_sham.json",
+      "sha256_lf": "ceaacce73f4aee7017af044e3655fb36961c417610512c4970dda5df68fb4345"
+    },
+    "callback_fixed": {
+      "path": "runs/callback_fixed.json",
+      "sha256_lf": "a34c6e2bf1d9f1768be48a5b9bbbe15fc4a8f7c4335981a3541d09529e524cd0"
+    }
+  },
+  "relative_error_reduction": {
+    "lin_vel_rmse_mps": 0.00843913520852679,
+    "yaw_rate_rmse_radps": 0.004737144008077204
+  },
+  "result_wording": "이 고정 평가에서 결함 유지와 콜백 교정 사이에 사전등록한 실패 차이가 없었다. 회복 시연 경로로 채택하지 않는다.",
+  "private_execution_audit": {
+    "verified_at_source_commit": "322f49de39bc4b3f5211cf6c5812629198d0009f",
+    "verification_passed": true,
+    "independent_code_reviewer": "APPROVE evidence integrity; no recovery claim",
+    "artifact_count": 36,
+    "arm_artifact_sha256": {
+      "fault_before": {
+        "manifest.json": "3c7a65690aab2ad278dc2aa58fa2c2530e4a894c4968af987586be96d08af99f",
+        "body.json": "bea8f27c7a67e139ec7da428a9a47da488be9e88b3b0e8719ec2529eb14099f1",
+        "fixed_report.json": "0d5d556a4e0b1dbd399d802def37188e8a38bc68c44c14603d0a4300e62b2e6d",
+        "configuration.yaml": "a8a62d4e6a4024d66c5f62ed55cad3c048238356d1b49992be524594fc33e54d",
+        "execution.json": "3babc8e35598b31aaea9f92c09bcd7808ab3c1364fead2d0f3b23ecd76d67c1a",
+        "launch.json": "377590147f28a61fc026b2bf587b771022fec0f1c06bffbc6f9b5ad0f18800a0",
+        "stdout.log": "2de8712bf610377820c164c90337c902491812381fd83de8b31a8345bb92da2d",
+        "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "child_started.json": "946e50c8ff5e207ec2421c30aacc0cd6f0101a30efaf1ad15036e76ef9054b78",
+        "effect_consumed.json": "98cc2048f4dd4b0498ac53ca647c65712482748bee46ae4ef1bc7798f00614cc",
+        "gpu_before.json": "518b487ad79f7fc6750bf11623e66d4f1879d223b1b5796ddc505e9fccaa9493",
+        "gpu_after.json": "800c8b7a4754c2fb0ce5dee84b3cff2952cb5c37cb0bc5db5ff78db324e44b7f"
+      },
+      "fault_sham": {
+        "manifest.json": "89d18b970c56dfa50742be5e18efda84613f61c7a544a352087b1593b4a3086f",
+        "body.json": "fed95b230bba24e25712a14e7cfb3493d2e7ee399c6e930253e5d3aca279379f",
+        "fixed_report.json": "65e2b2aa2911f3cc956a8f5e7e3646047bff249b1f1e14050bb054683614e924",
+        "configuration.yaml": "a8a62d4e6a4024d66c5f62ed55cad3c048238356d1b49992be524594fc33e54d",
+        "execution.json": "4b8e2131bc1bfc3d51a48b0b3d7004bfc16701000abc6d90fb08a7966f9d74e1",
+        "launch.json": "45f3c0ca758cac952c0e85707f89ec6e825f3ef1a1bab9527c5d7ef4d38e8d1d",
+        "stdout.log": "d633fc83ec30e11aab2d88e7b65bbab887cd5ee5835b8c0fe241f395f6b93ccd",
+        "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "child_started.json": "3944afe293e9bfe5b74f494bda208afb9d118d3b656cd6bfb54db7b41c8266e3",
+        "effect_consumed.json": "80b104b4c9e3c2d523a7ac0089cb1b6396244a72919646b6d893bdcbab5350a3",
+        "gpu_before.json": "f0571aebfc740f00ac9c57e96957c56ac0b2efbf57a8f773d5252ac7ba89e9ca",
+        "gpu_after.json": "ebc4b82f186212184d4d1245d1ffa1a132f6ef34c1141bcf98275ed67e288c63"
+      },
+      "callback_fixed": {
+        "manifest.json": "e5ee535a3ee4c76c7710f0e92346245b8460e293b83a940b1fe918b1cb74432b",
+        "body.json": "e623af41633521fba84b462f5600d9ed53eaef3469f7d563c26f401405bfd50a",
+        "fixed_report.json": "d42232d48df5c18fc76ecb135840ccb9594f5497de2fa63b687105c0e7a8d9ce",
+        "configuration.yaml": "a8a62d4e6a4024d66c5f62ed55cad3c048238356d1b49992be524594fc33e54d",
+        "execution.json": "63ddf37a3d9356eea58422ace5159935b35b3188b877ef9006fe2e228ad5f97d",
+        "launch.json": "e4d48ca295fec5178652fec7c02e9b07ce34fc275b91cdceb71b2862ffa59a66",
+        "stdout.log": "ae78afef9f60dd78d9c8e08ddca468ffe3cca2ae332daa44a4c6e5849f63caf0",
+        "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "child_started.json": "5902ce1d67e0c1a038d417246f16397ff3bc043c9a5c8d57b79b153417432daa",
+        "effect_consumed.json": "24a544859d1973af6323d901b2bbf48b9d6b4d67a8a7f4a5a1926c4470798c80",
+        "gpu_before.json": "848c779a626fd5975115c2ae842c610c5e4d8f1cde141294f9a14ef8d342e44b",
+        "gpu_after.json": "4a34722736649b14e520b86fa108b9ffb21e2928482f96ea5b8bb0f0c1b78d46"
+      }
+    },
+    "result_sha256": "9829a499df008f8a95427d61f7891a367ee5304b364bc622e2b143485acbe534",
+    "arms": {
+      "fault_before": {
+        "natural_exit": true,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "wall_s": 53.92199999978766,
+        "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "parent_receipt_sha256": "f4844963c69012e568399aa5593d328b36e00af565b5d22d00a02d4d7469a782",
+        "status": "pass"
+      },
+      "fault_sham": {
+        "natural_exit": true,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "wall_s": 52.73399999993853,
+        "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "parent_receipt_sha256": "28ecdb0056c00f444407fbe15986296d9230ef37e45a68f09c9ddf383f97a04f",
+        "status": "pass"
+      },
+      "callback_fixed": {
+        "natural_exit": true,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "wall_s": 61.15599999995902,
+        "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "parent_receipt_sha256": "8933958fc137e9f2f0c05c26bb74d44078383985bfeba1ec69153f62517ff4f5",
+        "status": "pass"
+      }
+    },
+    "full_raw_execution_artifacts_public": false,
+    "public_replay_verifies_execution_provenance": false,
+    "verification_scope": "Local original inputs, pinned SDK sources, configuration, PID and creation time, raw measurements, approval-free host execution and owned cleanup. Public readers can recompute numerical reports; hashes alone do not authenticate private execution."
+  },
+  "cost": {
+    "completed_triplet_sdk_jobs": 3,
+    "completed_triplet_parent_wall_s": 167.8119999996852,
+    "preserved_invalid_attempts": [
+      {
+        "path": "attempt_a.json",
+        "status": "invalid",
+        "sdk_jobs_launched": 1,
+        "parent_wall_s": 15.422000000020489
+      },
+      {
+        "path": "attempt_b.json",
+        "status": "invalid",
+        "sdk_jobs_launched": 1,
+        "parent_wall_s": 49.48400000017136
+      }
+    ],
+    "all_attempts_sdk_jobs": 5,
+    "all_attempts_parent_wall_s": 232.71799999987707,
+    "model_calls": 0,
+    "wall_scope": "Sum of parent launch to exit and owned job cleanup; not GPU kernel time or a savings measurement"
+  },
+  "agent_entry_or_approval_evidence": false,
+  "judgment_influence_proven": false,
+  "claims": {
+    "policy_weights_repaired": false,
+    "cause_confirmed": false,
+    "model_selected_intervention": false,
+    "superiority_proven": false,
+    "generalization_proven": false,
+    "statistical_significance_proven": false
+  },
+  "next_action": "Reject this immediate runtime correction as a recovery scene. Any training-time correction needs a separate preregistered experiment; this result does not predict its success."
+}
