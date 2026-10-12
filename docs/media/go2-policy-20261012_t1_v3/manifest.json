@@ -1,0 +1,44 @@
+{
+  "schema": "checkpoint_preview_artifact_v1",
+  "scope": "existing_policy_stock_playback",
+  "source_commit_sha": "de05acb8ab27e8a1265a304ebdff579aa0449e5e",
+  "protocol_sha256": "6241f1f7a4298edf7a5833e7f580f7664701d0077e354b1e4de316f604d388b1",
+  "checkpoint_sha256": "ed28e874db3e984b6946aea7fe2a193f5f0661cb3799e0f6aacc04cbecc9f647",
+  "training_seed": 2028,
+  "play_seed": 42,
+  "num_envs": 1,
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+  "overrides": [
+    "env.viewer.eye=[3.0,3.0,2.0]",
+    "env.viewer.lookat=[0.0,0.0,0.35]"
+  ],
+  "native_video": {
+    "width": 1280,
+    "height": 720,
+    "frame_rate": "50/1",
+    "frame_count": 299,
+    "duration_s": 5.98
+  },
+  "playback_wall_s": 53.188,
+  "process_cleanup_verified": true,
+  "artifacts": {
+    "simulation.mp4": {
+      "sha256": "dabc1f5d2cebf4ac7e9c0f71c515c0d6ca93630fc045e9ed602c42e29495fe06",
+      "bytes": 477783
+    },
+    "simulation.gif": {
+      "sha256": "13080cc0a31ac7f9d2b3f97f92cf5014b728ef376938d5f47361781b13bb853e",
+      "bytes": 2127747
+    },
+    "poster.png": {
+      "sha256": "04ec0b846cb8d1e09b8cee2c08341c9f8179e8b7968309a6f542497ed25f3603",
+      "bytes": 549954
+    }
+  },
+  "model_calls": 0,
+  "gpu_exclusive": false,
+  "performance_measurement": false,
+  "diagnosis_or_recovery_evidence": false,
+  "retraining": false,
+  "interpretation": "Existing frozen T1 policy in the stock Play environment. New capture; no AI-selected measurement, diagnosis, correction or recovery is shown."
+}

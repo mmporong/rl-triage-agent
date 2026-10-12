@@ -1,0 +1,50 @@
+{
+  "schema": "simulation_display_manifest_v1",
+  "scope": "same_native_video_cropped_no_text_cards",
+  "recording_manifest_sha256": "769da26e8558825d1d03f13a1e5e4a4dc080ec7ac437c38d65b52f2040962bf4",
+  "source_video": {
+    "path": "simulation.mp4",
+    "sha256": "dabc1f5d2cebf4ac7e9c0f71c515c0d6ca93630fc045e9ed602c42e29495fe06",
+    "probe": {
+      "width": 1280,
+      "height": 720,
+      "frame_rate": "50/1",
+      "frame_count": 299,
+      "duration_s": 5.98
+    }
+  },
+  "crop_pixels": {
+    "x": 160,
+    "y": 80,
+    "width": 640,
+    "height": 360
+  },
+  "output_width": 720,
+  "requested_output_fps": 15,
+  "effective_mean_fps": 15.0,
+  "full_sequence_preserved": true,
+  "source_time_range_s": [
+    0,
+    5.98
+  ],
+  "filters": "crop=640:360:160:80,fps=15,scale=720:-2:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=3",
+  "gif": {
+    "path": "simulation-focus.gif",
+    "sha256": "e6403cda5e40ab0383c0d0b578993cf30c52aba64c079c462bef6940e5fb1c80",
+    "bytes": 3000100,
+    "probe": {
+      "width": 720,
+      "height": 406,
+      "frame_rate": "50/3",
+      "frame_count": 90,
+      "duration_s": 6.0
+    }
+  },
+  "poster": {
+    "path": "poster-focus.png",
+    "sha256": "80ca8b1be30aba1d8ef9a808b223c35d086315a1a61208cbd719165540052cde"
+  },
+  "visual_review": "root_inspected_6_gif_samples_robot_remains_in_frame",
+  "independent_review": false,
+  "diagnosis_or_recovery_evidence": false
+}

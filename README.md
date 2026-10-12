@@ -30,13 +30,11 @@ An [additional Brev integration attempt](docs/ACTIVE-DIAGNOSIS-V3-RESULT.md) pre
 
 > 한국어 요약은 [아래](#한국어-요약)에 있습니다.
 
-## Screenshot
+## Isaac simulation
 
-| Healthy reference (checkpoint at 100 iterations) | Injected actuator fault (action scale 0.25 → 1.5) |
-|---|---|
-| ![Go2 robots standing upright under velocity commands](docs/media/baseline_s42_play.gif) | ![Go2 robots collapsing and rearing](docs/media/c04_s42_play.gif) |
+[![Go2 policy replay recorded in Isaac Sim](docs/media/go2-policy-20261012_t1_v3/simulation-focus.gif)](docs/media/go2-policy-20261012_t1_v3/simulation.mp4)
 
-Both clips are Isaac Sim 4.5 off-screen renders of trained checkpoints (`bench/record_play.ps1`). The agent never sees video; it reads TensorBoard scalars and optional selected configuration facts. The 100-iteration "healthy" checkpoint stays upright but does not yet follow the commanded velocities: on a fixed 26-command grid its velocity-tracking error equals that of standing still (`bench/protocols/fixed_eval_v1.json`).
+New off-screen recording of the existing 300-iteration T1 policy in the stock Go2 Play environment. The GIF crops the same simulation sequence to keep the robot visible; the linked video preserves all 299 frames over 5.98 seconds. [Recording provenance](docs/media/go2-policy-20261012_t1_v3/manifest.json) and [display settings](docs/media/go2-policy-20261012_t1_v3/display_manifest.json) bind the checkpoint, capture and crop. This shows policy playback; AI diagnosis and recovery remain unverified. The agent reads TensorBoard scalars and selected configuration facts.
 
 ## At A Glance
 
@@ -277,6 +275,8 @@ This re-derives past numbers; it is not new performance evidence. Two early file
 [관측 후 판단 갱신 드라이버](docs/ACTIVE-DIAGNOSIS.md)는 새 Nemotron 호출이 고른 검사를 승인 원장과 실제 Isaac 실행에 연결합니다. 측정값을 받은 모델의 원문 순위와 규칙 판정은 따로 남기고, 최신 결과를 가린 호출 및 단순 규칙 두 방식의 실행과 비교합니다. 진단과 가림 검증의 상태를 구분해 대조 호출이 잘못돼도 유효한 실제 판단을 이어가며, 해당 쌍은 발표 증거에서 제외합니다. 이미 본 입력의 통합 기록이며 정확도 향상이나 GPU 절감으로 해석하지 않습니다.
 
 [현재 통합 결과](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md)는 모델 8사례와 별도 실행한 규칙 두 방식을 포함합니다. 모델 기록 감사는 8/8 통과했지만, 측정 때문에 판단이 바뀌었다는 기준은 **0/8**입니다. 모델 7사례가 HOLD이며 진단 우위나 절감은 입증하지 못했습니다.
+
+상단 [시뮬레이션 GIF](docs/media/go2-policy-20261012_t1_v3/simulation-focus.gif)는 기존 T1 동결 정책을 새로 녹화한 Isaac 장면입니다. 같은 장면의 로봇 영역을 잘랐으며, [원본 영상](docs/media/go2-policy-20261012_t1_v3/simulation.mp4)은 5.98초·299프레임을 보존합니다. [출처](docs/media/go2-policy-20261012_t1_v3/manifest.json)에서 체크포인트와 녹화·종료를 대조할 수 있습니다. 이 재생은 AI 진단이나 회복 효과의 증거가 아닙니다.
 
 보존한 [영상](docs/media/evidence-v2-20261011-recovery-q4/evidence.mp4)은 실패 관찰부터 검사 선택·측정·보류까지, 그리고 별도 C01의 원복 전·후 모습을 나란히 보여줍니다. 원복 후 생존 19.9446/20초는 과거 평가 기록이며 각 영상은 5.9초를 재생합니다. C01 원복은 V2 진단과 다른 사례입니다. [manifest](docs/media/evidence-v2-20261011-recovery-q4/manifest.json)에서 출처와 산출물 해시를 확인할 수 있습니다. [추가 Brev 실행](docs/ACTIVE-DIAGNOSIS-V3-RESULT.md)은 인프라 실패를 포함한 24건의 종료 기록을 보존하며, 전체 성능 비교에는 사용하지 않습니다.
 
