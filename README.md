@@ -36,9 +36,9 @@ An [additional Brev integration attempt](docs/ACTIVE-DIAGNOSIS-V3-RESULT.md) pre
 
 ## Isaac simulation
 
-[![Go2 policies before correction, after correction and after control training in Isaac Sim](docs/media/go2-correction-reward_resume_dev3_20261013/comparison.gif)](docs/media/go2-correction-reward_resume_dev3_20261013/comparison.mp4)
+[![Go2 policies before correction, after correction and after control training in Isaac Sim](docs/media/go2-correction-motor_resume_dev_20261013/comparison.gif)](docs/media/go2-correction-motor_resume_dev_20261013/comparison.mp4)
 
-Actual off-screen Isaac recordings of the failed reward-frame policy, the policy after registered correction and continued training, and the control policy. All three use the same stock Go2 Play settings and seed. The linked video preserves 299 frames over 5.98 seconds; the GIF samples the same footage. This development case returned **`no_recovery`** in the separate 26-command fixed evaluation. [Recording provenance](docs/media/go2-correction-reward_resume_dev3_20261013/source_manifest.json) binds all three checkpoints, source code, original clips and process cleanup to the [measured result](evals/results/reward_resume_dev3_20261013/result.json). The preview is policy playback, not a new evaluation or an AI-selected recovery.
+Actual off-screen Isaac recordings of the failed motor-curve policy, the policy after registered correction and continued training, and the control policy. All three use the same stock Go2 Play settings and seed. The linked video preserves 299 frames over 5.98 seconds; the GIF samples the same footage. In the separate 26-command fixed evaluation, linear tracking error was 0.188 m/s after correction and 0.826 m/s for the control (healthy reference: 0.132 m/s). The corrected policy remained outside the registered healthy range: **`no_recovery`**. [Recording provenance](docs/media/go2-correction-motor_resume_dev_20261013/source_manifest.json) binds all three checkpoints, source code, original clips and process cleanup to the [measured result](evals/results/motor_resume_dev_20261013/result.json). The preview is policy playback, not a new evaluation or an AI-selected recovery.
 
 ## At A Glance
 
@@ -284,7 +284,7 @@ This re-derives past numbers; it is not new performance evidence. Two early file
 
 [현재 통합 결과](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md)는 모델 8사례와 별도 실행한 규칙 두 방식을 포함합니다. 모델 기록 감사는 8/8 통과했지만, 측정 때문에 판단이 바뀌었다는 기준은 **0/8**입니다. 모델 7사례가 HOLD이며 진단 우위나 절감은 입증하지 못했습니다.
 
-상단 [시뮬레이션 GIF](docs/media/go2-correction-reward_resume_dev3_20261013/comparison.gif)는 실패 정책, 교정 후 이어 학습한 정책, 대조 정책을 같은 조건으로 녹화한 Isaac 장면입니다. [비교 영상](docs/media/go2-correction-reward_resume_dev3_20261013/comparison.mp4)은 5.98초·299프레임을 보존합니다. 별도 고정 행동 평가의 판정은 **`no_recovery`**이며, 이 영상을 회복 성공으로 해석하지 않습니다. [출처](docs/media/go2-correction-reward_resume_dev3_20261013/source_manifest.json)에 체크포인트와 코드, 원본 영상, 프로세스 종료 검증을 묶었습니다.
+상단 [시뮬레이션 GIF](docs/media/go2-correction-motor_resume_dev_20261013/comparison.gif)는 실패 정책, 교정 후 이어 학습한 정책, 대조 정책을 같은 조건으로 녹화한 Isaac 장면입니다. [비교 영상](docs/media/go2-correction-motor_resume_dev_20261013/comparison.mp4)은 5.98초·299프레임을 보존합니다. 별도 고정 행동 평가의 선속도 오차는 교정군 0.188 m/s, 대조군 0.826 m/s, 정상 기준 0.132 m/s였습니다. 교정군이 정상 허용 범위를 벗어나 판정은 **`no_recovery`**입니다. [출처](docs/media/go2-correction-motor_resume_dev_20261013/source_manifest.json)에 체크포인트와 코드, 원본 영상, 프로세스 종료 검증을 묶었습니다.
 
 보존한 [영상](docs/media/evidence-v2-20261011-recovery-q4/evidence.mp4)은 실패 관찰부터 검사 선택·측정·보류까지, 그리고 별도 C01의 원복 전·후 모습을 나란히 보여줍니다. 원복 후 생존 19.9446/20초는 과거 평가 기록이며 각 영상은 5.9초를 재생합니다. C01 원복은 V2 진단과 다른 사례입니다. [manifest](docs/media/evidence-v2-20261011-recovery-q4/manifest.json)에서 출처와 산출물 해시를 확인할 수 있습니다. [추가 Brev 실행](docs/ACTIVE-DIAGNOSIS-V3-RESULT.md)은 인프라 실패를 포함한 24건의 종료 기록을 보존하며, 전체 성능 비교에는 사용하지 않습니다.
 

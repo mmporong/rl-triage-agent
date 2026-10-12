@@ -99,13 +99,15 @@ $tag = 'reward_resume_dev3_20261013'
 
 첫 사례의 [비교 영상](media/go2-correction-reward_resume_dev3_20261013/comparison.mp4)과 [GIF](media/go2-correction-reward_resume_dev3_20261013/comparison.gif)는 교정 전·등록 교정 후·대조 정책을 같은 조건으로 재생한다. 각 원본은 5.98초·299프레임이며, GIF는 같은 장면에서 90프레임을 사용한다. [출처 기록](media/go2-correction-reward_resume_dev3_20261013/source_manifest.json)에 세 체크포인트, 소스, 실행 종료 검증, 파일 해시가 있다. 행동 판정은 이 재생 화면이 아닌 위 고정 평가의 원시 수치로 계산한다.
 
+모터 사례의 [비교 영상](media/go2-correction-motor_resume_dev_20261013/comparison.mp4)과 [GIF](media/go2-correction-motor_resume_dev_20261013/comparison.gif)도 같은 세 조건을 재생한다. 원본과 비교 영상은 5.98초·299프레임, GIF는 6초·90프레임이다. [출처 기록](media/go2-correction-motor_resume_dev_20261013/source_manifest.json)은 case_02의 `no_recovery` 판정과 원본 체크포인트를 결합한다. README의 미리보기는 이 모터 사례이며, 첫 보상 사례의 영상도 보존한다.
+
 ## 액추에이터 곡선 검사
 
 `src/rl_triage/actuator_envelope.py`의 `inspect_actuator_envelope`는 정책 rollout 없이 등록 속도 격자에서 DC motor `_clip_effort`의 양·음 포화 출력을 읽고 설정에서 계산한 토크–속도 곡선과 비교한다. 측정 중 교체한 `_joint_vel`은 `finally`에서 원 객체로 복원한다. 설정·shape·유한성 검증이 실패하면 곡선 이상으로 확정하지 않고 `invalid`를 반환한다.
 
 이 함수는 device 중립의 제한된 곡선 readback이다. 반환하는 source SHA는 호출자가 제시한 값이며 함수가 파일 결합을 검증하지 않는다.
 
-`bench/actuator_envelope_runtime.py`와 `bench/run_actuator_envelope_runtime.py`는 이 함수를 실제 Go2 actuator에 연결하는 별도 실행기다. 정책 rollout 없이 13개 속도점과 12개 관절을 읽으며, NONE·F2·F3·F4 조건의 소스·런타임·상태 복원·자연 종료를 검증한다. 부모 프로세스가 측정 곡선과 판정을 다시 계산한다. 코드는 CPU 회귀 검증과 검토를 마쳤으며 실제 Isaac 측정은 아직 실행 전이다. Isaac Sim 4.5.0 버전을 확인하지만 정확히 같은 rc/build 바이너리까지 보증하지 않는다.
+`bench/actuator_envelope_runtime.py`와 `bench/run_actuator_envelope_runtime.py`는 이 함수를 실제 Go2 actuator에 연결하는 별도 실행기다. 정책 rollout 없이 13개 속도점과 12개 관절을 읽으며, NONE·F2·F3·F4 조건의 소스·런타임·상태 복원·자연 종료를 검증한다. 부모 프로세스가 측정 곡선과 판정을 다시 계산한다. 코드는 CPU 회귀 검증과 검토를 마쳤으며 유효한 실제 Isaac 측정 결과는 아직 없다. Isaac Sim 4.5.0 버전을 확인하지만 정확히 같은 rc/build 바이너리까지 보증하지 않는다.
 
 `src/rl_triage/mechanism_registry.py`는 기존 검사를 보존하면서 별도 레지스트리와 승인 원장에 digest를 결합한다. 정책에 따라 달라지는 `P_torque`를 메커니즘 확정에서 제외하는 구성을 제공한다. 새 곡선 검사는 아직 에이전트의 검사 선택 경로에 연결하지 않았다. 곡선 차이는 등록 입력 격자의 관찰이며 원인 확정이나 LLM 우위 근거가 아니다.
 
