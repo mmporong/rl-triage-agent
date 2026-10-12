@@ -116,6 +116,30 @@ def test_event_readback_accepts_only_upstream_reset_ranges():
         G.validate_event_readback({}, resolved)
 
 
+def test_sdk_tuple_readback_is_equivalent_to_saved_json_without_mutating_values():
+    raw = deepcopy(G.B.EXPECTED_INJECTION_READBACK)
+    ranges = raw["changed"]["events.base_com"]["com_range"]
+    for key, value in ranges.items():
+        ranges[key] = tuple(value)
+    original = deepcopy(raw)
+    assert raw != G.B.EXPECTED_INJECTION_READBACK
+    assert G.normalize_injection_readback(raw) == G.B.EXPECTED_INJECTION_READBACK
+    assert raw == original
+
+
+@pytest.mark.parametrize("change", [
+    lambda raw: raw["checks"].update(base_com_in_reset=1),
+    lambda raw: raw["changed"]["events.base_com"]["com_range"].update(x=(-0.06, 0.06)),
+    lambda raw: raw["changed"]["events.base_com"]["com_range"].update(z=(float("nan"), 0.01)),
+    lambda raw: raw["changed"]["events.base_com"].update(mode="startup"),
+])
+def test_tuple_normalization_preserves_rejection_of_changed_semantics(change):
+    raw = deepcopy(G.B.EXPECTED_INJECTION_READBACK)
+    change(raw)
+    with pytest.raises(ValueError):
+        G.normalize_injection_readback(raw)
+
+
 def test_target_body_binding_joins_original_resolved_and_runtime_names():
     original = {"name": "robot", "body_names": "base", "body_ids": slice(None)}
     resolved = {"name": "robot", "body_names": ["base"], "body_ids": [1]}

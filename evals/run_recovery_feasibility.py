@@ -15,7 +15,7 @@ for directory in (ROOT / "src", ROOT / "bench", ROOT / "evals"):
 
 import run_grounded_recovery as H  # noqa: E402
 
-PROTOCOL = ROOT / "bench/protocols/recovery_feasibility_v1.json"
+PROTOCOL = ROOT / "bench/protocols/recovery_feasibility_v2.json"
 PRIVATE = ROOT / "bench/private/recovery_feasibility"
 METADATA = ROOT / "bench/private/e01_s2028.meta.json"
 CODE = {"evals/run_recovery_feasibility.py"}
@@ -65,7 +65,7 @@ def source_input() -> tuple[dict, dict]:
 
 
 def prepare(isaaclab: Path) -> dict:
-    H.verified_protocol(isaaclab)
+    H.validate_protocol(H.read(H.PROTOCOL), isaaclab)
     binding, _ = source_input()
     protocol = {**deepcopy(FIXED), "input_binding": binding,
                 "recovery_protocol_sha256": H.W.file_sha(H.PROTOCOL),

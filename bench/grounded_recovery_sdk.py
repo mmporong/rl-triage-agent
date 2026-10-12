@@ -125,10 +125,18 @@ def validate_clock_trace(rows: object, *, reset_calls: object, env_create_count:
             "reset_calls": EXPECTED_RESETS}
 
 
+def normalize_injection_readback(injection: object) -> dict:
+    """SDK tuple 범위를 JSON 배열로 정규화한 뒤 원래 수치·타입 계약을 대조한다."""
+    raw = json.dumps(injection, sort_keys=True, allow_nan=False)
+    expected = json.dumps(B.EXPECTED_INJECTION_READBACK, sort_keys=True, allow_nan=False)
+    if raw != expected:
+        raise ValueError("injection readback differs from the fixed base COM contract")
+    return json.loads(raw)
+
+
 def validate_event_readback(injection: object, resolved: object) -> None:
     """X1/X1_REF 공통 상류 base_com reset 설정을 값으로 확인한다."""
-    if injection != B.EXPECTED_INJECTION_READBACK:
-        raise ValueError("injection readback differs from the fixed base COM contract")
+    normalize_injection_readback(injection)
     if not isinstance(resolved, Mapping):
         raise ValueError("resolved base_com event readback is missing")
     if resolved.get("mode") != "reset":
@@ -276,9 +284,7 @@ def _execute_fixed_eval(validated: dict, paths: dict[str, Path]) -> dict:
         env = original_make(*args, **kwargs)
         try:
             env = tracker.environment_created(env)
-            injection = hidden_faults._after_env(callback, env)
-            if injection != B.EXPECTED_INJECTION_READBACK:
-                raise ValueError("injection readback differs from the fixed base COM contract")
+            injection = normalize_injection_readback(hidden_faults._after_env(callback, env))
             config_sha, observation_sha, resolved, target = _write_configuration(
                 validated["paths"]["configuration_path"], env.unwrapped, injection,
             )

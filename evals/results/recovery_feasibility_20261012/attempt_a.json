@@ -1,0 +1,34 @@
+{
+  "schema": "recovery_feasibility_infrastructure_failure_v1",
+  "attempt": "callback_triplet_20261012_a",
+  "source_commit_sha": "73ea52e4ac6b5b999628a8319bc9e89deb5d4bf2",
+  "protocol_sha256": "0f25d1ee8e9d2bd368b342853f39695d3ae50e5bf1bbdb3cc0a3d1f0e6c8efc2",
+  "status": "invalid",
+  "completed_behavioral_arms": 0,
+  "sdk_jobs_launched": 1,
+  "model_calls": 0,
+  "failure_stage": "sdk_environment_configuration_before_policy_rollout",
+  "observed_error": "ValueError: injection readback differs from the fixed base COM contract",
+  "cause": "SDK tuple COM ranges compared to JSON list ranges without serialization normalization",
+  "cause_evidence": [
+    "IsaacLab velocity_env_cfg.py EventCfg.base_com.params.com_range",
+    "test_sdk_tuple_readback_is_equivalent_to_saved_json_without_mutating_values"
+  ],
+  "behavioral_result": null,
+  "owned_cleanup_verified": true,
+  "sdk_exit_code": 0,
+  "exit_code_alone_was_not_accepted": true,
+  "parent_wall_s": 15.422000000020489,
+  "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+  "private_raw_sha256": {
+    "execution.json": "dd2d80cd3fbd6cc0059b2abfafa8da0c2cdc6565c79aa55f05a08d32c22cc1ad",
+    "launch.json": "4445b7517a4def054bd5be505e0e579b65c09ffcaabc41a999bf61668168afc6",
+    "stdout.log": "1725a6a7f99ebb34f1fc895bc4ef2abaa84505a4eee7fc7ebb1028527276dcf9",
+    "stderr.log": "34e2a01c8a1f54205520d5bd7c129b5651da6aef3bd158aca16c3098f3fcbc1d",
+    "child_started.json": "4222b22cb9f6d69daf6ef63b1997918448313a16f2a021ca73e7306abb57bfea",
+    "child_failure.json": "9df58d31ebdfea20e8e7087d43320b87ef0ca55ccd51873b2028d4c202076c5d",
+    "manifest.json": "2ba12ef18b4e5f8b676b7f6a74b9cdb8e8d39c15fdc27b612e8fb81ae4f79758"
+  },
+  "semantic_retry": false,
+  "next_attempt_requires_committed_infrastructure_repair": true
+}
