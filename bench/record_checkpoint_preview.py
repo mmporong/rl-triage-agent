@@ -12,7 +12,7 @@ import record_evidence_media as M
 import run_runtime_readback_smoke as P
 
 ROOT = Path(__file__).resolve().parents[1]
-PROTOCOL = ROOT / "bench/protocols/checkpoint_preview_t1_v2.json"
+PROTOCOL = ROOT / "bench/protocols/checkpoint_preview_t1_v3.json"
 METADATA = ROOT / "bench/private/e01_s2028.meta.json"
 CODE = {"bench/record_checkpoint_preview.py", "bench/record_evidence_media.py",
         "bench/run_runtime_readback_smoke.py"}
@@ -20,8 +20,7 @@ PLAY = "scripts/reinforcement_learning/rsl_rl/play.py"
 FIXED = {"schema": "checkpoint_preview_v1", "scope": "existing_policy_stock_playback",
          "task": M.EXPECTED_TASK, "seed": 42, "num_envs": 1, "video_length": 300,
          "kit_args": "--/app/vulkan=false --/app/window/hideUi=true",
-         "overrides": ["env.viewer.eye=[3.0,3.0,2.0]", "env.viewer.lookat=[0.0,0.0,0.35]",
-                       "env.viewer.origin_type=asset_root", "env.viewer.asset_name=robot"],
+         "overrides": ["env.viewer.eye=[3.0,3.0,2.0]", "env.viewer.lookat=[0.0,0.0,0.35]"],
          "video_contract": M.EXPECTED_VIDEO_CONTRACT,
          "gpu_admission": M.EXPECTED_GPU_ADMISSION,
          "training_seed": 2028, "training_num_envs": 4096, "training_iterations": 300,

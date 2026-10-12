@@ -1,0 +1,100 @@
+{
+  "schema": "checkpoint_preview_v1",
+  "scope": "existing_policy_stock_playback",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+  "seed": 42,
+  "num_envs": 1,
+  "video_length": 300,
+  "kit_args": "--/app/vulkan=false --/app/window/hideUi=true",
+  "overrides": [
+    "env.viewer.eye=[3.0,3.0,2.0]",
+    "env.viewer.lookat=[0.0,0.0,0.35]"
+  ],
+  "video_contract": {
+    "width": 1280,
+    "height": 720,
+    "frame_rate": "50/1",
+    "frame_count": 299,
+    "duration_s": 5.98,
+    "duration_tolerance_s": 0.02
+  },
+  "gpu_admission": {
+    "policy": "desktop_shared_recording_v1",
+    "gpu_exclusive": false,
+    "performance_measurement": false,
+    "memory_used_limit_mib": 4096,
+    "gpu_index": 0,
+    "active_engine_min_percent": 1,
+    "protected_cim_name_only_process_names": [
+      "dwm.exe",
+      "remoting_desktop.exe",
+      "system",
+      "tabtip.exe"
+    ],
+    "guard_phases": [
+      "before_clip",
+      "after_clip"
+    ],
+    "allowed_process_types": [
+      "C+G",
+      "G"
+    ],
+    "allowed_display_process_names": [
+      "asus_framework.exe",
+      "chatgpt.exe",
+      "chrome.exe",
+      "codex-computer-use-swift.exe",
+      "crossdeviceresume.exe",
+      "discord.exe",
+      "dwm.exe",
+      "explorer.exe",
+      "lghub_system_tray.exe",
+      "microsoft.cmdpal.ui.exe",
+      "msedgewebview2.exe",
+      "nvidia overlay.exe",
+      "phoneexperiencehost.exe",
+      "powertoys.colorpickerui.exe",
+      "powertoys.exe",
+      "powertoys.fancyzones.exe",
+      "powertoys.peek.ui.exe",
+      "powertoys.quickaccess.exe",
+      "remoting_desktop.exe",
+      "searchhost.exe",
+      "shellexperiencehost.exe",
+      "shellhost.exe",
+      "slack.exe",
+      "startmenuexperiencehost.exe",
+      "system",
+      "tabtip.exe",
+      "textinputhost.exe",
+      "video.ui.exe",
+      "windowsterminal.exe"
+    ],
+    "allowed_active_engine_types": [
+      "3D",
+      "Copy",
+      "VideoDecode",
+      "VideoEncode"
+    ],
+    "unclassified_activity": "block"
+  },
+  "training_seed": 2028,
+  "training_num_envs": 4096,
+  "training_iterations": 300,
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "model_calls": 0,
+  "diagnosis_or_recovery_evidence": false,
+  "retraining": false,
+  "gif_fps": 15,
+  "gif_width": 720,
+  "source_files": {
+    "bench/record_checkpoint_preview.py": "b571a4dc7e9b7180db83ba09606fffbf3b221493847da47f53c0f6658e250ebd",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36"
+  },
+  "metadata_sha256": "f6647bcf7b15720387f3f955ebf7b6227daca812963b529c0c64cd2231cb376a",
+  "checkpoint_sha256": "ed28e874db3e984b6946aea7fe2a193f5f0661cb3799e0f6aacc04cbecc9f647",
+  "params_env_sha256": "74e1d74a851b8d6041f1f72f2fc1a40a5190f93221530daea55b3b5612feff1d",
+  "params_agent_sha256": "324120efd17ba13a0f019d66457d5db435017fcf6d86b938d76f3edbe82431c9",
+  "play_py_sha256": "0966feac5a96812fca880e3731e96b001918b57fa372f69e4cf5fdca538bd7bd"
+}
