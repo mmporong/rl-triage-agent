@@ -1,0 +1,38 @@
+{
+  "schema": "recovery_feasibility_infrastructure_failure_v1",
+  "attempt": "callback_triplet_20261012_b",
+  "source_commit_sha": "310b7f65944c348965f9d9f68d4fbf871fc84178",
+  "protocol_sha256": "1a8a29afed20aad020c027f25c2f3a1fac6de8a09adc8b2e393101b20d00088a",
+  "status": "invalid",
+  "completed_numeric_reports": 1,
+  "verified_behavioral_arms": 0,
+  "sdk_jobs_launched": 1,
+  "model_calls": 0,
+  "failure_stage": "sdk_body_json_serialization_after_policy_rollout",
+  "observed_error": "TypeError: Object of type slice is not JSON serializable",
+  "cause": "SceneEntityCfg unused joint/tendon/object selectors remained slice objects in the event readback returned for JSON serialization",
+  "cause_evidence": [
+    "saved configuration.yaml resolved_event_readback.base_com.params.asset_cfg",
+    "test_written_event_readback_uses_persisted_yaml_and_is_json_serializable"
+  ],
+  "numeric_report_validation": "pass_but_not_complete_execution_provenance",
+  "effect_evidence_valid": false,
+  "owned_cleanup_verified": true,
+  "sdk_exit_code": 0,
+  "exit_code_alone_was_not_accepted": true,
+  "parent_wall_s": 49.48400000017136,
+  "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+  "private_raw_sha256": {
+    "execution.json": "3895f523e5e05a9f37965b9dd3236333d086c1be68a99c6fd44acc785c4d3f80",
+    "launch.json": "db6b6848a1362c0003079a67957e6cba6e58e89a592a8e354da15559a53578ac",
+    "stdout.log": "cd5d96eb64291ba4f80dc789bdf7694147fb83d1bc647f5a54f35665cbf578a2",
+    "stderr.log": "54f16b9acbe855a512b8c566c38bc2f1ae4e3a98bad4e5c0cc61d1688c949f25",
+    "child_started.json": "33e22c0628f8bf9f054eca6f983e5fb5ae9c264d27c06ee0247ef7e280bbfca0",
+    "child_failure.json": "dd5857c7f3bb1acbfd979a2d841a82365fa1e37a51f53df4f3d9c0914b0fb380",
+    "manifest.json": "817a7b08fa3e7b80bbf84c2ff7bc8068ea92dbf5b7d396827eef89df2de57729",
+    "configuration.yaml": "a8a62d4e6a4024d66c5f62ed55cad3c048238356d1b49992be524594fc33e54d",
+    "fixed_report.json": "6acb001de0bd648a7f01f4f654b99e858ebfad44ea04cfb422d621dd8cb66042"
+  },
+  "semantic_retry": false,
+  "next_attempt_requires_committed_infrastructure_repair": true
+}

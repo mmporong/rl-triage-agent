@@ -184,6 +184,31 @@ def test_observation_configuration_sha_uses_stored_yaml_roundtrip(tmp_path):
     assert G._observation_configuration_sha(path) == G.S._canonical_sha(loaded)
 
 
+def test_written_event_readback_uses_persisted_yaml_and_is_json_serializable(tmp_path, monkeypatch):
+    # 실제 SceneEntityCfg는 사용하지 않는 selector도 slice로 보존한다.
+    payload = {"observation_configuration": {"joint_ids": slice(None)},
+               "resolved_event_readback": {"base_com": {"params": {
+                   "asset_cfg": {"body_ids": [0], "joint_ids": slice(None),
+                                 "fixed_tendon_ids": slice(None), "object_collection_ids": slice(None)},
+                   "com_range": {"x": (-0.05, 0.05)}}}},
+               "target_body_readback": {"body_names": ["base"], "base_body_index": 0}}
+    monkeypatch.setattr(G, "_configuration_payload", lambda *_: (deepcopy(payload), {}))
+    monkeypatch.setitem(sys.modules, "isaaclab.utils", SimpleNamespace(class_to_dict=lambda value: value))
+
+    def dump_yaml(path, value, **kwargs):
+        Path(path).write_text(yaml.dump(value, **kwargs), encoding="utf-8")
+
+    monkeypatch.setitem(sys.modules, "isaaclab.utils.io", SimpleNamespace(dump_yaml=dump_yaml))
+    path = tmp_path / "configuration.yaml"
+    sha, observation_sha, resolved, target = G._write_configuration(path, object(), {})
+    stored = G.B._load_configuration_yaml(path)
+    assert sha == G.S._sha256_file(path)
+    assert observation_sha == G.S._canonical_sha(stored["observation_configuration"])
+    assert resolved == stored["resolved_event_readback"] and target == stored["target_body_readback"]
+    assert resolved["base_com"]["params"]["asset_cfg"]["joint_ids"] == [None, None, None]
+    assert json.loads(json.dumps({"resolved": resolved, "target": target}, allow_nan=False))
+
+
 def _validated(folder):
     return {
         "manifest": {"arm": "fault_before", "callback": "X1", "checkpoint_path": str(folder / "model.pt"),

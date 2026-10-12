@@ -1,0 +1,46 @@
+{
+  "schema": "recovery_feasibility_protocol_v1",
+  "scope": "known_development_input_host_selected_callback_feasibility",
+  "effect_order": [
+    "fault_before",
+    "fault_sham",
+    "callback_fixed"
+  ],
+  "callbacks": {
+    "fault_before": "X1",
+    "fault_sham": "X1",
+    "callback_fixed": "X1_REF"
+  },
+  "execution_limit": 3,
+  "semantic_retries": 0,
+  "model_calls": 0,
+  "training_seed": 2028,
+  "training_num_envs": 4096,
+  "training_iterations": 300,
+  "checkpoint_sha256": "ed28e874db3e984b6946aea7fe2a193f5f0661cb3799e0f6aacc04cbecc9f647",
+  "retraining": false,
+  "additional_resets": 0,
+  "agent_entry_or_approval_evidence": false,
+  "judgment_influence_proven": false,
+  "generalization_proven": false,
+  "policy_weights_repaired": false,
+  "stop_rule": "first_invalid_arm_or_one_complete_triplet_no_semantic_retry",
+  "result_wording": {
+    "recovery_conditions_met": "알려진 개발 입력의 동일 정책에서 등록 콜백 교정의 행동 회복 조건을 관찰했다. 에이전트 선택·판단 변화·학습된 가중치 교정·일반화의 증거는 아니다.",
+    "no_recovery": "콜백 교정 조건에서 고정 보행 기준을 충족하지 못했다. 이 조건의 즉시 회복 경로는 채택하지 않는다.",
+    "no_failure_observed": "이 고정 평가에서 결함 유지와 콜백 교정 사이에 사전등록한 실패 차이가 없었다. 회복 시연 경로로 채택하지 않는다.",
+    "control_invalid": "무변경 반복의 동등성 또는 실패 지표 일치 조건을 충족하지 못했다. 효과의 유무를 확정하지 않는다.",
+    "invalid": "실행 또는 출처 검증이 실패했다. 행동 효과로 집계하지 않고 실패 기록을 보존한다."
+  },
+  "input_binding": {
+    "metadata_sha256": "f6647bcf7b15720387f3f955ebf7b6227daca812963b529c0c64cd2231cb376a",
+    "configuration_sha256": "74e1d74a851b8d6041f1f72f2fc1a40a5190f93221530daea55b3b5612feff1d",
+    "agent_configuration_sha256": "324120efd17ba13a0f019d66457d5db435017fcf6d86b938d76f3edbe82431c9",
+    "checkpoint_sha256": "ed28e874db3e984b6946aea7fe2a193f5f0661cb3799e0f6aacc04cbecc9f647",
+    "action_scale": 0.25
+  },
+  "recovery_protocol_sha256": "e932bcc4ed239f2fbae5cbdb764043c7adca9f7e0d82e8e7edcb6dbf4e9ec21d",
+  "source_files": {
+    "evals/run_recovery_feasibility.py": "0c8fa7485912e07fcb640692228cb82b0b90d77fdaa8edd0f837d9f99821714e"
+  }
+}

@@ -15,7 +15,7 @@ for directory in (ROOT / "src", ROOT / "bench", ROOT / "evals"):
 
 import run_grounded_recovery as H  # noqa: E402
 
-PROTOCOL = ROOT / "bench/protocols/recovery_feasibility_v2.json"
+PROTOCOL = ROOT / "bench/protocols/recovery_feasibility_v3.json"
 PRIVATE = ROOT / "bench/private/recovery_feasibility"
 METADATA = ROOT / "bench/private/e01_s2028.meta.json"
 CODE = {"evals/run_recovery_feasibility.py"}

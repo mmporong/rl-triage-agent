@@ -221,8 +221,11 @@ def _write_configuration(path: Path, base: object, injection: dict) -> tuple[str
         if temporary.exists():
             temporary.unlink()
     observation_sha = _observation_configuration_sha(path)
-    return (S._sha256_bytes(raw), observation_sha, payload["resolved_event_readback"],
-            payload["target_body_readback"])
+    stored = B._load_configuration_yaml(path)
+    resolved, target = stored["resolved_event_readback"], stored["target_body_readback"]
+    # SceneEntityCfg의 미지정 joint/tendon slice도 저장본과 같은 JSON 표현으로 결속한다.
+    json.dumps({"resolved": resolved, "target": target}, allow_nan=False)
+    return S._sha256_bytes(raw), observation_sha, resolved, target
 
 
 def _observation_configuration_sha(path: Path) -> str:

@@ -17,7 +17,7 @@ import grounded_recovery_sdk as D  # noqa: E402
 from rl_triage import grounded_recovery as C  # noqa: E402
 
 B, A, G, W, S, P, M = R.B, R.A, R.G, R.W, R.B.S, R.B.P, R.B.M
-PROTOCOL = ROOT / "bench/protocols/grounded_recovery_v5.json"
+PROTOCOL = ROOT / "bench/protocols/grounded_recovery_v6.json"
 FIXED_EVAL = ROOT / "bench/protocols/fixed_eval_v1.json"
 PRIVATE_ROOT = ROOT / "bench/private/grounded_recovery"
 CALLBACKS = {"fault_before": "X1", "fault_sham": "X1", "callback_fixed": "X1_REF"}
