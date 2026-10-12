@@ -1,13 +1,17 @@
 import asyncio
 import hashlib
 import json
+import socket
+from pathlib import Path
 from typing import cast
 from unittest.mock import Mock
 
 import pytest
+from pydantic import ValidationError
 
 from nat.builder.builder import Builder
 from nat.builder.function_info import FunctionInfo
+from nat.runtime.loader import load_workflow
 
 from rl_triage import nat_single_run as N
 from rl_triage import triage_tools as T
@@ -17,6 +21,52 @@ def _write_json(path, value):
     raw = json.dumps(value).encode("utf-8")
     path.write_bytes(raw)
     return hashlib.sha256(raw).hexdigest()
+
+
+def test_grounded_active_registry_uses_empty_strict_nat_input(tmp_path, monkeypatch):
+    trace_path = tmp_path / "tools.jsonl"
+    monkeypatch.setenv("TRIAGE_TRACE", str(trace_path))
+    builder = cast(Builder, Mock(spec=Builder))
+
+    async def invoke():
+        async with N.grounded_active_registry_fn(
+                N.GroundedActiveRegistryConfig(), builder) as tool:
+            assert isinstance(tool, FunctionInfo)
+            assert tool.single_fn is not None
+            schema = tool.input_schema.model_json_schema()
+            assert schema["properties"] == {}
+            assert schema["additionalProperties"] is False
+            assert schema.get("required", []) == []
+            request = tool.input_schema.model_validate({})
+            return json.loads(await tool.single_fn(request))
+
+    result = asyncio.run(invoke())
+    assert result == N.A.active_registry_profile()
+    call = json.loads(trace_path.read_text(encoding="utf-8"))
+    assert call["tool"] == "grounded_active_registry"
+    assert call["args"] == {}
+    with pytest.raises(ValidationError):
+        N.GroundedActiveRegistryInput.model_validate({"unexpected": True})
+
+
+def test_grounded_active_workflow_loads_without_network(monkeypatch):
+    config = Path(__file__).parents[1] / "configs" / "triage_single_run_grounded_active.yml"
+    monkeypatch.setenv("NVIDIA_API_KEY", "offline-test")
+    original_connect = socket.socket.connect
+
+    def deny_external(self, address):
+        host = address[0] if isinstance(address, tuple) else None
+        if host in {"127.0.0.1", "::1"}:
+            return original_connect(self, address)
+        raise AssertionError(f"external network attempted: {address!r}")
+
+    monkeypatch.setattr(socket.socket, "connect", deny_external)
+
+    async def load():
+        async with load_workflow(config, max_concurrency=1):
+            pass
+
+    asyncio.run(load())
 
 
 @pytest.mark.parametrize("provided", [False, True])

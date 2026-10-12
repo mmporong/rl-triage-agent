@@ -21,7 +21,7 @@ from rl_triage.process_diagnostics import launch_diagnostics  # noqa: E402
 import run_base_com_reset as B  # noqa: E402
 import grounded_active_model_call as W  # noqa: E402
 
-PROTOCOL = ROOT / "bench/protocols/grounded_active_v1.json"
+PROTOCOL = ROOT / "bench/protocols/grounded_active_v2.json"
 PRIVATE_ROOT = ROOT / "bench/private/grounded_active"
 CODE = {
     "src/rl_triage/grounded_active_profile.py", "src/rl_triage/grounded_evidence.py",
@@ -204,7 +204,7 @@ def validate_input_lineage(workspace: Path, case_id: str, metadata_path: Path) -
 def protocol_path(path: Path) -> Path:
     candidate = path.resolve()
     if candidate != PROTOCOL.resolve() or path.is_symlink():
-        raise ValueError("only the repository grounded_active_v1 protocol is supported")
+        raise ValueError("only the current repository grounded-active protocol is supported")
     return candidate
 
 

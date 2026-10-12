@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import sys
 import time
+from traceback import extract_tb
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -148,14 +149,16 @@ def call(stage: str, packet_path: Path, workspace: Path, output: Path) -> int:
         "reasoning_effort": POST_REASONING_EFFORT if stage != "initial" else "configured_by_nat",
         "provider_response_id": None, "provider_model": None, "finish_reason": None,
         "input_tokens": None, "output_tokens": None, "total_tokens": None,
-        "error_type": None, "valid": False,
+        "error_type": None, "error_stage": None, "error_frames": [], "valid": False,
     }
     events = []
     code = 2
+    error_stage = "credential_gate"
     try:
         if not os.environ.get("NVIDIA_API_KEY"):
             raise RuntimeError("credential environment is unavailable")
         if stage == "initial":
+            error_stage = "initial_packet_validation"
             if packet.get("schema") != "grounded_active_initial_packet_v1":
                 raise ValueError("initial packet schema mismatch")
             if version("nvidia-nat") != "1.9.0":
@@ -164,6 +167,7 @@ def call(stage: str, packet_path: Path, workspace: Path, output: Path) -> int:
                     CONFIG.read_bytes().replace(b"\r\n", b"\n")).hexdigest():
                 raise ValueError("initial config source binding mismatch")
             from rl_triage import triage_tools as T, single_run as S, grounded_evidence as G
+            error_stage = "initial_input_binding"
             T.WORKSPACE = workspace
             catalog_before = G.evidence_catalog(packet["case_id"])
             if catalog_before["catalog_sha256"] != packet["catalog_sha256"]:
@@ -175,7 +179,9 @@ def call(stage: str, packet_path: Path, workspace: Path, output: Path) -> int:
             trace.parent.mkdir(parents=True, exist_ok=True)
             with trace.open("x", encoding="utf-8", newline="\n"):
                 pass
+            error_stage = "initial_workflow"
             text = asyncio.run(nat_initial(packet, workspace, trace, events))
+            error_stage = "initial_contract_validation"
             record.update(summarize_nat_usage(events))
             record.update(validate_tool_trace(trace))
             record.update(workflow_config_sha256_lf=packet["workflow_config_sha256_lf"],
@@ -190,6 +196,7 @@ def call(stage: str, packet_path: Path, workspace: Path, output: Path) -> int:
                 raise ValueError("initial workflow source or execution budget invalid")
             record.update(assessment_sha256=canonical_sha(assessment), valid=True)
         else:
+            error_stage = "post_input_binding"
             if stage not in {"actual", "masked"} or packet.get("schema") != "grounded_active_post_packet_v1":
                 raise ValueError("post stage or packet schema mismatch")
             from openai import OpenAI
@@ -204,11 +211,13 @@ def call(stage: str, packet_path: Path, workspace: Path, output: Path) -> int:
             client = OpenAI(base_url="https://integrate.api.nvidia.com/v1",
                             api_key=os.environ["NVIDIA_API_KEY"], timeout=300, max_retries=0)
             record["llm_calls_started"] = 1
+            error_stage = "post_provider_call"
             response = client.chat.completions.create(model=MODEL, messages=messages,
                 temperature=0, max_tokens=POST_MAX_TOKENS, stream=False,
                 extra_body={"reasoning_effort": POST_REASONING_EFFORT})
             record.update(provider_response_id=response.id, provider_model=response.model,
                           llm_calls_finished=1)
+            error_stage = "post_response_validation"
             if response.usage is not None:
                 record.update(input_tokens=response.usage.prompt_tokens,
                               output_tokens=response.usage.completion_tokens,
@@ -226,6 +235,11 @@ def call(stage: str, packet_path: Path, workspace: Path, output: Path) -> int:
         code = 0
     except Exception as error:
         record["error_type"] = type(error).__name__
+        record["error_stage"] = error_stage
+        record["error_frames"] = [
+            {"file": Path(frame.filename).name, "line": frame.lineno, "function": frame.name}
+            for frame in extract_tb(error.__traceback__)[-8:]
+        ]
         if stage == "initial":
             record.update(summarize_nat_usage(events))
     record.update(finished_at=datetime.now(timezone.utc).isoformat(),

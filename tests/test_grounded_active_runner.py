@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 import pytest
 import yaml
@@ -112,6 +113,45 @@ def test_active_workflow_stops_on_tool_semantic_error_instead_of_retrying():
         (ROOT / "configs/triage_single_run_grounded_active.yml").read_text(encoding="utf-8"))
     assert config["workflow"]["handle_tool_errors"] is False
     assert config["workflow"]["truncation_retry"]["max_retries"] == 0
+
+
+def test_worker_setup_failure_records_stage_and_code_location_without_exception_content(
+        monkeypatch, tmp_path):
+    from rl_triage import grounded_evidence as G, triage_tools as T
+
+    config = tmp_path / "workflow.yml"
+    config.write_text("offline: true\n", encoding="utf-8")
+    monkeypatch.setattr(W, "CONFIG", config)
+    monkeypatch.setattr(W, "os", SimpleNamespace(
+        name="posix", environ={"NVIDIA_API_KEY": "offline-unused-placeholder"}))
+    monkeypatch.setattr(W, "version", lambda _name: "1.9.0")
+    monkeypatch.setattr(T, "WORKSPACE", tmp_path)
+    monkeypatch.setattr(G, "evidence_catalog", lambda _case: {"catalog_sha256": "c" * 64})
+    invocations = []
+
+    async def workflow_setup_failure(*_args):
+        invocations.append("setup")
+        raise ValueError("sensitive-exception-content")
+
+    monkeypatch.setattr(W, "nat_initial", workflow_setup_failure)
+    packet_path, output = tmp_path / "initial.packet.json", tmp_path / "initial.model.json"
+    write_json(packet_path, {
+        "schema": "grounded_active_initial_packet_v1", "case_id": "case",
+        "catalog_sha256": "c" * 64,
+        "workflow_config_sha256_lf": hashlib.sha256(config.read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
+    })
+    assert W.call("initial", packet_path, tmp_path, output) == 2
+    raw = output.read_text(encoding="utf-8")
+    record = json.loads(raw)
+    assert invocations == ["setup"]
+    assert record["valid"] is False and record["error_type"] == "ValueError"
+    assert record["error_stage"] == "initial_workflow"
+    assert record["llm_calls_started"] == record["llm_calls_finished"] == 0
+    assert record["error_frames"][-1]["function"] == "workflow_setup_failure"
+    assert all(frame["line"] > 0 and frame["file"] == Path(frame["file"]).name
+               for frame in record["error_frames"])
+    assert "sensitive-exception-content" not in raw
+    assert "offline-unused-placeholder" not in raw and str(tmp_path) not in raw
 
 
 def packet(value: float | None) -> dict:

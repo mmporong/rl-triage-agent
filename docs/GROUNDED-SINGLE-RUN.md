@@ -118,7 +118,7 @@ cd "$HOME/rl-triage-agent"
 
 `evals/run_grounded_active.py`는 기존 T1 metadata, telemetry, 저장된 `env.yaml`의 task·seed·환경 수·해시를 대조한다. 모델에는 중립 case alias와 등록한 telemetry·설정 근거만 제공하고 arm과 원본 경로는 host 기록에 둔다. 원래 학습과 별도 seed의 reset 계측은 서로 다른 실행이다. 원래 학습 코드의 SHA가 기록돼 있지 않은 경우 그 한계도 보존한다. 기존 학습의 원인 재현이나 정책 회복으로 표현하지 않는다.
 
-실행 source와 결과별 문구는 [grounded-active 프로토콜](../bench/protocols/grounded_active_v1.json)에 사전등록하고 커밋한다. task는 stock Go2, 검사 크기는 64 env·20 reset sequence·env별 10 reset, probe seed는 `20261012`다. 모델이 실행 미지원 검사를 선택하면 `HOLD`로 끝내며 GPU를 사용하지 않는다. 도구 오류와 잘못된 응답은 재시도하지 않는다. 승인 소비 후 중단된 실행도 다시 측정하지 않으며 기존 기록을 보존한다.
+실행 source와 결과별 문구는 [현재 grounded-active 프로토콜](../bench/protocols/grounded_active_v2.json)에 사전등록하고 커밋한다. 이전 v1 프로토콜과 결과는 보존한다. NAT 1.9의 검사 목록 등록은 빈 입력 스키마를 받는 함수로 구성하며 모델 입력은 `{}`다. 실패 기록에는 단계·코드 위치를 저장하고 예외 메시지·소스 줄·환경변수는 복사하지 않는다. task는 stock Go2, 검사 크기는 64 env·20 reset sequence·env별 10 reset, probe seed는 `20261012`다. 모델이 실행 미지원 검사를 선택하면 `HOLD`로 끝내며 GPU를 사용하지 않는다. 도구 오류와 잘못된 응답은 재시도하지 않는다. 승인 소비 후 중단된 실행도 다시 측정하지 않으며 기존 기록을 보존한다.
 
 유효한 parent·body·manifest와 소유 프로세스 종료를 확인한 뒤 같은 receipt에서 두 판단 packet을 만든다. 한쪽은 측정값을 받으며 다른 쪽은 값 필드만 `null`로 바꾼다. 지시·근거·사전 예측·최신 원본 receipt citation은 같고, 초기 순위·자유 서술·arm은 포함하지 않는다. case hash로 호출 순서를 고정하고, 두 호출의 요청 예산과 반환 model이 같고 provider response ID가 서로 다른지 확인한다. provider 내부 cache 상태는 확인하지 않는다.
 
@@ -165,7 +165,7 @@ cd "$HOME/rl-triage-agent"
 & .venv/Scripts/python.exe evals/run_grounded_recovery.py execute --tag demo_recovery
 ```
 
-source와 [결과별 문구를 포함한 프로토콜](../bench/protocols/grounded_recovery_v1.json)을 커밋한 뒤 사용한다. 요청 시점과 실행 시점에 원본 입력·새 모델 기록·측정 출처를 다시 확인한다. `bench/private/grounded_recovery/<tag>`에 승인 원장·조건별 설정·원시 평가·부모 receipt·최종 결과를 한 번 저장한다. 이 경로는 CPU 계약 검증 범위이며 실제 새 모델의 진입과 행동 회복은 아직 검증하지 않았다. 성공해도 같은 동결 정책의 이 고정 task·seed·격자에서 등록된 환경 콜백 교정 뒤 행동 기준을 통과했다는 범위로 해석한다.
+source와 [현재 결과별 문구를 포함한 프로토콜](../bench/protocols/grounded_recovery_v2.json)을 커밋한 뒤 사용한다. 이전 v1 프로토콜은 보존한다. 요청 시점과 실행 시점에 원본 입력·새 모델 기록·측정 출처를 다시 확인한다. `bench/private/grounded_recovery/<tag>`에 승인 원장·조건별 설정·원시 평가·부모 receipt·최종 결과를 한 번 저장한다. 이 경로는 CPU 계약 검증 범위이며 실제 새 모델의 진입과 행동 회복은 아직 검증하지 않았다. 성공해도 같은 동결 정책의 이 고정 task·seed·격자에서 등록된 환경 콜백 교정 뒤 행동 기준을 통과했다는 범위로 해석한다.
 
 ## 참고한 연구와 코드
 

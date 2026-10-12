@@ -3,6 +3,7 @@ from nat.builder.builder import Builder
 from nat.builder.function_info import FunctionInfo
 from nat.cli.register_workflow import register_function
 from nat.data_models.function import FunctionBaseConfig
+from pydantic import BaseModel, ConfigDict
 
 from rl_triage import single_run as S
 from rl_triage import grounded_evidence as G
@@ -162,11 +163,15 @@ class GroundedActiveRegistryConfig(FunctionBaseConfig, name="triage_grounded_act
     pass
 
 
+class GroundedActiveRegistryInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
 @register_function(config_type=GroundedActiveRegistryConfig)
 async def grounded_active_registry_fn(config: GroundedActiveRegistryConfig, builder: Builder):
-    async def _run() -> str:
+    async def _run(request: GroundedActiveRegistryInput) -> str:
         return _trace("grounded_active_registry", {}, _dump(A.active_registry_profile()))
-    yield FunctionInfo.from_fn(_run, description=(
+    yield FunctionInfo.from_fn(_run, input_schema=GroundedActiveRegistryInput, description=(
         "기존 read-only 3개와 승인된 simulation reset 검사 하나의 고정 registry를 반환한다. "
         "도구는 승인·실행·GPU 접근을 수행하지 않는다."))
 
