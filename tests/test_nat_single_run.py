@@ -124,11 +124,45 @@ def test_grounded_active_registry_uses_empty_strict_nat_input(tmp_path, monkeypa
 
     result = asyncio.run(invoke())
     assert result == N.A.active_registry_profile()
+    assert result["host_execution"]["executable_check_ids"] == ["reset_base_com_stability"]
+    assert result["host_execution"]["unsupported_check_result"] == "HOLD_without_execution"
+    assert set(result["checks"]) - set(result["host_execution"]["executable_check_ids"]) == set(N.G.READ_ONLY_CHECKS)
     call = json.loads(trace_path.read_text(encoding="utf-8"))
     assert call["tool"] == "grounded_active_registry"
     assert call["args"] == {}
     with pytest.raises(ValidationError):
         N.GroundedActiveRegistryInput.model_validate({"unexpected": True})
+
+
+def test_grounded_active_operand_schema_excludes_root_null_but_preserves_json_lists():
+    schema = N.GroundedActiveOperand.model_json_schema()
+    choices = schema["properties"]["value"]["anyOf"]
+    assert all(item.get("type") != "null" and "$ref" not in item for item in choices)
+    with pytest.raises(ValidationError):
+        N.GroundedActiveOperand.model_validate({"value": None, "unit": "configuration_value"})
+    for value in (0, 0.0, False, "", [], [None, 0, False]):
+        parsed = N.GroundedActiveOperand.model_validate({"value": value, "unit": "configuration_value"})
+        assert parsed.value == value
+        assert type(parsed.value) is type(value)
+
+
+def test_grounded_active_root_null_rejected_before_writer_or_model_execution(tmp_path, monkeypatch):
+    args = _grounded_active_args(tmp_path, monkeypatch)
+    args["hypotheses"][0]["premises"][0]["operand"]["value"] = None
+    trace_path = tmp_path / "tools.jsonl"
+    monkeypatch.setenv("TRIAGE_TRACE", str(trace_path))
+    _deny_external_network(monkeypatch)
+    builder = cast(Builder, Mock(spec=Builder))
+
+    async def invoke():
+        async with N.write_grounded_active_assessment_fn(
+                N.WriteGroundedActiveAssessmentConfig(), builder) as tool:
+            with pytest.raises(ValidationError):
+                tool.input_schema.model_validate(args)
+
+    asyncio.run(invoke())
+    assert not trace_path.exists()
+    assert not (tmp_path / "preregistrations/grounded_active_assessments/one.json").exists()
 
 
 def test_grounded_active_workflow_loads_without_network(monkeypatch):

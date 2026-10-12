@@ -186,6 +186,7 @@ def _index_row(item: dict) -> dict:
     return {
         "evidence_id": item["evidence_id"], "kind": item["kind"],
         "label": label, "path": path, "state": item["state"],
+        "premise_eligible": item["state"] == "present",
         "value_type": item["value_type"], "unit": item["unit"],
         "source_ref": source_ref,
     }
@@ -365,6 +366,7 @@ def evidence_catalog_details(case_id: str, catalog_sha256: str, evidence_ids: ob
         "unselected_evidence_count": len(catalog["evidence"]) - len(selected),
         "catalog_coverage_status": "selected_evidence_only",
         "comprehensive_diagnosis_supported": False,
+        "premise_eligibility": {item["evidence_id"]: item["state"] == "present" for item in selected},
         "evidence": selected,
     }
 

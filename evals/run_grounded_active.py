@@ -21,7 +21,7 @@ from rl_triage.process_diagnostics import launch_diagnostics  # noqa: E402
 import run_base_com_reset as B  # noqa: E402
 import grounded_active_model_call as W  # noqa: E402
 
-PROTOCOL = ROOT / "bench/protocols/grounded_active_v4.json"
+PROTOCOL = ROOT / "bench/protocols/grounded_active_v5.json"
 PRIVATE_ROOT = ROOT / "bench/private/grounded_active"
 CODE = {
     "src/rl_triage/grounded_active_profile.py", "src/rl_triage/grounded_evidence.py",
@@ -46,7 +46,7 @@ FIXED = {
     "initial_parent_validation": "ordered_events_and_raw_tool_trace_reaggregation",
     "initial_tool_limits": W.TOOL_LIMITS,
     "registry_id": "grounded_active_v1",
-    "executable_registry_ids": ["reset_base_com_stability"],
+    "executable_registry_ids": list(A.HOST_EXECUTABLE_CHECK_IDS),
     "unsupported_check_result": "HOLD_without_execution",
     "execution_limit": 1, "execution_arguments": A.FIXED_EXECUTION_ARGUMENTS,
     "supported_probe_task": B.TASK,
@@ -407,7 +407,7 @@ def initial(tag: str, workspace: Path, case_id: str, metadata_path: Path) -> dic
     binding = A.validate_case_manifest(case_id, manifest)
     write_new(folder / "case_binding.json", binding)
     check = assessment["next_check"]["registry_id"]
-    if check != "reset_base_com_stability":
+    if check not in A.HOST_EXECUTABLE_CHECK_IDS:
         result = {"schema": "grounded_active_development_result_v1", "case_id": case_id,
                   "source_commit_sha": commit, "protocol_sha256": spec["protocol_sha256"],
                   "status": "HOLD", "reason": "selected_check_execution_unsupported", "gpu_runs": 0,

@@ -196,12 +196,14 @@ class GroundedActiveSelectionBinding(GroundedActiveStrictInput):
 
 
 class GroundedActiveOperand(GroundedActiveStrictInput):
-    value: JsonValue
+    value: str | bool | int | float | list[JsonValue] = Field(
+        description="A non-null value matching the evidence type and unit. Only state=present evidence can be a premise."
+    )
     unit: str
 
 
 class GroundedActivePremise(GroundedActiveStrictInput):
-    evidence_id: str
+    evidence_id: str = Field(description="Selected ID marked eligible in premise_eligibility; missing and null are unavailable.")
     relation: Literal["eq", "ne", "lt", "lte", "gt", "gte"]
     operand: GroundedActiveOperand
 

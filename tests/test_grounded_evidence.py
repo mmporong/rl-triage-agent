@@ -389,6 +389,12 @@ def test_group_pages_have_no_missing_or_duplicate_ids_and_details_preserve_raw_r
     assert rows[selected_ids[0]]["state"] == "null" and rows[selected_ids[0]]["value"] is None
     assert rows[selected_ids[1]]["state"] == "present" and rows[selected_ids[1]]["value"] == 0.0
     assert rows[selected_ids[2]]["state"] == "missing" and rows[selected_ids[2]]["value"] is None
+    assert details["premise_eligibility"] == {
+        selected_ids[0]: False, selected_ids[1]: True, selected_ids[2]: False,
+    }
+    # Inspection preserves unavailable source rows; it does not authorize them as premises.
+    assert set(details["selection_binding"]["selected_evidence_ids"]) == set(selected_ids)
+    assert G.evidence_catalog("one")["catalog_sha256"] == catalog["catalog_sha256"]
 
 
 @pytest.mark.parametrize("kwargs, message", [

@@ -30,6 +30,15 @@ W = load_module("grounded_active_model_call_runner_test", "evals/grounded_active
 R = load_module("run_grounded_active_runner_test", "evals/run_grounded_active.py")
 
 
+def test_model_visible_capability_matches_host_protocol():
+    profile = R.A.active_registry_profile()["host_execution"]
+    assert profile["executable_check_ids"] == R.FIXED["executable_registry_ids"]
+    assert profile["supported_task"] == R.FIXED["supported_probe_task"]
+    assert profile["unsupported_check_result"] == R.FIXED["unsupported_check_result"]
+    assert profile["approval_required"] is True
+    assert profile["case_admission_verified"] is False
+
+
 def write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, sort_keys=True), encoding="utf-8")
@@ -53,6 +62,78 @@ def deny_external_network(monkeypatch) -> None:
 
     monkeypatch.setattr(socket.socket, "connect", guarded_connect)
     monkeypatch.setattr(socket.socket, "connect_ex", guarded_connect_ex)
+
+
+@pytest.mark.parametrize("check_id", sorted(R.A.ACTIVE_CHECKS))
+def test_initial_plan_status_matches_host_execution_and_never_launches_gpu(
+        monkeypatch, tmp_path, check_id):
+    workspace = tmp_path / "workspace"
+    case = workspace / "cases/one"
+    write_json(workspace / "reference/telemetry.json", {
+        "reference_status": "absent", "summary": {}, "series": {},
+    })
+    write_json(case / "telemetry.json", {
+        "summary": {"Train/value": {"n": 1, "last": 0.0}},
+        "series": {"Train/value": [0.0]},
+    })
+    write_json(case / "configuration.json", {"observations": {"enabled": False}})
+    write_json(case / "context.json", {
+        "schema": "single_run_context_v1",
+        "telemetry_sha256": W.file_sha(case / "telemetry.json"),
+        "configuration_sha256": W.file_sha(case / "configuration.json"),
+        "facts": [{"id": "enabled", "path": ["observations", "enabled"]}],
+    })
+    metadata_path = tmp_path / "source.meta.json"
+    metadata = {"task": R.B.TASK, "seed": 7, "fault": "X1"}
+    write_json(metadata_path, metadata)
+    write_json(workspace / "host_input_lineage.json", {})
+    monkeypatch.setattr(R, "ROOT", tmp_path)
+    monkeypatch.setattr(R, "PRIVATE_ROOT", tmp_path / "runs")
+    monkeypatch.setattr(R, "verify_protocol", lambda: ({}, "a" * 40))
+    monkeypatch.setattr(R, "validate_input_lineage", lambda *_args: metadata)
+    monkeypatch.setattr(R.T, "WORKSPACE", workspace)
+    monkeypatch.setattr(R.B, "run", lambda *_args: pytest.fail("initial stage launched GPU"))
+    deny_external_network(monkeypatch)
+    saved = {}
+
+    def offline_initial(_folder, stage, packet, _workspace):
+        assert stage == "initial"
+        evidence_id = "telemetry.summary::Train/value::last"
+        selection = R.G.evidence_catalog_details(
+            "one", packet["catalog_sha256"], [evidence_id],
+        )["selection_binding"]
+        hypotheses = [{
+            "id": name, "rank": rank, "narrative": "contract test hypothesis",
+            "premises": [{"evidence_id": evidence_id, "relation": "eq",
+                          "operand": {"value": 0.0, "unit": "telemetry_native"}}],
+        } for rank, name in enumerate(("h1", "h2"), start=1)]
+        predictions = [{
+            "hypothesis_id": name, "predictions": [{
+                "measurement_id": measurement_id, "relation": relation,
+                "operand": {"value": 0.0, "unit": definition["unit"]},
+            } for measurement_id, definition in R.A.ACTIVE_CHECKS[check_id]["measurements"].items()],
+        } for name, relation in (("h1", "lt"), ("h2", "gte"))]
+        saved.update(R.A.write_grounded_active_assessment(
+            "one", packet["catalog_sha256"], selection, hypotheses,
+            {"registry_id": check_id, "hypothesis_predictions": predictions},
+        ))
+        return {"outcome": {"valid": True},
+                "record": {"assessment_sha256": saved["assessment_sha256"]}}
+
+    monkeypatch.setattr(R, "fresh_model", offline_initial)
+    result = R.initial("one", workspace, "one", metadata_path)
+    supported = check_id in R.A.HOST_EXECUTABLE_CHECK_IDS
+    assert saved["next_check"]["execution_status"] == (
+        "approval_pending" if supported else "host_execution_unsupported"
+    )
+    assert result["status"] == ("approval_pending" if supported else "HOLD")
+    assert result["gpu_runs"] == 0
+    if not supported:
+        assert result["reason"] == "selected_check_execution_unsupported"
+    assert (tmp_path / "runs/one/request_binding.json").exists() is supported
+    assert (workspace / "preregistrations/active_requests").exists() is supported
+    assert not (workspace / "preregistrations/active_approvals").exists()
+    assert not (workspace / "preregistrations/active_consumed").exists()
 
 
 @pytest.mark.parametrize("events", [

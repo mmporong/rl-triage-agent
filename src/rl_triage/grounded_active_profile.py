@@ -20,6 +20,7 @@ SHA256_RE = re.compile(r"[0-9a-f]{64}")
 COMMIT_RE = re.compile(r"[0-9a-f]{40}")
 SAFE_TEXT = re.compile(r"[A-Za-z0-9_.:-]+")
 ACTIVE_REGISTRY_ID = "grounded_active_v1"
+HOST_EXECUTABLE_CHECK_IDS = ("reset_base_com_stability",)
 ACTIVE_CHECKS = deepcopy(G.READ_ONLY_CHECKS)
 ACTIVE_CHECKS["reset_base_com_stability"] = {
     "safety": "approved_simulation_reset",
@@ -220,6 +221,14 @@ def active_registry_profile() -> dict:
         "schema": "grounded_active_registry_v1", "registry_id": ACTIVE_REGISTRY_ID,
         "registry_sha256": _sha(ACTIVE_CHECKS), "checks": deepcopy(ACTIVE_CHECKS),
         "execution_status": "not_requested", "model_may_execute": False,
+        "host_execution": {
+            "executor_profile": "run_grounded_active",
+            "supported_task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+            "executable_check_ids": list(HOST_EXECUTABLE_CHECK_IDS),
+            "unsupported_check_result": "HOLD_without_execution",
+            "approval_required": True,
+            "case_admission_verified": False,
+        },
     }
 
 
@@ -236,6 +245,8 @@ def write_grounded_active_assessment(case_id: str, catalog_sha256: str,
             return {"status": "hold", "reason": "evidence_unavailable", "unavailable_evidence": unavailable}
     except (FileNotFoundError, PermissionError, ValueError) as exc:
         return {"error": str(exc)}
+    if checked_next["registry_id"] not in HOST_EXECUTABLE_CHECK_IDS:
+        checked_next["execution_status"] = "host_execution_unsupported"
     document = {
         "schema": "grounded_active_assessment_v1", "case_id": case_id,
         "created_at": _utc(), "status": "hypotheses_only",
