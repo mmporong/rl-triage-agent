@@ -17,11 +17,11 @@ import grounded_recovery_sdk as D  # noqa: E402
 from rl_triage import grounded_recovery as C  # noqa: E402
 
 B, A, G, W, S, P, M = R.B, R.A, R.G, R.W, R.B.S, R.B.P, R.B.M
-PROTOCOL = ROOT / "bench/protocols/grounded_recovery_v2.json"
+PROTOCOL = ROOT / "bench/protocols/grounded_recovery_v3.json"
 FIXED_EVAL = ROOT / "bench/protocols/fixed_eval_v1.json"
 PRIVATE_ROOT = ROOT / "bench/private/grounded_recovery"
 CALLBACKS = {"fault_before": "X1", "fault_sham": "X1", "callback_fixed": "X1_REF"}
-CHECKPOINT_SHA256 = "548082a7fc27ac9c84842eda3daa3b6c187ddcd84645a2ebd87ec9c3622daa79"
+CHECKPOINT_SHA256 = "ed28e874db3e984b6946aea7fe2a193f5f0661cb3799e0f6aacc04cbecc9f647"
 CODE = R.CODE | {
     "evals/run_grounded_recovery.py", "bench/grounded_recovery_sdk.py",
     "src/rl_triage/grounded_recovery.py", "src/rl_triage/recovery.py",
@@ -45,7 +45,7 @@ FIXED = {
     "task": C.TASK, "device": "cuda:0", "eval_seed": 2026,
     "num_envs": 1040, "horizon_steps": 1000, "step_dt": 0.02,
     "checkpoint_sha256": CHECKPOINT_SHA256,
-    "source_training_seed": 7, "source_training_num_envs": 4096,
+    "source_training_seed": 2028, "source_training_num_envs": 4096,
     "source_training_iterations": 300,
     "effect_order": list(C.ARMS), "callbacks": CALLBACKS,
     "execution_limit": 3, "semantic_retries": 0,
@@ -162,10 +162,7 @@ def fresh_record(folder: Path, stage: str, packet: dict) -> dict:
              and type(record.get("transport_retries")) is int and record["transport_retries"] == 0
              and record.get("client_cache_used") is False and record.get("saved_response_cached") is False)
     if stage == "initial":
-        started, finished = record.get("llm_calls_started"), record.get("llm_calls_finished")
-        valid = (valid and type(started) is int and type(finished) is int
-                 and 1 <= started <= 7 and finished == started
-                 and record.get("budget_valid") is True and record.get("semantic_rejection_observed") is False)
+        W.validate_initial_execution_record(record_path, record)
     else:
         valid = (valid and record.get("messages_sha256") == W.canonical_sha(W.post_messages(packet))
                  and type(record.get("llm_calls_started")) is int
@@ -183,7 +180,7 @@ def fresh_record(folder: Path, stage: str, packet: dict) -> dict:
 
 def validate_entry(grounded_tag: str, isaaclab: Path) -> dict:
     folder, spec, binding = R.load_run(grounded_tag)
-    if spec["arm"] != "X1" or spec["source_seed"] != 7:
+    if spec["arm"] != "X1" or spec["source_seed"] != FIXED["source_training_seed"]:
         raise ValueError("only the original declared X1 development input is supported")
     case, effect = spec["case_id"], read(folder / "consumed_binding.json")["effect_key"]
     assessment = A._load_bound("grounded_active_assessments", f"{case}.json")

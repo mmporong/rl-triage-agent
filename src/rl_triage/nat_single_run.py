@@ -1,9 +1,11 @@
 """정상 기준이 없는 단일 실행 진단 도구의 NeMo Agent Toolkit 등록."""
+from typing import Literal
+
 from nat.builder.builder import Builder
 from nat.builder.function_info import FunctionInfo
 from nat.cli.register_workflow import register_function
 from nat.data_models.function import FunctionBaseConfig
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
 from rl_triage import single_run as S
 from rl_triage import grounded_evidence as G
@@ -181,16 +183,81 @@ class WriteGroundedActiveAssessmentConfig(
     pass
 
 
+class GroundedActiveStrictInput(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+
+class GroundedActiveSelectionBinding(GroundedActiveStrictInput):
+    selection_id: str
+    case_id: str
+    catalog_sha256: str
+    selected_evidence_ids: list[str] = Field(min_length=1, max_length=16)
+    receipt_sha256: str
+
+
+class GroundedActiveOperand(GroundedActiveStrictInput):
+    value: JsonValue
+    unit: str
+
+
+class GroundedActivePremise(GroundedActiveStrictInput):
+    evidence_id: str
+    relation: Literal["eq", "ne", "lt", "lte", "gt", "gte"]
+    operand: GroundedActiveOperand
+
+
+class GroundedActiveHypothesis(GroundedActiveStrictInput):
+    id: str
+    rank: int
+    narrative: str
+    premises: list[GroundedActivePremise] = Field(min_length=1)
+
+
+class GroundedActivePrediction(GroundedActiveStrictInput):
+    measurement_id: str
+    relation: Literal["eq", "ne", "lt", "lte", "gt", "gte"]
+    operand: GroundedActiveOperand
+
+
+class GroundedActiveHypothesisPrediction(GroundedActiveStrictInput):
+    hypothesis_id: str
+    predictions: list[GroundedActivePrediction] = Field(min_length=1)
+
+
+class GroundedActiveNextCheck(GroundedActiveStrictInput):
+    registry_id: str = Field(description="grounded_active_registry에 등록된 check ID")
+    hypothesis_predictions: list[GroundedActiveHypothesisPrediction] = Field(min_length=2)
+
+
+class WriteGroundedActiveAssessmentInput(GroundedActiveStrictInput):
+    case_id: str
+    catalog_sha256: str
+    selection_binding: GroundedActiveSelectionBinding
+    hypotheses: list[GroundedActiveHypothesis] = Field(min_length=2)
+    next_check: GroundedActiveNextCheck
+
+
 @register_function(config_type=WriteGroundedActiveAssessmentConfig)
 async def write_grounded_active_assessment_fn(
         config: WriteGroundedActiveAssessmentConfig, builder: Builder):
-    async def _run(case_id: str, catalog_sha256: str, selection_binding: dict,
-                   hypotheses: list[dict], next_check: dict) -> str:
-        args = {"case_id": case_id, "catalog_sha256": catalog_sha256,
-                "selection_binding": selection_binding, "hypotheses": hypotheses,
-                "next_check": next_check}
-        return _trace("write_grounded_active_assessment", args, _dump(
-            A.write_grounded_active_assessment(**args)))
-    yield FunctionInfo.from_fn(_run, description=(
+    async def _run(request: WriteGroundedActiveAssessmentInput) -> str:
+        args = request.model_dump(mode="python")
+        result = A.write_grounded_active_assessment(**args)
+        traced = _trace("write_grounded_active_assessment", args, _dump(result))
+        assessment_sha = result.get("assessment_sha256")
+        saved_success = (
+            result.get("saved") ==
+            f"preregistrations/grounded_active_assessments/{args['case_id']}.json"
+            and result.get("status") == "hypotheses_only"
+            and result.get("case_id") == args["case_id"]
+            and result.get("catalog_sha256") == args["catalog_sha256"]
+            and isinstance(assessment_sha, str)
+            and len(assessment_sha) == 64
+            and all(character in "0123456789abcdef" for character in assessment_sha)
+        )
+        if not saved_success:
+            raise ValueError("grounded active assessment rejected")
+        return traced
+    yield FunctionInfo.from_fn(_run, input_schema=WriteGroundedActiveAssessmentInput, description=(
         "host selection 근거에 묶인 초기 가설과 사전 prediction을 active profile로 write-once 저장한다. "
         "승인·소비·실행·receipt 생성은 모델 도구로 제공하지 않는다."))

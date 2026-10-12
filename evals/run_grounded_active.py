@@ -21,7 +21,7 @@ from rl_triage.process_diagnostics import launch_diagnostics  # noqa: E402
 import run_base_com_reset as B  # noqa: E402
 import grounded_active_model_call as W  # noqa: E402
 
-PROTOCOL = ROOT / "bench/protocols/grounded_active_v2.json"
+PROTOCOL = ROOT / "bench/protocols/grounded_active_v3.json"
 PRIVATE_ROOT = ROOT / "bench/private/grounded_active"
 CODE = {
     "src/rl_triage/grounded_active_profile.py", "src/rl_triage/grounded_evidence.py",
@@ -38,6 +38,12 @@ FIXED = {
     "post_reasoning_effort": W.POST_REASONING_EFFORT,
     "provider_cache_status": "not_attested",
     "initial_llm_call_limit": 7, "post_llm_calls": 2,
+    "initial_usage_source": W.NAT_USAGE_SOURCE,
+    "initial_event_artifact": "type_uuid_token_usage_only_write_once",
+    "initial_callback_binding": "explicit_openai_config_callback_before_workflow_build",
+    "semantic_tool_error": "domain_writer_rejection_trace_then_exception_stop",
+    "schema_tool_error": "strict_input_rejection_before_domain_trace_no_retry",
+    "initial_parent_validation": "ordered_events_and_raw_tool_trace_reaggregation",
     "initial_tool_limits": W.TOOL_LIMITS,
     "registry_id": "grounded_active_v1",
     "executable_registry_ids": ["reset_base_com_stability"],
@@ -336,6 +342,11 @@ def fresh_model(folder: Path, stage: str, packet: dict, workspace: Path) -> dict
                      and record.get("max_output_tokens") == W.POST_MAX_TOKENS
                      and record.get("reasoning_effort") == W.POST_REASONING_EFFORT
                      and record.get("provider_cache_status") == "not_attested")
+    elif valid:
+        try:
+            W.validate_initial_execution_record(output, record)
+        except (OSError, KeyError, TypeError, ValueError):
+            valid, record_error = False, "invalid_initial_execution_artifact"
     outcome = {"schema": "grounded_active_model_outcome_v1", "stage": stage, "valid": bool(valid),
                "worker_cleanup_verified": cleanup_ok, "launch": launch,
                "model_record_sha256": W.file_sha(output) if output.exists() else None,

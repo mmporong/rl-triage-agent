@@ -314,6 +314,45 @@ def test_fresh_record_rejects_bool_incomplete_or_wrong_budget(tmp_path, started,
         H.fresh_record(folder, "actual", packet)
 
 
+def test_initial_fresh_record_binds_raw_nat_events_and_reaggregates_usage(tmp_path):
+    folder, _ = fresh_record_fixture(tmp_path)
+    packet = {"schema": "grounded_active_initial_packet_v1", "case_id": "case_public",
+              "catalog_sha256": "c" * 64, "workflow_config_sha256_lf": "d" * 64}
+    write_json(folder / "initial.packet.json", packet)
+    record = H.read(folder / "actual.model.json")
+    record.update(stage="initial", packet_sha256=H.W.file_sha(folder / "initial.packet.json"),
+                  budget_valid=True, semantic_rejection_observed=False)
+    events = [
+        {"type": "LLM_START", "id": "one", "usage": None},
+        {"type": "LLM_END", "id": "one", "usage": {
+            "prompt_tokens": 11, "completion_tokens": 3, "total_tokens": 14}},
+    ]
+    document = {"schema": "grounded_active_nat_events_v1", "packet_sha256": record["packet_sha256"],
+                "workflow_execution_entered": True, "events": events}
+    write_json(folder / "initial.model.events.json", document)
+    trace_path = folder / "initial.model.trace.jsonl"
+    trace_path.write_text("".join(json.dumps({"tool": name, "result_head": "{}"}) + "\n"
+                                 for name in H.W.TOOL_LIMITS), encoding="utf-8")
+    record.update(H.W.summarize_nat_usage(events, execution_entered=True),
+                  llm_events_sha256=H.W.file_sha(folder / "initial.model.events.json"),
+                  **H.W.validate_tool_trace(trace_path))
+    write_json(folder / "initial.model.json", record)
+    outcome = H.read(folder / "actual.outcome.json")
+    outcome.update(stage="initial", model_record_sha256=H.W.file_sha(folder / "initial.model.json"))
+    write_json(folder / "initial.outcome.json", outcome)
+    assert H.fresh_record(folder, "initial", packet)["total_tokens"] == 14
+
+    document["events"][1]["usage"]["prompt_tokens"] = 12
+    document["events"][1]["usage"]["total_tokens"] = 15
+    write_json(folder / "initial.model.events.json", document)
+    record["llm_events_sha256"] = H.W.file_sha(folder / "initial.model.events.json")
+    write_json(folder / "initial.model.json", record)
+    outcome["model_record_sha256"] = H.W.file_sha(folder / "initial.model.json")
+    write_json(folder / "initial.outcome.json", outcome)
+    with pytest.raises(ValueError, match="summary differs"):
+        H.fresh_record(folder, "initial", packet)
+
+
 def entry_fixture(monkeypatch, tmp_path):
     monkeypatch.setattr(H, "ROOT", tmp_path)
     folder = tmp_path / "grounded"
@@ -327,7 +366,7 @@ def entry_fixture(monkeypatch, tmp_path):
     checkpoint.write_bytes(b"checkpoint")
     config_path = run_dir / "env.yaml"
     config_path.write_text("actions:\n  joint_pos:\n    scale: 0.25\n", encoding="utf-8")
-    spec = {"arm": "X1", "source_seed": 7, "case_id": case, "metadata_path": str(metadata_path),
+    spec = {"arm": "X1", "source_seed": 2028, "case_id": case, "metadata_path": str(metadata_path),
             "source_commit_sha": "a" * 40}
     binding = {"case_source_binding_sha256": "b" * 64}
     monkeypatch.setattr(H.R, "load_run", lambda _tag: (folder, spec, binding))

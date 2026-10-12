@@ -1,8 +1,10 @@
+import asyncio
 from copy import deepcopy
 import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import socket
 import sys
 from types import SimpleNamespace
 
@@ -33,6 +35,26 @@ def write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, sort_keys=True), encoding="utf-8")
 
 
+def deny_external_network(monkeypatch) -> None:
+    original_connect = socket.socket.connect
+    original_connect_ex = socket.socket.connect_ex
+
+    def guarded_connect(self, address):
+        host = address[0] if isinstance(address, tuple) else None
+        if host in {"127.0.0.1", "::1"}:
+            return original_connect(self, address)
+        raise AssertionError(f"external network attempted: {address!r}")
+
+    def guarded_connect_ex(self, address):
+        host = address[0] if isinstance(address, tuple) else None
+        if host in {"127.0.0.1", "::1"}:
+            return original_connect_ex(self, address)
+        raise AssertionError(f"external network attempted through connect_ex: {address!r}")
+
+    monkeypatch.setattr(socket.socket, "connect", guarded_connect)
+    monkeypatch.setattr(socket.socket, "connect_ex", guarded_connect_ex)
+
+
 @pytest.mark.parametrize("events", [
     [
         {"type": "LLM_START", "id": "a"},
@@ -55,6 +77,7 @@ def test_nat_usage_missing_zero_or_unmatched_end_is_partial_not_zero_cost(events
     usage = W.summarize_nat_usage(events)
     assert usage["usage_coverage"] == "partial"
     assert usage["input_tokens"] is usage["output_tokens"] is usage["total_tokens"] is None
+    assert usage["usage_source"] == "nat_1_9_explicit_langchain_callback_llm_end"
 
 
 def test_nat_usage_rejects_duplicate_call_uuid_instead_of_collapsing_it():
@@ -67,8 +90,192 @@ def test_nat_usage_rejects_duplicate_call_uuid_instead_of_collapsing_it():
     ]
     usage = W.summarize_nat_usage(events)
     assert usage["llm_calls_started"] == 2
+    assert usage["llm_call_count_coverage"] == "incomplete"
     assert usage["usage_coverage"] == "partial"
     assert usage["total_tokens"] is None
+
+
+def test_nat_usage_distinguishes_not_started_from_executed_without_events():
+    not_started = W.summarize_nat_usage([], execution_entered=False)
+    assert not_started["llm_calls_started"] == not_started["llm_calls_finished"] == 0
+    assert not_started["llm_call_count_coverage"] == "not_started"
+
+    unavailable = W.summarize_nat_usage([], execution_entered=True)
+    assert unavailable["llm_calls_started"] is unavailable["llm_calls_finished"] is None
+    assert unavailable["llm_call_count_coverage"] == "unavailable"
+    assert unavailable["usage_coverage"] == "partial"
+
+
+def test_nat_usage_accepts_only_paired_unique_callback_ids_as_complete():
+    events = [
+        {"type": "LLM_START", "id": "one", "usage": None},
+        {"type": "LLM_END", "id": "one", "usage": {
+            "prompt_tokens": 11, "completion_tokens": 3, "total_tokens": 14,
+        }},
+    ]
+    usage = W.summarize_nat_usage(events, execution_entered=True)
+    assert usage["llm_calls_started"] == usage["llm_calls_finished"] == 1
+    assert usage["llm_call_count_coverage"] == usage["usage_coverage"] == "complete"
+    assert (usage["input_tokens"], usage["output_tokens"], usage["total_tokens"]) == (11, 3, 14)
+
+
+@pytest.mark.parametrize("attack", ["end_before_start", "events_before_execution"])
+def test_nat_event_artifact_rejects_impossible_order_or_execution_flag(tmp_path, attack):
+    events = [
+        {"type": "LLM_START", "id": "one", "usage": None},
+        {"type": "LLM_END", "id": "one", "usage": {
+            "prompt_tokens": 11, "completion_tokens": 3, "total_tokens": 14,
+        }},
+    ]
+    entered = attack != "events_before_execution"
+    if attack == "end_before_start":
+        events.reverse()
+    output = tmp_path / "initial.model.json"
+    artifact = output.with_suffix(".events.json")
+    write_json(artifact, {"schema": "grounded_active_nat_events_v1", "packet_sha256": "a" * 64,
+                          "workflow_execution_entered": entered, "events": events})
+    record = {"packet_sha256": "a" * 64, "llm_events_sha256": W.file_sha(artifact),
+              **W.summarize_nat_usage(events, entered)}
+    assert record["llm_call_count_coverage"] == "incomplete"
+    assert record["total_tokens"] is None
+    with pytest.raises(ValueError, match="order or execution entry"):
+        W.validate_nat_event_record(output, record)
+
+
+def test_nat_initial_real_callback_flow_records_one_offline_stream_call(
+        monkeypatch, tmp_path):
+    deny_external_network(monkeypatch)
+    monkeypatch.setenv("NVIDIA_API_KEY", "offline-unused-placeholder")
+    from langchain_core.messages import AIMessageChunk
+    from langchain_core.outputs import ChatGenerationChunk
+    from langchain_openai import ChatOpenAI
+
+    provider_calls = []
+
+    async def offline_stream(_self, *args, **kwargs):
+        provider_calls.append((args, kwargs))
+        yield ChatGenerationChunk(
+            message=AIMessageChunk(
+                content="offline-ok", id="offline-response",
+                usage_metadata={"input_tokens": 11, "output_tokens": 3, "total_tokens": 14},
+                chunk_position="last",
+            ),
+            generation_info={"finish_reason": "stop"},
+        )
+
+    monkeypatch.setattr(ChatOpenAI, "_astream", offline_stream)
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    trace_path = tmp_path / "tools.jsonl"
+    trace_path.touch()
+    events = []
+    progress = {"workflow_execution_entered": False}
+
+    result = asyncio.run(W.nat_initial(
+        {"case_id": "offline-case"}, workspace, trace_path, events, progress,
+    ))
+
+    assert result == "offline-ok"
+    assert len(provider_calls) == 1
+    assert progress == {"workflow_execution_entered": True}
+    assert [event["type"] for event in events] == ["LLM_START", "LLM_END"]
+    assert all(set(event) == {"type", "id", "usage"} for event in events)
+    assert events[0]["id"] == events[1]["id"]
+    usage = W.summarize_nat_usage(events, execution_entered=True)
+    assert usage["llm_calls_started"] == usage["llm_calls_finished"] == 1
+    assert usage["llm_call_count_coverage"] == usage["usage_coverage"] == "complete"
+    assert (usage["input_tokens"], usage["output_tokens"], usage["total_tokens"]) == (11, 3, 14)
+
+
+@pytest.mark.parametrize("rejection", ["error", "hold"])
+def test_nat_initial_semantic_tool_rejection_stops_before_second_provider_call(
+        monkeypatch, tmp_path, rejection):
+    deny_external_network(monkeypatch)
+    monkeypatch.setenv("NVIDIA_API_KEY", "offline-unused-placeholder")
+    from langchain_core.messages import AIMessageChunk
+    from langchain_core.outputs import ChatGenerationChunk
+    from langchain_openai import ChatOpenAI
+    if rejection == "hold":
+        from rl_triage import grounded_active_profile as A
+        monkeypatch.setattr(A, "write_grounded_active_assessment", lambda **_args: {
+            "status": "hold", "reason": "evidence_unavailable",
+        })
+
+    writer_args = {
+        "case_id": "missing-case", "catalog_sha256": "a" * 64,
+        "selection_binding": {
+            "selection_id": "sel_" + "1" * 32, "case_id": "missing-case",
+            "catalog_sha256": "a" * 64, "selected_evidence_ids": ["telemetry:x"],
+            "receipt_sha256": "b" * 64,
+        },
+        "hypotheses": [
+            {"id": "h1", "rank": 1, "narrative": "first", "premises": [{
+                "evidence_id": "telemetry:x", "relation": "eq",
+                "operand": {"value": 0.0, "unit": "telemetry_native"},
+            }]},
+            {"id": "h2", "rank": 2, "narrative": "second", "premises": [{
+                "evidence_id": "telemetry:x", "relation": "gte",
+                "operand": {"value": 0.0, "unit": "telemetry_native"},
+            }]},
+        ],
+        "next_check": {
+            "registry_id": "runtime_reward_window", "hypothesis_predictions": [
+                {"hypothesis_id": "h1", "predictions": [
+                    {"measurement_id": "reward_mean", "relation": "lt",
+                     "operand": {"value": 0.0, "unit": "reward_native"}},
+                    {"measurement_id": "reward_min", "relation": "lt",
+                     "operand": {"value": -1.0, "unit": "reward_native"}},
+                ]},
+                {"hypothesis_id": "h2", "predictions": [
+                    {"measurement_id": "reward_mean", "relation": "gte",
+                     "operand": {"value": 0.0, "unit": "reward_native"}},
+                    {"measurement_id": "reward_min", "relation": "gte",
+                     "operand": {"value": -1.0, "unit": "reward_native"}},
+                ]},
+            ],
+        },
+    }
+    provider_calls = []
+
+    async def rejected_writer_stream(_self, *args, **kwargs):
+        provider_calls.append((args, kwargs))
+        yield ChatGenerationChunk(
+            message=AIMessageChunk(
+                content="", id="offline-tool-call",
+                tool_call_chunks=[{
+                    "name": "write_grounded_active_assessment",
+                    "args": json.dumps(writer_args), "id": "writer-1", "index": 0,
+                    "type": "tool_call_chunk",
+                }],
+                usage_metadata={"input_tokens": 11, "output_tokens": 3, "total_tokens": 14},
+                chunk_position="last",
+            ),
+            generation_info={"finish_reason": "tool_calls"},
+        )
+
+    monkeypatch.setattr(ChatOpenAI, "_astream", rejected_writer_stream)
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    trace_path = tmp_path / "tools.jsonl"
+    trace_path.touch()
+    events = []
+    progress = {"workflow_execution_entered": False}
+
+    with pytest.raises(ValueError, match="grounded active assessment rejected"):
+        asyncio.run(W.nat_initial(
+            {"case_id": "missing-case"}, workspace, trace_path, events, progress,
+        ))
+
+    assert len(provider_calls) == 1
+    assert progress == {"workflow_execution_entered": True}
+    assert [event["type"] for event in events] == ["LLM_START", "LLM_END"]
+    assert all(set(event) == {"type", "id", "usage"} for event in events)
+    assert events[0]["id"] == events[1]["id"]
+    rows = [json.loads(line) for line in trace_path.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 1 and rows[0]["tool"] == "write_grounded_active_assessment"
+    returned = json.loads(rows[0]["result_head"])
+    assert ("error" in returned) if rejection == "error" else returned["status"] == "hold"
+    assert not (workspace / "preregistrations/grounded_active_assessments/missing-case.json").exists()
 
 
 def trace(path: Path, tools: list[tuple[str, str]]) -> None:
@@ -468,6 +675,57 @@ def test_fresh_model_rejects_wrong_post_budget_or_reasoning(
     result = R.fresh_model(folder, "actual", sent, workspace)
     assert result["record"][field] == value
     assert result["outcome"]["valid"] is False
+
+
+@pytest.mark.parametrize("mutation", [
+    None, "too_many_calls", "budget_summary", "semantic_summary", "trace_tamper", "budget_overrun",
+])
+def test_fresh_initial_parent_reaggregates_events_and_tool_trace_before_accepting(
+        monkeypatch, tmp_path, mutation):
+    folder, workspace = tmp_path / "model", tmp_path / "workspace"
+    folder.mkdir()
+    workspace.mkdir()
+    sent = {"schema": "grounded_active_initial_packet_v1", "case_id": "case_public"}
+    monkeypatch.setattr(R, "wsl_path", lambda path: str(path.resolve()))
+
+    def completed(*_args, **_kwargs):
+        output = folder / "initial.model.json"
+        events = []
+        for index in range(8 if mutation == "too_many_calls" else 1):
+            events.extend([
+                {"type": "LLM_START", "id": str(index), "usage": None},
+                {"type": "LLM_END", "id": str(index), "usage": {
+                    "prompt_tokens": 11, "completion_tokens": 3, "total_tokens": 14,
+                }},
+            ])
+        event_path = output.with_suffix(".events.json")
+        packet_sha = W.file_sha(folder / "initial.packet.json")
+        write_json(event_path, {"schema": "grounded_active_nat_events_v1", "packet_sha256": packet_sha,
+                               "workflow_execution_entered": True, "events": events})
+        trace_path = output.with_suffix(".trace.jsonl")
+        rows = valid_trace_rows()
+        if mutation == "budget_overrun":
+            rows.extend([("grounded_evidence_group_page", "{}") for _ in range(2)])
+        trace(trace_path, rows)
+        record = {"schema": "grounded_active_model_call_v1", "stage": "initial", "valid": True,
+                  "packet_sha256": packet_sha, "model": W.MODEL, "temperature": 0,
+                  "semantic_retries": 0, "transport_retries": 0, "client_cache_used": False,
+                  "saved_response_cached": False, "llm_events_sha256": W.file_sha(event_path),
+                  **W.summarize_nat_usage(events, True), **W.validate_tool_trace(trace_path)}
+        if mutation == "budget_summary":
+            record["budget_valid"] = False
+        elif mutation == "semantic_summary":
+            record["semantic_rejection_observed"] = True
+        elif mutation == "trace_tamper":
+            trace(trace_path, rows + [("grounded_evidence_group_page", "{}")])
+        write_json(output, record)
+        return R.subprocess.CompletedProcess(args=[], returncode=0, stdout=b"", stderr=b"")
+
+    monkeypatch.setattr(R.subprocess, "run", completed)
+    result = R.fresh_model(folder, "initial", sent, workspace)
+    assert result["outcome"]["valid"] is (mutation is None)
+    assert result["outcome"]["record_error"] == (
+        None if mutation is None else "invalid_initial_execution_artifact")
 
 
 def model_cost_record(input_tokens, output_tokens, *, valid=True):

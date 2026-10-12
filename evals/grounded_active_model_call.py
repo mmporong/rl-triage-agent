@@ -20,6 +20,7 @@ sys.path.insert(0, str(ROOT / "src"))
 MODEL = "nvidia/nemotron-3-super-120b-a12b"
 POST_MAX_TOKENS = 16384
 POST_REASONING_EFFORT = "none"
+NAT_USAGE_SOURCE = "nat_1_9_explicit_langchain_callback_llm_end"
 CONFIG = ROOT / "configs/triage_single_run_grounded_active.yml"
 TOOL_LIMITS = {
     "grounded_active_registry": 1, "grounded_evidence_group_index": 1,
@@ -67,7 +68,27 @@ def post_messages(packet: dict) -> list[dict]:
                                                       separators=(",", ":"), allow_nan=False)}]
 
 
-def summarize_nat_usage(events: list[dict]) -> dict:
+def nat_event_order_valid(events: list[dict], execution_entered: bool) -> bool:
+    if events and execution_entered is not True:
+        return False
+    seen, pending = set(), set()
+    for row in events:
+        identity = row["id"]
+        if row["type"] == "LLM_START":
+            if identity in seen:
+                return False
+            seen.add(identity)
+            pending.add(identity)
+        elif row["type"] == "LLM_END":
+            if identity not in pending:
+                return False
+            pending.remove(identity)
+        else:
+            return False
+    return True
+
+
+def summarize_nat_usage(events: list[dict], execution_entered: bool = False) -> dict:
     start_rows = [row for row in events if row["type"] == "LLM_START"]
     end_rows = [row for row in events if row["type"] == "LLM_END"]
     starts = {row["id"] for row in start_rows}
@@ -82,15 +103,20 @@ def summarize_nat_usage(events: list[dict]) -> dict:
                 or usage["total_tokens"] < usage["prompt_tokens"] + usage["completion_tokens"]):
             continue
         values.append(usage)
-    complete = (bool(starts) and set(ends) == starts and len(values) == len(starts)
-                and len(start_rows) == len(starts) and len(end_rows) == len(ends))
+    paired = (bool(starts) and nat_event_order_valid(events, execution_entered) and set(ends) == starts
+              and len(start_rows) == len(starts) and len(end_rows) == len(ends))
+    complete = paired and len(values) == len(starts)
+    unavailable = execution_entered and not start_rows and not end_rows
     return {
-        "llm_calls_started": len(start_rows), "llm_calls_finished": len(end_rows),
+        "llm_calls_started": None if unavailable else len(start_rows),
+        "llm_calls_finished": None if unavailable else len(end_rows),
+        "llm_call_count_coverage": "unavailable" if unavailable else "complete" if paired else
+            "incomplete" if start_rows or end_rows else "not_started",
         "usage_observed_calls": len(values), "usage_coverage": "complete" if complete else "partial",
         "input_tokens": sum(row["prompt_tokens"] for row in values) if complete else None,
         "output_tokens": sum(row["completion_tokens"] for row in values) if complete else None,
         "total_tokens": sum(row["total_tokens"] for row in values) if complete else None,
-        "usage_source": "nat_1_9_runtime_llm_end_events",
+        "usage_source": NAT_USAGE_SOURCE,
     }
 
 
@@ -100,14 +126,62 @@ def validate_tool_trace(path: Path) -> dict:
     within_budget = not (set(counts) - set(TOOL_LIMITS)) and all(
         counts[name] <= maximum for name, maximum in TOOL_LIMITS.items())
     required = all(counts[name] == 1 for name in TOOL_LIMITS if name != "grounded_evidence_group_page")
-    rejected = any('"error"' in row.get("result_head", "") for row in rows)
+    rejected = any('"error"' in row.get("result_head", "")
+                   or (row["tool"] == "write_grounded_active_assessment"
+                       and any(marker in row.get("result_head", "") for marker in (
+                           '"status": "hold"', '"status":"hold"')))
+                   for row in rows)
     return {"tool_counts": dict(counts), "budget_valid": within_budget and required,
             "semantic_rejection_observed": rejected, "trace_sha256": file_sha(path)}
 
 
-async def nat_initial(packet: dict, workspace: Path, trace: Path, events: list[dict]) -> str:
+def validate_nat_event_record(output: Path, record: dict) -> dict:
+    path = output.with_suffix(".events.json")
+    document = read_json(path)
+    if (set(document) != {"schema", "packet_sha256", "workflow_execution_entered", "events"}
+            or document["schema"] != "grounded_active_nat_events_v1"
+            or document["packet_sha256"] != record["packet_sha256"]
+            or type(document["workflow_execution_entered"]) is not bool
+            or not isinstance(document["events"], list)
+            or file_sha(path) != record.get("llm_events_sha256")):
+        raise ValueError("NAT event artifact binding changed")
+    for row in document["events"]:
+        if (not isinstance(row, dict) or set(row) != {"type", "id", "usage"}
+                or row["type"] not in {"LLM_START", "LLM_END"}
+                or not isinstance(row["id"], str) or not row["id"]
+                or (row["usage"] is not None and (not isinstance(row["usage"], dict)
+                    or set(row["usage"]) - {"prompt_tokens", "completion_tokens", "total_tokens"}))):
+            raise ValueError("NAT event artifact contains unregistered fields")
+    if not nat_event_order_valid(document["events"], document["workflow_execution_entered"]):
+        raise ValueError("NAT event order or execution entry is inconsistent")
+    summary = summarize_nat_usage(document["events"], document["workflow_execution_entered"])
+    if any(type(record.get(key)) is not type(value) or record[key] != value
+           for key, value in summary.items()):
+        raise ValueError("NAT event summary differs from its raw artifact")
+    return document
+
+
+def validate_initial_execution_record(output: Path, record: dict) -> None:
+    validate_nat_event_record(output, record)
+    summary = validate_tool_trace(output.with_suffix(".trace.jsonl"))
+    if any(type(record.get(key)) is not type(value) or record[key] != value
+           for key, value in summary.items()):
+        raise ValueError("initial tool summary differs from its raw trace")
+    started, finished = record.get("llm_calls_started"), record.get("llm_calls_finished")
+    if (type(started) is not int or type(finished) is not int or not 1 <= started <= 7
+            or finished != started or record.get("llm_call_count_coverage") != "complete"
+            or record.get("budget_valid") is not True
+            or record.get("semantic_rejection_observed") is not False):
+        raise ValueError("initial execution budget or rejection contract failed")
+
+
+async def nat_initial(packet: dict, workspace: Path, trace: Path, events: list[dict],
+                      progress: dict | None = None) -> str:
     from nat.builder.context import Context
-    from nat.runtime.loader import load_workflow
+    from nat.builder.workflow_builder import WorkflowBuilder
+    from nat.plugins.langchain.callback_handler import LangchainProfilerHandler
+    from nat.runtime.loader import load_config
+    from nat.runtime.session import SessionManager
     from rl_triage import nat_single_run  # noqa: F401
     from rl_triage import triage_tools as T
 
@@ -120,23 +194,35 @@ async def nat_initial(packet: dict, workspace: Path, trace: Path, events: list[d
         kind = str(payload.event_type)
         if kind not in {"LLM_START", "LLM_END"}:
             return
-        usage = payload.usage_info
-        events.append({"type": kind, "id": payload.UUID,
-                       "usage": usage.token_usage.model_dump() if usage is not None else None})
+        usage_info = payload.usage_info
+        usage = usage_info.token_usage.model_dump() if usage_info is not None else None
+        events.append({"type": kind, "id": str(payload.UUID),
+                       "usage": {key: usage[key] for key in (
+                           "prompt_tokens", "completion_tokens", "total_tokens") if key in usage}
+                       if usage is not None else None})
 
-    async with load_workflow(CONFIG, max_concurrency=1) as manager:
-        async with manager.run(f"Assess failed training case_id={packet['case_id']} and register one next check.") as runner:
-            subscription = Context.get().intermediate_step_manager.subscribe(on_next=on_step)
-            try:
-                return await asyncio.wait_for(runner.result(to_type=str), timeout=1800)
-            finally:
-                subscription.unsubscribe()
+    config = load_config(CONFIG)
+    config.llms["nemotron"].callbacks = [LangchainProfilerHandler()]
+    async with WorkflowBuilder.from_config(config=config) as builder:
+        manager = await SessionManager.create(config=config, shared_builder=builder, max_concurrency=1)
+        try:
+            async with manager.run(
+                    f"Assess failed training case_id={packet['case_id']} and register one next check.") as runner:
+                subscription = Context.get().intermediate_step_manager.subscribe(on_next=on_step)
+                try:
+                    if progress is not None:
+                        progress["workflow_execution_entered"] = True
+                    return await asyncio.wait_for(runner.result(to_type=str), timeout=1800)
+                finally:
+                    subscription.unsubscribe()
+        finally:
+            await manager.shutdown()
 
 
 def call(stage: str, packet_path: Path, workspace: Path, output: Path) -> int:
     if os.name != "posix":
         raise RuntimeError("model worker requires the existing WSL credential environment")
-    if output.exists():
+    if output.exists() or (stage == "initial" and output.with_suffix(".events.json").exists()):
         raise FileExistsError("existing model record is never overwritten")
     packet = read_json(packet_path)
     started_wall, started_cpu = time.perf_counter(), time.process_time()
@@ -152,6 +238,7 @@ def call(stage: str, packet_path: Path, workspace: Path, output: Path) -> int:
         "error_type": None, "error_stage": None, "error_frames": [], "valid": False,
     }
     events = []
+    progress = {"workflow_execution_entered": False}
     code = 2
     error_stage = "credential_gate"
     try:
@@ -180,9 +267,9 @@ def call(stage: str, packet_path: Path, workspace: Path, output: Path) -> int:
             with trace.open("x", encoding="utf-8", newline="\n"):
                 pass
             error_stage = "initial_workflow"
-            text = asyncio.run(nat_initial(packet, workspace, trace, events))
+            text = asyncio.run(nat_initial(packet, workspace, trace, events, progress))
             error_stage = "initial_contract_validation"
-            record.update(summarize_nat_usage(events))
+            record.update(summarize_nat_usage(events, progress["workflow_execution_entered"]))
             record.update(validate_tool_trace(trace))
             record.update(workflow_config_sha256_lf=packet["workflow_config_sha256_lf"],
                           workflow_output_sha256=hashlib.sha256(text.encode()).hexdigest(),
@@ -191,6 +278,8 @@ def call(stage: str, packet_path: Path, workspace: Path, output: Path) -> int:
             if (G.evidence_catalog(packet["case_id"])["catalog_sha256"] != packet["catalog_sha256"]
                     or assessment["catalog_sha256"] != packet["catalog_sha256"]
                     or not record["budget_valid"] or record["semantic_rejection_observed"]
+                    or record["llm_call_count_coverage"] != "complete"
+                    or type(record["llm_calls_started"]) is not int
                     or not 1 <= record["llm_calls_started"] <= 7
                     or record["llm_calls_finished"] != record["llm_calls_started"]):
                 raise ValueError("initial workflow source or execution budget invalid")
@@ -241,7 +330,18 @@ def call(stage: str, packet_path: Path, workspace: Path, output: Path) -> int:
             for frame in extract_tb(error.__traceback__)[-8:]
         ]
         if stage == "initial":
-            record.update(summarize_nat_usage(events))
+            record.update(summarize_nat_usage(events, progress["workflow_execution_entered"]))
+    if stage == "initial":
+        event_path = output.with_suffix(".events.json")
+        event_path.parent.mkdir(parents=True, exist_ok=True)
+        event_document = {"schema": "grounded_active_nat_events_v1",
+                          "packet_sha256": record["packet_sha256"],
+                          "workflow_execution_entered": progress["workflow_execution_entered"],
+                          "events": events}
+        with event_path.open("x", encoding="utf-8", newline="\n") as handle:
+            json.dump(event_document, handle, ensure_ascii=False, indent=2, allow_nan=False)
+            handle.write("\n")
+        record["llm_events_sha256"] = file_sha(event_path)
     record.update(finished_at=datetime.now(timezone.utc).isoformat(),
                   wall_s=time.perf_counter() - started_wall, cpu_s=time.process_time() - started_cpu,
                   exit_code=code, money_cost=None, money_cost_status="not_measured")
