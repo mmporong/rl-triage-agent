@@ -1,0 +1,103 @@
+{
+  "schema": "t1_pair_effect_replay_v1",
+  "scope": "retrospective_existing_three_training_pairs",
+  "new_model_calls": 0,
+  "new_gpu_runs": 0,
+  "input_count": 6,
+  "pair_count": 3,
+  "original_unhealthy": 2,
+  "original_failure_absent": 1,
+  "rows": [
+    {
+      "training_seed": 2026,
+      "original_label": "healthy",
+      "original_failed_metrics": [],
+      "fault_trained_policy": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 0.15340629523512267,
+        "yaw_rate_rmse_radps": 0.3070786985468556
+      },
+      "reference_trained_policy": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 0.1470599564734813,
+        "yaw_rate_rmse_radps": 0.290380116832676
+      },
+      "relative_error_reduction": {
+        "lin_vel_rmse_mps": 0.04136948064559193,
+        "yaw_rate_rmse_radps": 0.05437883445904875
+      },
+      "checkpoint_sha256": {
+        "run": "92cac76478796ca48f25fbce46167319b760131f7d30e069cf6d316713e091f5",
+        "reference": "ea0b06ee682a873bfa118c5daba383d8a96c6e4d8841951db7903b195a04bc60"
+      }
+    },
+    {
+      "training_seed": 2027,
+      "original_label": "unhealthy",
+      "original_failed_metrics": [
+        "err_yaw_ratio"
+      ],
+      "fault_trained_policy": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 0.1567346209992935,
+        "yaw_rate_rmse_radps": 0.3099105962341017
+      },
+      "reference_trained_policy": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 0.1788482555359784,
+        "yaw_rate_rmse_radps": 0.24922341189912128
+      },
+      "relative_error_reduction": {
+        "lin_vel_rmse_mps": -0.141089660954899,
+        "yaw_rate_rmse_radps": 0.1958215855553976
+      },
+      "checkpoint_sha256": {
+        "run": "0931b59754a4ea84f8d25d2741c9334859fe59cffd2db03dbd21d18a5c90c1d3",
+        "reference": "99f8d00910ed1c248449efd82a2560ec2d9fd8d1bc079161f7d6d15e871bd7ae"
+      }
+    },
+    {
+      "training_seed": 2028,
+      "original_label": "unhealthy",
+      "original_failed_metrics": [
+        "err_xy_ratio"
+      ],
+      "fault_trained_policy": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 0.15937443971535425,
+        "yaw_rate_rmse_radps": 0.3036472462293536
+      },
+      "reference_trained_policy": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 0.1388378224933149,
+        "yaw_rate_rmse_radps": 0.2967237915647292
+      },
+      "relative_error_reduction": {
+        "lin_vel_rmse_mps": 0.1288576590996533,
+        "yaw_rate_rmse_radps": 0.022800979592598924
+      },
+      "checkpoint_sha256": {
+        "run": "ed28e874db3e984b6946aea7fe2a193f5f0661cb3799e0f6aacc04cbecc9f647",
+        "reference": "fce4c18b83b836e43cb7b535a1beff2638191ba1acba625be01f9cde57cda2c5"
+      }
+    }
+  ],
+  "input_sha256_lf": {
+    "e01_s2026": "7c2e4801860dedc01ffcd6a50f68066b6cdbd439b89b8d38de49c53dd0cb3709",
+    "e01_s2027": "c73fe09ca9a767da8fe7929f7a1db53fbf87800b17160eba6942b650505bc17b",
+    "e01_s2028": "4656cd8f384bc6b0df92b5796624b18f43b720db1f666e1d188e07e605eae132",
+    "ref_e01_s2026": "f6ff4a8a64f5136f2d06840bccac70e99fa2fc2045b5ed1f975898a88959fd4b",
+    "ref_e01_s2027": "5f0ec03b7ad65c79bcc6657d64787ec16f36dc8209ab928ba9aa6a6035619b5f",
+    "ref_e01_s2028": "48ba2652116813649619923c92da97682ec54ff0446a07264f2c43cea97792af"
+  },
+  "source_summary_sha256_lf": "413839098872b25eac052e6cdd08583979d476d6d467dcc97b4251f4915f274e",
+  "agent_diagnosis_or_recovery_proven": false,
+  "statistical_superiority_proven": false,
+  "interpretation": "These are different policies trained under fault and reference callbacks, then evaluated in the same stock environment. They are not the same-policy runtime correction experiment, new training, an agent-selected repair, or new held-out evidence. All three existing pairs, including the failure-absent pair and worsened metrics, are retained."
+}
