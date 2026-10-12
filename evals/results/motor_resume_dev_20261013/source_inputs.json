@@ -1,0 +1,50 @@
+{
+  "schema": "training_correction_public_v1",
+  "fault": "F2",
+  "bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1513,
+    "err_yaw_ratio_max": 1.1719,
+    "fall_frac_max": 0.05
+  },
+  "runtime_versions": {
+    "torch": "2.7.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 3060",
+    "isaaclab": "0.41.3",
+    "isaaclab_tasks": "0.10.36",
+    "isaaclab_rl": "0.1.8",
+    "rsl-rl-lib": "2.3.3",
+    "isaacsim": null
+  },
+  "summary_sha256_lf": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+  "runs": {
+    "NONE": {
+      "run": "baseline_p0c_s2027",
+      "hashes": {
+        "metadata": "8e1e2e25421118a557f69a2de886e73e079cf5e08d13f71b035b0ccf74d7d581",
+        "checkpoint": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+        "environment": "614711ac8d5c7b72359efbb7e6ef502f4c14d0204f9c320f1d119982e6385a8a",
+        "agent": "e821536f238909e57de9e33fef48246537f99dc4fdaf8128281b87f21c301172",
+        "fixed_report": "9237d034d0c7be7775fa8330baeb0d08b63583ca301d1d83758d0776dce0cc73"
+      },
+      "original_label": "healthy",
+      "original_failed": []
+    },
+    "F2": {
+      "run": "h06_s2027",
+      "hashes": {
+        "metadata": "bd6a38f03dd19eee365ac3b47a5bd6f7ec156759a8b565bd02696e4150ad7735",
+        "checkpoint": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+        "environment": "614711ac8d5c7b72359efbb7e6ef502f4c14d0204f9c320f1d119982e6385a8a",
+        "agent": "38e8eee3bbd0fbdb14163951217cbee8ed4247c27273e65144da90555e47ef13",
+        "fixed_report": "6a9496d9564a6ad3a65ca9ea637c5f9527673dfbca7fe4ce44ddc172a5a6a058"
+      },
+      "original_label": "unhealthy",
+      "original_failed": [
+        "err_xy_ratio",
+        "err_yaw_ratio"
+      ]
+    }
+  },
+  "fixed_eval_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46"
+}

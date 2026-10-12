@@ -1,0 +1,167 @@
+{
+  "schema": "training_correction_public_v1",
+  "arms": {
+    "clean_reference": {
+      "receipt_sha256": "da6f458d078f1404474cf1b54170110f46a066c88675b130d14e1b224041871f",
+      "checkpoint": {
+        "file": "model_598.pt",
+        "sha256": "64940505917c891c5f1e01188b3fef01c1f83a35dbb9fb6be7d323e4562612e9"
+      },
+      "configs": {
+        "environment": {
+          "file": "env.yaml",
+          "sha256": "614711ac8d5c7b72359efbb7e6ef502f4c14d0204f9c320f1d119982e6385a8a"
+        },
+        "agent": {
+          "file": "agent.yaml",
+          "sha256": "8c994aa149418ef357ff370fc19e3f4b9e09005a25e3523728192377b99a4e03"
+        }
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324"
+      },
+      "resume_iteration": 299,
+      "final_iteration": 598,
+      "actual_control_steps": 7200,
+      "aggregate_env_steps": 29491200,
+      "budget": {
+        "seed": 2027,
+        "num_envs": 4096,
+        "max_iterations": 300,
+        "num_steps_per_env": 24,
+        "expected_control_steps": 7200
+      },
+      "observed": {
+        "environment_seed": 2027,
+        "environment_num_envs": 4096,
+        "action_scale": 0.25,
+        "agent_seed": 2027,
+        "agent_max_iterations": 300,
+        "runner_num_steps_per_env": 24
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "parent_wall_s": {
+        "scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "train_s": 484.4220000000205,
+        "fixed_evaluation_s": 47.25,
+        "total_s": 531.6720000000205
+      }
+    },
+    "fault_sham": {
+      "receipt_sha256": "2957a45ae7ffaea86873b6ec169c84e87141f386557643833c29a0a531ef3af5",
+      "checkpoint": {
+        "file": "model_598.pt",
+        "sha256": "201187567462fcf506dc0443091714b35bb58750d9f9a9f3e64dd6e98be1e702"
+      },
+      "configs": {
+        "environment": {
+          "file": "env.yaml",
+          "sha256": "614711ac8d5c7b72359efbb7e6ef502f4c14d0204f9c320f1d119982e6385a8a"
+        },
+        "agent": {
+          "file": "agent.yaml",
+          "sha256": "90aa5e39856c297cb61550998e9db2d271f12162d8d9f4d6927ecd28a9a6a448"
+        }
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2"
+      },
+      "resume_iteration": 299,
+      "final_iteration": 598,
+      "actual_control_steps": 7200,
+      "aggregate_env_steps": 29491200,
+      "budget": {
+        "seed": 2027,
+        "num_envs": 4096,
+        "max_iterations": 300,
+        "num_steps_per_env": 24,
+        "expected_control_steps": 7200
+      },
+      "observed": {
+        "environment_seed": 2027,
+        "environment_num_envs": 4096,
+        "action_scale": 0.25,
+        "agent_seed": 2027,
+        "agent_max_iterations": 300,
+        "runner_num_steps_per_env": 24
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "parent_wall_s": {
+        "scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "train_s": 468.25,
+        "fixed_evaluation_s": 89.53099999995902,
+        "total_s": 557.780999999959
+      }
+    },
+    "corrected": {
+      "receipt_sha256": "8e68e45e2d7f7208800eb9063e62b192ea3eda9b17c70a28a4796125422afd29",
+      "checkpoint": {
+        "file": "model_598.pt",
+        "sha256": "c89d90ec9fdce47fcb4cb81c61891c117512858964a6e715623e1e900a778f1e"
+      },
+      "configs": {
+        "environment": {
+          "file": "env.yaml",
+          "sha256": "614711ac8d5c7b72359efbb7e6ef502f4c14d0204f9c320f1d119982e6385a8a"
+        },
+        "agent": {
+          "file": "agent.yaml",
+          "sha256": "517c4df4134dd470186ec6c3ad337b0c767203273d42e608fe73f17c29d8dd12"
+        }
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "f3c341099041ae2e1502e21bd156a29bb880babd2002330c62afda6277d3c0d2"
+      },
+      "resume_iteration": 299,
+      "final_iteration": 598,
+      "actual_control_steps": 7200,
+      "aggregate_env_steps": 29491200,
+      "budget": {
+        "seed": 2027,
+        "num_envs": 4096,
+        "max_iterations": 300,
+        "num_steps_per_env": 24,
+        "expected_control_steps": 7200
+      },
+      "observed": {
+        "environment_seed": 2027,
+        "environment_num_envs": 4096,
+        "action_scale": 0.25,
+        "agent_seed": 2027,
+        "agent_max_iterations": 300,
+        "runner_num_steps_per_env": 24
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "parent_wall_s": {
+        "scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "train_s": 489.4220000000205,
+        "fixed_evaluation_s": 50.015000000130385,
+        "total_s": 539.4370000001509
+      }
+    }
+  }
+}

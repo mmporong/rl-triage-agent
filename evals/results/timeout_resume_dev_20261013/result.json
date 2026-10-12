@@ -1,0 +1,176 @@
+{
+  "schema": "training_correction_public_v1",
+  "replay_scope": "numeric_replay_only_not_execution_identity_attestation",
+  "tag": "timeout_resume_dev_20261013",
+  "case": "case_03",
+  "source_commit_sha": "5cdc6d4a0f17f1c29d4f4bb1f07cff4cc57ec908",
+  "protocol_sha256_lf": "abff34132c0f2fbbcfde9d4dee44c4cbd97871fb370cdf7c37d8584882d761d7",
+  "source_commit_scope": "experiment_execution_and_verdict_code_only",
+  "publisher_sources": {
+    "evals/publish_training_correction.py": "5dc08481677056b69ccb520fab8caf4fe0a9b8984c1e1d2a967cba719cfda3bc",
+    "evals/run_training_correction.py": "5473f030f357c7cec06861c1e33c8147d3960021f959956666531c9241da0bd1",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e"
+  },
+  "numeric": {
+    "status": "no_recovery",
+    "scope": "seen_single_seed_resume_feasibility",
+    "behavior": {
+      "clean_reference": {
+        "survival_s": 20.0,
+        "horizon_s": 20.0,
+        "fall_frac": 0.0,
+        "err_xy": 0.13186171244395944,
+        "err_yaw": 0.1721144763503927
+      },
+      "fault_sham": {
+        "survival_s": 19.794288330078125,
+        "horizon_s": 20.0,
+        "fall_frac": 0.014423076994717121,
+        "err_xy": 0.20440836940238738,
+        "err_yaw": 0.2924766986075353
+      },
+      "corrected": {
+        "survival_s": 19.4297119140625,
+        "horizon_s": 20.0,
+        "fall_frac": 0.03846153989434242,
+        "err_xy": 0.17559853700574732,
+        "err_yaw": 0.24793178411414357
+      }
+    },
+    "verdicts": {
+      "clean_reference": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "fault_sham": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "corrected": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      }
+    },
+    "original_behavior": {
+      "clean_reference": {
+        "survival_s": 20.0,
+        "horizon_s": 20.0,
+        "fall_frac": 0.0,
+        "err_xy": 0.14616400335087323,
+        "err_yaw": 0.2934866079446459
+      },
+      "fault": {
+        "survival_s": 19.996961669921877,
+        "horizon_s": 20.0,
+        "fall_frac": 0.000961538462433964,
+        "err_xy": 0.25584283440392175,
+        "err_yaw": 0.3116311392364914
+      }
+    },
+    "source_verdict": {
+      "label": "unhealthy",
+      "failed": [
+        "err_xy_ratio"
+      ],
+      "short_horizon": false,
+      "checks": {
+        "survival_ratio": true,
+        "fall_frac": true,
+        "err_xy_ratio": false,
+        "err_yaw_ratio": true
+      }
+    },
+    "secondary_verdicts": {
+      "clean_reference": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "fault_sham": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": true
+        }
+      },
+      "corrected": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": true
+        }
+      }
+    },
+    "original_sham_failed_overlap": [
+      "err_xy_ratio"
+    ],
+    "reference_walks": true,
+    "sham_corrected_initial_states_match": true,
+    "bands": {
+      "survival_ratio_min": 0.9,
+      "err_xy_ratio_max": 1.1513,
+      "err_yaw_ratio_max": 1.1719,
+      "fall_frac_max": 0.05
+    },
+    "sham_corrected_rng_hashes_match": true,
+    "full_environment_state_restored": false,
+    "rng_state_restored_from_checkpoint": false,
+    "causal_confirmation": false,
+    "stochastic_effect_separated": false,
+    "exact_training_trajectory_resumed": false,
+    "arm_order": [
+      "clean_reference",
+      "fault_sham",
+      "corrected"
+    ],
+    "model_selected_correction": false,
+    "generalization_proven": false,
+    "wording": "교정 후 이어 학습한 정책이 정상 기준의 행동 허용 범위를 통과하지 못했다."
+  }
+}

@@ -1,4 +1,4 @@
-"""검증된 case_01 교정 실험의 세 정책을 같은 Isaac Play 조건으로 녹화한다.
+"""검증된 등록 교정 실험의 세 정책을 같은 Isaac Play 조건으로 녹화한다.
 
 ``prepare``는 완료된 비공개 실행과 공개 수치 export를 다시 검증한 뒤, 녹화
 프로토콜만 새로 만든다. 프로토콜과 이 파일을 커밋한 다음에만 ``record``가
@@ -45,10 +45,7 @@ ALLOWED_RESULTS = {
     "restoration_observed_single_run", "source_failure_absent", "baseline_invalid",
     "no_failure_observed", "sham_shifted", "no_recovery",
 }
-FIXED = {
-    "schema": "training_correction_media_v1",
-    "scope": "verified_case_01_policy_playback",
-    "case": "case_01",
+COMMON_FIXED = {
     "task": M.EXPECTED_TASK,
     "seed": 42,
     "num_envs": 1,
@@ -68,11 +65,23 @@ FIXED = {
     "model_selected_correction": False,
     "media_claim": "policy_playback_only_result_status_preserved",
 }
+LEGACY_FIXED = {
+    "schema": "training_correction_media_v1",
+    "scope": "verified_case_01_policy_playback",
+    "case": "case_01",
+    **COMMON_FIXED,
+}
+FIXED = {
+    "schema": "training_correction_media_v2",
+    "scope": "verified_registered_case_policy_playback",
+    **COMMON_FIXED,
+}
 GENERATED_KEYS = {
-    "source_tag", "result_status", "result_wording", "source_commit_sha", "source_commit_scope",
+    "source_tag", "case", "fault", "result_status", "result_wording", "source_commit_sha", "source_commit_scope",
     "publisher_sources", "source_protocol_sha256_lf", "fixed_eval_sha256_lf", "code_sha256_lf",
     "play_py_sha256", "isaaclab_commit", "public_sources", "private_sources", "clips",
 }
+LEGACY_GENERATED_KEYS = GENERATED_KEYS - {"case", "fault"}
 CLIP_KEYS = {
     "id", "role", "run_basename", "checkpoint", "checkpoint_sha256",
     "params_env_sha256", "params_agent_sha256", "overrides",
@@ -138,6 +147,23 @@ def _private_artifacts(tag: str) -> list[dict[str, str]]:
             if path.is_file() and not path.is_symlink()]
 
 
+def _validate_result_lineage(*, tag: str, case: str, source_commit: str,
+                             source_protocol_sha: str, status: str, wording: str,
+                             request: dict[str, Any], public_result: dict[str, Any],
+                             private_result: dict[str, Any]) -> None:
+    registered_wording = H.FIXED["result_wording"].get(status)
+    numeric = public_result.get("numeric")
+    if (not isinstance(numeric, dict) or not isinstance(registered_wording, str)
+            or wording != registered_wording
+            or any(value.get("tag") != tag or value.get("case") != case
+                   or value.get("source_commit_sha") != source_commit
+                   or value.get("protocol_sha256_lf") != source_protocol_sha
+                   for value in (request, public_result, private_result))
+            or numeric.get("status") != status or numeric.get("wording") != wording
+            or private_result.get("status") != status or private_result.get("wording") != wording):
+        raise ValueError("public, private, and request result lineage differs")
+
+
 def _verified_source(tag: str, isaaclab: Path) -> dict[str, Any]:
     """비공개 실행, 공개 export, 체크포인트를 함께 다시 검증한다."""
     tag = _tag(tag)
@@ -147,7 +173,11 @@ def _verified_source(tag: str, isaaclab: Path) -> dict[str, Any]:
     public_result = H.read(public / "result.json")
     numeric = public_result.get("numeric", {})
     status = numeric.get("status")
-    if (public_result.get("case") != FIXED["case"] or status not in ALLOWED_RESULTS
+    case = public_result.get("case")
+    if case not in H.CASES:
+        raise ValueError("public correction result uses an unregistered case")
+    fault = H.CASES[case]["fault"]
+    if (status not in ALLOWED_RESULTS
             or replay.get("status") != status
             or numeric.get("model_selected_correction") is not False):
         raise ValueError("public correction result is invalid, partial, or from another case")
@@ -158,14 +188,15 @@ def _verified_source(tag: str, isaaclab: Path) -> dict[str, Any]:
         raise ValueError("public publisher source binding is incomplete")
 
     source_protocol, source_commit = H.verify_protocol(isaaclab)
+    source_protocol_sha = H.sha(H.PROTOCOL, True)
     request = H.read(private / "request.json")
     private_result = H.read(private / "result.json")
-    if (request.get("tag") != tag or request.get("case") != FIXED["case"]
-            or request.get("source_commit_sha") != source_commit
-            or private_result.get("status") != status
-            or private_result.get("source_commit_sha") != source_commit
-            or public_result.get("source_commit_sha") != source_commit):
-        raise ValueError("private and public correction results are not the same verified execution")
+    wording = numeric.get("wording")
+    _validate_result_lineage(
+        tag=tag, case=case, source_commit=source_commit,
+        source_protocol_sha=source_protocol_sha, status=status, wording=wording,
+        request=request, public_result=public_result, private_result=private_result,
+    )
 
     receipts: dict[str, dict[str, Any]] = {}
     for arm in H.ARMS:
@@ -178,10 +209,14 @@ def _verified_source(tag: str, isaaclab: Path) -> dict[str, Any]:
                 or parent.get("training_receipt_sha256") != H.sha(training / "receipt.json")
                 or parent.get("fixed_report_sha256") != H.sha(report)):
             raise ValueError(f"{arm} execution is partial or invalid")
+        expected_fault, expected_correction = H.selection(case, arm)
+        if (receipt.get("fault") != expected_fault
+                or receipt.get("correction_id") != expected_correction):
+            raise ValueError(f"{arm} receipt is bound to another case selection")
         receipts[arm] = receipt
 
     clips: list[dict[str, Any]] = []
-    original = H.source_paths(isaaclab, "F1")
+    original = H.source_paths(isaaclab, fault)
     clips.append({
         "id": CLIP_IDS[0], "role": "original_failed_source", "run_basename": original["checkpoint"].parent.name,
         "checkpoint": original["checkpoint"].name,
@@ -218,10 +253,11 @@ def _verified_source(tag: str, isaaclab: Path) -> dict[str, Any]:
     if len(private_sources) != len(_private_paths(tag)):
         raise ValueError("private correction artifact set is incomplete")
     return {
-        "tag": tag, "status": status, "wording": numeric.get("wording"),
+        "tag": tag, "case": case, "fault": fault,
+        "status": status, "wording": wording,
         "source_commit_sha": source_commit, "source_commit_scope": source_commit_scope,
         "publisher_sources": publisher_sources,
-        "source_protocol_sha256_lf": H.sha(H.PROTOCOL, True),
+        "source_protocol_sha256_lf": source_protocol_sha,
         "fixed_eval_sha256_lf": source_protocol["fixed_eval_sha256_lf"],
         "public_sources": public_sources, "private_sources": private_sources, "clips": clips,
     }
@@ -231,7 +267,8 @@ def prepare(tag: str, isaaclab: Path) -> dict[str, Any]:
     source = _verified_source(tag, isaaclab)
     path = protocol_path(tag)
     protocol = {
-        **deepcopy(FIXED), "source_tag": source["tag"], "result_status": source["status"],
+        **deepcopy(FIXED), "source_tag": source["tag"], "case": source["case"],
+        "fault": source["fault"], "result_status": source["status"],
         "result_wording": source["wording"], "source_commit_sha": source["source_commit_sha"],
         "source_commit_scope": source["source_commit_scope"],
         "publisher_sources": source["publisher_sources"],
@@ -250,7 +287,8 @@ def prepare(tag: str, isaaclab: Path) -> dict[str, Any]:
 
 def _resolve_clips(protocol: dict[str, Any], isaaclab: Path) -> list[dict[str, Any]]:
     private = H.folder_for(protocol["source_tag"])
-    original = H.source_paths(isaaclab, "F1")
+    _case, fault = _protocol_case_fault(protocol)
+    original = H.source_paths(isaaclab, fault)
     locations = {
         CLIP_IDS[0]: (original["checkpoint"], original["environment"].parent),
         CLIP_IDS[1]: (Path(H.read(private / "corrected/train/receipt.json")["checkpoint"]["path"]),
@@ -272,9 +310,24 @@ def _sha(value: object, length: int = 64) -> bool:
     return isinstance(value, str) and re.fullmatch(rf"[0-9a-f]{{{length}}}", value) is not None
 
 
+def _protocol_case_fault(protocol: dict[str, Any]) -> tuple[str, str]:
+    if protocol.get("schema") == LEGACY_FIXED["schema"]:
+        if protocol.get("case") != "case_01":
+            raise ValueError("legacy recording protocol case changed")
+        return "case_01", H.CASES["case_01"]["fault"]
+    case, fault = protocol.get("case"), protocol.get("fault")
+    if case not in H.CASES or fault != H.CASES[case]["fault"]:
+        raise ValueError("recording protocol case/fault binding changed")
+    return case, fault
+
+
 def _validate_protocol_shape(protocol: dict[str, Any], tag: str) -> None:
-    if set(protocol) != set(FIXED) | GENERATED_KEYS or protocol.get("source_tag") != tag:
+    legacy = protocol.get("schema") == LEGACY_FIXED["schema"]
+    fixed = LEGACY_FIXED if legacy else FIXED
+    generated = LEGACY_GENERATED_KEYS if legacy else GENERATED_KEYS
+    if set(protocol) != set(fixed) | generated or protocol.get("source_tag") != tag:
         raise ValueError("recording protocol schema or source tag changed")
+    _protocol_case_fault(protocol)
     if (protocol.get("result_status") not in ALLOWED_RESULTS
             or not isinstance(protocol.get("result_wording"), str)
             or not protocol["result_wording"]
@@ -399,17 +452,31 @@ def _verify_frozen_source(protocol: dict[str, Any], isaaclab: Path) -> None:
     public = ROOT / "evals/results" / protocol["source_tag"]
     replay = Q.replay(public)
     public_result = H.read(public / "result.json")
-    private_result = H.read(H.folder_for(protocol["source_tag"]) / "result.json")
+    private = H.folder_for(protocol["source_tag"])
+    request = H.read(private / "request.json")
+    private_result = H.read(private / "result.json")
     numeric = public_result.get("numeric", {})
+    case, fault = _protocol_case_fault(protocol)
+    _validate_result_lineage(
+        tag=protocol["source_tag"], case=case,
+        source_commit=protocol["source_commit_sha"],
+        source_protocol_sha=protocol["source_protocol_sha256_lf"],
+        status=protocol["result_status"], wording=protocol["result_wording"],
+        request=request, public_result=public_result, private_result=private_result,
+    )
     if (replay.get("status") != protocol["result_status"]
-            or numeric.get("status") != protocol["result_status"]
             or numeric.get("model_selected_correction") is not False
-            or private_result.get("status") != protocol["result_status"]
-            or public_result.get("source_commit_sha") != protocol["source_commit_sha"]
-            or private_result.get("source_commit_sha") != protocol["source_commit_sha"]
             or public_result.get("source_commit_scope") != protocol["source_commit_scope"]
             or public_result.get("publisher_sources") != protocol["publisher_sources"]):
         raise ValueError("frozen correction result binding changed")
+    for arm in H.ARMS:
+        receipt = H.read(private / arm / "train/receipt.json")
+        expected_fault, expected_correction = H.selection(case, arm)
+        if (receipt.get("fault") != expected_fault
+                or receipt.get("correction_id") != expected_correction):
+            raise ValueError("frozen arm selection binding changed")
+    if H.source_paths(isaaclab, fault)["checkpoint"].name != CLIP_CONTRACT[CLIP_IDS[0]][1]:
+        raise ValueError("frozen original checkpoint contract changed")
     source_protocol_relative = H.PROTOCOL.relative_to(ROOT).as_posix()
     if (H.sha(H.PROTOCOL, True) != protocol["source_protocol_sha256_lf"]
             or _git_blob_lf(protocol["source_commit_sha"], source_protocol_relative)
@@ -426,7 +493,8 @@ def verify(tag: str, isaaclab: Path) -> tuple[dict[str, Any], list[dict[str, Any
     path = protocol_path(tag)
     protocol = H.read(path)
     _validate_protocol_shape(protocol, tag)
-    for key, value in FIXED.items():
+    fixed = LEGACY_FIXED if protocol.get("schema") == LEGACY_FIXED["schema"] else FIXED
+    for key, value in fixed.items():
         if protocol.get(key) != value:
             raise ValueError("recording contract changed")
     for tool in ("ffmpeg", "ffprobe"):
@@ -533,7 +601,9 @@ def record(tag: str, isaaclab: Path, timeout_s: int = 900) -> dict[str, Any]:
     # guaranteed to print as 15/1 even though the ffmpeg fps filter is fixed at 15.
     _validate_gif(gif_probe)
     manifest = {
-        "schema": "training_correction_media_artifact_v1", "source_tag": tag,
+        "schema": "training_correction_media_artifact_v2", "source_tag": tag,
+        "source_case": _protocol_case_fault(protocol)[0],
+        "source_fault": _protocol_case_fault(protocol)[1],
         "source_result_status": protocol["result_status"],
         "source_result_wording": protocol["result_wording"],
         "model_selected_correction": False,

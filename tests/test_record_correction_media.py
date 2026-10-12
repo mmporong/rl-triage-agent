@@ -22,7 +22,7 @@ def _module():
     return module
 
 
-def _source(module, status="no_recovery"):
+def _source(module, status="no_recovery", case="case_01"):
     clips = []
     for clip_id, role, checkpoint in zip(module.CLIP_IDS,
                                          ("original_failed_source", "corrected", "fault_sham"),
@@ -31,7 +31,8 @@ def _source(module, status="no_recovery"):
                       "checkpoint": checkpoint, "checkpoint_sha256": clip_id[0] * 64,
                       "params_env_sha256": "e" * 64, "params_agent_sha256": "a" * 64,
                       "overrides": module.FIXED["overrides"]})
-    return {"tag": "source_tag", "status": status, "wording": f"wording:{status}",
+    return {"tag": "source_tag", "case": case, "fault": module.H.CASES[case]["fault"],
+            "status": status, "wording": f"wording:{status}",
             "source_commit_sha": "c" * 40,
             "source_commit_scope": "experiment_execution_and_verdict_code_only",
             "publisher_sources": {"evals/publish_training_correction.py": "d" * 64},
@@ -44,7 +45,8 @@ def _source(module, status="no_recovery"):
 
 def _protocol(module):
     source = _source(module)
-    return {**module.FIXED, "source_tag": source["tag"], "result_status": source["status"],
+    return {**module.FIXED, "source_tag": source["tag"], "case": source["case"],
+            "fault": source["fault"], "result_status": source["status"],
             "result_wording": source["wording"], "source_commit_sha": source["source_commit_sha"],
             "source_commit_scope": source["source_commit_scope"],
             "publisher_sources": source["publisher_sources"],
@@ -54,6 +56,28 @@ def _protocol(module):
             "play_py_sha256": "2" * 64, "isaaclab_commit": module.H.FIXED["isaaclab_commit"],
             "public_sources": source["public_sources"], "private_sources": source["private_sources"],
             "clips": source["clips"]}
+
+
+def _lineage(module):
+    tag, case, commit, protocol_sha, status = (
+        "source_tag", "case_02", "c" * 40, "p" * 64, "no_recovery",
+    )
+    wording = module.H.FIXED["result_wording"][status]
+    common = {"tag": tag, "case": case, "source_commit_sha": commit,
+              "protocol_sha256_lf": protocol_sha}
+    return {
+        "tag": tag, "case": case, "source_commit": commit,
+        "source_protocol_sha": protocol_sha, "status": status, "wording": wording,
+        "request": dict(common),
+        "public_result": {**common, "numeric": {"status": status, "wording": wording}},
+        "private_result": {**common, "status": status, "wording": wording},
+    }
+
+
+def test_result_lineage_accepts_one_exact_registered_execution():
+    module = _module()
+
+    module._validate_result_lineage(**_lineage(module))
 
 
 def test_prepare_writes_status_preserving_three_clip_protocol(monkeypatch, tmp_path):
@@ -75,6 +99,8 @@ def test_prepare_writes_status_preserving_three_clip_protocol(monkeypatch, tmp_p
     assert result["status"] == "prepared_commit_before_recording"
     assert result["protocol"] == "bench/protocols/training_correction_media_source_tag.json"
     assert protocol["result_status"] == "no_recovery"
+    assert protocol["schema"] == "training_correction_media_v2"
+    assert protocol["case"] == "case_01" and protocol["fault"] == "F1"
     assert protocol["model_selected_correction"] is False
     assert protocol["source_commit_scope"] == "experiment_execution_and_verdict_code_only"
     assert protocol["publisher_sources"]
@@ -99,6 +125,103 @@ def test_verified_source_rejects_invalid_or_partial_public_result(monkeypatch, t
         module._verified_source("source_tag", tmp_path)
 
 
+@pytest.mark.parametrize("document,field", [
+    ("request", "tag"), ("request", "case"), ("request", "source_commit_sha"),
+    ("request", "protocol_sha256_lf"), ("public_result", "tag"),
+    ("public_result", "case"), ("public_result", "source_commit_sha"),
+    ("public_result", "protocol_sha256_lf"), ("private_result", "tag"),
+    ("private_result", "case"), ("private_result", "source_commit_sha"),
+    ("private_result", "protocol_sha256_lf"), ("private_result", "status"),
+    ("private_result", "wording"),
+])
+def test_result_lineage_rejects_cross_execution_fields(document, field):
+    module = _module()
+    lineage = _lineage(module)
+    lineage[document][field] = "changed"
+
+    with pytest.raises(ValueError, match="result lineage differs"):
+        module._validate_result_lineage(**lineage)
+
+
+@pytest.mark.parametrize("field", ["status", "wording"])
+def test_result_lineage_rejects_public_numeric_or_protocol_wording_change(field):
+    module = _module()
+    lineage = _lineage(module)
+    if field == "wording":
+        lineage["wording"] = "교정에 성공했다."
+    else:
+        lineage["public_result"]["numeric"][field] = "restoration_observed_single_run"
+
+    with pytest.raises(ValueError, match="result lineage differs"):
+        module._validate_result_lineage(**lineage)
+
+
+def test_prepare_binds_registered_motor_case_without_reward_hardcode(monkeypatch, tmp_path):
+    module = _module()
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    for name in module.CODE:
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(name, encoding="utf-8")
+    play = tmp_path / module.PLAY
+    play.parent.mkdir(parents=True, exist_ok=True)
+    play.write_text("play", encoding="utf-8")
+    monkeypatch.setattr(module, "_verified_source", lambda *_args: _source(module, case="case_02"))
+
+    result = module.prepare("source_tag", tmp_path)
+    protocol = json.loads((tmp_path / result["protocol"]).read_text(encoding="utf-8"))
+
+    assert protocol["case"] == "case_02"
+    assert protocol["fault"] == "F2"
+    assert protocol["scope"] == "verified_registered_case_policy_playback"
+
+
+@pytest.mark.parametrize("case,fault", [("case_02", "F1"), ("case_03", "F2"), ("case_99", "F1")])
+def test_protocol_rejects_cross_case_or_fault_binding(case, fault):
+    module = _module()
+    protocol = _protocol(module)
+    protocol["case"], protocol["fault"] = case, fault
+
+    with pytest.raises(ValueError, match="case/fault binding"):
+        module._validate_protocol_shape(protocol, "source_tag")
+
+
+@pytest.mark.parametrize("case,fault", [("case_01", "F1"), ("case_02", "F2"), ("case_03", "F6")])
+def test_resolve_clips_selects_original_checkpoint_from_bound_fault(monkeypatch, tmp_path, case, fault):
+    module = _module()
+    private = tmp_path / "private"
+    monkeypatch.setattr(module.H, "folder_for", lambda _tag: private)
+    calls = []
+
+    def source_paths(_root, fault):
+        calls.append(fault)
+        run = tmp_path / f"source_{fault}"
+        return {"checkpoint": run / "model_299.pt", "environment": run / "params/env.yaml"}
+
+    monkeypatch.setattr(module.H, "source_paths", source_paths)
+    for arm in ("corrected", "fault_sham"):
+        path = private / arm / "train/receipt.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({"checkpoint": {"path": str(tmp_path / arm / "model_598.pt")},
+                                    "configs": {"environment": {"path": str(tmp_path / arm / "params/env.yaml")}}}),
+                        encoding="utf-8")
+
+    resolved = module._resolve_clips(_protocol(module) | {"case": case, "fault": fault}, tmp_path)
+
+    assert calls == [fault]
+    assert resolved[0]["checkpoint"].parent.name == f"source_{fault}"
+
+
+def test_frozen_case01_v1_protocol_shape_remains_readable():
+    module = _module()
+    path = ROOT / "bench/protocols/training_correction_media_reward_resume_dev3_20261013.json"
+    protocol = json.loads(path.read_text(encoding="utf-8"))
+
+    module._validate_protocol_shape(protocol, "reward_resume_dev3_20261013")
+
+    assert module._protocol_case_fault(protocol) == ("case_01", "F1")
+
+
 def test_record_checks_commit_before_gpu_or_launcher(monkeypatch, tmp_path):
     module = _module()
     monkeypatch.setattr(module, "verify", lambda *_args: (_ for _ in ()).throw(ValueError("must be committed")))
@@ -109,7 +232,9 @@ def test_record_checks_commit_before_gpu_or_launcher(monkeypatch, tmp_path):
         module.record("source_tag", tmp_path)
 
 
-@pytest.mark.parametrize("mutation", ["checkpoint_escape", "override_change", "role_change"])
+@pytest.mark.parametrize("mutation", [
+    "checkpoint_escape", "override_change", "role_change", "case_fault_swap", "scope_change",
+])
 def test_tampered_clip_contract_is_rejected_before_gpu(monkeypatch, tmp_path, mutation):
     module = _module()
     protocol = _protocol(module)
@@ -117,14 +242,18 @@ def test_tampered_clip_contract_is_rejected_before_gpu(monkeypatch, tmp_path, mu
         protocol["clips"][0]["checkpoint"] = "../../model_299.pt"
     elif mutation == "override_change":
         protocol["clips"][1]["overrides"] = ["env.viewer.eye=[0,0,0]"]
-    else:
+    elif mutation == "role_change":
         protocol["clips"][2]["role"] = "corrected"
+    elif mutation == "case_fault_swap":
+        protocol["case"], protocol["fault"] = "case_02", "F1"
+    else:
+        protocol["scope"] = "verified_case_01_policy_playback"
     path = tmp_path / "protocol.json"
     path.write_text(json.dumps(protocol), encoding="utf-8")
     monkeypatch.setattr(module, "protocol_path", lambda _tag: path)
     monkeypatch.setattr(module.M, "query_gpu", lambda: pytest.fail("GPU queried after protocol tamper"))
 
-    with pytest.raises(ValueError, match="clip contract changed"):
+    with pytest.raises(ValueError, match="clip contract changed|case/fault binding|recording contract changed"):
         module.record("source_tag", tmp_path)
 
 
@@ -250,6 +379,7 @@ def test_record_publishes_three_clips_and_neutral_comparison_manifest(monkeypatc
     protocol_file.parent.mkdir(parents=True)
     protocol_file.write_text("{}", encoding="utf-8")
     protocol = {**module.FIXED, "source_tag": "source_tag", "result_status": "no_recovery",
+                "case": "case_01", "fault": "F1",
                 "result_wording": "회복하지 못했다", "source_commit_sha": "s" * 40,
                 "source_commit_scope": "experiment_execution_and_verdict_code_only",
                 "publisher_sources": {"evals/publish_training_correction.py": "d" * 64},
@@ -294,6 +424,7 @@ def test_record_publishes_three_clips_and_neutral_comparison_manifest(monkeypatc
     assert result["status"] == "recorded" and result["clips"] == 3
     assert result["folder"] == "docs/media/go2-correction-source_tag"
     assert manifest["source_result_status"] == "no_recovery"
+    assert manifest["source_case"] == "case_01" and manifest["source_fault"] == "F1"
     assert manifest["gif_is_recovery_claim"] is False
     assert [row["id"] for row in manifest["clips"]] == list(module.CLIP_IDS)
     assert {row["frame_info"]["frame_count"] for row in manifest["clips"]} == {299}
