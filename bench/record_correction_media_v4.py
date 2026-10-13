@@ -3,6 +3,8 @@
 ``prepare``는 비공개 실행과 공개 수치 export를 실험 커밋 기준으로 다시 검증한 뒤 녹화
 프로토콜만 새로 만든다. 프로토콜과 이 파일을 커밋한 다음에만 ``record``가 GPU를 쓴다.
 v3 기록기(record_correction_media.py)는 세 arm에 고정돼 있어 바꾸지 않고 범용 함수만 재사용한다.
+프로토콜은 개정판 r2(``..._r2.json``)다. 같은 tag의 r1은 생성 seed가 고정 Play seed를 덮어써 녹화 전에
+거부됐고, 파일을 바꾸지 않은 채 r2의 ``supersedes``로 SHA와 이유를 결합한다.
 """
 from __future__ import annotations
 
@@ -58,20 +60,27 @@ CLIP_TITLES = {
     "reference_clean_resume": "Clean resumed", "reference_original_none": "Clean original",
 }
 ALLOWED_STATUS = Q.PUBLISHABLE_STATUS
+REVISION = 2
 FIXED = {
     "schema": "training_correction_media_v4",
     "scope": "verified_recovery_mode_seed_policy_playback",
+    # seed는 v3 공통값의 Play 재생 seed(42)다. 원 실행 seed는 생성 키 source_seed로 따로 둔다.
     **deepcopy(V3M.COMMON_FIXED),
+    "revision": REVISION,
     "clip_titles": CLIP_TITLES,
     "grid": {"columns": 3, "rows": 2, "cell_width": 640, "cell_height": 360},
     "comparison_size": [1920, 720],
     "gif_size": [960, 360],
 }
 GENERATED_KEYS = {
-    "source_tag", "seed", "result_status", "result_labels", "result_wording", "source_commit_sha",
+    "source_tag", "source_seed", "result_status", "result_labels", "result_wording", "source_commit_sha",
     "source_commit_scope", "publisher_sources", "source_protocol_sha256_lf", "fixed_eval_sha256_lf",
     "code_sha256_lf", "play_py_sha256", "isaaclab_commit", "public_sources", "private_sources", "clips",
+    "supersedes",
 }
+# r1 프로토콜은 생성 seed가 고정 Play seed를 덮어써 verify가 녹화 전에 거부했다. 파일은 그대로 두고 r2가 대체한다.
+SUPERSEDED_REASON = ("r1은 생성 키 seed(원 실행 seed)가 고정 키 seed(Play 재생 seed 42)를 덮어써 verify가 "
+                     "'recording contract changed'로 녹화 전에 거부했다(GPU 미사용). r2는 원 실행 seed를 source_seed로 둔다")
 CLIP_KEYS = V3M.CLIP_KEYS
 PRIVATE_FILES = {
     "consumed": "consumed.json", "train_manifest": "train/manifest.json",
@@ -81,8 +90,20 @@ PRIVATE_FILES = {
 }
 
 
-def protocol_path(tag: str) -> Path:
+def superseded_protocol_path(tag: str) -> Path:
     return ROOT / "bench" / "protocols" / f"training_correction_media_v4_{V3M._tag(tag)}.json"
+
+
+def protocol_path(tag: str) -> Path:
+    return ROOT / "bench" / "protocols" / f"training_correction_media_v4_{V3M._tag(tag)}_r{REVISION}.json"
+
+
+def _supersedes(tag: str) -> dict[str, str] | None:
+    """같은 tag의 r1 프로토콜이 있으면 경로·SHA·대체 이유를 결합한다. 파일은 바꾸지 않는다."""
+    old = superseded_protocol_path(tag)
+    if not old.is_file():
+        return None
+    return {"path": old.relative_to(ROOT).as_posix(), "sha256": M.sha256_file(old), "reason": SUPERSEDED_REASON}
 
 
 def _relative(path: Path) -> str:
@@ -210,7 +231,7 @@ def prepare(tag: str, isaaclab: Path) -> dict[str, Any]:
     source = _verified_source(tag, isaaclab)
     path = protocol_path(tag)
     protocol = {
-        **deepcopy(FIXED), "source_tag": source["tag"], "seed": source["seed"],
+        **deepcopy(FIXED), "source_tag": source["tag"], "source_seed": source["seed"], "supersedes": _supersedes(tag),
         "result_status": source["status"], "result_labels": source["labels"],
         "result_wording": source["wording"], "source_commit_sha": source["source_commit_sha"],
         "source_commit_scope": source["source_commit_scope"], "publisher_sources": source["publisher_sources"],
@@ -227,7 +248,7 @@ def prepare(tag: str, isaaclab: Path) -> dict[str, Any]:
 
 def _resolve_clips(protocol: dict[str, Any], isaaclab: Path) -> list[dict[str, Any]]:
     private = H.folder_for(protocol["source_tag"])
-    seed = protocol["seed"]
+    seed = protocol["source_seed"]
     locations = {}
     for clip_id in CLIP_IDS:
         role = CLIP_CONTRACT[clip_id][0]
@@ -246,7 +267,13 @@ def _validate_protocol_shape(protocol: dict[str, Any], tag: str) -> None:
     if set(protocol) != set(FIXED) | GENERATED_KEYS or protocol.get("source_tag") != tag:
         raise ValueError("recording protocol schema or source tag changed")
     labels = protocol.get("result_labels")
-    if (protocol.get("seed") not in H.SEEDS or protocol.get("result_status") not in ALLOWED_STATUS
+    supersedes = protocol.get("supersedes")
+    if supersedes is not None and (
+            not isinstance(supersedes, dict) or set(supersedes) != {"path", "sha256", "reason"}
+            or supersedes.get("path") != superseded_protocol_path(tag).relative_to(ROOT).as_posix()
+            or not V3M._sha(supersedes.get("sha256")) or supersedes.get("reason") != SUPERSEDED_REASON):
+        raise ValueError("superseded recording protocol binding is malformed")
+    if (protocol.get("source_seed") not in H.SEEDS or protocol.get("result_status") not in ALLOWED_STATUS
             or not isinstance(labels, dict) or set(labels) != set(H.TREATMENT_ARMS)
             or any(value not in H.LABELS for value in labels.values())
             or not isinstance(protocol.get("result_wording"), str) or not protocol["result_wording"]
@@ -337,7 +364,7 @@ def _verify_frozen_source(protocol: dict[str, Any], isaaclab: Path) -> None:
     public_result = H.read(public / "result.json")
     private = H.folder_for(tag)
     _validate_result_lineage(
-        tag=tag, seed=protocol["seed"], source_commit=protocol["source_commit_sha"],
+        tag=tag, seed=protocol["source_seed"], source_commit=protocol["source_commit_sha"],
         source_protocol_sha=protocol["source_protocol_sha256_lf"], status=protocol["result_status"],
         labels=protocol["result_labels"], request=H.read(private / "request.json"),
         public_result=public_result, private_result=H.read(private / "result.json"))
@@ -354,7 +381,7 @@ def _verify_frozen_source(protocol: dict[str, Any], isaaclab: Path) -> None:
         if (receipt.get("fault"), receipt.get("correction_id"), receipt.get("recovery_mode")) != H.selection(arm):
             raise ValueError("frozen arm selection binding changed")
     for fault in (H.FAULT, "NONE"):
-        if H.source_paths(isaaclab, protocol["seed"], fault)["checkpoint"].name != "model_299.pt":
+        if H.source_paths(isaaclab, protocol["source_seed"], fault)["checkpoint"].name != "model_299.pt":
             raise ValueError("frozen original checkpoint contract changed")
     relative = H.PROTOCOL.relative_to(ROOT).as_posix()
     if (H.sha(H.PROTOCOL, True) != protocol["source_protocol_sha256_lf"]
@@ -373,6 +400,8 @@ def verify(tag: str, isaaclab: Path) -> tuple[dict[str, Any], list[dict[str, Any
     _validate_protocol_shape(protocol, tag)
     if any(protocol.get(key) != value for key, value in FIXED.items()):
         raise ValueError("recording contract changed")
+    if protocol.get("supersedes") != _supersedes(tag):
+        raise ValueError("superseded recording protocol changed or disappeared")
     for tool in ("ffmpeg", "ffprobe"):
         if shutil.which(tool) is None:
             raise ValueError(f"missing media tool: {tool}")
@@ -461,7 +490,8 @@ def record(tag: str, isaaclab: Path, timeout_s: int = 900) -> dict[str, Any]:
     gif_probe = M._probe_video(gif)
     _validate_gif(gif_probe)
     manifest = {
-        "schema": "training_correction_media_artifact_v4", "source_tag": tag, "source_seed": protocol["seed"],
+        "schema": "training_correction_media_artifact_v4", "source_tag": tag, "source_seed": protocol["source_seed"],
+        "protocol_revision": protocol["revision"], "supersedes": protocol["supersedes"],
         "source_fault": H.FAULT, "source_result_status": protocol["result_status"],
         "source_result_labels": protocol["result_labels"], "source_result_wording": protocol["result_wording"],
         "model_selected_correction": False,

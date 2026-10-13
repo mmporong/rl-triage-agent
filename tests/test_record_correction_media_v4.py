@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -30,7 +31,8 @@ def _clips():
 def _protocol():
     labels = {"resume_corrected": "not_recovered", "resume_corrected_std_reset": "recovered",
               "restart_corrected": "recovered"}
-    return {**copy.deepcopy(MEDIA.FIXED), "source_tag": TAG, "seed": 2026, "result_status": "complete",
+    return {**copy.deepcopy(MEDIA.FIXED), "source_tag": TAG, "source_seed": 2026, "supersedes": None,
+            "result_status": "complete",
             "result_labels": labels, "result_wording": H.FIXED["result_wording"]["seed_summary"],
             "source_commit_sha": "c" * 40, "source_commit_scope": MEDIA.Q.SOURCE_COMMIT_SCOPE,
             "publisher_sources": {"evals/publish_training_correction_v4.py": "d" * 64},
@@ -70,7 +72,7 @@ def test_protocol_shape_rejects_tampering(mutation):
     elif mutation == "restart_checkpoint":
         protocol["clips"][2]["checkpoint"] = "model_598.pt"
     elif mutation == "seed":
-        protocol["seed"] = 2027
+        protocol["source_seed"] = 2027
     elif mutation == "status":
         protocol["result_status"] = "invalid"
     elif mutation == "label":
@@ -130,10 +132,11 @@ def test_prepare_binds_exported_seed_bundle_into_six_clip_protocol(monkeypatch, 
     _, isaaclab, tag = _media_fixture(monkeypatch, tmp_path)
     result = MEDIA.prepare(tag, isaaclab)
     assert result == {"status": "prepared_commit_before_recording",
-                      "protocol": f"bench/protocols/training_correction_media_v4_{tag}.json"}
+                      "protocol": f"bench/protocols/training_correction_media_v4_{tag}_r2.json"}
     protocol = json.loads((tmp_path / result["protocol"]).read_text(encoding="utf-8"))
     MEDIA._validate_protocol_shape(protocol, tag)
-    assert protocol["seed"] == 2026 and protocol["result_status"] == "complete"
+    assert protocol["source_seed"] == 2026 and protocol["seed"] == 42 and protocol["supersedes"] is None
+    assert protocol["result_status"] == "complete"
     assert protocol["result_labels"]["restart_corrected"] == "recovered"
     assert protocol["result_wording"] == H.FIXED["result_wording"]["seed_summary"]
     assert [clip["run_basename"] for clip in protocol["clips"]] == [
@@ -146,6 +149,54 @@ def test_prepare_binds_exported_seed_bundle_into_six_clip_protocol(monkeypatch, 
     assert str(tmp_path) not in rendered and "bench/private" not in rendered
     MEDIA._check_public_artifacts(tag, protocol["public_sources"])
     MEDIA._check_private_artifacts(tag, protocol["private_sources"])
+
+
+def test_fixed_play_seed_never_collides_with_generated_fields():
+    assert not set(MEDIA.FIXED) & MEDIA.GENERATED_KEYS
+    assert MEDIA.FIXED["seed"] == 42 and MEDIA.FIXED["revision"] == 2
+    assert MEDIA.protocol_path(TAG).name == f"training_correction_media_v4_{TAG}_r2.json"
+    assert MEDIA.superseded_protocol_path(TAG).name == f"training_correction_media_v4_{TAG}.json"
+
+
+def test_prepare_verify_record_round_trip_with_real_fixed_contract(monkeypatch, tmp_path):
+    """r1 버그(생성 seed가 Play seed를 덮어씀) 회귀: 실제 FIXED로 prepare한 프로토콜이 verify를 지나 GPU 확인까지 간다."""
+    _, isaaclab, tag = _media_fixture(monkeypatch, tmp_path)
+    legacy = MEDIA.superseded_protocol_path(tag)
+    legacy.parent.mkdir(parents=True, exist_ok=True)
+    legacy.write_text(json.dumps({**MEDIA.FIXED, "seed": 2026}), encoding="utf-8")
+    legacy_bytes = legacy.read_bytes()
+    MEDIA.prepare(tag, isaaclab)
+    protocol = json.loads(MEDIA.protocol_path(tag).read_text(encoding="utf-8"))
+    assert protocol["seed"] == MEDIA.FIXED["seed"] == 42 and protocol["source_seed"] == 2026
+    assert protocol["supersedes"] == {"path": f"bench/protocols/training_correction_media_v4_{tag}.json",
+                                      "sha256": hashlib.sha256(legacy_bytes).hexdigest(),
+                                      "reason": MEDIA.SUPERSEDED_REASON}
+    assert legacy.read_bytes() == legacy_bytes
+    # 저장소 밖 실행 환경(git blob·Isaac Python·Isaac Lab checkout)에 묶인 검사만 대역으로 바꾼다.
+    frozen, committed = [], []
+
+    def frozen_source(bound, _isaaclab):
+        MEDIA._check_public_artifacts(tag, bound["public_sources"])
+        MEDIA._check_private_artifacts(tag, bound["private_sources"])
+        frozen.append(bound["source_seed"])
+    monkeypatch.setattr(MEDIA, "_verify_frozen_source", frozen_source)
+    monkeypatch.setattr(MEDIA.shutil, "which", lambda tool: tool)
+    monkeypatch.setattr(MEDIA.P.S, "_git_head", lambda _root: H.FIXED["isaaclab_commit"])
+    monkeypatch.setattr(MEDIA.P.S, "_git_tracked_clean", lambda _root: True)
+    monkeypatch.setattr(MEDIA.P, "verify_committed", lambda _root, paths: committed.append(paths) or "r" * 40)
+    verified, inputs, commit = MEDIA.verify(tag, isaaclab)
+    assert (verified["seed"], verified["source_seed"], commit, frozen) == (42, 2026, "r" * 40, [2026])
+    assert f"bench/protocols/training_correction_media_v4_{tag}_r2.json" in committed[0]
+    assert [item["clip"]["id"] for item in inputs] == list(MEDIA.CLIP_IDS)
+    monkeypatch.setattr(MEDIA.M, "query_gpu", lambda: {"busy": True})
+    assert MEDIA.record(tag, isaaclab) == {"status": "gpu_busy_no_launch", "clips_recorded": 0}
+    MEDIA.protocol_path(tag).write_text(json.dumps({**protocol, "seed": 2026}), encoding="utf-8")
+    with pytest.raises(ValueError, match="recording contract changed"):
+        MEDIA.verify(tag, isaaclab)
+    MEDIA.protocol_path(tag).write_text(json.dumps(protocol), encoding="utf-8")
+    legacy.write_text("{}", encoding="utf-8")
+    with pytest.raises(ValueError, match="superseded"):
+        MEDIA.verify(tag, isaaclab)
 
 
 def test_prepare_refuses_partially_executed_seed(monkeypatch, tmp_path):
