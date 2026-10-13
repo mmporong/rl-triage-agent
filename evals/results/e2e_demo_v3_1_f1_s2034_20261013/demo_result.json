@@ -1,0 +1,283 @@
+{
+  "schema": "e2e_demo_result_v3_1",
+  "tag": "e2e_demo_v3_1_f1_s2034_20261013",
+  "variant": "f1",
+  "fault": "F1",
+  "mechanism": "reward",
+  "seed": 2034,
+  "case": "h02_s2034",
+  "decision_path": "nat_v4",
+  "outcome": "recovered",
+  "demo_success": true,
+  "success_conditions": {
+    "protocol_committed": true,
+    "seed_unused": true,
+    "source_failure_present": true,
+    "fresh_diagnosis_call": true,
+    "first_probe_from_model": true,
+    "probes_approved_consumed_once": true,
+    "loop_confirmed_mechanism": true,
+    "confirmation_specific": true,
+    "correction_call_accepted": true,
+    "correction_approved_consumed_once": true,
+    "correction_recovered": true,
+    "costs_recorded": true
+  },
+  "unmet_conditions": [],
+  "wording": "새 판단으로 시작한 승인된 검사가 등록 결함 메커니즘을 확정했고, 승인된 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과했다.",
+  "common_wording": "새 seed 2034의 합성 결함(F1) 1건을 끝까지 연결한 통합 시연이다. 결함과 probe는 같은 설계자가 만들었고, 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다.",
+  "steps_sha256": {
+    "begin": "ca884dceba54310dad76779a442e58df2f363cf7c0d0ac33359da6c57150342e",
+    "train_NONE": "c80bce1b3d7ee8e280d2b430e914d0a67890100c6dd8c5f525a6c814cc966a17",
+    "train_FAULT": "32d470aa7e65412dc8122b094b8596ac8bf034e2524b987d41962d87a96fd898",
+    "alarm": "8b61b04f45d5009d55cf0932d86988343bf29d9293850235804850991ebca8d2",
+    "evaluate": "6836914a367911262f52dca712f079d049d01f59d3167a85e99d28a13cbe6359",
+    "reference": "158ff541e366f33969a82e6c800dbfaeedd311f346367be2d21423d6d6b635e2",
+    "packet": "54e7ca43bebb7b6ee38457e4280784910ca549497427fe4525a9124869d4def1",
+    "loop_start": "63e5915ddf946bebbb417aaef41c5158183b81743b96d26d5929d03094f2cf19",
+    "loop_close": "8257e9a42fe41b46c86a38405f78f243ae26eb202c59d22c9d706b696a8deb10",
+    "specificity": "1c5ee4f8f1d559807e9e1353d308595389339d57f155ae2ca0a4e54b80620174",
+    "correction": "320698af87be7c548cc6574f3912550932c801a0f6f4593871cb07660af27cb2"
+  },
+  "terminal": null,
+  "protocol_sha256_lf": "16d07abd06e66c691c765bd67cae435c73a40d280a5c2823e621087da513cf50",
+  "source_commit_sha": [
+    "2d83b16f6dce26a0cf8c6834a29cd0e748377d03"
+  ],
+  "predictions": {
+    "source_failure": "F1이 같은 seed NONE 대비 unhealthy이고 정지 비율 ≥ 0.9",
+    "alarm": "R1이 F1에 울리고 NONE에는 울리지 않는다",
+    "diagnosis": "첫 판단 action=continue, 상위 3가설에 reward 포함",
+    "loop": "P_reward abnormal 뒤 reward 확정(예산 4 이내)",
+    "specificity": "게이트 없음",
+    "correction_rule": "reward·정지 비율 ≥ 0.9 → restart",
+    "correction": "교정 정책 recovered"
+  },
+  "prediction_results": {
+    "source_failure": true,
+    "alarm": true,
+    "diagnosis": true,
+    "loop": true,
+    "specificity": true,
+    "correction_rule": true,
+    "correction": true
+  },
+  "approver_identity_attested": false,
+  "training_parent_wall_s": {
+    "NONE": 569.1,
+    "FAULT": 559.9
+  },
+  "alarm": {
+    "NONE": {
+      "warned": false,
+      "alert_iterations": [],
+      "first_alert_iteration": null,
+      "qualifying_iteration_count": 0,
+      "iterations": 300
+    },
+    "FAULT": {
+      "warned": true,
+      "alert_iterations": [
+        135
+      ],
+      "first_alert_iteration": 135,
+      "qualifying_iteration_count": 174,
+      "iterations": 300
+    }
+  },
+  "evaluation": {
+    "gate": {
+      "none_walks": true,
+      "fault_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "standstill_ratio": {
+        "NONE": 0.12339826772230736,
+        "FAULT": 0.99695823571734
+      },
+      "outcome": "failure_present"
+    },
+    "reports": {
+      "NONE": {
+        "path": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/runs/baseline_p0c_s2034.json",
+        "sha256_lf": "98f58c38d79792a4b0be75d09c0d886dc15ca0e1a908baf8475960115355d338"
+      },
+      "FAULT": {
+        "path": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/runs/h02_s2034.json",
+        "sha256_lf": "6f4d786f1fd8de21bffaf070e22a37708d2e4b85b9a32fe5b0e8b5918528043e"
+      }
+    }
+  },
+  "reference_parent_wall_s": 93.3,
+  "diagnosis": {
+    "decision": {
+      "ranking": [
+        "reward",
+        "exploration",
+        "optimizer",
+        "physics",
+        "actuator",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "Initial investigation: reward significantly below reference suggests reward mechanism issue",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 11.023152939478557
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.271678352355956
+        }
+      ],
+      "expected_outcomes": {
+        "exploration": "normal",
+        "optimizer": "normal",
+        "reward": "abnormal"
+      }
+    },
+    "started": {
+      "hypotheses": [
+        "reward",
+        "exploration",
+        "optimizer"
+      ],
+      "model_probe": "P_reward",
+      "rule_probe": "P_value",
+      "proposed_probe": "P_reward",
+      "model_probe_used": true,
+      "request_id": "b7dcc63c9289",
+      "prereg_digest": "bc79c3c5aed1115f78abce11af940831634774f42eec63187a4a450c23569a98"
+    },
+    "call": {
+      "path": "nat_v4",
+      "input_tokens": 47359,
+      "output_tokens": 1632,
+      "execution_wall_s": 28.732972531113774,
+      "llm_calls": 10,
+      "precheck_calls": 1,
+      "response_id": null
+    }
+  },
+  "loop": {
+    "status": "confirmed",
+    "hypotheses": [
+      "reward"
+    ],
+    "observed": {
+      "P_reward": "abnormal"
+    },
+    "requests": [
+      {
+        "request_id": "b7dcc63c9289",
+        "probe": "P_reward",
+        "state": "done",
+        "approver": "claude_operator_user_authorized",
+        "outcome": "abnormal",
+        "measurement": {
+          "track_lin_vel_xy_exp_rel_error": 0.35214201219379904,
+          "track_ang_vel_z_exp_rel_error": 1.6773689548443826e-08
+        },
+        "gpu_s": 21.8,
+        "artifact": {
+          "probe": "evals/results/e2e_demo_v3_1_f1_s2034_20261013_loop/probes/h02_s2034__P_reward.json",
+          "execution": "evals/results/e2e_demo_v3_1_f1_s2034_20261013_loop/execution/h02_s2034__P_reward.json"
+        }
+      }
+    ],
+    "probe_costs": [
+      {
+        "gpu_wall_s": 21.8,
+        "cpu_s": 28.03125,
+        "simulator_steps": 51200,
+        "probe": "P_reward"
+      }
+    ]
+  },
+  "specificity": {
+    "required": [],
+    "outcomes": null,
+    "passed": true,
+    "measurements": null,
+    "parent_wall_s": null
+  },
+  "correction": {
+    "request_id": "7bdcd38f0a16",
+    "request": {
+      "correction_id": "restore_body_frame_reward",
+      "recovery_mode": "restart",
+      "budget_gpu_s": 2400
+    },
+    "model_proposal": {
+      "accepted": true,
+      "decision": "propose",
+      "agrees_with_rule": true,
+      "reasons": [],
+      "unmet_checklist": [],
+      "rule_visible_to_model": true,
+      "precheck_calls": 1
+    },
+    "call": {
+      "path": "nat_v4",
+      "input_tokens": 22247,
+      "output_tokens": 1171,
+      "execution_wall_s": 18.843421661062166,
+      "llm_calls": 7,
+      "precheck_calls": 1,
+      "response_id": null
+    },
+    "receipt": {
+      "at": "2026-10-13T11:57:02+00:00",
+      "event": "receipt",
+      "request_id": "7bdcd38f0a16",
+      "tag": "e2e_demo_v3_1_f1_s2034_20261013_fix",
+      "verdict": "recovered",
+      "result_sha": "762963e011953f91fb2cf1657328aca8dbfcd93ff3de99fd4b42e88d4bd8f7cd",
+      "gpu_s": 571.1,
+      "exit_code": 0,
+      "over_budget": false
+    },
+    "result": {
+      "label": "recovered",
+      "verdict": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "standstill_ratio": 0.12434974140899308,
+      "costs": {
+        "train_parent_wall_s": 520.9220000000205,
+        "eval_parent_wall_s": 50.187000000150874,
+        "per_arm": {
+          "restart_corrected": {
+            "train_parent_wall_s": 520.9220000000205
+          }
+        }
+      },
+      "recovery_mode": "restart",
+      "reference": {
+        "name": "original_same_seed_none",
+        "valid": true
+      }
+    }
+  }
+}
