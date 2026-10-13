@@ -42,6 +42,7 @@ PRIVATE_PATTERNS = (re.compile(r"[A-Za-z]:[\\/]"), re.compile(r"/home/|/Users/|L
                     re.compile(r"bench/private", re.I), re.compile(r'"(pid|process_id|process_identity)"'),
                     re.compile(r"https?://"))
 STATUS = ("ready", "waiting", "mismatch")
+STATUS_WORDS = ("대기", "불일치")
 MOTOR_CURVE_STATES = {"complete": "완료", "failed": "기록 실패", "invalid": "무효", "not_executed": "미실행"}
 RECOVERY_LABELS = {"recovered": "회복", "not_recovered": "미회복", "invalid": "판정 보류"}
 
@@ -546,7 +547,7 @@ def scene_nvidia(sources: Sources, slots: dict) -> dict:
     rows.insert(2, ["NeMo Agent Toolkit eval (nat eval --skip_workflow)", "저장된 결정 기록을 모델 호출 없이 같은 검증기로 다시 채점",
                     "재채점 대조 기록",
                     {"value": rescore and f"{rescore['items']}항목 · 판정 차이 0", "source": rescore_row["id"], "digits": None}])
-    rows.insert(3, ["NeMo Agent Toolkit HITL 미들웨어(선택)", "대기 요청을 보여 주고 운영자 확인을 받음. approve만 원장 승인 한 줄",
+    rows.insert(3, ["NeMo Agent Toolkit HITL 미들웨어(선택)", "승인 전 요청을 보여 주고 운영자 확인을 받음. approve만 원장 승인 한 줄",
                     "설정·테스트", cell(sources, "근거 파일", sources.file("configs/nat_hitl_ledger_example.yml")["id"], None)])
     skill = [
         ["Reward increases are not proof that the task behavior improved", "보상 크기 대신 고정 평가 26조건의 행동 지표로 판정"],
@@ -651,6 +652,9 @@ def check_public(data: dict) -> None:
     problems = [problem for text in text_fields(data) for problem in claim_violations(text)]
     serialized = json.dumps(data, ensure_ascii=False)
     problems += path_violations(serialized)
+    # 상태 표시 단어는 근거 상태 칸에만 나와야 한다. 장면 문구에 섞이면 "근거가 대기 중"으로 읽힌다.
+    problems += [f"status word in scene text: {text[:40]}" for scene in data.get("scenes", [])
+                 for text in text_fields(scene) if any(word in text for word in STATUS_WORDS)]
     if any(row["status"] not in STATUS for row in data["sources"].values()):
         problems.append("unknown source status")
     if problems:

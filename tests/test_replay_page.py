@@ -174,6 +174,10 @@ def test_check_public_rejects_injected_claim_or_path(built):
     leaked["scenes"][0]["lead"] = "C:\\Users\\someone\\run"
     with pytest.raises(ValueError, match="not publishable"):
         B.check_public(leaked)
+    worded = copy.deepcopy(data)  # 상태 단어가 장면 문구에 있으면 근거가 모두 확인돼도 "대기"가 화면에 남는다
+    worded["scenes"][8]["blocks"][0]["rows"][0][1] = "대기 요청을 보여 준다"
+    with pytest.raises(ValueError, match="status word"):
+        B.check_public(worded)
 
 
 def test_written_data_matches_current_approved_results(built):

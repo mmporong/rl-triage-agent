@@ -8827,7 +8827,7 @@ window.REPLAY_DATA = {
       ],
       [
        "NeMo Agent Toolkit HITL 미들웨어(선택)",
-       "대기 요청을 보여 주고 운영자 확인을 받음. approve만 원장 승인 한 줄",
+       "승인 전 요청을 보여 주고 운영자 확인을 받음. approve만 원장 승인 한 줄",
        "설정·테스트",
        {
         "value": "근거 파일",
