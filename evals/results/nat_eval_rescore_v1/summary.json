@@ -1,0 +1,258 @@
+{
+ "schema": "nat_eval_rescore_public_v1",
+ "source_commit_sha": "5202976f22e0d5790d58085ef9b7db016fbedaf1",
+ "code_sha256_lf": {
+  "configs/nat_eval_rescore.yml": "a4af59efc2b1dfc8d890dd9e3e2f58bdb60addd272d54be9c819e6b6d18210cd",
+  "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+  "evals/e4b_compare.py": "1124a91ab468f5b84cb4b83427f2cc90fd9f720af49f547cc935d2c9e93abc8e",
+  "evals/e4b_compare_v2.py": "fe08769484450998b9fc681c329b0a72eac7d74812ee3b3d6f93ca557034ff6e",
+  "evals/e4b_compare_v3.py": "b7e2d3f0e5bdbccfb8f5214190449d03a94b5b49a190e74d89ecd3b820d6be8b",
+  "evals/nat_decision_call.py": "9baba594b0ef6f21c855c9fe90bab2d5eb12dd670848ddf276cc21fdc6a7b872",
+  "evals/nat_eval_rescore.py": "8155d26e46464ff3f7aae7bbc1317e69eadec6c34018437088f2768ba04e0224",
+  "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9"
+ },
+ "stored_results_sha256_lf": {
+  "evals/results/e2e_reward_s2029_20261013/demo_result.json": "fb72d118a51f9827e60e833b9f045a4347973ddf570fe3c0d5ddb52c6aa5bcb3",
+  "evals/results/e2e_reward_s2030_20261013/demo_result.json": "fd1a72b73928ad85e3b12b5ee9053957c03529b8e9550fb406016d5a5497b351",
+  "evals/results/e4b_e2e_reward_s2029_20261013/summary.json": "b19f7056494e4a9186929d961b003d1063e0a5e2e8e92165f9e9798e45bb1ac5",
+  "evals/results/e4b_nat_compare_v2/summary.json": "06effea8668ddf5113a48665ca12db4b816ce907208bf3e67777c1cf84e43764",
+  "evals/results/e4b_nat_compare_v3/summary.json": "10bbca8499fd396e5d9d6fcedee537d5badab9bf053a6bc17c444f9038fe98cb"
+ },
+ "nat_versions": {
+  "nvidia-nat": "1.9.0",
+  "nvidia-nat-core": "1.9.0",
+  "nvidia-nat-eval": "1.9.0"
+ },
+ "execution": "NAT eval click 명령을 --skip_workflow로 같은 프로세스에서 호출(evaluator는 push 안에서만 등록)",
+ "evaluator_type": "rl_triage_contract_rescore",
+ "model_calls": 0,
+ "dataset_sha256": "e318a90e94132d5d32b9a93f0559a2498b98e4264eebd81c61a8c8e343d53341",
+ "items": 67,
+ "item_types": {
+  "demo_call": 4,
+  "nat_run": 55,
+  "single_call": 8
+ },
+ "average_score": 1.0,
+ "differences": [],
+ "mismatched_items": [],
+ "infra_error_items_taken_from_record": 0,
+ "reproduced": {
+  "v1": {
+   "adoption": "do_not_adopt",
+   "sets": {
+    "e2e_reward_s2029_20261013": {
+     "diagnosis": {
+      "counts": {
+       "valid": 3,
+       "invalid": 2,
+       "infra_error": 0,
+       "missing": 0
+      },
+      "non_infra_runs": 5,
+      "single_call_valid": true,
+      "agreement_with_single_call": {
+       "action": 3,
+       "top1": 3,
+       "top3_set": 1,
+       "probe": 2
+      },
+      "agreement_denominator": 3
+     },
+     "correction": {
+      "counts": {
+       "valid": 0,
+       "invalid": 5,
+       "infra_error": 0,
+       "missing": 0
+      },
+      "non_infra_runs": 5,
+      "single_call_valid": true,
+      "agreement_with_single_call": null,
+      "agreement_denominator": 0
+     }
+    }
+   }
+  },
+  "v2": {
+   "adoption": "do_not_adopt",
+   "sets": {
+    "s2030": {
+     "diagnosis": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "infra_error": 0,
+       "missing": 0
+      },
+      "non_infra_runs": 5,
+      "single_call_valid": true,
+      "agreement_with_single_call": {
+       "action": 5,
+       "top1": 4,
+       "top3_set": 1,
+       "probe": 3
+      },
+      "agreement_denominator": 5
+     },
+     "correction": {
+      "counts": {
+       "valid": 0,
+       "invalid": 5,
+       "infra_error": 0,
+       "missing": 0
+      },
+      "non_infra_runs": 5,
+      "single_call_valid": true,
+      "agreement_with_single_call": null,
+      "agreement_denominator": 0
+     }
+    },
+    "s2029": {
+     "diagnosis": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "infra_error": 0,
+       "missing": 0
+      },
+      "non_infra_runs": 5,
+      "single_call_valid": true,
+      "agreement_with_single_call": {
+       "action": 5,
+       "top1": 4,
+       "top3_set": 0,
+       "probe": 2
+      },
+      "agreement_denominator": 5
+     },
+     "correction": {
+      "counts": {
+       "valid": 0,
+       "invalid": 5,
+       "infra_error": 0,
+       "missing": 0
+      },
+      "non_infra_runs": 5,
+      "single_call_valid": true,
+      "agreement_with_single_call": null,
+      "agreement_denominator": 0
+     }
+    }
+   }
+  },
+  "v3": {
+   "adoption": "do_not_adopt",
+   "sets": {
+    "h02_s2027": {
+     "diagnosis": {
+      "counts": {
+       "valid": 2,
+       "invalid": 3,
+       "infra_error": 0,
+       "missing": 0
+      },
+      "non_infra_runs": 5,
+      "single_call_valid": false,
+      "agreement_with_single_call": null,
+      "agreement_denominator": 0
+     },
+     "correction": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "infra_error": 0,
+       "missing": 0
+      },
+      "non_infra_runs": 5,
+      "single_call_valid": false,
+      "agreement_with_single_call": null,
+      "agreement_denominator": 0
+     }
+    },
+    "s2030": {
+     "correction": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "infra_error": 0,
+       "missing": 0
+      },
+      "non_infra_runs": 5,
+      "single_call_valid": true,
+      "agreement_with_single_call": {
+       "decision": 5,
+       "correction_id": 5,
+       "recovery_mode": 5,
+       "unmet_checklist": 5
+      },
+      "agreement_denominator": 5
+     }
+    },
+    "s2029": {
+     "correction": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "infra_error": 0,
+       "missing": 0
+      },
+      "non_infra_runs": 5,
+      "single_call_valid": true,
+      "agreement_with_single_call": {
+       "decision": 5,
+       "correction_id": 5,
+       "recovery_mode": 5,
+       "unmet_checklist": 5
+      },
+      "agreement_denominator": 5
+     }
+    },
+    "h05_s2027": {
+     "correction": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "infra_error": 0,
+       "missing": 0
+      },
+      "non_infra_runs": 5,
+      "single_call_valid": false,
+      "agreement_with_single_call": null,
+      "agreement_denominator": 0
+     }
+    }
+   }
+  },
+  "demos": {
+   "e2e_reward_s2029_20261013": {
+    "diagnosis": {
+     "action": "continue",
+     "probe": "P_reward"
+    },
+    "correction": {
+     "accepted": true,
+     "decision": "propose",
+     "agrees_with_rule": true,
+     "reasons": [],
+     "unmet_checklist": []
+    }
+   },
+   "e2e_reward_s2030_20261013": {
+    "diagnosis": {
+     "action": "continue",
+     "probe": "P_reward"
+    },
+    "correction": {
+     "accepted": true,
+     "decision": "propose",
+     "agrees_with_rule": true,
+     "reasons": [],
+     "unmet_checklist": []
+    }
+   }
+  }
+ },
+ "pass": true,
+ "wording": "저장된 E4b NAT 결정 기록과 시연 단일 호출 기록을 NAT eval(--skip_workflow)과 기존 계약 검증기로 다시 채점해 공개 요약과 같은 판정을 얻었다는 재현 기록이다. 결정의 정확도나 NAT와 단일 호출 사이의 우열을 보여 주지 않으며 모델을 다시 부르지 않는다. 데이터셋과 응답 원문은 비공개이고 여기에는 그 SHA만 남긴다."
+}
