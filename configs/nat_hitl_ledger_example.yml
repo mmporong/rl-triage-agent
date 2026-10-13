@@ -1,0 +1,26 @@
+# 검사·교정 대기 요청 도구 뒤에 NAT HITL 확인을 붙이는 예시 설정(선택 기능).
+# 정본 승인은 원장이다. 운영자가 이진 선택으로 approve를 고를 때만 원장 approve 한 줄이 쓰이고, 그 밖의 응답은
+# 원장을 바꾸지 않는다. 거절 기록과 다음 검사 제안은 evals/loop.py reject가 맡고, 실행은 원장 consume을 거친다.
+# 등록 모듈: rl_triage.nat_hitl_ledger(실행기가 import해야 한다). 워크플로·LLM 설정은 쓰는 쪽이 붙인다.
+# 단일 승인 작성자 전제: HITL 세션 동안 같은 케이스에 loop.py·correct.py approve/reject를 함께 쓰지 않고, NAT 서버는
+# worker 하나로 돌린다. 누가 응답할 수 있는지는 front-end 인증이 정하며 approver는 이름표와 상호작용 id다.
+functions:
+  pending_probe:
+    _type: rl_hitl_pending_probe
+    loops_dir: evals/loops
+  pending_correction:
+    _type: rl_hitl_pending_correction
+    loops_dir: evals/loops
+
+middleware:
+  ledger_hitl:
+    _type: rl_triage_ledger_hitl
+    loops_dir: evals/loops
+    approver_label: operator
+    workflow_functions: [pending_probe, pending_correction]
+    post_invoke_prompt:
+      input_type: binary_choice
+      text: "아래 대기 요청을 원장에서 승인할까요? 승인해도 실행은 원장 consume을 거칩니다."
+      options:
+        - {id: approve, label: "승인", value: approve}
+        - {id: hold, label: "보류(원장 변경 없음)", value: hold}

@@ -1,0 +1,16 @@
+# 저장된 E4b NAT 결정 기록과 시연 단일 호출 기록을 다시 채점하는 nat eval 설정.
+# llms·workflow가 없다. workflow가 비어 있으면 NAT는 워크플로를 만들지 않고 evaluator만 만든다.
+# 실행은 evals/nat_eval_rescore.py nat-eval(evaluator 등록 뒤 --skip_workflow로 NAT eval 명령 호출).
+eval:
+  general:
+    max_concurrency: 4
+    per_input_user_id: false
+    output:
+      dir: ./bench/private/nat_eval_rescore/default_output
+      cleanup: false
+    dataset:
+      _type: json
+      file_path: ./bench/private/nat_eval_rescore/default_dataset.json
+  evaluators:
+    contract_rescore:
+      _type: rl_triage_contract_rescore
