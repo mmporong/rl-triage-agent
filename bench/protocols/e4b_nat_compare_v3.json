@@ -1,0 +1,193 @@
+{
+ "schema": "e4b_nat_compare_protocol_v3",
+ "question": "null 없는 교정 제출 스키마로 고친 NAT 도구 호출 워크플로가 E4b v1·v2에 쓰지 않은 입력에서 계약상 유효한 결정을 얼마나 내는가",
+ "scope": "fixed_packet_repeated_nat_decision_after_fix_development_measurement_not_accuracy_superiority_or_savings",
+ "model": "nvidia/nemotron-3-super-120b-a12b",
+ "nat_version": "1.9.0",
+ "temperature": 0,
+ "input_sets": {
+  "h02_s2027": {
+   "role": "adoption",
+   "kinds": [
+    "diagnosis",
+    "correction"
+   ],
+   "source": "public",
+   "case": "h02_s2027",
+   "note": "E4b v1·v2에 쓰지 않은 입력. 보상 결함 고리 confirmed. 채택 판정은 이 세트로만 한다"
+  },
+  "s2030": {
+   "role": "development",
+   "kinds": [
+    "correction"
+   ],
+   "source": "e2e",
+   "tag": "e2e_reward_s2030_20261013",
+   "note": "v2 교정 0/5 입력. 수정의 개발 확인"
+  },
+  "s2029": {
+   "role": "development",
+   "kinds": [
+    "correction"
+   ],
+   "source": "e2e",
+   "tag": "e2e_reward_s2029_20261013",
+   "note": "v1·v2 교정 0/5 입력. 수정의 개발 확인"
+  },
+  "h05_s2027": {
+   "role": "development_hold_branch",
+   "kinds": [
+    "correction"
+   ],
+   "source": "public",
+   "case": "h05_s2027",
+   "note": "등록 밖 메커니즘(exploration) 확정 고리. 결정적 규칙은 HOLD이며 hold 경로를 확인한다"
+  }
+ },
+ "adoption_set": "h02_s2027",
+ "diagnosis_packet_build": {
+  "max_probes": 4,
+  "probe_execution_budget_s": 180
+ },
+ "runs_per_kind": 5,
+ "attempts": "run 번호마다 첫 시도. 인프라 오류(제공자 연결·시간 초과·429·5xx·빈 응답)일 때만 같은 run 번호로 1회 더",
+ "status_definitions": {
+  "valid": "제출 도구가 계약 검증을 통과한 결정 하나를 저장했고 worker가 같은 검증기로 다시 통과시켰다. 제출 뒤 마지막 응답 단계의 오류는 post_submission_error로 따로 기록하고 결정을 버리지 않는다",
+  "invalid": "제출 거절(두 번째 제출 포함, 제출 파일이 있어도 거절 기록이 있으면 무효), 미제출, 반복 한도, 그 밖의 의미 오류",
+  "infra_error": "두 번째 시도까지 인프라 오류. 첫 시도만 인프라 오류이고 두 번째 시도가 없으면 미완료로 두고 판정하지 않는다"
+ },
+ "v2_failure_evidence": [
+  "[사실] v2 교정 제출 20회(s2030·s2029 각 5회 × 점검·제출 4호출 중 교정 인자 20개) 중 19개의 hold_reason이 문자열 \"None\"이었다",
+  "[사실] 같은 호출의 ATIF 궤적(파싱된 LLM 도구 호출 인자)과 도구 기록(도구가 받은 인자)이 호출마다 같았다(null 1회 포함)",
+  "[사실] langchain은 도구 인자 문자열을 json.loads로 파싱하므로 null은 None이 되고 \"None\"으로 바뀌지 않는다",
+  "[사실] 같은 계약의 단일 호출(응답 본문 JSON)은 hold_reason에 null을 썼다",
+  "[추론] \"None\"은 제공자 쪽 도구 호출 인자 생성·파싱 단계에서 생긴다. 원시 응답을 남기지 않아 모델과 제공자 파서를 가를 수 없다"
+ ],
+ "changes_from_v2": [
+  "교정 제출·점검 도구 e4b3_*: decision(propose|hold) 판별 칸, 쓰지 않는 칸은 빈 문자열, null 칸 없음",
+  "어댑터가 공개 계약 형태(hold_reason null 등)로 바꾼다. 판별 칸과 맞지 않는 칸은 고치지 않고 사유를 돌려준다",
+  "교정 도구 규칙(시스템 프롬프트 뒤 부분)을 새 스키마에 맞췄다. 진단 도구·설정·프롬프트는 v2와 같다",
+  "채택 입력을 E4b v1·v2에 쓰지 않은 h02_s2027 packet으로 바꿨다"
+ ],
+ "precheck": {
+  "limit": 2,
+  "tools": {
+   "diagnosis": "e4b2_check_decision",
+   "correction": "e4b3_check_proposal"
+  },
+  "note": "단일 호출 경로에는 없는 기능이다"
+ },
+ "comparison_conditions": {
+  "same": [
+   "모델·temperature 0·reasoning_effort none(extra_body)",
+   "같은 판단 계약 프롬프트와 검증기"
+  ],
+  "different": [
+   "NAT는 사실·카탈로그·등록 표·체크리스트를 도구로 조회하는 여러 턴, 단일 호출은 packet 전체를 한 번에 받는다",
+   "NAT는 제출 전 계약 점검 도구로 실행당 최대 2회 사유를 받아 고칠 수 있다",
+   "NAT 교정은 null 없는 도구 스키마를 어댑터가 계약 형태로 바꾼다. 단일 호출은 계약 JSON을 그대로 쓴다"
+  ]
+ },
+ "metrics": [
+  "세트·종류별 유효·무효·인프라 실행 수",
+  "단일 호출 기록이 있는 세트의 단일 호출 결정과의 일치",
+  "점검 호출 수와 점검을 쓴 실행 수",
+  "도구 호출 순서",
+  "LLM 호출 수",
+  "입력·출력 토큰",
+  "wall 시간"
+ ],
+ "adoption_rule": {
+  "min_non_infra_runs": 4,
+  "min_valid_runs": 4,
+  "set": "h02_s2027",
+  "rule": "다음 seed 시연에 NAT 결정을 쓰려면 h02_s2027 세트에서 두 종류 모두 인프라 오류를 뺀 실행이 4 이상이고 그중 유효 결정이 4 이상이어야 한다. 수치 조건은 v1·v2와 같다. 일치율은 채택 조건에 쓰지 않는다. 요약은 모든 세트 실행이 끝난 뒤에만 쓴다"
+ },
+ "wording": {
+  "adopt": "null 없는 교정 제출 스키마로 고친 NAT 도구 호출 워크플로가 E4b v1·v2에 쓰지 않은 입력에서 사전등록 조건만큼 유효한 결정을 냈다. 다음 seed 시연의 결정 단계에 쓸 수 있다. 정확도·우위의 근거가 아니다.",
+  "do_not_adopt": "고친 NAT 도구 호출 워크플로의 유효 결정이 새 입력에서 사전등록 조건에 못 미쳤다. 다음 seed 시연은 단일 호출 결정을 유지한다.",
+  "development": "s2030·s2029·h05_s2027 세트는 수정의 개발 확인이다. 채택 판정에 쓰지 않고 채택 세트·v1·v2 결과와 분모를 합치지 않는다.",
+  "common": "고정 입력을 반복 호출한 개발 측정이다. 채택 입력 h02_s2027은 이미 본 seed의 공개 기록에서 만든 packet이라 설계자가 본 사례다. NAT는 근거를 도구로 나눠 조회하고 점검으로 고칠 기회가 있으므로 단일 호출과 조건이 다르다. 일반화·정확도·절감을 주장하지 않는다."
+ },
+ "forbidden_claims": [
+  "NAT가 더 정확하다",
+  "모든 결정이 NAT로 이뤄졌다",
+  "토큰·시간 절감",
+  "일반화",
+  "v1·v2·v3를 합친 유효율",
+  "점검 도구가 없는 단일 호출과 같은 조건의 비교"
+ ],
+ "source_files": {
+  "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+  "configs/nat_demo_v2_diagnosis.yml": "0d7551db4b40e4142c002496a766aa051104aecb96ad5b2ac304f1e8cc7e5844",
+  "configs/nat_demo_v3_correction.yml": "204e98770641d4c15f00514b127835e4e425ec5495c8761904212d124778009d",
+  "evals/correct.py": "df91badc6d52865081d8d9ad2314982da21b98ab3f19727ede63c7468ecf9a43",
+  "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+  "evals/e4b_compare_v3.py": "b7e2d3f0e5bdbccfb8f5214190449d03a94b5b49a190e74d89ecd3b820d6be8b",
+  "evals/nat_decision_call.py": "9baba594b0ef6f21c855c9fe90bab2d5eb12dd670848ddf276cc21fdc6a7b872",
+  "evals/nat_decision_call_v2.py": "cc59e86d0fe638e178bc5a5001a47ebd59751b37535b2c3ab34425eb689d368c",
+  "evals/nat_decision_call_v3.py": "4523f3939ec07a1d0aecf59e3c4da790cbc892e9dfe4c9b6e9dbd82b973b8a0a",
+  "evals/run_active_diagnosis.py": "53662a81d57f7b70c0893166ec01bcf1128ba072456b52b7cc19c181a8742fc3",
+  "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+  "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+  "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+  "src/rl_triage/nat_demo_tools.py": "99971c877c8c62e1e11f02411a1a4f77978712cfb339ea1a9bb5b5b6a8272451",
+  "src/rl_triage/nat_demo_tools_v2.py": "99c5c286342580c885b9cd62173be3491030646b04fb23f6428fb3ce9bb61b23",
+  "src/rl_triage/nat_demo_tools_v3.py": "4b52906c2f304888e656830cdd1846cf3948cc2fdb1a5c61bf389285d8b8ddea",
+  "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1"
+ },
+ "input_sources": {
+  "bench/runs_p0c/baseline_p0c_s2027.telemetry.json": "a2c4d9b9971e2d3b335a542dcb14637f084aedef5ce10e3adfc6e91f4cc8217f",
+  "bench/runs_p0c/h02_s2027.telemetry.json": "4ad5317ac27a668e0799b9c894a25f2f11565d47edee734cf3b6e6c9b10ba67f",
+  "evals/loops/h02_s2027/ledger.jsonl": "4d7315d54fbc1fe44ff0c2aab53af98658e973d12df749c327e6d4cdbb8ff487",
+  "evals/loops/h02_s2027/prereg.json": "f48ff06230f70587dfb066e59c75243770198f67505bc82be621b334be04175c",
+  "evals/loops/h02_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+  "evals/loops/h02_s2027/state.json": "404b8516552b99bb3fb776bfbcc599e0468e83f084177eca63e0a3ae3547ae63",
+  "evals/loops/h05_s2027/ledger.jsonl": "4a0fb9dc26e3dd05e7e507785bd4f25806e9578a51d252c16b8c6f102062871b",
+  "evals/loops/h05_s2027/prereg.json": "51958b360cb3daae0b813765f79badd751e7a3e8a78003fb9b021bf903993b16",
+  "evals/loops/h05_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1",
+  "evals/loops/h05_s2027/state.json": "ee534d706109f4e4392d04af6d49d693cb535623d0798d1c7d7d70f5f3acf4b7",
+  "evals/results/p0c_fixed_eval_20261009/runs/h02_s2027.json": "26181e79cfe05f7909ce4af4a3965e83fe8da523f77b7ad750c7b56a0dc03e2d",
+  "evals/results/p0c_fixed_eval_20261009/runs/h05_s2027.json": "89055e5b2f7affe2a122c4e8627dbfe5e736baf517e0d8a7357564363f3fe1a1"
+ },
+ "inputs": {
+  "h02_s2027": {
+   "diagnosis": {
+    "packet": "bench/private/e4b_v3/inputs/h02_s2027/diagnosis.packet.json",
+    "packet_sha256": "ac4ee4365cd1e304eebfb43b7c56fa91ace1fbec54f38d5ee731f95e58408f4b",
+    "single_call": null,
+    "single_call_sha256": null
+   },
+   "correction": {
+    "packet": "bench/private/e4b_v3/inputs/h02_s2027/correction.packet.json",
+    "packet_sha256": "e69a106ed46bca769b21a2ade62c445ad78ae14f35d74502c58a609fc4165afb",
+    "single_call": null,
+    "single_call_sha256": null
+   }
+  },
+  "s2030": {
+   "correction": {
+    "packet": "bench/private/e2e_reward_demo/e2e_reward_s2030_20261013/model/correction.packet.json",
+    "packet_sha256": "d0807fe22fecb881fc0553345cfa1141eb68a4f47c05e4a00a7155c9bab3a0a1",
+    "single_call": "bench/private/e2e_reward_demo/e2e_reward_s2030_20261013/model/correction.call1.json",
+    "single_call_sha256": "088263ab316f0991e92dec768fccd91fdebbd3971fc2109600d6c0f31f594970"
+   }
+  },
+  "s2029": {
+   "correction": {
+    "packet": "bench/private/e2e_reward_demo/e2e_reward_s2029_20261013/model/correction.packet.json",
+    "packet_sha256": "441a906160535079098729758a3ddfe2e12aed68245808097370ae70c53781a6",
+    "single_call": "bench/private/e2e_reward_demo/e2e_reward_s2029_20261013/model/correction.call1.json",
+    "single_call_sha256": "953cb2dbe22cf00afc72e886aaf4ac8fc89d8e2672e06aa54b950c327073900f"
+   }
+  },
+  "h05_s2027": {
+   "correction": {
+    "packet": "bench/private/e4b_v3/inputs/h05_s2027/correction.packet.json",
+    "packet_sha256": "fcf5b5a2ad429ea405ae43edafbec0106a61fca3e5e0f25eee772bd50280dbd4",
+    "single_call": null,
+    "single_call_sha256": null
+   }
+  }
+ }
+}

@@ -1,0 +1,47 @@
+# E4b v3 교정 제안: null을 쓰지 않는 제출 스키마(decision 판별 칸, 쓰지 않는 칸은 빈 문자열). 읽기 도구는 v2(e4b2_*)와 같고
+# 점검·제출 도구만 e4b3_*다(evals/nat_decision_call_v3.py). system_prompt는 worker가 correction_model_call.SYSTEM 뒤에
+# 아래 도구 규칙을 붙여 넣는다. 모델 설정은 v1·v2와 같다.
+functions:
+  e4b2_list_fact_ids: {_type: e4b2_list_fact_ids}
+  e4b2_get_facts: {_type: e4b2_get_facts}
+  e4b2_registry: {_type: e4b2_registry}
+  e4b2_skill_checklist: {_type: e4b2_skill_checklist}
+  e4b3_check_proposal: {_type: e4b3_check_proposal}
+  e4b3_submit_proposal: {_type: e4b3_submit_proposal}
+
+llms:
+  nemotron:
+    _type: openai
+    model_name: nvidia/nemotron-3-super-120b-a12b
+    base_url: https://integrate.api.nvidia.com/v1
+    api_key: ${NVIDIA_API_KEY}
+    temperature: 0
+    max_tokens: 16384
+    max_retries: 0
+    request_timeout: 300
+    extra_body: {reasoning_effort: none}  # 단일 호출(evals/correction_model_call.py)과 같은 추론 설정
+
+workflow:
+  _type: tool_calling_agent
+  llm_name: nemotron
+  tool_names: [e4b2_list_fact_ids, e4b2_get_facts, e4b2_registry, e4b2_skill_checklist, e4b3_check_proposal,
+               e4b3_submit_proposal]
+  max_iterations: 12
+  max_history: 24
+  handle_tool_errors: false
+  truncation_retry: {max_retries: 0, token_increment: 0}
+  system_prompt: |
+    TOOL RULES. The facts, the registry and the skill checklist are not in the user message.
+    1. Read fact IDs with e4b2_list_fact_ids, values with e4b2_get_facts, the registered corrections with e4b2_registry,
+       and the six checklist items with e4b2_skill_checklist.
+    2. Build the tool arguments. They never use null:
+       - decision is "propose" or "hold".
+       - When propose: correction_id and recovery_mode come from the registry, and hold_reason is the empty string "".
+       - When hold: correction_id and recovery_mode are the empty string "", and hold_reason is a non-empty reason.
+       - cited_facts lists fact ids only.
+       - checklist has every item number. Each value is exactly ONE fact id, or "unmet". Never join several ids with
+         commas, and never put a correction id there.
+    3. Call e4b3_check_proposal with the arguments. If it returns reasons, fix exactly those and check again.
+       You may check at most 2 times in total.
+    4. Pass the final arguments to e4b3_submit_proposal exactly once. A rejection ends the run, so never resubmit.
+    After a successful submission reply with one short sentence.
