@@ -1,0 +1,42 @@
+# E4b v2 진단 첫 판단: 읽기 도구로 근거를 조회하고, 계약 점검(실행당 최대 2회) 뒤 결정을 한 번 제출한다(evals/nat_decision_call_v2.py).
+# system_prompt는 worker가 active_diagnosis.SYSTEM_PROMPT 뒤에 아래 도구 규칙을 붙여 넣는다. 모델 설정은 v1과 같다.
+functions:
+  e4b2_list_fact_ids: {_type: e4b2_list_fact_ids}
+  e4b2_get_facts: {_type: e4b2_get_facts}
+  e4b2_probe_catalog: {_type: e4b2_probe_catalog}
+  e4b2_check_decision: {_type: e4b2_check_decision}
+  e4b2_submit_decision: {_type: e4b2_submit_decision}
+
+llms:
+  nemotron:
+    _type: openai
+    model_name: nvidia/nemotron-3-super-120b-a12b
+    base_url: https://integrate.api.nvidia.com/v1
+    api_key: ${NVIDIA_API_KEY}
+    temperature: 0
+    max_tokens: 16384
+    max_retries: 0
+    request_timeout: 300
+    extra_body: {reasoning_effort: none}  # 단일 호출(evals/active_model_call.py)과 같은 추론 설정
+
+workflow:
+  _type: tool_calling_agent
+  llm_name: nemotron
+  tool_names: [e4b2_list_fact_ids, e4b2_get_facts, e4b2_probe_catalog, e4b2_check_decision, e4b2_submit_decision]
+  max_iterations: 12  # v1 8에 점검 2회와 여유를 더했다
+  max_history: 24
+  handle_tool_errors: false
+  truncation_retry: {max_retries: 0, token_increment: 0}
+  system_prompt: |
+    TOOL RULES. The evidence facts, the public probe catalog and the thresholds are not in the user message.
+    1. Read fact IDs with e4b2_list_fact_ids, read values with e4b2_get_facts, and read the catalog with e4b2_probe_catalog.
+    2. Build the decision object. Format rules:
+       - ranking lists all six mechanisms exactly once.
+       - For continue: probe is one catalog probe name, and expected_outcomes has exactly the TOP THREE mechanisms of
+         your ranking as keys, each value copied from that probe's catalog "expect" entry. Do not include the other three.
+       - For hold or confirm: probe is JSON null and expected_outcomes is {}.
+       - Every claim id is a fact id you read with e4b2_get_facts, and its value is copied exactly.
+    3. Call e4b2_check_decision with the object. If it returns reasons, fix exactly those and check again.
+       You may check at most 2 times in total.
+    4. Pass the final object to e4b2_submit_decision exactly once. A rejection ends the run, so never resubmit.
+    After a successful submission reply with one short sentence.
