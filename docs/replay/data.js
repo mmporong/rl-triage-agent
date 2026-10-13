@@ -8820,7 +8820,7 @@ window.REPLAY_DATA = {
        "저장된 결정 기록을 모델 호출 없이 같은 검증기로 다시 채점",
        "재채점 대조 기록",
        {
-        "value": null,
+        "value": "67항목 · 판정 차이 0",
         "source": "evals/results/nat_eval_rescore_v1",
         "digits": null
        }
@@ -9566,9 +9566,9 @@ window.REPLAY_DATA = {
    "id": "evals/results/nat_eval_rescore_v1",
    "path": "evals/results/nat_eval_rescore_v1/artifact_manifest.json",
    "kind": "public_nat_rescore",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "missing"
+   "sha256": "bca8da82ed3c6d635557fb6033418a8673406eafa066c3b439aeb90d3ce424bd",
+   "status": "ready",
+   "reason": null
   },
   "configs/nat_hitl_ledger_example.yml": {
    "id": "configs/nat_hitl_ledger_example.yml",
