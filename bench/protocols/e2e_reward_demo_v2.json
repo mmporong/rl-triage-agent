@@ -1,0 +1,297 @@
+{
+  "schema": "e2e_reward_demo_protocol_v2",
+  "question": "새 seed의 보상 결함 학습 실패 하나를 경고·고정 평가·새 Nemotron 판단·승인 검사·교정 제안·승인 교정·고정 평가로 끝까지 연결해 같은 사례/요청 ID로 기록할 수 있는가",
+  "scope": "single_new_seed_synthetic_reward_fault_integration_demo_not_accuracy_generalization_or_savings",
+  "seed": 2030,
+  "seed_selection": "seed 2026~2029·3029·7·42·123과 개발 실행에 쓰지 않은 다음 값. 시작 시 2030·3030의 산출물·학습 설정 부재를 확인한다",
+  "restart_seed": 3030,
+  "restart_seed_rule": "교정 재학습 seed = 실패 seed + 1000. NONE 기준·F1 실행과 다른 학습 seed를 사전등록한다. 같은 seed 처음부터 학습은 결정적이라 정상 학습을 바이트 단위로 재현했다(v4 seed 2026·2028 restart_corrected의 model_299.pt = 원본 NONE). 체크포인트 동일성을 기대하지 않으며, 판정은 서로 다른 seed 기준 쌍에서 만든 p0c 밴드로 같은 seed(2030) NONE 대비 한다",
+  "approval": "사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)",
+  "source_binding": "begin이 기록한 HEAD가 실험 커밋이다. 이후 단계와 restart 교정(부모의 실행 전·후 검사, 학습 자식의 manifest 검사)은 실험 커밋이 HEAD의 조상이고 결합 파일 blob의 LF 정규화 SHA256이 실험 커밋과 HEAD에서 같을 때만 진행하며, 단계 기록에는 실험 커밋을 남긴다. 결합 파일은 작업 트리에서도 커밋 상태와 같아야 한다",
+  "changes_from_v1": [
+    "seed 2030·재학습 seed 3030(v1은 2029·3029)",
+    "단계별 HEAD 기록·대조 대신 실험 커밋 고정 검증(source_binding). v1 seed 2029는 restart 학습이 자연 종료했지만 실행 중 결합 밖 파일 커밋으로 HEAD가 바뀌어 검증이 거부돼 correction_unknown으로 끝났다",
+    "protocol_committed는 단계 기록의 실험 커밋이 하나일 때만 참",
+    "승인 문구를 사람 승인 전제에서 approval로 바꿨다(v1 실행의 실제 승인은 사용자가 위임한 운영자 승인)",
+    "결과 스키마 e2e_reward_demo_result_v2·e2e_restart_correction_result_v2"
+  ],
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "num_envs": 4096,
+  "max_iterations": 300,
+  "num_steps_per_env": 24,
+  "action_scale": 0.25,
+  "cases": {
+    "NONE": "baseline_p0c_s2030",
+    "F1": "h02_s2030"
+  },
+  "case_ids": {
+    "NONE": "baseline_p0c",
+    "F1": "h02"
+  },
+  "telemetry_dir": "bench/runs_p0c",
+  "fault": "F1",
+  "fault_mechanism": "reward",
+  "fault_definition": "bench/hidden_faults.py F1(동결, 크기·정의 변경 없음)",
+  "steps": {
+    "begin": "프로토콜·소스 커밋과 seed 미사용 확인(GPU 없음)",
+    "train_NONE": "bench/run_case.ps1 -CaseId baseline_p0c -Fault NONE, 4096 env × 300회(GPU)",
+    "train_F1": "bench/run_case.ps1 -CaseId h02 -Fault F1, 4096 env × 300회(GPU)",
+    "alarm": "R1을 두 실행의 학습 텔레메트리에 적용(CPU). 판정 단계가 아니라 기록",
+    "evaluate": "evals/run_fixed_eval.py로 두 정책 고정 평가 후 p0c 밴드로 실패 존재 판정(GPU)",
+    "reference": "evals/run_probes.py로 NONE 정책의 6개 probe 기준 측정(GPU)",
+    "packet": "active_decision_packet_v2(사례·NONE 텔레메트리 말기 20% 평균, 공개 probe 카탈로그) 작성(CPU)",
+    "loop_start": "WSL active_model_call.py 기록을 검증하고 상위 3가설·모델 probe로 고리 시작(CPU)",
+    "loop_close": "evals/loop.py approve/reject/run(승인자·GPU)이 끝난 뒤 원장·산출물 대조(CPU)",
+    "correction": "correct.py evidence→correction_model_call.py(WSL)→propose→approve(승인자) 뒤 seed 3030 restart 교정 학습·고정 평가(GPU)"
+  },
+  "gpu_step_execution": "bench/run_runtime_readback_smoke.run_owned(Windows Job)로 프로세스 트리를 소유·정리한다. 학습 실패는 invalid로 종료(seed 재사용 없음). 고정 평가·기준 probe는 결과 파일이 없을 때만 인프라 재시도 1회",
+  "alarm": {
+    "metric": "Metrics/base_velocity/error_vel_xy",
+    "smoothing": "trailing_mean",
+    "window_iterations": 20,
+    "eligible_iteration_min": 60,
+    "persistence_iterations": 10,
+    "error_ratio": 2.0,
+    "reference": "같은 iteration의 정상 참조 실행별 과거 평균 중 최대값",
+    "reference_runs": [
+      "baseline_p0c_s2026",
+      "baseline_p0c_s2027",
+      "baseline_p0c_s2028"
+    ],
+    "status": "이미 본 seed 2026~2028에서 사후에 고른 후보 상수. 판정·게이트에 쓰지 않는다"
+  },
+  "evaluation": {
+    "protocol": "bench/protocols/fixed_eval_v1.json",
+    "bands_source": "evals/results/p0c_fixed_eval_20261009/summary.json",
+    "failure_rule": "같은 seed NONE이 걷고(err_xy < 0.5×제자리, 낙상 ≤ 0.05) F1이 NONE 대비 unhealthy면 실패 존재",
+    "baseline_walk_rule": "grounded_recovery.WALK_FRACTION·REF_FALL_MAX"
+  },
+  "diagnosis": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "packet_schema": "active_decision_packet_v2",
+    "decision_contract": "rl_triage.active_diagnosis.validate_decision",
+    "call": "evals/active_model_call.py(WSL, temperature 0)",
+    "max_infra_attempts": 2,
+    "record_binding": "packet SHA·messages SHA·모델 ID·worker 정리를 대조하고, 기록은 model 폴더의 diagnosis.call<n>.json 순서로만 받는다(제출하지 않은 호출 기록이 있으면 거부)",
+    "budget_left": 4,
+    "execution_budget_s": 180,
+    "blind_inputs": "사례 이름·정답·결함 정의를 넣지 않는다"
+  },
+  "loop": {
+    "case": "h02_s2030",
+    "top_k": 3,
+    "budget_probes": 4,
+    "first_probe": "Nemotron이 고른 probe가 상위 3가설을 가르면 그 probe, 아니면 동결 규칙 probe(대체로 기록)",
+    "update": "동결 probe_loop.update 규칙. 관측 뒤 모델 재호출 없음",
+    "request_budget_gpu_s": "probe cost_gpu_s × 2(evals/loop.py)",
+    "result_tag_suffix": "_loop",
+    "metered": true,
+    "approval": "evals/loop.py approve/reject. 사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)"
+  },
+  "correction": {
+    "case": "h02_s2030",
+    "correction_id": "restore_body_frame_reward",
+    "registered_recovery_mode": "restart",
+    "training_seed": 3030,
+    "budget_gpu_s_min": 2400,
+    "budget_note": "교정 요청 예산은 2400 s 이상이어야 한다. 실제 상한은 학습 1800 s·평가 360 s 감시 시간이다",
+    "result_tag_suffix": "_fix",
+    "model_call": "evals/correction_model_call.py(WSL, temperature 0)",
+    "auto_approval": false,
+    "approval": "evals/correct.py approve/reject. 사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)",
+    "reference": "같은 seed NONE의 시연 고정 평가",
+    "verdict": "recovery.verdict(p0c 밴드)"
+  },
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "rsl_rl_version": "2.3.3",
+  "torch_version": "2.7.0+cu128",
+  "watchdogs_s": {
+    "train": 1800,
+    "fixed_eval": 600,
+    "reference_probes": 900
+  },
+  "budget_estimate": {
+    "unit": "부모 프로세스 벽시계(초). GPU 전용 시간이나 절감량이 아니다",
+    "train_NONE": [
+      593.0,
+      802.3
+    ],
+    "train_F1": [
+      453.4,
+      672.3
+    ],
+    "fixed_eval_two_runs": [
+      80,
+      180
+    ],
+    "reference_six_probes": [
+      80,
+      180
+    ],
+    "loop_probes": [
+      18,
+      110
+    ],
+    "restart_train": [
+      453.4,
+      802.3
+    ],
+    "restart_eval": [
+      46.2,
+      89.5
+    ],
+    "total": [
+      1724.0,
+      2836.4
+    ],
+    "sources": {
+      "train": "P0-C bench/private/*_s202{6,7,8}.meta.json wall_time_s(run_case.ps1, Isaac 기동·TB 추출 포함)와 v1 seed 2029 시연 parent wall(NONE 593.0, F1 528.6, restart seed 3029 552.6)",
+      "fixed_eval": "P0-C 일괄 평가 작업당 평균 33.5 s·최대 43.4 s와 기동 약 11 s, 단일 평가 프로세스 parent wall 46.2~89.5 s, v1 두 정책 93.0 s",
+      "reference": "p1a NONE probe 내부 elapsed 합 약 64 s와 단일 probe 실행 wall 18~27 s, v1 91.7 s",
+      "loop": "evals/loops receipt gpu_s P_reward 18.3~20.9(v1 20.9), P_noise 17.9~21.2, P_torque 26.6"
+    },
+    "model_calls": "진단 1회·교정 1회, 각 인프라 오류 재시도 최대 1회"
+  },
+  "predictions": {
+    "source_failure": "F1이 같은 seed NONE 대비 unhealthy이고 standstill_ratio ≥ 0.9",
+    "alarm": "R1이 F1에 울리고 NONE에는 울리지 않는다(첫 경고 iteration은 예측하지 않는다)",
+    "diagnosis": "첫 판단 action=continue, 상위 3가설에 reward 포함",
+    "loop": "P_reward abnormal 뒤 reward 확정(예산 4 이내)",
+    "correction_rule": "reward·standstill_ratio ≥ 0.9 → restart",
+    "restart": "seed 3030 restart 교정 정책 recovered",
+    "basis": "seed 2026~2029 P0-C·v3·v4·v1 시연 개발 관찰. v4 seed 2026·2028 restart의 회복은 같은 seed 재현이라 자명했다. v1 seed 2029의 restart(seed 3029)는 학습이 자연 종료했지만 소스 검증 거부로 판정이 없었고(correction_unknown), 프로토콜 밖 사후 보조 측정에서만 허용 범위 안이었다(판정 아님). 다른 seed 재학습의 회복은 사전등록 판정으로는 이번에 처음 잰다. 예측 적중은 성공 조건과 따로 기록한다"
+  },
+  "success_conditions": {
+    "protocol_committed": "모든 단계가 실행 전에 커밋된 같은 프로토콜과 하나의 실험 커밋에서 돌았다",
+    "seed_unused": "시작 시 seed 2030·3030 학습·평가·고리 산출물이 없었다",
+    "source_failure_present": "같은 seed 정상 정책은 걷고 결함 정책은 unhealthy였다",
+    "fresh_diagnosis_call": "새 Nemotron 첫 판단 호출이 기록됐고 계약상 유효한 continue였다",
+    "first_probe_from_model": "첫 검사 제안이 Nemotron이 고른 probe였다(규칙 대체가 아님)",
+    "probes_approved_consumed_once": "모든 실행 probe가 승인 기록 뒤 한 번만 소비됐고 산출물 체크포인트 SHA가 사례와 같았다",
+    "loop_confirmed_reward": "동결 규칙 갱신으로 reward가 유일 가설로 확정됐다",
+    "correction_call_accepted": "새 교정 제안 Nemotron 호출이 기록됐고 검증을 통과해 교정 요청의 근거로 결합됐다",
+    "correction_approved_consumed_once": "승인 기록 뒤 교정 요청이 한 번 소비되고 receipt가 남았다",
+    "restart_recovered": "restart 교정 정책이 같은 seed 정상 정책 대비 healthy였다",
+    "costs_recorded": "학습·평가·probe 프로세스 시간과 두 모델 호출의 지연·토큰이 모두 기록됐다"
+  },
+  "success_rule": "결과가 recovered이고 성공 조건이 모두 참일 때만 demo_success",
+  "outcomes": {
+    "invalid": "출처·커밋·seed·산출물 결합 검증이 맞지 않아 시연 판정을 보류한다.",
+    "baseline_invalid": "같은 seed 정상 정책이 고정 평가에서 걷지 못해 비교 기준이 없다. 원인 진단을 시작하지 않았다.",
+    "source_failure_absent": "결함 학습 정책이 같은 seed 정상 정책 대비 고정 행동 허용 범위를 통과해 진단할 실패가 없었다.",
+    "model_infra_failed": "Nemotron 호출이 인프라 오류로 등록 횟수 안에 응답을 주지 못해 진단을 보류했다.",
+    "model_invalid": "Nemotron 응답이 공개 판단 계약을 어겨 검사를 제안하지 않고 보류했다.",
+    "diagnosis_hold": "Nemotron이 첫 판단에서 근거 부족으로 보류해 검사를 실행하지 않았다.",
+    "loop_not_confirmed": "승인된 검사들로 원인을 하나로 확정하지 못해(식별 불가 또는 지원 가설 없음) 교정을 제안하지 않았다.",
+    "wrong_confirmation": "검사 고리가 보상이 아닌 다른 메커니즘을 확정했다. 등록 결함과 다른 확정으로 기록하고 교정하지 않았다.",
+    "correction_not_proposed": "확정 뒤 교정 단계가 보류(HOLD)했거나 이 시연에 등록되지 않은 회복 방식이라 교정을 실행하지 않았다.",
+    "correction_rejected": "승인자가 교정 요청을 거절해 교정을 실행하지 않았다.",
+    "correction_unknown": "승인된 교정 실행이 실패·예산 초과·검증 불일치로 끝나 회복 여부를 판정하지 않았다.",
+    "not_recovered": "보상 결함을 확정하고 승인된 restart 교정까지 실행했지만, 교정 정책이 같은 seed 정상 정책 대비 고정 행동 허용 범위를 통과하지 못했다.",
+    "recovered": "새 Nemotron 판단으로 시작한 승인된 검사가 보상 결함을 확정했고, 승인된 restart 교정 정책이 같은 seed 정상 정책 대비 고정 행동 허용 범위를 통과했다.",
+    "in_progress": "아직 끝나지 않은 시연이다."
+  },
+  "common_wording": "새 seed 2030의 합성 보상 결함 1건을 끝까지 연결한 통합 시연이다. 결함과 probe는 같은 설계자가 만들었고, 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다.",
+  "gap_wording": "다음 성공 조건을 충족하지 못했다: ",
+  "semantic_retries": 0,
+  "forbidden_claims": [
+    "진단 정확도·우월성",
+    "일반화",
+    "교정 성공률",
+    "GPU 절감",
+    "이미 본 seed 결과와 합친 분모",
+    "v1 사후 보조 측정을 회복 판정으로 인용",
+    "승인자 문자열을 신원 인증으로 표기",
+    "운영자 승인을 사람 승인으로 표기"
+  ],
+  "source_files": {
+    "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+    "bench/correction_adapter.py": "71224801d07a136c999770a6296e017165579377ee96ab98fa36fc70aa11aaa8",
+    "bench/demo_restart_correction_v2.py": "317d256a056d432a3c6d83537fcba505531d6f18c766ae8194dadb5fe834090e",
+    "bench/external_faults.py": "33e0bcb7b4b5db8669bf1aaccd96f4eefe5b542fb5b564f69c1822081f18955d",
+    "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+    "bench/run_case.ps1": "778447f10250678ec3338b1352bc7769783bf261f9c2fe41536a36fa962bbff6",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/train_with_correction.py": "f93cc2a81bc8903b4b9ba3df61d7865d6bef9917a6f8dab207f38d147aa9d13b",
+    "bench/train_with_fault.py": "e4b3b698cc2b8823e50feec9aa22f8c07afe3b49cfe7750ae23cf5313554543c",
+    "bench/train_with_recovery_mode.py": "a9629ffbd34f4e344ecec84d4d42f3a08c575ad82250af8bf74d7282e667f29d",
+    "evals/active_model_call.py": "10349545f07071226213e10bcbaf617609bdb32e8f29b734e064fe760356ae3e",
+    "evals/correct.py": "df91badc6d52865081d8d9ad2314982da21b98ab3f19727ede63c7468ecf9a43",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/e2e_reward_demo_v2.py": "a83a28cc952159d511e88c12caae2e3b8b2a39a32720b93b488bf03e47265a34",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/loop.py": "270b9986a66ac1c7570693ed8d5dfe2ca0f5d1067cbfdedfb7b86be019dbb26d",
+    "evals/metered_probes.py": "8f938e7b0d4d3317136d45348f43326b74dd3b4ab315143e542cac26c1f13252",
+    "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+    "evals/run_active_diagnosis.py": "53662a81d57f7b70c0893166ec01bcf1128ba072456b52b7cc19c181a8742fc3",
+    "evals/run_fixed_eval.py": "6a822fbdbc7cc93c8b77dce9391195d4859edab7573f7c7644f39427e01c0675",
+    "evals/run_probes.py": "574139012a872eb5f42fef9282ae15bf7c626823b86e1553730e8717fc4db116",
+    "evals/run_training_correction.py": "5473f030f357c7cec06861c1e33c8147d3960021f959956666531c9241da0bd1",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "src/rl_triage/tracking_alarm.py": "31d457c6f77ec77a274c3e7a627899ebe1711ddc4c03832c6a2cd5c2ed88e24c",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af"
+  },
+  "reference_telemetry": {
+    "baseline_p0c_s2026": "bdcc275f72ac4a8e14848e31313f14878d9063cbb301ecdf1618cf337c684681",
+    "baseline_p0c_s2027": "a2c4d9b9971e2d3b335a542dcb14637f084aedef5ce10e3adfc6e91f4cc8217f",
+    "baseline_p0c_s2028": "2c14352906f2decb6341c84153799b0654026f34e612719a5bd05c3c3c5738ad"
+  },
+  "bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1513,
+    "err_yaw_ratio_max": 1.1719,
+    "fall_frac_max": 0.05
+  },
+  "bands_summary_sha256_lf": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+  "fixed_eval_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "v4_protocol_sha256_lf": "9216f4c649688434244dee8e6d947f52b0bff892482db686435b1d750a5553bf",
+  "correction_source_contract": {
+    "runtime": {
+      "cache_tag": "cpython-310",
+      "implementation": "CPython",
+      "version": [
+        3,
+        10,
+        15
+      ]
+    },
+    "schema": "correction_source_contract_v1",
+    "targets": {
+      "restore_body_frame_reward": {
+        "clean_fingerprint": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.rewards",
+        "qualname": "track_lin_vel_xy_exp",
+        "source": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+        "source_sha256": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76"
+      },
+      "restore_configured_timeout": {
+        "clean_fingerprint": "c59f0aa40f3a4c460d9f146d17db4a56fcf9a4783ee39dd237d3ce7ea8cb6b7d",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.terminations",
+        "qualname": "time_out",
+        "source": "source/isaaclab/isaaclab/envs/mdp/terminations.py",
+        "source_sha256": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762"
+      },
+      "restore_motor_torque_speed": {
+        "clean_fingerprint": "bf37f452239be21ec97ee61654f416abcafeb995c2e60fa509156f6d0e26aad3",
+        "mode": "attribute",
+        "module": "isaaclab.actuators.actuator_pd",
+        "qualname": "DCMotor._clip_effort",
+        "source": "source/isaaclab/isaaclab/actuators/actuator_pd.py",
+        "source_sha256": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012"
+      }
+    }
+  }
+}

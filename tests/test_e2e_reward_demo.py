@@ -444,7 +444,11 @@ def test_evaluate_allows_one_infra_retry_without_outputs(demo, monkeypatch, tmp_
     assert terminal["outcome"] == "invalid" and terminal["detail"]["attempt"] == 2
 
 
-def test_seed_unused_detects_names_and_logged_restart_seed(demo, tmp_path):
+def test_seed_unused_detects_names_and_logged_restart_seed(demo, tmp_path, monkeypatch):
+    repo = tmp_path / "repo"  # 실제 저장소에는 seed 2029 시연 산출물이 있으므로 검사 경로를 임시 폴더로 돌린다
+    for folder in (demo.RUNS_DIR, "bench/private", "evals/loops"):
+        (repo / folder).mkdir(parents=True)
+    monkeypatch.setattr(demo, "ROOT", repo)
     isaaclab = tmp_path / "IsaacLab"
     run = isaaclab / "logs/rsl_rl/unitree_go2_flat/2026-10-14_00-00-00_other_run"
     (run / "params").mkdir(parents=True)
@@ -452,6 +456,10 @@ def test_seed_unused_detects_names_and_logged_restart_seed(demo, tmp_path):
     assert not demo.seed_unused_evidence(isaaclab, "t8")["hits"]
     (run / "params/agent.yaml").write_text("seed: 3029\nrun_name: x\n", encoding="utf-8")
     assert any("seed 3029" in hit for hit in demo.seed_unused_evidence(isaaclab, "t8")["hits"])
+    (run / "params/agent.yaml").write_text("seed: 42\n", encoding="utf-8")
+    (repo / demo.RUNS_DIR / f"h02_s{demo.SEED}.telemetry.json").write_text("{}", encoding="utf-8")
+    assert [Path(hit).name for hit in demo.seed_unused_evidence(isaaclab, "t8")["hits"]] == [
+        f"h02_s{demo.SEED}.telemetry.json"]
 
 
 def test_prediction_results_follow_reached_steps():
