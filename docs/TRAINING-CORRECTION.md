@@ -101,6 +101,107 @@ $tag = 'reward_resume_dev3_20261013'
 
 모터 사례의 [비교 영상](media/go2-correction-motor_resume_dev_20261013/comparison.mp4)과 [GIF](media/go2-correction-motor_resume_dev_20261013/comparison.gif)도 같은 세 조건을 재생한다. 원본과 비교 영상은 5.98초·299프레임, GIF는 6초·90프레임이다. [출처 기록](media/go2-correction-motor_resume_dev_20261013/source_manifest.json)은 case_02의 `no_recovery` 판정과 원본 체크포인트를 결합한다. README의 미리보기는 이 모터 사례이며, 첫 보상 사례의 영상도 보존한다.
 
+## 회복 방식 비교 v4
+
+v3 `case_01`(seed 2027)에서는 보상 결함 F1을 고친 뒤 300회 이어 학습해도 정상 범위로 돌아오지 않았다. 학습 기록상 F1 정책은 명령을 따르지 않는 상태였고, 그 상태에서는 몸체 좌표와 월드 좌표의 추종 보상 차이가 작아 교정 신호가 약했을 가능성이 있다. v3 중단 규칙에 따라 seed 2027의 재시도나 예산 확대는 하지 않고, 회복 방식을 비교하는 질문을 새로 사전등록했다.
+
+> 보상 결함을 고친 뒤, 이어 학습·탐색 재설정 이어 학습·처음부터 재학습 중 무엇이 같은 300회 예산으로 정상 범위에 돌아오는가?
+
+### 입력과 arm
+
+입력은 P0-C에서 이미 본 seed 2026·2028의 F1 실행(`h02_s2026`, `h02_s2028`)과 정상 실행(`baseline_p0c_s2026`, `baseline_p0c_s2028`)이다. 원본 `model_299.pt`, 학습 설정, 메타데이터, 고정 평가의 SHA와 원본 판정을 [프로토콜 v4](../bench/protocols/training_correction_v4.json)에 묶었다. 등록 교정은 `restore_body_frame_reward` 하나이며 v3와 같은 CPU 검사 행렬을 SHA로 다시 결합했다.
+
+seed마다 아래 순서로 네 arm을 실행한다. 환경 수 4096, 환경당 rollout 24 step, 학습 300회는 모든 arm이 같다.
+
+| arm | 시작 상태 | 결함·교정 | 최종 체크포인트 | 주 기준 |
+|---|---|---|---|---|
+| `clean_resume_reference` | 정상 `model_299.pt`의 정책·optimizer | 없음 | `model_598.pt` | — (이어 학습 arm의 기준) |
+| `resume_corrected` | F1 `model_299.pt`의 정책·optimizer | F1 주입 뒤 교정 | `model_598.pt` | `clean_resume_reference` |
+| `resume_corrected_std_reset` | `resume_corrected`와 같고 action noise std만 재설정 | F1 주입 뒤 교정 | `model_598.pt` | `clean_resume_reference` |
+| `restart_corrected` | 체크포인트 없이 같은 seed로 새 초기화 | F1 주입 뒤 교정 | `model_299.pt` | 원본 정상 실행의 기존 고정 평가 |
+
+`resume_corrected_std_reset`은 체크포인트를 불러와 정책·optimizer 지문을 검증한 직후, 같은 파라미터 객체에 in-place로 `init_noise_std`(1.0)를 채우고 그 파라미터의 Adam 모멘트만 지운다. 다른 파라미터의 optimizer 상태와 param_groups는 재설정 시점에 바꾸지 않는다. 전후 std 값과 평균, 모멘트 유무, 정책·optimizer 지문, std 항목만 뺀 기대 optimizer 지문을 `initial.json`에 남기고 부모가 대조한다.
+
+`restart_corrected`의 대조는 원본 F1 실행(같은 seed, 같은 300회, 교정 없음)의 기존 고정 평가를 재사용하며 다시 학습하지 않는다. 원본 실행의 초기 정책 상태는 기록돼 있지 않으므로, 새 초기화의 지문과 RNG만 기록하고 원본과 같은지는 실행 중에 확인하지 않는다.
+
+### 판정과 사전 예측
+
+처리 arm마다 고정 평가 26조건의 행동 지표를 주 기준과 비교해 `recovered`(healthy), `not_recovered`(unhealthy), `invalid`로 표시한다. 이어 학습 기준은 제자리 대비 걷고 원본 정상 정책 대비 healthy여야 유효하며, 재학습 기준인 원본 정상 정책은 제자리 대비 걸어야 유효하다. 기준이 무효이거나 실행·검증 계약이 맞지 않으면 그 arm은 `invalid`다. 한 seed의 네 arm은 등록 순서로 실행하고 첫 실패에서 멈추며, 완료된 arm까지만 판정한다. 두 resume 처리 arm의 학습 직전 RNG 해시가 다르면 std 재설정 arm만 `invalid`로 둔다. 같은 프로토콜로 한 seed를 다시 실행하지 않는다.
+
+실행 전 예측은 `restart_corrected`가 두 seed 모두 `recovered`, `resume_corrected`가 두 seed 모두 `not_recovered`이며, `resume_corrected_std_reset`은 예측하지 않는 탐색 arm이다. v3 학습 기록에서 F1 교정·대조 arm의 std는 0.38~0.55로 정상 기준 0.27~0.36보다 높았으므로, std가 낮아 탐색이 부족하다는 설명은 약하다.
+
+`standstill_ratio`는 같은 고정 평가의 선속도 RMSE를 제자리 정책의 RMSE로 나눈 값이다. 1에 가까우면 명령 추종이 없다는 뜻이며 정지 자체를 증명하지 않는다. 실행 전에 계산한 원본 값은 아래와 같고, 사전 예측(F1 0.9 이상, 정상 0.3 이하)을 두 seed 모두 충족했다.
+
+| seed | 원본 F1 | 원본 정상 | 규칙 권고 |
+|---|---:|---:|---|
+| 2026 | 0.9967 | 0.1256 | restart |
+| 2028 | 0.9889 | 0.1195 | restart |
+
+회복 방식 규칙은 "결함 메커니즘이 보상이고 원본 F1의 standstill_ratio가 0.9 이상이면 restart, 아니면 resume"이다. seed 2027 단일 관찰에서 만든 규칙이므로 v4 결과로 적중 여부만 기록하며 판정 라벨에는 쓰지 않는다. 권고 arm이 회복하고 대안 arm이 회복하지 않으면 `hit`, 둘 다 회복하면 `both_recovered`, 권고 arm이 회복하지 않으면 `recommended_not_recovered`, 어느 쪽이든 `invalid`이면 `undetermined`다.
+
+모든 resume arm에 같게 적용되는 교란이 있다. RSL-RL 2.3.3 PPO는 resume 뒤 learning_rate를 설정값에서 다시 시작하고 adaptive schedule이 첫 update에서 optimizer lr을 덮어쓴다(rsl_rl #221). actor·critic·std는 Adam 하나와 전역 gradient clip(1.0)을 공유한다.
+
+### 결과
+
+| seed | arm | 판정 | 선속도 RMSE (m/s) | 회전속도 RMSE (rad/s) | standstill_ratio | 낙상률 |
+|---|---|---|---:|---:|---:|---:|
+| 2026 | 이어 학습 정상 기준 | — | 0.143 | 0.233 | 0.122 | 0.038 |
+| 2026 | 고쳐서 이어 학습 | `not_recovered` | 1.156 | 0.377 | 0.982 | 0.000 |
+| 2026 | 이어 학습 + std 재설정 | `not_recovered` | 1.115 | 0.295 | 0.948 | 0.001 |
+| 2026 | 고쳐서 처음부터 재학습 | `recovered` | 0.148 | 0.299 | 0.126 | 0.000 |
+| 2028 | 이어 학습 정상 기준 | — | 0.133 | 0.224 | 0.113 | 0.038 |
+| 2028 | 고쳐서 이어 학습 | `not_recovered` | 1.137 | 0.252 | 0.966 | 0.000 |
+| 2028 | 이어 학습 + std 재설정 | `not_recovered` | 1.155 | 0.184 | 0.981 | 0.000 |
+| 2028 | 고쳐서 처음부터 재학습 | `recovered` | 0.141 | 0.279 | 0.119 | 0.000 |
+
+| seed | 사전 예측 일치 | 규칙 권고 · 결과 | 학습·평가 parent wall (s) |
+|---|---|---|---:|
+| 2026 | 예측한 두 arm 모두 일치(std 재설정은 예측 없음) | restart · `hit` | 2426.624 |
+| 2028 | 예측한 두 arm 모두 일치(std 재설정은 예측 없음) | restart · `hit` | 2464.908 |
+
+두 seed 모두 사전 예측대로 고쳐서 이어 학습한 정책은 정상 범위에 돌아오지 않았고(선속도 오차 1.156·1.137 m/s, 이어 학습 정상 기준 0.143·0.133 m/s), 행동 노이즈 std를 초기값으로 되돌린 이어 학습도 돌아오지 않았다(1.115·1.155 m/s). 처음부터 재학습한 arm은 `recovered`였다. 이 arm의 최종 체크포인트 SHA는 두 seed 모두 원본 정상 실행의 `model_299.pt`와 같았다(seed 2026 `2e1e84cd…`, seed 2028 `d8c67eec…`). 교정한 코드가 정상 학습 코드와 같아져 같은 seed의 정상 학습을 바이트 그대로 재현한 것이므로, 재학습의 회복은 예상된 확인이며 새로운 회복 효과로 해석하지 않는다. 회복 방식 규칙의 권고(restart)는 두 seed에서 `hit`였다. seed 2027 하나에서 만든 규칙이 같은 결함의 이미 본 두 seed에서 맞았다는 관찰이며 일반 규칙의 근거가 아니다. 공개 결과는 [seed 2026](../evals/results/reward_v4_s2026_20261013/result.json)과 [seed 2028](../evals/results/reward_v4_s2028_20261013/result.json)에 있다.
+
+같은 seed 재학습이 정상 학습을 재현한다는 점 때문에, 이후 [종단 시연](../evals/results/e2e_reward_s2030_20261013/demo_result.json)은 재학습 seed를 실패 seed와 다르게(실패 seed 2030, 재학습 seed 3030) 사전등록했다. 그 단일 실행에서 restart 교정 정책은 같은 seed 정상 정책 대비 healthy였다(standstill_ratio 0.125). 체크포인트 재현이 아닌 재학습의 한 사례이며, 반복 실험의 회복률이 아니다.
+
+parent wall time은 각 arm의 부모 프로세스 실행부터 종료와 소유 작업 정리 확인까지를 더한 값이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.
+
+### 해석 경계
+
+각 칸은 이미 본 seed의 합성 결함에 대한 단일 실행이다. 같은 방식의 반복 분산을 재지 않았으므로 arm 사이 차이를 효과 크기나 일반화로 표현하지 않는다. 재학습 arm의 회복은 "보상 결함은 처음부터 다시 학습해야 한다"는 일반 규칙의 근거가 아니며, 회복하지 않은 이어 학습 arm은 300회 예산과 이 seed에서의 관찰이다. 회복 방식은 호스트가 사전등록한 비교이며 모델이 교정이나 회복 방식을 고른 결과가 아니다. 결함 체크포인트의 학습 이력 전체와 시뮬레이터·RNG 상태를 복원하지 않으므로 정확히 같은 학습 궤적의 재개로 부르지 않는다.
+
+### 공개 결과와 미디어
+
+v3 실행 코드는 공개 결과 재생의 소스 결합을 지키려고 바꾸지 않았다. v4는 [실행기](../evals/run_training_correction_v4.py)와 [학습 진입점](../bench/train_with_recovery_mode.py)이 v3 함수를 재사용한다. 공개본과 미디어 프로토콜은 결합 파일이 실험 커밋과 현재 HEAD에서 같고 실험 커밋이 HEAD의 조상일 때 실험 커밋 기준으로 다시 검증하므로, 실험 뒤 코드 커밋으로 HEAD가 바뀌어도 만들 수 있다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+# 실행(seed마다 한 번). 다른 GPU 작업이 있으면 시작하지 않는다.
+.\.venv\Scripts\python.exe evals/run_training_correction_v4.py verify
+.\.venv\Scripts\python.exe evals/run_training_correction_v4.py execute --seed 2026 --tag reward_v4_s2026_20261013
+.\.venv\Scripts\python.exe evals/run_training_correction_v4.py execute --seed 2028 --tag reward_v4_s2028_20261013
+
+# 공개 수치 묶음을 새 폴더에 한 번만 만들고 재생한다.
+.\.venv\Scripts\python.exe evals/publish_training_correction_v4.py export reward_v4_s2026_20261013 --isaaclab "$HOME/IsaacLab"
+.\.venv\Scripts\python.exe evals/publish_training_correction_v4.py export reward_v4_s2028_20261013 --isaaclab "$HOME/IsaacLab"
+.\.venv\Scripts\python.exe evals/publish_training_correction_v4.py replay evals/results/reward_v4_s2026_20261013
+.\.venv\Scripts\python.exe evals/publish_training_correction_v4.py aggregate evals/results/reward_v4_s2026_20261013 evals/results/reward_v4_s2028_20261013
+
+# 미디어 프로토콜(개정판 r2)을 만든 뒤 공개 결과와 함께 커밋하고, 그 다음에 녹화한다.
+.\.venv\Scripts\python.exe bench/record_correction_media_v4.py prepare reward_v4_s2026_20261013 --isaaclab "$HOME/IsaacLab"
+.\.venv\Scripts\python.exe bench/record_correction_media_v4.py prepare reward_v4_s2028_20261013 --isaaclab "$HOME/IsaacLab"
+.\.venv\Scripts\python.exe bench/record_correction_media_v4.py record reward_v4_s2026_20261013 --isaaclab "$HOME/IsaacLab"
+.\.venv\Scripts\python.exe bench/record_correction_media_v4.py record reward_v4_s2028_20261013 --isaaclab "$HOME/IsaacLab"
+
+# 공개 결과를 커밋한 뒤 발표 재생 화면 데이터를 다시 만든다.
+.\.venv\Scripts\python.exe evals/build_replay_page.py
+```
+
+공개 묶음은 seed마다 완료된 arm의 원시 고정 평가, 초기 상태 지문 요약(std 재설정 readback 포함), 학습 receipt 요약, 그 seed의 입력 SHA와 판정을 담고 절대 경로·PID·로그는 제외한다. 일부 arm만 끝난 seed도 완료된 arm까지 공개한다. `replay`는 공개 파일의 해시와 수치 판정을 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다.
+
+비교 영상은 원본 F1, 고쳐서 이어 학습, 고쳐서 재학습, std 재설정, 이어 학습 정상 기준, 원본 정상 정책의 여섯 정책을 같은 stock Play 조건으로 재생해 2×3 격자로 합친다. seed 2026의 [비교 영상](media/go2-correction-reward_v4_s2026_20261013/comparison.mp4)·[GIF](media/go2-correction-reward_v4_s2026_20261013/comparison.gif)·[출처 기록](media/go2-correction-reward_v4_s2026_20261013/source_manifest.json)과 seed 2028의 [비교 영상](media/go2-correction-reward_v4_s2028_20261013/comparison.mp4)·[GIF](media/go2-correction-reward_v4_s2028_20261013/comparison.gif)·[출처 기록](media/go2-correction-reward_v4_s2028_20261013/source_manifest.json)이 있다. 비교 영상은 1920×720·299프레임·5.98초, GIF는 960×360·90프레임·6초다. 두 seed 모두 4.5초 지점에서 원본 F1·고쳐서 이어 학습·std 재설정 정책은 출발점 근처에서 몸을 낮춘 채 머물고, 재학습·이어 학습 정상 기준·원본 정상 정책은 걸어서 멀어진다. 재생 한 번의 관찰이며 판정은 위 고정 평가 수치로만 한다.
+
+미디어 프로토콜은 개정판 r2(`bench/protocols/training_correction_media_v4_<tag>_r2.json`)를 쓴다. 같은 tag의 r1은 원 실행 seed를 담은 생성 키가 Play 재생 seed(42)를 덮어써 `record`가 녹화 전에 거부했고(GPU 미사용), 파일은 바꾸지 않은 채 r2의 `supersedes`에 r1의 SHA와 거부 이유를 결합했다. r2는 원 실행 seed를 `source_seed`로 따로 둔다.
+
 ## 액추에이터 곡선 검사
 
 `src/rl_triage/actuator_envelope.py`의 `inspect_actuator_envelope`는 정책 rollout 없이 등록 속도 격자에서 DC motor `_clip_effort`의 양·음 포화 출력을 읽고 설정에서 계산한 토크–속도 곡선과 비교한다. 측정 중 교체한 `_joint_vel`은 `finally`에서 원 객체로 복원한다. 설정·shape·유한성 검증이 실패하면 곡선 이상으로 확정하지 않고 `invalid`를 반환한다.
