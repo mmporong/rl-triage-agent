@@ -32,6 +32,7 @@
 | NAT 경로 비교 v4 | seed 2031 시연의 두 모델 결정 입력을 5회씩 | `adopt`. 유효 결정: 첫 판단 5/5, 교정 제안 5/5 | `evals/results/e4b_nat_compare_v4/summary.json` |
 | NAT 경로 비교 v1~v3 | 판마다 다른 고정 입력 | 세 판 모두 `do_not_adopt`(아래 "NAT 경로 비교") | `evals/results/e4b_e2e_reward_s2029_20261013/summary.json`, `evals/results/e4b_nat_compare_v2/summary.json`, `evals/results/e4b_nat_compare_v3/summary.json` |
 | 스킬 유무 프롬프트 비교 | 이미 본 사례 h02_s2027, 조건별 15회 | 알려진 실패 모드 해당 0/30(포함) 대 2/30(미포함), 기대 행동 26/50 대 24/50. 우위 근거 아님 | `evals/results/skill_ab_v1/summary.json` |
+| 결정 반복 일관성(N2) | 시연·개발 packet 11개(진단 6·교정 5), 단일 호출 5회씩 55회(새 측정). NAT v4는 E4b v4 기록 재사용 | 유효 출력의 결정은 반복 내내 같았고, pass^k를 낮춘 것은 계약 위반 출력 6/55. 평균 pass^4 진단 0.60·교정 0.64로 사전등록 하한 0.8 미만(`reconsider`). 정확도·우위 근거 아님 | `evals/results/n2_pass_k_v1/summary.json`, `docs/N2-PASS-K.md` |
 
 ## 시연 흐름과 공통 조건
 
@@ -489,6 +490,10 @@ NAT 결정 경로를 쓴 첫 시연이며, 같은 seed를 단일 호출로 돌�
 - NAT는 근거를 도구로 나눠 조회하고 단일 호출은 한 번에 받으므로, 일치율·비용 차이에는 이 제공 방식 차이가 섞여 있다.
 - 판정은 각 판의 워크플로 구성(도구 설명·스키마·표기 포함)에 대한 기록이며 NAT 자체의 성능 평가가 아니다.
 - v4 채택으로 NAT 경로를 쓴 시연은 위 "NAT 결정 경로 보상 결함 종단 시연(seed 2034)" 한 건이다.
+- 같은 packet을 단일 호출로도 5회 반복한 짝 비교와 반복 일관성(pass^k)은 `docs/N2-PASS-K.md`에 있다.
+  - v4 채택 세트(seed 2031)의 첫 판단은 5회 모두 유효했지만 1위가 reward 3 · optimizer 1 · termination 1로 갈렸다(pass^4 0).
+  - 채택 조건은 유효 수만 보므로 판정은 그대로 `adopt`다.
+  - 같은 packet의 단일 호출은 유효 4회의 1위가 모두 reward였고, 1회는 근거 claim이 빈 무효 결정이었다.
 
 ## 공식 디버깅 스킬 유무 프롬프트 비교
 
@@ -592,6 +597,7 @@ NAT 결정 경로를 쓴 첫 시연이며, 같은 seed를 단일 호출로 돌�
   - v3 `bench/protocols/e4b_nat_compare_v3.json`, `evals/results/e4b_nat_compare_v3/summary.json`
   - v4 `bench/protocols/e4b_nat_compare_v4.json`, `evals/results/e4b_nat_compare_v4/summary.json`
 - 스킬 유무 비교: `bench/protocols/skill_ab_v1.json`, `evals/results/skill_ab_v1/summary.json`
+- 결정 반복 일관성(N2): `bench/protocols/n2_pass_k_v1.json`, `evals/n2_pass_k.py`, `evals/results/n2_pass_k_v1/summary.json`, 테스트 `tests/test_n2_pass_k.py`, 문서 `docs/N2-PASS-K.md`
 - 테스트:
   - 보상 시연 `tests/test_e2e_reward_demo.py`, `tests/test_e2e_reward_demo_v2.py`
   - 모터·NAT 결정 경로 시연 `tests/test_e2e_demo_v3.py`, `tests/test_e2e_demo_v3_1.py`, `tests/test_e2e_demo_v3_1_nat.py`

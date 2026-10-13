@@ -1,0 +1,2394 @@
+{
+ "schema": "n2_pass_k_result_v1",
+ "protocol_sha256_lf": "decb3d5165bbb8e89a0e34962d8dc79c9e76f020eceec8cef20b90bfa1f00aca",
+ "source_commit_sha": "c392360ca5df0c46a503f8271d0071aa5bf1338c",
+ "complete": true,
+ "budget": {
+  "requests_used": 55,
+  "cap_requests": 80,
+  "exhausted": false
+ },
+ "sets": {
+  "h02_s2027": {
+   "case": "h02_s2027",
+   "seed": 2027,
+   "role": "e4b_v4_development",
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2843,
+       "min": 2843,
+       "max": 2843,
+       "total": 14215
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 198,
+       "min": 116,
+       "max": 204,
+       "total": 908
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.8954121039714664,
+       "min": 1.3884041639976203,
+       "max": 1.987042569089681,
+       "total": 8.944835347123444
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 3780.75,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 2843,
+        "output_tokens": 199,
+        "wall_s": 1.987042569089681,
+        "llm_calls": 1,
+        "record_sha256": "70fa2a47bbce83d24b0a788a7b1f6846eb122f057b1c45f500ddfe1e4e8c9ba9",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 2843,
+        "output_tokens": 198,
+        "wall_s": 1.7434599029365927,
+        "llm_calls": 1,
+        "record_sha256": "7b6f5b1cb6f8e400d43d9e0513473f50edd8aceec419b745f0a9044eb6b856f6",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 2843,
+        "output_tokens": 204,
+        "wall_s": 1.8954121039714664,
+        "llm_calls": 1,
+        "record_sha256": "7b1fa81efcf549cc195f5797e0d2aa2e195a4fbc9481f5da8b25edde523af17a",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 2843,
+        "output_tokens": 191,
+        "wall_s": 1.9305166071280837,
+        "llm_calls": 1,
+        "record_sha256": "6b131604ea63d3651db69feb000148b0be462c1bee18ca062820f70f8875ec00",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_episode"
+       },
+       {
+        "run": 5,
+        "status": "invalid",
+        "input_tokens": 2843,
+        "output_tokens": 116,
+        "wall_s": 1.3884041639976203,
+        "llm_calls": 1,
+        "record_sha256": "b7a6cd3f0800e526ce81c0d8ca8045aeb4909832e6af4b08fe42123028892469"
+       }
+      ],
+      "top1_is_registered_mechanism": 4,
+      "top1_probe_decisions": {
+       "reward · P_episode": 1,
+       "reward · P_reward": 3
+      }
+     },
+     "nat_v4": {
+      "counts": {
+       "valid": 3,
+       "invalid": 2,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 3
+      },
+      "pass_k": {
+       "1": 0.6,
+       "2": 0.3,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.6,
+       "2": 0.3,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 29495,
+       "min": 29333,
+       "max": 34651,
+       "total": 152935
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 1217,
+       "min": 1039,
+       "max": 1529,
+       "total": 6205
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 18.024546697968617,
+       "min": 15.215644323965535,
+       "max": 20.211641322122887,
+       "total": 89.19375565112568
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 7,
+       "min": 7,
+       "max": 8,
+       "total": 36
+      },
+      "tokens_per_valid_decision": 53046.666666666664,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 29333,
+        "output_tokens": 1039,
+        "wall_s": 15.215644323965535,
+        "llm_calls": 7,
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 29495,
+        "output_tokens": 1171,
+        "wall_s": 18.024546697968617,
+        "llm_calls": 7,
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 3,
+        "status": "invalid",
+        "input_tokens": 29432,
+        "output_tokens": 1529,
+        "wall_s": 16.06878902600147,
+        "llm_calls": 7
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 30024,
+        "output_tokens": 1217,
+        "wall_s": 20.211641322122887,
+        "llm_calls": 7,
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 5,
+        "status": "invalid",
+        "input_tokens": 34651,
+        "output_tokens": 1249,
+        "wall_s": 19.673134281067178,
+        "llm_calls": 8
+       }
+      ],
+      "top1_is_registered_mechanism": 3,
+      "top1_probe_decisions": {
+       "reward · P_reward": 3
+      }
+     },
+     "deterministic": {
+      "rule_prior": {
+       "top1": "reward",
+       "ranking": [
+        "reward",
+        "optimizer",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.1799857020378113e-07,
+       "top1_is_registered_mechanism": true
+      },
+      "rule_features": {
+       "top1": "optimizer",
+       "ranking": [
+        "optimizer",
+        "reward",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.574600115418434e-05,
+       "top1_is_registered_mechanism": false
+      },
+      "rule_template": {
+       "top1": "reward",
+       "ranking": [
+        "reward",
+        "optimizer",
+        "physics",
+        "exploration",
+        "actuator",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 8.218000177294016e-05,
+       "top1_is_registered_mechanism": true
+      },
+      "exhaustive_probes": {
+       "status": "confirmed",
+       "top1": "reward",
+       "probes_used": 6,
+       "gpu_s_saved_probes": 66.8,
+       "top1_is_registered_mechanism": true
+      }
+     }
+    }
+   }
+  },
+  "f2_s2031": {
+   "case": "h06_s2031",
+   "seed": 2031,
+   "role": "demo_v3_f2",
+   "mechanism": "actuator",
+   "kinds": {
+    "diagnosis": {
+     "single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "agree_with_recorded": 4,
+      "recorded": {
+       "path": "single",
+       "key": [
+        "continue",
+        "reward"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 2849,
+       "min": 2849,
+       "max": 2849,
+       "total": 14245
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 184,
+       "min": 112,
+       "max": 195,
+       "total": 864
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.9563311759848148,
+       "min": 1.3255381500348449,
+       "max": 2.22717831004411,
+       "total": 9.181880885036662
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 3777.25,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 2849,
+        "output_tokens": 189,
+        "wall_s": 1.9615861459169537,
+        "llm_calls": 1,
+        "record_sha256": "af307fd45d8d54a4948c0f221d6b846b0b35e923772e606ac90e8763dc02bede",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 2849,
+        "output_tokens": 184,
+        "wall_s": 2.22717831004411,
+        "llm_calls": 1,
+        "record_sha256": "ac19215cc32df3810e2ef72a44142a16a7c0dff3fd5929c8915dac2ca34765a6",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 3,
+        "status": "invalid",
+        "input_tokens": 2849,
+        "output_tokens": 112,
+        "wall_s": 1.3255381500348449,
+        "llm_calls": 1,
+        "record_sha256": "8802a5f49493c4e615039ae143f32a0d214d8f42db4bc9ae32ffc3e8f83aa5fc"
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 2849,
+        "output_tokens": 195,
+        "wall_s": 1.711247103055939,
+        "llm_calls": 1,
+        "record_sha256": "b733e985b1117e6e8e2344746b52b4d526df9426f91d30d6f64b6009a9355c28",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 2849,
+        "output_tokens": 184,
+        "wall_s": 1.9563311759848148,
+        "llm_calls": 1,
+        "record_sha256": "2553bdb809d07b3d30fa86c8d3e584742d85f14791ae89b067229e5ca29100e9",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       }
+      ],
+      "top1_is_registered_mechanism": 0,
+      "top1_probe_decisions": {
+       "reward · P_reward": 4
+      }
+     },
+     "nat_v4": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · optimizer": 1,
+       "continue · reward": 3,
+       "continue · termination": 1
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 0.3,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": 3,
+      "recorded": {
+       "path": "single",
+       "key": [
+        "continue",
+        "reward"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 34900,
+       "min": 29444,
+       "max": 41489,
+       "total": 171623
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 1384,
+       "min": 1062,
+       "max": 1587,
+       "total": 6733
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 17.603167770197615,
+       "min": 14.476795048918575,
+       "max": 23.83220640406944,
+       "total": 92.21008717501536
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 8,
+       "min": 7,
+       "max": 9,
+       "total": 39
+      },
+      "tokens_per_valid_decision": 35671.2,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 35483,
+        "output_tokens": 1390,
+        "wall_s": 16.588480673963204,
+        "llm_calls": 8,
+        "key": [
+         "continue",
+         "optimizer"
+        ],
+        "probe": "P_value"
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 30307,
+        "output_tokens": 1384,
+        "wall_s": 17.603167770197615,
+        "llm_calls": 7,
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_value"
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 29444,
+        "output_tokens": 1062,
+        "wall_s": 14.476795048918575,
+        "llm_calls": 7,
+        "key": [
+         "continue",
+         "termination"
+        ],
+        "probe": "P_episode"
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 34900,
+        "output_tokens": 1310,
+        "wall_s": 19.709437277866527,
+        "llm_calls": 8,
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_value"
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 41489,
+        "output_tokens": 1587,
+        "wall_s": 23.83220640406944,
+        "llm_calls": 9,
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       }
+      ],
+      "top1_is_registered_mechanism": 0,
+      "top1_probe_decisions": {
+       "optimizer · P_value": 1,
+       "reward · P_reward": 1,
+       "reward · P_value": 2,
+       "termination · P_episode": 1
+      }
+     },
+     "deterministic": {
+      "rule_prior": {
+       "top1": "reward",
+       "ranking": [
+        "reward",
+        "optimizer",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.1799857020378113e-07,
+       "top1_is_registered_mechanism": false
+      },
+      "rule_features": {
+       "top1": "optimizer",
+       "ranking": [
+        "optimizer",
+        "reward",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.5037995763123035e-05,
+       "top1_is_registered_mechanism": false
+      },
+      "rule_template": {
+       "top1": "optimizer",
+       "ranking": [
+        "optimizer",
+        "reward",
+        "physics",
+        "exploration",
+        "actuator",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 7.184999994933606e-05,
+       "top1_is_registered_mechanism": false
+      },
+      "exhaustive_probes": null
+     }
+    },
+    "correction": {
+     "single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_motor_torque_speed · restart": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "agree_with_recorded": 4,
+      "recorded": {
+       "path": "single",
+       "key": [
+        "propose",
+        "restore_motor_torque_speed",
+        "restart"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 1317,
+       "min": 1317,
+       "max": 1317,
+       "total": 6585
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 165,
+       "min": 157,
+       "max": 165,
+       "total": 817
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.6613485720008612,
+       "min": 1.4705398168880492,
+       "max": 2.4691920480690897,
+       "total": 8.831691911211237
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 1850.5,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 1317,
+        "output_tokens": 165,
+        "wall_s": 1.6861949861049652,
+        "llm_calls": 1,
+        "record_sha256": "c61c7f0d70c8886ac3849a41865c7902588e7cf1b5cc8c032eb05655bfecda84",
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       },
+       {
+        "run": 2,
+        "status": "invalid",
+        "input_tokens": 1317,
+        "output_tokens": 157,
+        "wall_s": 1.544416488148272,
+        "llm_calls": 1,
+        "record_sha256": "ec4a005604e3bcc9c229beb67ef45b7b11b41ed5491010b9c2dec94069711069"
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 1317,
+        "output_tokens": 165,
+        "wall_s": 2.4691920480690897,
+        "llm_calls": 1,
+        "record_sha256": "a9c7fb32acf8bbe7a396c3c85b1963a8e0bcf3dc5dcb27f2d5936ef81eb30606",
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 1317,
+        "output_tokens": 165,
+        "wall_s": 1.6613485720008612,
+        "llm_calls": 1,
+        "record_sha256": "da80d87e00310df95be449ed3aa7aa9de008b1140a6bac96220b72419ca42947",
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 1317,
+        "output_tokens": 165,
+        "wall_s": 1.4705398168880492,
+        "llm_calls": 1,
+        "record_sha256": "ee8943582aacec32d21832817aeb999b3576d5b0e792fff92ac6918478c1d58e",
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       }
+      ]
+     },
+     "nat_v4": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_motor_torque_speed · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": 5,
+      "recorded": {
+       "path": "single",
+       "key": [
+        "propose",
+        "restore_motor_torque_speed",
+        "restart"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 22377,
+       "min": 22149,
+       "max": 22423,
+       "total": 111553
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 1242,
+       "min": 1122,
+       "max": 1272,
+       "total": 6027
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 16.202332307817414,
+       "min": 15.804700687061995,
+       "max": 19.349937030114233,
+       "total": 83.82153586484492
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 7,
+       "min": 7,
+       "max": 7,
+       "total": 35
+      },
+      "tokens_per_valid_decision": 23516.0,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 22203,
+        "output_tokens": 1135,
+        "wall_s": 19.349937030114233,
+        "llm_calls": 7,
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 22149,
+        "output_tokens": 1122,
+        "wall_s": 16.202332307817414,
+        "llm_calls": 7,
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 22377,
+        "output_tokens": 1242,
+        "wall_s": 15.804700687061995,
+        "llm_calls": 7,
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 22423,
+        "output_tokens": 1272,
+        "wall_s": 16.643044761847705,
+        "llm_calls": 7,
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 22401,
+        "output_tokens": 1256,
+        "wall_s": 15.82152107800357,
+        "llm_calls": 7,
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       }
+      ]
+     },
+     "deterministic": {
+      "key": [
+       "propose",
+       "restore_motor_torque_speed",
+       "restart"
+      ],
+      "same_over_runs": true,
+      "compute_s_mean": 1.7999671399593354e-07,
+      "standstill_ratio": 0.8709512697635505
+     }
+    }
+   }
+  },
+  "r_s2030": {
+   "case": "h02_s2030",
+   "seed": 2030,
+   "role": "demo_reward_v2",
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": 5,
+      "recorded": {
+       "path": "single",
+       "key": [
+        "continue",
+        "reward"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 2829,
+       "min": 2829,
+       "max": 2829,
+       "total": 14145
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 193,
+       "min": 185,
+       "max": 223,
+       "total": 982
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.9996192820835859,
+       "min": 1.783483476843685,
+       "max": 5.68472175183706,
+       "total": 14.818821192486212
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 3025.4,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 2829,
+        "output_tokens": 188,
+        "wall_s": 1.8586019629146904,
+        "llm_calls": 1,
+        "record_sha256": "5a8c7e7220cd0e32f56d0a83db1831c6dd16c2d847bdc442f08c6ad4ed17d9ea",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 2829,
+        "output_tokens": 223,
+        "wall_s": 1.9996192820835859,
+        "llm_calls": 1,
+        "record_sha256": "80d7c5d2724df34e53452a3dba56adf117a774ccfe5f362efe034f4d9d4321b6",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 2829,
+        "output_tokens": 193,
+        "wall_s": 3.4923947188071907,
+        "llm_calls": 1,
+        "record_sha256": "3239087dab0bfbd045f7cc815d9d01e7850f9970120bec59c4c99d268fd343ec",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 2829,
+        "output_tokens": 185,
+        "wall_s": 5.68472175183706,
+        "llm_calls": 1,
+        "record_sha256": "7a53f039e5e1526898e7cea36b1457b6fb5468b1d805c854325f3446661a66d5",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 2829,
+        "output_tokens": 193,
+        "wall_s": 1.783483476843685,
+        "llm_calls": 1,
+        "record_sha256": "cca63543384954bab336c16780e98a88a0a6716c1219c5c7f04396080a27177f",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       }
+      ],
+      "top1_is_registered_mechanism": 5,
+      "top1_probe_decisions": {
+       "reward · P_reward": 5
+      }
+     },
+     "nat_v4": null,
+     "deterministic": {
+      "rule_prior": {
+       "top1": "reward",
+       "ranking": [
+        "reward",
+        "optimizer",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.1600088328123093e-07,
+       "top1_is_registered_mechanism": true
+      },
+      "rule_features": {
+       "top1": "optimizer",
+       "ranking": [
+        "optimizer",
+        "reward",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.4419998042285442e-05,
+       "top1_is_registered_mechanism": false
+      },
+      "rule_template": {
+       "top1": "reward",
+       "ranking": [
+        "reward",
+        "optimizer",
+        "physics",
+        "exploration",
+        "actuator",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 7.053599692881107e-05,
+       "top1_is_registered_mechanism": true
+      },
+      "exhaustive_probes": null
+     }
+    },
+    "correction": {
+     "single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": 5,
+      "recorded": {
+       "path": "single",
+       "key": [
+        "propose",
+        "restore_body_frame_reward",
+        "restart"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 1347,
+       "min": 1347,
+       "max": 1347,
+       "total": 6735
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 174,
+       "min": 174,
+       "max": 175,
+       "total": 871
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.8369634088594466,
+       "min": 1.5434466251172125,
+       "max": 3.839212459977716,
+       "total": 11.208494819002226
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 1521.2,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 1347,
+        "output_tokens": 175,
+        "wall_s": 3.839212459977716,
+        "llm_calls": 1,
+        "record_sha256": "c8e1077a2f56eb7e4c01231c29959fd37c79938e944b5373895147e2319d9e90",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 1347,
+        "output_tokens": 174,
+        "wall_s": 1.8369634088594466,
+        "llm_calls": 1,
+        "record_sha256": "e84e3e2ed1b719a400704193311dc3dd99a440d14c3454f7bf2bbaebb4661521",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 1347,
+        "output_tokens": 174,
+        "wall_s": 1.7879005940631032,
+        "llm_calls": 1,
+        "record_sha256": "4e25d37939d3b5fc27a115a8826cfc633e2ec169ec3e3acafc9e817988ab3355",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 1347,
+        "output_tokens": 174,
+        "wall_s": 1.5434466251172125,
+        "llm_calls": 1,
+        "record_sha256": "a26d0773feeab3277c5f262f80664fbcf728ea562c15e1ae704ad1a4cb4dfbb5",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 1347,
+        "output_tokens": 174,
+        "wall_s": 2.2009717309847474,
+        "llm_calls": 1,
+        "record_sha256": "e5160678a5040357313b5f1c759d29fda83139ac5f8532962f1cec79fbae0570",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       }
+      ]
+     },
+     "nat_v4": null,
+     "deterministic": {
+      "key": [
+       "propose",
+       "restore_body_frame_reward",
+       "restart"
+      ],
+      "same_over_runs": true,
+      "compute_s_mean": 5.479995161294937e-07,
+      "standstill_ratio": 1.0175617401372423
+     }
+    }
+   }
+  },
+  "f2_s2033": {
+   "case": "h06_s2033",
+   "seed": 2033,
+   "role": "demo_v3_1_f2",
+   "mechanism": "actuator",
+   "kinds": {
+    "diagnosis": {
+     "single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": 5,
+      "recorded": {
+       "path": "single",
+       "key": [
+        "continue",
+        "reward"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 2845,
+       "min": 2845,
+       "max": 2845,
+       "total": 14225
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 197,
+       "min": 148,
+       "max": 222,
+       "total": 954
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.839781628921628,
+       "min": 1.5141575811430812,
+       "max": 2.1182408060412854,
+       "total": 9.158360562985763
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 3035.8,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 2845,
+        "output_tokens": 197,
+        "wall_s": 1.839781628921628,
+        "llm_calls": 1,
+        "record_sha256": "8fe8388842d5f62ca7e176ed3a616af64c720234931643edb1bf82e4d700c617",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 2845,
+        "output_tokens": 197,
+        "wall_s": 1.7045243340544403,
+        "llm_calls": 1,
+        "record_sha256": "0cbd170ba142f96c6fd96cde7ebfd5c4f20471c923abf56b27dd79c676aa3aa6",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 2845,
+        "output_tokens": 190,
+        "wall_s": 1.9816562128253281,
+        "llm_calls": 1,
+        "record_sha256": "8d230ff926a68353c7f1ad22c2517db53a25de2e5ea83a45430a5abf6aa5d37d",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 2845,
+        "output_tokens": 148,
+        "wall_s": 1.5141575811430812,
+        "llm_calls": 1,
+        "record_sha256": "043ec714eaadd1d0c85fa4bc85b0360258775895a61ada42f42c26baa252fad8",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 2845,
+        "output_tokens": 222,
+        "wall_s": 2.1182408060412854,
+        "llm_calls": 1,
+        "record_sha256": "90f27ab3ea1dcfc87787107d9a61b8c1e03c8d7734dbb5220dcf417f0ba9f0ce",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       }
+      ],
+      "top1_is_registered_mechanism": 0,
+      "top1_probe_decisions": {
+       "reward · P_reward": 5
+      }
+     },
+     "nat_v4": null,
+     "deterministic": {
+      "rule_prior": {
+       "top1": "reward",
+       "ranking": [
+        "reward",
+        "optimizer",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.1799857020378113e-07,
+       "top1_is_registered_mechanism": false
+      },
+      "rule_features": {
+       "top1": "optimizer",
+       "ranking": [
+        "optimizer",
+        "reward",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.4622001908719539e-05,
+       "top1_is_registered_mechanism": false
+      },
+      "rule_template": {
+       "top1": "optimizer",
+       "ranking": [
+        "optimizer",
+        "reward",
+        "physics",
+        "exploration",
+        "actuator",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 7.114999927580356e-05,
+       "top1_is_registered_mechanism": false
+      },
+      "exhaustive_probes": null
+     }
+    },
+    "correction": {
+     "single": {
+      "counts": {
+       "valid": 3,
+       "invalid": 2,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_motor_torque_speed · restart": 3
+      },
+      "pass_k": {
+       "1": 0.6,
+       "2": 0.3,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.6,
+       "2": 0.3,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "agree_with_recorded": 3,
+      "recorded": {
+       "path": "single",
+       "key": [
+        "propose",
+        "restore_motor_torque_speed",
+        "restart"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 1284,
+       "min": 1284,
+       "max": 1284,
+       "total": 6420
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 157,
+       "min": 157,
+       "max": 165,
+       "total": 793
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.6249234951101243,
+       "min": 1.5475428369827569,
+       "max": 2.32061777706258,
+       "total": 8.7830080462154
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 2404.3333333333335,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 1284,
+        "output_tokens": 157,
+        "wall_s": 2.32061777706258,
+        "llm_calls": 1,
+        "record_sha256": "cb55e4db8ec862aa2f072e593b370ec09342dc0c8172594fb16d0f09d4325d0d",
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 1284,
+        "output_tokens": 157,
+        "wall_s": 1.5475428369827569,
+        "llm_calls": 1,
+        "record_sha256": "8289d44752742ae155a2a478ddfa18b656c15621d012a5267abbd674e44e0958",
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       },
+       {
+        "run": 3,
+        "status": "invalid",
+        "input_tokens": 1284,
+        "output_tokens": 157,
+        "wall_s": 1.5590954239014536,
+        "llm_calls": 1,
+        "record_sha256": "d372babd375be3f71d3ec3bd14c231a0815e22030438fdb0dafffd486755af8a"
+       },
+       {
+        "run": 4,
+        "status": "invalid",
+        "input_tokens": 1284,
+        "output_tokens": 157,
+        "wall_s": 1.6249234951101243,
+        "llm_calls": 1,
+        "record_sha256": "4ac96492ab0cce250ed646310c292738b5bd0941ad7dce79ada86cfb07f58931"
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 1284,
+        "output_tokens": 165,
+        "wall_s": 1.7308285131584853,
+        "llm_calls": 1,
+        "record_sha256": "1f418116b1aad8a6bb28006f3a6d2478c773c85f262b190f7286b9861ccb6257",
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       }
+      ]
+     },
+     "nat_v4": null,
+     "deterministic": {
+      "key": [
+       "propose",
+       "restore_motor_torque_speed",
+       "restart"
+      ],
+      "same_over_runs": true,
+      "compute_s_mean": 1.6999896615743637e-07,
+      "standstill_ratio": 0.8910023966042382
+     }
+    }
+   }
+  },
+  "f1_s2034": {
+   "case": "h02_s2034",
+   "seed": 2034,
+   "role": "demo_v3_1_f1_nat",
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": 5,
+      "recorded": {
+       "path": "nat_v4",
+       "key": [
+        "continue",
+        "reward"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 2848,
+       "min": 2848,
+       "max": 2848,
+       "total": 14240
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 194,
+       "min": 189,
+       "max": 199,
+       "total": 966
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.8964373681228608,
+       "min": 1.6903959731571376,
+       "max": 2.360759731847793,
+       "total": 9.795294938143343
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 3041.2,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 2848,
+        "output_tokens": 194,
+        "wall_s": 2.121218458050862,
+        "llm_calls": 1,
+        "record_sha256": "c0110f7bfe434924c48dcc8f56f4f686f8457d08c40f31416a941bf5b69af3a9",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 2848,
+        "output_tokens": 189,
+        "wall_s": 1.8964373681228608,
+        "llm_calls": 1,
+        "record_sha256": "6ecdf3635f96a68262b8cef2b5585a628cdf53924f8a34d389800e13b1681992",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 2848,
+        "output_tokens": 199,
+        "wall_s": 2.360759731847793,
+        "llm_calls": 1,
+        "record_sha256": "3771a33a71d773f4551e99d44280e522f2b100791737498672bab76d77150b11",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 2848,
+        "output_tokens": 195,
+        "wall_s": 1.6903959731571376,
+        "llm_calls": 1,
+        "record_sha256": "0e44c11ec159b06a2de3933f04a9a82ff1cfd3be736546c25f25c6b4bf90b654",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 2848,
+        "output_tokens": 189,
+        "wall_s": 1.7264834069646895,
+        "llm_calls": 1,
+        "record_sha256": "d287eb9ad8a253b3cfa101293604237a3be3ece308d2df3e95b486c0cbed858b",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       }
+      ],
+      "top1_is_registered_mechanism": 5,
+      "top1_probe_decisions": {
+       "reward · P_reward": 5
+      }
+     },
+     "nat_v4": null,
+     "deterministic": {
+      "rule_prior": {
+       "top1": "reward",
+       "ranking": [
+        "reward",
+        "optimizer",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.239962875843048e-07,
+       "top1_is_registered_mechanism": true
+      },
+      "rule_features": {
+       "top1": "optimizer",
+       "ranking": [
+        "optimizer",
+        "reward",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.5567997470498084e-05,
+       "top1_is_registered_mechanism": false
+      },
+      "rule_template": {
+       "top1": "reward",
+       "ranking": [
+        "reward",
+        "optimizer",
+        "physics",
+        "exploration",
+        "actuator",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 8.455999661237001e-05,
+       "top1_is_registered_mechanism": true
+      },
+      "exhaustive_probes": null
+     }
+    },
+    "correction": {
+     "single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": 5,
+      "recorded": {
+       "path": "nat_v4",
+       "key": [
+        "propose",
+        "restore_body_frame_reward",
+        "restart"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 1323,
+       "min": 1323,
+       "max": 1323,
+       "total": 6615
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 173,
+       "min": 173,
+       "max": 173,
+       "total": 865
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.9123005389701575,
+       "min": 1.8435485779773444,
+       "max": 3.284289513947442,
+       "total": 11.2240438926965
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 1496.0,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 1323,
+        "output_tokens": 173,
+        "wall_s": 3.284289513947442,
+        "llm_calls": 1,
+        "record_sha256": "6145eef264f95de17de1b39b8d6d98337cc1c14f59afdc41cd76f40531e3b3bc",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 1323,
+        "output_tokens": 173,
+        "wall_s": 1.8435485779773444,
+        "llm_calls": 1,
+        "record_sha256": "c586a5aeb5350d45cf808357fb760eda6c620f055ed8eee154f5fead02307c2c",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 1323,
+        "output_tokens": 173,
+        "wall_s": 1.859503781888634,
+        "llm_calls": 1,
+        "record_sha256": "d0d32827c58af67134002a852b0f2cde755f936537fd8396c8e75d593e656c97",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 1323,
+        "output_tokens": 173,
+        "wall_s": 1.9123005389701575,
+        "llm_calls": 1,
+        "record_sha256": "f417c4b5596468d90b99752606fb06d8bbf2ea5e7cf8aa68f086538e6af6c059",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 1323,
+        "output_tokens": 173,
+        "wall_s": 2.324401479912922,
+        "llm_calls": 1,
+        "record_sha256": "86389b0bfd03084675f65e2d589adbeb37874b0c9f2b3fc630bb0c1aba4908e8",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       }
+      ]
+     },
+     "nat_v4": null,
+     "deterministic": {
+      "key": [
+       "propose",
+       "restore_body_frame_reward",
+       "restart"
+      ],
+      "same_over_runs": true,
+      "compute_s_mean": 5.25997020304203e-07,
+      "standstill_ratio": 0.99695823571734
+     }
+    }
+   }
+  },
+  "u1_s2040": {
+   "case": "u1_s2040",
+   "seed": 2040,
+   "role": "demo_u1_upstream",
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "agree_with_recorded": 4,
+      "recorded": {
+       "path": "single",
+       "key": [
+        "continue",
+        "reward"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 2803,
+       "min": 2803,
+       "max": 2803,
+       "total": 14015
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 156,
+       "min": 111,
+       "max": 193,
+       "total": 809
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.6085397321730852,
+       "min": 1.2225170980673283,
+       "max": 2.557198748923838,
+       "total": 8.595392293296754
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 3706.0,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 2803,
+        "output_tokens": 156,
+        "wall_s": 1.6085397321730852,
+        "llm_calls": 1,
+        "record_sha256": "eaf39d765e856058730c2867fe3ec257c2cf6fab2db9f8e98b4e38d773e9f0a5",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 2803,
+        "output_tokens": 193,
+        "wall_s": 1.6846471270546317,
+        "llm_calls": 1,
+        "record_sha256": "42241e24f82d5784dc04159578c17c42ab514f88fbe8318dfa2c59ff7499c8a1",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 2803,
+        "output_tokens": 193,
+        "wall_s": 2.557198748923838,
+        "llm_calls": 1,
+        "record_sha256": "a403c6ca864fc8a63367e36def08c15f878ac9942a71baeb39a49e7266221529",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 4,
+        "status": "invalid",
+        "input_tokens": 2803,
+        "output_tokens": 111,
+        "wall_s": 1.2225170980673283,
+        "llm_calls": 1,
+        "record_sha256": "3fb6c030bc642d3e526216b0d24638077c243bd12b99928b045e4657bbf7f530"
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 2803,
+        "output_tokens": 156,
+        "wall_s": 1.522489587077871,
+        "llm_calls": 1,
+        "record_sha256": "b6f35e1e426849a125973a7a1f98bb521529e0a00a4e840e74738e855aa987d5",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       }
+      ],
+      "top1_is_registered_mechanism": 4,
+      "top1_probe_decisions": {
+       "reward · P_reward": 4
+      }
+     },
+     "nat_v4": null,
+     "deterministic": {
+      "rule_prior": {
+       "top1": "reward",
+       "ranking": [
+        "reward",
+        "optimizer",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.240009441971779e-07,
+       "top1_is_registered_mechanism": true
+      },
+      "rule_features": {
+       "top1": "optimizer",
+       "ranking": [
+        "optimizer",
+        "reward",
+        "physics",
+        "actuator",
+        "exploration",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 1.5787999145686627e-05,
+       "top1_is_registered_mechanism": false
+      },
+      "rule_template": {
+       "top1": "optimizer",
+       "ranking": [
+        "optimizer",
+        "reward",
+        "physics",
+        "exploration",
+        "actuator",
+        "termination"
+       ],
+       "same_over_runs": true,
+       "compute_s_mean": 9.743200149387121e-05,
+       "top1_is_registered_mechanism": false
+      },
+      "exhaustive_probes": null
+     }
+    },
+    "correction": {
+     "single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": 5,
+      "recorded": {
+       "path": "single",
+       "key": [
+        "propose",
+        "restore_body_frame_reward",
+        "restart"
+       ]
+      },
+      "input_tokens": {
+       "n": 5,
+       "median": 1346,
+       "min": 1346,
+       "max": 1346,
+       "total": 6730
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 173,
+       "min": 173,
+       "max": 173,
+       "total": 865
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.9387944650370628,
+       "min": 1.534893224015832,
+       "max": 5.302482791943476,
+       "total": 12.853683068882674
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 1519.0,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 1346,
+        "output_tokens": 173,
+        "wall_s": 1.7211416349746287,
+        "llm_calls": 1,
+        "record_sha256": "e390198ba0bbd9b50a333d9da68b3ce18aa707805a2a9ccbec086d3c51375128",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 1346,
+        "output_tokens": 173,
+        "wall_s": 5.302482791943476,
+        "llm_calls": 1,
+        "record_sha256": "f9dd96dab7a97c60bb313af7a06a50b9c524dab30f70bbafd964673cd4d852b1",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 1346,
+        "output_tokens": 173,
+        "wall_s": 2.356370952911675,
+        "llm_calls": 1,
+        "record_sha256": "9adc708e6dbd456ac44c83f85dbf26e56e383c9b05878052469baf5cc324b484",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 1346,
+        "output_tokens": 173,
+        "wall_s": 1.9387944650370628,
+        "llm_calls": 1,
+        "record_sha256": "acac1fb4e78b2dd7ce2517a9c3cf6cfc52e0eaeb454c08f9197f44c258e5b20b",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 1346,
+        "output_tokens": 173,
+        "wall_s": 1.534893224015832,
+        "llm_calls": 1,
+        "record_sha256": "b066c85500c7dc0453acdb356131bf2664719199499308fdec69e153fe3045d9",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       }
+      ]
+     },
+     "nat_v4": null,
+     "deterministic": {
+      "key": [
+       "propose",
+       "restore_body_frame_reward",
+       "restart"
+      ],
+      "same_over_runs": true,
+      "compute_s_mean": 5.340017378330231e-07,
+      "standstill_ratio": 1.0403000768238857
+     }
+    }
+   }
+  }
+ },
+ "matched_packets": {
+  "h02_s2027/diagnosis": {
+   "single_pass_k": {
+    "1": 0.8,
+    "2": 0.6,
+    "4": 0.2,
+    "5": 0.0
+   },
+   "nat_pass_k": {
+    "1": 0.6,
+    "2": 0.3,
+    "4": 0.0,
+    "5": 0.0
+   }
+  },
+  "f2_s2031/diagnosis": {
+   "single_pass_k": {
+    "1": 0.8,
+    "2": 0.6,
+    "4": 0.2,
+    "5": 0.0
+   },
+   "nat_pass_k": {
+    "1": 1.0,
+    "2": 0.3,
+    "4": 0.0,
+    "5": 0.0
+   }
+  },
+  "f2_s2031/correction": {
+   "single_pass_k": {
+    "1": 0.8,
+    "2": 0.6,
+    "4": 0.2,
+    "5": 0.0
+   },
+   "nat_pass_k": {
+    "1": 1.0,
+    "2": 1.0,
+    "4": 1.0,
+    "5": 1.0
+   }
+  }
+ },
+ "outcomes": {
+  "single/diagnosis": {
+   "stability": "varied",
+   "use": "reconsider",
+   "mean_pass4": 0.6,
+   "mean_pass_k": {
+    "1": 0.9,
+    "2": 0.7999999999999999,
+    "4": 0.6,
+    "5": 0.5
+   },
+   "wording": [
+    "단일 호출 진단: 같은 packet 반복에서 결정이 흔들렸다. 흔들린 packet과 결정 분포를 그대로 공개한다.",
+    "단일 호출 진단: 평균 pass^4가 사전등록 하한 0.8 미만이라 다음 시연 결정 단계에 쓰기 전에 재검토한다."
+   ]
+  },
+  "single/correction": {
+   "stability": "varied",
+   "use": "reconsider",
+   "mean_pass4": 0.64,
+   "mean_pass_k": {
+    "1": 0.8800000000000001,
+    "2": 0.78,
+    "4": 0.64,
+    "5": 0.6
+   },
+   "wording": [
+    "단일 호출 교정: 같은 packet 반복에서 결정이 흔들렸다. 흔들린 packet과 결정 분포를 그대로 공개한다.",
+    "단일 호출 교정: 평균 pass^4가 사전등록 하한 0.8 미만이라 다음 시연 결정 단계에 쓰기 전에 재검토한다."
+   ]
+  },
+  "nat_v4/diagnosis": {
+   "stability": "varied",
+   "use": "reconsider",
+   "mean_pass4": 0.0,
+   "mean_pass_k": {
+    "1": 0.8,
+    "2": 0.3,
+    "4": 0.0,
+    "5": 0.0
+   },
+   "wording": [
+    "NAT v4 진단: 같은 packet 반복에서 결정이 흔들렸다. 흔들린 packet과 결정 분포를 그대로 공개한다.",
+    "NAT v4 진단: 평균 pass^4가 사전등록 하한 0.8 미만이라 다음 시연 결정 단계에 쓰기 전에 재검토한다."
+   ],
+   "seen_before_preregistration": true
+  },
+  "nat_v4/correction": {
+   "stability": "stable",
+   "use": "usable",
+   "mean_pass4": 1.0,
+   "mean_pass_k": {
+    "1": 1.0,
+    "2": 1.0,
+    "4": 1.0,
+    "5": 1.0
+   },
+   "wording": [
+    "NAT v4 교정: 같은 packet을 5회 반복한 결정이 모든 packet에서 유효했고 서로 같았다.",
+    "NAT v4 교정: 평균 pass^4가 사전등록 하한 0.8 이상이라 다음 시연 결정 단계에 계속 쓸 수 있다."
+   ],
+   "seen_before_preregistration": true
+  }
+ },
+ "common_wording": "이미 본 packet(시연·개발 입력)을 같은 모델·temperature 0으로 반복한 개발 측정이다. 반복 일관성은 정확도의 근거가 아니고, 결정적 기준선은 같은 입력에서 늘 같으므로 pass^k가 1이다. NAT 반복은 사전등록 전에 본 E4b v4 기록을 다시 읽었다. 비용은 토큰·벽시계·계산 시간 기록이며 절감 주장이 아니다.",
+ "correction_rule_wording": "교정 packet에는 결정적 규칙의 결과가 실려 있어, 교정 결정과 규칙의 일치를 모델의 독립 판단으로 말하지 않는다."
+}
