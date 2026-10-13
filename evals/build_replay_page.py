@@ -155,6 +155,17 @@ def _fmt_sources(sources: Sources, paths: list[str]) -> list[str]:
     return [sources.file(path)["id"] for path in paths]
 
 
+def media_video(sources: Sources, folder: str) -> dict:
+    """비교 영상은 같은 폴더 source_manifest.json의 mp4 SHA와 맞고 manifest가 확인일 때만 확인으로 둔다."""
+    manifest, manifest_id = sources.load(f"{folder}/source_manifest.json", kind="media_manifest")
+    expected = manifest["comparison"]["mp4"]["sha256"] if manifest else None
+    video = sources.file(f"{folder}/comparison.mp4", kind="video", expected_sha256=expected)
+    if manifest is None:
+        video.update(status="waiting" if sources.rows[manifest_id]["status"] == "waiting" else "mismatch",
+                     reason="media_manifest_not_ready")
+    return video
+
+
 def scene_failure(sources: Sources, slots: dict) -> dict:
     rows = []
     for seed in SEEDS:
@@ -178,18 +189,20 @@ def scene_failure(sources: Sources, slots: dict) -> dict:
                          cell(sources, fault and last(fault, "Train/mean_reward"), fault_id, 1),
                          cell(sources, clean and last(clean, "Train/mean_reward"), clean_id, 1)])
     media = []
-    manifest_path = "docs/media/go2-correction-reward_resume_dev3_20261013/source_manifest.json"
-    manifest, manifest_id = sources.load(manifest_path, kind="media_manifest")
-    expected = manifest["comparison"]["mp4"]["sha256"] if manifest else None
-    video = sources.file("docs/media/go2-correction-reward_resume_dev3_20261013/comparison.mp4", kind="video",
-                         expected_sha256=expected)
-    if manifest is None:
-        video.update(status="waiting" if sources.rows[manifest_id]["status"] == "waiting" else "mismatch",
-                     reason="media_manifest_not_ready")
+    video = media_video(sources, "docs/media/go2-correction-reward_resume_dev3_20261013")
     media.append({"label": "seed 2027 · 이전 / v3 교정 이어 학습 / 대조", "source": video["id"]})
+    v4_videos = []
     for tag in slots["v4_tags"]:
-        media.append({"label": f"{tag} · 회복 방식 비교 영상",
-                      "source": sources.file(f"docs/media/go2-correction-{tag}/comparison.mp4", kind="video")["id"]})
+        v4_videos.append(media_video(sources, f"docs/media/go2-correction-{tag}")["id"])
+        seed = re.search(r"_s(\d{4})_", tag)
+        media.append({"label": f"seed {seed[1] if seed else tag} · 회복 방식 여섯 정책을 같은 Play 조건으로 재생",
+                      "source": v4_videos[-1]})
+    notes = ["standstill_ratio는 선속도 RMSE를 제자리 정책 RMSE로 나눈 값이다. 1에 가까우면 명령 추종이 없다는 뜻이며 정지 자체를 증명하지 않는다.",
+             "이미 본 seed의 합성 결함 개발 사례다. 실제 사용자 실패의 해결을 뜻하지 않는다."]
+    if v4_videos and all(sources.ready(source) for source in v4_videos):
+        notes.append("v4 영상 4.5초 지점: F1 이전·고쳐서 이어 학습·std 재설정 정책은 출발점 근처에서 몸을 낮춘 채 머물고, "
+                     "처음부터 재학습·정상 이어 학습·정상 원본 정책은 걸어서 멀어진다. 재생 한 번의 관찰이며 영상은 "
+                     "판정 근거가 아니다. 판정은 고정 평가 수치로 한다.")
     return {
         "id": "failure", "title": "실패 입력: 에피소드는 버티지만 명령을 따르지 않는다",
         "lead": "보상 좌표 결함(F1)을 넣고 300회 학습한 Go2 정책이다. 고정 평가 26조건에서 선속도 오차가 제자리 정책과 같은 수준이다.",
@@ -201,8 +214,7 @@ def scene_failure(sources: Sources, slots: dict) -> dict:
              "columns": ["seed", "F1 에피소드 길이", "F1 총보상", "정상 총보상"], "rows": training},
             {"type": "video", "items": media},
         ],
-        "notes": ["standstill_ratio는 선속도 RMSE를 제자리 정책 RMSE로 나눈 값이다. 1에 가까우면 명령 추종이 없다는 뜻이며 정지 자체를 증명하지 않는다.",
-                  "이미 본 seed의 합성 결함 개발 사례다. 실제 사용자 실패의 해결을 뜻하지 않는다."],
+        "notes": notes,
     }
 
 
@@ -312,7 +324,7 @@ def scene_probe(sources: Sources, slots: dict) -> dict:
                     value = f"{state} · 검사 {found['probes_used']}개"
                 row.append({"value": value, "source": order_id, "digits": None})
             order_rows.append(row)
-    end_to_end = sources.file(slots.get("end_to_end"), kind="end_to_end")
+    import replay_demo_slots as DS
     return {
         "id": "probe", "title": "다음 검사 하나: 보상 좌표 재계산(P_reward)",
         "lead": "기록된 상태로 선속도 추종 보상을 몸체 좌표와 월드 좌표에서 다시 계산한다. 두 값의 상대 차이가 F1 정책에서만 크게 나타난다.",
@@ -323,8 +335,7 @@ def scene_probe(sources: Sources, slots: dict) -> dict:
              "columns": ["검사 순서", "seed 2026", "seed 2027", "seed 2028"], "rows": order_rows},
             {"type": "table", "title": "이미 본 8개 사례의 고리 실행 기록(캐시된 순위, 새 모델 호출 없음)",
              "columns": ["항목", "값"], "rows": loop_rows, "status_sources": [loop_id]},
-            {"type": "slot", "label": "종단 시연: 새 Nemotron 호출 → 사람 승인 → 1회 소비 → Isaac 실행 → receipt",
-             "source": end_to_end["id"]},
+            *DS.end_to_end_blocks(sources, slots.get("end_to_end")),
         ],
         "notes": ["probe 작성자와 결함 작성자가 같아 고리 동작 확인으로만 쓴다. F1에서는 네 검사 순서 모두 보상 결함으로 확정했고 차이는 검사 수뿐이다.",
                   "수용 조건이 모두 충족되지 않은 기록은 그대로 표시한다."],
@@ -341,7 +352,7 @@ def scene_correction(sources: Sources, slots: dict) -> dict:
         ["규칙 근거", {"value": protocol["recovery_mode_rule"]["derived_from"], "source": protocol_id, "digits": None}],
         ["std 재설정 값", cell(sources, protocol["resume_inputs"]["init_noise_std"], protocol_id, 1)],
     ]
-    proposal = sources.file(slots.get("correction_proposal"), kind="correction_proposal")
+    import replay_demo_slots as DS
     return {
         "id": "correction", "title": "교정 제안: 등록된 교정 하나만 바꾼다",
         "lead": "결함 범주마다 미리 등록한 교정 중 하나를 고르고 다른 표적은 바꾸지 않는다. 회복 방식은 실행 전에 등록한 규칙으로 권고한다.",
@@ -350,7 +361,7 @@ def scene_correction(sources: Sources, slots: dict) -> dict:
              "status_sources": [protocol_id]},
             {"type": "table", "title": "사전등록 규칙(v4 프로토콜)", "columns": ["항목", "내용"], "rows": rule,
              "status_sources": [protocol_id]},
-            {"type": "slot", "wide": True, "label": "교정 제안 기록: 모델 제안 · 결정적 규칙 · 체크리스트", "source": proposal["id"]},
+            *DS.correction_proposal_blocks(sources, slots.get("correction_proposal")),
         ],
         "notes": ["규칙은 seed 2027 단일 관찰에서 만들었고 v4 결과로 적중 여부만 기록한다."],
     }
@@ -455,7 +466,7 @@ def scene_nvidia(sources: Sources) -> dict:
          "evals/results/p1a_probes_holdout_20261009/probes/h02_s2026.json"),
         ("OpenShell", "분석 코드의 파일·네트워크 권한 경계", "샌드박스 검사 기록",
          "evals/results/sandbox_kernel_tests.txt"),
-        ("애플리케이션 원장", "사람 승인 · 1회 소비 · receipt", "실행 기록",
+        ("애플리케이션 원장", "승인 · 1회 소비 · receipt", "실행 기록",
          "evals/results/live_loop_20261009/summary_v2.json"),
     ]
     rows = [[name, job, kind, {"value": "근거 파일", "source": sources.file(path)["id"], "digits": None}]
@@ -468,7 +479,7 @@ def scene_nvidia(sources: Sources) -> dict:
     ]
     return {
         "id": "nvidia", "title": "NVIDIA 기술의 역할",
-        "lead": "각 구성이 맡는 일과 그 근거 파일의 종류를 구분한다. 사람 승인과 1회 소비는 OpenShell이 아니라 애플리케이션 원장이 맡는다.",
+        "lead": "각 구성이 맡는 일과 그 근거 파일의 종류를 구분한다. 승인과 1회 소비는 OpenShell이 아니라 애플리케이션 원장이 맡는다.",
         "blocks": [
             {"type": "table", "wide": True, "title": "구성별 역할", "columns": ["구성", "하는 일", "근거 종류", "근거"], "rows": rows},
             {"type": "table", "wide": True, "title": "Isaac Lab 공식 스킬 isaaclab-debugging-rl-training(experimental) 항목과의 대응",

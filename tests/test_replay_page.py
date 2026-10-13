@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 from pathlib import Path
 import shutil
@@ -77,6 +78,27 @@ def test_bundle_requires_commit_and_publisher_replay(repo):
     assert B.Sources(repo).bundle("bundle", broken, kind="public_bundle_v4")[0]["status"] == "mismatch"
 
 
+def test_media_video_is_ready_only_when_bound_to_its_committed_manifest(repo):
+    folder = "docs/media/go2-x"
+    (repo / folder).mkdir(parents=True)
+    (repo / folder / "comparison.mp4").write_bytes(b"video")
+    digest = hashlib.sha256(b"video").hexdigest()
+    (repo / folder / "source_manifest.json").write_text(json.dumps({"comparison": {"mp4": {"sha256": digest}}}),
+                                                        encoding="utf-8")
+    assert B.media_video(B.Sources(repo), folder)["reason"] == "media_manifest_not_ready"
+    _git(repo, "add", f"{folder}/comparison.mp4", f"{folder}/source_manifest.json")
+    _git(repo, "commit", "-q", "-m", "media")
+    sources = B.Sources(repo)
+    video = B.media_video(sources, folder)
+    assert (video["status"], video["sha256"]) == ("ready", digest)
+    assert sources.rows[f"{folder}/source_manifest.json"]["kind"] == "media_manifest"
+    (repo / folder / "source_manifest.json").write_text(json.dumps({"comparison": {"mp4": {"sha256": "0" * 64}}}),
+                                                        encoding="utf-8")
+    _git(repo, "commit", "-q", "-am", "other manifest")
+    assert (B.media_video(B.Sources(repo), folder)["status"], B.media_video(B.Sources(repo), folder)["reason"]) == (
+        "mismatch", "sha_mismatch")
+
+
 def test_cell_withholds_numbers_from_unapproved_sources(repo):
     sources = B.Sources(repo)
     ready, waiting = sources.file("a.json")["id"], sources.file("missing.json")["id"]
@@ -133,6 +155,9 @@ def test_build_from_repository_is_publishable_and_never_mismatched(built):
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
         assert statuses[f"evals/results/{tag}"] == "ready"
     assert all(not row["path"] or not Path(row["path"]).is_absolute() for row in data["sources"].values())
+    for tag in ("reward_resume_dev3_20261013", *B._read(ROOT / B.SLOTS)["v4_tags"]):
+        assert statuses[f"docs/media/go2-correction-{tag}/source_manifest.json"] == "ready"
+        assert statuses[f"docs/media/go2-correction-{tag}/comparison.mp4"] == "ready"
     failure = data["scenes"][0]["blocks"][0]["rows"]
     assert failure[0][3]["value"] == pytest.approx(0.996710572588678)
     B.check_public(data)

@@ -201,11 +201,11 @@ window.REPLAY_DATA = {
        "source": "docs/media/go2-correction-reward_resume_dev3_20261013/comparison.mp4"
       },
       {
-       "label": "reward_v4_s2026_20261013 · 회복 방식 비교 영상",
+       "label": "seed 2026 · 회복 방식 여섯 정책을 같은 Play 조건으로 재생",
        "source": "docs/media/go2-correction-reward_v4_s2026_20261013/comparison.mp4"
       },
       {
-       "label": "reward_v4_s2028_20261013 · 회복 방식 비교 영상",
+       "label": "seed 2028 · 회복 방식 여섯 정책을 같은 Play 조건으로 재생",
        "source": "docs/media/go2-correction-reward_v4_s2028_20261013/comparison.mp4"
       }
      ]
@@ -213,7 +213,8 @@ window.REPLAY_DATA = {
    ],
    "notes": [
     "standstill_ratio는 선속도 RMSE를 제자리 정책 RMSE로 나눈 값이다. 1에 가까우면 명령 추종이 없다는 뜻이며 정지 자체를 증명하지 않는다.",
-    "이미 본 seed의 합성 결함 개발 사례다. 실제 사용자 실패의 해결을 뜻하지 않는다."
+    "이미 본 seed의 합성 결함 개발 사례다. 실제 사용자 실패의 해결을 뜻하지 않는다.",
+    "v4 영상 4.5초 지점: F1 이전·고쳐서 이어 학습·std 재설정 정책은 출발점 근처에서 몸을 낮춘 채 머물고, 처음부터 재학습·정상 이어 학습·정상 원본 정책은 걸어서 멀어진다. 재생 한 번의 관찰이며 영상은 판정 근거가 아니다. 판정은 고정 평가 수치로 한다."
    ],
    "number": 1
   },
@@ -7728,7 +7729,7 @@ window.REPLAY_DATA = {
     },
     {
      "type": "slot",
-     "label": "종단 시연: 새 Nemotron 호출 → 사람 승인 → 1회 소비 → Isaac 실행 → receipt",
+     "label": "종단 시연: 새 Nemotron 호출 → 승인 → 1회 소비 → Isaac 실행 → receipt",
      "source": "slot:end_to_end"
     }
    ],
@@ -8361,7 +8362,7 @@ window.REPLAY_DATA = {
   {
    "id": "nvidia",
    "title": "NVIDIA 기술의 역할",
-   "lead": "각 구성이 맡는 일과 그 근거 파일의 종류를 구분한다. 사람 승인과 1회 소비는 OpenShell이 아니라 애플리케이션 원장이 맡는다.",
+   "lead": "각 구성이 맡는 일과 그 근거 파일의 종류를 구분한다. 승인과 1회 소비는 OpenShell이 아니라 애플리케이션 원장이 맡는다.",
    "blocks": [
     {
      "type": "table",
@@ -8416,7 +8417,7 @@ window.REPLAY_DATA = {
       ],
       [
        "애플리케이션 원장",
-       "사람 승인 · 1회 소비 · receipt",
+       "승인 · 1회 소비 · receipt",
        "실행 기록",
        {
         "value": "근거 파일",
@@ -8672,21 +8673,37 @@ window.REPLAY_DATA = {
    "status": "ready",
    "reason": null
   },
+  "docs/media/go2-correction-reward_v4_s2026_20261013/source_manifest.json": {
+   "id": "docs/media/go2-correction-reward_v4_s2026_20261013/source_manifest.json",
+   "path": "docs/media/go2-correction-reward_v4_s2026_20261013/source_manifest.json",
+   "kind": "media_manifest",
+   "sha256": "9ead6de8d2ea3b76c06d4499ab11563c81c2ec44f24aff2a7340406e6504e6af",
+   "status": "ready",
+   "reason": null
+  },
   "docs/media/go2-correction-reward_v4_s2026_20261013/comparison.mp4": {
    "id": "docs/media/go2-correction-reward_v4_s2026_20261013/comparison.mp4",
    "path": "docs/media/go2-correction-reward_v4_s2026_20261013/comparison.mp4",
    "kind": "video",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "missing"
+   "sha256": "6337bb70ceb8c5f69c93f37b5548a300df5d3a633dec1f15a813dc6ff18307fb",
+   "status": "ready",
+   "reason": null
+  },
+  "docs/media/go2-correction-reward_v4_s2028_20261013/source_manifest.json": {
+   "id": "docs/media/go2-correction-reward_v4_s2028_20261013/source_manifest.json",
+   "path": "docs/media/go2-correction-reward_v4_s2028_20261013/source_manifest.json",
+   "kind": "media_manifest",
+   "sha256": "b0721b6ddd67a940b4be6044934931630208aac7e26298217b7e8364f6c596a5",
+   "status": "ready",
+   "reason": null
   },
   "docs/media/go2-correction-reward_v4_s2028_20261013/comparison.mp4": {
    "id": "docs/media/go2-correction-reward_v4_s2028_20261013/comparison.mp4",
    "path": "docs/media/go2-correction-reward_v4_s2028_20261013/comparison.mp4",
    "kind": "video",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "missing"
+   "sha256": "1c5d1b2ab6ab9dd478e69bc618f7d9bdeb501b36aaeffd093b0189088f5e0f00",
+   "status": "ready",
+   "reason": null
   },
   "bench/answer_key_p0c.json": {
    "id": "bench/answer_key_p0c.json",
