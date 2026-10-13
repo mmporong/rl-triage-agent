@@ -1,0 +1,251 @@
+{
+  "schema": "e2e_reward_demo_result_v2",
+  "tag": "e2e_reward_s2030_20261013",
+  "seed": 2030,
+  "case": "h02_s2030",
+  "outcome": "recovered",
+  "demo_success": true,
+  "success_conditions": {
+    "protocol_committed": true,
+    "seed_unused": true,
+    "source_failure_present": true,
+    "fresh_diagnosis_call": true,
+    "first_probe_from_model": true,
+    "probes_approved_consumed_once": true,
+    "loop_confirmed_reward": true,
+    "correction_call_accepted": true,
+    "correction_approved_consumed_once": true,
+    "restart_recovered": true,
+    "costs_recorded": true
+  },
+  "unmet_conditions": [],
+  "wording": "새 Nemotron 판단으로 시작한 승인된 검사가 보상 결함을 확정했고, 승인된 restart 교정 정책이 같은 seed 정상 정책 대비 고정 행동 허용 범위를 통과했다.",
+  "common_wording": "새 seed 2030의 합성 보상 결함 1건을 끝까지 연결한 통합 시연이다. 결함과 probe는 같은 설계자가 만들었고, 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다.",
+  "steps_sha256": {
+    "begin": "9351584f1231429f57cbdb8171deaf635284b7ba1e3cdfabb099042e22133b1f",
+    "train_NONE": "3f0da4b411361c6cbd5d1a4770f025d8d71ed13678ad5f1d24c9ede866c2aeac",
+    "train_F1": "7aea372a21944c5f93497ca1a25207ecdf04c4bbbe64645eee561cff1d770cc3",
+    "alarm": "3c5cb5d0c6380459658127d571ee80f369165a8a62fd7b62e7f8292c0f754272",
+    "evaluate": "742526a8f2d2bea37d1910a3f42fae847cae4c516c111aa2e8f14c1c402aaced",
+    "reference": "a1387793d77da9be732436e46b47771c4c163b21d7f9eb6d615882b59fb7a55e",
+    "packet": "04e586c5cfeb2a5ad12226d4d1a6794aeadcdd0afb5f7d0731df075eba8284d2",
+    "loop_start": "e29841daaf1a1118874990f1bad21b83c9f98e64b485bfa07fd09064b362ff86",
+    "loop_close": "75e03210b68efa143499ea37aee4fb47363cfde101da46387474cd854fb28593",
+    "correction": "4f6fa94fd98d439f3bfde635ee3720cc5a50158612b8e670a39db023db8de9ff"
+  },
+  "terminal": null,
+  "protocol_sha256_lf": "b6b86b0418cb5e28c29b58ee3a00c0023e5def6c59803a22e56692cf48411418",
+  "source_commit_sha": [
+    "8eade585f90aadbcffc3e7e82fdb63eeca90a72f"
+  ],
+  "predictions": {
+    "source_failure": "F1이 같은 seed NONE 대비 unhealthy이고 standstill_ratio ≥ 0.9",
+    "alarm": "R1이 F1에 울리고 NONE에는 울리지 않는다(첫 경고 iteration은 예측하지 않는다)",
+    "diagnosis": "첫 판단 action=continue, 상위 3가설에 reward 포함",
+    "loop": "P_reward abnormal 뒤 reward 확정(예산 4 이내)",
+    "correction_rule": "reward·standstill_ratio ≥ 0.9 → restart",
+    "restart": "seed 3030 restart 교정 정책 recovered",
+    "basis": "seed 2026~2029 P0-C·v3·v4·v1 시연 개발 관찰. v4 seed 2026·2028 restart의 회복은 같은 seed 재현이라 자명했다. v1 seed 2029의 restart(seed 3029)는 학습이 자연 종료했지만 소스 검증 거부로 판정이 없었고(correction_unknown), 프로토콜 밖 사후 보조 측정에서만 허용 범위 안이었다(판정 아님). 다른 seed 재학습의 회복은 사전등록 판정으로는 이번에 처음 잰다. 예측 적중은 성공 조건과 따로 기록한다"
+  },
+  "prediction_results": {
+    "source_failure": true,
+    "alarm": true,
+    "diagnosis": true,
+    "loop": true,
+    "correction_rule": true,
+    "restart": true
+  },
+  "approver_identity_attested": false,
+  "training_parent_wall_s": {
+    "NONE": 639.0,
+    "F1": 512.9
+  },
+  "alarm": {
+    "NONE": {
+      "warned": false,
+      "alert_iterations": [],
+      "first_alert_iteration": null,
+      "qualifying_iteration_count": 0,
+      "iterations": 300
+    },
+    "F1": {
+      "warned": true,
+      "alert_iterations": [
+        135
+      ],
+      "first_alert_iteration": 135,
+      "qualifying_iteration_count": 174,
+      "iterations": 300
+    }
+  },
+  "evaluation": {
+    "gate": {
+      "none_walks": true,
+      "fault_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "standstill_ratio": {
+        "NONE": 0.12470356740499845,
+        "F1": 1.0175617401372423
+      },
+      "outcome": "failure_present"
+    },
+    "reports": {
+      "NONE": {
+        "path": "evals/results/e2e_reward_s2030_20261013/runs/baseline_p0c_s2030.json",
+        "sha256_lf": "7e71bb6622c23b85965b048eaec68987d3b4ba83e0176db02d9a1f0dc992b5f1"
+      },
+      "F1": {
+        "path": "evals/results/e2e_reward_s2030_20261013/runs/h02_s2030.json",
+        "sha256_lf": "4a778074b843b646cba3f6b45a9f15c83d5454bacba7cce04a065780510ba4c0"
+      }
+    }
+  },
+  "reference_parent_wall_s": 87.9,
+  "diagnosis": {
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "No observations yet; start with lowest-cost probe that isolates reward mechanism.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 11.35914061864217
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 34.07913824717204
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    },
+    "started": {
+      "hypotheses": [
+        "reward",
+        "actuator",
+        "exploration"
+      ],
+      "model_probe": "P_reward",
+      "rule_probe": "P_noise",
+      "proposed_probe": "P_reward",
+      "model_probe_used": true,
+      "request_id": "d22f3fc90eb2",
+      "prereg_digest": "520487f16c4ef1a45399e3c9daa25bca3b6bb3e17d3405b0ad7d95b3974c4d8a"
+    },
+    "call": {
+      "response_id": "chatcmpl-da97213d-5b4e-4257-b6bd-6108ed9dc4ce",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "input_tokens": 2829,
+      "output_tokens": 185,
+      "total_tokens": 3014,
+      "execution_wall_s": 2.490539912134409
+    }
+  },
+  "loop": {
+    "status": "confirmed",
+    "hypotheses": [
+      "reward"
+    ],
+    "observed": {
+      "P_reward": "abnormal"
+    },
+    "requests": [
+      {
+        "request_id": "d22f3fc90eb2",
+        "probe": "P_reward",
+        "state": "done",
+        "approver": "claude_operator_user_authorized",
+        "outcome": "abnormal",
+        "measurement": {
+          "track_lin_vel_xy_exp_rel_error": 0.35775922700762747,
+          "track_ang_vel_z_exp_rel_error": 1.6728694522960553e-08
+        },
+        "gpu_s": 19.5,
+        "artifact": {
+          "probe": "evals/results/e2e_reward_s2030_20261013_loop/probes/h02_s2030__P_reward.json",
+          "execution": "evals/results/e2e_reward_s2030_20261013_loop/execution/h02_s2030__P_reward.json"
+        }
+      }
+    ],
+    "probe_costs": [
+      {
+        "probe": "P_reward",
+        "gpu_wall_s": 19.5,
+        "cpu_s": 25.921875,
+        "simulator_steps": 51200
+      }
+    ]
+  },
+  "correction": {
+    "request_id": "99207d20248c",
+    "model_proposal": {
+      "accepted": true,
+      "decision": "propose",
+      "agrees_with_rule": true,
+      "reasons": [],
+      "unmet_checklist": [],
+      "rule_visible_to_model": true
+    },
+    "call": {
+      "response_id": "chatcmpl-6a32518f-135c-4738-a0eb-49f4efa4e10c",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "input_tokens": 1347,
+      "output_tokens": 174,
+      "total_tokens": 1521,
+      "execution_wall_s": 1.94650052418001
+    },
+    "receipt": {
+      "at": "2026-10-13T04:27:59+00:00",
+      "event": "receipt",
+      "request_id": "99207d20248c",
+      "tag": "e2e_reward_s2030_20261013_fix",
+      "verdict": "recovered",
+      "result_sha": "d7ac5f7553eda7743ba1e4b7b19e6e43b220137b102d5ee3d5ecdcfa10ccb9c1",
+      "gpu_s": 557.2,
+      "exit_code": 0,
+      "over_budget": false
+    },
+    "result": {
+      "label": "recovered",
+      "verdict": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "standstill_ratio": 0.12544545755336192,
+      "costs": {
+        "train_parent_wall_s": 508.8120000001509,
+        "eval_parent_wall_s": 48.375
+      }
+    }
+  }
+}
