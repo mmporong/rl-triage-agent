@@ -1,0 +1,207 @@
+{
+ "schema": "d3_harmless_smoke_result_v1",
+ "tag": "d3_harmless_smoke_20261014_s2027",
+ "seed": 2027,
+ "changes": [
+  "H1",
+  "H2",
+  "H3",
+  "H4",
+  "H5",
+  "H6",
+  "H7"
+ ],
+ "attempt": 1,
+ "run_name": "d3_harmless_v1_s2027",
+ "retry_of": null,
+ "resumed_from": null,
+ "source_commit_sha": "113ac1d5aac2e9bd58e878690f5777485221e6b7",
+ "training_source_commit_sha": "113ac1d5aac2e9bd58e878690f5777485221e6b7",
+ "commits_seen": [
+  "113ac1d5aac2e9bd58e878690f5777485221e6b7"
+ ],
+ "protocol_sha256_lf": "3f6b4ca5f8b54560e9c34a7e1f5c0587d1388a22ef68c8831d59ff3d215e5354",
+ "reference_run": "baseline_p0c_s2027",
+ "checks": {
+  "pipeline_completed": true,
+  "training_exit_zero": true,
+  "final_checkpoint_present": true,
+  "injection_readback": true,
+  "params_overrides_applied": true,
+  "params_otherwise_match": true,
+  "reference_walks": true,
+  "fixed_report_valid": true,
+  "runtime_matches_reference": true,
+  "verdict_determined": true
+ },
+ "failed_checks": [],
+ "verdict": {
+  "label": "healthy",
+  "failed": [],
+  "short_horizon": false,
+  "checks": {
+   "survival_ratio": true,
+   "fall_frac": true,
+   "err_xy_ratio": true,
+   "err_yaw_ratio": true
+  }
+ },
+ "behavior": {
+  "survival_s": 20.0,
+  "horizon_s": 20.0,
+  "fall_frac": 0.0,
+  "err_xy": 0.15925374677800228,
+  "err_yaw": 0.22978869823315012
+ },
+ "comparison": {
+  "survival_ratio": 1.0,
+  "fall_frac": 0.0,
+  "err_xy_ratio": 1.0895551786147135,
+  "err_yaw_ratio": 0.7829614435984426,
+  "horizon_ratio": 1.0
+ },
+ "margins": {
+  "err_xy_ratio": false,
+  "err_yaw_ratio": true,
+  "fall_frac": true
+ },
+ "standstill_ratio": 0.13533966040563294,
+ "outcome": "harmless_fail",
+ "invalid_cause": null,
+ "prediction": "harmless_pass",
+ "prediction_match": false,
+ "failure": null,
+ "train_exit_code": 0,
+ "params_differences": {
+  "agent.yaml:algorithm.entropy_coef": [
+   0.01,
+   0.008
+  ],
+  "agent.yaml:run_name": [
+   "baseline_p0c_s2027",
+   "d3_harmless_v1_s2027"
+  ],
+  "env.yaml:observations.policy.joint_vel.noise.n_max": [
+   1.5,
+   1.2
+  ],
+  "env.yaml:observations.policy.joint_vel.noise.n_min": [
+   -1.5,
+   -1.2
+  ],
+  "env.yaml:rewards.track_lin_vel_xy_exp.weight": [
+   1.5,
+   1.4
+  ],
+  "env.yaml:scene.robot.actuators.base_legs.effort_limit": [
+   23.5,
+   23.7
+  ],
+  "env.yaml:scene.robot.actuators.base_legs.saturation_effort": [
+   23.5,
+   23.7
+  ]
+ },
+ "readback": {
+  "changes": [
+   "H1",
+   "H2",
+   "H3",
+   "H4",
+   "H5",
+   "H6",
+   "H7"
+  ],
+  "code": {
+   "H1": {
+    "flat_orientation_l2": {
+     "swapped": true,
+     "bound": true
+    }
+   },
+   "H3": {
+    "feet_air_time": {
+     "swapped": true,
+     "bound": true
+    }
+   },
+   "H6": {
+    "RewardManager.__str__": {
+     "swapped": true,
+     "bound": true
+    }
+   }
+  },
+  "config": {
+   "H2": {
+    "env.rewards.track_lin_vel_xy_exp.weight": true
+   },
+   "H4": {
+    "env.scene.robot.actuators.base_legs.effort_limit": true,
+    "env.scene.robot.actuators.base_legs.saturation_effort": true
+   },
+   "H5": {
+    "env.observations.policy.joint_vel.noise.n_min": true,
+    "env.observations.policy.joint_vel.noise.n_max": true
+   },
+   "H7": {
+    "agent.algorithm.entropy_coef": "params"
+   }
+  },
+  "ok": true
+ },
+ "telemetry_sha256": "ff1e85dfbe53d790595c90073c04b4e72aebde12c24de77d69956b371eca5a97",
+ "telemetry_summary": {
+  "Episode_Reward/lin_vel_z_l2": {
+   "first": -0.013882,
+   "last": -0.025972,
+   "min": -0.055292,
+   "max": -0.013882,
+   "nonfinite": 0
+  },
+  "Episode_Reward/ang_vel_xy_l2": {
+   "first": -0.007443,
+   "last": -0.056625,
+   "min": -0.346322,
+   "max": -0.007443,
+   "nonfinite": 0
+  },
+  "Episode_Reward/track_lin_vel_xy_exp": {
+   "first": 0.003432,
+   "last": 1.324924,
+   "min": 0.003432,
+   "max": 1.325475,
+   "nonfinite": 0
+  },
+  "Episode_Reward/track_ang_vel_z_exp": {
+   "first": 0.002996,
+   "last": 0.652652,
+   "min": 0.002996,
+   "max": 0.65266,
+   "nonfinite": 0
+  },
+  "Metrics/base_velocity/error_vel_xy": {
+   "first": 0.018103,
+   "last": 0.198003,
+   "min": 0.018103,
+   "max": 1.5395,
+   "nonfinite": 0
+  },
+  "Train/mean_episode_length": {
+   "first": 13.822917,
+   "last": 1000.0,
+   "min": 13.822917,
+   "max": 1000.0,
+   "nonfinite": 0
+  }
+ },
+ "checkpoint_sha256": "ac99e316d38bad3d5f981a5904afa1b443b1dabbd5322eb34030399ee3a2d073",
+ "parent_wall_s": {
+  "train_s": 492.6,
+  "telemetry_extract_s": 1.2,
+  "fixed_eval_s": 48.2
+ },
+ "parent_wall_scope": "부모 프로세스 벽시계(초). GPU 커널 시간이나 절감량이 아니다",
+ "scope": "D3 본실험 사전등록 전 무해 목록 확정을 위한 거르기. 변경 하나하나의 무해성·변경 간 상호작용·새 seed에서의 무해성·진단 성능·방법 비교가 아니다",
+ "model_calls": 0
+}
