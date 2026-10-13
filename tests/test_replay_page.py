@@ -148,9 +148,9 @@ def test_path_checker_rejects_private_or_network_references(text):
 
 def test_build_from_repository_is_publishable_and_never_mismatched(built):
     data = built
-    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 11))
+    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 12))
     assert [scene["id"] for scene in data["scenes"]] == [
-        "failure", "curves", "warning", "probe", "correction", "recovery", "motor", "hold", "nvidia", "cost"]
+        "failure", "curves", "warning", "probe", "correction", "demo", "recovery", "motor", "hold", "nvidia", "cost"]
     statuses = {key: row["status"] for key, row in data["sources"].items()}
     assert "mismatch" not in statuses.values()
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
@@ -175,7 +175,8 @@ def test_check_public_rejects_injected_claim_or_path(built):
     with pytest.raises(ValueError, match="not publishable"):
         B.check_public(leaked)
     worded = copy.deepcopy(data)  # 상태 단어가 장면 문구에 있으면 근거가 모두 확인돼도 "대기"가 화면에 남는다
-    worded["scenes"][8]["blocks"][0]["rows"][0][1] = "대기 요청을 보여 준다"
+    nvidia = next(scene for scene in worded["scenes"] if scene["id"] == "nvidia")
+    nvidia["blocks"][0]["rows"][0][1] = "대기 요청을 보여 준다"
     with pytest.raises(ValueError, match="status word"):
         B.check_public(worded)
 
@@ -228,15 +229,40 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
                                    check=True, capture_output=True, text=True, encoding="utf-8")
         outputs[name] = json.loads(completed.stdout)
     clean = outputs["clean"]
-    assert len(clean) == 10 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
+    assert len(clean) == 11 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
     assert "<svg" in clean[1] and "polyline" in clean[1]
-    assert [index for index, html in enumerate(clean) if 'class="blocks dense"' in html] == [5, 8]
+    dense = [scene["id"] for scene, html in zip(data["scenes"], clean, strict=True) if 'class="blocks dense"' in html]
+    assert dense == ["correction", "demo", "recovery", "nvidia", "cost"]
     for scene, html in zip(data["scenes"], clean):
         statuses = {data["sources"][source]["status"] for source in _scene_sources(scene)}
         assert ("waiting" in statuses) == ("대기" in html), scene["id"]
         assert ("mismatch" in statuses) == ("불일치" in html), scene["id"]
     assert "../../evals/results/p0c_fixed_eval_20261009/runs/h02_s2026.json" in clean[0]
     assert '<span class="pending mismatch">불일치</span>' in outputs["tampered"][0]
+
+
+def test_demo_scene_puts_both_demos_side_by_side_and_costs_in_the_last_scene(built):
+    scenes = {scene["id"]: scene for scene in built["scenes"]}
+    slots = B._read(ROOT / B.SLOTS)
+    demo = scenes["demo"]["blocks"]
+    assert [block["type"] for block in demo] == ["table", "table"]
+    assert demo[0]["status_sources"] == [slots["end_to_end"]] and demo[1]["status_sources"] == [slots["motor_end_to_end"]]
+    assert all("seed" in block["title"] and not block.get("wide") for block in demo)
+    proposals = [block for block in scenes["correction"]["blocks"] if block["title"].startswith("교정 제안 기록")]
+    assert [block["status_sources"][0] for block in proposals] == [slots["correction_proposal"],
+                                                                  slots["motor_correction_proposal"]]
+    assert not any(block.get("wide") for block in proposals)
+    costs = [block for block in scenes["cost"]["blocks"] if block.get("title", "").startswith("종단 시연 비용")]
+    assert len(costs) == 1 and [row[1]["source"] for row in costs[0]["rows"]] == [slots["end_to_end"], slots["motor_end_to_end"]]
+    assert not any("종단 시연" in block.get("title", "") for block in scenes["probe"]["blocks"])
+
+
+def test_demo_scene_keeps_a_waiting_slot_until_the_motor_result_is_set():
+    sources = B.Sources(ROOT)
+    slots = {**B._read(ROOT / B.SLOTS), "motor_end_to_end": None}
+    blocks = B.scene_demo(sources, slots)["blocks"]
+    assert [block["type"] for block in blocks] == ["table", "slot"]
+    assert blocks[1]["source"] == "slot:motor_end_to_end" and sources.rows["slot:motor_end_to_end"]["status"] == "waiting"
 
 
 def _motor_replay(seed: int, label: str = "not_recovered", curve: str = "complete") -> dict:

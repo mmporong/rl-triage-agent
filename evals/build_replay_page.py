@@ -288,7 +288,7 @@ def scene_warning(sources: Sources) -> dict:
     }
 
 
-def scene_probe(sources: Sources, slots: dict) -> dict:
+def scene_probe(sources: Sources) -> dict:
     fault_rows, other_max, other_ids = [], None, []
     for case in CASES:
         for seed in SEEDS:
@@ -327,7 +327,6 @@ def scene_probe(sources: Sources, slots: dict) -> dict:
                     value = f"{state} · 검사 {found['probes_used']}개"
                 row.append({"value": value, "source": order_id, "digits": None})
             order_rows.append(row)
-    import replay_demo_slots as DS
     return {
         "id": "probe", "title": "다음 검사 하나: 보상 좌표 재계산(P_reward)",
         "lead": "기록된 상태로 선속도 추종 보상을 몸체 좌표와 월드 좌표에서 다시 계산한다. 두 값의 상대 차이가 F1 정책에서만 크게 나타난다.",
@@ -338,7 +337,6 @@ def scene_probe(sources: Sources, slots: dict) -> dict:
              "columns": ["검사 순서", "seed 2026", "seed 2027", "seed 2028"], "rows": order_rows},
             {"type": "table", "title": "이미 본 8개 사례의 고리 실행 기록(캐시된 순위, 새 모델 호출 없음)",
              "columns": ["항목", "값"], "rows": loop_rows, "status_sources": [loop_id]},
-            *DS.end_to_end_blocks(sources, slots.get("end_to_end")),
         ],
         "notes": ["probe 작성자와 결함 작성자가 같아 고리 동작 확인으로만 쓴다. F1에서는 네 검사 순서 모두 보상 결함으로 확정했고 차이는 검사 수뿐이다.",
                   "수용 조건이 모두 충족되지 않은 기록은 그대로 표시한다."],
@@ -357,16 +355,35 @@ def scene_correction(sources: Sources, slots: dict) -> dict:
     ]
     import replay_demo_slots as DS
     return {
-        "id": "correction", "title": "교정 제안: 등록된 교정 하나만 바꾼다",
+        "id": "correction", "title": "교정 제안: 등록된 교정 하나만 바꾼다", "dense": True,
         "lead": "결함 범주마다 미리 등록한 교정 중 하나를 고르고 다른 표적은 바꾸지 않는다. 회복 방식은 실행 전에 등록한 규칙으로 권고한다.",
         "blocks": [
             {"type": "table", "title": "등록 교정과 대상 함수", "columns": ["교정", "대상"], "rows": targets,
              "status_sources": [protocol_id]},
             {"type": "table", "title": "사전등록 규칙(v4 프로토콜)", "columns": ["항목", "내용"], "rows": rule,
              "status_sources": [protocol_id]},
-            *DS.correction_proposal_blocks(sources, slots.get("correction_proposal")),
+            *DS.correction_proposal_blocks(sources, slots.get("correction_proposal"), wide=False),
+            *DS.correction_proposal_blocks(sources, slots.get("motor_correction_proposal"), kind="motor_correction_proposal",
+                                           label=DS.MOTOR_PROPOSAL_LABEL, wide=False),
         ],
         "notes": ["규칙은 seed 2027 단일 관찰에서 만들었고 v4 결과로 적중 여부만 기록한다."],
+    }
+
+
+def scene_demo(sources: Sources, slots: dict) -> dict:
+    """보상(seed 2030)·모터(seed 2033) 종단 시연을 나란히 둔다. 결과가 승인되지 않은 시연은 자리 표시로 남는다."""
+    import replay_demo_slots as DS
+    reward = DS.end_to_end_blocks(sources, slots.get("end_to_end"))
+    motor = DS.end_to_end_blocks(sources, slots.get("motor_end_to_end"), kind="motor_end_to_end",
+                                 label=DS.MOTOR_END_TO_END_LABEL)
+    return {
+        "id": "demo", "title": "종단 시연: 경고부터 교정 판정까지", "dense": True,
+        "lead": "새 seed에서 새 Nemotron 판단, 승인된 검사, 교정 제안 승인, Isaac 재학습, 고정 평가 판정을 한 번에 이었다. "
+                "왼쪽은 보상 결함, 오른쪽은 모터 결함이다.",
+        "blocks": [*reward, *motor],  # 비용은 마지막 장면의 종단 시연 비용 표에 둔다
+        "notes": ["결함과 probe는 같은 설계자가 만들었고 이미 본 결함 종류의 새 seed 한 건씩이다. "
+                  "진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다.",
+                  "승인은 사용자가 위임한 운영자 승인이며 승인자 신원은 인증하지 않았다."],
     }
 
 
@@ -592,12 +609,16 @@ def scene_cost(sources: Sources, slots: dict) -> dict:
         *[rf".\.venv\Scripts\python.exe evals/publish_training_correction_v4.py replay evals/results/{tag}" for tag in slots["v4_tags"]],
         r".\.venv\Scripts\python.exe evals/build_replay_page.py",
     ]
+    import replay_demo_slots as DS
+    demos = DS.cost_block(sources, [(slots.get("end_to_end"), "end_to_end", "보상 결함"),
+                                    (slots.get("motor_end_to_end"), "motor_end_to_end", "모터 결함")])
     return {
-        "id": "cost", "title": "비용과 재현",
-        "lead": "숫자는 공개 결과 파일에서 다시 계산한다. 아래 명령은 GPU·모델·네트워크 없이 공개 묶음의 해시와 판정을 재생한다.",
+        "id": "cost", "title": "비용과 재현", "dense": True,
+        "lead": "숫자는 공개 결과 파일에서 다시 계산한다. 재현 명령은 GPU·모델·네트워크 없이 공개 묶음의 해시와 판정을 재생한다.",
         "blocks": [
-            {"type": "table", "wide": True, "title": "실행 비용(초)", "columns": ["실행", "값(s)", "범위"], "rows": rows},
-            {"type": "commands", "wide": True, "title": "재현 명령(저장소 루트에서)", "lines": commands},
+            {"type": "table", "title": "실행 비용(초)", "columns": ["실행", "값(s)", "범위"], "rows": rows},
+            {"type": "commands", "title": "재현 명령(저장소 루트에서)", "lines": commands},
+            demos,
         ],
         "notes": ["parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
                   "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."],
@@ -608,7 +629,8 @@ def build(root: Path = ROOT) -> dict:
     sources = Sources(root)
     slots = _read(root / SLOTS)
     scenes = [scene_failure(sources, slots), scene_curves(sources), scene_warning(sources),
-              scene_probe(sources, slots), scene_correction(sources, slots), scene_recovery(sources, slots),
+              scene_probe(sources), scene_correction(sources, slots), scene_demo(sources, slots),
+              scene_recovery(sources, slots),
               scene_motor(sources, slots), scene_hold(sources), scene_nvidia(sources, slots), scene_cost(sources, slots)]
     for index, scene in enumerate(scenes, start=1):
         scene["number"] = index

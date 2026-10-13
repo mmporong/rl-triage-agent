@@ -1,8 +1,8 @@
-"""발표 재생 화면(E5)의 종단 시연 자리 두 개(end_to_end·correction_proposal)를 시연 공개 결과로 채운다.
+"""발표 재생 화면(E5)의 종단 시연 자리(end_to_end·correction_proposal과 모터 시연 짝)를 시연 공개 결과로 채운다.
 
 slots.json의 경로가 비어 있거나 파일이 승인되지 않았으면(없음·미커밋·변경·형식 다름) 기존 자리 표시를 그대로 둔다.
-값은 승인된 demo_result.json(evals/e2e_reward_demo.py·e2e_reward_demo_v2.py summarize 산출물)에서만 옮기고,
-회복 판정은 시연의 고정 평가 판정을 그대로 보여 줄 뿐 다시 계산하지 않는다. 승인된 결과에 값이 없으면
+값은 승인된 demo_result.json(evals/e2e_reward_demo.py·e2e_reward_demo_v2.py·e2e_demo_v3_1.py summarize 산출물)에서만
+옮기고, 회복 판정은 시연의 고정 평가 판정을 그대로 보여 줄 뿐 다시 계산하지 않는다. 승인된 결과에 값이 없으면
 대기가 아니라 기록 없음("-")이나 판정 없음으로 표시한다. GPU·모델·네트워크를 쓰지 않는다.
 """
 from __future__ import annotations
@@ -10,15 +10,29 @@ from __future__ import annotations
 import json
 from typing import Any
 
-# 결과 schema → 그 시연 판의 프로토콜(등록 교정·회복 방식 표시에 쓴다)
+# 결과 schema → 그 시연 판의 프로토콜(등록 교정·회복 방식 표시에 쓴다). v3.1은 결함 변형별 프로토콜이다.
 DEMO_PROTOCOLS = {
     "e2e_reward_demo_result_v1": "bench/protocols/e2e_reward_demo_v1.json",
     "e2e_reward_demo_result_v2": "bench/protocols/e2e_reward_demo_v2.json",
+    "e2e_demo_result_v3_1": "bench/protocols/e2e_demo_v3_1_{variant}.json",
 }
+VARIANTS = ("f1", "f2")
+# 회복 방식을 시연 프로토콜의 등록 규칙이 고르는 판(요청한 방식을 따로 보여 준다)
+RULE_CHOSEN_MODE = ("e2e_demo_result_v3_1",)
 END_TO_END_LABEL = "종단 시연: 새 Nemotron 호출 → 승인 → 1회 소비 → Isaac 실행 → receipt"
 PROPOSAL_LABEL = "교정 제안 기록: 모델 제안 · 결정적 규칙 · 체크리스트"
+MOTOR_END_TO_END_LABEL = "모터 결함 종단 시연: 새 Nemotron 호출 → 승인된 검사 → 교정 승인 → Isaac 재학습 → receipt"
+MOTOR_PROPOSAL_LABEL = "모터 결함 교정 제안 기록: 모델 제안 · 결정적 규칙 · 체크리스트"
 NO_RECORD = "-"
 NO_VERDICT = "판정 없음"
+
+
+def protocol_path(result: dict) -> str | None:
+    """결과가 가리키는 시연 프로토콜 경로. 모르는 변형이면 None."""
+    template = DEMO_PROTOCOLS[result["schema"]]
+    if "{variant}" not in template:
+        return template
+    return template.format(variant=result["variant"]) if result.get("variant") in VARIANTS else None
 
 
 def _cell(sources: Any, value: Any, source: str, digits: int | None = None) -> dict:
@@ -45,16 +59,24 @@ def _load(sources: Any, relative: str | None, kind: str) -> tuple[dict, dict | N
     if not isinstance(result, dict) or result.get("schema") not in DEMO_PROTOCOLS:
         row["status"], row["reason"] = "mismatch", "unexpected_schema"
         return row, None
+    if protocol_path(result) is None:
+        row["status"], row["reason"] = "mismatch", "unexpected_variant"
+        return row, None
     return row, result
 
 
-def end_to_end_blocks(sources: Any, relative: str | None) -> list[dict]:
-    row, result = _load(sources, relative, "end_to_end")
+def _fault_label(result: dict) -> str:
+    """제목 뒤에 붙는 결함 표시. v1·v2 결과에는 결함 필드가 없고 보상 결함(F1)이라 붙이지 않는다."""
+    return f" {result['fault']}·{result.get('mechanism')}" if result.get("fault") else ""
+
+
+def end_to_end_blocks(sources: Any, relative: str | None, *, kind: str = "end_to_end",
+                      label: str = END_TO_END_LABEL) -> list[dict]:
+    row, result = _load(sources, relative, kind)
     if result is None:
-        return [{"type": "slot", "label": END_TO_END_LABEL, "source": row["id"]}]
+        return [{"type": "slot", "label": label, "source": row["id"]}]
     sid = row["id"]
     decision = (result.get("diagnosis") or {}).get("decision") or {}
-    diagnosis_call = (result.get("diagnosis") or {}).get("call") or {}
     loop = result.get("loop") or {}
     correction = result.get("correction") or {}
     proposal, receipt = correction.get("model_proposal") or {}, correction.get("receipt") or {}
@@ -69,6 +91,12 @@ def end_to_end_blocks(sources: Any, relative: str | None) -> list[dict]:
             f"{decision.get('action')} · 상위 3 {', '.join(decision.get('ranking', [])[:3])} · 제안 검사 {decision.get('probe')}"
             if decision else None), sid)],
         ["승인된 검사", _cell(sources, f"{len(done)}건 실행 · {observed} · {loop.get('status')}" if loop else None, sid)],
+    ]
+    specificity = result.get("specificity")
+    if specificity is not None:  # v3.1: 확정 뒤 다른 원인 검사도 정상인지 보는 관문
+        outcomes = ", ".join(f"{probe} {outcome}" for probe, outcome in sorted((specificity.get("outcomes") or {}).items()))
+        steps.append(["특이성 관문", _cell(sources, f"{'통과' if specificity.get('passed') else '미통과'} · {outcomes}", sid)])
+    steps += [
         ["교정 제안(새 Nemotron 호출)", _cell(sources, (
             f"{proposal.get('decision')} · 계약 통과 {_yes(proposal.get('accepted'))} · 규칙과 일치 {_yes(proposal.get('agrees_with_rule'))}"
             if proposal else None), sid)],
@@ -77,41 +105,74 @@ def end_to_end_blocks(sources: Any, relative: str | None) -> list[dict]:
         ["교정 정책 standstill ratio", _cell(sources, fixed.get("standstill_ratio"), sid, 3)],
         ["결과 문구", _cell(sources, result.get("wording"), sid)],
     ]
-    walls = result.get("training_parent_wall_s") or {}
-    costs = fixed.get("costs") or {}
-    cost_rows = [
-        ["NONE 학습 wall(s)", _cell(sources, walls.get("NONE"), sid, 0)],
-        ["F1 학습 wall(s)", _cell(sources, walls.get("F1"), sid, 0)],
-        ["승인 검사 GPU wall(s)", _cell(sources, sum(r.get("gpu_s") or 0 for r in done) if done else None, sid, 1)],
-        ["교정 재학습 wall(s)", _cell(sources, costs.get("train_parent_wall_s"), sid, 0)],
-        ["교정 고정 평가 wall(s)", _cell(sources, costs.get("eval_parent_wall_s"), sid, 0)],
-        ["진단 호출 입력·출력 토큰", _cell(sources, _tokens(diagnosis_call), sid)],
-        ["교정 호출 입력·출력 토큰", _cell(sources, _tokens(correction.get("call") or {}), sid)],
-    ]
-    return [
-        {"type": "table", "title": f"종단 시연 seed {result.get('seed')}: 경고부터 교정 판정까지",
-         "columns": ["단계", "기록"], "rows": steps, "status_sources": [sid]},
-        {"type": "table", "title": "시연 비용 기록(부모 프로세스 벽시계·토큰이며 절감 비교가 아니다)",
-         "columns": ["항목", "값"], "rows": cost_rows, "status_sources": [sid]},
-    ]
+    return [{"type": "table", "title": f"종단 시연 seed {result.get('seed')}{_fault_label(result)}: 경고부터 교정 판정까지",
+             "columns": ["단계", "기록"], "rows": steps, "status_sources": [sid]}]
 
 
-def correction_proposal_blocks(sources: Any, relative: str | None) -> list[dict]:
-    row, result = _load(sources, relative, "correction_proposal")
-    if result is None:
-        return [{"type": "slot", "wide": True, "label": PROPOSAL_LABEL, "source": row["id"]}]
+COST_COLUMNS = ["시연", "NONE·결함 학습 wall(s)", "승인 검사 GPU wall(s)", "교정 재학습·평가 wall(s)",
+                "진단·교정 호출 토큰(입력 / 출력)"]
+
+
+def _pair(first: Any, second: Any, joiner: str = " / ") -> str | None:
+    """두 값을 한 칸에 적는다. 숫자는 초 단위 정수로, 빈 값은 기록 없음으로 둔다."""
+    if first is None and second is None:
+        return None
+    shown = [NO_RECORD if value is None else f"{value:.0f}" if isinstance(value, (int, float)) else value
+             for value in (first, second)]
+    return joiner.join(shown)
+
+
+def cost_row(sources: Any, relative: str | None, *, kind: str, name: str) -> list:
+    """비용 표의 한 줄(시연 하나). 결과가 승인되지 않았으면 그 근거 상태로 표시한다."""
+    row, result = _load(sources, relative, kind)
     sid = row["id"]
-    protocol_path = DEMO_PROTOCOLS[result["schema"]]
-    protocol_row = sources.file(protocol_path)
-    protocol = (json.loads((sources.root / protocol_path).read_text(encoding="utf-8"))
+    if result is None:
+        return [name, *({"value": None, "source": sid, "digits": None} for _ in COST_COLUMNS[1:])]
+    walls = result.get("training_parent_wall_s") or {}
+    fault = result.get("fault") or "F1"
+    done = [r for r in (result.get("loop") or {}).get("requests", []) if r.get("state") == "done"]
+    correction = result.get("correction") or {}
+    costs = (correction.get("result") or {}).get("costs") or {}
+    diagnosis_call = (result.get("diagnosis") or {}).get("call") or {}
+    return [f"{name} seed {result.get('seed')}",
+            _cell(sources, _pair(walls.get("NONE"), walls.get("FAULT", walls.get(fault))), sid),
+            _cell(sources, sum(r.get("gpu_s") or 0 for r in done) if done else None, sid, 1),
+            _cell(sources, _pair(costs.get("train_parent_wall_s"), costs.get("eval_parent_wall_s")), sid),
+            _cell(sources, _pair(_tokens(diagnosis_call), _tokens(correction.get("call") or {}), " · "), sid)]
+
+
+def cost_block(sources: Any, entries: list[tuple[str | None, str, str]]) -> dict:
+    """종단 시연 비용 표. entries는 (결과 경로, 근거 종류, 시연 이름)이다."""
+    rows = [cost_row(sources, relative, kind=kind, name=name) for relative, kind, name in entries]
+    return {"type": "table", "wide": True, "title": "종단 시연 비용(부모 프로세스 벽시계·토큰이며 절감 비교가 아니다)",
+            "columns": COST_COLUMNS, "rows": rows, "status_sources": [r[1]["source"] for r in rows]}
+
+
+def _registered(protocol: dict | None) -> str | None:
+    """시연 프로토콜의 등록 교정과 회복 방식. v3.1은 방식 여러 개를 등록하고 규칙이 하나를 고른다."""
+    if protocol is None:
+        return None
+    correction = protocol["correction"]
+    modes = correction.get("registered_recovery_mode") or "/".join(correction.get("modes") or ())
+    return f"{correction['correction_id']} · {modes}"
+
+
+def correction_proposal_blocks(sources: Any, relative: str | None, *, kind: str = "correction_proposal",
+                               label: str = PROPOSAL_LABEL, wide: bool = True) -> list[dict]:
+    row, result = _load(sources, relative, kind)
+    if result is None:
+        return [{"type": "slot", "wide": wide, "label": label, "source": row["id"]}]
+    sid = row["id"]
+    protocol_row = sources.file(protocol_path(result))
+    protocol = (json.loads((sources.root / protocol_row["path"]).read_text(encoding="utf-8"))
                 if protocol_row["status"] == "ready" else None)
-    registered = (f"{protocol['correction']['correction_id']} · {protocol['correction']['registered_recovery_mode']}"
-                  if protocol else None)
     correction = result.get("correction") or {}
     proposal, receipt = correction.get("model_proposal") or {}, correction.get("receipt") or {}
     unmet = proposal.get("unmet_checklist")
-    rows = [
-        ["등록 교정 · 회복 방식(시연 프로토콜)", _cell(sources, registered, protocol_row["id"])],
+    rows = [["등록 교정 · 회복 방식(시연 프로토콜)", _cell(sources, _registered(protocol), protocol_row["id"])]]
+    if result["schema"] in RULE_CHOSEN_MODE:
+        rows.append(["등록 규칙이 고른 회복 방식", _cell(sources, (correction.get("request") or {}).get("recovery_mode"), sid)])
+    rows += [
         ["모델 제안 결정", _cell(sources, proposal.get("decision"), sid)],
         ["공개 계약 검증 통과", _cell(sources, _yes(proposal.get("accepted")), sid)],
         ["결정적 규칙과 일치", _cell(sources, _yes(proposal.get("agrees_with_rule")), sid)],
@@ -119,5 +180,5 @@ def correction_proposal_blocks(sources: Any, relative: str | None) -> list[dict]
         ["미충족 체크리스트 항목 수", _cell(sources, None if unmet is None else len(unmet), sid, 0)],
         ["승인 뒤 1회 소비", _cell(sources, _yes(receipt.get("event") == "receipt") if receipt else None, sid)],
     ]
-    return [{"type": "table", "wide": True, "title": f"교정 제안 기록(종단 시연 seed {result.get('seed')})",
+    return [{"type": "table", "wide": wide, "title": f"교정 제안 기록(종단 시연 seed {result.get('seed')}{_fault_label(result)})",
              "columns": ["항목", "기록"], "rows": rows, "status_sources": [sid, protocol_row["id"]]}]

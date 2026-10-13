@@ -89,19 +89,26 @@ def test_unset_or_unapproved_paths_keep_the_original_slot(repo):
     assert (sources.rows[RESULT]["status"], sources.rows[RESULT]["reason"]) == ("mismatch", "modified_since_commit")
 
 
+def _cost_values(sources, entries) -> list:
+    return [[row[0], *(cell["value"] for cell in row[1:])] for row in DS.cost_block(sources, entries)["rows"]]
+
+
 def test_approved_result_fills_steps_costs_and_proposal(repo):
     sources = B.Sources(repo)
     blocks = DS.end_to_end_blocks(sources, RESULT)
-    assert [block["type"] for block in blocks] == ["table", "table"] and blocks[0]["status_sources"] == [RESULT]
+    assert [block["type"] for block in blocks] == ["table"] and blocks[0]["status_sources"] == [RESULT]
+    assert blocks[0]["title"] == "종단 시연 seed 2029: 경고부터 교정 판정까지"
     values = _values(blocks)
     assert values["시연 결과"] == "recovered · 성공 조건 3/3"
     assert values["첫 판단(새 Nemotron 호출)"] == "continue · 상위 3 reward, actuator, exploration · 제안 검사 P_reward"
-    assert values["승인된 검사"] == "1건 실행 · P_reward abnormal · confirmed"
+    assert values["승인된 검사"] == "1건 실행 · P_reward abnormal · confirmed" and "특이성 관문" not in values
     assert values["교정 제안(새 Nemotron 호출)"] == "propose · 계약 통과 예 · 규칙과 일치 예"
     assert values["승인 뒤 교정 실행 receipt"] == "receipt · recovered"
     assert (values["교정 정책 고정 평가 판정"], values["교정 정책 standstill ratio"]) == ("recovered", 0.131)
-    assert (values["NONE 학습 wall(s)"], values["승인 검사 GPU wall(s)"], values["교정 재학습 wall(s)"]) == (700.4, 20.9, 650.0)
-    assert values["진단 호출 입력·출력 토큰"] == "2834 / 212" and values["교정 호출 입력·출력 토큰"] == "1500 / 180"
+    cost = DS.cost_block(sources, [(RESULT, "end_to_end", "보상 결함")])
+    assert cost["columns"] == DS.COST_COLUMNS and cost["status_sources"] == [RESULT] and cost["wide"] is True
+    assert _cost_values(sources, [(RESULT, "end_to_end", "보상 결함")]) == [
+        ["보상 결함 seed 2029", "700 / 500", 20.9, "650 / 61", "2834 / 212 · 1500 / 180"]]
     proposal = DS.correction_proposal_blocks(sources, RESULT)
     assert proposal[0]["status_sources"] == [RESULT, PROTOCOL] and proposal[0]["wide"] is True
     assert _values(proposal) == {
@@ -118,12 +125,14 @@ def test_unjudged_correction_shows_no_verdict_instead_of_waiting(repo):
     (repo / RESULT).write_text(json.dumps(unknown, ensure_ascii=False), encoding="utf-8")
     _git(repo, "add", RESULT)
     _git(repo, "commit", "-q", "-m", "unknown")
-    values = _values(DS.end_to_end_blocks(B.Sources(repo), RESULT))
+    sources = B.Sources(repo)
+    values = _values(DS.end_to_end_blocks(sources, RESULT))
     assert values["시연 결과"] == "correction_unknown · 성공 조건 2/3"
     assert values["승인 뒤 교정 실행 receipt"] == "receipt · unknown"
     assert (values["교정 정책 고정 평가 판정"], values["교정 정책 standstill ratio"]) == (DS.NO_VERDICT, DS.NO_RECORD)
-    assert (values["교정 재학습 wall(s)"], values["교정 고정 평가 wall(s)"]) == (DS.NO_RECORD, DS.NO_RECORD)
     assert None not in values.values()
+    costs = _cost_values(sources, [(RESULT, "end_to_end", "보상 결함")])[0]
+    assert costs[3] == DS.NO_RECORD and None not in costs  # 교정 재학습·평가 기록 없음
 
 
 def test_v2_result_reads_the_v2_demo_protocol(repo):
@@ -137,6 +146,64 @@ def test_v2_result_reads_the_v2_demo_protocol(repo):
     blocks = DS.correction_proposal_blocks(B.Sources(repo), RESULT)
     assert blocks[0]["status_sources"] == [RESULT, v2_protocol] and blocks[0]["title"].endswith("seed 2030)")
     assert _values(blocks)["등록 교정 · 회복 방식(시연 프로토콜)"] == "restore_body_frame_reward · restart"
+
+
+MOTOR_SCHEMA = "e2e_demo_result_v3_1"
+MOTOR_PROTOCOL = "bench/protocols/e2e_demo_v3_1_f2.json"
+
+
+def motor_result(variant: str = "f2") -> dict:
+    """evals/e2e_demo_v3_1.py summarize 산출물과 같은 형식의 모터 결함 합성 결과(값은 가짜)."""
+    result = demo_result(schema=MOTOR_SCHEMA)
+    result.update(seed=2033, variant=variant, fault="F2", mechanism="actuator",
+                  training_parent_wall_s={"NONE": 553.6, "FAULT": 592.4},
+                  specificity={"required": ["P_noise", "P_value"], "passed": True,
+                               "outcomes": {"P_value": "normal", "P_noise": "normal"}})
+    result["correction"]["request"] = {"correction_id": "restore_motor_torque_speed", "recovery_mode": "restart"}
+    return result
+
+
+def _commit_motor(repo: Path, result: dict) -> None:
+    (repo / RESULT).write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
+    (repo / MOTOR_PROTOCOL).write_text(json.dumps({"correction": {
+        "correction_id": "restore_motor_torque_speed", "modes": {"restart": {}, "resume": {}}}}), encoding="utf-8")
+    _git(repo, "add", RESULT, MOTOR_PROTOCOL)
+    _git(repo, "commit", "-q", "-m", "motor")
+
+
+def test_v3_1_motor_result_shows_its_fault_gate_rule_chosen_mode_and_costs(repo):
+    _commit_motor(repo, motor_result())
+    sources = B.Sources(repo)
+    steps = DS.end_to_end_blocks(sources, RESULT, kind="motor_end_to_end", label=DS.MOTOR_END_TO_END_LABEL)
+    assert steps[0]["title"] == "종단 시연 seed 2033 F2·actuator: 경고부터 교정 판정까지"
+    values = _values(steps)
+    assert values["특이성 관문"] == "통과 · P_noise normal, P_value normal"
+    assert list(values).index("특이성 관문") == list(values).index("승인된 검사") + 1
+    proposal = DS.correction_proposal_blocks(sources, RESULT, kind="motor_correction_proposal",
+                                             label=DS.MOTOR_PROPOSAL_LABEL, wide=False)
+    assert proposal[0]["status_sources"] == [RESULT, MOTOR_PROTOCOL] and proposal[0]["wide"] is False
+    proposed = _values(proposal)
+    assert proposed["등록 교정 · 회복 방식(시연 프로토콜)"] == "restore_motor_torque_speed · restart/resume"
+    assert proposed["등록 규칙이 고른 회복 방식"] == "restart"
+    assert _cost_values(sources, [(RESULT, "motor_end_to_end", "모터 결함")])[0][:2] == ["모터 결함 seed 2033", "554 / 592"]
+
+
+def test_unknown_v3_1_variant_is_a_mismatch(repo):
+    _commit_motor(repo, motor_result(variant="f9"))
+    sources = B.Sources(repo)
+    assert DS.end_to_end_blocks(sources, RESULT, kind="motor_end_to_end")[0]["type"] == "slot"
+    assert (sources.rows[RESULT]["status"], sources.rows[RESULT]["reason"]) == ("mismatch", "unexpected_variant")
+
+
+def test_unset_motor_slots_wait_under_their_own_kind(repo):
+    sources = B.Sources(repo)
+    assert DS.end_to_end_blocks(sources, None, kind="motor_end_to_end", label=DS.MOTOR_END_TO_END_LABEL) == [
+        {"type": "slot", "label": DS.MOTOR_END_TO_END_LABEL, "source": "slot:motor_end_to_end"}]
+    assert DS.correction_proposal_blocks(sources, None, kind="motor_correction_proposal",
+                                         label=DS.MOTOR_PROPOSAL_LABEL, wide=False)[0]["wide"] is False
+    row = DS.cost_block(sources, [(None, "motor_end_to_end", "모터 결함")])["rows"][0]
+    assert row[0] == "모터 결함" and all(cell["value"] is None and cell["source"] == "slot:motor_end_to_end" for cell in row[1:])
+    assert sources.rows["slot:motor_end_to_end"]["status"] == "waiting"
 
 
 def test_unexpected_schema_is_a_mismatch_not_a_table(repo):
@@ -157,13 +224,14 @@ def test_missing_demo_protocol_withholds_only_the_registered_correction(repo):
 
 def test_block_text_has_no_forbidden_claim_or_private_path(repo):
     sources = B.Sources(repo)
-    texts = []
-    for block in DS.end_to_end_blocks(sources, RESULT) + DS.correction_proposal_blocks(sources, RESULT):
+    texts = list(DS.COST_COLUMNS)
+    blocks = DS.end_to_end_blocks(sources, RESULT) + DS.correction_proposal_blocks(sources, RESULT)
+    for block in blocks + [DS.cost_block(sources, [(RESULT, "end_to_end", "보상 결함")])]:
         texts.append(block.get("title", ""))
         for row in block["rows"]:
             texts.append(row[0])
             texts += [str(cell["value"]) for cell in row[1:] if isinstance(cell, dict)]
-    texts += [DS.END_TO_END_LABEL, DS.PROPOSAL_LABEL]
+    texts += [DS.END_TO_END_LABEL, DS.PROPOSAL_LABEL, DS.MOTOR_END_TO_END_LABEL, DS.MOTOR_PROPOSAL_LABEL]
     assert not [text for text in texts if "사람 승인" in text]
     assert not [problem for text in texts for problem in B.claim_violations(text) + B.path_violations(text)]
 

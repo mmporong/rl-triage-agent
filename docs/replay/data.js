@@ -7726,7 +7726,256 @@ window.REPLAY_DATA = {
      "status_sources": [
       "evals/results/live_loop_20261009/summary_v2.json"
      ]
+    }
+   ],
+   "notes": [
+    "probe 작성자와 결함 작성자가 같아 고리 동작 확인으로만 쓴다. F1에서는 네 검사 순서 모두 보상 결함으로 확정했고 차이는 검사 수뿐이다.",
+    "수용 조건이 모두 충족되지 않은 기록은 그대로 표시한다."
+   ],
+   "number": 4
+  },
+  {
+   "id": "correction",
+   "title": "교정 제안: 등록된 교정 하나만 바꾼다",
+   "dense": true,
+   "lead": "결함 범주마다 미리 등록한 교정 중 하나를 고르고 다른 표적은 바꾸지 않는다. 회복 방식은 실행 전에 등록한 규칙으로 권고한다.",
+   "blocks": [
+    {
+     "type": "table",
+     "title": "등록 교정과 대상 함수",
+     "columns": [
+      "교정",
+      "대상"
+     ],
+     "rows": [
+      [
+       "restore_body_frame_reward",
+       {
+        "value": "isaaclab.envs.mdp.rewards.track_lin_vel_xy_exp",
+        "source": "bench/protocols/training_correction_v4.json",
+        "digits": null
+       }
+      ],
+      [
+       "restore_configured_timeout",
+       {
+        "value": "isaaclab.envs.mdp.terminations.time_out",
+        "source": "bench/protocols/training_correction_v4.json",
+        "digits": null
+       }
+      ],
+      [
+       "restore_motor_torque_speed",
+       {
+        "value": "isaaclab.actuators.actuator_pd.DCMotor._clip_effort",
+        "source": "bench/protocols/training_correction_v4.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "bench/protocols/training_correction_v4.json"
+     ]
     },
+    {
+     "type": "table",
+     "title": "사전등록 규칙(v4 프로토콜)",
+     "columns": [
+      "항목",
+      "내용"
+     ],
+     "rows": [
+      [
+       "회복 방식 규칙",
+       {
+        "value": "fault_mechanism == reward and original_fault_standstill_ratio >= 0.9 -> restart, otherwise resume",
+        "source": "bench/protocols/training_correction_v4.json",
+        "digits": null
+       }
+      ],
+      [
+       "규칙 근거",
+       {
+        "value": "seed 2027 단일 관찰(v3 reward_resume_dev3_20261013 no_recovery)",
+        "source": "bench/protocols/training_correction_v4.json",
+        "digits": null
+       }
+      ],
+      [
+       "std 재설정 값",
+       {
+        "value": 1.0,
+        "source": "bench/protocols/training_correction_v4.json",
+        "digits": 1
+       }
+      ]
+     ],
+     "status_sources": [
+      "bench/protocols/training_correction_v4.json"
+     ]
+    },
+    {
+     "type": "table",
+     "wide": false,
+     "title": "교정 제안 기록(종단 시연 seed 2030)",
+     "columns": [
+      "항목",
+      "기록"
+     ],
+     "rows": [
+      [
+       "등록 교정 · 회복 방식(시연 프로토콜)",
+       {
+        "value": "restore_body_frame_reward · restart",
+        "source": "bench/protocols/e2e_reward_demo_v2.json",
+        "digits": null
+       }
+      ],
+      [
+       "모델 제안 결정",
+       {
+        "value": "propose",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "공개 계약 검증 통과",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "결정적 규칙과 일치",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "규칙을 모델 입력에 보여 줌",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "미충족 체크리스트 항목 수",
+       {
+        "value": 0,
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": 0
+       }
+      ],
+      [
+       "승인 뒤 1회 소비",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+      "bench/protocols/e2e_reward_demo_v2.json"
+     ]
+    },
+    {
+     "type": "table",
+     "wide": false,
+     "title": "교정 제안 기록(종단 시연 seed 2033 F2·actuator)",
+     "columns": [
+      "항목",
+      "기록"
+     ],
+     "rows": [
+      [
+       "등록 교정 · 회복 방식(시연 프로토콜)",
+       {
+        "value": "restore_motor_torque_speed · restart/resume",
+        "source": "bench/protocols/e2e_demo_v3_1_f2.json",
+        "digits": null
+       }
+      ],
+      [
+       "등록 규칙이 고른 회복 방식",
+       {
+        "value": "restart",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "모델 제안 결정",
+       {
+        "value": "propose",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "공개 계약 검증 통과",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "결정적 규칙과 일치",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "규칙을 모델 입력에 보여 줌",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "미충족 체크리스트 항목 수",
+       {
+        "value": 0,
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": 0
+       }
+      ],
+      [
+       "승인 뒤 1회 소비",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+      "bench/protocols/e2e_demo_v3_1_f2.json"
+     ]
+    }
+   ],
+   "notes": [
+    "규칙은 seed 2027 단일 관찰에서 만들었고 v4 결과로 적중 여부만 기록한다."
+   ],
+   "number": 5
+  },
+  {
+   "id": "demo",
+   "title": "종단 시연: 경고부터 교정 판정까지",
+   "dense": true,
+   "lead": "새 seed에서 새 Nemotron 판단, 승인된 검사, 교정 제안 승인, Isaac 재학습, 고정 평가 판정을 한 번에 이었다. 왼쪽은 보상 결함, 오른쪽은 모터 결함이다.",
+   "blocks": [
     {
      "type": "table",
      "title": "종단 시연 seed 2030: 경고부터 교정 판정까지",
@@ -7806,235 +8055,95 @@ window.REPLAY_DATA = {
     },
     {
      "type": "table",
-     "title": "시연 비용 기록(부모 프로세스 벽시계·토큰이며 절감 비교가 아니다)",
+     "title": "종단 시연 seed 2033 F2·actuator: 경고부터 교정 판정까지",
      "columns": [
-      "항목",
-      "값"
-     ],
-     "rows": [
-      [
-       "NONE 학습 wall(s)",
-       {
-        "value": 639.0,
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-        "digits": 0
-       }
-      ],
-      [
-       "F1 학습 wall(s)",
-       {
-        "value": 512.9,
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-        "digits": 0
-       }
-      ],
-      [
-       "승인 검사 GPU wall(s)",
-       {
-        "value": 19.5,
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-        "digits": 1
-       }
-      ],
-      [
-       "교정 재학습 wall(s)",
-       {
-        "value": 508.8120000001509,
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-        "digits": 0
-       }
-      ],
-      [
-       "교정 고정 평가 wall(s)",
-       {
-        "value": 48.375,
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-        "digits": 0
-       }
-      ],
-      [
-       "진단 호출 입력·출력 토큰",
-       {
-        "value": "2829 / 185",
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-        "digits": null
-       }
-      ],
-      [
-       "교정 호출 입력·출력 토큰",
-       {
-        "value": "1347 / 174",
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-        "digits": null
-       }
-      ]
-     ],
-     "status_sources": [
-      "evals/results/e2e_reward_s2030_20261013/demo_result.json"
-     ]
-    }
-   ],
-   "notes": [
-    "probe 작성자와 결함 작성자가 같아 고리 동작 확인으로만 쓴다. F1에서는 네 검사 순서 모두 보상 결함으로 확정했고 차이는 검사 수뿐이다.",
-    "수용 조건이 모두 충족되지 않은 기록은 그대로 표시한다."
-   ],
-   "number": 4
-  },
-  {
-   "id": "correction",
-   "title": "교정 제안: 등록된 교정 하나만 바꾼다",
-   "lead": "결함 범주마다 미리 등록한 교정 중 하나를 고르고 다른 표적은 바꾸지 않는다. 회복 방식은 실행 전에 등록한 규칙으로 권고한다.",
-   "blocks": [
-    {
-     "type": "table",
-     "title": "등록 교정과 대상 함수",
-     "columns": [
-      "교정",
-      "대상"
-     ],
-     "rows": [
-      [
-       "restore_body_frame_reward",
-       {
-        "value": "isaaclab.envs.mdp.rewards.track_lin_vel_xy_exp",
-        "source": "bench/protocols/training_correction_v4.json",
-        "digits": null
-       }
-      ],
-      [
-       "restore_configured_timeout",
-       {
-        "value": "isaaclab.envs.mdp.terminations.time_out",
-        "source": "bench/protocols/training_correction_v4.json",
-        "digits": null
-       }
-      ],
-      [
-       "restore_motor_torque_speed",
-       {
-        "value": "isaaclab.actuators.actuator_pd.DCMotor._clip_effort",
-        "source": "bench/protocols/training_correction_v4.json",
-        "digits": null
-       }
-      ]
-     ],
-     "status_sources": [
-      "bench/protocols/training_correction_v4.json"
-     ]
-    },
-    {
-     "type": "table",
-     "title": "사전등록 규칙(v4 프로토콜)",
-     "columns": [
-      "항목",
-      "내용"
-     ],
-     "rows": [
-      [
-       "회복 방식 규칙",
-       {
-        "value": "fault_mechanism == reward and original_fault_standstill_ratio >= 0.9 -> restart, otherwise resume",
-        "source": "bench/protocols/training_correction_v4.json",
-        "digits": null
-       }
-      ],
-      [
-       "규칙 근거",
-       {
-        "value": "seed 2027 단일 관찰(v3 reward_resume_dev3_20261013 no_recovery)",
-        "source": "bench/protocols/training_correction_v4.json",
-        "digits": null
-       }
-      ],
-      [
-       "std 재설정 값",
-       {
-        "value": 1.0,
-        "source": "bench/protocols/training_correction_v4.json",
-        "digits": 1
-       }
-      ]
-     ],
-     "status_sources": [
-      "bench/protocols/training_correction_v4.json"
-     ]
-    },
-    {
-     "type": "table",
-     "wide": true,
-     "title": "교정 제안 기록(종단 시연 seed 2030)",
-     "columns": [
-      "항목",
+      "단계",
       "기록"
      ],
      "rows": [
       [
-       "등록 교정 · 회복 방식(시연 프로토콜)",
+       "시연 결과",
        {
-        "value": "restore_body_frame_reward · restart",
-        "source": "bench/protocols/e2e_reward_demo_v2.json",
+        "value": "recovered · 성공 조건 12/12",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
         "digits": null
        }
       ],
       [
-       "모델 제안 결정",
+       "첫 판단(새 Nemotron 호출)",
        {
-        "value": "propose",
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "value": "continue · 상위 3 reward, actuator, exploration · 제안 검사 P_reward",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
         "digits": null
        }
       ],
       [
-       "공개 계약 검증 통과",
+       "승인된 검사",
        {
-        "value": "예",
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "value": "3건 실행 · P_noise normal, P_reward normal, P_torque abnormal · confirmed",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
         "digits": null
        }
       ],
       [
-       "결정적 규칙과 일치",
+       "특이성 관문",
        {
-        "value": "예",
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "value": "통과 · P_noise normal, P_value normal",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
         "digits": null
        }
       ],
       [
-       "규칙을 모델 입력에 보여 줌",
+       "교정 제안(새 Nemotron 호출)",
        {
-        "value": "예",
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "value": "propose · 계약 통과 예 · 규칙과 일치 예",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
         "digits": null
        }
       ],
       [
-       "미충족 체크리스트 항목 수",
+       "승인 뒤 교정 실행 receipt",
        {
-        "value": 0,
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-        "digits": 0
+        "value": "receipt · recovered",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": null
        }
       ],
       [
-       "승인 뒤 1회 소비",
+       "교정 정책 고정 평가 판정",
        {
-        "value": "예",
-        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "value": "recovered",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 정책 standstill ratio",
+       {
+        "value": 0.1244425163688526,
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": 3
+       }
+      ],
+      [
+       "결과 문구",
+       {
+        "value": "새 판단으로 시작한 승인된 검사가 등록 결함 메커니즘을 확정했고, 승인된 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과했다.",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
         "digits": null
        }
       ]
      ],
      "status_sources": [
-      "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-      "bench/protocols/e2e_reward_demo_v2.json"
+      "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json"
      ]
     }
    ],
    "notes": [
-    "규칙은 seed 2027 단일 관찰에서 만들었고 v4 결과로 적중 여부만 기록한다."
+    "결함과 probe는 같은 설계자가 만들었고 이미 본 결함 종류의 새 seed 한 건씩이다. 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다.",
+    "승인은 사용자가 위임한 운영자 승인이며 승인자 신원은 인증하지 않았다."
    ],
-   "number": 5
+   "number": 6
   },
   {
    "id": "recovery",
@@ -8352,7 +8461,7 @@ window.REPLAY_DATA = {
     "seed마다 단일 실행이다. 이미 본 seed의 합성 결함 개발 결과이며 일반화나 AI 교정 선택을 입증하지 않는다.",
     "재학습은 교정한 코드가 정상 학습과 같아져 같은 seed의 정상 정책을 다시 만든다. 체크포인트가 같으면 회복은 예상된 확인이며 새로운 회복 효과가 아니다."
    ],
-   "number": 6
+   "number": 7
   },
   {
    "id": "motor",
@@ -8564,7 +8673,7 @@ window.REPLAY_DATA = {
     "중간 체크포인트 평가는 같은 학습 실행의 저장본을 다시 평가한 보조 기록이며 라벨과 규칙 갱신에 쓰지 않는다. 반복 실행의 예산 효과 추정이 아니다.",
     "모터 결함의 이어 학습이 등록 기준을 통과하지 못한 seed가 있어, 다음 시연에는 actuator에도 restart를 권고하는 규칙과 restart arm을 사전등록해 시험한다. 이번 실험은 restart를 시험하지 않았고 이어 학습의 예산 부족 가능성도 남으므로 restart를 택할 근거로 쓰지 않는다. 이미 본 두 seed의 단일 실행이며 결함 일반 규칙의 근거가 아니다."
    ],
-   "number": 7
+   "number": 8
   },
   {
    "id": "hold",
@@ -8776,7 +8885,7 @@ window.REPLAY_DATA = {
    "notes": [
     "두 시험 모두 사전등록 뒤 실행한 개발 사례다. 표본이 작아 안전성 보장으로 말하지 않는다."
    ],
-   "number": 8
+   "number": 9
   },
   {
    "id": "nvidia",
@@ -8900,16 +9009,16 @@ window.REPLAY_DATA = {
     "NeMo Agent Toolkit·HITL 행의 근거는 설정·테스트이며 실행 기록이 아니다. HITL 확인은 선택 기능이고 기록된 시연에는 쓰지 않았다.",
     "재채점은 저장된 출력이 공개 요약과 같은 판정을 내는지 확인한 것이다. 결정의 정확도나 단일 호출과의 우열을 보여 주지 않으며 모델을 다시 부르지 않는다."
    ],
-   "number": 9
+   "number": 10
   },
   {
    "id": "cost",
    "title": "비용과 재현",
-   "lead": "숫자는 공개 결과 파일에서 다시 계산한다. 아래 명령은 GPU·모델·네트워크 없이 공개 묶음의 해시와 판정을 재생한다.",
+   "dense": true,
+   "lead": "숫자는 공개 결과 파일에서 다시 계산한다. 재현 명령은 GPU·모델·네트워크 없이 공개 묶음의 해시와 판정을 재생한다.",
    "blocks": [
     {
      "type": "table",
-     "wide": true,
      "title": "실행 비용(초)",
      "columns": [
       "실행",
@@ -8984,7 +9093,6 @@ window.REPLAY_DATA = {
     },
     {
      "type": "commands",
-     "wide": true,
      "title": "재현 명령(저장소 루트에서)",
      "lines": [
       ".\\.venv\\Scripts\\python.exe evals/publish_training_correction.py replay evals/results/reward_resume_dev3_20261013",
@@ -8992,13 +9100,77 @@ window.REPLAY_DATA = {
       ".\\.venv\\Scripts\\python.exe evals/publish_training_correction_v4.py replay evals/results/reward_v4_s2028_20261013",
       ".\\.venv\\Scripts\\python.exe evals/build_replay_page.py"
      ]
+    },
+    {
+     "type": "table",
+     "wide": true,
+     "title": "종단 시연 비용(부모 프로세스 벽시계·토큰이며 절감 비교가 아니다)",
+     "columns": [
+      "시연",
+      "NONE·결함 학습 wall(s)",
+      "승인 검사 GPU wall(s)",
+      "교정 재학습·평가 wall(s)",
+      "진단·교정 호출 토큰(입력 / 출력)"
+     ],
+     "rows": [
+      [
+       "보상 결함 seed 2030",
+       {
+        "value": "639 / 513",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       },
+       {
+        "value": 19.5,
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": 1
+       },
+       {
+        "value": "509 / 48",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       },
+       {
+        "value": "2829 / 185 · 1347 / 174",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "모터 결함 seed 2033",
+       {
+        "value": "554 / 592",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": null
+       },
+       {
+        "value": 73.8,
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": 1
+       },
+       {
+        "value": "541 / 55",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": null
+       },
+       {
+        "value": "2845 / 186 · 1284 / 157",
+        "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+      "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json"
+     ]
     }
    ],
    "notes": [
     "parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
     "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."
    ],
-   "number": 10
+   "number": 11
   }
  ],
  "sources": {
@@ -9458,14 +9630,6 @@ window.REPLAY_DATA = {
    "status": "ready",
    "reason": null
   },
-  "evals/results/e2e_reward_s2030_20261013/demo_result.json": {
-   "id": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-   "path": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-   "kind": "end_to_end",
-   "sha256": "fd1a72b73928ad85e3b12b5ee9053957c03529b8e9550fb406016d5a5497b351",
-   "status": "ready",
-   "reason": null
-  },
   "bench/protocols/training_correction_v4.json": {
    "id": "bench/protocols/training_correction_v4.json",
    "path": "bench/protocols/training_correction_v4.json",
@@ -9474,11 +9638,35 @@ window.REPLAY_DATA = {
    "status": "ready",
    "reason": null
   },
+  "evals/results/e2e_reward_s2030_20261013/demo_result.json": {
+   "id": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+   "path": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+   "kind": "correction_proposal",
+   "sha256": "fd1a72b73928ad85e3b12b5ee9053957c03529b8e9550fb406016d5a5497b351",
+   "status": "ready",
+   "reason": null
+  },
   "bench/protocols/e2e_reward_demo_v2.json": {
    "id": "bench/protocols/e2e_reward_demo_v2.json",
    "path": "bench/protocols/e2e_reward_demo_v2.json",
    "kind": "file",
    "sha256": "b6b86b0418cb5e28c29b58ee3a00c0023e5def6c59803a22e56692cf48411418",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json": {
+   "id": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+   "path": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+   "kind": "motor_correction_proposal",
+   "sha256": "a13bfe9ad5a610bb3a547b81add9f3c52d82be6fe4a4eada08b7267bec42c14d",
+   "status": "ready",
+   "reason": null
+  },
+  "bench/protocols/e2e_demo_v3_1_f2.json": {
+   "id": "bench/protocols/e2e_demo_v3_1_f2.json",
+   "path": "bench/protocols/e2e_demo_v3_1_f2.json",
+   "kind": "file",
+   "sha256": "1275ec610dd8be1418afd5c1924cc19d2e885400c1dfa9a01b3dc260fcb37d91",
    "status": "ready",
    "reason": null
   },
