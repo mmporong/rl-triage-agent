@@ -1,0 +1,134 @@
+{
+ "schema": "upstream_fault_smoke_result_v1",
+ "tag": "upstream_u1_smoke_20261013",
+ "fault": "U1",
+ "seed": 2026,
+ "attempt": 1,
+ "run_name": "upstream_u1_s2026",
+ "retry_of": null,
+ "resumed_from": null,
+ "source_commit_sha": "2105139758e440fd2b1c6f0e4aea094da1471d02",
+ "training_source_commit_sha": "2105139758e440fd2b1c6f0e4aea094da1471d02",
+ "commits_seen": [
+  "2105139758e440fd2b1c6f0e4aea094da1471d02"
+ ],
+ "protocol_sha256_lf": "095904bdbafcc97d4010e2df1b659612380943bffe98cfa5ea2931645aa4d59b",
+ "reference_run": "baseline_p0c_s2026",
+ "checks": {
+  "pipeline_completed": true,
+  "training_exit_zero": true,
+  "final_checkpoint_present": true,
+  "injection_readback": true,
+  "penalties_zero_in_telemetry": true,
+  "params_match_reference": true,
+  "reference_walks": true,
+  "fixed_report_valid": true,
+  "runtime_matches_reference": true,
+  "verdict_determined": true
+ },
+ "failed_checks": [],
+ "verdict": {
+  "label": "unhealthy",
+  "failed": [
+   "survival_ratio",
+   "fall_frac",
+   "err_xy_ratio",
+   "err_yaw_ratio"
+  ],
+  "short_horizon": false,
+  "checks": {
+   "survival_ratio": false,
+   "fall_frac": false,
+   "err_xy_ratio": false,
+   "err_yaw_ratio": false
+  }
+ },
+ "behavior": {
+  "survival_s": 15.5040380859375,
+  "horizon_s": 20.0,
+  "fall_frac": 0.27019229531288147,
+  "err_xy": 1.2232402345293667,
+  "err_yaw": 4.904270234333755
+ },
+ "standstill_ratio": 1.0395543042795092,
+ "outcome": "failure_present",
+ "invalid_cause": null,
+ "prediction": "failure_present",
+ "prediction_match": true,
+ "wording": "UniLab에서 원인이 확정된 결함(보상 4항이 몸체 속도 0을 읽음)의 의미를 옮긴 학습이 같은 seed 정상 학습 대비 p0c 밴드를 벗어났다. 이미 본 seed 하나의 단일 실행이며, 진단 성능이나 다른 결함·task로의 일반화를 말하지 않는다.",
+ "failure": null,
+ "train_exit_code": 0,
+ "params_differences": [
+  "agent.yaml:run_name"
+ ],
+ "readback": {
+  "fault": "U1",
+  "swapped": {
+   "track_lin_vel_xy_exp": true,
+   "track_ang_vel_z_exp": true,
+   "lin_vel_z_l2": true,
+   "ang_vel_xy_l2": true
+  },
+  "bound_to_reward_terms": {
+   "track_lin_vel_xy_exp": true,
+   "track_ang_vel_z_exp": true,
+   "lin_vel_z_l2": true,
+   "ang_vel_xy_l2": true
+  },
+  "ok": true
+ },
+ "telemetry_sha256": "2efc06e5adee519bc9b6646b16c1e17e5e3cd759f1d34be637933684c86e1206",
+ "telemetry_summary": {
+  "Episode_Reward/lin_vel_z_l2": {
+   "first": 0.0,
+   "last": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "nonfinite": 0
+  },
+  "Episode_Reward/ang_vel_xy_l2": {
+   "first": 0.0,
+   "last": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "nonfinite": 0
+  },
+  "Episode_Reward/track_lin_vel_xy_exp": {
+   "first": 0.0032,
+   "last": 0.291872,
+   "min": 0.0032,
+   "max": 0.407479,
+   "nonfinite": 0
+  },
+  "Episode_Reward/track_ang_vel_z_exp": {
+   "first": 0.002617,
+   "last": 0.713413,
+   "min": 0.002617,
+   "max": 0.719812,
+   "nonfinite": 0
+  },
+  "Metrics/base_velocity/error_vel_xy": {
+   "first": 0.018541,
+   "last": 1.565431,
+   "min": 0.018541,
+   "max": 1.702471,
+   "nonfinite": 0
+  },
+  "Train/mean_episode_length": {
+   "first": 12.01087,
+   "last": 995.609985,
+   "min": 12.01087,
+   "max": 1000.0,
+   "nonfinite": 0
+  }
+ },
+ "checkpoint_sha256": "8c65b6796b2fde2db93a6b4c9e8a01c46aaa7fd07b01ff1a1c89ed8cf2e3cd2a",
+ "parent_wall_s": {
+  "train_s": 590.8,
+  "telemetry_extract_s": 1.5,
+  "fixed_eval_s": 67.5
+ },
+ "parent_wall_scope": "부모 프로세스 벽시계(초). GPU 커널 시간이나 절감량이 아니다",
+ "scope": "설계자 밖 외부 결함 한 종류·seed 하나의 학습 실패 유무 거르기. 진단 성능·일반화·미관측 seed 평가가 아니다",
+ "model_calls": 0
+}
