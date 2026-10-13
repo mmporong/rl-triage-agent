@@ -2,7 +2,8 @@
 
 사례 = (seed, 해로운 변경, 사전등록 위치). 개발 사례 D0(이미 본 seed, 집계 제외)와 본실험 C1~C3(새 seed 2035~2037,
 U1·F1·F2). 재학습은 (seed, 적용 부분집합) 캐시를 방법끼리 함께 쓰고, 방법별 비용은 그 방법이 혼자 돌았을 때의 질의로 센다
-(evals/d3_methods.py). 결과 문구는 evals/d3_summary.py의 네 가지다. 프로토콜은 bench/protocols/d3_experiment_v1.json.
+(evals/d3_methods.py). 결과 문구는 evals/d3_summary.py의 네 가지다. 프로토콜은 bench/protocols/d3_experiment_v2.json
+(v1은 시작하지 않고 무해성 smoke v1 fail로 대체했다. FIXED version_history).
 
   python evals/run_d3_experiment.py prepare | verify
   python evals/run_d3_experiment.py begin --case D0                   # 실험 커밋 기록·전제 확인
@@ -57,9 +58,10 @@ import run_d3_harmless_smoke as H  # noqa: E402
 sha, read, write_new, load_params, finished, find_run_dir, _owned = (
     H.sha, H.read, H.write_new, H.load_params, H.finished, H.find_run_dir, H._owned)
 
-PROTOCOL = ROOT / "bench/protocols/d3_experiment_v1.json"
+VERSION = "v2"
+PROTOCOL = ROOT / f"bench/protocols/d3_experiment_{VERSION}.json"
 PRIVATE = ROOT / "bench/private/d3_experiment"
-RESULTS = ROOT / "evals/results/d3_experiment_v1"
+RESULTS = ROOT / f"evals/results/d3_experiment_{VERSION}"
 SUMMARIES = ROOT / "evals/results"
 RUNS_DIR = ROOT / "bench/runs_d3"
 P0C = ROOT / "evals/results/p0c_fixed_eval_20261009"
@@ -83,7 +85,7 @@ CASES = {
 }
 CODE = ("bench/d3_changes.py", "bench/d3_diff.py", "bench/train_with_d3_changes.py", "bench/d3_isaac.py",
         "evals/d3_methods.py", "evals/d3_summary.py", "evals/d3_agent.py", "evals/d3_model_call.py",
-        "evals/run_d3_experiment.py", "evals/run_d3_harmless_smoke.py", "bench/protocols/d3_harmless_smoke_v1.json",
+        "evals/run_d3_experiment.py", "evals/run_d3_harmless_smoke.py", "bench/protocols/d3_harmless_smoke_v2.json",
         "bench/upstream_faults.py", "bench/hidden_faults.py", "evals/run_upstream_smoke.py", "evals/probes.py",
         "src/rl_triage/probe_loop.py", "src/rl_triage/correction_ledger.py", "src/rl_triage/correction_registry.py",
         "bench/extract_tb.py", "evals/fixed_eval.py", "bench/protocols/fixed_eval_v1.json",
@@ -104,7 +106,7 @@ def rel(path: Path) -> str:
 # --- 사례 정의 ---
 def position(case: str) -> int:
     """해로운 변경의 1부터 센 위치. 문자열 seed 난수로 결과를 보기 전에 정한다."""
-    return random.Random(f"d3_experiment_v1:{case}").randint(1, len(D.HARMLESS) + 1)
+    return random.Random(f"d3_experiment_{VERSION}:{case}").randint(1, len(D.HARMLESS) + 1)
 
 
 def case_spec(case: str) -> dict:
@@ -128,7 +130,7 @@ def spec_of(ids) -> str:
 
 def run_name(case: str, mask: int, attempt: int = 1, rep: bool = False) -> str:
     seed = CASES[case]["seed"]
-    return f"d3v1_{case.lower()}_s{seed}_m{mask:02x}" + ("_rep" if rep else "") + ("" if attempt == 1 else f"_a{attempt}")
+    return f"d3{VERSION}_{case.lower()}_s{seed}_m{mask:02x}" + ("_rep" if rep else "") + ("" if attempt == 1 else f"_a{attempt}")
 
 
 def predicted_retrains(case: str) -> dict:
@@ -145,14 +147,17 @@ def predicted_retrains(case: str) -> dict:
 
 
 FIXED = {
-    "schema": "d3_experiment_protocol_v1",
+    "schema": f"d3_experiment_protocol_{VERSION}",
+    "version_history": {"v1": {"protocol": "bench/protocols/d3_experiment_v1.json", "commit": "1057441", "status": "시작하지 않음",
+                               "superseded_because": "무해성 smoke v1(a17480d)이 fail이어서 무해 목록이 H2 → S4로 바뀌었다. 사례·seed·방법·판정 규칙은 그대로이고 위치(문자열 seed에 판 이름)와 예측만 다시 계산했다"}},
     "question": "실패한 학습 하나에 변경 8개가 섞여 있고 그중 하나만 해로울 때, 해로운 변경을 확정하기까지 확인 재학습이 몇 번 "
                 "필요한가. 같은 재학습 상한에서 이분 탐색·하나씩 되돌리기·probe 범주 규칙·모델 순위(probe 있음·없음)를 비교한다",
     "scope": "Go2 flat 4096 env × 300회, k = 8, 사전등록 사례 3건(+집계하지 않는 개발 사례 1건). 결함·무해 변경·probe는 같은 "
              "설계자가 만들었고(U1만 외부 원인 결함의 의미 이식), 진단 정확도·일반화·실제 프로젝트에서의 절감을 재지 않는다",
     "changes": {cid: H.catalog_entry(cid) for cid in (*D.HARMLESS, *D.HARMFUL)},
     "cases": {case: {key: value for key, value in case_spec(case).items() if key != "labels"} for case in CASES},
-    "position_rule": "random.Random('d3_experiment_v1:<사례>').randint(1, 8). 무해 7개는 카탈로그 순서, 해로운 변경을 그 위치에 넣는다",
+    "position_rule": "random.Random('d3_experiment_v2:<사례>').randint(1, 8). 무해 7개(v2 목록)는 카탈로그 순서, 해로운 변경을 그 "
+                     "위치에 넣는다",
     "label_rule": "모델 입력에는 사례 순서(cases.order)의 라벨 change_1..change_8과 diff 원문만 넣는다. 변경 id·범주·역할은 넣지 않는다",
     "confirmation_rule": "변경 c 하나만 되돌린 재학습(전체 − {c})이 healthy일 때만 c를 확정한다(모든 방법 공통). 이 관측 없이 이름만 "
                          "대면 확정이 아니다",
@@ -204,7 +209,7 @@ FIXED = {
     "combination": {"decision": "U1은 bench/d3_changes.py 카탈로그(bench/upstream_faults.SWAPS·swap_code)로 무해 변경과 같은 "
                                 "프로세스에서 건다. 학습은 bench/train_with_d3_changes.py, probe는 bench/d3_isaac.py",
                     "not_used": "sub_2의 bench/upstream_isaac.py·upstream_runs.py는 결함 하나 단위 진입점이라 쓰지도 고치지도 않는다"},
-    "smoke_dependency": {"rule": "begin은 무해성 smoke(bench/protocols/d3_harmless_smoke_v1.json) 요약이 pass이고 그 변경 목록이 "
+    "smoke_dependency": {"rule": "begin은 무해성 smoke(bench/protocols/d3_harmless_smoke_v2.json) 요약이 pass이고 그 변경 목록이 "
                                  "지금 카탈로그 HARMLESS와 같을 때만 진행한다",
                          "fail_branch": "smoke가 fail·invalid면 이 프로토콜로는 시작하지 않는다. 원인 분리(변경별·범주별 smoke)나 예비 후보 "
                                         "교체를 새 smoke 판으로 사전등록해 pass를 얻은 뒤, 바뀐 HARMLESS로 이 실험 프로토콜도 새 판으로 "
@@ -233,12 +238,14 @@ FIXED = {
                   "source_binding": "begin이 기록한 HEAD가 그 사례의 실험 커밋이다. 이후 단계는 프로토콜·결합 코드가 커밋돼 있고 실험 커밋과 "
                                     "현재 HEAD 사이에 결합 경로 diff가 없을 때만 진행한다. 실행 중 결합 경로 커밋은 그 실행을 invalid로 만든다"},
     "gpu_estimate": {"unit": "부모 프로세스 벽시계(초)",
-                     "per_training_with_eval_s": [558, 1001],
-                     "basis": "무해성 smoke gpu_estimate와 같은 근거(시연 교정 재학습 508.8~541.1 s, U1 smoke 590.8 s, 고정 평가 48.4~67.5 s, "
-                              "경합 상한 873.6 s)",
-                     "per_case": "NONE·실패 실행 2회 + 기준 probe 약 90 s + 고리 probe 1~4회(회당 약 20~32 s) + 확인 재학습 합집합 5~9회",
-                     "development_extra": "D0 결정성 재학습 0~1회",
-                     "total_hours": "개발 사례 약 1.2~2.6시간, 본실험 3사례 약 3.3~7.5시간(설계안 8절 추정을 같은 근거로 다시 계산)"},
+                     "per_training_with_eval_s": [542, 1001],
+                     "basis": "무해성 smoke v2 gpu_estimate와 같은 근거(smoke v1 542.0·674.7 s/seed, 시연 교정 재학습 508.8~541.1 s, "
+                              "U1 smoke 590.8 s, 고정 평가 48.2~67.5 s, 경합 상한 873.6 s)",
+                     "per_case": "NONE·실패 실행 2회 + 기준 probe 약 90 s + 고리 probe 3~4회(회당 약 20~32 s) + 확인 재학습 합집합. "
+                                 "합집합(상호작용 없음, 고리가 예측대로, B4·B5 순위 최선~최악): D0 3~10, C1 4~10, C2 9~10, C3 4~10",
+                     "development_extra": "D0 결정성 재학습 0~1회(smoke v2 s2026 체크포인트와 같으면 0)",
+                     "total_hours": "학습 1회 약 600 s 기준 개발 사례 약 0.8~2.0시간, 본실험 3사례 약 3.8~6.0시간. 경합 상한(1,001 s)이면 "
+                                    "각각 약 1.4~3.3시간, 6.4~10.0시간"},
 }
 DYNAMIC = {"source_files", "isaaclab_sources", "rendered_diffs", "bands", "bands_summary_sha256_lf", "smoke_protocol_sha256_lf"}
 

@@ -456,8 +456,10 @@ def test_summarize_needs_every_main_case_and_writes_one_summary(tmp_path, monkey
 @needs_inputs
 def test_the_protocol_fixes_cases_positions_predictions_and_rules(protocol):
     assert {c: (v["seed"], v["harmful"], v["position"]) for c, v in protocol["cases"].items()} == {
-        "D0": (2026, "U1", 1), "C1": (2035, "U1", 6), "C2": (2036, "F1", 5), "C3": (2037, "F2", 7)}
-    assert protocol["predictions"]["computed"]["C3"] == {"B1": 3, "B2": 7, "B3": 2}
+        "D0": (2026, "U1", 1), "C1": (2035, "U1", 2), "C2": (2036, "F1", 7), "C3": (2037, "F2", 2)}
+    assert protocol["predictions"]["computed"]["C3"] == {"B1": 4, "B2": 2, "B3": 1}
+    assert protocol["version_history"]["v1"]["status"] == "시작하지 않음" and X.PROTOCOL.name == "d3_experiment_v2.json"
+    assert all("S4" in c["order"] and "H2" not in c["order"] for c in protocol["cases"].values())
     assert protocol["cap"] == 8 and protocol["model"]["id"] == X.MODEL
     assert set(protocol["rendered_diffs"]) == set(D.CHANGES)
     assert all(c["order"][c["position"] - 1] == c["harmful"] and len(c["order"]) == 8 for c in protocol["cases"].values())
@@ -490,7 +492,7 @@ def test_main_reports_a_busy_gpu_and_requires_the_case(monkeypatch, capsys):
 def test_run_names_and_subsets_are_readable_and_never_carry_change_ids():
     order = X.case_spec("C1")["order"]
     assert X.ids_of(order, 0) == () and X.spec_of(()) == "NONE"
-    assert X.ids_of(order, MT.single_revert(8, 5)) == tuple(D.HARMLESS)
-    assert X.run_name("C1", 0xDF) == "d3v1_c1_s2035_mdf" and X.run_name("C1", 0xDF, 2) == "d3v1_c1_s2035_mdf_a2"
+    assert X.ids_of(order, MT.single_revert(8, X.case_spec("C1")["harmful_index"])) == tuple(D.HARMLESS)
+    assert X.run_name("C1", 0xDF) == "d3v2_c1_s2035_mdf" and X.run_name("C1", 0xDF, 2) == "d3v2_c1_s2035_mdf_a2"
     assert not re.search(r"\b(H[1-7]|U1|F1|F2)\b", X.run_name("C1", 0xDF, rep=True))
     assert subprocess.list2cmdline(X.train_command(ISAACLAB, 2035, "n")).count("U1") == 0

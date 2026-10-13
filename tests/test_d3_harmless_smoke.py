@@ -168,20 +168,34 @@ def test_readback_for_other_changes_or_a_partial_readback_is_not_ok():
 
 
 def test_params_differences_show_values_only_for_registered_keys():
-    reference = {"env.yaml:rewards.track_lin_vel_xy_exp.weight": 1.5, "env.yaml:sim.dt": 0.005,
-                 "agent.yaml:run_name": "baseline_p0c_s2026", "env.yaml:same": 1}
-    run = {**reference, "env.yaml:rewards.track_lin_vel_xy_exp.weight": 1.4, "env.yaml:sim.dt": 0.02,
-           "agent.yaml:run_name": "d3_harmless_v1_s2026"}
+    noise = "env.yaml:observations.policy.joint_vel.noise.n_max"
+    retired = "env.yaml:rewards.track_lin_vel_xy_exp.weight"  # v1의 H2 키는 v2에서 등록 키가 아니다
+    reference = {noise: 1.5, retired: 1.5, "env.yaml:sim.dt": 0.005, "agent.yaml:run_name": "baseline_p0c_s2026",
+                 "env.yaml:same": 1}
+    run = {**reference, noise: 1.2, retired: 1.4, "env.yaml:sim.dt": 0.02, "agent.yaml:run_name": "d3_harmless_v2_s2026"}
     assert H.params_differences(run, reference) == {
-        "agent.yaml:run_name": ["baseline_p0c_s2026", "d3_harmless_v1_s2026"], "env.yaml:sim.dt": "값 생략",
-        "env.yaml:rewards.track_lin_vel_xy_exp.weight": [1.5, 1.4]}
+        "agent.yaml:run_name": ["baseline_p0c_s2026", "d3_harmless_v2_s2026"], "env.yaml:sim.dt": "값 생략",
+        noise: [1.5, 1.2], retired: "값 생략"}
+
+
+def test_the_version_history_matches_the_public_v1_results():
+    history = H.FIXED["version_history"]
+    assert history["v1"]["changes"] == list(D.HARMLESS_V1) and history["v2_change"]["retired"] == ["H2"]
+    for seed, path in H.PREVIOUS["results"].items():
+        result = H.read(ROOT / path)
+        observed = history["v1"]["observed"][seed]
+        assert (result["outcome"], result["verdict"]["label"]) == ("harmless_fail", observed["verdict"])
+        for key in ("err_xy_ratio", "err_yaw_ratio", "fall_frac"):
+            assert round(result["comparison"][key], 4) == observed[key], (seed, key)
+    assert H.read(ROOT / H.PREVIOUS["summary"])["outcome"] == history["v1"]["outcome"] == "fail"
+    assert (ROOT / H.PREVIOUS["protocol"]).is_file() and H.PROTOCOL.name == "d3_harmless_smoke_v2.json"
 
 
 # --- 프로토콜 ---
 @needs_inputs
 def test_the_protocol_records_changes_reserves_amendments_margins_and_rules(protocol):
     assert list(protocol["changes"]) == list(D.HARMLESS) and list(protocol["reserves"]) == list(D.RESERVE)
-    assert [a["id"] for a in protocol["amendments_from_design_draft"]] == ["H1", "H4", "H6", "reserve"]
+    assert [a["id"] for a in protocol["amendments_from_design_draft"]] == ["H1", "H4", "H6", "H2", "reserve"]
     assert protocol["apply"]["hydra_overrides"] == D.hydra_overrides(D.HARMLESS) and protocol["apply"]["spec"] == H.SPEC
     assert protocol["judgment"]["margins"] == {"err_xy_ratio_max": 1.05, "err_yaw_ratio_max": 1.05, "fall_frac_max": 0.02}
     assert protocol["seeds"] == [2026, 2027] and set(protocol["reference_inputs"]) == {"2026", "2027"}
@@ -233,7 +247,7 @@ def test_the_training_command_carries_no_change_ids():
     command = H.train_command(ISAACLAB, 2026, H.run_name(2026, 1))
     assert Path(command[1]).name == "train_with_d3_changes.py" and command[command.index("--seed") + 1] == "2026"
     assert not [part for part in command for cid in D.CHANGES if re.search(rf"\b{cid}\b", part)]
-    assert command[-2:] == ["--run_name", "d3_harmless_v1_s2026"] and H.run_name(2027, 2) == "d3_harmless_v1_s2027_a2"
+    assert command[-2:] == ["--run_name", "d3_harmless_v2_s2026"] and H.run_name(2027, 2) == "d3_harmless_v2_s2027_a2"
 
 
 # --- 실행 흐름(GPU 없이 소유 Job 실행을 대신한다) ---
@@ -330,8 +344,8 @@ def test_execute_trains_extracts_evaluates_and_writes_once(lab):
     assert (out["outcome"], out["failed_checks"], out["failure"]) == ("harmless_pass", [], None)
     result = _result(TAG)
     assert (result["seed"], result["attempt"], result["run_name"], result["changes"]) == (
-        2026, 1, "d3_harmless_v1_s2026", list(D.HARMLESS))
-    assert result["params_differences"] == _params(2026, "d3_harmless_v1_s2026") and result["model_calls"] == 0
+        2026, 1, "d3_harmless_v2_s2026", list(D.HARMLESS))
+    assert result["params_differences"] == _params(2026, "d3_harmless_v2_s2026") and result["model_calls"] == 0
     assert lab.state["calls"] == ["train_with_d3_changes.py", "extract_tb.py", "fixed_eval.py"]
     assert lab.state["verify_calls"] == 3  # 시작·평가 직전·평가 뒤
     assert "C:" not in json.dumps(result) and "LIMMM" not in json.dumps(result)
@@ -416,7 +430,7 @@ def test_a_training_watchdog_timeout_allows_exactly_one_retry_under_a_new_run_na
     with pytest.raises(ValueError, match="시도 2"):  # 다른 seed의 기록으로는 재시도하지 않는다
         H.execute(TAG + "b", 2027, lab.path, retry_of=TAG)
     assert H.execute(TAG + "b", 2026, lab.path, retry_of=TAG)["outcome"] == "harmless_pass"
-    assert (_result(TAG + "b")["attempt"], _result(TAG + "b")["run_name"]) == (2, "d3_harmless_v1_s2026_a2")
+    assert (_result(TAG + "b")["attempt"], _result(TAG + "b")["run_name"]) == (2, "d3_harmless_v2_s2026_a2")
     with pytest.raises(ValueError, match="시도 2"):
         H.execute(TAG + "c", 2026, lab.path, retry_of=TAG + "b")
 

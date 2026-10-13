@@ -1,0 +1,658 @@
+{
+ "schema": "d3_harmless_smoke_protocol_v2",
+ "version_history": {
+  "v1": {
+   "protocol": "bench/protocols/d3_harmless_smoke_v1.json",
+   "summary": "evals/results/d3_harmless_summary_20261014/summary.json",
+   "results": {
+    "2026": "evals/results/d3_harmless_smoke_20261014_s2026/result.json",
+    "2027": "evals/results/d3_harmless_smoke_20261014_s2027/result.json"
+   },
+   "commit": "a17480d",
+   "changes": [
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "H5",
+    "H6",
+    "H7"
+   ],
+   "outcome": "fail",
+   "observed": {
+    "2026": {
+     "verdict": "healthy",
+     "err_xy_ratio": 1.0623,
+     "err_yaw_ratio": 0.9464,
+     "fall_frac": 0.0
+    },
+    "2027": {
+     "verdict": "healthy",
+     "err_xy_ratio": 1.0896,
+     "err_yaw_ratio": 0.783,
+     "fall_frac": 0.0
+    }
+   },
+   "reading": "[관찰] 두 seed 모두 p0c healthy·낙상 0이었지만 선속도 오차 비만 여유 기준 1.05를 넘었고 yaw 오차 비는 1 미만이었다. [추론] 선속도 추종 보상 가중치를 낮춘 H2(1.5 → 1.4)가 가장 유력하다(선속도 추종 비중이 줄고 상대적으로 회전 비중이 커지는 방향과 일치). 7개를 함께 적용해 원인은 가르지 않았다"
+  },
+  "v2_change": {
+   "retired": [
+    "H2"
+   ],
+   "added": [
+    "S4"
+   ],
+   "rule": "v1 결과를 보고 고른 교체다. H2를 같은 reward 범주의 수식 보존 예비 S4(action_rate_l2 제곱 → 같은 값의 곱)로 바꿨다. 여유 기준(오차 비 1.05·낙상 0.02)·seed(2026·2027)·나머지 6개 변경은 바꾸지 않았다",
+   "caveat": "v1과 같은 seed라 나머지 6개는 이미 이 seed에서 (H2와 함께) 학습된 적이 있다. v2 pass도 H2가 원인이었다는 증명이 아니다(H2를 단독으로 재지 않았다)"
+  }
+ },
+ "question": "D3 무해 변경 v2 목록 7개를 모두 적용한 Go2 flat 4096 env × 300회 학습이 이미 본 seed 2026·2027에서 같은 seed 정상 학습 대비 p0c 밴드 healthy이고 여유 기준 안인가",
+ "scope": "D3 본실험 사전등록 전 무해 목록 확정을 위한 거르기. 변경 하나하나의 무해성·변경 간 상호작용·새 seed에서의 무해성·진단 성능·방법 비교가 아니다",
+ "changes": {
+  "H1": {
+   "role": "harmless",
+   "kind": "code",
+   "category": "reward",
+   "definition": "flat_orientation_l2의 제곱을 torch.square 대신 같은 값의 곱으로 계산한다(같은 수식)",
+   "sources": [
+    "의미 보존 리팩터링이라 수치 출처가 없다"
+   ],
+   "targets": [
+    {
+     "file": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+     "qualname": "flat_orientation_l2",
+     "edits": [
+      [
+       "    return torch.sum(torch.square(asset.data.projected_gravity_b[:, :2]), dim=1)",
+       "    gravity_xy = asset.data.projected_gravity_b[:, :2]\n    return torch.sum(gravity_xy * gravity_xy, dim=1)"
+      ]
+     ]
+    }
+   ]
+  },
+  "H3": {
+   "role": "harmless",
+   "kind": "code",
+   "category": "reward",
+   "definition": "feet_air_time이 읽는 발 체공 시간을 5.0 s에서 자른다(보행 체공 시간보다 훨씬 긴 경우에만 걸림)",
+   "sources": [
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/mdp/rewards.py feet_air_time_positive_biped의 torch.clamp(reward, max=threshold)(같은 파일의 clamp 선례). 5.0 s는 설계자 선택"
+   ],
+   "targets": [
+    {
+     "file": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/mdp/rewards.py",
+     "qualname": "feet_air_time",
+     "edits": [
+      [
+       "last_air_time = contact_sensor.data.last_air_time[:, sensor_cfg.body_ids]",
+       "last_air_time = torch.clamp(contact_sensor.data.last_air_time[:, sensor_cfg.body_ids], max=5.0)"
+      ]
+     ]
+    }
+   ]
+  },
+  "H4": {
+   "role": "harmless",
+   "kind": "config",
+   "category": "actuator",
+   "definition": "Go2 DC 모터 effort_limit·saturation_effort 23.5 → 23.7",
+   "sources": [
+    "source/isaaclab_assets/isaaclab_assets/robots/unitree.py:38-40"
+   ],
+   "overrides": {
+    "env.scene.robot.actuators.base_legs.effort_limit": [
+     23.5,
+     23.7
+    ],
+    "env.scene.robot.actuators.base_legs.saturation_effort": [
+     23.5,
+     23.7
+    ]
+   },
+   "file": "source/isaaclab_assets/isaaclab_assets/robots/unitree.py",
+   "scope": "UNITREE_GO2_CFG",
+   "edits": [
+    [
+     "effort_limit=23.5,",
+     "effort_limit=23.7,"
+    ],
+    [
+     "saturation_effort=23.5,",
+     "saturation_effort=23.7,"
+    ]
+   ],
+   "range": {
+    "inside": true,
+    "values": {
+     "go2 unitree.py:170-171": 23.5,
+     "go1 unitree.py:38,40(spec sheet)": 23.7
+    }
+   }
+  },
+  "H5": {
+   "role": "harmless",
+   "kind": "config",
+   "category": "observation",
+   "definition": "관절 속도 관측 노이즈 ±1.5 → ±1.2",
+   "sources": [
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/spot/flat_env_cfg.py:96-98"
+   ],
+   "overrides": {
+    "env.observations.policy.joint_vel.noise.n_min": [
+     -1.5,
+     -1.2
+    ],
+    "env.observations.policy.joint_vel.noise.n_max": [
+     1.5,
+     1.2
+    ]
+   },
+   "file": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py",
+   "scope": "ObservationsCfg.PolicyCfg",
+   "edits": [
+    [
+     "noise=Unoise(n_min=-1.5, n_max=1.5)",
+     "noise=Unoise(n_min=-1.2, n_max=1.2)"
+    ]
+   ],
+   "range": {
+    "inside": true,
+    "values": {
+     "velocity_env_cfg.py:132": 1.5,
+     "spot flat_env_cfg.py:97": 0.5
+    }
+   }
+  },
+  "H6": {
+   "role": "harmless",
+   "kind": "code",
+   "category": "logging",
+   "definition": "보상 관리자 시작 표의 가중치 열을 유효숫자 4자리 문자열로 출력한다(학습 값과 무관)",
+   "sources": [
+    "출력 형식 변경이라 수치 출처가 없다"
+   ],
+   "targets": [
+    {
+     "file": "source/isaaclab/isaaclab/managers/reward_manager.py",
+     "qualname": "RewardManager.__str__",
+     "edits": [
+      [
+       "table.add_row([index, name, term_cfg.weight])",
+       "table.add_row([index, name, f\"{term_cfg.weight:.4g}\"])"
+      ]
+     ]
+    }
+   ]
+  },
+  "H7": {
+   "role": "harmless",
+   "kind": "config",
+   "category": "optimizer",
+   "definition": "PPO entropy_coef 0.01 → 0.008",
+   "sources": [
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/g1/agents/rsl_rl_ppo_cfg.py:28"
+   ],
+   "overrides": {
+    "agent.algorithm.entropy_coef": [
+     0.01,
+     0.008
+    ]
+   },
+   "file": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py",
+   "scope": "UnitreeGo2RoughPPORunnerCfg",
+   "edits": [
+    [
+     "entropy_coef=0.01,",
+     "entropy_coef=0.008,"
+    ]
+   ],
+   "range": {
+    "inside": true,
+    "values": {
+     "go2·go1·a1·h1 ppo": 0.01,
+     "g1 rsl_rl_ppo_cfg.py:28": 0.008,
+     "anymal ppo": 0.005,
+     "spot ppo": 0.0025
+    }
+   }
+  },
+  "S4": {
+   "role": "reserve",
+   "kind": "code",
+   "category": "reward",
+   "definition": "action_rate_l2의 제곱을 torch.square 대신 같은 값의 곱으로 계산한다(같은 수식)",
+   "sources": [
+    "의미 보존 리팩터링이라 수치 출처가 없다"
+   ],
+   "targets": [
+    {
+     "file": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+     "qualname": "action_rate_l2",
+     "edits": [
+      [
+       "    return torch.sum(torch.square(env.action_manager.action - env.action_manager.prev_action), dim=1)",
+       "    action_delta = env.action_manager.action - env.action_manager.prev_action\n    return torch.sum(action_delta * action_delta, dim=1)"
+      ]
+     ]
+    }
+   ]
+  }
+ },
+ "reserves": {
+  "S1": {
+   "role": "reserve",
+   "kind": "config",
+   "category": "termination",
+   "definition": "base_contact 종료 접촉력 임계 1.0 → 1.1",
+   "sources": [
+    "문서화된 값은 모두 1.0이라 1.1은 설계자 선택"
+   ],
+   "overrides": {
+    "env.terminations.base_contact.params.threshold": [
+     1.0,
+     1.1
+    ]
+   },
+   "file": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py",
+   "scope": "TerminationsCfg",
+   "edits": [
+    [
+     "body_names=\"base\"), \"threshold\": 1.0}",
+     "body_names=\"base\"), \"threshold\": 1.1}"
+    ]
+   ],
+   "range": {
+    "inside": false,
+    "values": {
+     "velocity_env_cfg.py:273·spot·digit": 1.0
+    }
+   }
+  },
+  "S2": {
+   "role": "reserve",
+   "kind": "config",
+   "category": "optimizer",
+   "definition": "PPO learning_rate 1.0e-3 → 9.0e-4",
+   "sources": [
+    "문서화된 값은 모두 1.0e-3이라 9.0e-4는 설계자 선택"
+   ],
+   "overrides": {
+    "agent.algorithm.learning_rate": [
+     0.001,
+     0.0009
+    ]
+   },
+   "file": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py",
+   "scope": "UnitreeGo2RoughPPORunnerCfg",
+   "edits": [
+    [
+     "learning_rate=1.0e-3,",
+     "learning_rate=9.0e-4,"
+    ]
+   ],
+   "range": {
+    "inside": false,
+    "values": {
+     "모든 velocity ppo": 0.001
+    }
+   }
+  },
+  "S3": {
+   "role": "reserve",
+   "kind": "config",
+   "category": "reward",
+   "definition": "dof_acc_l2 가중치 -2.5e-7 → -3.0e-7",
+   "sources": [
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/cassie/rough_env_cfg.py:91",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/g1/flat_env_cfg.py:31"
+   ],
+   "overrides": {
+    "env.rewards.dof_acc_l2.weight": [
+     -2.5e-07,
+     -3e-07
+    ]
+   },
+   "file": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py",
+   "scope": "UnitreeGo2RoughEnvCfg",
+   "edits": [
+    [
+     "self.rewards.dof_acc_l2.weight = -2.5e-7",
+     "self.rewards.dof_acc_l2.weight = -3.0e-7"
+    ]
+   ],
+   "range": {
+    "inside": true,
+    "values": {
+     "g1 flat_env_cfg.py:31": -1e-07,
+     "go2 rough_env_cfg.py:58": -2.5e-07,
+     "cassie rough_env_cfg.py:91(기본 ×1.5)": -3.75e-07
+    }
+   }
+  }
+ },
+ "amendments_from_design_draft": [
+  {
+   "id": "H1",
+   "draft": "track_ang_vel_z_exp의 제곱을 (a-b)*(a-b)로",
+   "now": "flat_orientation_l2의 제곱을 곱으로",
+   "reason": "U1이 track_ang_vel_z_exp 본문을 통째로 바꿔 같은 함수에 두 변경을 겹칠 수 없다"
+  },
+  {
+   "id": "H4",
+   "draft": "velocity_limit 30 → 32",
+   "now": "effort_limit·saturation_effort 23.5 → 23.7",
+   "reason": "32는 Isaac Lab 로봇 설정에 문서화된 속도 한계(7.5~30) 밖이다. 23.7은 같은 파일 Go1 spec sheet 값이다"
+  },
+  {
+   "id": "H6",
+   "draft": "보상 관리자에 추가 스칼라 기록",
+   "now": "보상 관리자 시작 표의 가중치 표시 형식",
+   "reason": "Episode_Reward/ 아래에 새 스칼라를 넣으면 텔레메트리 특징 코드(src/rl_triage/rules.py:73, triage_tools.py:113)가 그 항을 보상 항으로 읽는다"
+  },
+  {
+   "id": "H2",
+   "draft": "v1 무해 목록의 H2(track_lin_vel_xy_exp 가중치 1.5 → 1.4)",
+   "now": "v2 무해 목록은 H2 대신 S4(action_rate_l2 제곱을 같은 값의 곱으로)",
+   "reason": "무해성 smoke v1(a17480d)이 fail이었다. [관찰] 두 seed 모두 p0c healthy·낙상 0이었지만 선속도 오차 비만 여유 기준 1.05를 넘었고(s2026 1.0623, s2027 1.0896) yaw 오차 비는 1 미만이었다(0.9464, 0.7830). [추론] 선속도 추종 보상 가중치를 낮춘 H2가 가장 유력하다(선속도 추종 비중이 줄고 상대적으로 회전 비중이 커지는 방향과 일치). 7개를 함께 적용해 원인은 가르지 않았다. v1 결과를 보고 고른 교체이며, 같은 reward 범주의 수식 보존 변경이라 미끼 역할은 남는다"
+  },
+  {
+   "id": "reserve",
+   "draft": "예비 후보 base_contact 임계·push 간격·학습률",
+   "now": "S1 base_contact 임계, S2 학습률, S3 dof_acc_l2 가중치, S4 action_rate_l2 리팩터링",
+   "reason": "Go2 rough_env_cfg.py:33이 push_robot을 None으로 두어 push 간격 변경이 학습에 닿지 않는다"
+  }
+ ],
+ "apply": {
+  "env_var": "TRIAGE_D3_CHANGES",
+  "spec": "H1,H3,H4,H5,H6,H7,S4",
+  "hydra_overrides": [
+   "env.scene.robot.actuators.base_legs.effort_limit=23.7",
+   "env.scene.robot.actuators.base_legs.saturation_effort=23.7",
+   "env.observations.policy.joint_vel.noise.n_min=-1.2",
+   "env.observations.policy.joint_vel.noise.n_max=1.2",
+   "agent.algorithm.entropy_coef=0.008"
+  ],
+  "expected_params": {
+   "env.yaml:scene.robot.actuators.base_legs.effort_limit": [
+    23.5,
+    23.7
+   ],
+   "env.yaml:scene.robot.actuators.base_legs.saturation_effort": [
+    23.5,
+    23.7
+   ],
+   "env.yaml:observations.policy.joint_vel.noise.n_min": [
+    -1.5,
+    -1.2
+   ],
+   "env.yaml:observations.policy.joint_vel.noise.n_max": [
+    1.5,
+    1.2
+   ],
+   "agent.yaml:algorithm.entropy_coef": [
+    0.01,
+    0.008
+   ]
+  },
+  "allowed_other_params_difference": "agent.yaml:run_name",
+  "method": "코드 변경은 환경 생성 직전 함수 __code__ 교체(bench/d3_changes.py before_env), 설정 변경은 같은 값의 hydra override를 train.py 인자 뒤에 붙인다(bench/train_with_d3_changes.py). 변경 id는 환경 변수로만 넘기며 명령줄·실행 이름에 남지 않는다",
+  "diff_rendering": "bench/d3_diff.py가 변경마다 Isaac Lab 소스 diff를 만들고, 코드는 실제 교체 본문과 AST가 같은지, 설정은 바뀐 숫자가 override와 같은지 확인한다. prepare·verify는 무해·예비·해로운 변경 전부가 렌더링되고 단서 canary가 0건일 때만 통과한다"
+ },
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "seeds": [
+  2026,
+  2027
+ ],
+ "num_envs": 4096,
+ "max_iterations": 300,
+ "action_scale": 0.25,
+ "final_checkpoint": "model_299.pt",
+ "training_entry": "bench/train_with_d3_changes.py(TRIAGE_D3_CHANGES=H1,…,H7), run_case.ps1과 같은 train.py 인자",
+ "reference": {
+  "runs": {
+   "2026": "baseline_p0c_s2026",
+   "2027": "baseline_p0c_s2027"
+  },
+  "fixed_reports": {
+   "2026": "evals/results/p0c_fixed_eval_20261009/runs/baseline_p0c_s2026.json",
+   "2027": "evals/results/p0c_fixed_eval_20261009/runs/baseline_p0c_s2027.json"
+  },
+  "bands_source": "evals/results/p0c_fixed_eval_20261009/summary.json",
+  "reuse": "P0-C 정상 실행(같은 task·seed·예산, bench/train_with_fault.py NONE)의 학습·고정 평가를 다시 쓰고 정상 학습은 하지 않는다"
+ },
+ "seed_choice": {
+  "decision": "이미 본 seed 2026·2027. 같은 task·seed·예산의 정상 학습·고정 평가가 있어 학습 2회로 끝난다(설계안 2.3절)",
+  "cons": [
+   "이미 본 seed라 미관측 seed 평가가 아니다",
+   "D3 본실험 새 seed(2035~2037)에서의 무해성은 이 smoke가 보장하지 않는다. 본실험은 사례마다 같은 seed 정상 학습을 따로 하고, 무해 부분집합이 unhealthy면 interaction_observed로 처리한다(설계안 2.3절)",
+   "기준은 2026-10-09 학습이라 그사이 런타임 변화가 섞일 수 있다 → 평가 런타임 버전 일치와 params 일치를 유효 조건으로 둔다",
+   "기준은 다른 진입점(bench/train_with_fault.py, TRIAGE_FAULT=NONE)으로 학습됐다. 변경이 없을 때 두 진입점이 같은 학습을 내는지 실행으로 대조하지 않았다",
+   "7개를 함께 적용하므로 변경끼리 효과가 상쇄되는 경우를 가르지 못한다",
+   "같은 고정 평가 계약의 정상 기준 baseline_p0c_s2026~s2034(2032 없음) 8개 중 s2026은 yaw 오차가 가장 크고 선속도 오차가 두 번째로 크며, s2027은 둘 다 네 번째다. 기준 오차가 큰 편이라 같은 1.05 여유 기준이 오차가 작은 기준에서보다 느슨하고, 오차가 작은 새 seed 기준에서는 더 엄격하게 작용할 수 있다",
+   "v1과 같은 seed를 다시 쓴다. v1 결과(선속도 오차 비 초과)를 본 뒤 목록을 바꿨으므로 v2 결과는 결과를 보고 고친 목록의 확인이다(version_history.v2_change)"
+  ]
+ },
+ "judgment": {
+  "bands": "P0-C summary.json bands(p0c 밴드)로 같은 seed 기준 고정 평가와 비교한 healthy/unhealthy",
+  "margins": {
+   "err_xy_ratio_max": 1.05,
+   "err_yaw_ratio_max": 1.05,
+   "fall_frac_max": 0.02
+  },
+  "margin_scope": "선속도·yaw 오차 비는 같은 seed 기준 대비 비, 낙상은 이 실행의 고정 평가 낙상 비율(절대값)이다. 생존 비는 p0c 밴드만 본다",
+  "margin_reason": "무해 변경이 판정 경계 근처에 있으면 이분 탐색 도중 무해 부분집합이 unhealthy로 나와 결과가 흔들린다(설계안 2.3절)",
+  "seed_outcome": "유효 조건을 모두 채우고 p0c healthy이며 여유 기준 셋을 모두 지키면 harmless_pass, p0c unhealthy이거나 여유 기준 하나라도 넘으면 harmless_fail, 유효 조건이 어긋나면 invalid"
+ },
+ "execution": {
+  "owned_process": "bench/run_runtime_readback_smoke.run_owned: 소유 Windows Job, 시간 초과 시 프로세스 트리 종료, stdout·stderr 분리",
+  "watchdog_s": {
+   "training": 2700,
+   "telemetry_extract": 300,
+   "fixed_evaluation": 360
+  },
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "gpu_admission": "학습 전 GPU가 사용 중이면 아무것도 쓰지 않고 실행하지 않는다. 고정 평가 전에는 최대 1800초 동안 60초 간격으로 다시 확인한다",
+  "fixed_evaluation_entry": "evals/fixed_eval.py --protocol bench/protocols/fixed_eval_v1.json --jobs <jobs.json> --headless(U1 smoke와 같은 호출)",
+  "reverify": "고정 평가 직전과 평가 뒤에 프로토콜·결합 코드·Isaac Lab 대상 파일을 다시 확인하고(결합 경로 clean·커밋됨, 시작 커밋과 현재 HEAD 사이 결합 경로 diff 없음), 평가 뒤 체크포인트 SHA를 다시 계산한다. 결합 밖 파일의 커밋은 막지 않고 본 커밋을 모두 기록한다",
+  "seed_order": "seed 2026을 먼저, 2027을 다음에 실행한다. 한 seed가 harmless_fail로 확정되면 전체는 fail이므로 남은 seed는 실행하지 않아도 된다",
+  "skip_rule": "학습 측 검사(종료 코드·체크포인트·교체 확인 줄·params)가 하나라도 어긋나면 판정에 쓰지 않을 고정 평가는 하지 않는다",
+  "attempts": {
+   "2026": {
+    "1": "d3_harmless_v2_s2026",
+    "2": "d3_harmless_v2_s2026_a2"
+   },
+   "2027": {
+    "1": "d3_harmless_v2_s2027",
+    "2": "d3_harmless_v2_s2027_a2"
+   }
+  },
+  "retry_rule": "seed마다 시도 2는 같은 프로토콜에서 시도 1의 마지막 결과(이어 하기를 했으면 그 결과)가 끝났고 invalid_cause가 infrastructure일 때, 그 결과의 tag를 지정해 한 번만 한다. 변경·seed·판정 기준은 같다",
+  "resume_rule": "학습 측 검사(종료 코드·체크포인트·교체 확인 줄)를 통과한 뒤 추출·평가 단계의 인프라 원인으로 invalid가 된 결과는 새 tag로 같은 학습의 추출·평가·판정만 한 번 다시 한다. 학습은 다시 하지 않고, 다음 시도가 이미 시작됐으면 하지 않는다",
+  "final_rule": "seed마다 처음 나온 유효 결과(harmless_pass 또는 harmless_fail)가 최종이다. 그 seed의 시도 2·이어 하기는 모두 거부한다"
+ },
+ "seed_outcomes": {
+  "harmless_pass": "유효 조건을 모두 채우고 p0c healthy이며 여유 기준 안",
+  "harmless_fail": "유효 조건을 모두 채우고 p0c unhealthy이거나 여유 기준 밖",
+  "invalid": "아래 유효 조건 중 하나라도 어긋남(판정이 undetermined인 경우 포함). 무해 여부를 판정하지 않는다"
+ },
+ "overall_outcomes": {
+  "pass": "두 seed의 최종 결과가 모두 harmless_pass",
+  "fail": "어느 seed든 최종 결과가 harmless_fail",
+  "invalid": "fail이 없고, 모든 seed가 최종이거나 더 할 단계가 없으며, 어느 seed가 유효 결과 없이 끝남",
+  "undecided": "위 셋이 아니면 요약을 쓰지 않는다"
+ },
+ "validity_checks": {
+  "pipeline_completed": "실행기 단계(학습·추출·params 대조·평가 전 재확인·고정 평가·사후 확인)가 예외·시간 초과·소스 변경 없이 끝남",
+  "training_exit_zero": "학습 프로세스 종료 코드 0",
+  "final_checkpoint_present": "실행 폴더에 model_299.pt",
+  "injection_readback": "학습 stdout의 [d3_changes] 줄 하나: 무해 7개 id, 코드 교체 유지·결합, env 설정 값이 모두 맞음",
+  "params_overrides_applied": "params에서 override 키마다 기준 실행 값이 등록 기준값이고 이번 실행 값이 등록 새 값",
+  "params_otherwise_match": "그 밖의 params 차이는 agent run_name뿐",
+  "reference_walks": "기준 정책이 고정 평가에서 걷는다(정지 대비 오차 비 0.5 미만, 낙상 0.05 이하)",
+  "fixed_report_valid": "고정 평가 보고서가 결합한 fixed_eval_v1 계약 SHA(기준 보고서와 같음)·체크포인트 SHA·action scale을 통과",
+  "runtime_matches_reference": "고정 평가 런타임 버전이 기준 보고서와 같다",
+  "verdict_determined": "p0c 밴드 판정이 healthy 또는 unhealthy다"
+ },
+ "invalid_causes": {
+  "rule": "validity_checks 순서에서 처음 어긋난 검사의 원인 하나를 invalid_cause로 적고, 어긋난 검사 전체는 failed_checks에 남긴다. 학습 뒤 단계(추출 이후)에서 실행기가 멈췄어도 학습 3검사와, params를 읽었으면 params 2검사 중 어긋난 것이 있으면 그 원인을 적는다",
+  "by_check": {
+   "pipeline_completed": "infrastructure",
+   "training_exit_zero": "training_process",
+   "final_checkpoint_present": "training_process",
+   "injection_readback": "injection",
+   "params_overrides_applied": "injection",
+   "params_otherwise_match": "comparability",
+   "reference_walks": "comparability",
+   "fixed_report_valid": "evaluation",
+   "runtime_matches_reference": "comparability",
+   "verdict_determined": "evaluation"
+  },
+  "change_induced_crash": "변경 때문에 학습 프로세스가 죽거나(종료 코드≠0) 체크포인트가 없어도 training_process로 invalid다. harmless_fail로 세지 않지만 목록은 확정되지 않는다. 학습 단계 watchdog 초과는 원인과 관계없이 infrastructure로 기록된다",
+  "judge_failure": "판정 계산 자체가 예외로 끝나면 실패 단계 judge, invalid_cause runner로 남긴다. 실행기 결함이라 재실행·이어 하기 대상이 아니다"
+ },
+ "prediction": {
+  "seed_outcome": "harmless_pass",
+  "overall": "pass",
+  "reason": "코드 변경 4개는 같은 수식이거나(H1·S4) 보행 체공 시간보다 훨씬 긴 경우에만 걸리거나(H3) 학습 값과 무관하고(H6), 설정 변경 3개는 Isaac Lab 다른 로봇 설정에 문서화된 범위 안의 작은 수치 변화다. v1에서 선속도 오차 비를 1.05 위로 민 것으로 보이는 보상 가중치 변경(H2)은 뺐다[추론]"
+ },
+ "failure_rule": "fail·invalid가 나와도 이 결과를 보고 여유 기준·변경 수치·seed를 바꾸지 않는다. 7개를 함께 적용한 smoke는 원인 변경을 가르지 못하므로, 후속은 그 이유를 적은 새 프로토콜 버전으로 사전등록한다. 시도·최종 표식은 프로토콜 SHA별이다",
+ "next_if_fail": {
+  "v3": "범주별 분리 smoke를 seed 2026 하나로 사전등록한다. 묶음 A(reward 코드 H1·S4·H3), B(설정 H4·H5·H7), C(로깅 H6)를 따로 학습해 같은 여유 기준으로 본다(학습 3회, 기준은 baseline_p0c_s2026)",
+  "v4": "여유 기준을 넘은 묶음의 변경을 남은 예비(S1·S2·S3)나 새 후보로 바꾼 목록으로 두 seed smoke를 다시 한다",
+  "no_single_group": "어느 묶음도 단독으로 넘지 않으면(조합 효과) 무해 변경 수(k)를 줄이는 것은 설계 변경이므로 메인·사용자 결정으로 넘긴다",
+  "invalid": "invalid는 실행 규칙(시도 2·이어 하기)대로만 다시 하고, 끝내 유효 결과가 없으면 같은 목록으로 새 판을 만든다"
+ },
+ "used_for": "D3 무해 목록 확정 여부만. 진단 성능·교정·방법 비교 수치로 쓰지 않는다",
+ "gpu_estimate": {
+  "unit": "부모 프로세스 벽시계(초). GPU 커널 시간이나 절감량이 아니다",
+  "train_s": [
+   492.6,
+   873.6
+  ],
+  "train_basis": "같은 4096 env × 300회 학습의 공개 기록: 무해성 smoke v1 492.6·621.0 s(evals/results/d3_harmless_smoke_20261014_s*), 종단 시연 교정 재학습 508.8~541.1 s(evals/results/e2e_*_20261013 train_parent_wall_s), U1 smoke 590.8 s. 상한 873.6 s는 GPU 경합 구간 기록(run_upstream_smoke gpu_estimate의 ref_e01_s2028)",
+  "telemetry_extract_s": [
+   1.2,
+   60
+  ],
+  "fixed_eval_s": [
+   48.2,
+   67.5
+  ],
+  "fixed_eval_basis": "무해성 smoke v1 48.2·52.4 s, 시연 교정 평가 48.4~54.9 s, U1 smoke 67.5 s",
+  "per_seed_s": [
+   542,
+   1001
+  ],
+  "total_s": [
+   1084,
+   2002
+  ]
+ },
+ "wording": {
+  "pass": "무해 변경 7개를 모두 적용한 학습이 이미 본 seed 2026·2027에서 같은 seed 정상 학습 대비 p0c 밴드와 여유 기준(선속도·yaw 오차 비 1.05 이하, 낙상 0.02 이하) 안이었다. 7개를 함께 적용한 seed 두 개의 결과이며, 변경 하나하나나 새 seed에서의 무해성을 보장하지 않는다.",
+  "fail": "무해 변경 7개를 모두 적용한 학습이 적어도 한 seed에서 p0c 밴드나 여유 기준을 벗어났다. 어느 변경 때문인지는 이 smoke로 가르지 않으며, 무해 목록은 확정하지 않는다.",
+  "invalid": "smoke가 사전등록한 유효 조건을 채우지 못해 무해 목록 확정 여부를 판정하지 않는다."
+ },
+ "source_files": {
+  "bench/d3_changes.py": "cee73dd87f88187ef59a06e09c1342bfc026b15a19950f81dab513d0aecca2ed",
+  "bench/d3_diff.py": "c5ef2ae8f610f8fe628299a76507d6dacbc9441cc6bd80d4bc637397548678d9",
+  "bench/train_with_d3_changes.py": "1254b3b71ff1d0981a9d1cfc296e10665d810087fc1bb74f5485bb5148b25cb3",
+  "evals/run_d3_harmless_smoke.py": "afb159ca67cefec994a80bcba790322b519a057251457bd211a2c7f2a8d87dfb",
+  "bench/upstream_faults.py": "58d7c07f481328c606a191ea55ba8f9f8e54388db9db121e925c69c8878ae249",
+  "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+  "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+  "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+  "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+  "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+  "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+  "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+  "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+  "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e"
+ },
+ "isaaclab_sources": {
+  "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+  "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+  "source/isaaclab/isaaclab/managers/reward_manager.py": "5d41d6a376cfb456849d861c3232694ea5662cc38970e2e2c7e5152f156d88d7",
+  "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+  "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+  "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/mdp/rewards.py": "29c0d6d71d44fa57d81819a0ee4a710740688d28568b88502705d0338b6856e0",
+  "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+ },
+ "reference_inputs": {
+  "2026": {
+   "run": "baseline_p0c_s2026",
+   "bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1513,
+    "err_yaw_ratio_max": 1.1719,
+    "fall_frac_max": 0.05
+   },
+   "checkpoint_sha256": "2e1e84cdbe5b348d1b6c3fe99c4894c95029ab5a18d3ebde69cd1e1743e80b2f",
+   "fixed_eval_protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+   "hashes": {
+    "metadata": "5456ec305e4d664fcf67603dcf515c5afa33a25fb0d472d3b010114b9ae87bf6",
+    "environment": "d153ee695f877bf4d99e0ef81358ff7886c9e9a25f117eaf7187f490150acc36",
+    "agent": "82377e2081ed4a768dcc77a1627e6344089607a39c9f1d7a4a09a2c8e87127c8",
+    "fixed_report": "00bb0a582fe4d3ba66cf049dc5b840fb7f74650fc693b11304c278026f4e30d8",
+    "summary": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24"
+   },
+   "runtime_versions": {
+    "torch": "2.7.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 3060",
+    "isaaclab": "0.41.3",
+    "isaaclab_tasks": "0.10.36",
+    "isaaclab_rl": "0.1.8",
+    "rsl-rl-lib": "2.3.3",
+    "isaacsim": null
+   },
+   "walks": true,
+   "standstill_ratio": 0.1255953876333965
+  },
+  "2027": {
+   "run": "baseline_p0c_s2027",
+   "bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1513,
+    "err_yaw_ratio_max": 1.1719,
+    "fall_frac_max": 0.05
+   },
+   "checkpoint_sha256": "9e94b5c822a3301a216c74a9a5068be10e83cf80f666291f69309645e32da324",
+   "fixed_eval_protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+   "hashes": {
+    "metadata": "8e1e2e25421118a557f69a2de886e73e079cf5e08d13f71b035b0ccf74d7d581",
+    "environment": "614711ac8d5c7b72359efbb7e6ef502f4c14d0204f9c320f1d119982e6385a8a",
+    "agent": "e821536f238909e57de9e33fef48246537f99dc4fdaf8128281b87f21c301172",
+    "fixed_report": "0415e9a0803eb4fde4e404d17a2b096f8b8da579372b8f8a2ca8fdaa75548372",
+    "summary": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24"
+   },
+   "runtime_versions": {
+    "torch": "2.7.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 3060",
+    "isaaclab": "0.41.3",
+    "isaaclab_tasks": "0.10.36",
+    "isaaclab_rl": "0.1.8",
+    "rsl-rl-lib": "2.3.3",
+    "isaacsim": null
+   },
+   "walks": true,
+   "standstill_ratio": 0.12421551754515729
+  }
+ },
+ "rendered_diffs": {
+  "H1": "5718d0ae400a7b6729cc4d68b8f19c763f7ed72523590f4abd8feeb07a19d116",
+  "H2": "52197f1d845ca3e649bdc6981b06b25fdb8bc1d7b1536b6197e2211bf0cf6ef6",
+  "H3": "668f29e34df5d57225c75daeabe262d6ff2bbc4952393722fc9ee2b0897fb127",
+  "H4": "dd0c0cd49faa870455e9883e5a54d5be32f1b0a779e8701dd1a027cb4a9b677e",
+  "H5": "97d7ebcdc0f5d9eeefa89543b865f457a05ef2959538c2eba7c81f232b64e088",
+  "H6": "f641c8129bf62c4ba8cadfe54135ddfd5a3c58958deff6e916907696de446b78",
+  "H7": "77a2b8d460b65f0f1fe13c1d57b9158523bd3db7d333c6da18c9f29c4ba37061",
+  "S1": "9ca63ae147dd19e84958ceab1cfc44397cafa2e3570754906f4180aa6cbcc0b0",
+  "S2": "f59dab4ffd8db491a242a5f79433aa23647ee15dc407d9b14f1e30a35d1fece0",
+  "S3": "59ca717fa1d4af0ab515c2b6dc54f67387aa17b27628bb5cfe2f1f99bebc920a",
+  "S4": "0be79421eaf7be4dd700a8902320d24b1ef95ef564a7dcb30cca499f4206f407",
+  "U1": "f8d03826d3fc6ffd23cf0a8c6ca5940635ddcee029b5dde9d41368e1cba37e46",
+  "F1": "4ab5f214198a2e141dfbae92d523cd445f12dcfe21622bceb4b2a12e7d3ea3c1",
+  "F2": "e7da9fb35f106feb6639eb0b49bfe33d40101686fbba6be25c1e9968d91fd71e"
+ }
+}

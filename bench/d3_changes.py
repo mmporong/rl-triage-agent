@@ -201,8 +201,13 @@ CHANGES = {
                                    "(-1.0 - 5.0 * self._joint_vel / self.velocity_limit)")]}],
            "sources": ["bench/hidden_faults.py F2(설계자 결함)와 같은 식"]},
 }
-HARMLESS = tuple(cid for cid, c in CHANGES.items() if c["role"] == "harmless")
-RESERVE = tuple(cid for cid, c in CHANGES.items() if c["role"] == "reserve")
+# 무해 목록은 판마다 남긴다. v1은 카탈로그 role이 harmless인 7개이고 무해성 smoke v1(a17480d)에서 fail이었다.
+# v2는 H2를 같은 reward 범주의 수식 보존 예비 S4로 바꿨다(AMENDMENTS 마지막 항목). 지금 판은 HARMLESS다.
+HARMLESS_V1 = tuple(cid for cid, c in CHANGES.items() if c["role"] == "harmless")
+HARMLESS_V2 = ("H1", "H3", "H4", "H5", "H6", "H7", "S4")  # 확인 줄·부분집합 id와 같은 카탈로그 순서
+HARMLESS = HARMLESS_V2
+RETIRED = tuple(cid for cid in HARMLESS_V1 if cid not in HARMLESS)
+RESERVE = tuple(cid for cid, c in CHANGES.items() if c["role"] == "reserve" and cid not in HARMLESS)
 HARMFUL = tuple(cid for cid, c in CHANGES.items() if c["role"] == "harmful")
 
 # 설계안 초안(2.2절 표)과 달라진 항목. 사전등록 전 확정 목록의 근거로 남긴다.
@@ -217,6 +222,12 @@ AMENDMENTS = [
      "now": "보상 관리자 시작 표의 가중치 표시 형식",
      "reason": "Episode_Reward/ 아래에 새 스칼라를 넣으면 텔레메트리 특징 코드(src/rl_triage/rules.py:73, "
                "triage_tools.py:113)가 그 항을 보상 항으로 읽는다"},
+    {"id": "H2", "draft": "v1 무해 목록의 H2(track_lin_vel_xy_exp 가중치 1.5 → 1.4)",
+     "now": "v2 무해 목록은 H2 대신 S4(action_rate_l2 제곱을 같은 값의 곱으로)",
+     "reason": "무해성 smoke v1(a17480d)이 fail이었다. [관찰] 두 seed 모두 p0c healthy·낙상 0이었지만 선속도 오차 비만 여유 기준 "
+               "1.05를 넘었고(s2026 1.0623, s2027 1.0896) yaw 오차 비는 1 미만이었다(0.9464, 0.7830). [추론] 선속도 추종 보상 "
+               "가중치를 낮춘 H2가 가장 유력하다(선속도 추종 비중이 줄고 상대적으로 회전 비중이 커지는 방향과 일치). 7개를 함께 "
+               "적용해 원인은 가르지 않았다. v1 결과를 보고 고른 교체이며, 같은 reward 범주의 수식 보존 변경이라 미끼 역할은 남는다"},
     {"id": "reserve", "draft": "예비 후보 base_contact 임계·push 간격·학습률",
      "now": "S1 base_contact 임계, S2 학습률, S3 dof_acc_l2 가중치, S4 action_rate_l2 리팩터링",
      "reason": "Go2 rough_env_cfg.py:33이 push_robot을 None으로 두어 push 간격 변경이 학습에 닿지 않는다"},

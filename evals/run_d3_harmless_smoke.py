@@ -4,6 +4,7 @@ D3(코드 수준 다중 변경과 이분 탐색 기준선)는 "무해 부분집�
 있으면 이분 탐색 도중 결과가 흔들리므로, 본실험 사전등록 전에 무해 7개(bench/d3_changes.py HARMLESS)를 모두 적용해
 이미 본 seed 2026·2027에서 한 번씩 학습·고정 평가하고 p0c 밴드에 여유 기준을 더해 거른다. 기준은 P0-C의 같은 seed
 정상 실행(baseline_p0c_s<seed>)이다. 무해성 판정만 하고 진단 성능·방법 비교는 재지 않는다.
+지금 판은 v2(bench/protocols/d3_harmless_smoke_v2.json)다. v1은 fail이었고 무해 목록에서 H2를 S4로 바꿨다(FIXED version_history).
 
   python evals/run_d3_harmless_smoke.py prepare           # 프로토콜 작성(커밋 전)
   python evals/run_d3_harmless_smoke.py verify            # 계약·코드·Isaac Lab 소스·기준 입력·커밋 확인
@@ -43,7 +44,13 @@ sha, read, write_new = S.sha, S.read, S.write_new
 standstill_ratio, walks, load_params, finished = S.standstill_ratio, S.walks, S.load_params, S.finished
 find_run_dir, _owned = S.find_run_dir, S._owned  # 실행 폴더 찾기·소유 Job 실행은 U1 smoke와 같다
 
-PROTOCOL = ROOT / "bench/protocols/d3_harmless_smoke_v1.json"
+# v2: v1(bench/protocols/d3_harmless_smoke_v1.json, 결과 a17480d, fail)에서 무해 목록만 H2 → S4로 바꿨다.
+# v1 프로토콜·결과는 그대로 두고, v1 실행 코드는 커밋 a17480d에 있다. 이 파일이 바뀌어 v1 verify는 HEAD에서 거부된다.
+VERSION = "v2"
+PROTOCOL = ROOT / f"bench/protocols/d3_harmless_smoke_{VERSION}.json"
+PREVIOUS = {"protocol": "bench/protocols/d3_harmless_smoke_v1.json", "summary": "evals/results/d3_harmless_summary_20261014/summary.json",
+            "results": {"2026": "evals/results/d3_harmless_smoke_20261014_s2026/result.json",
+                        "2027": "evals/results/d3_harmless_smoke_20261014_s2027/result.json"}}
 PRIVATE = ROOT / "bench/private/d3_harmless_smoke"
 RESULTS = ROOT / "evals/results"
 RUNS_DIR = ROOT / "bench/runs_d3"
@@ -75,8 +82,8 @@ CODE = ("bench/d3_changes.py", "bench/d3_diff.py", "bench/train_with_d3_changes.
 
 
 def run_name(seed: int, attempt: int) -> str:
-    """프로토콜 판(v1)을 넣어 뒤 판의 실행 폴더·텔레메트리와 이름이 겹치지 않게 한다."""
-    return f"d3_harmless_v1_s{seed}" + ("" if attempt == 1 else f"_a{attempt}")
+    """프로토콜 판을 넣어 앞뒤 판의 실행 폴더·텔레메트리와 이름이 겹치지 않게 한다."""
+    return f"d3_harmless_{VERSION}_s{seed}" + ("" if attempt == 1 else f"_a{attempt}")
 
 
 def reference_run(seed: int) -> str:
@@ -98,8 +105,20 @@ def catalog_entry(cid: str) -> dict:
 
 
 FIXED = {
-    "schema": "d3_harmless_smoke_protocol_v1",
-    "question": "D3 무해 변경 7개를 모두 적용한 Go2 flat 4096 env × 300회 학습이 이미 본 seed 2026·2027에서 같은 seed "
+    "schema": f"d3_harmless_smoke_protocol_{VERSION}",
+    "version_history": {
+        "v1": {**PREVIOUS, "commit": "a17480d", "changes": list(D.HARMLESS_V1), "outcome": "fail",
+               "observed": {"2026": {"verdict": "healthy", "err_xy_ratio": 1.0623, "err_yaw_ratio": 0.9464, "fall_frac": 0.0},
+                            "2027": {"verdict": "healthy", "err_xy_ratio": 1.0896, "err_yaw_ratio": 0.783, "fall_frac": 0.0}},
+               "reading": "[관찰] 두 seed 모두 p0c healthy·낙상 0이었지만 선속도 오차 비만 여유 기준 1.05를 넘었고 yaw 오차 비는 1 "
+                          "미만이었다. [추론] 선속도 추종 보상 가중치를 낮춘 H2(1.5 → 1.4)가 가장 유력하다(선속도 추종 비중이 줄고 "
+                          "상대적으로 회전 비중이 커지는 방향과 일치). 7개를 함께 적용해 원인은 가르지 않았다"},
+        "v2_change": {"retired": list(D.RETIRED), "added": ["S4"],
+                      "rule": "v1 결과를 보고 고른 교체다. H2를 같은 reward 범주의 수식 보존 예비 S4(action_rate_l2 제곱 → 같은 값의 곱)로 "
+                              "바꿨다. 여유 기준(오차 비 1.05·낙상 0.02)·seed(2026·2027)·나머지 6개 변경은 바꾸지 않았다",
+                      "caveat": "v1과 같은 seed라 나머지 6개는 이미 이 seed에서 (H2와 함께) 학습된 적이 있다. v2 pass도 H2가 원인이었다는 "
+                                "증명이 아니다(H2를 단독으로 재지 않았다)"}},
+    "question": "D3 무해 변경 v2 목록 7개를 모두 적용한 Go2 flat 4096 env × 300회 학습이 이미 본 seed 2026·2027에서 같은 seed "
                 "정상 학습 대비 p0c 밴드 healthy이고 여유 기준 안인가",
     "scope": "D3 본실험 사전등록 전 무해 목록 확정을 위한 거르기. 변경 하나하나의 무해성·변경 간 상호작용·새 seed에서의 "
              "무해성·진단 성능·방법 비교가 아니다",
@@ -137,7 +156,9 @@ FIXED = {
                  "7개를 함께 적용하므로 변경끼리 효과가 상쇄되는 경우를 가르지 못한다",
                  "같은 고정 평가 계약의 정상 기준 baseline_p0c_s2026~s2034(2032 없음) 8개 중 s2026은 yaw 오차가 가장 크고 선속도 "
                  "오차가 두 번째로 크며, s2027은 둘 다 네 번째다. 기준 오차가 큰 편이라 같은 1.05 여유 기준이 오차가 작은 기준에서보다 "
-                 "느슨하고, 오차가 작은 새 seed 기준에서는 더 엄격하게 작용할 수 있다"],
+                 "느슨하고, 오차가 작은 새 seed 기준에서는 더 엄격하게 작용할 수 있다",
+                 "v1과 같은 seed를 다시 쓴다. v1 결과(선속도 오차 비 초과)를 본 뒤 목록을 바꿨으므로 v2 결과는 결과를 보고 고친 목록의 "
+                 "확인이다(version_history.v2_change)"],
     },
     "judgment": {
         "bands": "P0-C summary.json bands(p0c 밴드)로 같은 seed 기준 고정 평가와 비교한 healthy/unhealthy",
@@ -206,23 +227,29 @@ FIXED = {
         "judge_failure": "판정 계산 자체가 예외로 끝나면 실패 단계 judge, invalid_cause runner로 남긴다. 실행기 결함이라 재실행·이어 하기 대상이 아니다",
     },
     "prediction": {"seed_outcome": "harmless_pass", "overall": "pass",
-                   "reason": "코드 변경 3개는 같은 수식이거나(H1) 보행 체공 시간보다 훨씬 긴 경우에만 걸리거나(H3) 학습 값과 무관하고(H6), "
-                             "설정 변경 4개는 Isaac Lab 다른 로봇 설정에 문서화된 범위 안의 작은 수치 변화다"},
+                   "reason": "코드 변경 4개는 같은 수식이거나(H1·S4) 보행 체공 시간보다 훨씬 긴 경우에만 걸리거나(H3) 학습 값과 "
+                             "무관하고(H6), 설정 변경 3개는 Isaac Lab 다른 로봇 설정에 문서화된 범위 안의 작은 수치 변화다. v1에서 "
+                             "선속도 오차 비를 1.05 위로 민 것으로 보이는 보상 가중치 변경(H2)은 뺐다[추론]"},
     "failure_rule": "fail·invalid가 나와도 이 결과를 보고 여유 기준·변경 수치·seed를 바꾸지 않는다. 7개를 함께 적용한 smoke는 원인 "
-                    "변경을 가르지 못하므로, 후속(변경별·범주별 분리 smoke나 예비 후보 교체)은 그 이유를 적은 새 프로토콜 버전으로 "
-                    "사전등록한다. 시도·최종 표식은 프로토콜 SHA별이다",
+                    "변경을 가르지 못하므로, 후속은 그 이유를 적은 새 프로토콜 버전으로 사전등록한다. 시도·최종 표식은 프로토콜 SHA별이다",
+    "next_if_fail": {
+        "v3": "범주별 분리 smoke를 seed 2026 하나로 사전등록한다. 묶음 A(reward 코드 H1·S4·H3), B(설정 H4·H5·H7), C(로깅 H6)를 "
+              "따로 학습해 같은 여유 기준으로 본다(학습 3회, 기준은 baseline_p0c_s2026)",
+        "v4": "여유 기준을 넘은 묶음의 변경을 남은 예비(S1·S2·S3)나 새 후보로 바꾼 목록으로 두 seed smoke를 다시 한다",
+        "no_single_group": "어느 묶음도 단독으로 넘지 않으면(조합 효과) 무해 변경 수(k)를 줄이는 것은 설계 변경이므로 메인·사용자 결정으로 넘긴다",
+        "invalid": "invalid는 실행 규칙(시도 2·이어 하기)대로만 다시 하고, 끝내 유효 결과가 없으면 같은 목록으로 새 판을 만든다"},
     "used_for": "D3 무해 목록 확정 여부만. 진단 성능·교정·방법 비교 수치로 쓰지 않는다",
     "gpu_estimate": {
         "unit": "부모 프로세스 벽시계(초). GPU 커널 시간이나 절감량이 아니다",
-        "train_s": [508.8, 873.6],
-        "train_basis": "같은 4096 env × 300회 학습의 공개 기록: 종단 시연 교정 재학습 508.8~541.1 s(evals/results/e2e_*_20261013 "
-                       "train_parent_wall_s), U1 smoke 590.8 s(evals/results/upstream_u1_smoke_20261013/result.json). 상한 "
-                       "873.6 s는 GPU 경합 구간 기록(run_upstream_smoke gpu_estimate의 ref_e01_s2028)",
-        "telemetry_extract_s": [1.5, 60],
-        "fixed_eval_s": [48.4, 67.5],
-        "fixed_eval_basis": "시연 교정 평가 eval_parent_wall_s 48.4~54.9 s, U1 smoke 67.5 s",
-        "per_seed_s": [558, 1001],
-        "total_s": [1116, 2002],
+        "train_s": [492.6, 873.6],
+        "train_basis": "같은 4096 env × 300회 학습의 공개 기록: 무해성 smoke v1 492.6·621.0 s(evals/results/d3_harmless_smoke_20261014_s*), "
+                       "종단 시연 교정 재학습 508.8~541.1 s(evals/results/e2e_*_20261013 train_parent_wall_s), U1 smoke 590.8 s. "
+                       "상한 873.6 s는 GPU 경합 구간 기록(run_upstream_smoke gpu_estimate의 ref_e01_s2028)",
+        "telemetry_extract_s": [1.2, 60],
+        "fixed_eval_s": [48.2, 67.5],
+        "fixed_eval_basis": "무해성 smoke v1 48.2·52.4 s, 시연 교정 평가 48.4~54.9 s, U1 smoke 67.5 s",
+        "per_seed_s": [542, 1001],
+        "total_s": [1084, 2002],
     },
     "wording": {
         "pass": "무해 변경 7개를 모두 적용한 학습이 이미 본 seed 2026·2027에서 같은 seed 정상 학습 대비 p0c 밴드와 여유 기준"

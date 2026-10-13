@@ -35,10 +35,12 @@ FAKE_TORCH = SimpleNamespace(square=np.square, exp=np.exp, zeros_like=np.zeros_l
 
 # --- 카탈로그 ---
 def test_the_catalog_has_seven_harmless_changes_across_categories_and_three_harmful_candidates():
-    assert D.HARMLESS == ("H1", "H2", "H3", "H4", "H5", "H6", "H7")
-    assert D.RESERVE == ("S1", "S2", "S3", "S4") and D.HARMFUL == ("U1", "F1", "F2")
+    assert D.HARMLESS_V1 == ("H1", "H2", "H3", "H4", "H5", "H6", "H7")  # smoke v1(fail)의 목록은 그대로 남긴다
+    assert D.HARMLESS == D.HARMLESS_V2 == ("H1", "H3", "H4", "H5", "H6", "H7", "S4") and D.RETIRED == ("H2",)
+    assert list(D.HARMLESS) == [cid for cid in D.CHANGES if cid in D.HARMLESS]  # 확인 줄·부분집합 id와 같은 순서
+    assert D.RESERVE == ("S1", "S2", "S3") and D.HARMFUL == ("U1", "F1", "F2")
     kinds = {cid: (D.CHANGES[cid]["kind"], D.CHANGES[cid]["category"]) for cid in D.HARMLESS}
-    assert sorted(kinds.values()) == sorted([("code", "reward"), ("config", "reward"), ("code", "reward"),
+    assert sorted(kinds.values()) == sorted([("code", "reward"), ("code", "reward"), ("code", "reward"),
                                              ("config", "actuator"), ("config", "observation"), ("code", "logging"),
                                              ("config", "optimizer")])
     assert [D.CHANGES[cid]["category"] for cid in D.HARMFUL] == ["reward", "reward", "actuator"]
@@ -71,7 +73,7 @@ def test_the_catalog_refuses_a_harmless_change_on_a_harmful_target_or_a_shared_o
 
 
 def test_amendments_from_the_design_draft_keep_their_reasons():
-    assert [a["id"] for a in D.AMENDMENTS] == ["H1", "H4", "H6", "reserve"]
+    assert [a["id"] for a in D.AMENDMENTS] == ["H1", "H4", "H6", "H2", "reserve"]
     assert all(a["draft"] and a["now"] and a["reason"] for a in D.AMENDMENTS)
     assert "track_ang_vel_z_exp" in U.SWAPS["U1"]  # H1을 옮긴 이유가 지금도 성립한다
     assert all(t["qualname"] not in U.SWAPS["U1"] for t in D.code_targets("H1"))
@@ -88,8 +90,9 @@ def test_subsets_are_parsed_in_catalog_order_with_at_most_one_harmful_change():
 
 
 def test_hydra_overrides_and_params_keys_come_from_the_catalog():
-    assert D.hydra_overrides(D.HARMLESS) == [
-        "env.rewards.track_lin_vel_xy_exp.weight=1.4",
+    v2 = D.hydra_overrides(D.HARMLESS)
+    assert D.hydra_overrides(D.HARMLESS_V1) == ["env.rewards.track_lin_vel_xy_exp.weight=1.4", *v2]  # v2는 H2만 뺐다
+    assert v2 == [
         "env.scene.robot.actuators.base_legs.effort_limit=23.7",
         "env.scene.robot.actuators.base_legs.saturation_effort=23.7",
         "env.observations.policy.joint_vel.noise.n_min=-1.2",
