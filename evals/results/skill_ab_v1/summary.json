@@ -1,0 +1,1541 @@
+{
+ "schema": "skill_ab_result_v1",
+ "protocol_sha256_lf": "8e35975b4d80c7a176f057eef0ebe58a36755c130ad70469228abf40062c96c1",
+ "source_commit_sha": "63ab9baaa43e14c519aeb64d4264116418643d08",
+ "case": "h02_s2027",
+ "model": "nvidia/nemotron-3-super-120b-a12b",
+ "request": {
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "temperature": 0,
+  "max_tokens": 16384,
+  "stream": false,
+  "extra_body": {
+   "reasoning_effort": "none"
+  }
+ },
+ "prompts_sha256": "863c3fea1705dac5251bab787511c2d2a597a136e5e788216fd2badf9fa12afb",
+ "packet_sha256": "7193a2962bf1424d51052de0d00902af04f8347701b517b06f6d059e7db52e65",
+ "variants": {
+  "without_skill": {
+   "calls": 15,
+   "answered": 15,
+   "infra_error": 0,
+   "infra_retries": 0,
+   "scorable": 15,
+   "unscorable": 0,
+   "unscorable_reasons": {},
+   "failure_modes": {
+    "items": 30,
+    "rule_judged": 30,
+    "hits": 2,
+    "human_grading_required": 0
+   },
+   "expected": {
+    "items": 50,
+    "rule_judged": 50,
+    "hits": 24,
+    "human_grading_required": 0
+   },
+   "explanation_items_human_grading_required": 30,
+   "input_tokens": {
+    "n": 15,
+    "median": 968,
+    "min": 966,
+    "max": 971
+   },
+   "output_tokens": {
+    "n": 15,
+    "median": 260,
+    "min": 207,
+    "max": 431
+   },
+   "wall_s": {
+    "n": 15,
+    "median": 5.033469741931185,
+    "min": 3.3187168249860406,
+    "max": 10.06448201299645
+   }
+  },
+  "with_skill": {
+   "calls": 15,
+   "answered": 15,
+   "infra_error": 0,
+   "infra_retries": 0,
+   "scorable": 15,
+   "unscorable": 0,
+   "unscorable_reasons": {},
+   "failure_modes": {
+    "items": 30,
+    "rule_judged": 30,
+    "hits": 0,
+    "human_grading_required": 0
+   },
+   "expected": {
+    "items": 50,
+    "rule_judged": 50,
+    "hits": 26,
+    "human_grading_required": 0
+   },
+   "explanation_items_human_grading_required": 30,
+   "input_tokens": {
+    "n": 15,
+    "median": 2411,
+    "min": 2409,
+    "max": 2414
+   },
+   "output_tokens": {
+    "n": 15,
+    "median": 294,
+    "min": 146,
+    "max": 410
+   },
+   "wall_s": {
+    "n": 15,
+    "median": 4.095763724995777,
+    "min": 2.4837382088880986,
+    "max": 5.859990944154561
+   }
+  }
+ },
+ "scenarios": {
+  "S1": {
+   "without_skill": {
+    "calls": 5,
+    "answered": 5,
+    "infra_error": 0,
+    "infra_retries": 0,
+    "scorable": 5,
+    "unscorable": 0,
+    "unscorable_reasons": {},
+    "failure_modes": {
+     "items": 10,
+     "rule_judged": 10,
+     "hits": 0,
+     "human_grading_required": 0
+    },
+    "expected": {
+     "items": 20,
+     "rule_judged": 20,
+     "hits": 16,
+     "human_grading_required": 0
+    },
+    "explanation_items_human_grading_required": 10,
+    "input_tokens": {
+     "n": 5,
+     "median": 968,
+     "min": 968,
+     "max": 968
+    },
+    "output_tokens": {
+     "n": 5,
+     "median": 299,
+     "min": 252,
+     "max": 352
+    },
+    "wall_s": {
+     "n": 5,
+     "median": 5.419494815170765,
+     "min": 4.84748341399245,
+     "max": 10.06448201299645
+    }
+   },
+   "with_skill": {
+    "calls": 5,
+    "answered": 5,
+    "infra_error": 0,
+    "infra_retries": 0,
+    "scorable": 5,
+    "unscorable": 0,
+    "unscorable_reasons": {},
+    "failure_modes": {
+     "items": 10,
+     "rule_judged": 10,
+     "hits": 0,
+     "human_grading_required": 0
+    },
+    "expected": {
+     "items": 20,
+     "rule_judged": 20,
+     "hits": 19,
+     "human_grading_required": 0
+    },
+    "explanation_items_human_grading_required": 10,
+    "input_tokens": {
+     "n": 5,
+     "median": 2411,
+     "min": 2411,
+     "max": 2411
+    },
+    "output_tokens": {
+     "n": 5,
+     "median": 340,
+     "min": 305,
+     "max": 359
+    },
+    "wall_s": {
+     "n": 5,
+     "median": 5.0112016189377755,
+     "min": 3.9343656981363893,
+     "max": 5.65750024584122
+    }
+   }
+  },
+  "S2": {
+   "without_skill": {
+    "calls": 5,
+    "answered": 5,
+    "infra_error": 0,
+    "infra_retries": 0,
+    "scorable": 5,
+    "unscorable": 0,
+    "unscorable_reasons": {},
+    "failure_modes": {
+     "items": 10,
+     "rule_judged": 10,
+     "hits": 2,
+     "human_grading_required": 0
+    },
+    "expected": {
+     "items": 15,
+     "rule_judged": 15,
+     "hits": 6,
+     "human_grading_required": 0
+    },
+    "explanation_items_human_grading_required": 10,
+    "input_tokens": {
+     "n": 5,
+     "median": 966,
+     "min": 966,
+     "max": 966
+    },
+    "output_tokens": {
+     "n": 5,
+     "median": 246,
+     "min": 207,
+     "max": 259
+    },
+    "wall_s": {
+     "n": 5,
+     "median": 3.957916392944753,
+     "min": 3.3187168249860406,
+     "max": 5.941708130994812
+    }
+   },
+   "with_skill": {
+    "calls": 5,
+    "answered": 5,
+    "infra_error": 0,
+    "infra_retries": 0,
+    "scorable": 5,
+    "unscorable": 0,
+    "unscorable_reasons": {},
+    "failure_modes": {
+     "items": 10,
+     "rule_judged": 10,
+     "hits": 0,
+     "human_grading_required": 0
+    },
+    "expected": {
+     "items": 15,
+     "rule_judged": 15,
+     "hits": 5,
+     "human_grading_required": 0
+    },
+    "explanation_items_human_grading_required": 10,
+    "input_tokens": {
+     "n": 5,
+     "median": 2409,
+     "min": 2409,
+     "max": 2409
+    },
+    "output_tokens": {
+     "n": 5,
+     "median": 154,
+     "min": 146,
+     "max": 206
+    },
+    "wall_s": {
+     "n": 5,
+     "median": 3.078750313958153,
+     "min": 2.4837382088880986,
+     "max": 3.3903346438892186
+    }
+   }
+  },
+  "S3": {
+   "without_skill": {
+    "calls": 5,
+    "answered": 5,
+    "infra_error": 0,
+    "infra_retries": 0,
+    "scorable": 5,
+    "unscorable": 0,
+    "unscorable_reasons": {},
+    "failure_modes": {
+     "items": 10,
+     "rule_judged": 10,
+     "hits": 0,
+     "human_grading_required": 0
+    },
+    "expected": {
+     "items": 15,
+     "rule_judged": 15,
+     "hits": 2,
+     "human_grading_required": 0
+    },
+    "explanation_items_human_grading_required": 10,
+    "input_tokens": {
+     "n": 5,
+     "median": 971,
+     "min": 971,
+     "max": 971
+    },
+    "output_tokens": {
+     "n": 5,
+     "median": 277,
+     "min": 257,
+     "max": 431
+    },
+    "wall_s": {
+     "n": 5,
+     "median": 4.906247120117769,
+     "min": 4.331663723103702,
+     "max": 6.219363879878074
+    }
+   },
+   "with_skill": {
+    "calls": 5,
+    "answered": 5,
+    "infra_error": 0,
+    "infra_retries": 0,
+    "scorable": 5,
+    "unscorable": 0,
+    "unscorable_reasons": {},
+    "failure_modes": {
+     "items": 10,
+     "rule_judged": 10,
+     "hits": 0,
+     "human_grading_required": 0
+    },
+    "expected": {
+     "items": 15,
+     "rule_judged": 15,
+     "hits": 2,
+     "human_grading_required": 0
+    },
+    "explanation_items_human_grading_required": 10,
+    "input_tokens": {
+     "n": 5,
+     "median": 2414,
+     "min": 2414,
+     "max": 2414
+    },
+    "output_tokens": {
+     "n": 5,
+     "median": 294,
+     "min": 235,
+     "max": 410
+    },
+    "wall_s": {
+     "n": 5,
+     "median": 4.354805991984904,
+     "min": 3.9680141310673207,
+     "max": 5.859990944154561
+    }
+   }
+  }
+ },
+ "failure_hit_difference_with_minus_without": -2,
+ "human_grading": {
+  "status": "pending",
+  "items": [
+   "explanation is consistent with the case packet",
+   "step details are specific and correct"
+  ],
+  "blind_to_condition": true
+ },
+ "wording": "같은 고정 입력에서 스킬 포함 프롬프트 응답의 알려진 실패 모드 해당은 규칙 판정 0/30건, 스킬 미포함 프롬프트 응답은 2/30건이다(포함 − 미포함 = -2건). 기대 행동 포함은 규칙 판정 26/50건과 24/50건이다. 채점 불가 응답은 0개와 0개이며, 그 응답의 규칙 항목과 모든 응답의 설명 항목은 사람 채점 필요로 분모에 남겼다.",
+ "common_wording": "이미 본 한 사례의 고정 입력을 반복 호출해 모델이 진술한 계획을 센 개발 측정이다. 실행한 행동이나 진단의 맞고 틀림은 재지 않았다. 스킬 예시가 채점 기준과 겹치고 두 조건이 같은 행동 목록을 받으므로, 건수 차이는 기록일 뿐 스킬의 효과·우위·일반화의 근거가 아니다.",
+ "rows": [
+  {
+   "call": 1,
+   "repeat": 1,
+   "prompt_id": "S2:with_skill",
+   "scenario": "S2",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2409,
+   "output_tokens": 154,
+   "wall_s": 3.3903346438892186,
+   "response_sha256": "d1196d2e3f19786a19f65ded3059669d27ab40ce304c08d1696c1b423bdf157e",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Patches the runner to ignore shape mismatches.": false,
+    "Assumes the checkpoint is corrupt before checking environment dimensions.": false
+   },
+   "expected": {
+    "Compares current observation/action spaces with the checkpoint training config.": true,
+    "Treats shape mismatch as an environment-contract issue.": false,
+    "Recommends retraining or reverting unintended contract changes.": false
+   },
+   "plan": {
+    "actions": [
+     "compare_obs_action_dims"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 2,
+   "repeat": 1,
+   "prompt_id": "S1:without_skill",
+   "scenario": "S1",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 968,
+   "output_tokens": 300,
+   "wall_s": 7.37656836095266,
+   "response_sha256": "4027a021b8820be99c979567a5b92797cb362c3546d8ed51d7fd4e44db6bc4c7",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Declares the run successful from reward alone.": false,
+    "Changes PPO hyperparameters before checking reward and observation semantics.": false
+   },
+   "expected": {
+    "Separates reward curves from task success metrics.": true,
+    "Audits per-term rewards against task phases.": true,
+    "Checks success reward, termination, and metric geometry.": true,
+    "Recommends deterministic rollout or state traces before retuning PPO.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "check_reward_geometry",
+     "audit_reward_terms"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 3,
+   "repeat": 1,
+   "prompt_id": "S2:without_skill",
+   "scenario": "S2",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 966,
+   "output_tokens": 259,
+   "wall_s": 3.3187168249860406,
+   "response_sha256": "4451d21ba1ebccfae5faa581d4795f41740f7799f06886b4bf0e303797787339",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Patches the runner to ignore shape mismatches.": false,
+    "Assumes the checkpoint is corrupt before checking environment dimensions.": false
+   },
+   "expected": {
+    "Compares current observation/action spaces with the checkpoint training config.": false,
+    "Treats shape mismatch as an environment-contract issue.": true,
+    "Recommends retraining or reverting unintended contract changes.": false
+   },
+   "plan": {
+    "actions": [
+     "classify_environment_contract_change",
+     "inspect_task_metric",
+     "check_observations"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": true,
+    "checkpoint_selection_basis": [
+     "task_metric"
+    ],
+    "next_run_change_count": 1
+   }
+  },
+  {
+   "call": 4,
+   "repeat": 1,
+   "prompt_id": "S1:with_skill",
+   "scenario": "S1",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2411,
+   "output_tokens": 305,
+   "wall_s": 3.9343656981363893,
+   "response_sha256": "d736ff1849f81ada8eaea1fd0023ae5f1ca51cbaea2839bb6765ef6873354bc2",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Declares the run successful from reward alone.": false,
+    "Changes PPO hyperparameters before checking reward and observation semantics.": false
+   },
+   "expected": {
+    "Separates reward curves from task success metrics.": true,
+    "Audits per-term rewards against task phases.": true,
+    "Checks success reward, termination, and metric geometry.": true,
+    "Recommends deterministic rollout or state traces before retuning PPO.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_reward_geometry",
+     "check_observations"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior",
+     "stability"
+    ],
+    "next_run_change_count": 1
+   }
+  },
+  {
+   "call": 5,
+   "repeat": 1,
+   "prompt_id": "S3:without_skill",
+   "scenario": "S3",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 971,
+   "output_tokens": 257,
+   "wall_s": 4.493674270110205,
+   "response_sha256": "fa47495bd171c3ec5fcf6a2bee0fde673b7bdf83bfe7a6d07e3765a34e47c119",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Attributes behavior to one change without controls.": false,
+    "Chooses checkpoints only from total reward.": false
+   },
+   "expected": {
+    "Marks the run as exploratory because multiple variables changed.": false,
+    "Recommends control runs or one-variable ablations.": false,
+    "Defines success metrics before launching the next run.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_observations",
+     "state_trace"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "undetermined",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "stability"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 6,
+   "repeat": 1,
+   "prompt_id": "S3:with_skill",
+   "scenario": "S3",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2414,
+   "output_tokens": 294,
+   "wall_s": 3.9680141310673207,
+   "response_sha256": "05a4b54d8defc1faec3e31e1e857068fbf7126fa57e38ea5dfb11e7a70dab1c6",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Attributes behavior to one change without controls.": false,
+    "Chooses checkpoints only from total reward.": false
+   },
+   "expected": {
+    "Marks the run as exploratory because multiple variables changed.": false,
+    "Recommends control runs or one-variable ablations.": false,
+    "Defines success metrics before launching the next run.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_observations",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "undetermined",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior",
+     "stability"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 7,
+   "repeat": 2,
+   "prompt_id": "S2:without_skill",
+   "scenario": "S2",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 966,
+   "output_tokens": 207,
+   "wall_s": 3.957916392944753,
+   "response_sha256": "c96d6c3da8dec05ee88532e9d902cc607308a1ab5694093944fa10b8cf144535",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Patches the runner to ignore shape mismatches.": true,
+    "Assumes the checkpoint is corrupt before checking environment dimensions.": false
+   },
+   "expected": {
+    "Compares current observation/action spaces with the checkpoint training config.": true,
+    "Treats shape mismatch as an environment-contract issue.": false,
+    "Recommends retraining or reverting unintended contract changes.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "compare_obs_action_dims",
+     "patch_runner_ignore_shapes"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": true,
+    "checkpoint_selection_basis": [
+     "task_metric"
+    ],
+    "next_run_change_count": 1
+   }
+  },
+  {
+   "call": 8,
+   "repeat": 2,
+   "prompt_id": "S1:without_skill",
+   "scenario": "S1",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 968,
+   "output_tokens": 276,
+   "wall_s": 5.419494815170765,
+   "response_sha256": "f8359c5b394d04d39d72067aa33d13ff3b04622bbdf88287c355447dc7005adc",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Declares the run successful from reward alone.": false,
+    "Changes PPO hyperparameters before checking reward and observation semantics.": false
+   },
+   "expected": {
+    "Separates reward curves from task success metrics.": true,
+    "Audits per-term rewards against task phases.": true,
+    "Checks success reward, termination, and metric geometry.": true,
+    "Recommends deterministic rollout or state traces before retuning PPO.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "check_reward_geometry",
+     "audit_reward_terms"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 9,
+   "repeat": 2,
+   "prompt_id": "S3:without_skill",
+   "scenario": "S3",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 971,
+   "output_tokens": 431,
+   "wall_s": 6.106257078005001,
+   "response_sha256": "c04c039931864899efdc3b4174aa22943e412fd63cd7ba29583cbc611e57dcd0",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Attributes behavior to one change without controls.": false,
+    "Chooses checkpoints only from total reward.": false
+   },
+   "expected": {
+    "Marks the run as exploratory because multiple variables changed.": false,
+    "Recommends control runs or one-variable ablations.": false,
+    "Defines success metrics before launching the next run.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_observations",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "undetermined",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior",
+     "stability"
+    ],
+    "next_run_change_count": 3
+   }
+  },
+  {
+   "call": 10,
+   "repeat": 2,
+   "prompt_id": "S2:with_skill",
+   "scenario": "S2",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2409,
+   "output_tokens": 146,
+   "wall_s": 3.078750313958153,
+   "response_sha256": "b5f51a52006807233977ec1896416f8681e12bddf6fc5c1c5b28d715c6095ea6",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Patches the runner to ignore shape mismatches.": false,
+    "Assumes the checkpoint is corrupt before checking environment dimensions.": false
+   },
+   "expected": {
+    "Compares current observation/action spaces with the checkpoint training config.": true,
+    "Treats shape mismatch as an environment-contract issue.": false,
+    "Recommends retraining or reverting unintended contract changes.": false
+   },
+   "plan": {
+    "actions": [
+     "compare_obs_action_dims"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": true,
+    "checkpoint_selection_basis": [],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 11,
+   "repeat": 2,
+   "prompt_id": "S3:with_skill",
+   "scenario": "S3",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2414,
+   "output_tokens": 247,
+   "wall_s": 4.095763724995777,
+   "response_sha256": "050494a14772737592e5b18505b22ec3c2c12001559850eef13d05d9c6cb71ef",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Attributes behavior to one change without controls.": false,
+    "Chooses checkpoints only from total reward.": false
+   },
+   "expected": {
+    "Marks the run as exploratory because multiple variables changed.": false,
+    "Recommends control runs or one-variable ablations.": false,
+    "Defines success metrics before launching the next run.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_observations",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "undetermined",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior",
+     "stability"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 12,
+   "repeat": 2,
+   "prompt_id": "S1:with_skill",
+   "scenario": "S1",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2411,
+   "output_tokens": 359,
+   "wall_s": 5.252729450818151,
+   "response_sha256": "bb0d232cfc110ab83592024082d076506f8568d7c00d649337a61b75c6c7b92a",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Declares the run successful from reward alone.": false,
+    "Changes PPO hyperparameters before checking reward and observation semantics.": false
+   },
+   "expected": {
+    "Separates reward curves from task success metrics.": true,
+    "Audits per-term rewards against task phases.": true,
+    "Checks success reward, termination, and metric geometry.": true,
+    "Recommends deterministic rollout or state traces before retuning PPO.": true
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_reward_geometry",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior",
+     "stability"
+    ],
+    "next_run_change_count": 1
+   }
+  },
+  {
+   "call": 13,
+   "repeat": 3,
+   "prompt_id": "S1:without_skill",
+   "scenario": "S1",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 968,
+   "output_tokens": 299,
+   "wall_s": 4.84748341399245,
+   "response_sha256": "56141d32957bb4d3e5ce647b6998e10e5fbc12067624ad653ef8c2c413078086",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Declares the run successful from reward alone.": false,
+    "Changes PPO hyperparameters before checking reward and observation semantics.": false
+   },
+   "expected": {
+    "Separates reward curves from task success metrics.": true,
+    "Audits per-term rewards against task phases.": true,
+    "Checks success reward, termination, and metric geometry.": false,
+    "Recommends deterministic rollout or state traces before retuning PPO.": true
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_observations",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 14,
+   "repeat": 3,
+   "prompt_id": "S3:with_skill",
+   "scenario": "S3",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2414,
+   "output_tokens": 235,
+   "wall_s": 5.859990944154561,
+   "response_sha256": "0fbfee5763d709254fecf372a07737756a434a3b5aa724d860c45ca9a0ef97e0",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Attributes behavior to one change without controls.": false,
+    "Chooses checkpoints only from total reward.": false
+   },
+   "expected": {
+    "Marks the run as exploratory because multiple variables changed.": false,
+    "Recommends control runs or one-variable ablations.": false,
+    "Defines success metrics before launching the next run.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_observations",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "undetermined",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior",
+     "stability"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 15,
+   "repeat": 3,
+   "prompt_id": "S2:without_skill",
+   "scenario": "S2",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 966,
+   "output_tokens": 246,
+   "wall_s": 3.724517935886979,
+   "response_sha256": "7fac9e72a3e4f2e6e75bd39002a4c7e981ac4bb840a9cb5fdaca760cec46cea6",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Patches the runner to ignore shape mismatches.": false,
+    "Assumes the checkpoint is corrupt before checking environment dimensions.": false
+   },
+   "expected": {
+    "Compares current observation/action spaces with the checkpoint training config.": true,
+    "Treats shape mismatch as an environment-contract issue.": true,
+    "Recommends retraining or reverting unintended contract changes.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "compare_obs_action_dims",
+     "classify_environment_contract_change"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": true,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior"
+    ],
+    "next_run_change_count": 1
+   }
+  },
+  {
+   "call": 16,
+   "repeat": 3,
+   "prompt_id": "S2:with_skill",
+   "scenario": "S2",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2409,
+   "output_tokens": 157,
+   "wall_s": 2.860595083096996,
+   "response_sha256": "c86de17036238995ce3f2276b848ea56a209e8b7c587bec1637f14129c21cb29",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Patches the runner to ignore shape mismatches.": false,
+    "Assumes the checkpoint is corrupt before checking environment dimensions.": false
+   },
+   "expected": {
+    "Compares current observation/action spaces with the checkpoint training config.": true,
+    "Treats shape mismatch as an environment-contract issue.": false,
+    "Recommends retraining or reverting unintended contract changes.": false
+   },
+   "plan": {
+    "actions": [
+     "compare_obs_action_dims"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": true,
+    "checkpoint_selection_basis": [],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 17,
+   "repeat": 3,
+   "prompt_id": "S3:without_skill",
+   "scenario": "S3",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 971,
+   "output_tokens": 260,
+   "wall_s": 4.331663723103702,
+   "response_sha256": "fd0ce7d189b092ced4e6bf5b7e8ba91d139a920a11e662a750c8c6ee1ba5c1ca",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Attributes behavior to one change without controls.": false,
+    "Chooses checkpoints only from total reward.": false
+   },
+   "expected": {
+    "Marks the run as exploratory because multiple variables changed.": true,
+    "Recommends control runs or one-variable ablations.": false,
+    "Defines success metrics before launching the next run.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_observations",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 18,
+   "repeat": 3,
+   "prompt_id": "S1:with_skill",
+   "scenario": "S1",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2411,
+   "output_tokens": 340,
+   "wall_s": 5.65750024584122,
+   "response_sha256": "f422303eae120d399a227a2c3163f3f4c27ca41a63219d5456d953ec6270a98a",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Declares the run successful from reward alone.": false,
+    "Changes PPO hyperparameters before checking reward and observation semantics.": false
+   },
+   "expected": {
+    "Separates reward curves from task success metrics.": true,
+    "Audits per-term rewards against task phases.": true,
+    "Checks success reward, termination, and metric geometry.": true,
+    "Recommends deterministic rollout or state traces before retuning PPO.": true
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_reward_geometry",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior",
+     "stability"
+    ],
+    "next_run_change_count": 1
+   }
+  },
+  {
+   "call": 19,
+   "repeat": 4,
+   "prompt_id": "S1:with_skill",
+   "scenario": "S1",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2411,
+   "output_tokens": 349,
+   "wall_s": 4.673541215015575,
+   "response_sha256": "c88b44cbcd28d70f0e55f403a4ad8d1496ad9d00f65c265ee1eecfa99465f24a",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Declares the run successful from reward alone.": false,
+    "Changes PPO hyperparameters before checking reward and observation semantics.": false
+   },
+   "expected": {
+    "Separates reward curves from task success metrics.": true,
+    "Audits per-term rewards against task phases.": true,
+    "Checks success reward, termination, and metric geometry.": true,
+    "Recommends deterministic rollout or state traces before retuning PPO.": true
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_reward_geometry",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior",
+     "stability"
+    ],
+    "next_run_change_count": 1
+   }
+  },
+  {
+   "call": 20,
+   "repeat": 4,
+   "prompt_id": "S3:with_skill",
+   "scenario": "S3",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2414,
+   "output_tokens": 410,
+   "wall_s": 5.567520797019824,
+   "response_sha256": "0fee71b9698441a15f35f4d8a559457a8391fe93e128cc68ac90a2064c02652d",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Attributes behavior to one change without controls.": false,
+    "Chooses checkpoints only from total reward.": false
+   },
+   "expected": {
+    "Marks the run as exploratory because multiple variables changed.": false,
+    "Recommends control runs or one-variable ablations.": false,
+    "Defines success metrics before launching the next run.": true
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_observations",
+     "define_success_metric"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "undetermined",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior",
+     "stability"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 21,
+   "repeat": 4,
+   "prompt_id": "S3:without_skill",
+   "scenario": "S3",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 971,
+   "output_tokens": 277,
+   "wall_s": 4.906247120117769,
+   "response_sha256": "37f74daf995dc4931247dfd602da6428c71ab2240053c43f12ce0be959a0649f",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Attributes behavior to one change without controls.": false,
+    "Chooses checkpoints only from total reward.": false
+   },
+   "expected": {
+    "Marks the run as exploratory because multiple variables changed.": false,
+    "Recommends control runs or one-variable ablations.": false,
+    "Defines success metrics before launching the next run.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_observations",
+     "classify_environment_contract_change"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "undetermined",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "stability"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 22,
+   "repeat": 4,
+   "prompt_id": "S2:with_skill",
+   "scenario": "S2",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2409,
+   "output_tokens": 206,
+   "wall_s": 3.1327322411816567,
+   "response_sha256": "ed25146d1012bb4f87086eba53fde407749e4ad4c6fc0aa02dca3598d12f7009",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Patches the runner to ignore shape mismatches.": false,
+    "Assumes the checkpoint is corrupt before checking environment dimensions.": false
+   },
+   "expected": {
+    "Compares current observation/action spaces with the checkpoint training config.": true,
+    "Treats shape mismatch as an environment-contract issue.": false,
+    "Recommends retraining or reverting unintended contract changes.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "compare_obs_action_dims"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 23,
+   "repeat": 4,
+   "prompt_id": "S1:without_skill",
+   "scenario": "S1",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 968,
+   "output_tokens": 252,
+   "wall_s": 10.06448201299645,
+   "response_sha256": "766d7c8ddff20d6c532f3ace65c64c5e4a40d353b093c1d4d6e005bb707a3095",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Declares the run successful from reward alone.": false,
+    "Changes PPO hyperparameters before checking reward and observation semantics.": false
+   },
+   "expected": {
+    "Separates reward curves from task success metrics.": true,
+    "Audits per-term rewards against task phases.": true,
+    "Checks success reward, termination, and metric geometry.": true,
+    "Recommends deterministic rollout or state traces before retuning PPO.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "check_reward_geometry",
+     "audit_reward_terms"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "total_reward"
+    ],
+    "next_run_change_count": 2
+   }
+  },
+  {
+   "call": 24,
+   "repeat": 4,
+   "prompt_id": "S2:without_skill",
+   "scenario": "S2",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 966,
+   "output_tokens": 256,
+   "wall_s": 5.941708130994812,
+   "response_sha256": "63ff55a299a64685b0fd5b704e5a66ab176a3b6b4d7d9ca8b3323eadeb2388d9",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Patches the runner to ignore shape mismatches.": true,
+    "Assumes the checkpoint is corrupt before checking environment dimensions.": false
+   },
+   "expected": {
+    "Compares current observation/action spaces with the checkpoint training config.": false,
+    "Treats shape mismatch as an environment-contract issue.": true,
+    "Recommends retraining or reverting unintended contract changes.": false
+   },
+   "plan": {
+    "actions": [
+     "classify_environment_contract_change",
+     "inspect_task_metric",
+     "patch_runner_ignore_shapes"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": true,
+    "checkpoint_selection_basis": [
+     "task_metric"
+    ],
+    "next_run_change_count": 1
+   }
+  },
+  {
+   "call": 25,
+   "repeat": 5,
+   "prompt_id": "S3:without_skill",
+   "scenario": "S3",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 971,
+   "output_tokens": 369,
+   "wall_s": 6.219363879878074,
+   "response_sha256": "9b0a1b9e859670de46521c430152efd0039ace7dbda49fa0b6ea34dd02dbd7fd",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Attributes behavior to one change without controls.": false,
+    "Chooses checkpoints only from total reward.": false
+   },
+   "expected": {
+    "Marks the run as exploratory because multiple variables changed.": true,
+    "Recommends control runs or one-variable ablations.": false,
+    "Defines success metrics before launching the next run.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_observations",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 26,
+   "repeat": 5,
+   "prompt_id": "S2:with_skill",
+   "scenario": "S2",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2409,
+   "output_tokens": 154,
+   "wall_s": 2.4837382088880986,
+   "response_sha256": "1e69c42a130dc8c4daa853044985a537e0848d9b3167049aff4335ad1ef1efc0",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Patches the runner to ignore shape mismatches.": false,
+    "Assumes the checkpoint is corrupt before checking environment dimensions.": false
+   },
+   "expected": {
+    "Compares current observation/action spaces with the checkpoint training config.": true,
+    "Treats shape mismatch as an environment-contract issue.": false,
+    "Recommends retraining or reverting unintended contract changes.": false
+   },
+   "plan": {
+    "actions": [
+     "compare_obs_action_dims"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 27,
+   "repeat": 5,
+   "prompt_id": "S3:with_skill",
+   "scenario": "S3",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2414,
+   "output_tokens": 303,
+   "wall_s": 4.354805991984904,
+   "response_sha256": "36889c484905f1ec4613768b89692073442fd481909d44f3a28948cb8c1608d0",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Attributes behavior to one change without controls.": false,
+    "Chooses checkpoints only from total reward.": false
+   },
+   "expected": {
+    "Marks the run as exploratory because multiple variables changed.": false,
+    "Recommends control runs or one-variable ablations.": false,
+    "Defines success metrics before launching the next run.": true
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_observations",
+     "define_success_metric"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "undetermined",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior",
+     "stability"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 28,
+   "repeat": 5,
+   "prompt_id": "S1:without_skill",
+   "scenario": "S1",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 968,
+   "output_tokens": 352,
+   "wall_s": 5.033469741931185,
+   "response_sha256": "275a0517dcd43d8914d786379a82e4c9ce04db7df3096dbf66f5e1230a7c2656",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Declares the run successful from reward alone.": false,
+    "Changes PPO hyperparameters before checking reward and observation semantics.": false
+   },
+   "expected": {
+    "Separates reward curves from task success metrics.": true,
+    "Audits per-term rewards against task phases.": true,
+    "Checks success reward, termination, and metric geometry.": true,
+    "Recommends deterministic rollout or state traces before retuning PPO.": true
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "check_reward_geometry",
+     "audit_reward_terms",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 29,
+   "repeat": 5,
+   "prompt_id": "S2:without_skill",
+   "scenario": "S2",
+   "variant": "without_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 966,
+   "output_tokens": 240,
+   "wall_s": 5.365771549055353,
+   "response_sha256": "06e28217bdee328e81a2c2fa5aaf48297292fec31908ca655e3fb5b7d916b521",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Patches the runner to ignore shape mismatches.": false,
+    "Assumes the checkpoint is corrupt before checking environment dimensions.": false
+   },
+   "expected": {
+    "Compares current observation/action spaces with the checkpoint training config.": true,
+    "Treats shape mismatch as an environment-contract issue.": false,
+    "Recommends retraining or reverting unintended contract changes.": false
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "compare_obs_action_dims",
+     "state_trace"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": true,
+    "checkpoint_selection_basis": [
+     "task_metric"
+    ],
+    "next_run_change_count": 0
+   }
+  },
+  {
+   "call": 30,
+   "repeat": 5,
+   "prompt_id": "S1:with_skill",
+   "scenario": "S1",
+   "variant": "with_skill",
+   "status": "answered",
+   "attempts": 1,
+   "input_tokens": 2411,
+   "output_tokens": 338,
+   "wall_s": 5.0112016189377755,
+   "response_sha256": "e21ca04ad9f3bd308162820b2a7324072994abc36dad46f94b79ca75949afca5",
+   "scorable": true,
+   "unscorable_reason": null,
+   "failure_modes": {
+    "Declares the run successful from reward alone.": false,
+    "Changes PPO hyperparameters before checking reward and observation semantics.": false
+   },
+   "expected": {
+    "Separates reward curves from task success metrics.": true,
+    "Audits per-term rewards against task phases.": true,
+    "Checks success reward, termination, and metric geometry.": true,
+    "Recommends deterministic rollout or state traces before retuning PPO.": true
+   },
+   "plan": {
+    "actions": [
+     "inspect_task_metric",
+     "audit_reward_terms",
+     "check_reward_geometry",
+     "deterministic_rollout"
+    ],
+    "run_assessment": "not_successful",
+    "run_status": "exploratory",
+    "attributed_change_present": false,
+    "checkpoint_selection_basis": [
+     "task_metric",
+     "rollout_behavior",
+     "stability"
+    ],
+    "next_run_change_count": 1
+   }
+  }
+ ]
+}
