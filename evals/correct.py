@@ -1,6 +1,8 @@
 """E2 진단 확정 뒤 교정 제안·승인·실행 CLI(사양 SPEC-correction-step 구성 3). 원장은 evals/loops/<케이스>/correction_ledger.jsonl.
 
+  python evals/correct.py evidence <케이스> --source-report <report JSON> --output <packet.json>   # 모델 입력 packet
   python evals/correct.py propose <케이스> --source-report <fixed_eval_v1 report JSON> [--budget-gpu-s 7200]
+                                   [--model-proposal <correction_model_call 기록 JSON>]
   python evals/correct.py approve <케이스> <request_id> --approver <이름>
   python evals/correct.py reject  <케이스> <request_id> --approver <이름> --reason <이유>
   python evals/correct.py run     <케이스> <request_id> --tag <결과 tag> [--isaaclab <경로>]   # GPU: 메인 오케스트레이터만
@@ -8,6 +10,9 @@
 
 - propose는 evals/loops/<케이스> 상태가 confirmed일 때만 한다. 등록 밖 메커니즘·none_supported 등은 HOLD를 기록하고 요청을 만들지 않는다.
 - run은 승인을 한 번 소비하고 주입된 실행 함수를 부른 뒤 receipt를 남긴다. 모델·에이전트는 이 CLI를 부르지 않는다.
+- --model-proposal은 현재 근거로 다시 만든 packet과 호출 기록의 packet·프롬프트 digest가 같을 때만 검증 결과를
+  evidence.model_proposal로 붙인다. 요청의 교정·회복 방식은 결정적 규칙 값 그대로이며 모델 제안으로 승인되지 않는다.
+  순서는 evidence → correction_model_call.py(WSL) → propose --model-proposal이다. 같은 제안이 원장에 있으면 다시 propose할 수 없다.
 - 실행 함수 계약: execute(request: dict) -> {"exit_code": int, "gpu_s": float, "verdict": "recovered"|"not_recovered"|"unknown",
   "result_sha": str|None, "tag": str}. request에는 case, request_id, correction_id, recovery_mode, protocol_case_arm, budget_gpu_s, tag가 있다.
 """
@@ -22,6 +27,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "evals"))
+import correction_model_call as M  # noqa: E402
 from rl_triage import correction_registry as R  # noqa: E402
 from rl_triage import probe_loop as L  # noqa: E402
 from rl_triage.correction_ledger import CorrectionLedger, LedgerError  # noqa: E402
@@ -54,33 +61,73 @@ def loop_state_digest(prereg: dict, state: dict) -> str:
     return L.digest({"prereg": prereg, "state": state})
 
 
+def _confirming_request(case: str, state: dict, loop_led: L.Ledger) -> tuple[str, dict]:
+    """confirmed loop의 (메커니즘, 확정 probe의 끝난 abnormal 요청)."""
+    status = state.get("status")
+    if status != "confirmed" or len(state.get("hypotheses", [])) != 1:
+        raise LedgerError(f"{case}: loop 상태가 confirmed가 아니다({status!r})")
+    mech = state["hypotheses"][0]
+    probe = L.confirming_probe(mech)
+    confirm = [r for r in loop_led.requests().values() if r["probe"] == probe and r["state"] == "done"
+               and r["receipt"]["outcome"] == "abnormal"]
+    if not confirm:
+        raise LedgerError(f"{case}: 확정 probe({probe}) abnormal receipt가 원장에 없다")
+    return mech, confirm[-1]
+
+
+def evidence_packet(case: str, source_report: dict, loops: Path = LOOPS, source_report_sha: str | None = None) -> dict:
+    """교정 제안 모델에게 줄 packet. 같은 loop 상태·report·skill이면 언제 만들어도 같다."""
+    return _packet(case, *_loop_state(case, loops), source_report, source_report_sha)
+
+
+def _packet(case: str, prereg: dict, state: dict, loop_led: L.Ledger, source_report: dict,
+            source_report_sha: str | None) -> dict:
+    mech, req = _confirming_request(case, state, loop_led)
+    receipts = [e for e in loop_led.events() if e["event"] == "receipt"]
+    confirming = {"probe": req["probe"], "request_id": req["request_id"], "outcome": req["receipt"]["outcome"],
+                  "measurement": req["receipt"].get("measurement")}
+    return M.build_packet(case=case, loop_state_digest=loop_state_digest(prereg, state),
+                          receipts_digest=L.digest(receipts), mechanism=mech, confirming=confirming,
+                          observed=state.get("observed", {}), rule=R.recommend_recovery_mode(mech, source_report),
+                          source_report=source_report, source_report_sha256=source_report_sha,
+                          checkpoint_sha256=prereg.get("checkpoint_sha256"))
+
+
 def propose(case: str, source_report: dict, budget_gpu_s: int = DEFAULT_BUDGET_GPU_S, loops: Path = LOOPS,
-            source_report_sha: str | None = None) -> dict:
-    """확정된 loop에서 교정 하나·회복 방식 하나를 제안한다. 지원 밖이면 {"decision": "HOLD"}만 반환(요청 0)."""
-    prereg, state, loop_led = _loop_state(case, loops)
+            source_report_sha: str | None = None, model_record: dict | None = None,
+            model_record_sha: str | None = None) -> dict:
+    """확정된 loop에서 교정 하나·회복 방식 하나를 제안한다. 지원 밖이면 {"decision": "HOLD"}만 반환(요청 0).
+
+    model_record가 있으면 검증 결과를 evidence.model_proposal로 붙인다. 교정·회복 방식은 결정적 규칙 값이다.
+    """
+    prereg, state, loop_led = _loop_state(case, loops)  # 원장 digest와 packet을 같은 읽기에서 만든다
     led = _ledger(case, loops)
     lsd = loop_state_digest(prereg, state)
     status = state.get("status")
     if status in ("none_supported", "unidentifiable"):
+        if model_record is not None:  # 확정 전에는 packet이 없으므로 모델 기록이 이 loop의 것인지 확인할 수 없다
+            raise ValueError(f"{case}: loop 상태 {status}에는 모델 제안을 붙이지 않는다")
         led.hold(lsd, "", f"loop status {status}")
         return {"decision": R.HOLD, "reason": f"loop status {status}"}
     if status != "confirmed" or len(state.get("hypotheses", [])) != 1:
         raise LedgerError(f"{case}: loop 상태가 confirmed가 아니다({status!r})")
     mech = state["hypotheses"][0]
+    review = None
+    if model_record is not None:  # 원장에 쓰기 전에 packet 결합부터 확인한다. 불일치는 ValueError로 멈춘다.
+        packet = _packet(case, prereg, state, loop_led, source_report, source_report_sha)
+        review = M.review_call_record(model_record, packet, model_record_sha)
     if mech not in R.REGISTRY:
-        led.hold(lsd, mech, "unregistered_mechanism")
-        return {"decision": R.HOLD, "reason": "unregistered_mechanism", "mechanism": mech}
-    probe = L.confirming_probe(mech)
-    reqs = loop_led.requests()
-    confirm = [r for r in reqs.values() if r["probe"] == probe and r["state"] == "done"
-               and r["receipt"]["outcome"] == "abnormal"]
-    if not confirm:
-        raise LedgerError(f"{case}: 확정 probe({probe}) abnormal receipt가 원장에 없다")
+        led.hold(lsd, mech, "unregistered_mechanism", None if review is None else {"model_proposal": review})
+        out = {"decision": R.HOLD, "reason": "unregistered_mechanism", "mechanism": mech}
+        return out if review is None else {**out, "model_proposal": review}
+    _, req = _confirming_request(case, state, loop_led)
     rule = R.recommend_recovery_mode(mech, source_report)
     receipts = [e for e in loop_led.events() if e["event"] == "receipt"]
-    evidence = {"confirming_probe": probe, "confirming_request_id": confirm[-1]["request_id"],
+    evidence = {"confirming_probe": req["probe"], "confirming_request_id": req["request_id"],
                 "standstill_ratio": rule["standstill_ratio"], "rule": rule["rule"], "rule_mode": rule["mode"],
                 "source_report_sha256": source_report_sha}
+    if review is not None:
+        evidence["model_proposal"] = review
     ev = led.propose(lsd, mech, L.digest(receipts), rule["correction_id"], rule["mode"],
                      R.protocol_case_arm(mech), budget_gpu_s, evidence)
     return {"decision": "proposed", **ev}
@@ -128,13 +175,24 @@ def status(case: str, loops: Path = LOOPS) -> dict:
             "orphans": led.orphans()}
 
 
+def _read_json(path: Path) -> tuple[dict, str]:
+    """(내용, LF 정규화 SHA256)."""
+    raw = path.read_bytes()
+    return json.loads(raw), hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest()
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="E2 교정 제안·승인·실행")
     sub = ap.add_subparsers(dest="cmd", required=True)
+    e = sub.add_parser("evidence")
+    e.add_argument("case")
+    e.add_argument("--source-report", type=Path, required=True, help="결함 실행의 fixed_eval_v1 report JSON")
+    e.add_argument("--output", type=Path, required=True, help="새 packet 파일(덮어쓰지 않는다)")
     p = sub.add_parser("propose")
     p.add_argument("case")
     p.add_argument("--source-report", type=Path, required=True, help="결함 실행의 fixed_eval_v1 report JSON")
     p.add_argument("--budget-gpu-s", type=int, default=DEFAULT_BUDGET_GPU_S)
+    p.add_argument("--model-proposal", type=Path, help="evals/correction_model_call.py 호출 기록 JSON")
     for name in ("approve", "reject"):
         q = sub.add_parser(name)
         q.add_argument("case")
@@ -151,10 +209,19 @@ def main(argv=None) -> int:
     s.add_argument("case")
     args = ap.parse_args(argv)
     try:
-        if args.cmd == "propose":
-            raw = args.source_report.read_bytes()
-            sha = hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest()
-            out = propose(args.case, json.loads(raw), args.budget_gpu_s, source_report_sha=sha)
+        if args.cmd == "evidence":
+            report, sha = _read_json(args.source_report)
+            packet = evidence_packet(args.case, report, LOOPS, source_report_sha=sha)
+            text = json.dumps(packet, ensure_ascii=False, indent=1, allow_nan=False) + "\n"  # 반쪽 파일 방지
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            with args.output.open("x", encoding="utf-8", newline="\n") as handle:
+                handle.write(text)
+            out = {"output": str(args.output), "packet_digest": M.packet_digest(packet)}
+        elif args.cmd == "propose":
+            report, sha = _read_json(args.source_report)
+            record, record_sha = _read_json(args.model_proposal) if args.model_proposal else (None, None)
+            out = propose(args.case, report, args.budget_gpu_s, LOOPS, source_report_sha=sha, model_record=record,
+                          model_record_sha=record_sha)
         elif args.cmd == "approve":
             out = _ledger(args.case, LOOPS).approve(args.request_id, args.approver)
         elif args.cmd == "reject":
@@ -164,7 +231,7 @@ def main(argv=None) -> int:
         else:
             out = status(args.case)
         print(json.dumps(out, ensure_ascii=False, indent=1))
-    except (LedgerError, ValueError) as e:
+    except (LedgerError, ValueError, FileExistsError) as e:
         print(f"거부: {e}", file=sys.stderr)
         return 2
     return 0

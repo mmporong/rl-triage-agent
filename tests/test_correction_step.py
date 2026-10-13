@@ -1,7 +1,9 @@
 """E2 교정 제안·승인·실행 단계 테스트. GPU·모델·네트워크 없이 돈다."""
+import hashlib
 import importlib.util
 import json
 import sys
+import types
 from pathlib import Path
 
 import pytest
@@ -24,7 +26,7 @@ def _load(name, rel):
 
 
 C = _load("correct_cli", "evals/correct.py")
-M = _load("correction_model_call", "evals/correction_model_call.py")
+M = C.M  # correct.py가 불러온 같은 모듈
 
 
 def report(ratio, standstill=1.0):
@@ -326,44 +328,301 @@ def test_duplicate_event_and_timestamp_reversal_fail(tmp_path):
         led.requests()
 
 
-# --- 모델 제안 검증(호출 없음) ---
-EVIDENCE = {"mechanism": "reward", "facts": {"standstill_ratio": 0.95, "confirming_probe": "P_reward"},
-            "rule_result": {"correction_id": "restore_body_frame_reward", "mode": "restart"}}
+# --- E3 모델 교정 제안: skill 체크리스트 근거, 호출 없음 ---
+CHECK_OK = {"1": "eval_metrics", "2": "confirmed_mechanism", "3": "confirming_probe", "4": "eval_metrics",
+            "5": "unmet", "6": "registered_correction"}
 
 
-def prop(**kw):
-    return {**{"correction_id": "restore_body_frame_reward", "recovery_mode": "restart",
-               "cited_facts": ["standstill_ratio"]}, **kw}
+def answer(**kw):
+    base = {"correction_id": "restore_body_frame_reward", "recovery_mode": "restart",
+            "cited_facts": ["standstill_ratio", "confirming_probe_outcome"], "checklist": dict(CHECK_OK),
+            "hold_reason": None}
+    return json.dumps({**base, **kw}, ensure_ascii=False)
 
 
-def test_model_proposal_valid_and_rule_agreement():
-    out = M.validate_model_proposal(prop(), EVIDENCE)
-    assert out["accepted"] and out["agrees_with_rule"]
-    out = M.validate_model_proposal(prop(recovery_mode="resume"), EVIDENCE)
-    assert out["accepted"] and not out["agrees_with_rule"]
+FIXTURES = {  # 이름: (모델 응답 content, accepted, decision)
+    "normal": (answer(), True, "propose"),
+    "out_of_registry": (answer(correction_id="rewrite_reward_code"), False, None),
+    "no_citation": (answer(cited_facts=[]), False, None),
+    "mechanism_mismatch": (answer(correction_id="restore_motor_torque_speed", recovery_mode="resume"), False, None),
+    "broken_json": ('{"correction_id": "restore_body_frame_reward", "recovery_mode": ', False, None),
+    "hold": (answer(correction_id=None, recovery_mode=None, cited_facts=["probe_observations"],
+                    hold_reason="체크리스트 5번을 충족하는 사실이 없다"), True, R.HOLD),
+}
+
+
+def packet_for(tmp_path, ratio=0.95, mechanism="reward", sha="aa", case="c1"):
+    make_loop(tmp_path, case=case, mechanism=mechanism)
+    return C.evidence_packet(case, report(ratio), loops=tmp_path, source_report_sha=sha)
+
+
+def call_record(packet, content, **kw):
+    return {"schema": M.RECORD_SCHEMA, "packet_digest": M.packet_digest(packet), "exit_code": 0,
+            "messages_sha256": L.digest(M.build_messages(packet)), "skill_sha256": M.SKILL_SHA256,
+            "request": {"model": "fixture-model", "temperature": 0}, "provider_model": "fixture-model",
+            "response_id": "r1", "content": content, **kw}
+
+
+def test_skill_reference_pinned_and_checklist_verbatim():
+    src =json.loads((M.SKILL_DIR / "SOURCE.json").read_text(encoding="utf-8"))
+    assert src["commit_sha"] == M.SKILL_COMMIT and src["files"]["SKILL.md"]["sha256"] == M.SKILL_SHA256
+    for name, meta in src["files"].items():  # 상류 바이트 그대로(LICENSE 포함)
+        assert hashlib.sha256((M.SKILL_DIR / name).read_bytes()).hexdigest() == meta["sha256"]
+    assert src["license"] == "BSD-3-Clause"
+    assert "SPDX-License-Identifier: BSD-3-Clause" in (M.SKILL_DIR / "LICENSE").read_text(encoding="utf-8")
+    items = M.skill_checklist()
+    assert list(items) == ["1", "2", "3", "4", "5", "6"]
+    assert items["2"].startswith("The failed layer is classified as environment, reward, reset, physics")
+    assert items["6"] == "Any recommended next run changes only one variable."
+
+
+def test_skill_tamper_detected_and_crlf_tolerated(tmp_path):
+    data = (M.SKILL_DIR / "SKILL.md").read_bytes()
+    (tmp_path / "SKILL.md").write_bytes(data.replace(b"\n", b"\r\n"))
+    assert M.skill_checklist(tmp_path) == M.skill_checklist()
+    (tmp_path / "SKILL.md").write_bytes(data.replace(b"only one variable", b"two variables"))
+    with pytest.raises(ValueError):
+        M.skill_checklist(tmp_path)
+
+
+def test_packet_carries_facts_checklist_costs_but_messages_hide_case(tmp_path):
+    pk = packet_for(tmp_path, case="hidden_case_name")
+    f = pk["facts"]
+    assert f["confirmed_mechanism"] == "reward" and f["confirming_probe"] == "P_reward"
+    assert f["confirming_probe_outcome"] == "abnormal" and f["standstill_ratio"] == pytest.approx(0.95)
+    assert f["rule_mode"] == "restart" and f["registered_recovery_modes"] == ["restart", "resume"]
+    arms = {"clean_reference", "corrected", "fault_sham"}
+    assert set(f["cost_train_300_updates_parent_wall_s"]) == arms and set(f["cost_fixed_eval_parent_wall_s"]) == arms
+    assert pk["cost_basis_source"] == M.COST_SOURCE
+    assert pk["checklist"] == M.skill_checklist()
+    assert pk["rule_result"] == {"correction_id": "restore_body_frame_reward", "mode": "restart"}
+    msgs = M.build_messages(pk)
+    assert [m["role"] for m in msgs] == ["system", "user"]
+    body = json.loads(msgs[1]["content"])
+    assert body["facts"] == f and body["skill_checklist"] == pk["checklist"]
+    assert "hidden_case_name" not in msgs[1]["content"] and pk["loop_state_digest"] not in msgs[1]["content"]
+
+
+def test_evidence_requires_confirmed_loop(tmp_path):
+    make_loop(tmp_path, status="open", hyps=["reward", "physics"], confirm=False)
+    with pytest.raises(LedgerError):
+        C.evidence_packet("c1", report(1.0), loops=tmp_path)
+
+
+@pytest.mark.parametrize("name", list(FIXTURES))
+def test_fixture_responses(tmp_path, name):
+    content, accepted, decision = FIXTURES[name]
+    pk = packet_for(tmp_path)
+    out = M.review_call_record(call_record(pk, content), pk, "cc")
+    assert out["accepted"] is accepted and out["decision"] == decision
+    assert out["record_sha256"] == "cc" and out["packet_digest"] == M.packet_digest(pk)
+    assert (out["reasons"] == []) is accepted
+    if not accepted:
+        assert not out["agrees_with_rule"]
+    if name == "normal":
+        assert out["agrees_with_rule"] and out["unmet_checklist"] == ["5"]
+    if name == "hold":
+        assert not out["agrees_with_rule"]  # 결정적 규칙은 restart
+    if name == "broken_json":
+        assert out["proposal"] is None and "JSON" in out["reasons"][0]
 
 
 @pytest.mark.parametrize("bad", [
-    prop(correction_id="rewrite_reward_code"),                 # 등록 표 밖
-    prop(correction_id="restore_motor_torque_speed"),          # 다른 메커니즘의 교정
-    prop(recovery_mode="scratch"),
-    prop(cited_facts=[]),                                      # 인용 없음
-    prop(cited_facts=["invented_fact"]),                       # 근거에 없는 인용
-    prop(correction_id=["x"]),
-    {"correction_id": "restore_body_frame_reward", "recovery_mode": "restart"},
-    "not a dict",
+    {"checklist": {k: v for k, v in CHECK_OK.items() if k != "6"}},  # 체크리스트 누락
+    {"checklist": {**CHECK_OK, "2": "invented_fact"}},               # 체크리스트가 없는 사실 인용
+    {"cited_facts": ["invented_fact"]},
+    {"recovery_mode": "scratch"},
+    {"correction_id": ["x"]},
+    {"hold_reason": ""},
+    {"hold_reason": "보류", "correction_id": "restore_body_frame_reward"},
 ])
-def test_model_proposal_rejected(bad):
-    out = M.validate_model_proposal(bad, EVIDENCE)
-    assert not out["accepted"] and out["reasons"] and not out["agrees_with_rule"]
+def test_more_rejections(tmp_path, bad):
+    out = M.validate_model_proposal(json.loads(answer(**bad)), packet_for(tmp_path))
+    assert not out["accepted"] and out["reasons"]
 
 
-def test_model_proposal_unregistered_mechanism():
-    assert not M.validate_model_proposal(prop(), {**EVIDENCE, "mechanism": "physics"})["accepted"]
+def test_key_set_fence_and_rule_disagreement(tmp_path):
+    pk = packet_for(tmp_path)
+    obj = json.loads(answer())
+    assert not M.validate_model_proposal({**obj, "approve": True}, pk)["accepted"]
+    assert not M.validate_model_proposal({k: v for k, v in obj.items() if k != "hold_reason"}, pk)["accepted"]
+    assert not M.validate_model_proposal("not a dict", pk)["accepted"]
+    assert M.review_call_record(call_record(pk, "```json\n" + answer() + "\n```"), pk)["accepted"]
+    disagree = M.validate_model_proposal(json.loads(answer(recovery_mode="resume")), pk)
+    assert disagree["accepted"] and not disagree["agrees_with_rule"]
 
 
-def test_build_messages_has_no_network_and_carries_facts():
-    msgs = M.build_messages(EVIDENCE)
-    assert [m["role"] for m in msgs] == ["system", "user"]
-    body = json.loads(msgs[1]["content"])
-    assert body["facts"] == EVIDENCE["facts"] and "restore_body_frame_reward" in msgs[1]["content"]
+def test_review_refuses_stale_failed_or_foreign_record(tmp_path):
+    pk = packet_for(tmp_path)
+    for rec in (call_record(pk, answer(), packet_digest="0" * 64),
+                call_record(pk, answer(), messages_sha256="0" * 64),  # 다른 프롬프트로 만든 응답
+                call_record(pk, answer(), skill_sha256="0" * 64),
+                call_record(pk, None, exit_code=2, infra_error="empty_or_truncated_response"),
+                {**call_record(pk, answer()), "schema": "active_model_call_v1"}):
+        with pytest.raises(ValueError):
+            M.review_call_record(rec, pk)
+
+
+def test_review_marks_rule_visibility_and_caps_stored_output(tmp_path):
+    pk = packet_for(tmp_path)
+    out = M.review_call_record(call_record(pk, answer()), pk)
+    assert out["rule_visible_to_model"] and out["messages_sha256"] == L.digest(M.build_messages(pk))
+    big = M.review_call_record(call_record(pk, answer(hold_reason="x" * 5000, correction_id=None,
+                                                      recovery_mode=None)), pk)
+    assert big["proposal"] is None and big["proposal_omitted"] == "too_large" and big["decision"] == R.HOLD
+
+
+def test_propose_attaches_model_review_but_keeps_rule_and_needs_approval(tmp_path):
+    pk = packet_for(tmp_path)
+    out = C.propose("c1", report(0.95), loops=tmp_path, source_report_sha="aa",
+                    model_record=call_record(pk, answer(recovery_mode="resume")), model_record_sha="bb")
+    assert out["decision"] == "proposed" and out["recovery_mode"] == "restart"  # 모델 값이 아니라 규칙 값
+    mp = out["evidence"]["model_proposal"]
+    assert mp["accepted"] and not mp["agrees_with_rule"] and mp["proposal"]["recovery_mode"] == "resume"
+    assert mp["record_sha256"] == "bb"
+    assert C.status("c1", tmp_path)["requests"][out["request_id"]]["state"] == "pending"
+    calls = []
+    with pytest.raises(LedgerError):  # 사람 승인 전에는 실행할 수 없다
+        C.run("c1", out["request_id"], fake_exec(calls=calls), loops=tmp_path)
+    assert calls == []
+
+
+def test_rejected_model_output_is_recorded_on_request(tmp_path):
+    pk = packet_for(tmp_path)
+    out = C.propose("c1", report(0.95), loops=tmp_path, source_report_sha="aa",
+                    model_record=call_record(pk, FIXTURES["broken_json"][0]))
+    mp = out["evidence"]["model_proposal"]
+    assert out["decision"] == "proposed" and not mp["accepted"] and mp["reasons"]
+
+
+def test_stale_model_record_writes_nothing(tmp_path):
+    pk = packet_for(tmp_path, sha="aa")
+    with pytest.raises(ValueError):  # report SHA가 바뀌면 packet digest가 달라진다
+        C.propose("c1", report(0.95), loops=tmp_path, source_report_sha="zz", model_record=call_record(pk, answer()))
+    st = C.status("c1", tmp_path)
+    assert st["requests"] == {} and st["holds"] == []
+
+
+def test_model_record_on_unconfirmed_loop_is_refused(tmp_path):
+    pk = packet_for(tmp_path)
+    make_loop(tmp_path, case="c2", status="none_supported", hyps=[], confirm=False)
+    with pytest.raises(ValueError):
+        C.propose("c2", report(1.0), loops=tmp_path, model_record=call_record(pk, answer()))
+    assert C.status("c2", tmp_path)["holds"] == []
+
+
+def test_without_model_record_evidence_unchanged(tmp_path):
+    make_loop(tmp_path)
+    out = C.propose("c1", report(0.95), loops=tmp_path, source_report_sha="aa")
+    assert "model_proposal" not in out["evidence"]
+
+
+def test_unregistered_mechanism_hold_keeps_model_review(tmp_path):
+    pk = packet_for(tmp_path, mechanism="physics")
+    assert pk["rule_result"]["mode"] == R.HOLD and pk["facts"]["registered_correction"] is None
+    out = C.propose("c1", report(0.95), loops=tmp_path, source_report_sha="aa",
+                    model_record=call_record(pk, FIXTURES["hold"][0]))
+    assert out["decision"] == R.HOLD and out["model_proposal"]["decision"] == R.HOLD
+    assert out["model_proposal"]["agrees_with_rule"]
+    st = C.status("c1", tmp_path)
+    assert st["requests"] == {} and st["holds"][0]["evidence"]["model_proposal"]["decision"] == R.HOLD
+
+
+# --- call: 가짜 openai 모듈로만 돈다(네트워크·키 없음) ---
+def fake_openai(monkeypatch, content=None, raise_connection=False):
+    mod = types.ModuleType("openai")
+
+    class APIConnectionError(Exception):
+        pass
+
+    class APITimeoutError(Exception):
+        pass
+
+    class APIStatusError(Exception):
+        status_code = 500
+
+    seen = {"requests": 0}
+
+    def create(**kw):
+        seen["requests"] += 1
+        seen["request"] = kw
+        if raise_connection:
+            raise APIConnectionError("no network in tests")
+        msg = types.SimpleNamespace(content=content, reasoning_content=None)
+        return types.SimpleNamespace(id="resp-1", model="fake-model",
+                                     choices=[types.SimpleNamespace(message=msg, finish_reason="stop")],
+                                     usage=types.SimpleNamespace(prompt_tokens=11, completion_tokens=7,
+                                                                 total_tokens=18))
+
+    class OpenAI:
+        def __init__(self, **kw):
+            seen["client"] = kw
+            self.chat = types.SimpleNamespace(completions=types.SimpleNamespace(create=create))
+
+    mod.OpenAI, mod.APIConnectionError = OpenAI, APIConnectionError
+    mod.APITimeoutError, mod.APIStatusError = APITimeoutError, APIStatusError
+    monkeypatch.setitem(sys.modules, "openai", mod)
+    monkeypatch.setenv("NVIDIA_API_KEY", "placeholder-for-test")
+    return seen
+
+
+def write_packet(tmp_path, pk, name="packet.json"):
+    p = tmp_path / name
+    p.write_text(json.dumps(pk, ensure_ascii=False, indent=1), encoding="utf-8")
+    return p
+
+
+def test_call_records_request_response_and_tokens(tmp_path, monkeypatch):
+    pk = packet_for(tmp_path)
+    seen = fake_openai(monkeypatch, content=answer())
+    out = tmp_path / "call" / "record.json"
+    assert M.call(write_packet(tmp_path, pk), out, "fixture-model") == 0
+    text = out.read_text(encoding="utf-8")
+    rec = json.loads(text)
+    assert rec["schema"] == M.RECORD_SCHEMA and rec["request"]["temperature"] == 0
+    assert rec["packet_digest"] == M.packet_digest(pk) and rec["skill_sha256"] == M.SKILL_SHA256
+    assert (rec["input_tokens"], rec["output_tokens"], rec["total_tokens"]) == (11, 7, 18)
+    assert rec["exit_code"] == 0 and rec["execution_wall_s"] >= 0 and rec["content"] == answer()
+    assert seen["request"]["messages"] == M.build_messages(pk) and seen["client"]["max_retries"] == 0
+    assert "placeholder-for-test" not in text
+    assert M.review_call_record(rec, pk)["accepted"]
+    with pytest.raises(FileExistsError):  # 기록이 있으면 호출 전에 멈춘다
+        M.call(write_packet(tmp_path, pk), out, "fixture-model")
+    assert seen["requests"] == 1
+
+
+def test_call_connection_error_is_retryable_and_review_refuses(tmp_path, monkeypatch):
+    pk = packet_for(tmp_path)
+    fake_openai(monkeypatch, raise_connection=True)
+    out = tmp_path / "r.json"
+    assert M.call(write_packet(tmp_path, pk), out, "m") == 2
+    rec = json.loads(out.read_text(encoding="utf-8"))
+    assert rec["infra_error"] == "APIConnectionError" and rec["retryable"] and rec["content"] is None
+    with pytest.raises(ValueError):
+        M.review_call_record(rec, pk)
+
+
+def test_call_refuses_packet_with_altered_checklist(tmp_path, monkeypatch):
+    pk = packet_for(tmp_path)
+    seen = fake_openai(monkeypatch, content=answer())
+    bad = {**pk, "checklist": {**pk["checklist"], "6": "Change everything at once."}}
+    with pytest.raises(ValueError):
+        M.call(write_packet(tmp_path, bad), tmp_path / "r.json", "m")
+    assert seen["requests"] == 0
+
+
+def test_cli_evidence_then_propose_with_model_record(tmp_path, monkeypatch):
+    make_loop(tmp_path)
+    monkeypatch.setattr(C, "LOOPS", tmp_path)
+    rp = tmp_path / "report.json"
+    rp.write_text(json.dumps(report(0.95)), encoding="utf-8")
+    pk_path = tmp_path / "packet.json"
+    assert C.main(["evidence", "c1", "--source-report", str(rp), "--output", str(pk_path)]) == 0
+    assert C.main(["evidence", "c1", "--source-report", str(rp), "--output", str(pk_path)]) == 2  # 덮어쓰기 거부
+    pk = json.loads(pk_path.read_text(encoding="utf-8"))
+    recp = tmp_path / "record.json"
+    recp.write_text(json.dumps(call_record(pk, answer())), encoding="utf-8")
+    assert C.main(["propose", "c1", "--source-report", str(rp), "--model-proposal", str(recp)]) == 0
+    req = next(iter(C.status("c1", tmp_path)["requests"].values()))
+    assert req["state"] == "pending" and req["recovery_mode"] == "restart"
+    assert req["evidence"]["model_proposal"]["accepted"] and req["evidence"]["model_proposal"]["record_sha256"]

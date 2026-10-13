@@ -66,10 +66,13 @@ class CorrectionLedger(L.Ledger):
         return L.digest({"loop_state": loop_state_digest, "correction": correction_id,
                          "mode": recovery_mode})[:16]
 
-    def hold(self, loop_state_digest: str, mechanism: str, reason: str) -> dict:
+    def hold(self, loop_state_digest: str, mechanism: str, reason: str, evidence: dict | None = None) -> dict:
         """지원 밖 확정 메커니즘이나 none_supported 기록. 요청은 만들지 않는다."""
-        return self._append({"event": "held", "decision": HOLD, "loop_state_digest": loop_state_digest,
-                             "mechanism": mechanism, "reason": reason})
+        ev = {"event": "held", "decision": HOLD, "loop_state_digest": loop_state_digest, "mechanism": mechanism,
+              "reason": reason}
+        if evidence is not None:
+            ev["evidence"] = evidence
+        return self._append(ev)
 
     def propose(self, loop_state_digest: str, confirmed_mechanism: str, receipts_digest: str, correction_id: str,
                 recovery_mode: str, protocol_case_arm: dict, budget_gpu_s: int, evidence: dict | None = None) -> dict:
