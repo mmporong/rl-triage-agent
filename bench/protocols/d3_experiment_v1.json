@@ -1,0 +1,641 @@
+{
+ "schema": "d3_experiment_protocol_v1",
+ "question": "실패한 학습 하나에 변경 8개가 섞여 있고 그중 하나만 해로울 때, 해로운 변경을 확정하기까지 확인 재학습이 몇 번 필요한가. 같은 재학습 상한에서 이분 탐색·하나씩 되돌리기·probe 범주 규칙·모델 순위(probe 있음·없음)를 비교한다",
+ "scope": "Go2 flat 4096 env × 300회, k = 8, 사전등록 사례 3건(+집계하지 않는 개발 사례 1건). 결함·무해 변경·probe는 같은 설계자가 만들었고(U1만 외부 원인 결함의 의미 이식), 진단 정확도·일반화·실제 프로젝트에서의 절감을 재지 않는다",
+ "changes": {
+  "H1": {
+   "role": "harmless",
+   "kind": "code",
+   "category": "reward",
+   "definition": "flat_orientation_l2의 제곱을 torch.square 대신 같은 값의 곱으로 계산한다(같은 수식)",
+   "sources": [
+    "의미 보존 리팩터링이라 수치 출처가 없다"
+   ],
+   "targets": [
+    {
+     "file": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+     "qualname": "flat_orientation_l2",
+     "edits": [
+      [
+       "    return torch.sum(torch.square(asset.data.projected_gravity_b[:, :2]), dim=1)",
+       "    gravity_xy = asset.data.projected_gravity_b[:, :2]\n    return torch.sum(gravity_xy * gravity_xy, dim=1)"
+      ]
+     ]
+    }
+   ]
+  },
+  "H2": {
+   "role": "harmless",
+   "kind": "config",
+   "category": "reward",
+   "definition": "track_lin_vel_xy_exp 가중치 1.5 → 1.4",
+   "sources": [
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/cassie/rough_env_cfg.py:88"
+   ],
+   "overrides": {
+    "env.rewards.track_lin_vel_xy_exp.weight": [
+     1.5,
+     1.4
+    ]
+   },
+   "file": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py",
+   "scope": "UnitreeGo2RoughEnvCfg",
+   "edits": [
+    [
+     "self.rewards.track_lin_vel_xy_exp.weight = 1.5",
+     "self.rewards.track_lin_vel_xy_exp.weight = 1.4"
+    ]
+   ],
+   "range": {
+    "inside": true,
+    "values": {
+     "velocity_env_cfg 기본": 1.0,
+     "go1·go2·a1 rough_env_cfg.py:56": 1.5,
+     "cassie rough_env_cfg.py:88": 2.0
+    }
+   }
+  },
+  "H3": {
+   "role": "harmless",
+   "kind": "code",
+   "category": "reward",
+   "definition": "feet_air_time이 읽는 발 체공 시간을 5.0 s에서 자른다(보행 체공 시간보다 훨씬 긴 경우에만 걸림)",
+   "sources": [
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/mdp/rewards.py feet_air_time_positive_biped의 torch.clamp(reward, max=threshold)(같은 파일의 clamp 선례). 5.0 s는 설계자 선택"
+   ],
+   "targets": [
+    {
+     "file": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/mdp/rewards.py",
+     "qualname": "feet_air_time",
+     "edits": [
+      [
+       "last_air_time = contact_sensor.data.last_air_time[:, sensor_cfg.body_ids]",
+       "last_air_time = torch.clamp(contact_sensor.data.last_air_time[:, sensor_cfg.body_ids], max=5.0)"
+      ]
+     ]
+    }
+   ]
+  },
+  "H4": {
+   "role": "harmless",
+   "kind": "config",
+   "category": "actuator",
+   "definition": "Go2 DC 모터 effort_limit·saturation_effort 23.5 → 23.7",
+   "sources": [
+    "source/isaaclab_assets/isaaclab_assets/robots/unitree.py:38-40"
+   ],
+   "overrides": {
+    "env.scene.robot.actuators.base_legs.effort_limit": [
+     23.5,
+     23.7
+    ],
+    "env.scene.robot.actuators.base_legs.saturation_effort": [
+     23.5,
+     23.7
+    ]
+   },
+   "file": "source/isaaclab_assets/isaaclab_assets/robots/unitree.py",
+   "scope": "UNITREE_GO2_CFG",
+   "edits": [
+    [
+     "effort_limit=23.5,",
+     "effort_limit=23.7,"
+    ],
+    [
+     "saturation_effort=23.5,",
+     "saturation_effort=23.7,"
+    ]
+   ],
+   "range": {
+    "inside": true,
+    "values": {
+     "go2 unitree.py:170-171": 23.5,
+     "go1 unitree.py:38,40(spec sheet)": 23.7
+    }
+   }
+  },
+  "H5": {
+   "role": "harmless",
+   "kind": "config",
+   "category": "observation",
+   "definition": "관절 속도 관측 노이즈 ±1.5 → ±1.2",
+   "sources": [
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/spot/flat_env_cfg.py:96-98"
+   ],
+   "overrides": {
+    "env.observations.policy.joint_vel.noise.n_min": [
+     -1.5,
+     -1.2
+    ],
+    "env.observations.policy.joint_vel.noise.n_max": [
+     1.5,
+     1.2
+    ]
+   },
+   "file": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py",
+   "scope": "ObservationsCfg.PolicyCfg",
+   "edits": [
+    [
+     "noise=Unoise(n_min=-1.5, n_max=1.5)",
+     "noise=Unoise(n_min=-1.2, n_max=1.2)"
+    ]
+   ],
+   "range": {
+    "inside": true,
+    "values": {
+     "velocity_env_cfg.py:132": 1.5,
+     "spot flat_env_cfg.py:97": 0.5
+    }
+   }
+  },
+  "H6": {
+   "role": "harmless",
+   "kind": "code",
+   "category": "logging",
+   "definition": "보상 관리자 시작 표의 가중치 열을 유효숫자 4자리 문자열로 출력한다(학습 값과 무관)",
+   "sources": [
+    "출력 형식 변경이라 수치 출처가 없다"
+   ],
+   "targets": [
+    {
+     "file": "source/isaaclab/isaaclab/managers/reward_manager.py",
+     "qualname": "RewardManager.__str__",
+     "edits": [
+      [
+       "table.add_row([index, name, term_cfg.weight])",
+       "table.add_row([index, name, f\"{term_cfg.weight:.4g}\"])"
+      ]
+     ]
+    }
+   ]
+  },
+  "H7": {
+   "role": "harmless",
+   "kind": "config",
+   "category": "optimizer",
+   "definition": "PPO entropy_coef 0.01 → 0.008",
+   "sources": [
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/g1/agents/rsl_rl_ppo_cfg.py:28"
+   ],
+   "overrides": {
+    "agent.algorithm.entropy_coef": [
+     0.01,
+     0.008
+    ]
+   },
+   "file": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py",
+   "scope": "UnitreeGo2RoughPPORunnerCfg",
+   "edits": [
+    [
+     "entropy_coef=0.01,",
+     "entropy_coef=0.008,"
+    ]
+   ],
+   "range": {
+    "inside": true,
+    "values": {
+     "go2·go1·a1·h1 ppo": 0.01,
+     "g1 rsl_rl_ppo_cfg.py:28": 0.008,
+     "anymal ppo": 0.005,
+     "spot ppo": 0.0025
+    }
+   }
+  },
+  "U1": {
+   "role": "harmful",
+   "kind": "code",
+   "category": "reward",
+   "definition": "보상 4항이 읽는 root 몸체 좌표 선·각속도가 0(관측은 그대로)",
+   "sources": [
+    "https://github.com/Motphys/UniLab/commit/58ec02ea8b650e6b90db222188a770932d6b9676",
+    "https://github.com/Motphys/UniLab/pull/1254"
+   ],
+   "targets": [
+    {
+     "file": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+     "qualname": "track_lin_vel_xy_exp",
+     "edits": [
+      [
+       "- asset.data.root_lin_vel_b[:, :2]",
+       "- torch.zeros_like(asset.data.root_lin_vel_b[:, :2])"
+      ]
+     ]
+    },
+    {
+     "file": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+     "qualname": "track_ang_vel_z_exp",
+     "edits": [
+      [
+       "- asset.data.root_ang_vel_b[:, 2]",
+       "- torch.zeros_like(asset.data.root_ang_vel_b[:, 2])"
+      ]
+     ]
+    },
+    {
+     "file": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+     "qualname": "lin_vel_z_l2",
+     "edits": [
+      [
+       "torch.square(asset.data.root_lin_vel_b[:, 2])",
+       "torch.square(torch.zeros_like(asset.data.root_lin_vel_b[:, 2]))"
+      ]
+     ]
+    },
+    {
+     "file": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+     "qualname": "ang_vel_xy_l2",
+     "edits": [
+      [
+       "torch.square(asset.data.root_ang_vel_b[:, :2])",
+       "torch.square(torch.zeros_like(asset.data.root_ang_vel_b[:, :2]))"
+      ]
+     ]
+    }
+   ]
+  },
+  "F1": {
+   "role": "harmful",
+   "kind": "code",
+   "category": "reward",
+   "definition": "속도 추종 보상이 몸체 좌표 대신 월드 좌표 선속도를 씀",
+   "sources": [
+    "bench/hidden_faults.py F1(설계자 결함)"
+   ],
+   "targets": [
+    {
+     "file": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+     "qualname": "track_lin_vel_xy_exp",
+     "edits": [
+      [
+       "asset.data.root_lin_vel_b[:, :2]",
+       "asset.data.root_lin_vel_w[:, :2]"
+      ]
+     ]
+    }
+   ]
+  },
+  "F2": {
+   "role": "harmful",
+   "kind": "code",
+   "category": "actuator",
+   "definition": "DC 모터 토크-속도 곡선의 속도 항 5배(낮은 관절 속도에서 토크 포화)",
+   "sources": [
+    "bench/hidden_faults.py F2(설계자 결함)와 같은 식"
+   ],
+   "targets": [
+    {
+     "file": "source/isaaclab/isaaclab/actuators/actuator_pd.py",
+     "qualname": "DCMotor._clip_effort",
+     "edits": [
+      [
+       "(1.0 - self._joint_vel / self.velocity_limit)",
+       "(1.0 - 5.0 * self._joint_vel / self.velocity_limit)"
+      ],
+      [
+       "(-1.0 - self._joint_vel / self.velocity_limit)",
+       "(-1.0 - 5.0 * self._joint_vel / self.velocity_limit)"
+      ]
+     ]
+    }
+   ]
+  }
+ },
+ "cases": {
+  "D0": {
+   "seed": 2026,
+   "harmful": "U1",
+   "aggregate": false,
+   "role": "개발 사례. 실행기·캐시·결정성 확인용이며 집계하지 않는다. 무해성 smoke와 같은 seed라 결정성 대조에 그 체크포인트를 쓸 수 있다",
+   "case": "D0",
+   "position": 1,
+   "harmful_index": 0,
+   "order": [
+    "U1",
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "H5",
+    "H6",
+    "H7"
+   ],
+   "categories": [
+    "reward",
+    "reward",
+    "reward",
+    "reward",
+    "actuator",
+    "observation",
+    "logging",
+    "optimizer"
+   ]
+  },
+  "C1": {
+   "seed": 2035,
+   "harmful": "U1",
+   "aggregate": true,
+   "role": "본실험",
+   "case": "C1",
+   "position": 6,
+   "harmful_index": 5,
+   "order": [
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "H5",
+    "U1",
+    "H6",
+    "H7"
+   ],
+   "categories": [
+    "reward",
+    "reward",
+    "reward",
+    "actuator",
+    "observation",
+    "reward",
+    "logging",
+    "optimizer"
+   ]
+  },
+  "C2": {
+   "seed": 2036,
+   "harmful": "F1",
+   "aggregate": true,
+   "role": "본실험",
+   "case": "C2",
+   "position": 5,
+   "harmful_index": 4,
+   "order": [
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "F1",
+    "H5",
+    "H6",
+    "H7"
+   ],
+   "categories": [
+    "reward",
+    "reward",
+    "reward",
+    "actuator",
+    "reward",
+    "observation",
+    "logging",
+    "optimizer"
+   ]
+  },
+  "C3": {
+   "seed": 2037,
+   "harmful": "F2",
+   "aggregate": true,
+   "role": "본실험",
+   "case": "C3",
+   "position": 7,
+   "harmful_index": 6,
+   "order": [
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "H5",
+    "H6",
+    "F2",
+    "H7"
+   ],
+   "categories": [
+    "reward",
+    "reward",
+    "reward",
+    "actuator",
+    "observation",
+    "logging",
+    "actuator",
+    "optimizer"
+   ]
+  }
+ },
+ "position_rule": "random.Random('d3_experiment_v1:<사례>').randint(1, 8). 무해 7개는 카탈로그 순서, 해로운 변경을 그 위치에 넣는다",
+ "label_rule": "모델 입력에는 사례 순서(cases.order)의 라벨 change_1..change_8과 diff 원문만 넣는다. 변경 id·범주·역할은 넣지 않는다",
+ "confirmation_rule": "변경 c 하나만 되돌린 재학습(전체 − {c})이 healthy일 때만 c를 확정한다(모든 방법 공통). 이 관측 없이 이름만 대면 확정이 아니다",
+ "cap": 8,
+ "methods": {
+  "B1": "이분 탐색: 후보의 앞쪽 절반을 되돌리고(나머지는 적용) healthy면 그 절반, 아니면 나머지 절반. 하나 남으면 단일 되돌리기로 확정",
+  "B2": "하나씩 되돌리기: 사례 순서대로 단일 되돌리기",
+  "B3": "probe 범주 규칙: 동결 고리(probe_loop, 모든 범주 가설, FIXED_ORDER, 같은 판정 임계값)로 메커니즘 m을 확정하면 범주가 m인 변경을 사례 순서로 먼저, 나머지를 사례 순서로 단일 되돌리기. 고리가 확정하지 못하면 B1",
+  "B4": "모델 순위: B3와 같은 텔레메트리 사실·probe 관측과 변경 diff 원문으로 모델 단일 호출이 낸 순위대로 단일 되돌리기",
+  "B5": "모델 순위(probe 없음): B4에서 probe 관측만 뺀 절제"
+ },
+ "costs": {
+  "main": "확정까지 그 방법이 혼자 돌았을 때 질의한 서로 다른 확인 재학습 수. unresolved·model_invalid는 R=8로 센다",
+  "secondary": [
+   "확인 재학습의 부모 벽시계 합(학습+추출+고정 평가). B3·B4에는 기준 probe와 고리 probe 벽시계를 더한다",
+   "잘못된 확정 수, unresolved 수",
+   "B4·B5 모델 호출 토큰·지연"
+  ],
+  "shared": "NONE·실패 실행 학습과 고정 평가는 모든 방법이 같이 쓰므로 방법 비용에 넣지 않고 따로 보고한다"
+ },
+ "cache": {
+  "key": "(프로토콜, seed, 적용 변경 부분집합)",
+  "reuse": "같은 키는 한 번만 학습한다. 여러 방법이 같은 부분집합을 물으면 그 결과를 같이 쓴다. 실제 GPU는 질의 합집합만큼 든다",
+  "attempts": "부분집합마다 실행은 최대 2회이고 두 번째는 첫 실행이 인프라 원인으로 답을 못 냈을 때만이다",
+  "determinism": "개발 사례 D0의 '해로운 변경만 되돌린' 부분집합(무해 7개 적용) 체크포인트를 무해성 smoke s2026 체크포인트와 대조하고, 다르거나 smoke 결과가 없으면 같은 부분집합을 한 번 더 학습해 대조한다. 같지 않으면 캐시를 쓰지 않는 새 프로토콜 판이 필요하고 본실험을 시작하지 않는다"
+ },
+ "ledger": {
+  "format": "src/rl_triage/correction_ledger.CorrectionLedger의 사건 형식·순서 검사(proposed→approved→consumed→receipt)를 물려받은 재학습 요청 원장. 효과 키는 (사례, 적용 부분집합)",
+  "approval": "사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)",
+  "rule": "모든 방법의 확인 재학습은 같은 원장·같은 승인 방식을 거친다. 승인 대기 시간은 지표에서 뺀다"
+ },
+ "verdict": "재학습 정책을 같은 사례 NONE 정책과 같은 고정 평가(fixed_eval_v1)로 비교하고 P0-C summary.json의 p0c 밴드로 healthy/unhealthy를 정한다. undetermined나 유효 조건 실패는 unknown이며 방법은 그 자리에서 unresolved다",
+ "validity_checks": {
+  "training": [
+   "학습 종료 코드 0",
+   "model_299.pt",
+   "[d3_changes] 확인 줄 ok(그 부분집합의 id·교체·결합·env 설정)",
+   "params 차이가 그 부분집합 override와 run_name뿐(NONE 제외)"
+  ],
+  "evaluation": [
+   "fixed_eval_v1 계약·체크포인트 SHA·action scale 검증",
+   "평가 런타임이 같은 사례 NONE과 같음",
+   "NONE 정책이 걷는다(정지 대비 오차 비 0.5 미만, 낙상 0.05 이하)"
+  ],
+  "causes": "infrastructure(실행기·watchdog·GPU·소스 변경) / training_process / injection / comparability / evaluation. infrastructure만 재실행 대상이다"
+ },
+ "case_validity": {
+  "case_invalid": "실패 실행(변경 8개 전부)이 NONE 대비 unhealthy가 아니거나, NONE·실패 실행·기준 probe가 유효하게 끝나지 않음",
+  "interaction_observed": "해로운 변경이 없는 부분집합이 unhealthy이거나 있는 부분집합이 healthy. 그 사례는 재학습을 멈추고 방법 비교 집계에서 뺀 채 따로 보고한다"
+ },
+ "probes": {
+  "rule": "기준은 같은 사례 NONE 정책의 probe 6종 측정. 고리는 실패 정책(변경 8개 전부를 건 probe 환경)에 FIXED_ORDER로 하나씩 재고 probe_loop.classify·update·status를 그대로 쓴다. 다 재면 probe_loop.simulate('fixed')와 같다",
+  "injection": "bench/d3_isaac.py: 코드 교체와 env 설정 override를 첫 make 직전에 같은 값으로 넣고 확인 줄을 남긴다. 기준 probe 6종 실패나 probe 하나의 인프라 실패는 한 번 다시 잰다",
+  "approval": "probe는 방법의 선택이 아니라 B3·B4가 함께 쓰는 고정 관측이라 원장 승인 없이 운영자 명령으로 잰다"
+ },
+ "model": {
+  "id": "nvidia/nemotron-3-super-120b-a12b",
+  "call": "evals/d3_model_call.py(WSL, temperature 0, max_tokens 16384, reasoning_effort none, 사례·방법마다 단일 호출)",
+  "contract": "evals/d3_agent.py: 라벨·diff·텔레메트리 사실(B4는 probe 관측 포함), 출력 ranking·reasons·uncertain, 검증 실패는 의미 재시도 없이 model_invalid",
+  "retry": "인프라 오류(빈 응답·잘림·연결·429/5xx)만 사례·방법마다 최대 2회 호출",
+  "uncertain": "보류 여부(uncertain)는 기록만 하고 순서에 쓰지 않는다",
+  "nat": "NAT 도구 호출 경로는 이 판에서 쓰지 않는다(새 도구·계약이 필요하다)"
+ },
+ "combination": {
+  "decision": "U1은 bench/d3_changes.py 카탈로그(bench/upstream_faults.SWAPS·swap_code)로 무해 변경과 같은 프로세스에서 건다. 학습은 bench/train_with_d3_changes.py, probe는 bench/d3_isaac.py",
+  "not_used": "sub_2의 bench/upstream_isaac.py·upstream_runs.py는 결함 하나 단위 진입점이라 쓰지도 고치지도 않는다"
+ },
+ "smoke_dependency": {
+  "rule": "begin은 무해성 smoke(bench/protocols/d3_harmless_smoke_v1.json) 요약이 pass이고 그 변경 목록이 지금 카탈로그 HARMLESS와 같을 때만 진행한다",
+  "fail_branch": "smoke가 fail·invalid면 이 프로토콜로는 시작하지 않는다. 원인 분리(변경별·범주별 smoke)나 예비 후보 교체를 새 smoke 판으로 사전등록해 pass를 얻은 뒤, 바뀐 HARMLESS로 이 실험 프로토콜도 새 판으로 다시 만든다(위치·예측이 바뀐다)"
+ },
+ "main_case_preconditions": [
+  "D0 결정성 대조가 same",
+  "seed 2035~2037이 저장소·Isaac Lab 로그·학습 params에서 쓰인 적 없음(begin이 기록)"
+ ],
+ "predictions": {
+  "B1": "사례마다 3 또는 4",
+  "B2": "사례마다 해로운 변경의 위치 p",
+  "B3": "고리가 해로운 변경의 범주를 확정하면 그 범주 안 순번",
+  "B4": "3사례 중 2사례 이상에서 1위가 해로운 변경(재학습 1회), 나머지도 B3 이하",
+  "B5": "B4와 같거나 1회 많다",
+  "computed": {
+   "D0": {
+    "B1": 3,
+    "B2": 1,
+    "B3": 1
+   },
+   "C1": {
+    "B1": 4,
+    "B2": 6,
+    "B3": 4
+   },
+   "C2": {
+    "B1": 3,
+    "B2": 5,
+    "B3": 4
+   },
+   "C3": {
+    "B1": 3,
+    "B2": 7,
+    "B3": 2
+   }
+  },
+  "loop": {
+   "U1": "P_episode·P_noise normal, P_reward abnormal → reward 확정(probe 3개). U1 종단 시연 seed 2040(4e13082)에서도 P_reward 한 번으로 reward가 확정됐다",
+   "F1": "U1과 같은 경로로 reward 확정(probe 3개)",
+   "F2": "P_reward normal로 reward 기각 → P_torque abnormal → actuator 확정(probe 4개)",
+   "note": "동결 P_reward는 기대값을 보상 관리자의 그 항 가중치·std로 다시 계산하므로 무해 변경 H2(가중치)는 양쪽에 같이 들어가 판정을 바꾸지 않는다[코드 읽기, 실행 확인 아님]"
+  },
+  "reason": "[추론] U1·F1·F2의 diff는 속도 신호를 0이나 다른 좌표계로 바꾸거나 토크 곡선 계수를 바꾸고, 무해 변경은 수식을 보존하거나 작은 수치만 바꾼다. 다만 무해 변경 H2(가중치)·H4(토크 한계)를 1위로 둘 위험이 있다"
+ },
+ "outcomes": {
+  "agent_fewer_retrains": "k = 8, 사전등록 사례 3건에서 변경 diff와 probe 관측으로 순위를 매긴 에이전트가 결정적 기준선보다 확인 재학습을 적게 써서 해로운 변경을 확정했다. 사례 수가 적어 일반화·통계적 우위의 근거가 아니다.",
+  "no_advantage": "이 설정에서 에이전트 순위는 결정적 기준선보다 확인 재학습을 줄이지 못했다.",
+  "agent_worse": "에이전트 순위가 결정적 기준선보다 재학습을 더 쓰거나 틀린 변경을 확정했다.",
+  "invalid": "사례 성립 조건을 채우지 못해 방법 비교를 판정하지 않는다."
+ },
+ "advantage_conditions": [
+  "① 유효 사례에서 B4 확인 재학습 합 < B1·B2·B3 합의 최소",
+  "② 어느 유효 사례에서도 B4 > B3 아님",
+  "③ B4 잘못된 확정 0, unresolved 0",
+  "④ 유효 사례 3개"
+ ],
+ "forbidden_claims": [
+  "에이전트가 더 정확하다",
+  "일반화",
+  "실제 PR·프로젝트에서의 절감",
+  "통계적 유의",
+  "다른 실험과 합친 분모",
+  "k ≠ 8에서도 성립",
+  "LLM 코드 리뷰가 사람보다 낫다",
+  "B5 결과를 probe 일반의 가치로 확대"
+ ],
+ "execution": {
+  "watchdog_s": {
+   "training": 2700,
+   "telemetry_extract": 300,
+   "fixed_evaluation": 360,
+   "probes": 600
+  },
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "retrain_budget_gpu_s": 3600,
+  "gpu_admission": "GPU 단계마다 시작 전 GPU가 사용 중이면 아무것도 쓰지 않고 실행하지 않는다(종료 코드 3). 고정 평가 전에는 최대 1800초 기다린다",
+  "source_binding": "begin이 기록한 HEAD가 그 사례의 실험 커밋이다. 이후 단계는 프로토콜·결합 코드가 커밋돼 있고 실험 커밋과 현재 HEAD 사이에 결합 경로 diff가 없을 때만 진행한다. 실행 중 결합 경로 커밋은 그 실행을 invalid로 만든다"
+ },
+ "gpu_estimate": {
+  "unit": "부모 프로세스 벽시계(초)",
+  "per_training_with_eval_s": [
+   558,
+   1001
+  ],
+  "basis": "무해성 smoke gpu_estimate와 같은 근거(시연 교정 재학습 508.8~541.1 s, U1 smoke 590.8 s, 고정 평가 48.4~67.5 s, 경합 상한 873.6 s)",
+  "per_case": "NONE·실패 실행 2회 + 기준 probe 약 90 s + 고리 probe 1~4회(회당 약 20~32 s) + 확인 재학습 합집합 5~9회",
+  "development_extra": "D0 결정성 재학습 0~1회",
+  "total_hours": "개발 사례 약 1.2~2.6시간, 본실험 3사례 약 3.3~7.5시간(설계안 8절 추정을 같은 근거로 다시 계산)"
+ },
+ "source_files": {
+  "bench/d3_changes.py": "2cb433e678491e6ee2e83fabd16ad5b14a104fbee740b6cc4e006f4a626729a2",
+  "bench/d3_diff.py": "c5ef2ae8f610f8fe628299a76507d6dacbc9441cc6bd80d4bc637397548678d9",
+  "bench/train_with_d3_changes.py": "1254b3b71ff1d0981a9d1cfc296e10665d810087fc1bb74f5485bb5148b25cb3",
+  "bench/d3_isaac.py": "0a06a07def6f26725f9d0a7a86fb4f9b8894907ed3ff40ed8b928abe67ca9d18",
+  "evals/d3_methods.py": "914695d958ca1cc126e9cd0a23b384712ef354dfdb7178ea1d338ba099061d81",
+  "evals/d3_summary.py": "0fe5248d2c16c1584bf3ae456c98e3667a1a714a77165faed907569295aec67c",
+  "evals/d3_agent.py": "2c7cae2ecb0e374b2a831c18aca7f56109090ebc74da3798db1ea3a015e2a3e1",
+  "evals/d3_model_call.py": "a56e8d0ebef046f0b5e47b6674e542a9a72d1ece508aa5482f83cb4dfe1566f9",
+  "evals/run_d3_experiment.py": "e51e6f4aaa175e564501b3bfd6d8ab63781a0752b632c7cfc226332406ef9def",
+  "evals/run_d3_harmless_smoke.py": "760baeaca5f9f2850ef2cd0283ce2c7304bee01d91e8d169d1a771c11ecf5488",
+  "bench/protocols/d3_harmless_smoke_v1.json": "3f6b4ca5f8b54560e9c34a7e1f5c0587d1388a22ef68c8831d59ff3d215e5354",
+  "bench/upstream_faults.py": "58d7c07f481328c606a191ea55ba8f9f8e54388db9db121e925c69c8878ae249",
+  "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+  "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+  "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+  "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+  "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+  "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+  "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+  "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+  "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+  "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+  "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+  "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+  "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e"
+ },
+ "isaaclab_sources": {
+  "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+  "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+  "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+  "source/isaaclab/isaaclab/managers/reward_manager.py": "5d41d6a376cfb456849d861c3232694ea5662cc38970e2e2c7e5152f156d88d7",
+  "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+  "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+  "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+  "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/mdp/rewards.py": "29c0d6d71d44fa57d81819a0ee4a710740688d28568b88502705d0338b6856e0",
+  "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+ },
+ "rendered_diffs": {
+  "H1": "5718d0ae400a7b6729cc4d68b8f19c763f7ed72523590f4abd8feeb07a19d116",
+  "H2": "52197f1d845ca3e649bdc6981b06b25fdb8bc1d7b1536b6197e2211bf0cf6ef6",
+  "H3": "668f29e34df5d57225c75daeabe262d6ff2bbc4952393722fc9ee2b0897fb127",
+  "H4": "dd0c0cd49faa870455e9883e5a54d5be32f1b0a779e8701dd1a027cb4a9b677e",
+  "H5": "97d7ebcdc0f5d9eeefa89543b865f457a05ef2959538c2eba7c81f232b64e088",
+  "H6": "f641c8129bf62c4ba8cadfe54135ddfd5a3c58958deff6e916907696de446b78",
+  "H7": "77a2b8d460b65f0f1fe13c1d57b9158523bd3db7d333c6da18c9f29c4ba37061",
+  "S1": "9ca63ae147dd19e84958ceab1cfc44397cafa2e3570754906f4180aa6cbcc0b0",
+  "S2": "f59dab4ffd8db491a242a5f79433aa23647ee15dc407d9b14f1e30a35d1fece0",
+  "S3": "59ca717fa1d4af0ab515c2b6dc54f67387aa17b27628bb5cfe2f1f99bebc920a",
+  "S4": "0be79421eaf7be4dd700a8902320d24b1ef95ef564a7dcb30cca499f4206f407",
+  "U1": "f8d03826d3fc6ffd23cf0a8c6ca5940635ddcee029b5dde9d41368e1cba37e46",
+  "F1": "4ab5f214198a2e141dfbae92d523cd445f12dcfe21622bceb4b2a12e7d3ea3c1",
+  "F2": "e7da9fb35f106feb6639eb0b49bfe33d40101686fbba6be25c1e9968d91fd71e"
+ },
+ "bands": {
+  "survival_ratio_min": 0.9,
+  "err_xy_ratio_max": 1.1513,
+  "err_yaw_ratio_max": 1.1719,
+  "fall_frac_max": 0.05
+ },
+ "bands_summary_sha256_lf": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+ "smoke_protocol_sha256_lf": "3f6b4ca5f8b54560e9c34a7e1f5c0587d1388a22ef68c8831d59ff3d215e5354"
+}
