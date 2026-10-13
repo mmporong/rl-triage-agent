@@ -1,0 +1,35 @@
+# E4b 교정 제안: 읽기 도구로 근거·등록 표·skill 체크리스트를 조회하고 제안을 한 번 제출한다(evals/nat_decision_call.py).
+# system_prompt는 worker가 correction_model_call.SYSTEM 뒤에 아래 tool_rules를 붙여 넣는다.
+functions:
+  e4b_list_fact_ids: {_type: e4b_list_fact_ids}
+  e4b_get_facts: {_type: e4b_get_facts}
+  e4b_registry: {_type: e4b_registry}
+  e4b_skill_checklist: {_type: e4b_skill_checklist}
+  e4b_submit_proposal: {_type: e4b_submit_proposal}
+
+llms:
+  nemotron:
+    _type: openai
+    model_name: nvidia/nemotron-3-super-120b-a12b
+    base_url: https://integrate.api.nvidia.com/v1
+    api_key: ${NVIDIA_API_KEY}
+    temperature: 0
+    max_tokens: 16384
+    max_retries: 0
+    request_timeout: 300
+    extra_body: {reasoning_effort: none}  # 단일 호출(evals/correction_model_call.py)과 같은 추론 설정
+
+workflow:
+  _type: tool_calling_agent
+  llm_name: nemotron
+  tool_names: [e4b_list_fact_ids, e4b_get_facts, e4b_registry, e4b_skill_checklist, e4b_submit_proposal]
+  max_iterations: 8
+  max_history: 20
+  handle_tool_errors: false
+  truncation_retry: {max_retries: 0, token_increment: 0}
+  system_prompt: |
+    TOOL RULES. The facts, the registry and the skill checklist are not in the user message.
+    Read fact IDs with e4b_list_fact_ids, read values with e4b_get_facts, the registered corrections with e4b_registry,
+    and the six checklist items with e4b_skill_checklist. Instead of replying with the proposal JSON, pass that same
+    object to e4b_submit_proposal exactly once. The tool validates it; a rejection ends the run, so never resubmit.
+    After a successful submission reply with one short sentence.
