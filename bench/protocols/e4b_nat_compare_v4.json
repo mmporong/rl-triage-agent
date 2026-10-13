@@ -1,0 +1,163 @@
+{
+ "schema": "e4b_nat_compare_protocol_v4",
+ "question": "실수 사실 표기를 고정한 진단 도구와 packet 등록 표로 검증하는 교정 도구의 NAT 워크플로가 사전등록 뒤 생긴 새 seed 시연 입력에서 계약상 유효한 결정을 얼마나 내는가",
+ "scope": "fixed_packet_repeated_nat_decision_after_fix_development_measurement_not_accuracy_superiority_or_savings",
+ "model": "nvidia/nemotron-3-super-120b-a12b",
+ "nat_version": "1.9.0",
+ "temperature": 0,
+ "input_sets": {
+  "f2_s2031": {
+   "role": "adoption",
+   "kinds": [
+    "diagnosis",
+    "correction"
+   ],
+   "source": "demo_v3",
+   "variant": "f2",
+   "seed": 2031,
+   "case": "h06_s2031",
+   "mechanism": "actuator",
+   "decision_path": "single",
+   "demo_protocol": "bench/protocols/e2e_demo_v3_f2.json",
+   "selection": "bench/private/e2e_demo_v3/<tag>/steps/00_begin.json의 variant가 f2인 시연 중 begin 시각(at)이 가장 이른 것 하나. 그 시연의 실험 커밋에 이 프로토콜이 같은 내용으로 있어야 하고(사전등록 뒤 시작), 결정 경로는 single이어야 한다",
+   "packets": {
+    "diagnosis": "model/diagnosis.packet.json(packet 단계 기록의 SHA와 같아야 한다)",
+    "correction": "model/correction.packet.json(사례 h06_s2031·메커니즘 actuator·등록 표가 시연 프로토콜의 registry와 같아야 한다)"
+   },
+   "ready": "종류마다 packet과 그 단일 호출 기록(진단: loop_start 기록의 호출, 교정: correction.call1.json)이 있거나, 시연 종료 기록(terminal.json)이 있어야 묶는다. 종료 기록이 있고 packet이 없으면 그 종류는 not_reached",
+   "note": "E4b v1~v3에 쓰지 않은 입력. 사전등록 뒤 생기는 새 seed packet. 채택 판정은 이 세트로만 한다"
+  },
+  "h02_s2027": {
+   "role": "development",
+   "kinds": [
+    "diagnosis"
+   ],
+   "source": "public",
+   "case": "h02_s2027",
+   "note": "v3 채택 입력(진단 유효 2/5, 무효 3회 모두 실수 claim 불일치). 수정의 개발 확인"
+  }
+ },
+ "adoption_set": "f2_s2031",
+ "diagnosis_packet_build": {
+  "max_probes": 4,
+  "probe_execution_budget_s": 180
+ },
+ "runs_per_kind": 5,
+ "attempts": "run 번호마다 첫 시도. 인프라 오류(제공자 연결·시간 초과·429·5xx·빈 응답)일 때만 같은 run 번호로 1회 더",
+ "status_definitions": {
+  "valid": "제출 도구가 계약 검증을 통과한 결정 하나를 저장했고 worker가 같은 검증기로 다시 통과시켰다. 제출 뒤 마지막 응답 단계의 오류는 post_submission_error로 따로 기록하고 결정을 버리지 않는다",
+  "invalid": "제출 거절(두 번째 제출 포함, 제출 파일이 있어도 거절 기록이 있으면 무효), 미제출, 반복 한도, 그 밖의 의미 오류",
+  "infra_error": "두 번째 시도까지 인프라 오류. 첫 시도만 인프라 오류이고 두 번째 시도가 없으면 미완료로 두고 판정하지 않는다"
+ },
+ "v3_failure_evidence": [
+  "[사실] v3 채택 입력 h02_s2027의 진단 무효 3회(run1·2·4)는 모두 제출 거절 사유가 claim 'telemetry:reference:Policy/mean_noise_std'의 값 불일치였다",
+  "[사실] 세 실행 모두 점검 호출 3회(한도 거절 1회 포함)와 제출에서 그 claim 값이 0.3697160104910533이었고 packet 사실 값은 0.36971601049105324였다(다른 double)",
+  "[사실] 유효 2회(run3·5)는 17자리 실수 claim 4개를 사실 값과 같은 double로 인용했다",
+  "[사실] 공개 검증기 active_diagnosis.validate_decision은 claim 값을 사실 값과 == 로 비교한다(_same_value)",
+  "[추론] 17자리 실수 표기를 옮기는 과정에서 마지막 자리가 바뀌었다. 원시 응답이 없어 모델과 제공자 파서를 가르지 못한다"
+ ],
+ "claim_mapping": {
+  "choice": "display_exact_mapping",
+  "display": "e4b4_get_facts는 유한 실수 사실을 유효숫자 6자리 문자열(format '.6g')로 보여 준다. 정수·문자열·불리언은 그대로 보여 준다",
+  "mapping": "claim id의 저장 사실이 유한 실수이고 claim 값이 보여 준 문자열과 같거나 그 문자열을 float로 읽은 수와 같을 때만 저장 값으로 바꾼다. 나머지 claim은 그대로 두고 공개 검증기(수정 없음)가 == 로 판정한다",
+  "rationale": [
+   "공개 검증기의 의미(모델이 받은 근거 값을 그대로 인용한다)가 유지된다. 사실마다 받아들이는 값은 모델에게 보여 준 표기 하나(문자열 또는 같은 수)뿐이고, 보여 주지 않은 근사값은 통과하지 못한다",
+   "허용 오차는 보여 주지 않은 근사값도 통과시켜 '그대로 인용'을 '가까운 값'으로 바꾼다. h02_s2027 packet의 0이 아닌 사실 값은 4.3e-4~6.8e4라 절대·상대 오차 방식과 크기를 새로 정해야 하고, 그 값은 v3 실패를 본 뒤 정하는 값이 된다",
+   "[추론] 문자열 값은 제공자 쪽 도구 인자 생성·파싱의 실수 재표기 영향을 받지 않는다"
+  ],
+  "rejected_alternative": "허용 오차 사전등록(어댑터가 오차 안의 claim을 사실 값으로 바꾼다)",
+  "cost": "모델이 보는 실수 정밀도가 유효숫자 6자리로 준다. 그 영향(순위·probe 선택)은 이 측정 범위 밖이다"
+ },
+ "changes_from_v3": [
+  "진단 사실 읽기 도구 e4b4_get_facts: 유한 실수를 유효숫자 6자리 문자열로 보여 준다",
+  "진단 점검·제출 도구 e4b4_*: 보여 준 표기와 정확히 같은 claim만 저장 값으로 바꾼 뒤 공개 검증기로 검증한다. 제출 파일에는 바꾼 결정(decision)과 모델 인자(tool_args)를 함께 남긴다",
+  "진단 도구 규칙(시스템 프롬프트 뒤 부분)에 보여 준 표기 그대로 인용하는 규칙을 더했다. 진단 도구 목록은 v2의 조회 도구를 그대로 쓴다",
+  "교정 점검·제출 도구 e4b4_*: v3 null 없는 스키마·어댑터 그대로, 검증 등록 표를 packet에 실린 등록 표로 한다. worker 제출 재검증도 같은 표로 한다. 기본 등록 표 packet에서는 v3와 같다",
+  "채택 입력을 사전등록 뒤 생기는 시연 v3 F2 첫 사례 packet으로 바꿨다"
+ ],
+ "precheck": {
+  "limit": 2,
+  "tools": {
+   "diagnosis": "e4b4_check_decision",
+   "correction": "e4b4_check_proposal"
+  },
+  "note": "단일 호출 경로에는 없는 기능이다"
+ },
+ "comparison_conditions": {
+  "same": [
+   "모델·temperature 0·reasoning_effort none(extra_body)",
+   "같은 판단 계약 프롬프트와 검증기"
+  ],
+  "different": [
+   "NAT는 사실·카탈로그·등록 표·체크리스트를 도구로 조회하는 여러 턴, 단일 호출은 packet 전체를 한 번에 받는다",
+   "NAT는 제출 전 계약 점검 도구로 실행당 최대 2회 사유를 받아 고칠 수 있다",
+   "NAT 진단은 실수 사실을 6자리 문자열로 받고 표기 일치 claim이 저장 값으로 바뀐다. 단일 호출은 원 실수를 받는다",
+   "NAT 교정은 null 없는 도구 스키마를 어댑터가 계약 형태로 바꾼다. 단일 호출은 계약 JSON을 그대로 쓴다"
+  ]
+ },
+ "metrics": [
+  "세트·종류별 유효·무효·인프라 실행 수",
+  "단일 호출 기록이 있는 세트의 단일 호출 결정과의 일치",
+  "점검 호출 수와 점검을 쓴 실행 수",
+  "도구 호출 순서",
+  "LLM 호출 수",
+  "입력·출력 토큰",
+  "wall 시간"
+ ],
+ "adoption_rule": {
+  "min_non_infra_runs": 4,
+  "min_valid_runs": 4,
+  "set": "f2_s2031",
+  "rule": "다음 seed 시연에 NAT 결정을 쓰려면 f2_s2031 세트에서 두 종류 모두 인프라 오류를 뺀 실행이 4 이상이고 그중 유효 결정이 4 이상이어야 한다. 수치 조건은 v1~v3과 같다. 시연이 packet 단계 전에 끝나 한 종류라도 입력이 생기지 않으면 no_input이고 채택하지 않는다. 일치율은 채택 조건에 쓰지 않는다. 요약은 모든 세트 실행이 끝난 뒤에만 쓴다"
+ },
+ "wording": {
+  "adopt": "실수 표기를 고정한 NAT 도구 호출 워크플로가 사전등록 뒤 생긴 새 seed 시연 입력에서 사전등록 조건만큼 유효한 결정을 냈다. 다음 seed 시연의 결정 단계에 쓸 수 있다. 정확도·우위의 근거가 아니다.",
+  "do_not_adopt": "고친 NAT 도구 호출 워크플로의 유효 결정이 새 seed 시연 입력에서 사전등록 조건에 못 미쳤다. 다음 seed 시연은 단일 호출 결정을 유지한다.",
+  "no_input": "시연 v3 F2 첫 사례가 packet 단계 전에 끝나 채택 입력의 일부가 생기지 않았다. 채택 판정을 하지 못했고 다음 seed 시연은 단일 호출 결정을 유지한다.",
+  "development": "h02_s2027 세트는 수정의 개발 확인이다. 채택 판정에 쓰지 않고 채택 세트·v1~v3 결과와 분모를 합치지 않는다.",
+  "common": "고정 입력을 반복 호출한 개발 측정이다. 결함과 probe는 같은 설계자가 만들었고, NAT는 근거를 도구로 나눠 조회하고 점검으로 고칠 기회가 있으므로 단일 호출과 조건이 다르다. 일반화·정확도·절감을 주장하지 않는다."
+ },
+ "forbidden_claims": [
+  "NAT가 더 정확하다",
+  "모든 결정이 NAT로 이뤄졌다",
+  "토큰·시간 절감",
+  "일반화",
+  "v1~v4를 합친 유효율",
+  "점검 도구가 없는 단일 호출과 같은 조건의 비교",
+  "표기 고정이 진단 내용(순위·probe)을 개선했다"
+ ],
+ "source_files": {
+  "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+  "configs/nat_demo_v4_correction.yml": "0aa46d0e4e8809265618ef842b57e19c2cc87388ddc1d9bca0846b5336405743",
+  "configs/nat_demo_v4_diagnosis.yml": "4bc055c5e26e7eed2724c79f05d1e570f2315afd994836db1a4f53dcf0ca5aef",
+  "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+  "evals/e4b_compare_v4.py": "e0e98b18c68116f8d3c72234d99e0dd399655abfc06b5309aea23b5285a23f5d",
+  "evals/nat_decision_call.py": "9baba594b0ef6f21c855c9fe90bab2d5eb12dd670848ddf276cc21fdc6a7b872",
+  "evals/nat_decision_call_v2.py": "cc59e86d0fe638e178bc5a5001a47ebd59751b37535b2c3ab34425eb689d368c",
+  "evals/nat_decision_call_v3.py": "4523f3939ec07a1d0aecf59e3c4da790cbc892e9dfe4c9b6e9dbd82b973b8a0a",
+  "evals/nat_decision_call_v4.py": "41e68edd48e110258fa0c1ebc932d6a5da30b213746875fd3fb81539e41f4a14",
+  "evals/run_active_diagnosis.py": "53662a81d57f7b70c0893166ec01bcf1128ba072456b52b7cc19c181a8742fc3",
+  "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+  "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+  "src/rl_triage/nat_demo_tools.py": "99971c877c8c62e1e11f02411a1a4f77978712cfb339ea1a9bb5b5b6a8272451",
+  "src/rl_triage/nat_demo_tools_v2.py": "99c5c286342580c885b9cd62173be3491030646b04fb23f6428fb3ce9bb61b23",
+  "src/rl_triage/nat_demo_tools_v3.py": "4b52906c2f304888e656830cdd1846cf3948cc2fdb1a5c61bf389285d8b8ddea",
+  "src/rl_triage/nat_demo_tools_v4.py": "a8f6ae0b3767c33af3efb3e108962bec0e251a5fd6bad433728518c087002a65",
+  "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1"
+ },
+ "input_sources": {
+  "bench/runs_p0c/baseline_p0c_s2027.telemetry.json": "a2c4d9b9971e2d3b335a542dcb14637f084aedef5ce10e3adfc6e91f4cc8217f",
+  "bench/runs_p0c/h02_s2027.telemetry.json": "4ad5317ac27a668e0799b9c894a25f2f11565d47edee734cf3b6e6c9b10ba67f"
+ },
+ "development_inputs": {
+  "h02_s2027": {
+   "diagnosis": {
+    "status": "bound",
+    "packet": "bench/private/e4b_v4/inputs/h02_s2027/diagnosis.packet.json",
+    "packet_sha256": "ac4ee4365cd1e304eebfb43b7c56fa91ace1fbec54f38d5ee731f95e58408f4b",
+    "single_call": null,
+    "single_call_sha256": null
+   }
+  }
+ }
+}

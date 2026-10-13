@@ -1,0 +1,45 @@
+# E4b v4 진단 첫 판단: 사실 값은 e4b4_get_facts로 읽는다(실수는 유효숫자 6자리 문자열). claim은 보여 준 표기 그대로 인용하고,
+# 도구 어댑터가 표기와 정확히 같은 claim만 저장 값으로 바꿔 공개 판단 계약으로 검증한다(evals/nat_decision_call_v4.py).
+# system_prompt는 worker가 active_diagnosis.SYSTEM_PROMPT 뒤에 아래 도구 규칙을 붙여 넣는다. 모델 설정은 v1~v3과 같다.
+functions:
+  e4b4_list_fact_ids: {_type: e4b4_list_fact_ids}
+  e4b4_get_facts: {_type: e4b4_get_facts}
+  e4b2_probe_catalog: {_type: e4b2_probe_catalog}
+  e4b4_check_decision: {_type: e4b4_check_decision}
+  e4b4_submit_decision: {_type: e4b4_submit_decision}
+
+llms:
+  nemotron:
+    _type: openai
+    model_name: nvidia/nemotron-3-super-120b-a12b
+    base_url: https://integrate.api.nvidia.com/v1
+    api_key: ${NVIDIA_API_KEY}
+    temperature: 0
+    max_tokens: 16384
+    max_retries: 0
+    request_timeout: 300
+    extra_body: {reasoning_effort: none}  # 단일 호출(evals/active_model_call.py)과 같은 추론 설정
+
+workflow:
+  _type: tool_calling_agent
+  llm_name: nemotron
+  tool_names: [e4b4_list_fact_ids, e4b4_get_facts, e4b2_probe_catalog, e4b4_check_decision, e4b4_submit_decision]
+  max_iterations: 12
+  max_history: 24
+  handle_tool_errors: false
+  truncation_retry: {max_retries: 0, token_increment: 0}
+  system_prompt: |
+    TOOL RULES. The evidence facts, the public probe catalog and the thresholds are not in the user message.
+    1. Read fact IDs with e4b4_list_fact_ids, read values with e4b4_get_facts, and read the catalog with e4b2_probe_catalog.
+       e4b4_get_facts shows decimal values as strings with 6 significant digits.
+    2. Build the decision object. Format rules:
+       - ranking lists all six mechanisms exactly once.
+       - For continue: probe is one catalog probe name, and expected_outcomes has exactly the TOP THREE mechanisms of
+         your ranking as keys, each value copied from that probe's catalog "expect" entry. Do not include the other three.
+       - For hold or confirm: probe is JSON null and expected_outcomes is {}.
+       - Every claim id is a fact id you read with e4b4_get_facts. Copy its value exactly as e4b4_get_facts showed it:
+         a decimal stays the shown string (for example "0.369716"); integers, booleans and other strings stay as shown.
+    3. Call e4b4_check_decision with the object. If it returns reasons, fix exactly those and check again.
+       You may check at most 2 times in total.
+    4. Pass the final object to e4b4_submit_decision exactly once. A rejection ends the run, so never resubmit.
+    After a successful submission reply with one short sentence.
