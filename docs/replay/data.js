@@ -7728,9 +7728,150 @@ window.REPLAY_DATA = {
      ]
     },
     {
-     "type": "slot",
-     "label": "종단 시연: 새 Nemotron 호출 → 승인 → 1회 소비 → Isaac 실행 → receipt",
-     "source": "slot:end_to_end"
+     "type": "table",
+     "title": "종단 시연 seed 2030: 경고부터 교정 판정까지",
+     "columns": [
+      "단계",
+      "기록"
+     ],
+     "rows": [
+      [
+       "시연 결과",
+       {
+        "value": "recovered · 성공 조건 11/11",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "첫 판단(새 Nemotron 호출)",
+       {
+        "value": "continue · 상위 3 reward, actuator, exploration · 제안 검사 P_reward",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "승인된 검사",
+       {
+        "value": "1건 실행 · P_reward abnormal · confirmed",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 제안(새 Nemotron 호출)",
+       {
+        "value": "propose · 계약 통과 예 · 규칙과 일치 예",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "승인 뒤 교정 실행 receipt",
+       {
+        "value": "receipt · recovered",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 정책 고정 평가 판정",
+       {
+        "value": "recovered",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 정책 standstill ratio",
+       {
+        "value": 0.12544545755336192,
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": 3
+       }
+      ],
+      [
+       "결과 문구",
+       {
+        "value": "새 Nemotron 판단으로 시작한 승인된 검사가 보상 결함을 확정했고, 승인된 restart 교정 정책이 같은 seed 정상 정책 대비 고정 행동 허용 범위를 통과했다.",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/e2e_reward_s2030_20261013/demo_result.json"
+     ]
+    },
+    {
+     "type": "table",
+     "title": "시연 비용 기록(부모 프로세스 벽시계·토큰이며 절감 비교가 아니다)",
+     "columns": [
+      "항목",
+      "값"
+     ],
+     "rows": [
+      [
+       "NONE 학습 wall(s)",
+       {
+        "value": 639.0,
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": 0
+       }
+      ],
+      [
+       "F1 학습 wall(s)",
+       {
+        "value": 512.9,
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": 0
+       }
+      ],
+      [
+       "승인 검사 GPU wall(s)",
+       {
+        "value": 19.5,
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": 1
+       }
+      ],
+      [
+       "교정 재학습 wall(s)",
+       {
+        "value": 508.8120000001509,
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": 0
+       }
+      ],
+      [
+       "교정 고정 평가 wall(s)",
+       {
+        "value": 48.375,
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": 0
+       }
+      ],
+      [
+       "진단 호출 입력·출력 토큰",
+       {
+        "value": "2829 / 185",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 호출 입력·출력 토큰",
+       {
+        "value": "1347 / 174",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/e2e_reward_s2030_20261013/demo_result.json"
+     ]
     }
    ],
    "notes": [
@@ -7819,10 +7960,75 @@ window.REPLAY_DATA = {
      ]
     },
     {
-     "type": "slot",
+     "type": "table",
      "wide": true,
-     "label": "교정 제안 기록: 모델 제안 · 결정적 규칙 · 체크리스트",
-     "source": "slot:correction_proposal"
+     "title": "교정 제안 기록(종단 시연 seed 2030)",
+     "columns": [
+      "항목",
+      "기록"
+     ],
+     "rows": [
+      [
+       "등록 교정 · 회복 방식(시연 프로토콜)",
+       {
+        "value": "restore_body_frame_reward · restart",
+        "source": "bench/protocols/e2e_reward_demo_v2.json",
+        "digits": null
+       }
+      ],
+      [
+       "모델 제안 결정",
+       {
+        "value": "propose",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "공개 계약 검증 통과",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "결정적 규칙과 일치",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "규칙을 모델 입력에 보여 줌",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "미충족 체크리스트 항목 수",
+       {
+        "value": 0,
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": 0
+       }
+      ],
+      [
+       "승인 뒤 1회 소비",
+       {
+        "value": "예",
+        "source": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+      "bench/protocols/e2e_reward_demo_v2.json"
+     ]
     }
    ],
    "notes": [
@@ -9017,13 +9223,13 @@ window.REPLAY_DATA = {
    "status": "ready",
    "reason": null
   },
-  "slot:end_to_end": {
-   "id": "slot:end_to_end",
-   "path": null,
+  "evals/results/e2e_reward_s2030_20261013/demo_result.json": {
+   "id": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+   "path": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
    "kind": "end_to_end",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "path_not_set"
+   "sha256": "fd1a72b73928ad85e3b12b5ee9053957c03529b8e9550fb406016d5a5497b351",
+   "status": "ready",
+   "reason": null
   },
   "bench/protocols/training_correction_v4.json": {
    "id": "bench/protocols/training_correction_v4.json",
@@ -9033,13 +9239,13 @@ window.REPLAY_DATA = {
    "status": "ready",
    "reason": null
   },
-  "slot:correction_proposal": {
-   "id": "slot:correction_proposal",
-   "path": null,
-   "kind": "correction_proposal",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "path_not_set"
+  "bench/protocols/e2e_reward_demo_v2.json": {
+   "id": "bench/protocols/e2e_reward_demo_v2.json",
+   "path": "bench/protocols/e2e_reward_demo_v2.json",
+   "kind": "file",
+   "sha256": "b6b86b0418cb5e28c29b58ee3a00c0023e5def6c59803a22e56692cf48411418",
+   "status": "ready",
+   "reason": null
   },
   "evals/results/reward_resume_dev3_20261013": {
    "id": "evals/results/reward_resume_dev3_20261013",
