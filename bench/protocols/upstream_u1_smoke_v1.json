@@ -1,0 +1,282 @@
+{
+ "schema": "upstream_fault_smoke_protocol_v1",
+ "question": "다른 프레임워크에서 원인이 확정·수정된 결함 U1의 의미를 옮기면 Go2 flat 4096 env × 300회 학습이 실제로 실패하는가",
+ "scope": "설계자 밖 외부 결함 한 종류·seed 하나의 학습 실패 유무 거르기. 진단 성능·일반화·미관측 seed 평가가 아니다",
+ "fault": {
+  "id": "U1",
+  "category": "reward",
+  "definition": "Isaac Lab v2.1.1 isaaclab.envs.mdp.rewards의 4개 보상 함수가 읽는 root 몸체 좌표 선·각속도 자리를 0으로 둔다. 함수 객체는 그대로 두고 __code__만 바꾼다(bench/upstream_faults.py). 관측 항은 바꾸지 않는다",
+  "observation_unchanged_reason": "원전은 보상 항이 0을 읽었다고만 적고 관측은 언급하지 않는다. 수정 전 upstream Go2 flat 설정(conf/appo/task/go2_joystick_flat/base.yaml, 58ec02e의 부모 697f45a)에서 policy·critic의 base_ang_vel은 gyro 센서, critic의 base_lin_vel은 local_linvel 센서(builtin_sensor)를 읽었다. 설정에서 이름이 몸체 속도 항인 것은 보상 4항뿐이고, 원전 커밋 메시지도 이 4항이 0을 읽었다고 적는다. 다른 함수의 내부 동작은 설정에 드러나지 않아 이 근거의 범위 밖이다",
+  "no_tuning_rule": "결함 정의는 원전에서만 정한다. 이번 결과를 보고 크기·항목·정의를 바꾸거나 다른 seed로 재시도하지 않는다. 시도·최종 표식은 프로토콜 SHA별이므로, 최종 결과가 나온 뒤 같은 결함으로 새 프로토콜 버전을 만들지 않는다(만들어야 하면 그 사유를 새 프로토콜에 적는다)"
+ },
+ "source": {
+  "framework": "UniLab(Motphys), MotrixSim·MuJoCo 백엔드. Isaac Lab 버그가 아니다",
+  "workaround_commit": {
+   "url": "https://github.com/Motphys/UniLab/commit/58ec02ea8b650e6b90db222188a770932d6b9676",
+   "author": "TATP-233",
+   "excerpts": [
+    "The migrated quadruped flat/rough owners read tracking_lin_vel, tracking_ang_vel, lin_vel_z, and ang_vel_xy",
+    "identically zero for the root body",
+    "trained with no velocity feedback (reward 28.3 vs legacy 39.9, tracking stuck at 0.44, entropy never collapsed)",
+    "velocity penalties are live again and tracking_lin_vel climbs 0.37 -> 0.78"
+   ]
+  },
+  "fix_pr": {
+   "url": "https://github.com/Motphys/UniLab/pull/1254",
+   "merged": "2026-08-23",
+   "squash_commit": "https://github.com/Motphys/UniLab/commit/2a3bcea728e71fa1225211ae9c4cf8dcf94be5de",
+   "title": "fix: pin get_body_*_vel_b to analytical body-frame semantics across backends",
+   "excerpts": [
+    "the root body read exactly zero (verified empirically on both backends)",
+    "back to the generic track_lin_vel_xy_exp / track_ang_vel_z_exp / lin_vel_z_l2 / ang_vel_xy_l2 terms"
+   ]
+  },
+  "contract_discussion": "https://github.com/Motphys/UniLab/discussions/1246",
+  "excerpt_note": "발췌는 gh api로 읽은 커밋 메시지 원문이다(2026-10-13 대조). PR 발췌 두 개는 PR 본문이 아니라 squash 커밋 메시지에 있고, 두 번째 발췌는 원문 줄바꿈을 공백 하나로 합쳤다"
+ },
+ "mapping": [
+  {
+   "source_term": "tracking_lin_vel",
+   "isaaclab_function": "track_lin_vel_xy_exp",
+   "reads": "root_lin_vel_b[:, :2]",
+   "go2_flat_term": "track_lin_vel_xy_exp",
+   "weight": 1.5,
+   "std": "sqrt(0.25)",
+   "effect": "exp(-|명령 xy|²/std²): 행동과 무관한 명령 함수"
+  },
+  {
+   "source_term": "tracking_ang_vel",
+   "isaaclab_function": "track_ang_vel_z_exp",
+   "reads": "root_ang_vel_b[:, 2]",
+   "go2_flat_term": "track_ang_vel_z_exp",
+   "weight": 0.75,
+   "std": "sqrt(0.25)",
+   "effect": "exp(-명령 z²/std²): 행동과 무관한 명령 함수"
+  },
+  {
+   "source_term": "lin_vel_z",
+   "isaaclab_function": "lin_vel_z_l2",
+   "reads": "root_lin_vel_b[:, 2]",
+   "go2_flat_term": "lin_vel_z_l2",
+   "weight": -2.0,
+   "effect": "항상 0"
+  },
+  {
+   "source_term": "ang_vel_xy",
+   "isaaclab_function": "ang_vel_xy_l2",
+   "reads": "root_ang_vel_b[:, :2]",
+   "go2_flat_term": "ang_vel_xy_l2",
+   "weight": -0.05,
+   "effect": "항상 0"
+  }
+ ],
+ "isaaclab_locations": {
+  "version": "v2.1.1",
+  "commit": "90b79bb2",
+  "rewards_function_lines": {
+   "lin_vel_z_l2": [
+    76,
+    80
+   ],
+   "ang_vel_xy_l2": [
+    83,
+    87
+   ],
+   "track_lin_vel_xy_exp": [
+    297,
+    308
+   ],
+   "track_ang_vel_z_exp": [
+    311,
+    319
+   ]
+  },
+  "velocity_env_cfg_lines": [
+   235,
+   243
+  ],
+  "go2_rough_env_cfg_weight_lines": [
+   56,
+   57
+  ]
+ },
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "seed": 2026,
+ "num_envs": 4096,
+ "max_iterations": 300,
+ "action_scale": 0.25,
+ "final_checkpoint": "model_299.pt",
+ "training_entry": "bench/train_with_upstream_fault.py(TRIAGE_UPSTREAM_FAULT=U1), run_case.ps1과 같은 train.py 인자",
+ "reference": {
+  "run": "baseline_p0c_s2026",
+  "fixed_report": "evals/results/p0c_fixed_eval_20261009/runs/baseline_p0c_s2026.json",
+  "bands_source": "evals/results/p0c_fixed_eval_20261009/summary.json",
+  "reuse": "P0-C 정상 실행(같은 task·seed·예산, bench/train_with_fault.py NONE)의 학습·고정 평가를 다시 쓰고 정상 학습은 하지 않는다"
+ },
+ "seed_choice": {
+  "decision": "seed 2026, 기준은 P0-C baseline_p0c_s2026 재사용(학습 1회)",
+  "pros": [
+   "학습 1회로 끝난다(미사용 seed는 정상 학습까지 2회)",
+   "같은 task·seed·예산의 기준 학습·고정 평가가 이미 검증돼 있고 v4·W1이 같은 기준을 썼다",
+   "T1 X2가 P0-C baseline_p0c_s<seed>를 짝 기준으로 재사용한 선례가 있다",
+   "P0-B2에서 같은 seed·설정의 100회 학습을 다시 하면 체크포인트까지 같았다(baseline_repeat1_s42, docs/P0-B2-FIXED-EVAL.md 75행). 4096 env × 300회에서는 확인하지 않았다"
+  ],
+  "cons": [
+   "seed 2026은 이미 본 seed(P0-C holdout·v4·W1)라 이 smoke는 미관측 seed 평가가 아니다",
+   "기준은 2026-10-09 학습이라 그사이 런타임 변화가 섞일 수 있다 → 평가 런타임 버전 일치와 params 일치를 유효 조건으로 둔다",
+   "런타임 일치는 고정 평가 보고서의 versions 필드(torch·GPU 이름·isaaclab·isaaclab_tasks·isaaclab_rl·rsl-rl-lib)만 본다. isaacsim 값은 null이고 GPU 드라이버와 Isaac Lab 트리 전체는 결합하지 않는다(결합은 매핑 3파일 SHA)",
+   "기준은 다른 진입점(bench/train_with_fault.py, TRIAGE_FAULT=NONE)으로 학습됐다. 코드를 읽으면 NONE은 아무것도 바꾸지 않지만 실행으로 대조하지는 않았다",
+   "U1을 뒤에 미관측 seed 평가에 쓰면 seed 2026은 그 평가에서 뺀다"
+  ],
+  "alternative": "미사용 seed(예: 2041) + 같은 날 새 정상 학습: 짝의 날짜·런타임이 같지만 GPU 약 두 배이고, 이 smoke의 질문(실패가 나는가)에는 seed의 새로움이 필요하지 않다"
+ },
+ "execution": {
+  "owned_process": "bench/run_runtime_readback_smoke.run_owned: 소유 Windows Job, 시간 초과 시 프로세스 트리 종료, stdout·stderr 분리",
+  "watchdog_s": {
+   "training": 2700,
+   "telemetry_extract": 300,
+   "fixed_evaluation": 360
+  },
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "gpu_admission": "학습 전 GPU가 사용 중이면 아무것도 쓰지 않고 실행하지 않는다. 고정 평가 전에는 최대 1800초 동안 60초 간격으로 다시 확인한다",
+  "fixed_evaluation_entry": "evals/fixed_eval.py --protocol bench/protocols/fixed_eval_v1.json --jobs <jobs.json> --headless(v4·W1과 같은 호출)",
+  "reverify": "고정 평가 직전과 평가 뒤에 프로토콜·결합 코드를 다시 확인하고(결합 경로 clean·커밋됨, 시작 커밋과 현재 HEAD 사이 결합 경로 diff 없음), 평가 뒤 체크포인트 SHA를 다시 계산한다. 결합 밖 파일의 커밋은 막지 않고 본 커밋을 모두 기록한다",
+  "bound_infrastructure_note": "공용 실행 도구 3파일(record_evidence_media·run_runtime_readback_smoke·runtime_readback_smoke)도 SHA로 결합하므로, 다른 작업이 이 파일을 고치면 verify가 거부되고 새 프로토콜 버전이 필요하다",
+  "skip_rule": "학습 측 검사(종료 코드·체크포인트·교체 확인 줄·텔레메트리 0·params)가 하나라도 어긋나면 판정에 쓰지 않을 고정 평가는 하지 않는다",
+  "attempts": {
+   "1": "upstream_u1_s2026",
+   "2": "upstream_u1_s2026_a2"
+  },
+  "retry_rule": "시도 2는 같은 프로토콜에서 시도 1의 마지막 결과(이어 하기를 했으면 그 결과)가 끝났고 invalid_cause가 infrastructure일 때, 그 결과의 tag를 지정해 한 번만 한다. 결함 정의·seed·판정 기준은 같다",
+  "resume_rule": "학습 측 검사(종료 코드·체크포인트·교체 확인 줄)를 통과한 뒤 추출·평가 단계의 인프라 원인으로 invalid가 된 결과는 새 tag로 같은 학습의 추출·평가·판정만 한 번 다시 한다. 학습은 다시 하지 않고, 다음 시도가 이미 시작됐으면 하지 않는다",
+  "final_rule": "처음 나온 유효 결과(failure_present 또는 failure_absent)가 최종이다. 그 뒤로는 시도 2·이어 하기를 모두 거부한다"
+ },
+ "outcomes": {
+  "failure_present": "유효 조건을 모두 채우고, U1 고정 평가가 같은 seed 정상 고정 평가 대비 p0c 밴드에서 unhealthy",
+  "failure_absent": "유효 조건을 모두 채우고 healthy",
+  "invalid": "아래 유효 조건 중 하나라도 어긋남(판정이 undetermined인 경우 포함). 실패 유무를 판정하지 않는다"
+ },
+ "validity_checks": {
+  "pipeline_completed": "실행기 단계(학습·추출·params 대조·평가 전 재확인·고정 평가·사후 확인)가 예외·시간 초과·소스 변경 없이 끝남",
+  "training_exit_zero": "학습 프로세스 종료 코드 0",
+  "final_checkpoint_present": "실행 폴더에 model_299.pt",
+  "injection_readback": "학습 stdout의 [upstream_fault] 줄 하나: 4함수 본문 교체가 유지되고 보상 관리자가 그 함수 객체를 씀",
+  "penalties_zero_in_telemetry": "텔레메트리 Episode_Reward/lin_vel_z_l2·ang_vel_xy_l2가 300시점 모두 정확히 0(정상 실행에서는 0이 아님)",
+  "params_match_reference": "params/env.yaml·agent.yaml이 기준 실행과 agent run_name 외에 같다",
+  "reference_walks": "기준 정책이 고정 평가에서 걷는다(정지 대비 오차 비 0.5 미만, 낙상 0.05 이하)",
+  "fixed_report_valid": "고정 평가 보고서가 결합한 fixed_eval_v1 계약 SHA(기준 보고서와 같음)·체크포인트 SHA·action scale을 통과",
+  "runtime_matches_reference": "고정 평가 런타임 버전이 기준 보고서와 같다",
+  "verdict_determined": "p0c 밴드 판정이 healthy 또는 unhealthy다"
+ },
+ "invalid_causes": {
+  "rule": "validity_checks 순서에서 처음 어긋난 검사의 원인 하나를 invalid_cause로 적고, 어긋난 검사 전체는 failed_checks에 남긴다. 학습 뒤 단계(추출 이후)에서 실행기가 멈췄어도 학습 3검사(종료 코드·체크포인트·교체 확인 줄)와, 텔레메트리를 읽었으면 벌점 0 검사 중 어긋난 것이 있으면 그 원인을 적는다",
+  "by_check": {
+   "pipeline_completed": "infrastructure",
+   "training_exit_zero": "training_process",
+   "final_checkpoint_present": "training_process",
+   "injection_readback": "injection",
+   "penalties_zero_in_telemetry": "injection",
+   "params_match_reference": "comparability",
+   "reference_walks": "comparability",
+   "fixed_report_valid": "evaluation",
+   "runtime_matches_reference": "comparability",
+   "verdict_determined": "evaluation"
+  },
+  "fault_induced_crash": "결함 때문에 학습 프로세스가 죽거나(종료 코드≠0) 체크포인트가 없어도 training_process로 invalid다. 실행 한 번으로 결함 원인과 인프라 원인을 가를 수 없어 failure_present로 세지 않는다. 학습 단계 watchdog 초과는 원인과 관계없이 infrastructure로 기록된다",
+  "judge_failure": "판정 계산 자체가 예외로 끝나면 실패 단계 judge, invalid_cause runner로 남긴다. 실행기 결함이라 재실행·이어 하기 대상이 아니다"
+ },
+ "prediction": {
+  "outcome": "failure_present",
+  "reason": "원전이 같은 결함에서 추종 정체(tracking stuck at 0.44)를 보고했다. 추종 보상이 행동과 무관한 명령 함수가 되고 속도 페널티가 사라지므로 고정 평가 선속도 오차 비가 p0c 밴드(1.1513)를 넘을 것으로 본다"
+ },
+ "later_uses": {
+  "failure_present": [
+   "동결 probe·고리 시험: P_reward는 실제 root_lin_vel_b로 다시 계산하므로 reward abnormal로 확정될 것으로 본다. 등록 교정 restore_body_frame_reward는 4항 중 track_lin_vel_xy_exp 하나만 다루므로 교정 단계의 '등록 범위 밖' 처리를 별도로 사전등록해 시험한다",
+   "D3 해로운 변경 후보(research_next 0절): 외부 원인 확정 결함 중 smoke에서 실패가 확인된 것을 우선한다",
+   "둘 다 별도 사전등록이 필요하며 이 smoke 결과로 진단 성능을 말하지 않는다"
+  ],
+  "failure_absent": "이 task·예산·seed에서 실패 없음으로 기록하고 후보에서 내린다. 결함 크기나 정의를 키우지 않는다",
+  "invalid": "invalid_cause와 실패 단계를 기록한다. 다시 실행하거나 이어 하는 것은 execution.retry_rule·resume_rule만 따르며 판정 기준과 결함 정의는 바꾸지 않는다"
+ },
+ "used_for": "실패 유무 판정만. 고리·교정·D3에는 이번 판정을 쓰지 않는다",
+ "gpu_estimate": {
+  "unit": "부모 프로세스 벽시계(초). GPU 커널 시간이나 절감량이 아니다",
+  "train_s": [
+   429.3,
+   873.6
+  ],
+  "train_basis": "P0-C·T1 4096 env × 300회 신규 학습 27건의 run_case 학습 wall(bench/private/*_s202[678].meta.json). GPU 경합이 기록된 e01_s2028(1871.3 s)을 뺀 26건의 범위와 중앙값 506.05 s. 상한 873.6 s(ref_e01_s2028)도 같은 GPU 메모리 점유 구간의 실행이다(docs/T1-EXTERNAL-FAULTS.md 178행)",
+  "telemetry_extract_s": "측정 기록 없음(1분 미만으로 추정)",
+  "fixed_eval_s": [
+   51.2,
+   64.5
+  ],
+  "fixed_eval_basis": "v4·W1 단일 고정 평가 parent wall(공개 training_evidence.json)",
+  "total_s": [
+   480,
+   1000
+  ]
+ },
+ "wording": {
+  "failure_present": "UniLab에서 원인이 확정된 결함(보상 4항이 몸체 속도 0을 읽음)의 의미를 옮긴 학습이 같은 seed 정상 학습 대비 p0c 밴드를 벗어났다. 이미 본 seed 하나의 단일 실행이며, 진단 성능이나 다른 결함·task로의 일반화를 말하지 않는다.",
+  "failure_absent": "UniLab에서 원인이 확정된 결함의 의미를 옮긴 학습이 같은 seed 정상 학습 대비 p0c 밴드 안이었다. 이 task·예산·seed에서 학습 실패가 재현되지 않았고, 결함 크기나 정의를 바꿔 다시 시도하지 않는다.",
+  "invalid": "smoke가 사전등록한 유효 조건을 채우지 못해 학습 실패 유무를 판정하지 않는다."
+ },
+ "source_files": {
+  "bench/upstream_faults.py": "58d7c07f481328c606a191ea55ba8f9f8e54388db9db121e925c69c8878ae249",
+  "bench/train_with_upstream_fault.py": "b9c30cdb2b72ba394b1ad33a6f985bf454611190f46938839fd33636ac9ddbbf",
+  "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+  "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+  "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+  "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+  "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+  "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+  "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+  "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e"
+ },
+ "isaaclab_sources": {
+  "rewards": {
+   "path": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+   "sha256_lf": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76"
+  },
+  "velocity_env_cfg": {
+   "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py",
+   "sha256_lf": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+  },
+  "go2_rough_env_cfg": {
+   "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py",
+   "sha256_lf": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0"
+  }
+ },
+ "reference_inputs": {
+  "run": "baseline_p0c_s2026",
+  "bands": {
+   "survival_ratio_min": 0.9,
+   "err_xy_ratio_max": 1.1513,
+   "err_yaw_ratio_max": 1.1719,
+   "fall_frac_max": 0.05
+  },
+  "checkpoint_sha256": "2e1e84cdbe5b348d1b6c3fe99c4894c95029ab5a18d3ebde69cd1e1743e80b2f",
+  "fixed_eval_protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "hashes": {
+   "metadata": "5456ec305e4d664fcf67603dcf515c5afa33a25fb0d472d3b010114b9ae87bf6",
+   "environment": "d153ee695f877bf4d99e0ef81358ff7886c9e9a25f117eaf7187f490150acc36",
+   "agent": "82377e2081ed4a768dcc77a1627e6344089607a39c9f1d7a4a09a2c8e87127c8",
+   "fixed_report": "00bb0a582fe4d3ba66cf049dc5b840fb7f74650fc693b11304c278026f4e30d8",
+   "summary": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+   "telemetry": "bdcc275f72ac4a8e14848e31313f14878d9063cbb301ecdf1618cf337c684681"
+  },
+  "runtime_versions": {
+   "torch": "2.7.0+cu128",
+   "gpu": "NVIDIA GeForce RTX 3060",
+   "isaaclab": "0.41.3",
+   "isaaclab_tasks": "0.10.36",
+   "isaaclab_rl": "0.1.8",
+   "rsl-rl-lib": "2.3.3",
+   "isaacsim": null
+  },
+  "walks": true,
+  "standstill_ratio": 0.1255953876333965
+ }
+}
