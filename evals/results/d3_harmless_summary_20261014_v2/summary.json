@@ -1,0 +1,77 @@
+{
+ "schema": "d3_harmless_smoke_summary_v1",
+ "tag": "d3_harmless_summary_20261014_v2",
+ "protocol_sha256_lf": "4c28b92c7fe9923c90bd9f0419387aa0a56a8c57a31b69bea01ea631181570ca",
+ "changes": [
+  "H1",
+  "H3",
+  "H4",
+  "H5",
+  "H6",
+  "H7",
+  "S4"
+ ],
+ "seeds": {
+  "2026": {
+   "tag": "d3_harmless_smoke_20261014_v2_s2026",
+   "final": true,
+   "outcome": "harmless_pass",
+   "invalid_cause": null,
+   "comparison": {
+    "survival_ratio": 1.0,
+    "fall_frac": 0.0,
+    "err_xy_ratio": 1.0424147591173771,
+    "err_yaw_ratio": 0.7929879731009807,
+    "horizon_ratio": 1.0
+   },
+   "margins": {
+    "err_xy_ratio": true,
+    "err_yaw_ratio": true,
+    "fall_frac": true
+   },
+   "verdict": "healthy",
+   "checkpoint_sha256": "fe6d3ae4820264abad7cd2dab59803a133806a1b4e5801eea82b892fbb65eba2",
+   "parent_wall_s": {
+    "train_s": 506.2,
+    "telemetry_extract_s": 1.2,
+    "fixed_eval_s": 50.4
+   }
+  },
+  "2027": {
+   "tag": "d3_harmless_smoke_20261014_v2_s2027",
+   "final": true,
+   "outcome": "harmless_pass",
+   "invalid_cause": null,
+   "comparison": {
+    "survival_ratio": 1.0,
+    "fall_frac": 0.0,
+    "err_xy_ratio": 1.0185513134290847,
+    "err_yaw_ratio": 0.8814837834686611,
+    "horizon_ratio": 1.0
+   },
+   "margins": {
+    "err_xy_ratio": true,
+    "err_yaw_ratio": true,
+    "fall_frac": true
+   },
+   "verdict": "healthy",
+   "checkpoint_sha256": "607fa05e838f436697576183002d1b800b61225c2336aa4f4269f46d9d342049",
+   "parent_wall_s": {
+    "train_s": 501.4,
+    "telemetry_extract_s": 1.2,
+    "fixed_eval_s": 46.5
+   }
+  }
+ },
+ "outcome": "pass",
+ "prediction": "pass",
+ "prediction_match": true,
+ "wording": "무해 변경 7개를 모두 적용한 학습이 이미 본 seed 2026·2027에서 같은 seed 정상 학습 대비 p0c 밴드와 여유 기준(선속도·yaw 오차 비 1.05 이하, 낙상 0.02 이하) 안이었다. 7개를 함께 적용한 seed 두 개의 결과이며, 변경 하나하나나 새 seed에서의 무해성을 보장하지 않는다.",
+ "margins": {
+  "err_xy_ratio_max": 1.05,
+  "err_yaw_ratio_max": 1.05,
+  "fall_frac_max": 0.02
+ },
+ "scope": "D3 본실험 사전등록 전 무해 목록 확정을 위한 거르기. 변경 하나하나의 무해성·변경 간 상호작용·새 seed에서의 무해성·진단 성능·방법 비교가 아니다",
+ "model_calls": 0
+}
