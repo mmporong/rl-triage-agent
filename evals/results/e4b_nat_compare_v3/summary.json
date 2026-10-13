@@ -1,0 +1,1509 @@
+{
+ "schema": "e4b_nat_compare_result_v3",
+ "protocol_sha256_lf": "1429333350372617c912a1c4e755350705f8c4129556abfb978a3ae60112089b",
+ "source_commit_sha": "d330c82b6a96d8fbe4e68b1c4f12b0be3d2fc62a",
+ "sets": {
+  "h02_s2027": {
+   "role": "adoption",
+   "kinds": {
+    "diagnosis": {
+     "counts": {
+      "valid": 2,
+      "invalid": 3,
+      "infra_error": 0,
+      "missing": 0
+     },
+     "non_infra_runs": 5,
+     "single_call_available": false,
+     "single_call_valid": false,
+     "agreement_with_single_call": null,
+     "agreement_denominator": 0,
+     "decisions": {
+      "continue": 2
+     },
+     "runs_using_precheck": 5,
+     "tool_sequences": {
+      "e4b2_list_fact_ids > e4b2_get_facts > e4b2_probe_catalog > e4b2_get_facts > e4b2_check_decision > e4b2_submit_decision": 1,
+      "e4b2_list_fact_ids > e4b2_probe_catalog > e4b2_get_facts > e4b2_get_facts > e4b2_check_decision > e4b2_get_facts > e4b2_check_decision > e4b2_get_facts > e4b2_check_decision > e4b2_submit_decision": 1,
+      "e4b2_list_fact_ids > e4b2_probe_catalog > e4b2_get_facts > e4b2_get_facts > e4b2_get_facts > e4b2_check_decision > e4b2_get_facts > e4b2_check_decision > e4b2_get_facts > e4b2_check_decision > e4b2_submit_decision": 1,
+      "e4b2_list_fact_ids > e4b2_probe_catalog > e4b2_get_facts > e4b2_get_facts > e4b2_get_facts > e4b2_get_facts > e4b2_check_decision > e4b2_get_facts > e4b2_check_decision > e4b2_get_facts > e4b2_check_decision > e4b2_submit_decision": 1,
+      "e4b2_list_fact_ids > e4b2_probe_catalog > e4b2_get_facts > e4b2_get_facts > e4b2_get_facts > e4b2_get_facts > e4b2_check_decision > e4b2_submit_decision": 1
+     },
+     "precheck_calls": {
+      "n": 5,
+      "median": 3,
+      "min": 1,
+      "max": 3
+     },
+     "llm_calls": {
+      "n": 5,
+      "median": 10,
+      "min": 6,
+      "max": 12
+     },
+     "input_tokens": {
+      "n": 5,
+      "median": 48982,
+      "min": 25204,
+      "max": 60798
+     },
+     "output_tokens": {
+      "n": 5,
+      "median": 2280,
+      "min": 1197,
+      "max": 3102
+     },
+     "wall_s": {
+      "n": 5,
+      "median": 25.939935312140733,
+      "min": 23.145528926048428,
+      "max": 58.18233568407595
+     },
+     "single_call_costs": null,
+     "runs": [
+      {
+       "run": 1,
+       "attempt": 1,
+       "status": "invalid",
+       "decision": null,
+       "error_type": "ValueError",
+       "precheck_calls": 3,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b2_get_facts",
+        "e4b2_get_facts",
+        "e4b2_check_decision",
+        "e4b2_get_facts",
+        "e4b2_check_decision",
+        "e4b2_get_facts",
+        "e4b2_check_decision",
+        "e4b2_submit_decision"
+       ],
+       "llm_calls": 10,
+       "input_tokens": 48982,
+       "output_tokens": 2501,
+       "wall_s": 25.939935312140733,
+       "atif_sha256": "03d73e753f584f5717a8e6cf47b1c53941351b5b491533c8a15ac3404f3b2160"
+      },
+      {
+       "run": 2,
+       "attempt": 1,
+       "status": "invalid",
+       "decision": null,
+       "error_type": "ValueError",
+       "precheck_calls": 3,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b2_get_facts",
+        "e4b2_get_facts",
+        "e4b2_get_facts",
+        "e4b2_check_decision",
+        "e4b2_get_facts",
+        "e4b2_check_decision",
+        "e4b2_get_facts",
+        "e4b2_check_decision",
+        "e4b2_submit_decision"
+       ],
+       "llm_calls": 11,
+       "input_tokens": 52257,
+       "output_tokens": 2280,
+       "wall_s": 23.145528926048428,
+       "atif_sha256": "1d6c52c2725c2905f047ba6c4c90255ee5b3a8ea59006e557467c93925a5c42c"
+      },
+      {
+       "run": 3,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "ranking": [
+         "reward",
+         "exploration",
+         "optimizer",
+         "actuator",
+         "physics",
+         "termination"
+        ],
+        "probe": "P_reward",
+        "action": "continue",
+        "reason": "Initial assessment shows poor reward performance and high tracking error, suggesting reward function issues as primary concern",
+        "claims": [
+         {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 12.570486783981323
+         },
+         {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+         },
+         {
+          "id": "telemetry:case:Metrics/base_velocity/error_vel_xy",
+          "value": 1.5146108249823251
+         },
+         {
+          "id": "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+          "value": 0.19920970598856608
+         }
+        ],
+        "expected_outcomes": {
+         "exploration": "normal",
+         "optimizer": "normal",
+         "reward": "abnormal"
+        }
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b2_get_facts",
+        "e4b2_get_facts",
+        "e4b2_get_facts",
+        "e4b2_get_facts",
+        "e4b2_check_decision",
+        "e4b2_submit_decision"
+       ],
+       "llm_calls": 9,
+       "input_tokens": 40004,
+       "output_tokens": 1729,
+       "wall_s": 34.14634122885764,
+       "atif_sha256": "99a139950daa1021de55fd9d79b308005158b9bfb38a970286bd1f0ec373e473"
+      },
+      {
+       "run": 4,
+       "attempt": 1,
+       "status": "invalid",
+       "decision": null,
+       "error_type": "ValueError",
+       "precheck_calls": 3,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b2_get_facts",
+        "e4b2_get_facts",
+        "e4b2_get_facts",
+        "e4b2_get_facts",
+        "e4b2_check_decision",
+        "e4b2_get_facts",
+        "e4b2_check_decision",
+        "e4b2_get_facts",
+        "e4b2_check_decision",
+        "e4b2_submit_decision"
+       ],
+       "llm_calls": 12,
+       "input_tokens": 60798,
+       "output_tokens": 3102,
+       "wall_s": 58.18233568407595,
+       "atif_sha256": "d09b983987f62af2fa63de5048b0787871ac2e04582185da7c7f6900b55a6dbe"
+      },
+      {
+       "run": 5,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "ranking": [
+         "reward",
+         "exploration",
+         "optimizer",
+         "actuator",
+         "physics",
+         "termination"
+        ],
+        "probe": "P_reward",
+        "action": "continue",
+        "reason": "Mean reward significantly below reference, tracking rewards show linear velocity deficit",
+        "claims": [
+         {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 12.570486783981323
+         },
+         {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+         },
+         {
+          "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 0.3123434710005919
+         },
+         {
+          "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 1.413650377591451
+         }
+        ],
+        "expected_outcomes": {
+         "exploration": "normal",
+         "optimizer": "normal",
+         "reward": "abnormal"
+        }
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_probe_catalog",
+        "e4b2_get_facts",
+        "e4b2_check_decision",
+        "e4b2_submit_decision"
+       ],
+       "llm_calls": 6,
+       "input_tokens": 25204,
+       "output_tokens": 1197,
+       "wall_s": 23.981091289082542,
+       "atif_sha256": "fdb3e9881600ae9cf6dc4876d2a0b72b338a8d993befd4fcbdacdd47ee4a389d"
+      }
+     ],
+     "complete": true
+    },
+    "correction": {
+     "counts": {
+      "valid": 5,
+      "invalid": 0,
+      "infra_error": 0,
+      "missing": 0
+     },
+     "non_infra_runs": 5,
+     "single_call_available": false,
+     "single_call_valid": false,
+     "agreement_with_single_call": null,
+     "agreement_denominator": 0,
+     "decisions": {
+      "propose": 5
+     },
+     "runs_using_precheck": 5,
+     "tool_sequences": {
+      "e4b2_list_fact_ids > e4b2_get_facts > e4b2_registry > e4b2_skill_checklist > e4b3_check_proposal > e4b3_submit_proposal": 5
+     },
+     "precheck_calls": {
+      "n": 5,
+      "median": 1,
+      "min": 1,
+      "max": 1
+     },
+     "llm_calls": {
+      "n": 5,
+      "median": 7,
+      "min": 7,
+      "max": 7
+     },
+     "input_tokens": {
+      "n": 5,
+      "median": 22270,
+      "min": 22197,
+      "max": 22292
+     },
+     "output_tokens": {
+      "n": 5,
+      "median": 1113,
+      "min": 1087,
+      "max": 1131
+     },
+     "wall_s": {
+      "n": 5,
+      "median": 14.795431867940351,
+      "min": 12.954775965074077,
+      "max": 19.31505100103095
+     },
+     "single_call_costs": null,
+     "runs": [
+      {
+       "run": 1,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe",
+          "4": "confirming_probe_measurement",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "confirming_probe"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "registered_correction",
+          "registered_recovery_modes",
+          "rule",
+          "standstill_ratio",
+          "cost_fixed_eval_parent_wall_s",
+          "cost_train_300_updates_parent_wall_s"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22200,
+       "output_tokens": 1107,
+       "wall_s": 14.795431867940351,
+       "atif_sha256": "59c72f0df79617d19d6fbe85d37dc5e519aa97f8f1b4bda27b6925abec02b302"
+      },
+      {
+       "run": 2,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "probe_observations",
+          "4": "confirming_probe_measurement",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "rule"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "confirming_probe_measurement",
+          "eval_metrics",
+          "cost_fixed_eval_parent_wall_s",
+          "cost_train_300_updates_parent_wall_s",
+          "rule",
+          "rule_mode"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22274,
+       "output_tokens": 1113,
+       "wall_s": 12.954775965074077,
+       "atif_sha256": "f24ddccab227cd46e2c2cbc3345ff2d4a053b4de206c4f014001d9e7c3b5846f"
+      },
+      {
+       "run": 3,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirmed_mechanism",
+          "2": "confirmed_mechanism",
+          "3": "probe_observations",
+          "4": "confirming_probe_measurement",
+          "5": "confirming_probe_outcome",
+          "6": "rule"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "registered_correction",
+          "registered_recovery_modes",
+          "rule",
+          "standstill_ratio"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22197,
+       "output_tokens": 1087,
+       "wall_s": 19.31505100103095,
+       "atif_sha256": "9c3c4ab3a161c7816dfc66b3363e7371b4f5ec670da04f6c74a30f2d92e99a1d"
+      },
+      {
+       "run": 4,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe",
+          "4": "confirming_probe_measurement",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "registered_correction"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "registered_correction",
+          "registered_recovery_modes",
+          "rule",
+          "rule_mode",
+          "standstill_ratio",
+          "confirming_probe_measurement",
+          "cost_fixed_eval_parent_wall_s",
+          "cost_train_300_updates_parent_wall_s"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22292,
+       "output_tokens": 1131,
+       "wall_s": 13.211331241996959,
+       "atif_sha256": "2b2a304ab3495133890ee42c7d29e8cdcfd00daf375ff1ed723328e155a0c61f"
+      },
+      {
+       "run": 5,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe",
+          "4": "confirming_probe_measurement",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "registered_correction"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "registered_correction",
+          "registered_recovery_modes",
+          "rule",
+          "standstill_ratio",
+          "rule_mode",
+          "confirming_probe_measurement",
+          "cost_fixed_eval_parent_wall_s",
+          "cost_train_300_updates_parent_wall_s"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22270,
+       "output_tokens": 1114,
+       "wall_s": 15.366676585981622,
+       "atif_sha256": "89886cd62d15a5eba610050aec3f579a0fcbc1650f4365ef27dead5c06c6970e"
+      }
+     ],
+     "complete": true
+    }
+   },
+   "meets_numeric_rule": false
+  },
+  "s2030": {
+   "role": "development",
+   "kinds": {
+    "correction": {
+     "counts": {
+      "valid": 5,
+      "invalid": 0,
+      "infra_error": 0,
+      "missing": 0
+     },
+     "non_infra_runs": 5,
+     "single_call_available": true,
+     "single_call_valid": true,
+     "agreement_with_single_call": {
+      "decision": 5,
+      "correction_id": 5,
+      "recovery_mode": 5,
+      "unmet_checklist": 5
+     },
+     "agreement_denominator": 5,
+     "decisions": {
+      "propose": 5
+     },
+     "runs_using_precheck": 5,
+     "tool_sequences": {
+      "e4b2_list_fact_ids > e4b2_get_facts > e4b2_registry > e4b2_skill_checklist > e4b3_check_proposal > e4b3_submit_proposal": 5
+     },
+     "precheck_calls": {
+      "n": 5,
+      "median": 1,
+      "min": 1,
+      "max": 1
+     },
+     "llm_calls": {
+      "n": 5,
+      "median": 7,
+      "min": 7,
+      "max": 7
+     },
+     "input_tokens": {
+      "n": 5,
+      "median": 22296,
+      "min": 22242,
+      "max": 22335
+     },
+     "output_tokens": {
+      "n": 5,
+      "median": 1123,
+      "min": 1085,
+      "max": 1172
+     },
+     "wall_s": {
+      "n": 5,
+      "median": 14.702179497107863,
+      "min": 12.853018680820242,
+      "max": 21.564997546141967
+     },
+     "single_call_costs": {
+      "input_tokens": 1347,
+      "output_tokens": 174,
+      "execution_wall_s": 1.94650052418001
+     },
+     "runs": [
+      {
+       "run": 1,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe",
+          "4": "confirming_probe_measurement",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "rule_mode"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "registered_correction",
+          "registered_recovery_modes",
+          "rule",
+          "rule_mode",
+          "standstill_ratio",
+          "confirming_probe_measurement",
+          "cost_fixed_eval_parent_wall_s",
+          "cost_train_300_updates_parent_wall_s"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22296,
+       "output_tokens": 1123,
+       "wall_s": 14.702179497107863,
+       "atif_sha256": "b1ed84d7980d27c1f418f219156a82bc16fbe6f17afcd9f2f5aba7b028a5e798"
+      },
+      {
+       "run": 2,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe_measurement",
+          "4": "confirming_probe_measurement",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "rule"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "registered_correction",
+          "registered_recovery_modes",
+          "rule",
+          "rule_mode",
+          "standstill_ratio",
+          "confirming_probe_measurement",
+          "cost_fixed_eval_parent_wall_s",
+          "cost_train_300_updates_parent_wall_s",
+          "eval_metrics"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22335,
+       "output_tokens": 1172,
+       "wall_s": 21.564997546141967,
+       "atif_sha256": "67f0623e64fade5ca492f11a461713de080e4bd69e99de2c10e1c8f41805ffa9"
+      },
+      {
+       "run": 3,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "probe_observations",
+          "4": "confirming_probe_measurement",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "rule"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "confirming_probe_measurement",
+          "eval_metrics",
+          "cost_fixed_eval_parent_wall_s",
+          "rule",
+          "rule_mode"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22242,
+       "output_tokens": 1085,
+       "wall_s": 17.84944839309901,
+       "atif_sha256": "bd3bf2ce1f6c2961bc475bae66b25238e22467bae785562bb3ca3d89f128dbb3"
+      },
+      {
+       "run": 4,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe",
+          "4": "confirming_probe_measurement",
+          "5": "confirming_probe_measurement",
+          "6": "registered_correction"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe",
+          "confirming_probe_outcome",
+          "confirming_probe_measurement",
+          "registered_correction",
+          "registered_recovery_modes",
+          "rule",
+          "standstill_ratio"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22247,
+       "output_tokens": 1113,
+       "wall_s": 13.644493220141158,
+       "atif_sha256": "577927bb749b1f67302826459962819333516a97f922c988b25a76bf54358c60"
+      },
+      {
+       "run": 5,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe",
+          "4": "confirming_probe_measurement",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "rule_mode"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "registered_correction",
+          "registered_recovery_modes",
+          "rule",
+          "rule_mode",
+          "standstill_ratio",
+          "confirming_probe_measurement",
+          "cost_fixed_eval_parent_wall_s",
+          "cost_train_300_updates_parent_wall_s",
+          "eval_metrics"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22318,
+       "output_tokens": 1138,
+       "wall_s": 12.853018680820242,
+       "atif_sha256": "d80c3269abc0ff8368c6e054f0436fe8f02649c2e136eab449ec825160215805"
+      }
+     ],
+     "complete": true
+    }
+   },
+   "meets_numeric_rule": true
+  },
+  "s2029": {
+   "role": "development",
+   "kinds": {
+    "correction": {
+     "counts": {
+      "valid": 5,
+      "invalid": 0,
+      "infra_error": 0,
+      "missing": 0
+     },
+     "non_infra_runs": 5,
+     "single_call_available": true,
+     "single_call_valid": true,
+     "agreement_with_single_call": {
+      "decision": 5,
+      "correction_id": 5,
+      "recovery_mode": 5,
+      "unmet_checklist": 5
+     },
+     "agreement_denominator": 5,
+     "decisions": {
+      "propose": 5
+     },
+     "runs_using_precheck": 5,
+     "tool_sequences": {
+      "e4b2_list_fact_ids > e4b2_get_facts > e4b2_registry > e4b2_skill_checklist > e4b3_check_proposal > e4b3_submit_proposal": 5
+     },
+     "precheck_calls": {
+      "n": 5,
+      "median": 1,
+      "min": 1,
+      "max": 1
+     },
+     "llm_calls": {
+      "n": 5,
+      "median": 7,
+      "min": 7,
+      "max": 7
+     },
+     "input_tokens": {
+      "n": 5,
+      "median": 22313,
+      "min": 21927,
+      "max": 22812
+     },
+     "output_tokens": {
+      "n": 5,
+      "median": 1225,
+      "min": 1022,
+      "max": 1466
+     },
+     "wall_s": {
+      "n": 5,
+      "median": 15.700220518978313,
+      "min": 15.138569182017818,
+      "max": 20.140686692204326
+     },
+     "single_call_costs": {
+      "input_tokens": 1311,
+      "output_tokens": 174,
+      "execution_wall_s": 2.4059815870132297
+     },
+     "runs": [
+      {
+       "run": 1,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe_measurement",
+          "4": "confirming_probe_measurement",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "registered_correction"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe_outcome",
+          "confirming_probe_measurement",
+          "eval_metrics",
+          "cost_fixed_eval_parent_wall_s",
+          "registered_correction"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 21927,
+       "output_tokens": 1022,
+       "wall_s": 15.650918328901753,
+       "atif_sha256": "a20b2fb2aac1d447c4adad926c3e7fb975659110822212cce9d46d219726930e"
+      },
+      {
+       "run": 2,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirmed_mechanism",
+          "2": "confirmed_mechanism",
+          "3": "rule",
+          "4": "confirming_probe_measurement",
+          "5": "confirming_probe_measurement",
+          "6": "rule_mode"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe_outcome",
+          "rule",
+          "confirming_probe_measurement",
+          "rule_mode"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22313,
+       "output_tokens": 1225,
+       "wall_s": 15.765329792164266,
+       "atif_sha256": "f72f94a8fce99b6d2443eb3eca4569b3a60301938117ac9d4b649f4d1c7100cb"
+      },
+      {
+       "run": 3,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirmed_mechanism",
+          "2": "confirmed_mechanism",
+          "3": "probe_observations",
+          "4": "confirming_probe_measurement",
+          "5": "confirming_probe_measurement",
+          "6": "registered_correction"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "confirming_probe_measurement",
+          "eval_metrics",
+          "registered_correction"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22385,
+       "output_tokens": 1257,
+       "wall_s": 15.700220518978313,
+       "atif_sha256": "776c2a3175da7bc1d47776f7e5b7914a034f3e3354a6909553f3986f969673cf"
+      },
+      {
+       "run": 4,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe_measurement",
+          "4": "confirming_probe_measurement",
+          "5": "confirming_probe_measures",
+          "6": "registered_correction"
+         },
+         "cited_facts": [
+          "confirming_probe_outcome",
+          "confirmed_mechanism",
+          "confirming_probe_measurement",
+          "confirming_probe_measures",
+          "registered_correction"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22812,
+       "output_tokens": 1466,
+       "wall_s": 20.140686692204326,
+       "atif_sha256": "2032316f775032f56135b80ff2a665948756a590dd6602f2be891296488ca317"
+      },
+      {
+       "run": 5,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe_measurement",
+          "4": "confirming_probe_measurement",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "rule"
+         },
+         "cited_facts": [
+          "confirming_probe_outcome",
+          "confirmed_mechanism",
+          "confirming_probe_measurement",
+          "cost_fixed_eval_parent_wall_s",
+          "rule"
+         ],
+         "correction_id": "restore_body_frame_reward",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22280,
+       "output_tokens": 1199,
+       "wall_s": 15.138569182017818,
+       "atif_sha256": "6a9914005d3fc84401f0cc8c969b4cfab3aac034217daebe49ff14f03982150b"
+      }
+     ],
+     "complete": true
+    }
+   },
+   "meets_numeric_rule": true
+  },
+  "h05_s2027": {
+   "role": "development_hold_branch",
+   "kinds": {
+    "correction": {
+     "counts": {
+      "valid": 4,
+      "invalid": 1,
+      "infra_error": 0,
+      "missing": 0
+     },
+     "non_infra_runs": 5,
+     "single_call_available": false,
+     "single_call_valid": false,
+     "agreement_with_single_call": null,
+     "agreement_denominator": 0,
+     "decisions": {
+      "HOLD": 4
+     },
+     "runs_using_precheck": 5,
+     "tool_sequences": {
+      "e4b2_list_fact_ids > e4b2_get_facts > e4b2_registry > e4b2_skill_checklist > e4b3_check_proposal > e4b2_registry > e4b3_check_proposal > e4b2_get_facts > e4b2_get_facts > e4b3_check_proposal > e4b3_submit_proposal": 1,
+      "e4b2_list_fact_ids > e4b2_get_facts > e4b2_registry > e4b2_skill_checklist > e4b3_check_proposal > e4b2_registry > e4b3_check_proposal > e4b3_submit_proposal": 1,
+      "e4b2_list_fact_ids > e4b2_get_facts > e4b2_registry > e4b2_skill_checklist > e4b3_check_proposal > e4b3_check_proposal > e4b3_submit_proposal": 1,
+      "e4b2_list_fact_ids > e4b2_get_facts > e4b2_registry > e4b2_skill_checklist > e4b3_check_proposal > e4b3_submit_proposal": 2
+     },
+     "precheck_calls": {
+      "n": 5,
+      "median": 2,
+      "min": 1,
+      "max": 3
+     },
+     "llm_calls": {
+      "n": 5,
+      "median": 7,
+      "min": 7,
+      "max": 12
+     },
+     "input_tokens": {
+      "n": 5,
+      "median": 22235,
+      "min": 21704,
+      "max": 48007
+     },
+     "output_tokens": {
+      "n": 5,
+      "median": 1432,
+      "min": 985,
+      "max": 2228
+     },
+     "wall_s": {
+      "n": 5,
+      "median": 16.654531976906583,
+      "min": 11.62546771299094,
+      "max": 26.401943632867187
+     },
+     "single_call_costs": null,
+     "runs": [
+      {
+       "run": 1,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe",
+          "4": "eval_metrics",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "confirmed_mechanism"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "rule",
+          "rule_mode"
+         ],
+         "correction_id": null,
+         "hold_reason": "The confirmed mechanism is 'exploration' but no specific correction is registered for exploration mechanisms in the registry. The rule indicates 'unregistered_mechanism' with rule_mode: 'HOLD'.",
+         "recovery_mode": null
+        },
+        "accepted": true,
+        "decision": "HOLD",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22235,
+       "output_tokens": 1326,
+       "wall_s": 15.928021680098027,
+       "atif_sha256": "1df982bbae7323f21f229030ad9d9e4d044f018282c454eab074c56266218479"
+      },
+      {
+       "run": 2,
+       "attempt": 1,
+       "status": "invalid",
+       "decision": null,
+       "error_type": "ValueError",
+       "precheck_calls": 2,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22013,
+       "output_tokens": 1432,
+       "wall_s": 16.654531976906583,
+       "atif_sha256": "2d492e8004c31b67cc9ce8d55d513a2442219c46b23c52d4fc23aeabc4dd7d2b"
+      },
+      {
+       "run": 3,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirmed_mechanism",
+          "2": "unmet",
+          "3": "unmet",
+          "4": "unmet",
+          "5": "unmet",
+          "6": "unmet"
+         },
+         "cited_facts": [
+          "confirmed_mechanism"
+         ],
+         "correction_id": null,
+         "hold_reason": "Insufficient evidence to map confirmed mechanism 'exploration' to a specific registry layer (actuator/reward/termination) for skill checklist item 2",
+         "recovery_mode": null
+        },
+        "accepted": true,
+        "decision": "HOLD",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": [
+         "2",
+         "3",
+         "4",
+         "5",
+         "6"
+        ]
+       },
+       "error_type": null,
+       "precheck_calls": 2,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b2_registry",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 9,
+       "input_tokens": 31700,
+       "output_tokens": 1716,
+       "wall_s": 26.401943632867187,
+       "atif_sha256": "4c8985c7d530ecbfabad9b2c94f83fba24f53357e6ebe302058182800c1acf0f"
+      },
+      {
+       "run": 4,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "probe_observations",
+          "4": "eval_metrics",
+          "5": "unmet",
+          "6": "unmet"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "eval_metrics"
+         ],
+         "correction_id": null,
+         "hold_reason": "Confirmed mechanism is exploration but no registered correction exists for exploration mechanism in registry",
+         "recovery_mode": null
+        },
+        "accepted": true,
+        "decision": "HOLD",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": [
+         "5",
+         "6"
+        ]
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 21704,
+       "output_tokens": 985,
+       "wall_s": 11.62546771299094,
+       "atif_sha256": "532e34905651e1f8b54abc8b67fc9536e3c58ec0a375cc1588524bbde34e556f"
+      },
+      {
+       "run": 5,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "eval_task",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe",
+          "4": "eval_metrics",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "confirmed_mechanism"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "rule",
+          "rule_mode"
+         ],
+         "correction_id": null,
+         "hold_reason": "The confirmed mechanism 'exploration' is not registered in the correction registry, indicating an unregistered mechanism that requires further investigation before applying any correction.",
+         "recovery_mode": null
+        },
+        "accepted": true,
+        "decision": "HOLD",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 3,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b3_check_proposal",
+        "e4b2_registry",
+        "e4b3_check_proposal",
+        "e4b2_get_facts",
+        "e4b2_get_facts",
+        "e4b3_check_proposal",
+        "e4b3_submit_proposal"
+       ],
+       "llm_calls": 12,
+       "input_tokens": 48007,
+       "output_tokens": 2228,
+       "wall_s": 24.18028732179664,
+       "atif_sha256": "5a6b426ce1ac06e41e04605afe5f7f578aa8410aa66b1ef15b28938b9164176a"
+      }
+     ],
+     "complete": true
+    }
+   },
+   "meets_numeric_rule": true
+  }
+ },
+ "adoption": {
+  "decision": "do_not_adopt",
+  "set": "h02_s2027",
+  "rule": "다음 seed 시연에 NAT 결정을 쓰려면 h02_s2027 세트에서 두 종류 모두 인프라 오류를 뺀 실행이 4 이상이고 그중 유효 결정이 4 이상이어야 한다. 수치 조건은 v1·v2와 같다. 일치율은 채택 조건에 쓰지 않는다. 요약은 모든 세트 실행이 끝난 뒤에만 쓴다",
+  "reason": null
+ },
+ "wording": "고친 NAT 도구 호출 워크플로의 유효 결정이 새 입력에서 사전등록 조건에 못 미쳤다. 다음 seed 시연은 단일 호출 결정을 유지한다.",
+ "development_wording": "s2030·s2029·h05_s2027 세트는 수정의 개발 확인이다. 채택 판정에 쓰지 않고 채택 세트·v1·v2 결과와 분모를 합치지 않는다.",
+ "common_wording": "고정 입력을 반복 호출한 개발 측정이다. 채택 입력 h02_s2027은 이미 본 seed의 공개 기록에서 만든 packet이라 설계자가 본 사례다. NAT는 근거를 도구로 나눠 조회하고 점검으로 고칠 기회가 있으므로 단일 호출과 조건이 다르다. 일반화·정확도·절감을 주장하지 않는다."
+}
