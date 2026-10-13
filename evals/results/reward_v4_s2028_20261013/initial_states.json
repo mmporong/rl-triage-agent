@@ -1,0 +1,211 @@
+{
+  "schema": "training_correction_v4_public_v1",
+  "arms": {
+    "clean_resume_reference": {
+      "recovery_mode": "resume",
+      "policy_state": {
+        "sha256": "6245118496c32c28df72a98ca69e7bf90d1d26eee522674fc5df2f458c44326b",
+        "tensor_count": 17,
+        "scalar_count": 0
+      },
+      "optimizer_state": {
+        "sha256": "5dc53df31bde5dc618c85ebb26cf04757916f13b24c89b971784c08692837964",
+        "tensor_count": 51,
+        "scalar_count": 29
+      },
+      "rng_state_before_learn": {
+        "cpu_sha256": "bc85ea05b0160e808c3353c736790716ce3d79be489d684bd67747b702103a5e",
+        "cuda_all_sha256": [
+          "813fa075f9ea6481e17d7227d67c0e3865dea74022ff08a026df36b6a39d372c"
+        ],
+        "cuda_device_count": 1
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "d8c67eec0b8108b7e7092a80a3efcdc0338285c06c87ca8b9f7b8c65641024e3",
+        "load_optimizer": true
+      },
+      "resume_iteration": 299,
+      "start_iteration": 299,
+      "source_checkpoint_state": {
+        "iteration": 299,
+        "policy_state_sha256": "6245118496c32c28df72a98ca69e7bf90d1d26eee522674fc5df2f458c44326b",
+        "optimizer_state_sha256": "5dc53df31bde5dc618c85ebb26cf04757916f13b24c89b971784c08692837964"
+      },
+      "std_reset": null
+    },
+    "resume_corrected": {
+      "recovery_mode": "resume",
+      "policy_state": {
+        "sha256": "c38a7222994ea7d74ff908d4ac23d01650ce21391d187d7e10ac2e845ca0975e",
+        "tensor_count": 17,
+        "scalar_count": 0
+      },
+      "optimizer_state": {
+        "sha256": "91498a79fa112b6d709fab6db1e8e23835e54ed579eff8cc7a30aa68806e128f",
+        "tensor_count": 51,
+        "scalar_count": 29
+      },
+      "rng_state_before_learn": {
+        "cpu_sha256": "bc85ea05b0160e808c3353c736790716ce3d79be489d684bd67747b702103a5e",
+        "cuda_all_sha256": [
+          "813fa075f9ea6481e17d7227d67c0e3865dea74022ff08a026df36b6a39d372c"
+        ],
+        "cuda_device_count": 1
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "e63f4b0cddb0213e1f124ee6f0349218237511af0bdf0e75e12386b9d1856b2e",
+        "load_optimizer": true
+      },
+      "resume_iteration": 299,
+      "start_iteration": 299,
+      "source_checkpoint_state": {
+        "iteration": 299,
+        "policy_state_sha256": "c38a7222994ea7d74ff908d4ac23d01650ce21391d187d7e10ac2e845ca0975e",
+        "optimizer_state_sha256": "91498a79fa112b6d709fab6db1e8e23835e54ed579eff8cc7a30aa68806e128f"
+      },
+      "std_reset": null
+    },
+    "resume_corrected_std_reset": {
+      "recovery_mode": "resume_std_reset",
+      "policy_state": {
+        "sha256": "6fb76d8d0d4ee8e228d3a9b5a74a876e1c81339b75e5ce4c7df1e710e49398cc",
+        "tensor_count": 17,
+        "scalar_count": 0
+      },
+      "optimizer_state": {
+        "sha256": "ef07134513d7fe06916156e51a8b38b1cc2a7ab9284e59974cf420f4b13f5984",
+        "tensor_count": 48,
+        "scalar_count": 29
+      },
+      "rng_state_before_learn": {
+        "cpu_sha256": "bc85ea05b0160e808c3353c736790716ce3d79be489d684bd67747b702103a5e",
+        "cuda_all_sha256": [
+          "813fa075f9ea6481e17d7227d67c0e3865dea74022ff08a026df36b6a39d372c"
+        ],
+        "cuda_device_count": 1
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "e63f4b0cddb0213e1f124ee6f0349218237511af0bdf0e75e12386b9d1856b2e",
+        "load_optimizer": true
+      },
+      "resume_iteration": 299,
+      "start_iteration": 299,
+      "source_checkpoint_state": {
+        "iteration": 299,
+        "policy_state_sha256": "c38a7222994ea7d74ff908d4ac23d01650ce21391d187d7e10ac2e845ca0975e",
+        "optimizer_state_sha256": "91498a79fa112b6d709fab6db1e8e23835e54ed579eff8cc7a30aa68806e128f"
+      },
+      "std_reset": {
+        "schema": "action_std_reset_v2",
+        "parameter": "std",
+        "noise_std_type": "scalar",
+        "init_noise_std": 1.0,
+        "parameter_target_float32": 1.0,
+        "before": [
+          0.4028957188129425,
+          0.3546815514564514,
+          0.39329805970191956,
+          0.4207387864589691,
+          0.6717355847358704,
+          0.6626951694488525,
+          0.4499884247779846,
+          0.47400274872779846,
+          0.540930986404419,
+          0.5584574937820435,
+          0.6906537413597107,
+          0.5507746338844299
+        ],
+        "after": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after_matches_init": true,
+        "std_mean_before": 0.5142377416292826,
+        "std_mean_after": 1.0,
+        "policy_state_before_reset": "c38a7222994ea7d74ff908d4ac23d01650ce21391d187d7e10ac2e845ca0975e",
+        "policy_state_after_reset": "6fb76d8d0d4ee8e228d3a9b5a74a876e1c81339b75e5ce4c7df1e710e49398cc",
+        "changed_tensor_paths": [
+          "$[\"std\"]"
+        ],
+        "parameter_in_optimizer": true,
+        "optimizer_param_index": 0,
+        "optimizer_std_moment_present_before": true,
+        "optimizer_std_moment_present_after": false,
+        "optimizer_state_before_reset": "91498a79fa112b6d709fab6db1e8e23835e54ed579eff8cc7a30aa68806e128f",
+        "optimizer_state_expected_after_reset": "ef07134513d7fe06916156e51a8b38b1cc2a7ab9284e59974cf420f4b13f5984",
+        "optimizer_state_after_reset": "ef07134513d7fe06916156e51a8b38b1cc2a7ab9284e59974cf420f4b13f5984",
+        "optimizer_other_state_preserved": true
+      }
+    },
+    "restart_corrected": {
+      "recovery_mode": "restart",
+      "policy_state": {
+        "sha256": "600bf33da757473036b778cc41b04ef4d9c3679f7f113ccd6523ecaff3a706b9",
+        "tensor_count": 17,
+        "scalar_count": 0
+      },
+      "optimizer_state": {
+        "sha256": "92b351b206094432aca46f50ef04b12c5bda34ae9e4ce83b2589d62912605e1c",
+        "tensor_count": 0,
+        "scalar_count": 29
+      },
+      "rng_state_before_learn": {
+        "cpu_sha256": "bc85ea05b0160e808c3353c736790716ce3d79be489d684bd67747b702103a5e",
+        "cuda_all_sha256": [
+          "813fa075f9ea6481e17d7227d67c0e3865dea74022ff08a026df36b6a39d372c"
+        ],
+        "cuda_device_count": 1
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "resume_checkpoint": null,
+      "resume_iteration": null,
+      "start_iteration": 0,
+      "source_checkpoint_state": null,
+      "std_reset": null
+    }
+  }
+}

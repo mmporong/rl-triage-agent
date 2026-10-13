@@ -1,0 +1,288 @@
+{
+  "schema": "training_correction_v4_public_v1",
+  "replay_scope": "numeric_replay_only_not_execution_identity_attestation",
+  "tag": "reward_v4_s2026_20261013",
+  "seed": 2026,
+  "source_commit_sha": "9e2d84213c2c4ce5e33179e30c580f7b85d7457b",
+  "protocol_sha256_lf": "9216f4c649688434244dee8e6d947f52b0bff892482db686435b1d750a5553bf",
+  "source_commit_scope": "experiment_execution_and_verdict_code_only",
+  "publisher_sources": {
+    "evals/publish_training_correction.py": "5dc08481677056b69ccb520fab8caf4fe0a9b8984c1e1d2a967cba719cfda3bc",
+    "evals/publish_training_correction_v4.py": "ce948cf1bdf3fccfd9e91d1fd9ca3a78dfeb9528862e75280d67a3230c462244",
+    "evals/run_training_correction.py": "5473f030f357c7cec06861c1e33c8147d3960021f959956666531c9241da0bd1",
+    "evals/run_training_correction_v4.py": "2cfbe60120e904062f73697e62e6128216a92110192a2ed4667adf1d7ab8f98b",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e"
+  },
+  "numeric": {
+    "status": "complete",
+    "seed": 2026,
+    "scope": "seen_two_seed_reward_fault_recovery_mode_development",
+    "arm_order": [
+      "clean_resume_reference",
+      "resume_corrected",
+      "resume_corrected_std_reset",
+      "restart_corrected"
+    ],
+    "completed_arms": [
+      "clean_resume_reference",
+      "resume_corrected",
+      "resume_corrected_std_reset",
+      "restart_corrected"
+    ],
+    "failed_arm": null,
+    "labels": {
+      "resume_corrected": "not_recovered",
+      "resume_corrected_std_reset": "not_recovered",
+      "restart_corrected": "recovered"
+    },
+    "label_reasons": {
+      "resume_corrected": "verdict_unhealthy",
+      "resume_corrected_std_reset": "verdict_unhealthy",
+      "restart_corrected": "verdict_healthy"
+    },
+    "predictions": {
+      "resume_corrected": "not_recovered",
+      "resume_corrected_std_reset": null,
+      "restart_corrected": "recovered"
+    },
+    "prediction_match": {
+      "resume_corrected": true,
+      "resume_corrected_std_reset": null,
+      "restart_corrected": true
+    },
+    "references": {
+      "restart": {
+        "source": "original_same_seed_none_300_iterations_from_scratch_existing_fixed_eval",
+        "walks": true,
+        "valid": true
+      },
+      "resume": {
+        "source": "same_seed_clean_reference_resumed_same_updates",
+        "walks": true,
+        "secondary_label": "healthy",
+        "valid": true
+      }
+    },
+    "behavior": {
+      "clean_resume_reference": {
+        "survival_s": 19.278345947265624,
+        "horizon_s": 20.0,
+        "fall_frac": 0.03846153989434242,
+        "err_xy": 0.14332131470449136,
+        "err_yaw": 0.2330987674435481
+      },
+      "resume_corrected": {
+        "survival_s": 20.0,
+        "horizon_s": 20.0,
+        "fall_frac": 0.0,
+        "err_xy": 1.1559090498253748,
+        "err_yaw": 0.37718513740867865
+      },
+      "resume_corrected_std_reset": {
+        "survival_s": 19.9896533203125,
+        "horizon_s": 20.0,
+        "fall_frac": 0.000961538462433964,
+        "err_xy": 1.115191564055571,
+        "err_yaw": 0.2954563199378459
+      },
+      "restart_corrected": {
+        "survival_s": 20.0,
+        "horizon_s": 20.0,
+        "fall_frac": 0.0,
+        "err_xy": 0.14778769208306278,
+        "err_yaw": 0.2990055679373791
+      }
+    },
+    "verdicts": {
+      "resume_corrected": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "resume_corrected_std_reset": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "restart_corrected": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      }
+    },
+    "secondary_verdicts": {
+      "clean_resume_reference": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "resume_corrected": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "resume_corrected_std_reset": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": true
+        }
+      },
+      "restart_corrected": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      }
+    },
+    "original_behavior": {
+      "clean_reference": {
+        "survival_s": 20.0,
+        "horizon_s": 20.0,
+        "fall_frac": 0.0,
+        "err_xy": 0.14778769208306278,
+        "err_yaw": 0.2990055679373791
+      },
+      "fault": {
+        "survival_s": 20.0,
+        "horizon_s": 20.0,
+        "fall_frac": 0.0,
+        "err_xy": 1.1728261520847478,
+        "err_yaw": 0.5684501339523959
+      }
+    },
+    "source_verdict": {
+      "label": "unhealthy",
+      "failed": [
+        "err_xy_ratio",
+        "err_yaw_ratio"
+      ],
+      "short_horizon": false,
+      "checks": {
+        "survival_ratio": true,
+        "fall_frac": true,
+        "err_xy_ratio": false,
+        "err_yaw_ratio": false
+      }
+    },
+    "restart_sham_counterpart": {
+      "run": "h02_s2026",
+      "reused_original_run": true,
+      "rerun": false,
+      "verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      }
+    },
+    "mechanical_signal": {
+      "name": "standstill_ratio",
+      "values": {
+        "original_none": 0.1255953876333965,
+        "original_fault": 0.996710572588678,
+        "clean_resume_reference": 0.12179969673199566,
+        "resume_corrected": 0.9823338001663467,
+        "resume_corrected_std_reset": 0.947730591085569,
+        "restart_corrected": 0.1255953876333965
+      },
+      "prediction_met": {
+        "original_fault": true,
+        "original_none": true
+      },
+      "used_for_labels": false,
+      "wording": "standstill_ratio는 같은 고정 평가의 선속도 RMSE를 제자리 정책의 RMSE로 나눈 값이다. 1에 가까우면 명령 추종이 없다는 뜻이며 정지 자체를 증명하지 않는다."
+    },
+    "recovery_mode_rule": {
+      "recommended": "restart",
+      "recommended_arm": "restart_corrected",
+      "recommended_label": "recovered",
+      "alternative_arm": "resume_corrected",
+      "alternative_label": "not_recovered",
+      "outcome": "hit",
+      "rule_hit": true,
+      "used_for_labels": false,
+      "wording": "seed 2027 단일 관찰에서 만든 규칙이다. v4 결과로 적중 여부만 기록하며 판정 라벨에 쓰지 않는다."
+    },
+    "bands": {
+      "survival_ratio_min": 0.9,
+      "err_xy_ratio_max": 1.1513,
+      "err_yaw_ratio_max": 1.1719,
+      "fall_frac_max": 0.05
+    },
+    "resume_treatment_rng_hashes_match": true,
+    "full_environment_state_restored": false,
+    "rng_state_restored_from_checkpoint": false,
+    "causal_confirmation": false,
+    "stochastic_effect_separated": false,
+    "exact_training_trajectory_resumed": false,
+    "model_selected_correction": false,
+    "generalization_proven": false,
+    "gpu_saving_claimed": false,
+    "wording": {
+      "resume_corrected": "보상 결함을 고친 뒤 이 회복 방식으로 300회 학습한 단일 실행이 등록 기준 대비 고정 행동 허용 범위를 통과하지 못했다. 이미 본 seed의 합성 결함 개발 결과이며 일반화·AI 교정 선택·GPU 절감을 주장하지 않는다.",
+      "resume_corrected_std_reset": "보상 결함을 고친 뒤 이 회복 방식으로 300회 학습한 단일 실행이 등록 기준 대비 고정 행동 허용 범위를 통과하지 못했다. 이미 본 seed의 합성 결함 개발 결과이며 일반화·AI 교정 선택·GPU 절감을 주장하지 않는다.",
+      "restart_corrected": "보상 결함을 고친 뒤 이 회복 방식으로 300회 학습한 단일 실행이 등록 기준 대비 고정 행동 허용 범위를 통과했다. 이미 본 seed의 합성 결함 개발 결과이며 일반화·AI 교정 선택·GPU 절감을 주장하지 않는다."
+    },
+    "seed_wording": "이미 본 seed의 합성 결함(F1) 개발 결과다. arm마다 단일 실행이며 일반화·AI 교정 선택·GPU 절감 주장이 아니다."
+  }
+}

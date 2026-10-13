@@ -1,0 +1,262 @@
+{
+  "schema": "training_correction_v4_public_v1",
+  "arms": {
+    "clean_resume_reference": {
+      "receipt_sha256": "da00e5e17e595ad3c6341021ead10bc1a275722c57d6e2da9ee76f0e07ff73b6",
+      "recovery_mode": "resume",
+      "checkpoint": {
+        "file": "model_598.pt",
+        "sha256": "08f037318cfc0ee0c41a87a62ecf870b5633f53bbb7b480cbfe66b78bbe0695f"
+      },
+      "configs": {
+        "environment": {
+          "file": "env.yaml",
+          "sha256": "d153ee695f877bf4d99e0ef81358ff7886c9e9a25f117eaf7187f490150acc36"
+        },
+        "agent": {
+          "file": "agent.yaml",
+          "sha256": "80b3450a681a409bd53dfdd45fbe45be54a2bd253a9334f7c0dfa11ddbc5487b"
+        }
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "2e1e84cdbe5b348d1b6c3fe99c4894c95029ab5a18d3ebde69cd1e1743e80b2f"
+      },
+      "resume_iteration": 299,
+      "start_iteration": 299,
+      "final_iteration": 598,
+      "checkpoint_load_calls": 1,
+      "std_reset_applied": false,
+      "resume_scope": {
+        "policy_optimizer_restored": true,
+        "full_environment_state_restored": false,
+        "rng_state_restored_from_checkpoint": false,
+        "fresh_initialization": false,
+        "action_std_reset": false
+      },
+      "actual_control_steps": 7200,
+      "aggregate_env_steps": 29491200,
+      "budget": {
+        "seed": 2026,
+        "num_envs": 4096,
+        "max_iterations": 300,
+        "num_steps_per_env": 24,
+        "expected_control_steps": 7200
+      },
+      "observed": {
+        "environment_seed": 2026,
+        "environment_num_envs": 4096,
+        "action_scale": 0.25,
+        "agent_seed": 2026,
+        "agent_max_iterations": 300,
+        "runner_num_steps_per_env": 24
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "parent_wall_s": {
+        "scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "train_s": 516.5930000001099,
+        "fixed_evaluation_s": 58.57799999997951,
+        "total_s": 575.1710000000894
+      }
+    },
+    "resume_corrected": {
+      "receipt_sha256": "121f59b0095adf55391cf5098eb264fbcccb21cad6a45e61dd7083db880db45b",
+      "recovery_mode": "resume",
+      "checkpoint": {
+        "file": "model_598.pt",
+        "sha256": "37ff93769014b9abd0008729e92ae10f4fa950bc1e8b24155ab9376385fb6ec4"
+      },
+      "configs": {
+        "environment": {
+          "file": "env.yaml",
+          "sha256": "d153ee695f877bf4d99e0ef81358ff7886c9e9a25f117eaf7187f490150acc36"
+        },
+        "agent": {
+          "file": "agent.yaml",
+          "sha256": "23d74b4a4a020f9af9d5c00172ce952220bfd3fa22587dd58c44654c5d0a2eaf"
+        }
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "d1621a289b31d883f2d0da825689ecd10998ee2d3a53c8c4cf2d887fb866546c"
+      },
+      "resume_iteration": 299,
+      "start_iteration": 299,
+      "final_iteration": 598,
+      "checkpoint_load_calls": 1,
+      "std_reset_applied": false,
+      "resume_scope": {
+        "policy_optimizer_restored": true,
+        "full_environment_state_restored": false,
+        "rng_state_restored_from_checkpoint": false,
+        "fresh_initialization": false,
+        "action_std_reset": false
+      },
+      "actual_control_steps": 7200,
+      "aggregate_env_steps": 29491200,
+      "budget": {
+        "seed": 2026,
+        "num_envs": 4096,
+        "max_iterations": 300,
+        "num_steps_per_env": 24,
+        "expected_control_steps": 7200
+      },
+      "observed": {
+        "environment_seed": 2026,
+        "environment_num_envs": 4096,
+        "action_scale": 0.25,
+        "agent_seed": 2026,
+        "agent_max_iterations": 300,
+        "runner_num_steps_per_env": 24
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "parent_wall_s": {
+        "scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "train_s": 549.030999999959,
+        "fixed_evaluation_s": 51.20299999997951,
+        "total_s": 600.2339999999385
+      }
+    },
+    "resume_corrected_std_reset": {
+      "receipt_sha256": "8b02f3a34f0f69f32ffa7e5cfba9c4b943e79e31285ae84eeb8d69ace7690e0c",
+      "recovery_mode": "resume_std_reset",
+      "checkpoint": {
+        "file": "model_598.pt",
+        "sha256": "17f9cac434193a0b14647e352ac1276ff3098699f86ecdc4c7cd4c728981bf92"
+      },
+      "configs": {
+        "environment": {
+          "file": "env.yaml",
+          "sha256": "d153ee695f877bf4d99e0ef81358ff7886c9e9a25f117eaf7187f490150acc36"
+        },
+        "agent": {
+          "file": "agent.yaml",
+          "sha256": "a121a91a1d959b073eb14957d3185562ee86cac6db89487bcb317da1db51485c"
+        }
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "d1621a289b31d883f2d0da825689ecd10998ee2d3a53c8c4cf2d887fb866546c"
+      },
+      "resume_iteration": 299,
+      "start_iteration": 299,
+      "final_iteration": 598,
+      "checkpoint_load_calls": 1,
+      "std_reset_applied": true,
+      "resume_scope": {
+        "policy_optimizer_restored": true,
+        "full_environment_state_restored": false,
+        "rng_state_restored_from_checkpoint": false,
+        "fresh_initialization": false,
+        "action_std_reset": true
+      },
+      "actual_control_steps": 7200,
+      "aggregate_env_steps": 29491200,
+      "budget": {
+        "seed": 2026,
+        "num_envs": 4096,
+        "max_iterations": 300,
+        "num_steps_per_env": 24,
+        "expected_control_steps": 7200
+      },
+      "observed": {
+        "environment_seed": 2026,
+        "environment_num_envs": 4096,
+        "action_scale": 0.25,
+        "agent_seed": 2026,
+        "agent_max_iterations": 300,
+        "runner_num_steps_per_env": 24
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "parent_wall_s": {
+        "scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "train_s": 568.4220000000205,
+        "fixed_evaluation_s": 51.28099999995902,
+        "total_s": 619.7029999999795
+      }
+    },
+    "restart_corrected": {
+      "receipt_sha256": "4f4fa99f84f595ea0e4c3c20ea720e05e1466bf1b5ec76d7d8db3f483d0a8f09",
+      "recovery_mode": "restart",
+      "checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "2e1e84cdbe5b348d1b6c3fe99c4894c95029ab5a18d3ebde69cd1e1743e80b2f"
+      },
+      "configs": {
+        "environment": {
+          "file": "env.yaml",
+          "sha256": "d153ee695f877bf4d99e0ef81358ff7886c9e9a25f117eaf7187f490150acc36"
+        },
+        "agent": {
+          "file": "agent.yaml",
+          "sha256": "4411c8083d23dc266907c3a15287f0ac35dc7b0559d76b5be8d8cb0fc3ac8797"
+        }
+      },
+      "resume_checkpoint": null,
+      "resume_iteration": null,
+      "start_iteration": 0,
+      "final_iteration": 299,
+      "checkpoint_load_calls": 0,
+      "std_reset_applied": false,
+      "resume_scope": {
+        "policy_optimizer_restored": false,
+        "full_environment_state_restored": false,
+        "rng_state_restored_from_checkpoint": false,
+        "fresh_initialization": true,
+        "action_std_reset": false
+      },
+      "actual_control_steps": 7200,
+      "aggregate_env_steps": 29491200,
+      "budget": {
+        "seed": 2026,
+        "num_envs": 4096,
+        "max_iterations": 300,
+        "num_steps_per_env": 24,
+        "expected_control_steps": 7200
+      },
+      "observed": {
+        "environment_seed": 2026,
+        "environment_num_envs": 4096,
+        "action_scale": 0.25,
+        "agent_seed": 2026,
+        "agent_max_iterations": 300,
+        "runner_num_steps_per_env": 24
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "parent_wall_s": {
+        "scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "train_s": 575.9220000000205,
+        "fixed_evaluation_s": 55.59400000004098,
+        "total_s": 631.5160000000615
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "training_correction_v4_public_v1",
+  "seed": 2028,
+  "fault": "F1",
+  "bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1513,
+    "err_yaw_ratio_max": 1.1719,
+    "fall_frac_max": 0.05
+  },
+  "runtime_versions": {
+    "torch": "2.7.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 3060",
+    "isaaclab": "0.41.3",
+    "isaaclab_tasks": "0.10.36",
+    "isaaclab_rl": "0.1.8",
+    "rsl-rl-lib": "2.3.3",
+    "isaacsim": null
+  },
+  "summary_sha256_lf": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+  "runs": {
+    "NONE": {
+      "run": "baseline_p0c_s2028",
+      "hashes": {
+        "metadata": "57339286037f856392f77bf8a1e31ce941d7a997cfc68bc1217d97bedac59e99",
+        "checkpoint": "d8c67eec0b8108b7e7092a80a3efcdc0338285c06c87ca8b9f7b8c65641024e3",
+        "environment": "2ec1e42b47231ec33d5a91135b63a20912a75de6c1067faf5f3ecff018599638",
+        "agent": "4f8ed66fede1f583705762f2e844b77a794de168af991b28912bcf8d7ee94c3d",
+        "fixed_report": "3c37d160a6267a334e8df676965cd5c7a57cc83635a566c0e20bd9e792f090e0"
+      },
+      "original_label": "healthy",
+      "original_failed": [],
+      "standstill_ratio": 0.11946874740428846
+    },
+    "F1": {
+      "run": "h02_s2028",
+      "hashes": {
+        "metadata": "da7a6185ac677700df9693db812df920a7dc06e5414b88d9e6e19d2ad7427e13",
+        "checkpoint": "e63f4b0cddb0213e1f124ee6f0349218237511af0bdf0e75e12386b9d1856b2e",
+        "environment": "2ec1e42b47231ec33d5a91135b63a20912a75de6c1067faf5f3ecff018599638",
+        "agent": "22f0903edb6b4a363c68c3963c281e2cc5527110b6e38a561fdbe90fd10335c9",
+        "fixed_report": "9a70f99717c5107245787812bfb4ff6276a345c7a94635ecd3a90cb43d38e5e3"
+      },
+      "original_label": "unhealthy",
+      "original_failed": [
+        "err_xy_ratio",
+        "err_yaw_ratio"
+      ],
+      "standstill_ratio": 0.9889124553767873
+    }
+  },
+  "init_noise_std": 1.0,
+  "fixed_eval_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46"
+}
