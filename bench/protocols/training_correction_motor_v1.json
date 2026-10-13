@@ -1,0 +1,482 @@
+{
+  "schema": "training_correction_motor_protocol_v1",
+  "question": "모터 곡선 결함(F2)을 고친 뒤 같은 300회 이어 학습이 정상 범위로 돌아오는가, 그 예산 반응은 어떠한가",
+  "purpose": "보상 결함(F1)에서는 이어 학습이 돌아오지 않았다(v4). 결함 종류에 따라 이어 학습이 통하는지 보고, 회복 방식 규칙이 결함 종류에 따라 이어 학습과 재학습을 가를 근거가 있는지 확인한다",
+  "scope": "seen_two_seed_actuator_fault_resume_and_budget_response_development",
+  "excluded_seeds": {
+    "2027": "v3 case_02(motor_resume_dev_20261013)에서 같은 이어 학습을 이미 실행해 no_recovery였다. 재실행하지 않는다"
+  },
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "seeds": [
+    2026,
+    2028
+  ],
+  "num_envs": 4096,
+  "max_iterations": 300,
+  "num_steps_per_env": 24,
+  "action_scale": 0.25,
+  "resume_iteration": 299,
+  "final_iteration": 598,
+  "fault": "F2",
+  "fault_mechanism": "actuator",
+  "fault_definition": "bench/hidden_faults.py F2(동결): DC 모터 토크-속도 곡선의 속도 항 5배",
+  "correction": "restore_motor_torque_speed",
+  "input_runs": {
+    "2026": {
+      "NONE": "baseline_p0c_s2026",
+      "F2": "h06_s2026"
+    },
+    "2028": {
+      "NONE": "baseline_p0c_s2028",
+      "F2": "h06_s2028"
+    }
+  },
+  "source_cohort_already_seen": true,
+  "arms": [
+    "clean_resume_reference",
+    "resume_corrected"
+  ],
+  "arm_specs": {
+    "clean_resume_reference": {
+      "recovery_mode": "resume",
+      "fault": "NONE",
+      "correction": null,
+      "role": "resume_reference"
+    },
+    "resume_corrected": {
+      "recovery_mode": "resume",
+      "fault": "F2",
+      "correction": "restore_motor_torque_speed",
+      "role": "treatment",
+      "primary_reference": "clean_resume_reference"
+    }
+  },
+  "excluded_arms": {
+    "restart_corrected": "같은 seed 처음부터 재학습은 교정 코드가 정상 학습과 같아 원본 정상 정책을 바이트 그대로 재현한다(v4 두 seed 관찰). 결함에 관한 정보를 더하지 않는다",
+    "resume_corrected_std_reset": "v4 F1에서 회복 여부를 바꾸지 않았다. 이번 질문인 이어 학습의 예산 반응보다 정보가 작다",
+    "resume_fault_sham": "v3 seed 2027에서 결함 유지 대조 0.826 m/s 대 교정 0.188 m/s로 교정의 효과는 이미 컸다. 두 seed 합계 약 20분을 더 써 GPU 상한을 넘긴다"
+  },
+  "budget_curve": {
+    "checkpoints": [
+      "model_350.pt",
+      "model_450.pt",
+      "model_550.pt"
+    ],
+    "updates_after_resume": [
+      51,
+      151,
+      251
+    ],
+    "arms": [
+      "clean_resume_reference",
+      "resume_corrected"
+    ],
+    "training": false,
+    "evaluation": "fixed_eval_v1과 같은 조건. seed마다 두 arm 학습이 끝난 뒤 한 프로세스에서 작업 6개(arm 2 × 체크포인트 3)",
+    "comparison": "같은 iteration의 정상 이어 학습 체크포인트 대비 같은 p0c 밴드로 보조 판정한다. 원본(+0)과 최종(+299)은 기존 평가와 arm 평가를 쓴다",
+    "used_for_labels": false,
+    "used_for_rule_update": false,
+    "rationale": "v3 seed 2027에서 교정한 이어 학습은 0.826→0.188 m/s로 크게 줄었지만 밴드 밖이었다. 남은 질문은 '예산이 부족한가, 멈췄는가'다. 저장된 중간 체크포인트를 학습 없이 평가하면 두 seed 합계 약 7~10분으로 예산 반응을 볼 수 있다",
+    "budget_limited_candidate_rule": "최종 라벨이 not_recovered이고 정상 기준 대비 선속도 오차 비가 model_350보다 최종에서 작으면 기록한다. 규칙 갱신에 쓰지 않는다"
+  },
+  "gpu_estimate": {
+    "unit": "부모 프로세스 벽시계(초). GPU 커널 시간이나 절감량이 아니다",
+    "limit_two_seeds_s": 3600,
+    "arm_total_s": [
+      575.171,
+      631.516
+    ],
+    "arm_total_basis": "v4 공개 training_evidence.json의 이어 학습 arm 4개 parent wall total_s 범위(학습 516.6~576.9 s, 고정 평가 51.2~60.4 s). 같은 4096 env·300회 이어 학습·같은 평가",
+    "budget_curve_eval_per_seed_s": [
+      210,
+      290
+    ],
+    "budget_curve_basis": "평가 작업 6개를 한 프로세스에서 실행: P0-C 일괄 평가 작업당 평균 33.5 s·최대 43.4 s, v4 단일 평가 parent wall 51.2~60.4 s에서 뺀 기동 시간 약 10~27 s",
+    "per_seed_s": [
+      1360.3,
+      1553.0
+    ],
+    "two_seeds_s": [
+      2720.7,
+      3106.1
+    ]
+  },
+  "references": {
+    "resume_primary": "same_seed_clean_reference_resumed_same_updates",
+    "resume_secondary": "original_same_seed_clean_checkpoint",
+    "budget_primary": "same_seed_clean_reference_checkpoint_at_the_same_iteration",
+    "reference_validity": "이어 학습 기준은 고정 평가에서 제자리 대비 걷고(WALK_FRACTION) 낙상률 REF_FALL_MAX 이하이며 원본 정상 정책 대비 healthy여야 한다"
+  },
+  "resume_scope": "policy_optimizer_warm_start_not_environment_or_rng_restore",
+  "known_confounders": [
+    "RSL-RL 2.3.3 PPO는 resume 뒤 learning_rate를 cfg 값에서 다시 시작하고 adaptive schedule이 첫 update에서 optimizer lr을 덮어쓴다(rsl_rl #221, 상류 v5.4.2 수정). 모든 resume arm에 같게 적용되어 arm 간 차이를 만들지 않는다",
+    "actor·critic·std가 Adam 하나와 전역 clip_grad_norm(max_grad_norm 1.0)을 공유한다"
+  ],
+  "prior_observations_wording": "모터 v3 seed 2027: 교정 이어 학습 0.188 m/s, 결함 유지 대조 0.826 m/s, 정상 이어 학습 0.132 m/s(no_recovery). 보상 v4 seed 2026·2028: 고친 이어 학습 1.156·1.137 m/s, 정상 이어 학습 0.143·0.133 m/s(not_recovered). 수치는 prior_derivation에서 공개 파일로 다시 계산한다",
+  "predictions": {
+    "resume_corrected": "not_recovered"
+  },
+  "secondary_predictions": {
+    "final_error_below_half_of_original_fault": true,
+    "final_error_below_first_budget_point": true
+  },
+  "prediction_wording": "resume_corrected는 두 seed 모두 not_recovered(근거: v3 seed 2027 교정 0.188 대 기준 0.132, 오차 비 약 1.42 > 1.1513). 보조 예측: 최종 선속도 오차가 원본 결함 오차의 절반 미만이고, budget curve 첫 점(model_350)보다 작다",
+  "labels": [
+    "recovered",
+    "not_recovered",
+    "invalid"
+  ],
+  "label_rule": "resume_corrected의 최종(model_598) 고정 평가가 같은 seed 정상 이어 학습 대비 healthy면 recovered, unhealthy면 not_recovered, 기준 무효·실행 실패·미실행은 invalid",
+  "mechanical_signal": {
+    "name": "standstill_ratio",
+    "definition": "metrics.lin_vel_rmse_mps / standstill.lin_vel_rmse_mps in the same fixed_eval_v1 report",
+    "new_measurement": false,
+    "used_for_labels": false
+  },
+  "recovery_mode_rule": {
+    "current": "fault_mechanism == reward and original_fault_standstill_ratio >= 0.9 -> restart, otherwise resume",
+    "threshold": 0.9,
+    "recommendation_for_this_fault": "resume(메커니즘 actuator는 현재 규칙의 restart 조건에 해당하지 않는다)",
+    "outcomes": {
+      "recommended_recovered": "권고한 resume arm이 recovered",
+      "recommended_not_recovered": "권고한 resume arm이 not_recovered",
+      "undetermined": "권고 arm이 invalid"
+    },
+    "update_criteria": {
+      "keep": "두 seed 모두 resume_corrected가 recovered → actuator는 resume을 유지한다(규칙 변경 없음)",
+      "change": "두 seed 모두 유효하고 하나라도 not_recovered → 다음 시연에 next_rule_if_changed와 그 restart arm을 사전등록해 시험한다. 이번 실험은 restart를 시험하지 않는다",
+      "undetermined": "어느 seed든 invalid이거나 두 seed가 다 없으면 → 규칙 갱신을 보류한다"
+    },
+    "next_rule_if_changed": "(fault_mechanism == reward and original_fault_standstill_ratio >= 0.9) or fault_mechanism == actuator -> restart, otherwise resume",
+    "derived_from": "보상 결함 seed 2027 단일 관찰(v3)과 v4 두 seed 적중",
+    "used_for_labels": false
+  },
+  "python_runtime": {
+    "implementation": "CPython",
+    "version": [
+      3,
+      10,
+      15
+    ],
+    "cache_tag": "cpython-310"
+  },
+  "torch_version": "2.7.0+cu128",
+  "bands_source": "evals/results/p0c_fixed_eval_20261009/summary.json",
+  "allowed_agent_config_changes": {
+    "resume": [
+      "run_name",
+      "resume",
+      "load_run",
+      "load_checkpoint",
+      "max_iterations"
+    ]
+  },
+  "train_watchdog_s": 1800,
+  "eval_watchdog_s": 360,
+  "budget_eval_watchdog_s": 600,
+  "semantic_retries": 0,
+  "train_limit_per_arm": 1,
+  "eval_limit_per_arm": 1,
+  "budget_eval_limit": 1,
+  "execution_unit": "one_seed_two_arms_in_registered_order_then_one_budget_curve_evaluation_stop_on_first_failure",
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "rsl_rl_version": "2.3.3",
+  "source_binding": "execute가 기록한 HEAD가 실험 커밋이다. 이후 arm·학습 자식·budget 평가·공개본은 실험 커밋이 HEAD의 조상이고 결합 파일 blob(LF 정규화 SHA256)이 두 커밋에서 같을 때만 진행하고 실험 커밋을 기록한다",
+  "cpu_evidence_reuse": "v1~v4와 같은 교정 표적의 CPU 행렬을 SHA로 재결합한다",
+  "approval_actor": "claude_operator_user_authorized",
+  "approval_wording": "사용자가 위임한 운영자 승인(승인자 문자열 기록, 신원 인증 아님)",
+  "model_calls": 0,
+  "model_selected_correction": false,
+  "result_wording": {
+    "recovered": "모터 곡선 결함을 고친 뒤 300회 이어 학습한 단일 실행이 같은 seed 정상 이어 학습 대비 고정 행동 허용 범위를 통과했다. 이미 본 seed의 합성 결함 개발 결과이며 일반화·AI 교정 선택·GPU 절감을 주장하지 않는다.",
+    "not_recovered": "모터 곡선 결함을 고친 뒤 300회 이어 학습한 단일 실행이 같은 seed 정상 이어 학습 대비 고정 행동 허용 범위를 통과하지 못했다. 이미 본 seed의 합성 결함 개발 결과이며 일반화·AI 교정 선택·GPU 절감을 주장하지 않는다.",
+    "invalid": "출처·개입·초기 상태·예산·평가·종료 계약이나 기준 정책 검증이 맞지 않거나 실행되지 않아 회복 판정을 보류한다.",
+    "seed_summary": "이미 본 seed의 합성 결함(F2) 개발 결과다. arm마다 단일 실행이며 일반화·AI 교정 선택·GPU 절감 주장이 아니다.",
+    "budget_curve": "중간 체크포인트 평가는 같은 학습 실행의 저장본을 다시 평가한 보조 기록이며 라벨과 규칙 갱신에 쓰지 않는다. 반복 실행의 예산 효과 추정이 아니다.",
+    "rule_update": {
+      "keep": "두 seed 모두 모터 결함의 이어 학습이 정상 범위로 돌아와, 현재 규칙(actuator는 resume)을 유지한다. 이미 본 두 seed의 단일 실행이며 결함 일반 규칙의 근거가 아니다.",
+      "change": "모터 결함의 이어 학습이 등록 기준을 통과하지 못한 seed가 있어, 다음 시연에는 actuator에도 restart를 권고하는 규칙과 restart arm을 사전등록해 시험한다. 이번 실험은 restart를 시험하지 않았고 이어 학습의 예산 부족 가능성도 남으므로 restart를 택할 근거로 쓰지 않는다. 이미 본 두 seed의 단일 실행이며 결함 일반 규칙의 근거가 아니다.",
+      "undetermined": "유효한 판정이 두 seed 모두 갖춰지지 않아 회복 방식 규칙을 갱신하지 않는다."
+    }
+  },
+  "forbidden_claims": [
+    "이어 학습이 재학습보다 낫다",
+    "GPU·시간 절감",
+    "일반화",
+    "AI가 교정이나 회복 방식을 골랐다",
+    "최초"
+  ],
+  "source_files": {
+    "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+    "bench/correction_adapter.py": "71224801d07a136c999770a6296e017165579377ee96ab98fa36fc70aa11aaa8",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/train_with_correction.py": "f93cc2a81bc8903b4b9ba3df61d7865d6bef9917a6f8dab207f38d147aa9d13b",
+    "bench/train_with_recovery_mode.py": "a9629ffbd34f4e344ecec84d4d42f3a08c575ad82250af8bf74d7282e667f29d",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/publish_training_correction.py": "5dc08481677056b69ccb520fab8caf4fe0a9b8984c1e1d2a967cba719cfda3bc",
+    "evals/publish_training_correction_v4.py": "ce948cf1bdf3fccfd9e91d1fd9ca3a78dfeb9528862e75280d67a3230c462244",
+    "evals/run_training_correction.py": "5473f030f357c7cec06861c1e33c8147d3960021f959956666531c9241da0bd1",
+    "evals/run_training_correction_motor.py": "8c9584c4535273c82b48ad8ea1dbc0f8a5d34856d478a4be9b1ad48d00801e5b",
+    "evals/run_training_correction_v4.py": "2cfbe60120e904062f73697e62e6128216a92110192a2ed4667adf1d7ab8f98b",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af"
+  },
+  "sdk_sources": {
+    "scripts/reinforcement_learning/rsl_rl/cli_args.py": "9b21e1106599d91a9881a79b0564518afc6e45ac6f7fb8b957b16bba12310cb1",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_cfg.py": "a83599520494f7066c3729d279585654ca72d9eaac12d6cac2536f07147d8b1f",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/app/app_launcher.py": "5424f2b4a7b1d967fe51017dfc5d47c2ec8ff09ddd190e184fead6d51fdd0502",
+    "source/isaaclab/isaaclab/assets/articulation/articulation_data.py": "662394fea5fb5a93b333937cad71d59ad74563d6d4fee823057cb5ebb7a6bf52",
+    "source/isaaclab/isaaclab/envs/manager_based_env.py": "6ac4ec08175d2df87b489867b99239b02d106863384f73a7610fb4015ceda0d6",
+    "source/isaaclab/isaaclab/envs/manager_based_rl_env.py": "b13e9106b98666b33637841f100589731aa4e24ce3ca133ff99dddb43f11b1f2",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab/isaaclab/managers/reward_manager.py": "5d41d6a376cfb456849d861c3232694ea5662cc38970e2e2c7e5152f156d88d7",
+    "source/isaaclab/isaaclab/managers/termination_manager.py": "ea239d8fd57e87010b74b358a91b1ae8b2487e5edc621da01468456ea92fa71f",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor.py": "926158c959e5aa65651ead836965637be45517d8538cadc3a93067d76ebb6990",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor_data.py": "c02606ab91acd0eeb29cd76bdb58e7cba217c62e18d55e4cfdecefd83aba15bc",
+    "source/isaaclab/isaaclab/utils/dict.py": "68a424ae35f84fcf5157e2d0402ad95ec1475e13095ff8cbf39432673f9eda1c",
+    "source/isaaclab/isaaclab/utils/io/yaml.py": "cdd6a95aa348b6ab3af7cf07d071c5829c2ae1de8147d49ec5bc23fcd155de71",
+    "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+    "source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py": "fcc844cf95bd3145713476b41fcd0a33b87967c2f409016196b7bcb2ecc4475b",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "8b37eb407af8629f350bba43d17746f4536b6d67449935556af26314619b1162",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "59d95358724d0a4a58f9aa49d887b84d12d37d7ba5f781d615d6468ac37f243e",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+  },
+  "rsl_sources": {
+    "__init__.py": "eca880a726873a075dc37aba1c4da3bfa8f7a19df45ed963964e864b48c6bfcc",
+    "algorithms/__init__.py": "82800dabead2a8e8fbc22162d34358cbafefefa81e620bbe1fbfea4b034e1205",
+    "algorithms/distillation.py": "9aedcf086771d1bd1e7eebcc53637e7f1cb2e97b2b2f497aa087090a8fa984aa",
+    "algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "env/__init__.py": "8b187dca6d7ca5f9f4ab6a8c30218ca7bd6d3f952706526cad4ae156d1541870",
+    "env/vec_env.py": "4cea1f22d498d76d00ef34facbf0abec256ce4266f679fb9dd185641bdca778b",
+    "modules/__init__.py": "9cdaae9b6823ca0019dcb317f3ab136d588d79259db00ebf437598625dfc20df",
+    "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "modules/actor_critic_recurrent.py": "965a3f1db386fb58fe277761a4db8cda967c4a51ad5735e2bc5dccf10a49d710",
+    "modules/normalizer.py": "f52677617f729c21c7440fd52d69b7e570313836a9deb21519425b806043a311",
+    "modules/rnd.py": "957fd599dd19c579e1c83f37d253d0ff45d789f5965ed4d3b3b4c235ec00386c",
+    "modules/student_teacher.py": "f44d6cbd5ddc18f109b6a914e0c6dd80107f6b71bffef60d26cf695c7ee60d04",
+    "modules/student_teacher_recurrent.py": "6342ebeb80768d97a6bc8bd4792fd96f947b5d58c0cbab59b71cb8b735520e34",
+    "networks/__init__.py": "57d38865f66dcff63a419f962de32ef07919fdfc40ccad96ee4713e7bdaa87b8",
+    "networks/memory.py": "dada928b14ebd32a1f47c9185f2b94e2ff799faa698ca519f0d78ec92531cebe",
+    "runners/__init__.py": "661b14b7160ee0d7f30c234e9885875ac5d5686897c5bc22bdec875189d27075",
+    "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "storage/__init__.py": "599a712105321c64423e65777d709ace050ef46d5f98b8791d697b9c4e55106e",
+    "storage/rollout_storage.py": "456450bbba03f9f5818f9ec43d2f3bd5d14d2d27f4bf2308838dd580f32ffcf0",
+    "utils/__init__.py": "2e407f50cb40043ab4b9690c10465a59ed4bbba714ff18670ac0aca8552a39b6",
+    "utils/neptune_utils.py": "1a30b7fe45ce1ba9be52c07d050678a23fe57e61ae25465af4159c93af195d40",
+    "utils/utils.py": "db99cd0877488809d73332f05670e9c72da9bd0292aa554121c503e61544588e",
+    "utils/wandb_utils.py": "875443f672af864930aee511c4dfd8b362b0b066c9cd54bd57b0513dd10336b2"
+  },
+  "correction_source_contract": {
+    "runtime": {
+      "cache_tag": "cpython-310",
+      "implementation": "CPython",
+      "version": [
+        3,
+        10,
+        15
+      ]
+    },
+    "schema": "correction_source_contract_v1",
+    "targets": {
+      "restore_body_frame_reward": {
+        "clean_fingerprint": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.rewards",
+        "qualname": "track_lin_vel_xy_exp",
+        "source": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+        "source_sha256": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76"
+      },
+      "restore_configured_timeout": {
+        "clean_fingerprint": "c59f0aa40f3a4c460d9f146d17db4a56fcf9a4783ee39dd237d3ce7ea8cb6b7d",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.terminations",
+        "qualname": "time_out",
+        "source": "source/isaaclab/isaaclab/envs/mdp/terminations.py",
+        "source_sha256": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762"
+      },
+      "restore_motor_torque_speed": {
+        "clean_fingerprint": "bf37f452239be21ec97ee61654f416abcafeb995c2e60fa509156f6d0e26aad3",
+        "mode": "attribute",
+        "module": "isaaclab.actuators.actuator_pd",
+        "qualname": "DCMotor._clip_effort",
+        "source": "source/isaaclab/isaaclab/actuators/actuator_pd.py",
+        "source_sha256": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012"
+      }
+    }
+  },
+  "fixed_eval_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "resume_inputs": {
+    "summary_sha256_lf": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+    "bands": {
+      "survival_ratio_min": 0.9,
+      "err_xy_ratio_max": 1.1513,
+      "err_yaw_ratio_max": 1.1719,
+      "fall_frac_max": 0.05
+    },
+    "seeds": {
+      "2026": {
+        "runs": {
+          "NONE": {
+            "run": "baseline_p0c_s2026",
+            "hashes": {
+              "metadata": "5456ec305e4d664fcf67603dcf515c5afa33a25fb0d472d3b010114b9ae87bf6",
+              "checkpoint": "2e1e84cdbe5b348d1b6c3fe99c4894c95029ab5a18d3ebde69cd1e1743e80b2f",
+              "environment": "d153ee695f877bf4d99e0ef81358ff7886c9e9a25f117eaf7187f490150acc36",
+              "agent": "82377e2081ed4a768dcc77a1627e6344089607a39c9f1d7a4a09a2c8e87127c8",
+              "fixed_report": "33d4fb81d975520063b0ea091bf4a86f396fd0b4e7706e41c1023f67bd95c596"
+            },
+            "original_label": "healthy",
+            "original_failed": [],
+            "standstill_ratio": 0.1255953876333965
+          },
+          "F2": {
+            "run": "h06_s2026",
+            "hashes": {
+              "metadata": "1c5d04e2396b09bc042a40c7a5003598f7fa51d967a0c0c9b70197699d371af5",
+              "checkpoint": "76eafc2f48c63d50e3261229568870c10c3ae285389e4e5749f065ce9a3f5fba",
+              "environment": "d153ee695f877bf4d99e0ef81358ff7886c9e9a25f117eaf7187f490150acc36",
+              "agent": "84df2fc11a6899d8d8d1639beb13c8ede70a6a980208d8994b8ae4c6c2a72c36",
+              "fixed_report": "f9fd5b8ca94eef5bf1086f1df5298480318986e4cbcfb088e6a1cf9bf2b630c9"
+            },
+            "original_label": "unhealthy",
+            "original_failed": [
+              "err_xy_ratio",
+              "err_yaw_ratio"
+            ],
+            "standstill_ratio": 0.864458216764081
+          }
+        },
+        "original_none_walks": true,
+        "rule_recommendation": "resume"
+      },
+      "2028": {
+        "runs": {
+          "NONE": {
+            "run": "baseline_p0c_s2028",
+            "hashes": {
+              "metadata": "57339286037f856392f77bf8a1e31ce941d7a997cfc68bc1217d97bedac59e99",
+              "checkpoint": "d8c67eec0b8108b7e7092a80a3efcdc0338285c06c87ca8b9f7b8c65641024e3",
+              "environment": "2ec1e42b47231ec33d5a91135b63a20912a75de6c1067faf5f3ecff018599638",
+              "agent": "4f8ed66fede1f583705762f2e844b77a794de168af991b28912bcf8d7ee94c3d",
+              "fixed_report": "3c37d160a6267a334e8df676965cd5c7a57cc83635a566c0e20bd9e792f090e0"
+            },
+            "original_label": "healthy",
+            "original_failed": [],
+            "standstill_ratio": 0.11946874740428846
+          },
+          "F2": {
+            "run": "h06_s2028",
+            "hashes": {
+              "metadata": "5febae5331c07278780e719c696360730da3baffa07102ce697e7dd6ed39e784",
+              "checkpoint": "eaef2349a453cc49310d81d7c265d506a5cfd41480a8d74ca21b08652f84f0fb",
+              "environment": "2ec1e42b47231ec33d5a91135b63a20912a75de6c1067faf5f3ecff018599638",
+              "agent": "83cd28a1d212281aebb96105c89cb2428412a4a984291d6e1d38e6486d56521d",
+              "fixed_report": "77290f57f2cbd38be8660a7ffba2580ccb765d72926aad15c5d8aba040cc000d"
+            },
+            "original_label": "unhealthy",
+            "original_failed": [
+              "err_xy_ratio",
+              "err_yaw_ratio"
+            ],
+            "standstill_ratio": 0.8635506303150988
+          }
+        },
+        "original_none_walks": true,
+        "rule_recommendation": "resume"
+      }
+    },
+    "runtime_versions": {
+      "torch": "2.7.0+cu128",
+      "gpu": "NVIDIA GeForce RTX 3060",
+      "isaaclab": "0.41.3",
+      "isaaclab_tasks": "0.10.36",
+      "isaaclab_rl": "0.1.8",
+      "rsl-rl-lib": "2.3.3",
+      "isaacsim": null
+    }
+  },
+  "prior_derivation": {
+    "motor_seed": 2027,
+    "motor_v3_status": "no_recovery",
+    "files": {
+      "motor_original_fault": {
+        "path": "evals/results/p0c_fixed_eval_20261009/runs/h06_s2027.json",
+        "sha256_lf": "eef73d5f125bd591271d773637c9639475c824ea8a994cdd499a9af98da3c2eb"
+      },
+      "motor_original_none": {
+        "path": "evals/results/p0c_fixed_eval_20261009/runs/baseline_p0c_s2027.json",
+        "sha256_lf": "0415e9a0803eb4fde4e404d17a2b096f8b8da579372b8f8a2ca8fdaa75548372"
+      },
+      "motor_v3_clean_reference": {
+        "path": "evals/results/motor_resume_dev_20261013/reports/clean_reference.json",
+        "sha256_lf": "b80299ef2ec00f3615a943bc9f98d09a9b48393cd068417b1a176542fb843e61"
+      },
+      "motor_v3_fault_sham": {
+        "path": "evals/results/motor_resume_dev_20261013/reports/fault_sham.json",
+        "sha256_lf": "f238d314af6bd3c80500b91c79edb5b1d9eb49b63197a1b35791bb96167b8267"
+      },
+      "motor_v3_corrected": {
+        "path": "evals/results/motor_resume_dev_20261013/reports/corrected.json",
+        "sha256_lf": "53b5fa7d56442dd9f6e67d6e260738838c726bd904e34e30b1c730225ec8c597"
+      },
+      "reward_v4_2026": {
+        "path": "evals/results/reward_v4_s2026_20261013/result.json",
+        "sha256_lf": "167cebe4bf25f99478d8cfbbaf2e31e67814483434859a24b9abdf8da5acd3eb"
+      },
+      "reward_v4_2028": {
+        "path": "evals/results/reward_v4_s2028_20261013/result.json",
+        "sha256_lf": "01891d12d30c679835c9532f29531b839a2ffd0eda5740525d06d057336ef761"
+      }
+    },
+    "motor_err_xy": {
+      "original_fault": 1.0667364147350218,
+      "original_none": 0.14616400335087323,
+      "v3_clean_reference": 0.13186171244395944,
+      "v3_fault_sham": 0.8262102916253836,
+      "v3_corrected": 0.1883595651968174
+    },
+    "motor_corrected_to_reference_ratio": 1.428462907888211,
+    "motor_standstill_ratio": {
+      "original_fault": 0.9065516324323136,
+      "original_none": 0.12421551754515729,
+      "v3_clean_reference": 0.11206090747458496,
+      "v3_fault_sham": 0.7021437332215027,
+      "v3_corrected": 0.16007484975173739
+    },
+    "reward_v4_resume": {
+      "2026": {
+        "resume_corrected_label": "not_recovered",
+        "resume_corrected_err_xy": 1.1559090498253748,
+        "clean_resume_reference_err_xy": 0.14332131470449136
+      },
+      "2028": {
+        "resume_corrected_label": "not_recovered",
+        "resume_corrected_err_xy": 1.137130453005461,
+        "clean_resume_reference_err_xy": 0.13270022049957778
+      }
+    }
+  },
+  "cpu_checks": {
+    "folder": "bench/private/correction_development_20261013/cpu_matrix",
+    "sha256": {
+      "f1_match.json": "a5c3eef9349d3907da54d4bff2bfd340c477bf6c92c27db1d2ac414f8c9b58fe",
+      "f1_wrong.json": "e45bc4d40b1a83c0a84a21283beb0c40c36dbbcb6d690ffc171c33b30f123aa7",
+      "f2_match.json": "cb89a9f17d42815638cc191ffa8d31a89084869fc38029770bc2a7e332557433",
+      "f2_wrong.json": "873e4a5564c83fc0af2eda7126ebabddab925422a7e70c1daaa803ffe18533aa",
+      "f6_match.json": "d2d85a36a5c3c2d57b6e904cc5b361ad1c23c5bee4d8c754a639369401cf2d13",
+      "f6_wrong.json": "96fca8bb68cdc4c4eeb2b548341f4a40a38b6d51c2194fbb009294ab478f5e49"
+    },
+    "passed_count": 6
+  }
+}
