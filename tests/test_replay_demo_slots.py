@@ -288,6 +288,90 @@ def test_a_single_call_result_cannot_fill_the_nat_slots(repo):
     assert sources.rows[RESULT]["reason"] == "unexpected_decision_path"
 
 
+UPSTREAM_PROTOCOL = DS.DEMO_PROTOCOLS[DS.UPSTREAM_SCHEMA]
+READBACK_NOTE = "등록 표적 복원됨, 그 밖 함수 상태는 보조 지문 기록(aux_fingerprints, 판정에 쓰지 않음)"
+
+
+def upstream_result(contrast: str | None = "insufficient_and_not_recovered") -> dict:
+    """evals/e2e_demo_u1.py summarize 산출물과 같은 형식의 U1 합성 결과(값은 가짜)."""
+    result = demo_result("not_recovered", schema=DS.UPSTREAM_SCHEMA)
+    result.update(seed=2040, variant="u1", fault="U1", mechanism="reward", decision_path="single",
+                  training_parent_wall_s={"NONE": 560.0, "FAULT": 571.0},
+                  specificity={"required": [], "passed": True, "outcomes": None},
+                  scope_check={"mode": "contrast", "correction_id": "restore_body_frame_reward", "agent_judgment": False,
+                               "proceed_to_correction": True,
+                               "result": {"verdict": "scope_insufficient", "probe": "P_reward", "threshold": 0.05,
+                                          "rel_errors": {"track_lin_vel_xy_exp": 0.93, "track_ang_vel_z_exp": 0.97},
+                                          "abnormal_terms": ["track_ang_vel_z_exp", "track_lin_vel_xy_exp"],
+                                          "registered_targets": ["track_lin_vel_xy_exp"],
+                                          "uncovered_terms": ["track_ang_vel_z_exp"]}},
+                  scope_contrast=None if contrast is None else {"category": contrast, "wording": "대조 문구."},
+                  prediction_results={"scope_check": True, "correction": True, "scope_contrast": True})
+    result["correction"]["request"] = {"correction_id": "restore_body_frame_reward", "recovery_mode": "restart"}
+    result["correction"]["result"]["correction_readback"] = {
+        "note": READBACK_NOTE, "registered_target_state": "restored_to_clean",
+        "aux_fingerprints": {"used_for_verdict": False,
+                             "differs_from_clean": ["ang_vel_xy_l2", "lin_vel_z_l2", "track_ang_vel_z_exp"]}}
+    return result
+
+
+def _commit_upstream(repo: Path, result: dict) -> None:
+    (repo / RESULT).write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
+    (repo / UPSTREAM_PROTOCOL).write_text(json.dumps({"correction": {
+        "correction_id": "restore_body_frame_reward", "modes": {"restart": {}, "resume": {}}}}), encoding="utf-8")
+    _git(repo, "add", RESULT, UPSTREAM_PROTOCOL)
+    _git(repo, "commit", "-q", "-m", "upstream")
+
+
+def test_upstream_steps_keep_the_shared_rows_and_put_the_scope_in_its_own_table(repo):
+    _commit_upstream(repo, upstream_result())
+    steps = DS.end_to_end_blocks(B.Sources(repo), RESULT, kind="upstream_end_to_end", label=DS.UPSTREAM_END_TO_END_LABEL)
+    assert steps[0]["title"] == "종단 시연 seed 2040 U1·reward: 경고부터 교정 판정까지"
+    values = _values(steps)
+    assert values["특이성 관문"] == "등록된 보조 검사 없음" and values["교정 정책 고정 평가 판정"] == "not_recovered"
+    assert not [name for name in values if "범위" in name or "readback" in name]  # 범위 점검·readback은 대조 표에 둔다
+
+
+def test_scope_block_shows_the_check_the_judgement_and_the_contrast(repo):
+    _commit_upstream(repo, upstream_result())
+    sources = B.Sources(repo)
+    blocks = DS.scope_blocks(sources, RESULT)
+    assert blocks[0]["title"] == "교정 범위 점검과 재학습 대조(seed 2040)" and blocks[0]["status_sources"] == [RESULT]
+    assert _values(blocks) == {
+        "점검 방식": "대조 모드: 판정 기록 뒤 재학습 1회 · 결정적 검사",
+        "확정 검사 항별 상대 오차(문턱 0.05)": "track_ang_vel_z_exp 0.97 · track_lin_vel_xy_exp 0.93",
+        "등록 교정과 되돌리는 함수": "restore_body_frame_reward → track_lin_vel_xy_exp",
+        "점검 판정 · 등록 표적 밖 이상 항": "scope_insufficient · track_ang_vel_z_exp",
+        "대조 범주(점검 × 고정 평가 판정)": "insufficient_and_not_recovered",
+        "사전 예측 적중(점검 · 교정 · 대조)": "예 · 예 · 예",
+        "교정 readback(등록 표적만 대조)": f"restored_to_clean · {READBACK_NOTE}",
+        "보조 지문: 원본과 다른 함수(판정에 쓰지 않음)": "ang_vel_xy_l2, lin_vel_z_l2, track_ang_vel_z_exp"}
+    proposal = _values(DS.correction_proposal_blocks(sources, RESULT))
+    assert proposal["등록 규칙이 고른 회복 방식"] == "restart"
+    assert _cost_values(sources, [(RESULT, "upstream_end_to_end", "설계자 밖 결함 U1")])[0][:2] == [
+        "설계자 밖 결함 U1 seed 2040", "560 / 571"]
+
+
+def test_scope_block_of_a_demo_that_ended_before_the_check_shows_no_record(repo):
+    ended = upstream_result(contrast=None)
+    ended.update(outcome="loop_not_confirmed", scope_check=None, prediction_results={"scope_check": None})
+    ended["correction"] = None
+    _commit_upstream(repo, ended)
+    values = _values(DS.scope_blocks(B.Sources(repo), RESULT))
+    assert values["점검 판정 · 등록 표적 밖 이상 항"] == "-" and values["대조 범주(점검 × 고정 평가 판정)"] == "-"
+    assert values["점검 방식"] == "-" and values["교정 readback(등록 표적만 대조)"] == "-"
+    assert values["사전 예측 적중(점검 · 교정 · 대조)"] == "- · - · -"
+
+
+def test_scope_slot_waits_without_a_result_and_rejects_other_demos(repo):
+    sources = B.Sources(repo)
+    assert DS.scope_blocks(sources, None) == [{"type": "slot", "label": DS.SCOPE_LABEL, "source": "slot:upstream_end_to_end"}]
+    assert sources.rows["slot:upstream_end_to_end"]["status"] == "waiting"
+    sources = B.Sources(repo)  # 보상 시연(v1) 결과는 범위 점검 자리에 들어가지 않는다
+    assert DS.scope_blocks(sources, RESULT)[0]["type"] == "slot"
+    assert (sources.rows[RESULT]["status"], sources.rows[RESULT]["reason"]) == ("mismatch", "not_upstream_result")
+
+
 def test_unexpected_schema_is_a_mismatch_not_a_table(repo):
     (repo / RESULT).write_text(json.dumps({**demo_result(), "schema": "other"}), encoding="utf-8")
     _git(repo, "add", RESULT)
@@ -313,7 +397,8 @@ def test_block_text_has_no_forbidden_claim_or_private_path(repo):
         for row in block["rows"]:
             texts.append(row[0])
             texts += [str(cell["value"]) for cell in row[1:] if isinstance(cell, dict)]
-    texts += [DS.END_TO_END_LABEL, DS.PROPOSAL_LABEL, DS.MOTOR_END_TO_END_LABEL, DS.MOTOR_PROPOSAL_LABEL]
+    texts += [DS.END_TO_END_LABEL, DS.PROPOSAL_LABEL, DS.MOTOR_END_TO_END_LABEL, DS.MOTOR_PROPOSAL_LABEL,
+              DS.UPSTREAM_END_TO_END_LABEL, DS.SCOPE_LABEL, *DS.SCOPE_MODES.values()]
     assert not [text for text in texts if "사람 승인" in text]
     assert not [problem for text in texts for problem in B.claim_violations(text) + B.path_violations(text)]
 

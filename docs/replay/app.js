@@ -180,7 +180,7 @@
         return renderBlock(data, block);
       }).join("") + "</div>" +
       '<div><ul class="notes">' + (scene.notes || []).map(function (note) { return "<li>" + esc(note) + "</li>"; }).join("") + "</ul>" +
-      "<footer><span>" + esc(data.scope) + "</span>" +
+      "<footer><span>" + esc(scene.scope || data.scope) + "</span>" +
       '<nav><button type="button" data-step="-1">이전</button><div class="dots">' + dots +
       '</div><button type="button" data-step="1">다음</button></nav></footer></div>';
   }

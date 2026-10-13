@@ -1,7 +1,7 @@
-"""발표 재생 화면(E5)의 종단 시연 자리(보상·모터·NAT 결정 경로 시연)를 시연 공개 결과로 채운다.
+"""발표 재생 화면(E5)의 종단 시연 자리(보상·모터·NAT 결정 경로·설계자 밖 결함 U1 시연)를 시연 공개 결과로 채운다.
 
 slots.json의 경로가 비어 있거나 파일이 승인되지 않았으면(없음·미커밋·변경·형식 다름) 기존 자리 표시를 그대로 둔다.
-값은 승인된 demo_result.json(evals/e2e_reward_demo.py·e2e_reward_demo_v2.py·e2e_demo_v3_1.py summarize 산출물)에서만
+값은 승인된 demo_result.json(evals/e2e_reward_demo.py·e2e_reward_demo_v2.py·e2e_demo_v3_1.py·e2e_demo_u1.py summarize 산출물)에서만
 옮기고, 회복 판정은 시연의 고정 평가 판정을 그대로 보여 줄 뿐 다시 계산하지 않는다. 승인된 결과에 값이 없으면
 대기가 아니라 기록 없음("-")이나 판정 없음으로 표시한다. NAT 도구 목록은 시연 프로토콜이 SHA로 묶은 설정에서만 읽는다.
 GPU·모델·네트워크를 쓰지 않는다.
@@ -19,16 +19,22 @@ DEMO_PROTOCOLS = {
     "e2e_reward_demo_result_v1": "bench/protocols/e2e_reward_demo_v1.json",
     "e2e_reward_demo_result_v2": "bench/protocols/e2e_reward_demo_v2.json",
     "e2e_demo_result_v3_1": "bench/protocols/e2e_demo_v3_1_{variant}.json",
+    "e2e_demo_result_u1_v1": "bench/protocols/e2e_demo_u1_v1.json",
 }
+UPSTREAM_SCHEMA = "e2e_demo_result_u1_v1"
 VARIANTS = ("f1", "f2")
 # 회복 방식을 시연 프로토콜의 등록 규칙이 고르는 판(요청한 방식을 따로 보여 준다)
-RULE_CHOSEN_MODE = ("e2e_demo_result_v3_1",)
+RULE_CHOSEN_MODE = ("e2e_demo_result_v3_1", "e2e_demo_result_u1_v1")
 END_TO_END_LABEL = "종단 시연: 새 Nemotron 호출 → 승인 → 1회 소비 → Isaac 실행 → receipt"
 PROPOSAL_LABEL = "교정 제안 기록: 모델 제안 · 결정적 규칙 · 체크리스트"
 MOTOR_END_TO_END_LABEL = "모터 결함 종단 시연: 새 Nemotron 호출 → 승인된 검사 → 교정 승인 → Isaac 재학습 → receipt"
 MOTOR_PROPOSAL_LABEL = "모터 결함 교정 제안 기록: 모델 제안 · 결정적 규칙 · 체크리스트"
 NAT_END_TO_END_LABEL = "NAT 결정 경로 종단 시연: NeMo Agent Toolkit 도구 호출 → 승인된 검사 → 교정 승인 → Isaac 재학습 → receipt"
 NAT_RECORD_LABEL = "NeMo Agent Toolkit 호출 기록: LLM 호출 · 제출 전 점검 · 토큰 · 설정 도구"
+UPSTREAM_END_TO_END_LABEL = ("설계자 밖 결함 U1 종단 시연: 새 Nemotron 호출 → 승인된 검사 → 교정 범위 점검 → 교정 승인 → "
+                             "Isaac 재학습 → receipt")
+SCOPE_LABEL = "교정 범위 점검과 재학습 대조: 확정 검사 항별 오차 · 등록 표적 · 고정 평가 판정"
+SCOPE_MODES = {"contrast": "대조 모드: 판정 기록 뒤 재학습 1회", "enforce": "강제 모드: 범위 부족이면 재학습 전에 끝냄"}
 # 결과의 decision_path → 화면 표기. v1·v2 결과에는 필드가 없고 단일 호출이다.
 DECISION_PATHS = {"single": "새 Nemotron 호출", "nat_v4": "NeMo Agent Toolkit 도구 호출"}
 # NAT 결정 경로 → 진단·교정 워크플로 설정(시연 프로토콜 source_files가 LF SHA로 묶는다)
@@ -281,3 +287,61 @@ def nat_role_cell(sources: Any, relative: str | None, *, kind: str = "nat_end_to
     counts = [((result.get(stage) or {}).get("call") or {}).get("llm_calls") for stage in ("diagnosis", "correction")]
     shown = [NO_RECORD if count is None else f"{count}회" for count in counts]
     return _cell(sources, f"seed {result.get('seed')} · 진단 LLM {shown[0]} · 교정 LLM {shown[1]}", row["id"])
+
+
+def _readback_text(readback: dict | None) -> str | None:
+    if not readback:
+        return None
+    return f"{readback.get('registered_target_state')} · {readback.get('note')}"
+
+
+def _errors_text(scope: dict) -> str | None:
+    errors = scope.get("rel_errors")
+    if not errors:
+        return None
+    return " · ".join(f"{name} {NO_RECORD if value is None else f'{value:.3g}'}" for name, value in sorted(errors.items()))
+
+
+def _hit(value: Any) -> str:
+    return NO_RECORD if value is None else _yes(value)
+
+
+def _terms(names: list | None) -> str:
+    return ", ".join(names or []) or "없음"
+
+
+def scope_blocks(sources: Any, relative: str | None, *, kind: str = "upstream_end_to_end") -> list[dict]:
+    """U1 시연의 교정 범위 점검과 재학습 판정 대조. U1 결과가 아니면 불일치로 두고 자리 표시를 남긴다.
+
+    단계 표(end_to_end_blocks)와 나란히 놓이므로 고정 평가 판정·결과 문구(대조 문구 포함)는 단계 표에만 둔다.
+    """
+    row, result = _load(sources, relative, kind)
+    if result is not None and result["schema"] != UPSTREAM_SCHEMA:
+        row["status"], row["reason"] = "mismatch", "not_upstream_result"
+        result = None
+    if result is None:
+        return [{"type": "slot", "label": SCOPE_LABEL, "source": row["id"]}]
+    sid = row["id"]
+    step = result.get("scope_check") or {}
+    scope = step.get("result") or {}
+    fixed = (result.get("correction") or {}).get("result") or {}
+    contrast = result.get("scope_contrast") or {}
+    predicted = result.get("prediction_results") or {}
+    aux = (fixed.get("correction_readback") or {}).get("aux_fingerprints") or {}
+    method = f"{SCOPE_MODES.get(step.get('mode'), step.get('mode'))} · 결정적 검사" if step else None
+    threshold = f"(문턱 {scope['threshold']})" if scope.get("threshold") is not None else ""
+    rows = [
+        ["점검 방식", _cell(sources, method, sid)],
+        [f"확정 검사 항별 상대 오차{threshold}", _cell(sources, _errors_text(scope), sid)],
+        ["등록 교정과 되돌리는 함수", _cell(sources, f"{step.get('correction_id')} → {_terms(scope.get('registered_targets'))}"
+                                          if step else None, sid)],
+        ["점검 판정 · 등록 표적 밖 이상 항", _cell(sources, f"{scope.get('verdict')} · {_terms(scope.get('uncovered_terms'))}"
+                                               if scope else None, sid)],
+        ["대조 범주(점검 × 고정 평가 판정)", _cell(sources, contrast.get("category"), sid)],
+        ["사전 예측 적중(점검 · 교정 · 대조)", _cell(sources, " · ".join(
+            _hit(predicted.get(key)) for key in ("scope_check", "correction", "scope_contrast")) if predicted else None, sid)],
+        ["교정 readback(등록 표적만 대조)", _cell(sources, _readback_text(fixed.get("correction_readback")), sid)],
+        ["보조 지문: 원본과 다른 함수(판정에 쓰지 않음)", _cell(sources, _terms(aux.get("differs_from_clean")) if aux else None, sid)],
+    ]
+    return [{"type": "table", "title": f"교정 범위 점검과 재학습 대조(seed {result.get('seed')})",
+             "columns": ["항목", "기록"], "rows": rows, "status_sources": [sid]}]

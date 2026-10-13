@@ -43,6 +43,14 @@ PRIVATE_PATTERNS = (re.compile(r"[A-Za-z]:[\\/]"), re.compile(r"/home/|/Users/|L
                     re.compile(r"https?://"))
 STATUS = ("ready", "waiting", "mismatch")
 STATUS_WORDS = ("대기", "불일치")
+# 하단 범위 문구. 장면의 scope가 있으면 공통 문구(SCOPE_COMMON)를 덮어쓴다. 장면별로 사실에 맞게 쓴다.
+SCOPE_COMMON = "승인된 공개 결과만 읽는 발표 재생 화면. 이미 본 합성 결함 개발 사례이며 일반화·GPU 절감 주장이 아니다."
+SCOPE_NEW_SEED_DEMO = "승인된 공개 결과만 읽는 발표 재생 화면. 이미 본 결함 종류의 새 seed 단일 실행이며 일반화·GPU 절감 주장이 아니다."
+SCOPE_UPSTREAM_SMOKE = ("다른 프레임워크에서 원인이 확정된 결함을 우리가 이식해 주입한 사례이며, 이미 쓴 seed 2026의 단일 smoke 실행이다. "
+                        "진단 정확도·교정 성공률·일반화의 근거가 아니다.")
+SCOPE_HOLD = "외부 원인 결함을 주입한 사례(T1)와 결함 없는 정상 입력(T2)의 이미 본 개발 기록이며, 정확도·일반화의 근거가 아니다."
+SCOPE_UPSTREAM_DEMO = ("다른 프레임워크에서 원인이 확정된 결함을 우리가 이식해 주입한 사례이며, 새 seed 단일 실행이다. "
+                       "진단 정확도·교정 성공률·일반화의 근거가 아니다.")
 MOTOR_CURVE_STATES = {"complete": "완료", "failed": "기록 실패", "invalid": "무효", "not_executed": "미실행"}
 RECOVERY_LABELS = {"recovered": "회복", "not_recovered": "미회복", "invalid": "판정 보류"}
 
@@ -377,7 +385,7 @@ def scene_demo(sources: Sources, slots: dict) -> dict:
     motor = DS.end_to_end_blocks(sources, slots.get("motor_end_to_end"), kind="motor_end_to_end",
                                  label=DS.MOTOR_END_TO_END_LABEL)
     return {
-        "id": "demo", "title": "종단 시연: 경고부터 교정 판정까지", "dense": True,
+        "id": "demo", "title": "종단 시연: 경고부터 교정 판정까지", "dense": True, "scope": SCOPE_NEW_SEED_DEMO,
         "lead": "새 seed에서 새 Nemotron 판단, 승인된 검사, 교정 제안 승인, Isaac 재학습, 고정 평가 판정을 한 번에 이었다. "
                 "왼쪽은 보상 결함, 오른쪽은 모터 결함이다.",
         "blocks": [*reward, *motor],  # 비용은 마지막 장면의 종단 시연 비용 표에 둔다
@@ -393,6 +401,7 @@ def scene_nat_demo(sources: Sources, slots: dict) -> dict:
     relative = slots.get("nat_end_to_end")
     return {
         "id": "nat_demo", "title": "NAT 결정 경로 시연: 진단과 교정 제안을 도구 호출로 제출", "dense": True,
+        "scope": SCOPE_NEW_SEED_DEMO,
         "lead": "진단 결정과 교정 제안을 NeMo Agent Toolkit 도구 호출 워크플로가 제출했다. 승인·검사·재학습·고정 평가는 앞 시연과 같다.",
         "blocks": [*DS.end_to_end_blocks(sources, relative, kind="nat_end_to_end", label=DS.NAT_END_TO_END_LABEL),
                    *DS.nat_record_blocks(sources, relative)],
@@ -546,7 +555,7 @@ def scene_hold(sources: Sources) -> dict:
          {"value": "열지 않음" if row["loop_opened"] is False else "열림", "source": t2_id, "digits": None},
          cell(sources, row["interventions"], t2_id, 0)] for row in t2["rows"]]
     return {
-        "id": "hold", "title": "멈추는 경우: 지원 밖이면 확정하지 않는다",
+        "id": "hold", "title": "멈추는 경우: 지원 밖이면 확정하지 않는다", "scope": SCOPE_HOLD,
         "lead": "외부 원인 결함(T1)은 등록 메커니즘 밖이라 확정 대신 지원 밖으로 끝나야 하고, 정상 입력(T2)에서는 고리를 열지 않아야 한다.",
         "blocks": [
             {"type": "table", "wide": True, "title": "T1 외부 원인 결함(사례×방식)", "status_sources": [t1_id],
@@ -555,6 +564,89 @@ def scene_hold(sources: Sources) -> dict:
              "columns": ["사례", "행동 라벨", "고리", "개입"], "rows": t2_rows},
         ],
         "notes": ["두 시험 모두 사전등록 뒤 실행한 개발 사례다. 표본이 작아 안전성 보장으로 말하지 않는다."],
+    }
+
+
+UPSTREAM_SMOKE_PROTOCOL = "bench/protocols/upstream_u1_smoke_v1.json"
+UPSTREAM_SMOKE_RESULT = "evals/results/upstream_u1_smoke_20261013/result.json"
+UPSTREAM_DEMO_PROTOCOL = "bench/protocols/e2e_demo_u1_v1.json"
+
+
+def _short_ref(url: str | None, pattern: str) -> str | None:
+    """원전 URL에서 커밋 앞 7자리나 PR 번호만 꺼낸다. 화면에는 URL을 싣지 않는다."""
+    match = re.search(pattern, url or "")
+    return match[1] if match else None
+
+
+def scene_upstream(sources: Sources) -> dict:
+    """설계자 밖 결함 U1: 원전 출처와 이식, 등록 교정이 덮는 범위, smoke 결과."""
+    smoke_protocol, protocol_id = sources.load(UPSTREAM_SMOKE_PROTOCOL)
+    demo_protocol, demo_protocol_id = sources.load(UPSTREAM_DEMO_PROTOCOL)
+    smoke, smoke_id = sources.load(UPSTREAM_SMOKE_RESULT)
+    origin = []
+    if smoke_protocol is not None:
+        source = smoke_protocol["source"]
+        commit = _short_ref(source["workaround_commit"]["url"], r"/commit/([0-9a-f]{7})")
+        pr = _short_ref(source["fix_pr"]["url"], r"/pull/(\d+)")
+        origin = [
+            ["원전 프레임워크", cell(sources, source["framework"], protocol_id, None)],
+            ["원전 수정", cell(sources, f"우회 커밋 {commit} · 백엔드 수정 PR #{pr}({source['fix_pr']['merged']} 병합)",
+                           protocol_id, None)],
+            ["수정 커밋 메시지 발췌", cell(sources, source["fix_pr"]["excerpts"][0], protocol_id, None)],
+            ["Isaac Lab으로 옮긴 보상 항(가중치)", cell(sources, " · ".join(
+                f"{row['isaaclab_function']}({row['weight']})" for row in smoke_protocol["mapping"]), protocol_id, None)],
+        ]
+    if demo_protocol is not None:
+        scope = demo_protocol["registered_correction_scope"]
+        origin += [
+            ["등록 교정이 되돌리는 함수", cell(sources, f"{scope['correction_id']} → {scope['target']}(네 함수 중 하나)",
+                                       demo_protocol_id, None)],
+            ["코드 지문으로 보이는가", cell(sources, demo_protocol["b_code_wording"], demo_protocol_id, None)],
+        ]
+    smoke_rows = []
+    if smoke is not None:
+        swapped = smoke["readback"]["swapped"]
+        smoke_rows = [
+            ["결과 · 사전 예측 일치", cell(sources, f"{smoke['outcome']} · {'예' if smoke['prediction_match'] else '아니오'}",
+                                       smoke_id, None)],
+            ["고정 평가 판정(같은 seed 정상 대비)", cell(sources, f"{smoke['verdict']['label']} · 실패 검사 "
+                                                         f"{', '.join(smoke['verdict']['failed']) or '없음'}", smoke_id, None)],
+            ["standstill ratio", cell(sources, smoke["standstill_ratio"], smoke_id, 3)],
+            ["주입 확인(교체된 함수)", cell(sources, f"{sum(swapped.values())}/{len(swapped)} · 확인 줄 "
+                                               f"{'ok' if smoke['readback']['ok'] else '실패'}", smoke_id, None)],
+            ["정상 학습과의 params 차이", cell(sources, ", ".join(smoke["params_differences"]) or "없음", smoke_id, None)],
+            ["학습 parent wall(s)", cell(sources, smoke["parent_wall_s"]["train_s"], smoke_id, 0)],
+        ]
+    return {
+        "id": "upstream", "title": "설계자 밖 결함: 다른 프레임워크에서 원인이 확정된 결함을 옮겼다", "dense": True,
+        "scope": SCOPE_UPSTREAM_SMOKE,
+        "lead": ("UniLab(MotrixSim·MuJoCo 백엔드)에서 원인이 확정된 결함(보상 4항이 몸체 속도 0을 읽음)의 의미를 Isaac Lab "
+                 "Go2 flat에 옮겼다. 등록 교정은 네 함수 중 하나만 되돌린다."),
+        "blocks": [
+            {"type": "table", "title": "원전과 이식", "columns": ["항목", "내용"], "rows": origin,
+             "status_sources": [protocol_id, demo_protocol_id]},
+            {"type": "table", "title": f"U1 smoke(seed {smoke['seed'] if smoke else '-'}, 4096 env × 300회)",
+             "columns": ["항목", "기록"], "rows": smoke_rows, "status_sources": [smoke_id]},
+        ],
+        "notes": ["결함 의미는 외부 공개 수정에서 왔지만 이식·주입 방식·검사·범위 점검 규칙은 결함을 안 뒤에 만들었다. "
+                  "설계자 결합을 줄일 뿐 없애지 못한다."],
+    }
+
+
+def scene_upstream_demo(sources: Sources, slots: dict) -> dict:
+    """U1 종단 시연 단계와 교정 범위 점검·재학습 대조. 시연 결과가 승인되지 않았으면 자리 표시로 남는다."""
+    import replay_demo_slots as DS
+    relative = slots.get("upstream_end_to_end")
+    return {
+        "id": "upstream_demo", "title": "U1 시연: 재학습 전에 교정 범위를 점검하고 실측과 대조한다", "dense": True,
+        "scope": SCOPE_UPSTREAM_DEMO,
+        "lead": "확정 검사의 항별 오차로 교정 범위를 재학습 전에 점검하고, 재학습을 한 번 실행해 실측과 대조한다.",
+        "blocks": [
+            *DS.end_to_end_blocks(sources, relative, kind="upstream_end_to_end", label=DS.UPSTREAM_END_TO_END_LABEL),
+            *DS.scope_blocks(sources, relative),
+        ],
+        "notes": ["seed 하나의 단일 실행이며 진단 정확도·일반화·교정 성공률의 근거가 아니다. 승인은 위임된 운영자 승인이며 "
+                  "승인자 신원은 인증하지 않았다."],
     }
 
 
@@ -629,7 +721,8 @@ def scene_cost(sources: Sources, slots: dict) -> dict:
     import replay_demo_slots as DS
     demos = DS.cost_block(sources, [(slots.get("end_to_end"), "end_to_end", "보상 결함"),
                                     (slots.get("motor_end_to_end"), "motor_end_to_end", "모터 결함"),
-                                    (slots.get("nat_end_to_end"), "nat_end_to_end", "보상 결함(NAT 경로)")])
+                                    (slots.get("nat_end_to_end"), "nat_end_to_end", "보상 결함(NAT 경로)"),
+                                    (slots.get("upstream_end_to_end"), "upstream_end_to_end", "설계자 밖 결함 U1")])
     return {
         "id": "cost", "title": "비용과 재현", "dense": True,
         "lead": "숫자는 공개 결과 파일에서 다시 계산한다. 재현 명령은 GPU·모델·네트워크 없이 공개 묶음의 해시와 판정을 재생한다.",
@@ -649,11 +742,12 @@ def build(root: Path = ROOT) -> dict:
     scenes = [scene_failure(sources, slots), scene_curves(sources), scene_warning(sources),
               scene_probe(sources), scene_correction(sources, slots), scene_demo(sources, slots),
               scene_nat_demo(sources, slots), scene_recovery(sources, slots),
-              scene_motor(sources, slots), scene_hold(sources), scene_nvidia(sources, slots), scene_cost(sources, slots)]
+              scene_motor(sources, slots), scene_hold(sources), scene_upstream(sources), scene_upstream_demo(sources, slots),
+              scene_nvidia(sources, slots), scene_cost(sources, slots)]
     for index, scene in enumerate(scenes, start=1):
         scene["number"] = index
     data = {"schema": SCHEMA,
-            "scope": "승인된 공개 결과만 읽는 발표 재생 화면. 이미 본 합성 결함 개발 사례이며 일반화·GPU 절감 주장이 아니다.",
+            "scope": SCOPE_COMMON,
             "status_labels": {"ready": "확인", "waiting": "대기", "mismatch": "불일치"},
             "scenes": scenes, "sources": sources.rows}
     check_public(data)

@@ -7974,6 +7974,7 @@ window.REPLAY_DATA = {
    "id": "demo",
    "title": "종단 시연: 경고부터 교정 판정까지",
    "dense": true,
+   "scope": "승인된 공개 결과만 읽는 발표 재생 화면. 이미 본 결함 종류의 새 seed 단일 실행이며 일반화·GPU 절감 주장이 아니다.",
    "lead": "새 seed에서 새 Nemotron 판단, 승인된 검사, 교정 제안 승인, Isaac 재학습, 고정 평가 판정을 한 번에 이었다. 왼쪽은 보상 결함, 오른쪽은 모터 결함이다.",
    "blocks": [
     {
@@ -8149,6 +8150,7 @@ window.REPLAY_DATA = {
    "id": "nat_demo",
    "title": "NAT 결정 경로 시연: 진단과 교정 제안을 도구 호출로 제출",
    "dense": true,
+   "scope": "승인된 공개 결과만 읽는 발표 재생 화면. 이미 본 결함 종류의 새 seed 단일 실행이며 일반화·GPU 절감 주장이 아니다.",
    "lead": "진단 결정과 교정 제안을 NeMo Agent Toolkit 도구 호출 워크플로가 제출했다. 승인·검사·재학습·고정 평가는 앞 시연과 같다.",
    "blocks": [
     {
@@ -8856,6 +8858,7 @@ window.REPLAY_DATA = {
   {
    "id": "hold",
    "title": "멈추는 경우: 지원 밖이면 확정하지 않는다",
+   "scope": "외부 원인 결함을 주입한 사례(T1)와 결함 없는 정상 입력(T2)의 이미 본 개발 기록이며, 정확도·일반화의 근거가 아니다.",
    "lead": "외부 원인 결함(T1)은 등록 메커니즘 밖이라 확정 대신 지원 밖으로 끝나야 하고, 정상 입력(T2)에서는 고리를 열지 않아야 한다.",
    "blocks": [
     {
@@ -9066,6 +9069,317 @@ window.REPLAY_DATA = {
    "number": 10
   },
   {
+   "id": "upstream",
+   "title": "설계자 밖 결함: 다른 프레임워크에서 원인이 확정된 결함을 옮겼다",
+   "dense": true,
+   "scope": "다른 프레임워크에서 원인이 확정된 결함을 우리가 이식해 주입한 사례이며, 이미 쓴 seed 2026의 단일 smoke 실행이다. 진단 정확도·교정 성공률·일반화의 근거가 아니다.",
+   "lead": "UniLab(MotrixSim·MuJoCo 백엔드)에서 원인이 확정된 결함(보상 4항이 몸체 속도 0을 읽음)의 의미를 Isaac Lab Go2 flat에 옮겼다. 등록 교정은 네 함수 중 하나만 되돌린다.",
+   "blocks": [
+    {
+     "type": "table",
+     "title": "원전과 이식",
+     "columns": [
+      "항목",
+      "내용"
+     ],
+     "rows": [
+      [
+       "원전 프레임워크",
+       {
+        "value": "UniLab(Motphys), MotrixSim·MuJoCo 백엔드. Isaac Lab 버그가 아니다",
+        "source": "bench/protocols/upstream_u1_smoke_v1.json",
+        "digits": null
+       }
+      ],
+      [
+       "원전 수정",
+       {
+        "value": "우회 커밋 58ec02e · 백엔드 수정 PR #1254(2026-08-23 병합)",
+        "source": "bench/protocols/upstream_u1_smoke_v1.json",
+        "digits": null
+       }
+      ],
+      [
+       "수정 커밋 메시지 발췌",
+       {
+        "value": "the root body read exactly zero (verified empirically on both backends)",
+        "source": "bench/protocols/upstream_u1_smoke_v1.json",
+        "digits": null
+       }
+      ],
+      [
+       "Isaac Lab으로 옮긴 보상 항(가중치)",
+       {
+        "value": "track_lin_vel_xy_exp(1.5) · track_ang_vel_z_exp(0.75) · lin_vel_z_l2(-2.0) · ang_vel_xy_l2(-0.05)",
+        "source": "bench/protocols/upstream_u1_smoke_v1.json",
+        "digits": null
+       }
+      ],
+      [
+       "등록 교정이 되돌리는 함수",
+       {
+        "value": "restore_body_frame_reward → isaaclab.envs.mdp.rewards.track_lin_vel_xy_exp(네 함수 중 하나)",
+        "source": "bench/protocols/e2e_demo_u1_v1.json",
+        "digits": null
+       }
+      ],
+      [
+       "코드 지문으로 보이는가",
+       {
+        "value": "B-code는 우리 주입 방식 때문에 바로 보이며 원전의 백엔드 0 읽기는 지문으로 보이지 않았을 것[추론]",
+        "source": "bench/protocols/e2e_demo_u1_v1.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "bench/protocols/upstream_u1_smoke_v1.json",
+      "bench/protocols/e2e_demo_u1_v1.json"
+     ]
+    },
+    {
+     "type": "table",
+     "title": "U1 smoke(seed 2026, 4096 env × 300회)",
+     "columns": [
+      "항목",
+      "기록"
+     ],
+     "rows": [
+      [
+       "결과 · 사전 예측 일치",
+       {
+        "value": "failure_present · 예",
+        "source": "evals/results/upstream_u1_smoke_20261013/result.json",
+        "digits": null
+       }
+      ],
+      [
+       "고정 평가 판정(같은 seed 정상 대비)",
+       {
+        "value": "unhealthy · 실패 검사 survival_ratio, fall_frac, err_xy_ratio, err_yaw_ratio",
+        "source": "evals/results/upstream_u1_smoke_20261013/result.json",
+        "digits": null
+       }
+      ],
+      [
+       "standstill ratio",
+       {
+        "value": 1.0395543042795092,
+        "source": "evals/results/upstream_u1_smoke_20261013/result.json",
+        "digits": 3
+       }
+      ],
+      [
+       "주입 확인(교체된 함수)",
+       {
+        "value": "4/4 · 확인 줄 ok",
+        "source": "evals/results/upstream_u1_smoke_20261013/result.json",
+        "digits": null
+       }
+      ],
+      [
+       "정상 학습과의 params 차이",
+       {
+        "value": "agent.yaml:run_name",
+        "source": "evals/results/upstream_u1_smoke_20261013/result.json",
+        "digits": null
+       }
+      ],
+      [
+       "학습 parent wall(s)",
+       {
+        "value": 590.8,
+        "source": "evals/results/upstream_u1_smoke_20261013/result.json",
+        "digits": 0
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/upstream_u1_smoke_20261013/result.json"
+     ]
+    }
+   ],
+   "notes": [
+    "결함 의미는 외부 공개 수정에서 왔지만 이식·주입 방식·검사·범위 점검 규칙은 결함을 안 뒤에 만들었다. 설계자 결합을 줄일 뿐 없애지 못한다."
+   ],
+   "number": 11
+  },
+  {
+   "id": "upstream_demo",
+   "title": "U1 시연: 재학습 전에 교정 범위를 점검하고 실측과 대조한다",
+   "dense": true,
+   "scope": "다른 프레임워크에서 원인이 확정된 결함을 우리가 이식해 주입한 사례이며, 새 seed 단일 실행이다. 진단 정확도·교정 성공률·일반화의 근거가 아니다.",
+   "lead": "확정 검사의 항별 오차로 교정 범위를 재학습 전에 점검하고, 재학습을 한 번 실행해 실측과 대조한다.",
+   "blocks": [
+    {
+     "type": "table",
+     "title": "종단 시연 seed 2040 U1·reward: 경고부터 교정 판정까지",
+     "columns": [
+      "단계",
+      "기록"
+     ],
+     "rows": [
+      [
+       "시연 결과",
+       {
+        "value": "not_recovered · 성공 조건 13/13",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "첫 판단(새 Nemotron 호출)",
+       {
+        "value": "continue · 상위 3 reward, actuator, exploration · 제안 검사 P_reward",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "승인된 검사",
+       {
+        "value": "1건 실행 · P_reward abnormal · confirmed",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "특이성 관문",
+       {
+        "value": "등록된 보조 검사 없음",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 제안(새 Nemotron 호출)",
+       {
+        "value": "propose · 계약 통과 예 · 규칙과 일치 예",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "승인 뒤 교정 실행 receipt",
+       {
+        "value": "receipt · not_recovered",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 정책 고정 평가 판정",
+       {
+        "value": "not_recovered",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 정책 standstill ratio",
+       {
+        "value": 0.3910500047550451,
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": 3
+       }
+      ],
+      [
+       "결과 문구",
+       {
+        "value": "등록 결함을 확정하고 승인된 교정까지 실행했지만, 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과하지 못했다. 교정 범위 점검은 재학습 전에 등록 교정 밖의 이상 항을 기록했고, 교정 정책은 실측에서도 회복하지 못했다.",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json"
+     ]
+    },
+    {
+     "type": "table",
+     "title": "교정 범위 점검과 재학습 대조(seed 2040)",
+     "columns": [
+      "항목",
+      "기록"
+     ],
+     "rows": [
+      [
+       "점검 방식",
+       {
+        "value": "대조 모드: 판정 기록 뒤 재학습 1회 · 결정적 검사",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "확정 검사 항별 상대 오차(문턱 0.05)",
+       {
+        "value": "track_ang_vel_z_exp 1.32 · track_lin_vel_xy_exp 0.357",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "등록 교정과 되돌리는 함수",
+       {
+        "value": "restore_body_frame_reward → track_lin_vel_xy_exp",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "점검 판정 · 등록 표적 밖 이상 항",
+       {
+        "value": "scope_insufficient · track_ang_vel_z_exp",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "대조 범주(점검 × 고정 평가 판정)",
+       {
+        "value": "insufficient_and_not_recovered",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "사전 예측 적중(점검 · 교정 · 대조)",
+       {
+        "value": "예 · 예 · 예",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 readback(등록 표적만 대조)",
+       {
+        "value": "restored_to_clean · 등록 표적 복원됨, 그 밖 함수 상태는 보조 지문 기록(aux_fingerprints, 판정에 쓰지 않음)",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "보조 지문: 원본과 다른 함수(판정에 쓰지 않음)",
+       {
+        "value": "ang_vel_xy_l2, lin_vel_z_l2, track_ang_vel_z_exp",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json"
+     ]
+    }
+   ],
+   "notes": [
+    "seed 하나의 단일 실행이며 진단 정확도·일반화·교정 성공률의 근거가 아니다. 승인은 위임된 운영자 승인이며 승인자 신원은 인증하지 않았다."
+   ],
+   "number": 12
+  },
+  {
    "id": "nvidia",
    "title": "NVIDIA 기술의 역할",
    "dense": true,
@@ -9187,7 +9501,7 @@ window.REPLAY_DATA = {
     "NeMo Agent Toolkit 행은 NAT 결정 경로 시연 한 건의 기록이다. HITL 행의 근거는 설정·테스트이며 실행 기록이 아니다. HITL 확인은 선택 기능이고 기록된 시연에는 쓰지 않았다.",
     "재채점은 저장된 출력이 공개 요약과 같은 판정을 내는지 확인한 것이다. 결정의 정확도나 단일 호출과의 우열을 보여 주지 않으며 모델을 다시 부르지 않는다."
    ],
-   "number": 11
+   "number": 13
   },
   {
    "id": "cost",
@@ -9359,12 +9673,36 @@ window.REPLAY_DATA = {
         "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
         "digits": null
        }
+      ],
+      [
+       "설계자 밖 결함 U1 seed 2040",
+       {
+        "value": "560 / 557",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       },
+       {
+        "value": 20.1,
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": 1
+       },
+       {
+        "value": "523 / 55",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       },
+       {
+        "value": "2803 / 199 · 1346 / 150",
+        "source": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+        "digits": null
+       }
       ]
      ],
      "status_sources": [
       "evals/results/e2e_reward_s2030_20261013/demo_result.json",
       "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
-      "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json"
+      "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+      "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json"
      ]
     }
    ],
@@ -9372,7 +9710,7 @@ window.REPLAY_DATA = {
     "parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
     "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."
    ],
-   "number": 12
+   "number": 14
   }
  ],
  "sources": {
@@ -9957,6 +10295,38 @@ window.REPLAY_DATA = {
    "path": "evals/results/t2_gate_20261009/summary_v2.json",
    "kind": "file",
    "sha256": "12334159d6613d02cbbc8fcd1f8c9a97a4a00f55fda43481009a9d9c53cc5ef3",
+   "status": "ready",
+   "reason": null
+  },
+  "bench/protocols/upstream_u1_smoke_v1.json": {
+   "id": "bench/protocols/upstream_u1_smoke_v1.json",
+   "path": "bench/protocols/upstream_u1_smoke_v1.json",
+   "kind": "file",
+   "sha256": "095904bdbafcc97d4010e2df1b659612380943bffe98cfa5ea2931645aa4d59b",
+   "status": "ready",
+   "reason": null
+  },
+  "bench/protocols/e2e_demo_u1_v1.json": {
+   "id": "bench/protocols/e2e_demo_u1_v1.json",
+   "path": "bench/protocols/e2e_demo_u1_v1.json",
+   "kind": "file",
+   "sha256": "410e86209c271039f3e93cd05a5c3d440e84e924ff60c2f60c7f85f64c02e52e",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/upstream_u1_smoke_20261013/result.json": {
+   "id": "evals/results/upstream_u1_smoke_20261013/result.json",
+   "path": "evals/results/upstream_u1_smoke_20261013/result.json",
+   "kind": "file",
+   "sha256": "4a980fd460e79861f58dafd5635671d43b991c31440f73e4b321543babc0b27b",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json": {
+   "id": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+   "path": "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+   "kind": "upstream_end_to_end",
+   "sha256": "a30f841acc064b15b717f066e2ef81afc025f339a8441c22615f2b37c1a4e21e",
    "status": "ready",
    "reason": null
   },
