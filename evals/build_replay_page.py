@@ -368,7 +368,8 @@ def scene_recovery(sources: Sources, slots: dict) -> dict:
     labels = {"recovered": "회복", "not_recovered": "미회복", "invalid": "판정 보류"}
     arms = (("resume_corrected", "고쳐서 이어 학습"), ("resume_corrected_std_reset", "이어 학습 + std 재설정"),
             ("restart_corrected", "고쳐서 처음부터 재학습"), ("clean_resume_reference", "정상 기준(이어 학습)"))
-    v4_rows = [[title] for _, title in arms] + [["원본 F1 · 규칙 권고와 결과"]]
+    v4_rows = [[title] for _, title in arms] + [["원본 F1 · 규칙 권고와 결과"], ["재학습 체크포인트 = 원본 정상 체크포인트"]]
+    protocol_v4, _ = sources.load("bench/protocols/training_correction_v4.json")
     columns, ready = ["방식"], []
     for tag in slots["v4_tags"]:
         row, replay = sources.bundle(f"evals/results/{tag}", Q4.replay, kind="public_bundle_v4")
@@ -385,9 +386,16 @@ def scene_recovery(sources: Sources, slots: dict) -> dict:
                                cell(sources, behavior and behavior["err_xy"], row["id"]),
                                cell(sources, signal.get(arm), row["id"])]
         rule = replay["recovery_mode_rule"] if replay else {}
-        v4_rows[-1] += [{"value": f"{rule.get('recommended')} · {rule.get('outcome')}" if replay else None,
+        v4_rows[-2] += [{"value": f"{rule.get('recommended')} · {rule.get('outcome')}" if replay else None,
                          "source": row["id"], "digits": None},
                         "-", cell(sources, signal.get("original_fault"), row["id"])]
+        same = None
+        if replay and protocol_v4 and seed in protocol_v4["resume_inputs"]["seeds"]:
+            evidence = _read(sources.root / f"evals/results/{tag}/training_evidence.json")["arms"]
+            restart = evidence.get("restart_corrected", {}).get("checkpoint", {}).get("sha256")
+            original = protocol_v4["resume_inputs"]["seeds"][seed]["runs"]["NONE"]["hashes"]["checkpoint"]
+            same = None if restart is None else ("같음" if restart == original else "다름")
+        v4_rows[-1] += [{"value": same, "source": row["id"], "digits": None}, "-", "-"]
     blocks = [
         {"type": "table", "wide": True, "title": "v4 seed 2026·2028: 같은 300회 예산의 회복 방식",
          "columns": columns, "rows": v4_rows,
@@ -407,7 +415,7 @@ def scene_recovery(sources: Sources, slots: dict) -> dict:
         "lead": "같은 300회 예산으로 이어 학습, 탐색 재설정 이어 학습, 처음부터 재학습을 비교한다. 이어 학습 계열은 이어 학습한 정상 정책, 재학습은 원본 정상 정책과 비교한다.",
         "blocks": blocks,
         "notes": ["seed마다 단일 실행이다. 이미 본 seed의 합성 결함 개발 결과이며 일반화나 AI 교정 선택을 입증하지 않는다.",
-                  "판정 보류는 기준 정책 검증·실행 계약이 맞지 않은 경우다."],
+                  "재학습은 교정한 코드가 정상 학습과 같아져 같은 seed의 정상 정책을 다시 만든다. 체크포인트가 같으면 회복은 예상된 확인이며 새로운 회복 효과가 아니다."],
     }
 
 

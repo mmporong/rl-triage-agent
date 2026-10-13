@@ -165,6 +165,18 @@ def test_static_page_files_are_local_only():
         assert not any(B.claim_violations(line) for line in static_text.splitlines()), name
 
 
+def _scene_sources(scene: dict) -> set[str]:
+    sources = set()
+    for block in scene["blocks"]:
+        sources.update(block.get("status_sources", []))
+        sources.update(item["source"] for item in block.get("items", []))
+        if block.get("source"):
+            sources.add(block["source"])
+        for row in block.get("rows", []):
+            sources.update(cell["source"] for cell in row if isinstance(cell, dict))
+    return sources
+
+
 @pytest.mark.skipif(shutil.which("node") is None, reason="node is required to render the static page")
 def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built):
     data = built
@@ -188,6 +200,9 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
     clean = outputs["clean"]
     assert len(clean) == 9 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
     assert "<svg" in clean[1] and "polyline" in clean[1]
-    assert "대기" in clean[3] and "대기" in clean[5]
+    for scene, html in zip(data["scenes"], clean):
+        statuses = {data["sources"][source]["status"] for source in _scene_sources(scene)}
+        assert ("waiting" in statuses) == ("대기" in html), scene["id"]
+        assert ("mismatch" in statuses) == ("불일치" in html), scene["id"]
     assert "../../evals/results/p0c_fixed_eval_20261009/runs/h02_s2026.json" in clean[0]
     assert '<span class="pending mismatch">불일치</span>' in outputs["tampered"][0]

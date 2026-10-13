@@ -7851,32 +7851,32 @@ window.REPLAY_DATA = {
       [
        "고쳐서 이어 학습",
        {
-        "value": null,
+        "value": "미회복",
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": null
        },
        {
-        "value": null,
+        "value": 1.1559090498253748,
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": 0.9823338001663467,
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": "미회복",
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": null
        },
        {
-        "value": null,
+        "value": 1.137130453005461,
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": 0.9663750615625747,
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": 3
        }
@@ -7884,32 +7884,32 @@ window.REPLAY_DATA = {
       [
        "이어 학습 + std 재설정",
        {
-        "value": null,
+        "value": "미회복",
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": null
        },
        {
-        "value": null,
+        "value": 1.115191564055571,
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": 0.947730591085569,
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": "미회복",
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": null
        },
        {
-        "value": null,
+        "value": 1.1547552705732445,
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": 0.9813532763461815,
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": 3
        }
@@ -7917,32 +7917,32 @@ window.REPLAY_DATA = {
       [
        "고쳐서 처음부터 재학습",
        {
-        "value": null,
+        "value": "회복",
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0.14778769208306278,
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": 0.1255953876333965,
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": "회복",
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0.14057849406437406,
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": 0.11946874740428846,
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": 3
        }
@@ -7950,32 +7950,32 @@ window.REPLAY_DATA = {
       [
        "정상 기준(이어 학습)",
        {
-        "value": null,
+        "value": "기준",
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0.14332131470449136,
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": 0.12179969673199566,
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": "기준",
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0.13270022049957778,
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": 0.11277350229756872,
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": 3
        }
@@ -7983,27 +7983,44 @@ window.REPLAY_DATA = {
       [
        "원본 F1 · 규칙 권고와 결과",
        {
-        "value": null,
+        "value": "restart · hit",
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": null
        },
        "-",
        {
-        "value": null,
+        "value": 0.996710572588678,
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": 3
        },
        {
-        "value": null,
+        "value": "restart · hit",
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": null
        },
        "-",
        {
-        "value": null,
+        "value": 0.9889124553767873,
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": 3
        }
+      ],
+      [
+       "재학습 체크포인트 = 원본 정상 체크포인트",
+       {
+        "value": "같음",
+        "source": "evals/results/reward_v4_s2026_20261013",
+        "digits": null
+       },
+       "-",
+       "-",
+       {
+        "value": "같음",
+        "source": "evals/results/reward_v4_s2028_20261013",
+        "digits": null
+       },
+       "-",
+       "-"
       ]
      ],
      "status_sources": [
@@ -8055,11 +8072,77 @@ window.REPLAY_DATA = {
      "status_sources": [
       "evals/results/reward_resume_dev3_20261013"
      ]
+    },
+    {
+     "type": "table",
+     "title": "두 seed 요약(사전 예측 대비)",
+     "columns": [
+      "방식",
+      "회복 seed 수",
+      "예측",
+      "예측 유지"
+     ],
+     "rows": [
+      [
+       "resume_corrected",
+       {
+        "value": "0/2",
+        "source": "evals/results/reward_v4_s2026_20261013",
+        "digits": null
+       },
+       {
+        "value": "not_recovered",
+        "source": "evals/results/reward_v4_s2026_20261013",
+        "digits": null
+       },
+       {
+        "value": "예",
+        "source": "evals/results/reward_v4_s2026_20261013",
+        "digits": null
+       }
+      ],
+      [
+       "resume_corrected_std_reset",
+       {
+        "value": "0/2",
+        "source": "evals/results/reward_v4_s2026_20261013",
+        "digits": null
+       },
+       {
+        "value": "예측 없음",
+        "source": "evals/results/reward_v4_s2026_20261013",
+        "digits": null
+       },
+       {
+        "value": "-",
+        "source": "evals/results/reward_v4_s2026_20261013",
+        "digits": null
+       }
+      ],
+      [
+       "restart_corrected",
+       {
+        "value": "2/2",
+        "source": "evals/results/reward_v4_s2026_20261013",
+        "digits": null
+       },
+       {
+        "value": "recovered",
+        "source": "evals/results/reward_v4_s2026_20261013",
+        "digits": null
+       },
+       {
+        "value": "예",
+        "source": "evals/results/reward_v4_s2026_20261013",
+        "digits": null
+       }
+      ]
+     ]
     }
    ],
    "notes": [
     "seed마다 단일 실행이다. 이미 본 seed의 합성 결함 개발 결과이며 일반화나 AI 교정 선택을 입증하지 않는다.",
-    "판정 보류는 기준 정책 검증·실행 계약이 맞지 않은 경우다."
+    "재학습은 교정한 코드가 정상 학습과 같아져 같은 seed의 정상 정책을 다시 만든다. 체크포인트가 같으면 회복은 예상된 확인이며 새로운 회복 효과가 아니다."
    ],
    "number": 6
   },
@@ -8422,7 +8505,7 @@ window.REPLAY_DATA = {
       [
        "v4 reward_v4_s2026_20261013(4 arm)",
        {
-        "value": null,
+        "value": 2426.624000000069,
         "source": "evals/results/reward_v4_s2026_20261013",
         "digits": 0
        },
@@ -8431,7 +8514,7 @@ window.REPLAY_DATA = {
       [
        "v4 reward_v4_s2028_20261013(4 arm)",
        {
-        "value": null,
+        "value": 2464.907999999821,
         "source": "evals/results/reward_v4_s2028_20261013",
         "digits": 0
        },
@@ -8953,17 +9036,17 @@ window.REPLAY_DATA = {
    "id": "evals/results/reward_v4_s2026_20261013",
    "path": "evals/results/reward_v4_s2026_20261013/artifact_manifest.json",
    "kind": "public_bundle_v4",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "missing"
+   "sha256": "617b96ed5cf0f122359b7b41f64a54fe7c76838dcb85fdfa70f104c1ea600724",
+   "status": "ready",
+   "reason": null
   },
   "evals/results/reward_v4_s2028_20261013": {
    "id": "evals/results/reward_v4_s2028_20261013",
    "path": "evals/results/reward_v4_s2028_20261013/artifact_manifest.json",
    "kind": "public_bundle_v4",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "missing"
+   "sha256": "1e78b88078bf327352b6a6f887fe6850af167c1c79756c968254c4340230d483",
+   "status": "ready",
+   "reason": null
   },
   "evals/results/t1_loop_compare_20261009/loop_compare.json": {
    "id": "evals/results/t1_loop_compare_20261009/loop_compare.json",
