@@ -1,0 +1,38 @@
+{
+ "hypotheses": [
+  "actuator"
+ ],
+ "observed": {
+  "P_reward": "normal",
+  "P_noise": "normal",
+  "P_torque": "abnormal"
+ },
+ "skipped": [],
+ "budget": 4,
+ "status": "confirmed",
+ "pending": null,
+ "history": [
+  {
+   "request_id": "3c919574ef61",
+   "probe": "P_reward",
+   "outcome": "normal",
+   "dropped": [
+    "reward"
+   ]
+  },
+  {
+   "request_id": "1422dd3bd3eb",
+   "probe": "P_noise",
+   "outcome": "normal",
+   "dropped": [
+    "exploration"
+   ]
+  },
+  {
+   "request_id": "4f5d51855a04",
+   "probe": "P_torque",
+   "outcome": "abnormal",
+   "dropped": []
+  }
+ ]
+}
