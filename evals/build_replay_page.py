@@ -42,6 +42,8 @@ PRIVATE_PATTERNS = (re.compile(r"[A-Za-z]:[\\/]"), re.compile(r"/home/|/Users/|L
                     re.compile(r"bench/private", re.I), re.compile(r'"(pid|process_id|process_identity)"'),
                     re.compile(r"https?://"))
 STATUS = ("ready", "waiting", "mismatch")
+MOTOR_CURVE_STATES = {"complete": "완료", "failed": "기록 실패", "invalid": "무효", "not_executed": "미실행"}
+RECOVERY_LABELS = {"recovered": "회복", "not_recovered": "미회복", "invalid": "판정 보류"}
 
 
 def _git(root: Path, *args: str) -> subprocess.CompletedProcess:
@@ -376,7 +378,7 @@ def scene_recovery(sources: Sources, slots: dict) -> dict:
                        ("corrected", "등록 교정 이어 학습")):
         v3_rows.append([label, cell(sources, v3 and v3["behavior"][arm]["err_xy"], v3_row["id"])])
     v3_rows.append(["판정", {"value": v3 and v3["status"], "source": v3_row["id"], "digits": None}])
-    labels = {"recovered": "회복", "not_recovered": "미회복", "invalid": "판정 보류"}
+    labels = RECOVERY_LABELS
     arms = (("resume_corrected", "고쳐서 이어 학습"), ("resume_corrected_std_reset", "이어 학습 + std 재설정"),
             ("restart_corrected", "고쳐서 처음부터 재학습"), ("clean_resume_reference", "정상 기준(이어 학습)"))
     v4_rows = [[title] for _, title in arms] + [["원본 F1 · 규칙 권고와 결과"], ["재학습 체크포인트 = 원본 정상 체크포인트"]]
@@ -422,12 +424,79 @@ def scene_recovery(sources: Sources, slots: dict) -> dict:
                                  {"value": {True: "예", False: "아니오", None: "-"}[row["prediction_held_all_seeds"]],
                                   "source": ready[0], "digits": None}] for arm, row in summary["arms"].items()]})
     return {
-        "id": "recovery", "title": "회복 방식 비교: 고쳐서 이어 학습할까, 처음부터 다시 할까",
+        "id": "recovery", "title": "회복 방식 비교: 고쳐서 이어 학습할까, 처음부터 다시 할까", "dense": True,
         "lead": "같은 300회 예산으로 이어 학습, 탐색 재설정 이어 학습, 처음부터 재학습을 비교한다. 이어 학습 계열은 이어 학습한 정상 정책, 재학습은 원본 정상 정책과 비교한다.",
         "blocks": blocks,
         "notes": ["seed마다 단일 실행이다. 이미 본 seed의 합성 결함 개발 결과이며 일반화나 AI 교정 선택을 입증하지 않는다.",
                   "재학습은 교정한 코드가 정상 학습과 같아져 같은 seed의 정상 정책을 다시 만든다. 체크포인트가 같으면 회복은 예상된 확인이며 새로운 회복 효과가 아니다."],
     }
+
+
+def scene_motor(sources: Sources, slots: dict) -> dict:
+    """모터 결함(F2) 고쳐서 이어 학습의 seed별 판정과 중간 저장본 예산 반응. 공개 묶음이 없으면 칸을 비운다."""
+    import run_training_correction_motor as W
+    tags = slots["motor_tags"]
+    iterations = [W.RESUME_ITERATION, *W.BUDGET_CHECKPOINTS, W.FINAL_ITERATION]
+    judged, budget, ready = [], [], []
+    for tag in tags:
+        row, replay = sources.bundle(f"evals/results/{tag}", W.replay, kind="public_bundle_motor")
+        seed = re.search(r"_s(\d{4})_", tag)
+        seed = seed[1] if seed else tag
+        if replay is None:
+            judged_values, budget_values = [None] * 5, [None] * (len(iterations) + 3)
+        else:
+            ready.append(row["id"])
+            treated = replay["behavior"].get("resume_corrected")
+            reference = replay["behavior"].get("clean_resume_reference")
+            curve, rule = replay["budget_curve"], replay["recovery_mode_rule"]
+            complete = curve["status"] == "complete"
+            if complete and [point["iteration"] for point in curve["points"]] != iterations:
+                raise ValueError(f"{tag}: budget curve 점이 화면 열({iterations})과 다르다")
+            # 확인된 묶음 안에서 비어 있는 값은 "-"로 둔다. None은 화면에서 근거 미확인 표시로 읽힌다.
+            judged_values = [RECOVERY_LABELS.get(replay["labels"]["resume_corrected"], "-"),
+                             treated["err_xy"] if treated else "-", reference["err_xy"] if reference else "-",
+                             treated["err_xy"] / reference["err_xy"] if treated and reference and reference["err_xy"]
+                             else "-",
+                             f"{rule['recommended']} · {rule['outcome']}"]
+            budget_values = [MOTOR_CURVE_STATES.get(curve["status"], curve["status"]),
+                             *([point["err_xy_ratio"] for point in curve["points"]] if complete
+                               else ["-"] * len(iterations)),
+                             (curve.get("first_healthy_iteration") or "없음") if complete else "-",
+                             {True: "예", False: "아니오"}.get(curve.get("budget_limited_candidate"), "-")]
+        judged.append([seed, *[_motor_cell(sources, value, row["id"]) for value in judged_values]])
+        budget.append([seed, *[_motor_cell(sources, value, row["id"]) for value in budget_values]])
+    notes = ["seed마다 단일 실행이다. 이미 본 seed의 합성 결함 개발 결과이며 일반화나 AI 교정 선택을 입증하지 않는다."]
+    if ready:
+        notes.append(W.FIXED["result_wording"]["budget_curve"])
+    if len(ready) == len(tags) == 2:
+        summary = W.aggregate_public([sources.root / source for source in ready])
+        update = summary["rule_update"]
+        held = {True: "예", False: "아니오", None: "-"}[summary["prediction_held_all_seeds"]]
+        judged.append(["두 seed",
+                       _motor_cell(sources, f"회복 {summary['recovered']}/{len(summary['labels'])} · 예측 유지 {held}", ready[0]),
+                       "-", "-", "-", _motor_cell(sources, f"규칙 갱신 {update['decision']}", ready[0])])
+        notes.append(update["wording"])
+    status_sources = [sources.rows[f"evals/results/{tag}"]["id"] for tag in tags]
+    return {
+        "id": "motor", "title": "모터 결함: 고쳐서 이어 학습과 예산 반응",
+        "lead": ("모터 곡선 결함(F2)을 고친 뒤 정상 이어 학습과 같은 300회를 이어 학습한다. 실행 전 예측은 두 seed 모두 미회복이다. "
+                 "중간 저장본(+51·+151·+251회)은 학습 없이 다시 평가해 같은 iteration의 정상 이어 학습과 비교한다."),
+        "blocks": [
+            {"type": "table", "wide": True, "title": "seed별 판정(최종 +299회, 같은 seed 정상 이어 학습 대비)",
+             "columns": ["seed", "판정", "고쳐서 이어 학습 RMSE (m/s)", "정상 이어 학습 RMSE (m/s)", "오차 비(고쳐서 / 정상)",
+                         "규칙 권고 · 결과"],
+             "rows": judged, "status_sources": status_sources},
+            {"type": "table", "wide": True, "title": "예산 반응(보조 기록): 같은 iteration 정상 이어 학습 대비 선속도 오차 비",
+             "columns": ["seed", "기록", *[f"+{k - W.RESUME_ITERATION}" for k in iterations],
+                         "처음 healthy (iteration 번호)", "budget_limited_candidate"],
+             "rows": budget, "status_sources": status_sources},
+        ],
+        "notes": notes,
+    }
+
+
+def _motor_cell(sources: Sources, value: Any, source: str) -> dict:
+    return cell(sources, value, source, 3 if isinstance(value, float) else 0 if isinstance(value, int) else None)
 
 
 def scene_hold(sources: Sources) -> dict:
@@ -456,7 +525,8 @@ def scene_hold(sources: Sources) -> dict:
     }
 
 
-def scene_nvidia(sources: Sources) -> dict:
+def scene_nvidia(sources: Sources, slots: dict) -> dict:
+    import nat_eval_rescore as N
     roles = [
         ("Nemotron (nvidia/nemotron-3-super-120b-a12b)", "가설 순위와 다음 검사 제안", "모델 호출 기록",
          "evals/results/t1_agent_20261009/rankings.json"),
@@ -471,6 +541,13 @@ def scene_nvidia(sources: Sources) -> dict:
     ]
     rows = [[name, job, kind, {"value": "근거 파일", "source": sources.file(path)["id"], "digits": None}]
             for name, job, kind, path in roles]
+    # 재채점 행은 공개 요약이 커밋되고 공개 파일만으로 replay를 통과할 때만 값을 보인다.
+    rescore_row, rescore = sources.bundle(slots["nat_rescore"], N.replay_public, kind="public_nat_rescore")
+    rows.insert(2, ["NeMo Agent Toolkit eval (nat eval --skip_workflow)", "저장된 결정 기록을 모델 호출 없이 같은 검증기로 다시 채점",
+                    "재채점 대조 기록",
+                    {"value": rescore and f"{rescore['items']}항목 · 판정 차이 0", "source": rescore_row["id"], "digits": None}])
+    rows.insert(3, ["NeMo Agent Toolkit HITL 미들웨어(선택)", "대기 요청을 보여 주고 운영자 확인을 받음. approve만 원장 승인 한 줄",
+                    "설정·테스트", cell(sources, "근거 파일", sources.file("configs/nat_hitl_ledger_example.yml")["id"], None)])
     skill = [
         ["Reward increases are not proof that the task behavior improved", "보상 크기 대신 고정 평가 26조건의 행동 지표로 판정"],
         ["Map every reward term to a named task phase and check consistent geometry", "P_reward: 추종 보상을 몸체·월드 좌표에서 다시 계산"],
@@ -478,7 +555,7 @@ def scene_nvidia(sources: Sources) -> dict:
         ["Any recommended next run changes only one variable", "등록 교정 하나만 복원하고 회복 방식만 바꿔 비교"],
     ]
     return {
-        "id": "nvidia", "title": "NVIDIA 기술의 역할",
+        "id": "nvidia", "title": "NVIDIA 기술의 역할", "dense": True,
         "lead": "각 구성이 맡는 일과 그 근거 파일의 종류를 구분한다. 승인과 1회 소비는 OpenShell이 아니라 애플리케이션 원장이 맡는다.",
         "blocks": [
             {"type": "table", "wide": True, "title": "구성별 역할", "columns": ["구성", "하는 일", "근거 종류", "근거"], "rows": rows},
@@ -486,7 +563,8 @@ def scene_nvidia(sources: Sources) -> dict:
              "columns": ["공식 스킬 항목(요지)", "이 고리의 대응"], "rows": skill},
         ],
         "notes": ["대응표는 절차 비교이며 실행 중 그 스킬을 호출했다는 뜻이 아니다.",
-                  "NeMo Agent Toolkit 행의 근거는 설정 파일이며 이번 화면의 실행 기록은 아니다."],
+                  "NeMo Agent Toolkit·HITL 행의 근거는 설정·테스트이며 실행 기록이 아니다. HITL 확인은 선택 기능이고 기록된 시연에는 쓰지 않았다.",
+                  "재채점은 저장된 출력이 공개 요약과 같은 판정을 내는지 확인한 것이다. 결정의 정확도나 단일 호출과의 우열을 보여 주지 않으며 모델을 다시 부르지 않는다."],
     }
 
 
@@ -530,7 +608,7 @@ def build(root: Path = ROOT) -> dict:
     slots = _read(root / SLOTS)
     scenes = [scene_failure(sources, slots), scene_curves(sources), scene_warning(sources),
               scene_probe(sources, slots), scene_correction(sources, slots), scene_recovery(sources, slots),
-              scene_hold(sources), scene_nvidia(sources), scene_cost(sources, slots)]
+              scene_motor(sources, slots), scene_hold(sources), scene_nvidia(sources, slots), scene_cost(sources, slots)]
     for index, scene in enumerate(scenes, start=1):
         scene["number"] = index
     data = {"schema": SCHEMA,

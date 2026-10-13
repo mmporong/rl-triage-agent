@@ -8039,6 +8039,7 @@ window.REPLAY_DATA = {
   {
    "id": "recovery",
    "title": "회복 방식 비교: 고쳐서 이어 학습할까, 처음부터 다시 할까",
+   "dense": true,
    "lead": "같은 300회 예산으로 이어 학습, 탐색 재설정 이어 학습, 처음부터 재학습을 비교한다. 이어 학습 계열은 이어 학습한 정상 정책, 재학습은 원본 정상 정책과 비교한다.",
    "blocks": [
     {
@@ -8354,6 +8355,218 @@ window.REPLAY_DATA = {
    "number": 6
   },
   {
+   "id": "motor",
+   "title": "모터 결함: 고쳐서 이어 학습과 예산 반응",
+   "lead": "모터 곡선 결함(F2)을 고친 뒤 정상 이어 학습과 같은 300회를 이어 학습한다. 실행 전 예측은 두 seed 모두 미회복이다. 중간 저장본(+51·+151·+251회)은 학습 없이 다시 평가해 같은 iteration의 정상 이어 학습과 비교한다.",
+   "blocks": [
+    {
+     "type": "table",
+     "wide": true,
+     "title": "seed별 판정(최종 +299회, 같은 seed 정상 이어 학습 대비)",
+     "columns": [
+      "seed",
+      "판정",
+      "고쳐서 이어 학습 RMSE (m/s)",
+      "정상 이어 학습 RMSE (m/s)",
+      "오차 비(고쳐서 / 정상)",
+      "규칙 권고 · 결과"
+     ],
+     "rows": [
+      [
+       "2026",
+       {
+        "value": "미회복",
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": null
+       },
+       {
+        "value": 0.22469600167988962,
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": 3
+       },
+       {
+        "value": 0.14332131470449136,
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": 3
+       },
+       {
+        "value": 1.5677779829412084,
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": 3
+       },
+       {
+        "value": "resume · recommended_not_recovered",
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": null
+       }
+      ],
+      [
+       "2028",
+       {
+        "value": "미회복",
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": null
+       },
+       {
+        "value": 0.2079049066299209,
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": 3
+       },
+       {
+        "value": 0.13270022049957778,
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": 3
+       },
+       {
+        "value": 1.5667261580065153,
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": 3
+       },
+       {
+        "value": "resume · recommended_not_recovered",
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": null
+       }
+      ],
+      [
+       "두 seed",
+       {
+        "value": "회복 0/2 · 예측 유지 예",
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": null
+       },
+       "-",
+       "-",
+       "-",
+       {
+        "value": "규칙 갱신 change",
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/motor_w1_s2026_20261013",
+      "evals/results/motor_w1_s2028_20261013"
+     ]
+    },
+    {
+     "type": "table",
+     "wide": true,
+     "title": "예산 반응(보조 기록): 같은 iteration 정상 이어 학습 대비 선속도 오차 비",
+     "columns": [
+      "seed",
+      "기록",
+      "+0",
+      "+51",
+      "+151",
+      "+251",
+      "+299",
+      "처음 healthy (iteration 번호)",
+      "budget_limited_candidate"
+     ],
+     "rows": [
+      [
+       "2026",
+       {
+        "value": "완료",
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": null
+       },
+       {
+        "value": 6.882881872122323,
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": 3
+       },
+       {
+        "value": 6.263416679287062,
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": 3
+       },
+       {
+        "value": 4.257405738071035,
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": 3
+       },
+       {
+        "value": 2.827593875383056,
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": 3
+       },
+       {
+        "value": 1.5677779829412084,
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": 3
+       },
+       {
+        "value": "없음",
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": null
+       },
+       {
+        "value": "예",
+        "source": "evals/results/motor_w1_s2026_20261013",
+        "digits": null
+       }
+      ],
+      [
+       "2028",
+       {
+        "value": "완료",
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": null
+       },
+       {
+        "value": 7.228255498425865,
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": 3
+       },
+       {
+        "value": 6.673012567387177,
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": 3
+       },
+       {
+        "value": 5.799238313073853,
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": 3
+       },
+       {
+        "value": 2.74555833615872,
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": 3
+       },
+       {
+        "value": 1.5667261580065153,
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": 3
+       },
+       {
+        "value": "없음",
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": null
+       },
+       {
+        "value": "예",
+        "source": "evals/results/motor_w1_s2028_20261013",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/motor_w1_s2026_20261013",
+      "evals/results/motor_w1_s2028_20261013"
+     ]
+    }
+   ],
+   "notes": [
+    "seed마다 단일 실행이다. 이미 본 seed의 합성 결함 개발 결과이며 일반화나 AI 교정 선택을 입증하지 않는다.",
+    "중간 체크포인트 평가는 같은 학습 실행의 저장본을 다시 평가한 보조 기록이며 라벨과 규칙 갱신에 쓰지 않는다. 반복 실행의 예산 효과 추정이 아니다.",
+    "모터 결함의 이어 학습이 등록 기준을 통과하지 못한 seed가 있어, 다음 시연에는 actuator에도 restart를 권고하는 규칙과 restart arm을 사전등록해 시험한다. 이번 실험은 restart를 시험하지 않았고 이어 학습의 예산 부족 가능성도 남으므로 restart를 택할 근거로 쓰지 않는다. 이미 본 두 seed의 단일 실행이며 결함 일반 규칙의 근거가 아니다."
+   ],
+   "number": 7
+  },
+  {
    "id": "hold",
    "title": "멈추는 경우: 지원 밖이면 확정하지 않는다",
    "lead": "외부 원인 결함(T1)은 등록 메커니즘 밖이라 확정 대신 지원 밖으로 끝나야 하고, 정상 입력(T2)에서는 고리를 열지 않아야 한다.",
@@ -8563,11 +8776,12 @@ window.REPLAY_DATA = {
    "notes": [
     "두 시험 모두 사전등록 뒤 실행한 개발 사례다. 표본이 작아 안전성 보장으로 말하지 않는다."
    ],
-   "number": 7
+   "number": 8
   },
   {
    "id": "nvidia",
    "title": "NVIDIA 기술의 역할",
+   "dense": true,
    "lead": "각 구성이 맡는 일과 그 근거 파일의 종류를 구분한다. 승인과 1회 소비는 OpenShell이 아니라 애플리케이션 원장이 맡는다.",
    "blocks": [
     {
@@ -8598,6 +8812,26 @@ window.REPLAY_DATA = {
        {
         "value": "근거 파일",
         "source": "configs/triage_workflow.yml",
+        "digits": null
+       }
+      ],
+      [
+       "NeMo Agent Toolkit eval (nat eval --skip_workflow)",
+       "저장된 결정 기록을 모델 호출 없이 같은 검증기로 다시 채점",
+       "재채점 대조 기록",
+       {
+        "value": null,
+        "source": "evals/results/nat_eval_rescore_v1",
+        "digits": null
+       }
+      ],
+      [
+       "NeMo Agent Toolkit HITL 미들웨어(선택)",
+       "대기 요청을 보여 주고 운영자 확인을 받음. approve만 원장 승인 한 줄",
+       "설정·테스트",
+       {
+        "value": "근거 파일",
+        "source": "configs/nat_hitl_ledger_example.yml",
         "digits": null
        }
       ],
@@ -8663,9 +8897,10 @@ window.REPLAY_DATA = {
    ],
    "notes": [
     "대응표는 절차 비교이며 실행 중 그 스킬을 호출했다는 뜻이 아니다.",
-    "NeMo Agent Toolkit 행의 근거는 설정 파일이며 이번 화면의 실행 기록은 아니다."
+    "NeMo Agent Toolkit·HITL 행의 근거는 설정·테스트이며 실행 기록이 아니다. HITL 확인은 선택 기능이고 기록된 시연에는 쓰지 않았다.",
+    "재채점은 저장된 출력이 공개 요약과 같은 판정을 내는지 확인한 것이다. 결정의 정확도나 단일 호출과의 우열을 보여 주지 않으며 모델을 다시 부르지 않는다."
    ],
-   "number": 8
+   "number": 9
   },
   {
    "id": "cost",
@@ -8763,7 +8998,7 @@ window.REPLAY_DATA = {
     "parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
     "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."
    ],
-   "number": 9
+   "number": 10
   }
  ],
  "sources": {
@@ -9271,6 +9506,22 @@ window.REPLAY_DATA = {
    "status": "ready",
    "reason": null
   },
+  "evals/results/motor_w1_s2026_20261013": {
+   "id": "evals/results/motor_w1_s2026_20261013",
+   "path": "evals/results/motor_w1_s2026_20261013/artifact_manifest.json",
+   "kind": "public_bundle_motor",
+   "sha256": "44626ee28f96f95fa6bb4a2a8bbbd99ca81493c352ca86a6aab9c3eae0baa645",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/motor_w1_s2028_20261013": {
+   "id": "evals/results/motor_w1_s2028_20261013",
+   "path": "evals/results/motor_w1_s2028_20261013/artifact_manifest.json",
+   "kind": "public_bundle_motor",
+   "sha256": "2054bf830dcb40cf340e024ef29a8748efe4fccb1fbe49495b3f8d9fc40adf9f",
+   "status": "ready",
+   "reason": null
+  },
   "evals/results/t1_loop_compare_20261009/loop_compare.json": {
    "id": "evals/results/t1_loop_compare_20261009/loop_compare.json",
    "path": "evals/results/t1_loop_compare_20261009/loop_compare.json",
@@ -9308,6 +9559,22 @@ window.REPLAY_DATA = {
    "path": "evals/results/sandbox_kernel_tests.txt",
    "kind": "file",
    "sha256": "cd967fdf367ffbd2873848cf4967c32f33fea38143a6a1ed4ae6a707adb80d50",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/nat_eval_rescore_v1": {
+   "id": "evals/results/nat_eval_rescore_v1",
+   "path": "evals/results/nat_eval_rescore_v1/artifact_manifest.json",
+   "kind": "public_nat_rescore",
+   "sha256": null,
+   "status": "waiting",
+   "reason": "missing"
+  },
+  "configs/nat_hitl_ledger_example.yml": {
+   "id": "configs/nat_hitl_ledger_example.yml",
+   "path": "configs/nat_hitl_ledger_example.yml",
+   "kind": "file",
+   "sha256": "85960a3ad1089cd77cabb12d4d4914c865a4ba113a9a3ef1f4dd55bf4aa2f876",
    "status": "ready",
    "reason": null
   },

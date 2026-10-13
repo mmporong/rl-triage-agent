@@ -17,6 +17,7 @@ for directory in (ROOT / "src", ROOT / "bench", ROOT / "evals"):
     sys.path.insert(0, str(directory))
 
 import build_replay_page as B  # noqa: E402
+import run_training_correction_motor as W  # noqa: E402
 
 PAGE = ROOT / "docs/replay"
 
@@ -147,9 +148,9 @@ def test_path_checker_rejects_private_or_network_references(text):
 
 def test_build_from_repository_is_publishable_and_never_mismatched(built):
     data = built
-    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 10))
+    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 11))
     assert [scene["id"] for scene in data["scenes"]] == [
-        "failure", "curves", "warning", "probe", "correction", "recovery", "hold", "nvidia", "cost"]
+        "failure", "curves", "warning", "probe", "correction", "recovery", "motor", "hold", "nvidia", "cost"]
     statuses = {key: row["status"] for key, row in data["sources"].items()}
     assert "mismatch" not in statuses.values()
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
@@ -223,11 +224,107 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
                                    check=True, capture_output=True, text=True, encoding="utf-8")
         outputs[name] = json.loads(completed.stdout)
     clean = outputs["clean"]
-    assert len(clean) == 9 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
+    assert len(clean) == 10 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
     assert "<svg" in clean[1] and "polyline" in clean[1]
+    assert [index for index, html in enumerate(clean) if 'class="blocks dense"' in html] == [5, 8]
     for scene, html in zip(data["scenes"], clean):
         statuses = {data["sources"][source]["status"] for source in _scene_sources(scene)}
         assert ("waiting" in statuses) == ("대기" in html), scene["id"]
         assert ("mismatch" in statuses) == ("불일치" in html), scene["id"]
     assert "../../evals/results/p0c_fixed_eval_20261009/runs/h02_s2026.json" in clean[0]
     assert '<span class="pending mismatch">불일치</span>' in outputs["tampered"][0]
+
+
+def _motor_replay(seed: int, label: str = "not_recovered", curve: str = "complete") -> dict:
+    ratios = ((299, 7.3), (350, 2.1), (450, 1.6), (550, 1.5), (598, 1.6))
+    return {"status": "complete", "seed": seed, "labels": {"resume_corrected": label},
+            "behavior": {"resume_corrected": {"err_xy": 0.2}, "clean_resume_reference": {"err_xy": 0.125}},
+            "budget_curve": {"status": curve, "points": [{"iteration": k, "err_xy_ratio": r} for k, r in ratios]
+                             if curve == "complete" else [], "first_healthy_iteration": None,
+                             **({"budget_limited_candidate": True} if curve == "complete" else {})},
+            "recovery_mode_rule": {"recommended": "resume", "outcome": "recommended_not_recovered"}}
+
+
+class _MotorSources(B.Sources):
+    """모터 공개 묶음만 replay를 통과한 것으로 두고 나머지는 실제 판정을 쓴다."""
+
+    def __init__(self, root: Path, fake: dict):
+        super().__init__(root)
+        self.fake = fake
+
+    def bundle(self, relative, replay, *, kind):
+        tag = relative.rsplit("/", 1)[-1]
+        if tag not in self.fake:
+            return super().bundle(relative, replay, kind=kind)
+        self.rows[relative] = {"id": relative, "path": f"{relative}/artifact_manifest.json", "kind": kind,
+                               "sha256": "0" * 64, "status": "ready", "reason": None}
+        self.replays[relative] = self.fake[tag]
+        return self.rows[relative], self.fake[tag]
+
+
+def _rows(block: dict) -> dict:
+    return {row[0]: [cell["value"] if isinstance(cell, dict) else cell for cell in row[1:]] for row in block["rows"]}
+
+
+MOTOR_TAGS = B._read(ROOT / B.SLOTS)["motor_tags"]
+
+
+def test_motor_scene_waits_without_public_bundles(repo):
+    sources = B.Sources(repo)
+    scene = B.scene_motor(sources, {"motor_tags": MOTOR_TAGS})
+    judged, budget = scene["blocks"]
+    assert list(_rows(judged)) == list(_rows(budget)) == ["2026", "2028"]
+    assert all(value is None for block in (judged, budget) for values in _rows(block).values() for value in values)
+    assert {sources.rows[f"evals/results/{tag}"]["status"] for tag in MOTOR_TAGS} == {"waiting"}
+    assert len(scene["notes"]) == 1
+
+
+def test_motor_scene_shows_replayed_values_and_rule_update_only_with_both_seeds(repo, monkeypatch):
+    tags = list(MOTOR_TAGS)
+    calls = []
+
+    def aggregate(folders):
+        calls.append(folders)
+        return {"recovered": 0, "labels": {"2026": "not_recovered", "2028": "not_recovered"},
+                "prediction_held_all_seeds": True,
+                "rule_update": {"decision": "change", "wording": W.FIXED["result_wording"]["rule_update"]["change"]}}
+    monkeypatch.setattr(W, "aggregate_public", aggregate)
+    sources = _MotorSources(repo, {tags[0]: _motor_replay(2026), tags[1]: _motor_replay(2028)})
+    scene = B.scene_motor(sources, {"motor_tags": tags})
+    judged, budget = (_rows(block) for block in scene["blocks"])
+    assert judged["2026"][:4] == ["미회복", 0.2, 0.125, pytest.approx(1.6)]
+    assert judged["2026"][4] == "resume · recommended_not_recovered"
+    assert judged["두 seed"] == ["회복 0/2 · 예측 유지 예", "-", "-", "-", "규칙 갱신 change"]
+    assert budget["2028"] == ["완료", 7.3, 2.1, 1.6, 1.5, 1.6, "없음", "예"]
+    assert scene["blocks"][1]["columns"][2:7] == ["+0", "+51", "+151", "+251", "+299"]
+    shifted = _motor_replay(2026)
+    shifted["budget_curve"]["points"][1]["iteration"] = 351
+    with pytest.raises(ValueError, match="budget curve"):
+        B.scene_motor(_MotorSources(repo, {tags[0]: shifted}), {"motor_tags": tags})
+    zero = _motor_replay(2026)
+    zero["behavior"]["clean_resume_reference"]["err_xy"] = 0.0
+    assert _rows(B.scene_motor(_MotorSources(repo, {tags[0]: zero}), {"motor_tags": tags})["blocks"][0])["2026"][3] == "-"
+    assert scene["blocks"][1]["rows"][0][3]["digits"] == 3
+    assert len(calls) == 1 and [folder.name for folder in calls[0]] == tags
+    assert scene["notes"][1:] == [W.FIXED["result_wording"]["budget_curve"],
+                                  W.FIXED["result_wording"]["rule_update"]["change"]]
+    B.check_public({"scenes": [scene], "sources": sources.rows})
+
+    partial = _MotorSources(repo, {tags[0]: _motor_replay(2026, "invalid", "failed")})
+    scene = B.scene_motor(partial, {"motor_tags": tags})
+    judged, budget = (_rows(block) for block in scene["blocks"])
+    assert len(calls) == 1 and "두 seed" not in judged
+    assert scene["notes"][1:] == [W.FIXED["result_wording"]["budget_curve"]]
+    assert judged["2026"][0] == "판정 보류" and judged["2028"] == [None] * 5
+    assert budget["2026"] == ["기록 실패", "-", "-", "-", "-", "-", "-", "-"] and budget["2028"] == [None] * 8
+
+
+def test_nvidia_scene_shows_the_rescore_row_only_after_the_public_summary_replays(repo):
+    slots = {"nat_rescore": "evals/results/nat_eval_rescore_v1"}
+    name = "NeMo Agent Toolkit eval (nat eval --skip_workflow)"
+
+    def rows(sources):
+        return {row[0]: row[3]["value"] for row in B.scene_nvidia(sources, slots)["blocks"][0]["rows"]}
+    waiting = B.Sources(repo)
+    assert rows(waiting)[name] is None and waiting.rows["evals/results/nat_eval_rescore_v1"]["status"] == "waiting"
+    assert rows(_MotorSources(repo, {"nat_eval_rescore_v1": {"items": 67}}))[name] == "67항목 · 판정 차이 0"

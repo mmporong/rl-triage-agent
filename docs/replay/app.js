@@ -176,7 +176,7 @@
     }).join("");
     return '<div class="topline"><span>RL Triage · 발표 재생</span><span class="counter">' + scene.number + " / " + total + "</span></div>" +
       "<header><h1>" + esc(scene.title) + '</h1><p class="lead">' + esc(scene.lead) + "</p></header>" +
-      '<div class="blocks' + (scene.blocks.length === 1 ? " single" : "") + '">' + scene.blocks.map(function (block) {
+      '<div class="blocks' + (scene.blocks.length === 1 ? " single" : "") + (scene.dense ? " dense" : "") + '">' + scene.blocks.map(function (block) {
         return renderBlock(data, block);
       }).join("") + "</div>" +
       '<div><ul class="notes">' + (scene.notes || []).map(function (note) { return "<li>" + esc(note) + "</li>"; }).join("") + "</ul>" +

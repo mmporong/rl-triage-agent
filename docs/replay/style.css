@@ -36,6 +36,11 @@ h1 { margin: 14px 0 8px; font-size: 48px; line-height: 1.2; letter-spacing: -0.5
 .block { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; min-width: 0; }
 .block.wide { grid-column: 1 / -1; }
 .block h2 { margin: 0 0 12px; font-size: 21px; color: #2b3445; }
+.blocks.dense { gap: 16px; }
+.blocks.dense .block { padding: 14px 20px; }
+.blocks.dense .block h2 { margin-bottom: 8px; }
+.blocks.dense th, .blocks.dense td { padding-top: 5px; padding-bottom: 5px; }
+.blocks.dense .evidence { margin-top: 6px; }
 
 table { width: 100%; border-collapse: collapse; font-size: 19px; }
 th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
