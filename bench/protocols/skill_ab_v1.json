@@ -1,0 +1,296 @@
+{
+ "schema": "skill_ab_protocol_v1",
+ "question": "같은 사례 사실과 스킬 evaluations.md의 질의 3개를 줄 때, 시스템 프롬프트에 공식 Isaac Lab 디버깅 스킬 텍스트(SKILL.md·reference.md·examples.md)를 넣은 경우와 뺀 경우 모델이 진술한 다음 단계 계획이 스킬의 Known failure modes와 Expected behavior 규칙에 각각 몇 번 해당하는가",
+ "scope": "seen_case_fixed_packet_stated_plan_counts_not_skill_effect_superiority_or_generalization",
+ "case": "h02_s2027",
+ "model": "nvidia/nemotron-3-super-120b-a12b",
+ "request": {
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "temperature": 0,
+  "max_tokens": 16384,
+  "stream": false,
+  "extra_body": {
+   "reasoning_effort": "none"
+  }
+ },
+ "top_p": "보내지 않음(제공자 기본값)",
+ "repeats": 5,
+ "calls": 30,
+ "order_seed": 20261013,
+ "call_order": [
+  {
+   "call": 1,
+   "repeat": 1,
+   "prompt_id": "S2:with_skill"
+  },
+  {
+   "call": 2,
+   "repeat": 1,
+   "prompt_id": "S1:without_skill"
+  },
+  {
+   "call": 3,
+   "repeat": 1,
+   "prompt_id": "S2:without_skill"
+  },
+  {
+   "call": 4,
+   "repeat": 1,
+   "prompt_id": "S1:with_skill"
+  },
+  {
+   "call": 5,
+   "repeat": 1,
+   "prompt_id": "S3:without_skill"
+  },
+  {
+   "call": 6,
+   "repeat": 1,
+   "prompt_id": "S3:with_skill"
+  },
+  {
+   "call": 7,
+   "repeat": 2,
+   "prompt_id": "S2:without_skill"
+  },
+  {
+   "call": 8,
+   "repeat": 2,
+   "prompt_id": "S1:without_skill"
+  },
+  {
+   "call": 9,
+   "repeat": 2,
+   "prompt_id": "S3:without_skill"
+  },
+  {
+   "call": 10,
+   "repeat": 2,
+   "prompt_id": "S2:with_skill"
+  },
+  {
+   "call": 11,
+   "repeat": 2,
+   "prompt_id": "S3:with_skill"
+  },
+  {
+   "call": 12,
+   "repeat": 2,
+   "prompt_id": "S1:with_skill"
+  },
+  {
+   "call": 13,
+   "repeat": 3,
+   "prompt_id": "S1:without_skill"
+  },
+  {
+   "call": 14,
+   "repeat": 3,
+   "prompt_id": "S3:with_skill"
+  },
+  {
+   "call": 15,
+   "repeat": 3,
+   "prompt_id": "S2:without_skill"
+  },
+  {
+   "call": 16,
+   "repeat": 3,
+   "prompt_id": "S2:with_skill"
+  },
+  {
+   "call": 17,
+   "repeat": 3,
+   "prompt_id": "S3:without_skill"
+  },
+  {
+   "call": 18,
+   "repeat": 3,
+   "prompt_id": "S1:with_skill"
+  },
+  {
+   "call": 19,
+   "repeat": 4,
+   "prompt_id": "S1:with_skill"
+  },
+  {
+   "call": 20,
+   "repeat": 4,
+   "prompt_id": "S3:with_skill"
+  },
+  {
+   "call": 21,
+   "repeat": 4,
+   "prompt_id": "S3:without_skill"
+  },
+  {
+   "call": 22,
+   "repeat": 4,
+   "prompt_id": "S2:with_skill"
+  },
+  {
+   "call": 23,
+   "repeat": 4,
+   "prompt_id": "S1:without_skill"
+  },
+  {
+   "call": 24,
+   "repeat": 4,
+   "prompt_id": "S2:without_skill"
+  },
+  {
+   "call": 25,
+   "repeat": 5,
+   "prompt_id": "S3:without_skill"
+  },
+  {
+   "call": 26,
+   "repeat": 5,
+   "prompt_id": "S2:with_skill"
+  },
+  {
+   "call": 27,
+   "repeat": 5,
+   "prompt_id": "S3:with_skill"
+  },
+  {
+   "call": 28,
+   "repeat": 5,
+   "prompt_id": "S1:without_skill"
+  },
+  {
+   "call": 29,
+   "repeat": 5,
+   "prompt_id": "S2:without_skill"
+  },
+  {
+   "call": 30,
+   "repeat": 5,
+   "prompt_id": "S1:with_skill"
+  }
+ ],
+ "attempts": "호출마다 첫 시도. 인프라 오류(연결·시간 초과·429·5xx·빈 응답·잘린 응답)일 때만 같은 호출로 1회 더. 응답 내용 때문에 재시도하지 않는다",
+ "status_definitions": {
+  "answered": "응답 본문이 있고 잘리지 않았다. 채점 가능 여부와 무관하게 응답 분모에 들어간다",
+  "infra_error": "두 번째 시도까지 인프라 오류. 첫 시도만 인프라 오류이고 두 번째 시도가 없으면 미완료로 두고 요약하지 않는다",
+  "call_error": "인프라 외 호출 오류(인증·요청 형식 등). 하나라도 있으면 요약하지 않고 실행 환경을 고친 뒤 새 버전으로 다시 한다"
+ },
+ "scoring": {
+  "code": "evals/skill_ab.py",
+  "grader": "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/evaluations.md(프롬프트에 넣지 않음)",
+  "rules": {
+   "failure_modes": {
+    "S1": [
+     "Declares the run successful from reward alone.",
+     "Changes PPO hyperparameters before checking reward and observation semantics."
+    ],
+    "S2": [
+     "Patches the runner to ignore shape mismatches.",
+     "Assumes the checkpoint is corrupt before checking environment dimensions."
+    ],
+    "S3": [
+     "Attributes behavior to one change without controls.",
+     "Chooses checkpoints only from total reward."
+    ]
+   },
+   "expected": {
+    "S1": [
+     "Separates reward curves from task success metrics.",
+     "Audits per-term rewards against task phases.",
+     "Checks success reward, termination, and metric geometry.",
+     "Recommends deterministic rollout or state traces before retuning PPO."
+    ],
+    "S2": [
+     "Compares current observation/action spaces with the checkpoint training config.",
+     "Treats shape mismatch as an environment-contract issue.",
+     "Recommends retraining or reverting unintended contract changes."
+    ],
+    "S3": [
+     "Marks the run as exploratory because multiple variables changed.",
+     "Recommends control runs or one-variable ablations.",
+     "Defines success metrics before launching the next run."
+    ]
+   }
+  },
+  "rule_texts_sha256": "c5e31208106a0b4ae921a34fb2745a9702942277b4d9d47a65e193f0962823a3",
+  "scorable": "응답이 JSON 객체 하나이고 키·enum이 응답 형식과 같다(```json 울타리 허용)",
+  "human_grading_items": [
+   "explanation is consistent with the case packet",
+   "step details are specific and correct"
+  ],
+  "automatic": "규칙으로 판정 가능한 항목만 자동 채점한다. 결과를 본 뒤 규칙을 바꾸지 않는다"
+ },
+ "denominators": {
+  "calls": "조건마다 15회(시나리오 3 × 반복 5). 인프라 오류로 끝난 호출은 응답이 아니므로 응답 분모에서 빼고 따로 적는다",
+  "unscorable": "채점 불가 응답 수 / 그 조건의 응답 수",
+  "failure_modes": "응답 × 시나리오별 실패 모드 2개. 채점 가능한 응답의 항목은 규칙 판정, 채점 불가 응답의 항목은 사람 채점 필요로 같은 분모에 남긴다",
+  "expected": "응답 × 시나리오별 기대 행동 수(S1 4, S2 3, S3 3). 규칙 판정과 사람 채점 필요를 같은 방식으로 나눈다",
+  "human_grading": "응답 × 설명 항목 2개. 조건을 가린 채 사람이 채점하며 이 요약에서는 pending이다"
+ },
+ "metrics": [
+  "조건·시나리오별 응답·채점 가능·채점 불가 수와 사유",
+  "실패 모드 해당 수(규칙 판정)와 사람 채점 필요 수",
+  "기대 행동 포함 수(규칙 판정)와 사람 채점 필요 수",
+  "스킬 포함 − 미포함 실패 모드 해당 건수 차이",
+  "입력·출력 토큰과 호출 wall 시간(나란히 기록)",
+  "인프라 오류 재시도 수"
+ ],
+ "wording": {
+  "result": "같은 고정 입력에서 스킬 포함 프롬프트 응답의 알려진 실패 모드 해당은 규칙 판정 {with_failure_hits}/{with_failure_judged}건, 스킬 미포함 프롬프트 응답은 {without_failure_hits}/{without_failure_judged}건이다(포함 − 미포함 = {failure_hit_difference:+d}건). 기대 행동 포함은 규칙 판정 {with_expected_hits}/{with_expected_judged}건과 {without_expected_hits}/{without_expected_judged}건이다. 채점 불가 응답은 {with_unscorable}개와 {without_unscorable}개이며, 그 응답의 규칙 항목과 모든 응답의 설명 항목은 사람 채점 필요로 분모에 남겼다.",
+  "common": "이미 본 한 사례의 고정 입력을 반복 호출해 모델이 진술한 계획을 센 개발 측정이다. 실행한 행동이나 진단의 맞고 틀림은 재지 않았다. 스킬 예시가 채점 기준과 겹치고 두 조건이 같은 행동 목록을 받으므로, 건수 차이는 기록일 뿐 스킬의 효과·우위·일반화의 근거가 아니다.",
+  "incomplete": "등록한 호출이 모두 끝나지 않아 요약하지 않았다."
+ },
+ "forbidden_claims": [
+  "스킬이 성능을 높였다",
+  "스킬을 넣으면 더 정확하다",
+  "다른 방법과의 우열",
+  "일반화",
+  "절감",
+  "최초"
+ ],
+ "results_path": "evals/results/skill_ab_v1/summary.json",
+ "prompts": {
+  "S1:without_skill": {
+   "system_sha256": "ce6680d338437a30aee0ebc54b36d7166832d2d0c734c98139e70faa3ee88254",
+   "user_sha256": "418262e61a1458f6eb90784b0d756c757bedbc2b3e031403437ce3e99e152f7f"
+  },
+  "S1:with_skill": {
+   "system_sha256": "a989c03ae933454fd33d1e063b496e7ec9804bed55e4d781a9f62c7cb89f6913",
+   "user_sha256": "418262e61a1458f6eb90784b0d756c757bedbc2b3e031403437ce3e99e152f7f"
+  },
+  "S2:without_skill": {
+   "system_sha256": "ce6680d338437a30aee0ebc54b36d7166832d2d0c734c98139e70faa3ee88254",
+   "user_sha256": "a431e054178a4cdc87dede1292db1df7464c1298219b4b57b881320143014580"
+  },
+  "S2:with_skill": {
+   "system_sha256": "a989c03ae933454fd33d1e063b496e7ec9804bed55e4d781a9f62c7cb89f6913",
+   "user_sha256": "a431e054178a4cdc87dede1292db1df7464c1298219b4b57b881320143014580"
+  },
+  "S3:without_skill": {
+   "system_sha256": "ce6680d338437a30aee0ebc54b36d7166832d2d0c734c98139e70faa3ee88254",
+   "user_sha256": "9bf96cbcfda953a3bbfb34c0b8f095f5e0ebe25d0c9268c3d02e6385151b0164"
+  },
+  "S3:with_skill": {
+   "system_sha256": "a989c03ae933454fd33d1e063b496e7ec9804bed55e4d781a9f62c7cb89f6913",
+   "user_sha256": "9bf96cbcfda953a3bbfb34c0b8f095f5e0ebe25d0c9268c3d02e6385151b0164"
+  }
+ },
+ "packet_sha256": "7193a2962bf1424d51052de0d00902af04f8347701b517b06f6d059e7db52e65",
+ "skill_files_in_prompt": {
+  "SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+  "reference.md": "b80f37170bf30569af5407eb7e26b7d8ee994f8d0b9a84aaf901f6f3b2eafa03",
+  "examples.md": "25e5f889134a3bd01b19643b7d34a540ab6d2d0412490773316f866a440950a8"
+ },
+ "grader_file_not_in_prompt": {
+  "evaluations.md": "546df6bae996e9e871ce8de24afba092e011c5d971daad5a4b274fb96a5ccdbc"
+ },
+ "source_files": {
+  "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+  "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/evaluations.md": "546df6bae996e9e871ce8de24afba092e011c5d971daad5a4b274fb96a5ccdbc",
+  "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/examples.md": "25e5f889134a3bd01b19643b7d34a540ab6d2d0412490773316f866a440950a8",
+  "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/reference.md": "b80f37170bf30569af5407eb7e26b7d8ee994f8d0b9a84aaf901f6f3b2eafa03",
+  "evals/skill_ab.py": "7133dec81393aa5165ec470f625c377ebd7fa360a8dd9d8afc67f78c9c0b0332",
+  "evals/skill_ab_call.py": "1a46cc747a63b294c14aba8764cad0e9a8625b26303cae52884527e44d59b345",
+  "evals/skill_ab_compare.py": "7c0c2600b44ff5efd3ccd49a1a01dac61c607a2d3516f93ae85739f3840cb99b"
+ }
+}
