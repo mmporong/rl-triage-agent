@@ -570,6 +570,9 @@ def scene_hold(sources: Sources) -> dict:
 UPSTREAM_SMOKE_PROTOCOL = "bench/protocols/upstream_u1_smoke_v1.json"
 UPSTREAM_SMOKE_RESULT = "evals/results/upstream_u1_smoke_20261013/result.json"
 UPSTREAM_DEMO_PROTOCOL = "bench/protocols/e2e_demo_u1_v1.json"
+# 운영 기준의 정의. 근거는 시연 프로토콜 scope_gate.enforce_outcome(강제 모드: 범위가 충분하지 않으면 재학습 전에 종료)이다
+UPSTREAM_OPERATING_NOTE = ("운영 기준은 강제 모드다(시연 프로토콜 scope_gate.enforce_outcome: 범위가 충분하지 않으면 재학습 전에 종료). "
+                           "이 시연의 재학습은 사전등록한 대조 모드의 예외다.")
 
 
 def _short_ref(url: str | None, pattern: str) -> str | None:
@@ -646,7 +649,8 @@ def scene_upstream_demo(sources: Sources, slots: dict) -> dict:
             *DS.scope_blocks(sources, relative),
         ],
         "notes": ["seed 하나의 단일 실행이며 진단 정확도·일반화·교정 성공률의 근거가 아니다. 승인은 위임된 운영자 승인이며 "
-                  "승인자 신원은 인증하지 않았다."],
+                  "승인자 신원은 인증하지 않았다.",
+                  UPSTREAM_OPERATING_NOTE],
     }
 
 

@@ -321,6 +321,9 @@ def test_upstream_scenes_read_the_source_smoke_and_demo_protocol_and_wait_for_th
     slots = {**B._read(ROOT / B.SLOTS), "upstream_end_to_end": "evals/results/upstream_demo_not_run/demo_result.json"}
     demo = B.scene_upstream_demo(sources, slots)
     steps, scope = demo["blocks"]
+    protocol = B._read(ROOT / B.UPSTREAM_DEMO_PROTOCOL)["scope_gate"]  # 운영 기준 메모는 공개 프로토콜의 강제 모드 규칙이다
+    assert B.UPSTREAM_OPERATING_NOTE in demo["notes"] and "재학습 전에 종료" in protocol["enforce_outcome"]
+    assert protocol["mode"] == "contrast" and "검증용으로 승인" in protocol["contrast_run"]
     assert [steps["type"], scope["type"]] == ["slot", "slot"] and steps["source"] == scope["source"]
     assert sources.rows[steps["source"]]["status"] == "waiting"
     B.check_public({"scenes": [scene, demo], "sources": sources.rows})

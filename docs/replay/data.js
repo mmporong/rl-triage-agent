@@ -9345,6 +9345,14 @@ window.REPLAY_DATA = {
        }
       ],
       [
+       "교정 승인 성격",
+       {
+        "value": "대조 측정용 승인(운영 기준 예외) · 요청 근거 scope_insufficient · 체크리스트 미충족 3·5·6 · 강제 모드였다면 재학습 전 종료",
+        "source": "bench/protocols/e2e_demo_u1_v1.json",
+        "digits": null
+       }
+      ],
+      [
        "사전 예측 적중(점검 · 교정 · 대조)",
        {
         "value": "예 · 예 · 예",
@@ -9370,12 +9378,14 @@ window.REPLAY_DATA = {
       ]
      ],
      "status_sources": [
-      "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json"
+      "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json",
+      "bench/protocols/e2e_demo_u1_v1.json"
      ]
     }
    ],
    "notes": [
-    "seed 하나의 단일 실행이며 진단 정확도·일반화·교정 성공률의 근거가 아니다. 승인은 위임된 운영자 승인이며 승인자 신원은 인증하지 않았다."
+    "seed 하나의 단일 실행이며 진단 정확도·일반화·교정 성공률의 근거가 아니다. 승인은 위임된 운영자 승인이며 승인자 신원은 인증하지 않았다.",
+    "운영 기준은 강제 모드다(시연 프로토콜 scope_gate.enforce_outcome: 범위가 충분하지 않으면 재학습 전에 종료). 이 시연의 재학습은 사전등록한 대조 모드의 예외다."
    ],
    "number": 12
   },

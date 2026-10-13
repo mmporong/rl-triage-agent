@@ -308,6 +308,7 @@ def upstream_result(contrast: str | None = "insufficient_and_not_recovered") -> 
                   scope_contrast=None if contrast is None else {"category": contrast, "wording": "대조 문구."},
                   prediction_results={"scope_check": True, "correction": True, "scope_contrast": True})
     result["correction"]["request"] = {"correction_id": "restore_body_frame_reward", "recovery_mode": "restart"}
+    result["correction"]["scope_check_bound"] = True
     result["correction"]["result"]["correction_readback"] = {
         "note": READBACK_NOTE, "registered_target_state": "restored_to_clean",
         "aux_fingerprints": {"used_for_verdict": False,
@@ -318,7 +319,9 @@ def upstream_result(contrast: str | None = "insufficient_and_not_recovered") -> 
 def _commit_upstream(repo: Path, result: dict) -> None:
     (repo / RESULT).write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
     (repo / UPSTREAM_PROTOCOL).write_text(json.dumps({"correction": {
-        "correction_id": "restore_body_frame_reward", "modes": {"restart": {}, "resume": {}}}}), encoding="utf-8")
+        "correction_id": "restore_body_frame_reward", "modes": {"restart": {}, "resume": {}}},
+        "scope_gate": {"mode": "contrast", "contrast_run": "운영자는 부족 판정을 보고 검증용으로 승인한다",
+                       "enforce_outcome": "강제 모드에서 재학습 전에 종료"}}), encoding="utf-8")
     _git(repo, "add", RESULT, UPSTREAM_PROTOCOL)
     _git(repo, "commit", "-q", "-m", "upstream")
 
@@ -336,13 +339,16 @@ def test_scope_block_shows_the_check_the_judgement_and_the_contrast(repo):
     _commit_upstream(repo, upstream_result())
     sources = B.Sources(repo)
     blocks = DS.scope_blocks(sources, RESULT)
-    assert blocks[0]["title"] == "교정 범위 점검과 재학습 대조(seed 2040)" and blocks[0]["status_sources"] == [RESULT]
+    assert blocks[0]["title"] == "교정 범위 점검과 재학습 대조(seed 2040)"
+    assert blocks[0]["status_sources"] == [RESULT, UPSTREAM_PROTOCOL]
     assert _values(blocks) == {
         "점검 방식": "대조 모드: 판정 기록 뒤 재학습 1회 · 결정적 검사",
         "확정 검사 항별 상대 오차(문턱 0.05)": "track_ang_vel_z_exp 0.97 · track_lin_vel_xy_exp 0.93",
         "등록 교정과 되돌리는 함수": "restore_body_frame_reward → track_lin_vel_xy_exp",
         "점검 판정 · 등록 표적 밖 이상 항": "scope_insufficient · track_ang_vel_z_exp",
         "대조 범주(점검 × 고정 평가 판정)": "insufficient_and_not_recovered",
+        "교정 승인 성격": ("대조 측정용 승인(운영 기준 예외) · 요청 근거 scope_insufficient · 체크리스트 미충족 없음 · "
+                     "강제 모드였다면 재학습 전 종료"),
         "사전 예측 적중(점검 · 교정 · 대조)": "예 · 예 · 예",
         "교정 readback(등록 표적만 대조)": f"restored_to_clean · {READBACK_NOTE}",
         "보조 지문: 원본과 다른 함수(판정에 쓰지 않음)": "ang_vel_xy_l2, lin_vel_z_l2, track_ang_vel_z_exp"}
@@ -350,6 +356,35 @@ def test_scope_block_shows_the_check_the_judgement_and_the_contrast(repo):
     assert proposal["등록 규칙이 고른 회복 방식"] == "restart"
     assert _cost_values(sources, [(RESULT, "upstream_end_to_end", "설계자 밖 결함 U1")])[0][:2] == [
         "설계자 밖 결함 U1 seed 2040", "560 / 571"]
+
+
+@pytest.mark.parametrize("change,expected", [
+    ({}, "대조 측정용 승인(운영 기준 예외) · 요청 근거 scope_insufficient · 체크리스트 미충족 3·5·6 · 강제 모드였다면 재학습 전 종료"),
+    ({"verdict": "scope_sufficient"}, "승인 · 요청 근거 scope_sufficient · 체크리스트 미충족 3·5·6"),
+    ({"bound": False}, "승인 · 범위 점검 미결합"),
+    ({"receipt": None}, "-")])
+def test_approval_nature_comes_only_from_the_bound_request_and_the_protocol(repo, change, expected):
+    result = upstream_result()
+    result["correction"]["model_proposal"]["unmet_checklist"] = ["3", "5", "6"]
+    result["correction"]["scope_check_bound"] = change.get("bound", True)
+    if "verdict" in change:
+        result["scope_check"]["result"]["verdict"] = change["verdict"]
+    if "receipt" in change:
+        result["correction"]["receipt"] = change["receipt"]
+    if change.get("bound") is False:
+        expected = "승인 · 범위 점검 미결합"
+    _commit_upstream(repo, result)
+    assert _values(DS.scope_blocks(B.Sources(repo), RESULT))["교정 승인 성격"] == expected
+
+
+def test_approval_nature_waits_for_the_demo_protocol(repo):
+    _commit_upstream(repo, upstream_result())
+    _git(repo, "rm", "-q", "--cached", UPSTREAM_PROTOCOL)
+    _git(repo, "commit", "-q", "-m", "protocol out")
+    sources = B.Sources(repo)
+    row = next(r for r in DS.scope_blocks(sources, RESULT)[0]["rows"] if r[0] == "교정 승인 성격")
+    assert row[1] == {"value": None, "source": UPSTREAM_PROTOCOL, "digits": None}
+    assert sources.rows[UPSTREAM_PROTOCOL]["status"] == "waiting"
 
 
 def test_scope_block_of_a_demo_that_ended_before_the_check_shows_no_record(repo):

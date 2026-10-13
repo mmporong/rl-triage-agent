@@ -310,6 +310,27 @@ def _terms(names: list | None) -> str:
     return ", ".join(names or []) or "없음"
 
 
+def _approval_text(result: dict, protocol: dict | None) -> str | None:
+    """교정 승인 성격. 요청 근거에 묶인 범위 판정·미충족 체크리스트와 프로토콜의 대조·강제 모드 규칙만 쓴다.
+
+    대조 모드에서 범위가 충분하지 않다는 판정이 요청 근거에 묶인 채 승인·소비(receipt)됐으면 대조 측정용 승인이다.
+    묶이지 않았으면 승인자가 그 판정을 보았다고 말할 수 없어 일반 승인으로 둔다. 근거는 프로토콜 scope_gate의
+    contrast_run(운영자는 부족 판정을 보고 검증용으로 승인)과 enforce_outcome(강제 모드면 재학습 전 종료)이다.
+    """
+    correction = result.get("correction") or {}
+    step = result.get("scope_check") or {}
+    verdict = (step.get("result") or {}).get("verdict")
+    if not correction or (correction.get("receipt") or {}).get("event") != "receipt" or protocol is None:
+        return None
+    unmet = "·".join((correction.get("model_proposal") or {}).get("unmet_checklist") or []) or "없음"
+    evidence = f"요청 근거 {verdict} · 체크리스트 미충족 {unmet}" if correction.get("scope_check_bound") else "범위 점검 미결합"
+    gate = protocol.get("scope_gate") or {}
+    if (correction.get("scope_check_bound") and step.get("mode") == "contrast" and gate.get("contrast_run")
+            and verdict not in ("scope_sufficient", "not_applicable")):
+        return f"대조 측정용 승인(운영 기준 예외) · {evidence} · 강제 모드였다면 재학습 전 종료"
+    return f"승인 · {evidence}"
+
+
 def scope_blocks(sources: Any, relative: str | None, *, kind: str = "upstream_end_to_end") -> list[dict]:
     """U1 시연의 교정 범위 점검과 재학습 판정 대조. U1 결과가 아니면 불일치로 두고 자리 표시를 남긴다.
 
@@ -322,6 +343,7 @@ def scope_blocks(sources: Any, relative: str | None, *, kind: str = "upstream_en
     if result is None:
         return [{"type": "slot", "label": SCOPE_LABEL, "source": row["id"]}]
     sid = row["id"]
+    protocol_row, protocol = _protocol(sources, result)
     step = result.get("scope_check") or {}
     scope = step.get("result") or {}
     fixed = (result.get("correction") or {}).get("result") or {}
@@ -338,10 +360,11 @@ def scope_blocks(sources: Any, relative: str | None, *, kind: str = "upstream_en
         ["점검 판정 · 등록 표적 밖 이상 항", _cell(sources, f"{scope.get('verdict')} · {_terms(scope.get('uncovered_terms'))}"
                                                if scope else None, sid)],
         ["대조 범주(점검 × 고정 평가 판정)", _cell(sources, contrast.get("category"), sid)],
+        ["교정 승인 성격", _cell(sources, _approval_text(result, protocol), protocol_row["id"])],
         ["사전 예측 적중(점검 · 교정 · 대조)", _cell(sources, " · ".join(
             _hit(predicted.get(key)) for key in ("scope_check", "correction", "scope_contrast")) if predicted else None, sid)],
         ["교정 readback(등록 표적만 대조)", _cell(sources, _readback_text(fixed.get("correction_readback")), sid)],
         ["보조 지문: 원본과 다른 함수(판정에 쓰지 않음)", _cell(sources, _terms(aux.get("differs_from_clean")) if aux else None, sid)],
     ]
     return [{"type": "table", "title": f"교정 범위 점검과 재학습 대조(seed {result.get('seed')})",
-             "columns": ["항목", "기록"], "rows": rows, "status_sources": [sid]}]
+             "columns": ["항목", "기록"], "rows": rows, "status_sources": [sid, protocol_row["id"]]}]
