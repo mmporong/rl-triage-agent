@@ -387,6 +387,21 @@ def scene_demo(sources: Sources, slots: dict) -> dict:
     }
 
 
+def scene_nat_demo(sources: Sources, slots: dict) -> dict:
+    """NAT 결정 경로 시연: 단계 표와 NeMo Agent Toolkit 호출 기록을 나란히 둔다."""
+    import replay_demo_slots as DS
+    relative = slots.get("nat_end_to_end")
+    return {
+        "id": "nat_demo", "title": "NAT 결정 경로 시연: 진단과 교정 제안을 도구 호출로 제출", "dense": True,
+        "lead": "진단 결정과 교정 제안을 NeMo Agent Toolkit 도구 호출 워크플로가 제출했다. 승인·검사·재학습·고정 평가는 앞 시연과 같다.",
+        "blocks": [*DS.end_to_end_blocks(sources, relative, kind="nat_end_to_end", label=DS.NAT_END_TO_END_LABEL),
+                   *DS.nat_record_blocks(sources, relative)],
+        "notes": ["도구 호출 순서와 횟수는 공개 결과에 없어 설정된 도구 목록만 보인다. 설정은 시연 프로토콜이 SHA로 묶은 파일이다.",
+                  "NAT 경로 비교 요약의 채택 판정에 따라 쓴 경로이며 단일 호출과의 우열을 보여 주지 않는다. "
+                  "이미 본 결함 종류의 새 seed 한 건이다."],
+    }
+
+
 def scene_recovery(sources: Sources, slots: dict) -> dict:
     import publish_training_correction as Q3
     import publish_training_correction_v4 as Q4
@@ -545,11 +560,10 @@ def scene_hold(sources: Sources) -> dict:
 
 def scene_nvidia(sources: Sources, slots: dict) -> dict:
     import nat_eval_rescore as N
+    import replay_demo_slots as DS
     roles = [
         ("Nemotron (nvidia/nemotron-3-super-120b-a12b)", "가설 순위와 다음 검사 제안", "모델 호출 기록",
          "evals/results/t1_agent_20261009/rankings.json"),
-        ("NeMo Agent Toolkit", "도구 호출 워크플로 구성", "설정",
-         "configs/triage_workflow.yml"),
         ("Isaac Lab 2.1.1 · Isaac Sim 4.5", "검사 실행 · 재학습 · 고정 평가", "실행 기록",
          "evals/results/p1a_probes_holdout_20261009/probes/h02_s2026.json"),
         ("OpenShell", "분석 코드의 파일·네트워크 권한 경계", "샌드박스 검사 기록",
@@ -559,6 +573,8 @@ def scene_nvidia(sources: Sources, slots: dict) -> dict:
     ]
     rows = [[name, job, kind, {"value": "근거 파일", "source": sources.file(path)["id"], "digits": None}]
             for name, job, kind, path in roles]
+    rows.insert(1, ["NeMo Agent Toolkit", "시연에서 진단 결정·교정 제안을 도구 호출로 제출", "시연 결정 기록",
+                    DS.nat_role_cell(sources, slots.get("nat_end_to_end"))])
     # 재채점 행은 공개 요약이 커밋되고 공개 파일만으로 replay를 통과할 때만 값을 보인다.
     rescore_row, rescore = sources.bundle(slots["nat_rescore"], N.replay_public, kind="public_nat_rescore")
     rows.insert(2, ["NeMo Agent Toolkit eval (nat eval --skip_workflow)", "저장된 결정 기록을 모델 호출 없이 같은 검증기로 다시 채점",
@@ -581,7 +597,8 @@ def scene_nvidia(sources: Sources, slots: dict) -> dict:
              "columns": ["공식 스킬 항목(요지)", "이 고리의 대응"], "rows": skill},
         ],
         "notes": ["대응표는 절차 비교이며 실행 중 그 스킬을 호출했다는 뜻이 아니다.",
-                  "NeMo Agent Toolkit·HITL 행의 근거는 설정·테스트이며 실행 기록이 아니다. HITL 확인은 선택 기능이고 기록된 시연에는 쓰지 않았다.",
+                  "NeMo Agent Toolkit 행은 NAT 결정 경로 시연 한 건의 기록이다. HITL 행의 근거는 설정·테스트이며 실행 기록이 아니다. "
+                  "HITL 확인은 선택 기능이고 기록된 시연에는 쓰지 않았다.",
                   "재채점은 저장된 출력이 공개 요약과 같은 판정을 내는지 확인한 것이다. 결정의 정확도나 단일 호출과의 우열을 보여 주지 않으며 모델을 다시 부르지 않는다."],
     }
 
@@ -611,7 +628,8 @@ def scene_cost(sources: Sources, slots: dict) -> dict:
     ]
     import replay_demo_slots as DS
     demos = DS.cost_block(sources, [(slots.get("end_to_end"), "end_to_end", "보상 결함"),
-                                    (slots.get("motor_end_to_end"), "motor_end_to_end", "모터 결함")])
+                                    (slots.get("motor_end_to_end"), "motor_end_to_end", "모터 결함"),
+                                    (slots.get("nat_end_to_end"), "nat_end_to_end", "보상 결함(NAT 경로)")])
     return {
         "id": "cost", "title": "비용과 재현", "dense": True,
         "lead": "숫자는 공개 결과 파일에서 다시 계산한다. 재현 명령은 GPU·모델·네트워크 없이 공개 묶음의 해시와 판정을 재생한다.",
@@ -630,7 +648,7 @@ def build(root: Path = ROOT) -> dict:
     slots = _read(root / SLOTS)
     scenes = [scene_failure(sources, slots), scene_curves(sources), scene_warning(sources),
               scene_probe(sources), scene_correction(sources, slots), scene_demo(sources, slots),
-              scene_recovery(sources, slots),
+              scene_nat_demo(sources, slots), scene_recovery(sources, slots),
               scene_motor(sources, slots), scene_hold(sources), scene_nvidia(sources, slots), scene_cost(sources, slots)]
     for index, scene in enumerate(scenes, start=1):
         scene["number"] = index

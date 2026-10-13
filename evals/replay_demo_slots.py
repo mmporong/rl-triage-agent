@@ -1,14 +1,18 @@
-"""발표 재생 화면(E5)의 종단 시연 자리(end_to_end·correction_proposal과 모터 시연 짝)를 시연 공개 결과로 채운다.
+"""발표 재생 화면(E5)의 종단 시연 자리(보상·모터·NAT 결정 경로 시연)를 시연 공개 결과로 채운다.
 
 slots.json의 경로가 비어 있거나 파일이 승인되지 않았으면(없음·미커밋·변경·형식 다름) 기존 자리 표시를 그대로 둔다.
 값은 승인된 demo_result.json(evals/e2e_reward_demo.py·e2e_reward_demo_v2.py·e2e_demo_v3_1.py summarize 산출물)에서만
 옮기고, 회복 판정은 시연의 고정 평가 판정을 그대로 보여 줄 뿐 다시 계산하지 않는다. 승인된 결과에 값이 없으면
-대기가 아니라 기록 없음("-")이나 판정 없음으로 표시한다. GPU·모델·네트워크를 쓰지 않는다.
+대기가 아니라 기록 없음("-")이나 판정 없음으로 표시한다. NAT 도구 목록은 시연 프로토콜이 SHA로 묶은 설정에서만 읽는다.
+GPU·모델·네트워크를 쓰지 않는다.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from typing import Any
+
+import yaml
 
 # 결과 schema → 그 시연 판의 프로토콜(등록 교정·회복 방식 표시에 쓴다). v3.1은 결함 변형별 프로토콜이다.
 DEMO_PROTOCOLS = {
@@ -23,6 +27,13 @@ END_TO_END_LABEL = "종단 시연: 새 Nemotron 호출 → 승인 → 1회 소�
 PROPOSAL_LABEL = "교정 제안 기록: 모델 제안 · 결정적 규칙 · 체크리스트"
 MOTOR_END_TO_END_LABEL = "모터 결함 종단 시연: 새 Nemotron 호출 → 승인된 검사 → 교정 승인 → Isaac 재학습 → receipt"
 MOTOR_PROPOSAL_LABEL = "모터 결함 교정 제안 기록: 모델 제안 · 결정적 규칙 · 체크리스트"
+NAT_END_TO_END_LABEL = "NAT 결정 경로 종단 시연: NeMo Agent Toolkit 도구 호출 → 승인된 검사 → 교정 승인 → Isaac 재학습 → receipt"
+NAT_RECORD_LABEL = "NeMo Agent Toolkit 호출 기록: LLM 호출 · 제출 전 점검 · 토큰 · 설정 도구"
+# 결과의 decision_path → 화면 표기. v1·v2 결과에는 필드가 없고 단일 호출이다.
+DECISION_PATHS = {"single": "새 Nemotron 호출", "nat_v4": "NeMo Agent Toolkit 도구 호출"}
+# NAT 결정 경로 → 진단·교정 워크플로 설정(시연 프로토콜 source_files가 LF SHA로 묶는다)
+NAT_CONFIGS = {"nat_v4": {"diagnosis": "configs/nat_demo_v4_diagnosis.yml",
+                          "correction": "configs/nat_demo_v4_correction.yml"}}
 NO_RECORD = "-"
 NO_VERDICT = "판정 없음"
 
@@ -62,7 +73,14 @@ def _load(sources: Any, relative: str | None, kind: str) -> tuple[dict, dict | N
     if protocol_path(result) is None:
         row["status"], row["reason"] = "mismatch", "unexpected_variant"
         return row, None
+    if (result.get("decision_path") or "single") not in DECISION_PATHS:
+        row["status"], row["reason"] = "mismatch", "unexpected_decision_path"
+        return row, None
     return row, result
+
+
+def _path_label(result: dict) -> str:
+    return DECISION_PATHS[result.get("decision_path") or "single"]
 
 
 def _fault_label(result: dict) -> str:
@@ -87,17 +105,19 @@ def end_to_end_blocks(sources: Any, relative: str | None, *, kind: str = "end_to
     label = fixed.get("label") or (NO_VERDICT if correction else None)
     steps = [
         ["시연 결과", _cell(sources, f"{result.get('outcome')} · 성공 조건 {sum(bool(v) for v in checks.values())}/{len(checks)}", sid)],
-        ["첫 판단(새 Nemotron 호출)", _cell(sources, (
+        [f"첫 판단({_path_label(result)})", _cell(sources, (
             f"{decision.get('action')} · 상위 3 {', '.join(decision.get('ranking', [])[:3])} · 제안 검사 {decision.get('probe')}"
             if decision else None), sid)],
         ["승인된 검사", _cell(sources, f"{len(done)}건 실행 · {observed} · {loop.get('status')}" if loop else None, sid)],
     ]
     specificity = result.get("specificity")
-    if specificity is not None:  # v3.1: 확정 뒤 다른 원인 검사도 정상인지 보는 관문
+    if specificity is not None:  # v3.1: 확정 뒤 다른 원인 검사도 정상인지 보는 관문(변형에 따라 등록 검사가 없다)
         outcomes = ", ".join(f"{probe} {outcome}" for probe, outcome in sorted((specificity.get("outcomes") or {}).items()))
-        steps.append(["특이성 관문", _cell(sources, f"{'통과' if specificity.get('passed') else '미통과'} · {outcomes}", sid)])
+        shown = (f"{'통과' if specificity.get('passed') else '미통과'} · {outcomes}" if specificity.get("required")
+                 else "등록된 보조 검사 없음")
+        steps.append(["특이성 관문", _cell(sources, shown, sid)])
     steps += [
-        ["교정 제안(새 Nemotron 호출)", _cell(sources, (
+        [f"교정 제안({_path_label(result)})", _cell(sources, (
             f"{proposal.get('decision')} · 계약 통과 {_yes(proposal.get('accepted'))} · 규칙과 일치 {_yes(proposal.get('agrees_with_rule'))}"
             if proposal else None), sid)],
         ["승인 뒤 교정 실행 receipt", _cell(sources, f"{receipt.get('event')} · {receipt.get('verdict')}" if receipt else None, sid)],
@@ -157,15 +177,18 @@ def _registered(protocol: dict | None) -> str | None:
     return f"{correction['correction_id']} · {modes}"
 
 
+def _protocol(sources: Any, result: dict) -> tuple[dict, dict | None]:
+    row = sources.file(protocol_path(result))
+    return row, (json.loads((sources.root / row["path"]).read_text(encoding="utf-8")) if row["status"] == "ready" else None)
+
+
 def correction_proposal_blocks(sources: Any, relative: str | None, *, kind: str = "correction_proposal",
                                label: str = PROPOSAL_LABEL, wide: bool = True) -> list[dict]:
     row, result = _load(sources, relative, kind)
     if result is None:
         return [{"type": "slot", "wide": wide, "label": label, "source": row["id"]}]
     sid = row["id"]
-    protocol_row = sources.file(protocol_path(result))
-    protocol = (json.loads((sources.root / protocol_row["path"]).read_text(encoding="utf-8"))
-                if protocol_row["status"] == "ready" else None)
+    protocol_row, protocol = _protocol(sources, result)
     correction = result.get("correction") or {}
     proposal, receipt = correction.get("model_proposal") or {}, correction.get("receipt") or {}
     unmet = proposal.get("unmet_checklist")
@@ -182,3 +205,79 @@ def correction_proposal_blocks(sources: Any, relative: str | None, *, kind: str 
     ]
     return [{"type": "table", "wide": wide, "title": f"교정 제안 기록(종단 시연 seed {result.get('seed')}{_fault_label(result)})",
              "columns": ["항목", "기록"], "rows": rows, "status_sources": [sid, protocol_row["id"]]}]
+
+
+def _load_nat(sources: Any, relative: str | None, kind: str) -> tuple[dict, dict | None]:
+    """NAT 결정 경로 시연 결과. 승인된 결과가 NAT 경로가 아니면 불일치로 둔다."""
+    row, result = _load(sources, relative, kind)
+    if result is not None and result.get("decision_path") not in NAT_CONFIGS:
+        row["status"], row["reason"] = "mismatch", "not_nat_decision_path"
+        return row, None
+    return row, result
+
+
+def _lf_sha(path) -> str:
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
+def _bound_config(sources: Any, path: str, protocol: dict | None) -> dict:
+    """시연 프로토콜 source_files가 묶은 LF SHA와 같은 설정 파일만 확인으로 둔다."""
+    row = sources.file(path, kind="nat_config")
+    if row["status"] == "ready" and protocol is None:
+        row["status"], row["reason"] = "waiting", "demo_protocol_not_ready"
+    elif row["status"] == "ready" and protocol.get("source_files", {}).get(path) != _lf_sha(sources.root / path):
+        row["status"], row["reason"] = "mismatch", "demo_protocol_sha_mismatch"
+    return row
+
+
+def _call_text(call: dict) -> str | None:
+    if not call or call.get("llm_calls") is None:
+        return None
+    parts = [f"LLM {call['llm_calls']}회"]
+    if call.get("precheck_calls") is not None:
+        parts.append(f"제출 전 점검 {call['precheck_calls']}회")
+    if call.get("execution_wall_s") is not None:
+        parts.append(f"실행 {call['execution_wall_s']:.1f} s")
+    return " · ".join(parts)
+
+
+def nat_record_blocks(sources: Any, relative: str | None, *, kind: str = "nat_end_to_end") -> list[dict]:
+    """NAT 결정 경로의 호출 기록. 도구 호출 순서는 공개 결과에 없어 설정된 도구 목록만 보인다."""
+    row, result = _load_nat(sources, relative, kind)
+    if result is None:
+        return [{"type": "slot", "label": NAT_RECORD_LABEL, "source": row["id"]}]
+    sid = row["id"]
+    protocol_row, protocol = _protocol(sources, result)
+    adoption = (protocol or {}).get("nat_adoption") or {}
+    diagnosis_call = (result.get("diagnosis") or {}).get("call") or {}
+    correction_call = (result.get("correction") or {}).get("call") or {}
+    rows = [
+        ["결정 경로", _cell(sources, f"{_path_label(result)}({result['decision_path']})", sid)],
+        ["경로 채택 근거(시연 프로토콜)", _cell(sources, adoption.get("decision") and f"NAT 경로 비교 요약 판정 {adoption['decision']}",
+                                     protocol_row["id"])],
+        ["진단 호출", _cell(sources, _call_text(diagnosis_call), sid)],
+        ["진단 토큰(입력 / 출력)", _cell(sources, _tokens(diagnosis_call), sid)],
+        ["교정 호출", _cell(sources, _call_text(correction_call), sid)],
+        ["교정 토큰(입력 / 출력)", _cell(sources, _tokens(correction_call), sid)],
+    ]
+    ids = [sid, protocol_row["id"]]
+    for stage, title in (("diagnosis", "진단"), ("correction", "교정")):
+        path = NAT_CONFIGS[result["decision_path"]][stage]
+        config_row = _bound_config(sources, path, protocol)
+        tools = None
+        if config_row["status"] == "ready":
+            tools = ", ".join(yaml.safe_load((sources.root / path).read_text(encoding="utf-8"))["workflow"]["tool_names"])
+        rows.append([f"{title} 워크플로 도구(설정 목록, 호출 순서 아님)", _cell(sources, tools, config_row["id"])])
+        ids.append(config_row["id"])
+    return [{"type": "table", "title": f"NeMo Agent Toolkit 호출 기록(seed {result.get('seed')})",
+             "columns": ["항목", "기록"], "rows": rows, "status_sources": ids}]
+
+
+def nat_role_cell(sources: Any, relative: str | None, *, kind: str = "nat_end_to_end") -> dict:
+    """NVIDIA 역할 표의 NAT 행 근거: NAT 결정 경로 시연 한 건의 LLM 호출 수."""
+    row, result = _load_nat(sources, relative, kind)
+    if result is None:
+        return {"value": None, "source": row["id"], "digits": None}
+    counts = [((result.get(stage) or {}).get("call") or {}).get("llm_calls") for stage in ("diagnosis", "correction")]
+    shown = [NO_RECORD if count is None else f"{count}회" for count in counts]
+    return _cell(sources, f"seed {result.get('seed')} · 진단 LLM {shown[0]} · 교정 LLM {shown[1]}", row["id"])

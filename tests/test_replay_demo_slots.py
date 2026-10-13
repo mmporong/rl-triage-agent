@@ -1,6 +1,7 @@
 """재생 화면의 종단 시연 자리: 승인 상태별 자리 표시, 승인된 시연 결과의 표, 금지 문구·경로, 렌더링."""
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 import shutil
@@ -204,6 +205,87 @@ def test_unset_motor_slots_wait_under_their_own_kind(repo):
     row = DS.cost_block(sources, [(None, "motor_end_to_end", "모터 결함")])["rows"][0]
     assert row[0] == "모터 결함" and all(cell["value"] is None and cell["source"] == "slot:motor_end_to_end" for cell in row[1:])
     assert sources.rows["slot:motor_end_to_end"]["status"] == "waiting"
+
+
+NAT_PROTOCOL = "bench/protocols/e2e_demo_v3_1_f1.json"
+NAT_TOOLS = {"diagnosis": ["e4b4_get_facts", "e4b4_submit_decision"],
+             "correction": ["e4b2_skill_checklist", "e4b4_submit_proposal"]}
+
+
+def nat_result(decision_path: str = "nat_v4") -> dict:
+    """NAT 결정 경로 시연(v3.1, F1) 합성 결과. 공개 결과처럼 호출 기록에 도구 호출 순서가 없다."""
+    result = motor_result(variant="f1")
+    result.update(seed=2034, fault="F1", mechanism="reward", decision_path=decision_path,
+                  specificity={"required": [], "outcomes": None, "passed": True})
+    result["diagnosis"]["call"] = {"path": decision_path, "input_tokens": 47359, "output_tokens": 1632,
+                                   "execution_wall_s": 28.73, "llm_calls": 10, "precheck_calls": 1}
+    result["correction"]["call"] = {"path": decision_path, "input_tokens": 22247, "output_tokens": 1171,
+                                    "execution_wall_s": 18.84, "llm_calls": 7, "precheck_calls": 1}
+    return result
+
+
+def _commit_nat(repo: Path, result: dict, *, stale_sha: bool = False) -> None:
+    source_files = {}
+    for stage, path in DS.NAT_CONFIGS["nat_v4"].items():
+        text = f"workflow:\n  _type: tool_calling_agent\n  tool_names: [{', '.join(NAT_TOOLS[stage])}]\n"
+        (repo / path).parent.mkdir(parents=True, exist_ok=True)
+        (repo / path).write_text(text, encoding="utf-8")
+        source_files[path] = "0" * 64 if stale_sha else hashlib.sha256(text.encode("utf-8")).hexdigest()
+    (repo / RESULT).write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
+    (repo / NAT_PROTOCOL).write_text(json.dumps({
+        "correction": {"correction_id": "restore_body_frame_reward", "modes": {"restart": {}, "resume": {}}},
+        "nat_adoption": {"decision": "adopt"}, "source_files": source_files}), encoding="utf-8")
+    _git(repo, "add", RESULT, NAT_PROTOCOL, *DS.NAT_CONFIGS["nat_v4"].values())
+    _git(repo, "commit", "-q", "-m", "nat")
+
+
+def test_nat_result_shows_its_decision_path_calls_and_bound_tool_lists(repo):
+    _commit_nat(repo, nat_result())
+    sources = B.Sources(repo)
+    values = _values(DS.end_to_end_blocks(sources, RESULT, kind="nat_end_to_end", label=DS.NAT_END_TO_END_LABEL))
+    assert "첫 판단(NeMo Agent Toolkit 도구 호출)" in values and "교정 제안(NeMo Agent Toolkit 도구 호출)" in values
+    assert values["특이성 관문"] == "등록된 보조 검사 없음"
+    (record,) = DS.nat_record_blocks(sources, RESULT)
+    assert record["status_sources"] == [RESULT, NAT_PROTOCOL, *DS.NAT_CONFIGS["nat_v4"].values()]
+    assert _values([record]) == {
+        "결정 경로": "NeMo Agent Toolkit 도구 호출(nat_v4)", "경로 채택 근거(시연 프로토콜)": "NAT 경로 비교 요약 판정 adopt",
+        "진단 호출": "LLM 10회 · 제출 전 점검 1회 · 실행 28.7 s", "진단 토큰(입력 / 출력)": "47359 / 1632",
+        "교정 호출": "LLM 7회 · 제출 전 점검 1회 · 실행 18.8 s", "교정 토큰(입력 / 출력)": "22247 / 1171",
+        "진단 워크플로 도구(설정 목록, 호출 순서 아님)": "e4b4_get_facts, e4b4_submit_decision",
+        "교정 워크플로 도구(설정 목록, 호출 순서 아님)": "e4b2_skill_checklist, e4b4_submit_proposal"}
+    assert DS.nat_role_cell(sources, RESULT)["value"] == "seed 2034 · 진단 LLM 10회 · 교정 LLM 7회"
+
+
+def test_nat_tool_lists_wait_or_mismatch_unless_bound_by_the_demo_protocol(repo):
+    _commit_nat(repo, nat_result(), stale_sha=True)
+    sources = B.Sources(repo)
+    record = _values(DS.nat_record_blocks(sources, RESULT))
+    assert record["진단 워크플로 도구(설정 목록, 호출 순서 아님)"] is None and record["진단 호출"].startswith("LLM 10회")
+    config = DS.NAT_CONFIGS["nat_v4"]["diagnosis"]
+    assert (sources.rows[config]["status"], sources.rows[config]["reason"]) == ("mismatch", "demo_protocol_sha_mismatch")
+
+
+def test_nat_tool_lists_wait_while_the_demo_protocol_is_not_committed(repo):
+    _commit_nat(repo, nat_result())
+    _git(repo, "rm", "-q", "--cached", NAT_PROTOCOL)
+    _git(repo, "commit", "-q", "-m", "protocol out")
+    sources = B.Sources(repo)
+    record = _values(DS.nat_record_blocks(sources, RESULT))
+    assert record["교정 워크플로 도구(설정 목록, 호출 순서 아님)"] is None and record["경로 채택 근거(시연 프로토콜)"] is None
+    config = DS.NAT_CONFIGS["nat_v4"]["correction"]
+    assert (sources.rows[config]["status"], sources.rows[config]["reason"]) == ("waiting", "demo_protocol_not_ready")
+
+
+def test_a_single_call_result_cannot_fill_the_nat_slots(repo):
+    _commit_nat(repo, nat_result(decision_path="single"))
+    sources = B.Sources(repo)
+    assert DS.nat_record_blocks(sources, RESULT)[0]["type"] == "slot"
+    assert (sources.rows[RESULT]["status"], sources.rows[RESULT]["reason"]) == ("mismatch", "not_nat_decision_path")
+    assert DS.nat_role_cell(B.Sources(repo), RESULT)["value"] is None
+    _commit_nat(repo, nat_result(decision_path="nat_v9"))
+    sources = B.Sources(repo)
+    assert DS.end_to_end_blocks(sources, RESULT, kind="nat_end_to_end")[0]["type"] == "slot"
+    assert sources.rows[RESULT]["reason"] == "unexpected_decision_path"
 
 
 def test_unexpected_schema_is_a_mismatch_not_a_table(repo):

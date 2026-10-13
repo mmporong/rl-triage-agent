@@ -8146,6 +8146,184 @@ window.REPLAY_DATA = {
    "number": 6
   },
   {
+   "id": "nat_demo",
+   "title": "NAT 결정 경로 시연: 진단과 교정 제안을 도구 호출로 제출",
+   "dense": true,
+   "lead": "진단 결정과 교정 제안을 NeMo Agent Toolkit 도구 호출 워크플로가 제출했다. 승인·검사·재학습·고정 평가는 앞 시연과 같다.",
+   "blocks": [
+    {
+     "type": "table",
+     "title": "종단 시연 seed 2034 F1·reward: 경고부터 교정 판정까지",
+     "columns": [
+      "단계",
+      "기록"
+     ],
+     "rows": [
+      [
+       "시연 결과",
+       {
+        "value": "recovered · 성공 조건 12/12",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "첫 판단(NeMo Agent Toolkit 도구 호출)",
+       {
+        "value": "continue · 상위 3 reward, exploration, optimizer · 제안 검사 P_reward",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "승인된 검사",
+       {
+        "value": "1건 실행 · P_reward abnormal · confirmed",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "특이성 관문",
+       {
+        "value": "등록된 보조 검사 없음",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 제안(NeMo Agent Toolkit 도구 호출)",
+       {
+        "value": "propose · 계약 통과 예 · 규칙과 일치 예",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "승인 뒤 교정 실행 receipt",
+       {
+        "value": "receipt · recovered",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 정책 고정 평가 판정",
+       {
+        "value": "recovered",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 정책 standstill ratio",
+       {
+        "value": 0.12434974140899308,
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": 3
+       }
+      ],
+      [
+       "결과 문구",
+       {
+        "value": "새 판단으로 시작한 승인된 검사가 등록 결함 메커니즘을 확정했고, 승인된 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과했다.",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json"
+     ]
+    },
+    {
+     "type": "table",
+     "title": "NeMo Agent Toolkit 호출 기록(seed 2034)",
+     "columns": [
+      "항목",
+      "기록"
+     ],
+     "rows": [
+      [
+       "결정 경로",
+       {
+        "value": "NeMo Agent Toolkit 도구 호출(nat_v4)",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "경로 채택 근거(시연 프로토콜)",
+       {
+        "value": "NAT 경로 비교 요약 판정 adopt",
+        "source": "bench/protocols/e2e_demo_v3_1_f1.json",
+        "digits": null
+       }
+      ],
+      [
+       "진단 호출",
+       {
+        "value": "LLM 10회 · 제출 전 점검 1회 · 실행 28.7 s",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "진단 토큰(입력 / 출력)",
+       {
+        "value": "47359 / 1632",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 호출",
+       {
+        "value": "LLM 7회 · 제출 전 점검 1회 · 실행 18.8 s",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "교정 토큰(입력 / 출력)",
+       {
+        "value": "22247 / 1171",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "진단 워크플로 도구(설정 목록, 호출 순서 아님)",
+       {
+        "value": "e4b4_list_fact_ids, e4b4_get_facts, e4b2_probe_catalog, e4b4_check_decision, e4b4_submit_decision",
+        "source": "configs/nat_demo_v4_diagnosis.yml",
+        "digits": null
+       }
+      ],
+      [
+       "교정 워크플로 도구(설정 목록, 호출 순서 아님)",
+       {
+        "value": "e4b2_list_fact_ids, e4b2_get_facts, e4b2_registry, e4b2_skill_checklist, e4b4_check_proposal, e4b4_submit_proposal",
+        "source": "configs/nat_demo_v4_correction.yml",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+      "bench/protocols/e2e_demo_v3_1_f1.json",
+      "configs/nat_demo_v4_diagnosis.yml",
+      "configs/nat_demo_v4_correction.yml"
+     ]
+    }
+   ],
+   "notes": [
+    "도구 호출 순서와 횟수는 공개 결과에 없어 설정된 도구 목록만 보인다. 설정은 시연 프로토콜이 SHA로 묶은 파일이다.",
+    "NAT 경로 비교 요약의 채택 판정에 따라 쓴 경로이며 단일 호출과의 우열을 보여 주지 않는다. 이미 본 결함 종류의 새 seed 한 건이다."
+   ],
+   "number": 7
+  },
+  {
    "id": "recovery",
    "title": "회복 방식 비교: 고쳐서 이어 학습할까, 처음부터 다시 할까",
    "dense": true,
@@ -8461,7 +8639,7 @@ window.REPLAY_DATA = {
     "seed마다 단일 실행이다. 이미 본 seed의 합성 결함 개발 결과이며 일반화나 AI 교정 선택을 입증하지 않는다.",
     "재학습은 교정한 코드가 정상 학습과 같아져 같은 seed의 정상 정책을 다시 만든다. 체크포인트가 같으면 회복은 예상된 확인이며 새로운 회복 효과가 아니다."
    ],
-   "number": 7
+   "number": 8
   },
   {
    "id": "motor",
@@ -8673,7 +8851,7 @@ window.REPLAY_DATA = {
     "중간 체크포인트 평가는 같은 학습 실행의 저장본을 다시 평가한 보조 기록이며 라벨과 규칙 갱신에 쓰지 않는다. 반복 실행의 예산 효과 추정이 아니다.",
     "모터 결함의 이어 학습이 등록 기준을 통과하지 못한 seed가 있어, 다음 시연에는 actuator에도 restart를 권고하는 규칙과 restart arm을 사전등록해 시험한다. 이번 실험은 restart를 시험하지 않았고 이어 학습의 예산 부족 가능성도 남으므로 restart를 택할 근거로 쓰지 않는다. 이미 본 두 seed의 단일 실행이며 결함 일반 규칙의 근거가 아니다."
    ],
-   "number": 8
+   "number": 9
   },
   {
    "id": "hold",
@@ -8885,7 +9063,7 @@ window.REPLAY_DATA = {
    "notes": [
     "두 시험 모두 사전등록 뒤 실행한 개발 사례다. 표본이 작아 안전성 보장으로 말하지 않는다."
    ],
-   "number": 9
+   "number": 10
   },
   {
    "id": "nvidia",
@@ -8916,11 +9094,11 @@ window.REPLAY_DATA = {
       ],
       [
        "NeMo Agent Toolkit",
-       "도구 호출 워크플로 구성",
-       "설정",
+       "시연에서 진단 결정·교정 제안을 도구 호출로 제출",
+       "시연 결정 기록",
        {
-        "value": "근거 파일",
-        "source": "configs/triage_workflow.yml",
+        "value": "seed 2034 · 진단 LLM 10회 · 교정 LLM 7회",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
         "digits": null
        }
       ],
@@ -9006,10 +9184,10 @@ window.REPLAY_DATA = {
    ],
    "notes": [
     "대응표는 절차 비교이며 실행 중 그 스킬을 호출했다는 뜻이 아니다.",
-    "NeMo Agent Toolkit·HITL 행의 근거는 설정·테스트이며 실행 기록이 아니다. HITL 확인은 선택 기능이고 기록된 시연에는 쓰지 않았다.",
+    "NeMo Agent Toolkit 행은 NAT 결정 경로 시연 한 건의 기록이다. HITL 행의 근거는 설정·테스트이며 실행 기록이 아니다. HITL 확인은 선택 기능이고 기록된 시연에는 쓰지 않았다.",
     "재채점은 저장된 출력이 공개 요약과 같은 판정을 내는지 확인한 것이다. 결정의 정확도나 단일 호출과의 우열을 보여 주지 않으며 모델을 다시 부르지 않는다."
    ],
-   "number": 10
+   "number": 11
   },
   {
    "id": "cost",
@@ -9158,11 +9336,35 @@ window.REPLAY_DATA = {
         "source": "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
         "digits": null
        }
+      ],
+      [
+       "보상 결함(NAT 경로) seed 2034",
+       {
+        "value": "569 / 560",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       },
+       {
+        "value": 21.8,
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": 1
+       },
+       {
+        "value": "521 / 50",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       },
+       {
+        "value": "47359 / 1632 · 22247 / 1171",
+        "source": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+        "digits": null
+       }
       ]
      ],
      "status_sources": [
       "evals/results/e2e_reward_s2030_20261013/demo_result.json",
-      "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json"
+      "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json",
+      "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json"
      ]
     }
    ],
@@ -9170,7 +9372,7 @@ window.REPLAY_DATA = {
     "parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
     "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."
    ],
-   "number": 11
+   "number": 12
   }
  ],
  "sources": {
@@ -9670,6 +9872,38 @@ window.REPLAY_DATA = {
    "status": "ready",
    "reason": null
   },
+  "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json": {
+   "id": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+   "path": "evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json",
+   "kind": "nat_end_to_end",
+   "sha256": "8f468443268fe93effc8e654a8ec3cb50a002f3f16a2cde8bf40f494994589f0",
+   "status": "ready",
+   "reason": null
+  },
+  "bench/protocols/e2e_demo_v3_1_f1.json": {
+   "id": "bench/protocols/e2e_demo_v3_1_f1.json",
+   "path": "bench/protocols/e2e_demo_v3_1_f1.json",
+   "kind": "file",
+   "sha256": "16d07abd06e66c691c765bd67cae435c73a40d280a5c2823e621087da513cf50",
+   "status": "ready",
+   "reason": null
+  },
+  "configs/nat_demo_v4_diagnosis.yml": {
+   "id": "configs/nat_demo_v4_diagnosis.yml",
+   "path": "configs/nat_demo_v4_diagnosis.yml",
+   "kind": "nat_config",
+   "sha256": "4bc055c5e26e7eed2724c79f05d1e570f2315afd994836db1a4f53dcf0ca5aef",
+   "status": "ready",
+   "reason": null
+  },
+  "configs/nat_demo_v4_correction.yml": {
+   "id": "configs/nat_demo_v4_correction.yml",
+   "path": "configs/nat_demo_v4_correction.yml",
+   "kind": "nat_config",
+   "sha256": "0aa46d0e4e8809265618ef842b57e19c2cc87388ddc1d9bca0846b5336405743",
+   "status": "ready",
+   "reason": null
+  },
   "evals/results/reward_resume_dev3_20261013": {
    "id": "evals/results/reward_resume_dev3_20261013",
    "path": "evals/results/reward_resume_dev3_20261013/artifact_manifest.json",
@@ -9731,14 +9965,6 @@ window.REPLAY_DATA = {
    "path": "evals/results/t1_agent_20261009/rankings.json",
    "kind": "file",
    "sha256": "9de5f3aa37d2cd13360039705b27e97e2bafcc287f95470585e242b5d2f7a081",
-   "status": "ready",
-   "reason": null
-  },
-  "configs/triage_workflow.yml": {
-   "id": "configs/triage_workflow.yml",
-   "path": "configs/triage_workflow.yml",
-   "kind": "file",
-   "sha256": "d611bdf81e56862b8db27b8ebe4fc94277a0942d3f79ea47143688db439c4628",
    "status": "ready",
    "reason": null
   },

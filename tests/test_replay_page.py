@@ -148,9 +148,10 @@ def test_path_checker_rejects_private_or_network_references(text):
 
 def test_build_from_repository_is_publishable_and_never_mismatched(built):
     data = built
-    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 12))
+    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 13))
     assert [scene["id"] for scene in data["scenes"]] == [
-        "failure", "curves", "warning", "probe", "correction", "demo", "recovery", "motor", "hold", "nvidia", "cost"]
+        "failure", "curves", "warning", "probe", "correction", "demo", "nat_demo", "recovery", "motor", "hold", "nvidia",
+        "cost"]
     statuses = {key: row["status"] for key, row in data["sources"].items()}
     assert "mismatch" not in statuses.values()
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
@@ -229,10 +230,10 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
                                    check=True, capture_output=True, text=True, encoding="utf-8")
         outputs[name] = json.loads(completed.stdout)
     clean = outputs["clean"]
-    assert len(clean) == 11 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
+    assert len(clean) == 12 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
     assert "<svg" in clean[1] and "polyline" in clean[1]
     dense = [scene["id"] for scene, html in zip(data["scenes"], clean, strict=True) if 'class="blocks dense"' in html]
-    assert dense == ["correction", "demo", "recovery", "nvidia", "cost"]
+    assert dense == ["correction", "demo", "nat_demo", "recovery", "nvidia", "cost"]
     for scene, html in zip(data["scenes"], clean):
         statuses = {data["sources"][source]["status"] for source in _scene_sources(scene)}
         assert ("waiting" in statuses) == ("대기" in html), scene["id"]
@@ -253,8 +254,22 @@ def test_demo_scene_puts_both_demos_side_by_side_and_costs_in_the_last_scene(bui
                                                                   slots["motor_correction_proposal"]]
     assert not any(block.get("wide") for block in proposals)
     costs = [block for block in scenes["cost"]["blocks"] if block.get("title", "").startswith("종단 시연 비용")]
-    assert len(costs) == 1 and [row[1]["source"] for row in costs[0]["rows"]] == [slots["end_to_end"], slots["motor_end_to_end"]]
+    assert len(costs) == 1 and [row[1]["source"] for row in costs[0]["rows"]] == [
+        slots["end_to_end"], slots["motor_end_to_end"], slots["nat_end_to_end"]]
     assert not any("종단 시연" in block.get("title", "") for block in scenes["probe"]["blocks"])
+
+
+def test_nat_scene_and_nvidia_row_read_the_nat_demo_record(built):
+    scenes = {scene["id"]: scene for scene in built["scenes"]}
+    nat = B._read(ROOT / B.SLOTS)["nat_end_to_end"]
+    steps, record = scenes["nat_demo"]["blocks"]
+    assert steps["status_sources"] == [nat] and "첫 판단(NeMo Agent Toolkit 도구 호출)" in [row[0] for row in steps["rows"]]
+    values = {row[0]: row[1]["value"] for row in record["rows"]}
+    assert values["결정 경로"] == "NeMo Agent Toolkit 도구 호출(nat_v4)"
+    assert values["진단 호출"].startswith("LLM ") and "e4b2_skill_checklist" in values["교정 워크플로 도구(설정 목록, 호출 순서 아님)"]
+    assert all(built["sources"][source]["status"] == "ready" for source in record["status_sources"])
+    role = next(row for row in scenes["nvidia"]["blocks"][0]["rows"] if row[0] == "NeMo Agent Toolkit")
+    assert role[2] == "시연 결정 기록" and role[3]["source"] == nat and role[3]["value"].startswith("seed 2034 · 진단 LLM")
 
 
 def test_demo_scene_keeps_a_waiting_slot_until_the_motor_result_is_set():
