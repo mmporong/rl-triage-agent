@@ -17,6 +17,7 @@ for directory in (ROOT / "src", ROOT / "bench", ROOT / "evals"):
     sys.path.insert(0, str(directory))
 
 import build_replay_page as B  # noqa: E402
+import replay_d3  # noqa: E402
 import run_training_correction_motor as W  # noqa: E402
 
 PAGE = ROOT / "docs/replay"
@@ -148,10 +149,10 @@ def test_path_checker_rejects_private_or_network_references(text):
 
 def test_build_from_repository_is_publishable_and_never_mismatched(built):
     data = built
-    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 15))
+    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 16))
     assert [scene["id"] for scene in data["scenes"]] == [
         "failure", "curves", "warning", "probe", "correction", "demo", "nat_demo", "recovery", "motor", "hold", "upstream",
-        "upstream_demo", "nvidia", "cost"]
+        "upstream_demo", "d3", "nvidia", "cost"]
     statuses = {key: row["status"] for key, row in data["sources"].items()}
     assert "mismatch" not in statuses.values()
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
@@ -187,10 +188,12 @@ def test_scene_scope_overrides_the_common_footer_only_where_the_facts_differ(bui
     assert built["scope"] == B.SCOPE_COMMON
     assert {k: v for k, v in scopes.items() if v} == {
         "demo": B.SCOPE_NEW_SEED_DEMO, "nat_demo": B.SCOPE_NEW_SEED_DEMO,
-        "hold": B.SCOPE_HOLD, "upstream": B.SCOPE_UPSTREAM_SMOKE, "upstream_demo": B.SCOPE_UPSTREAM_DEMO}
+        "hold": B.SCOPE_HOLD, "upstream": B.SCOPE_UPSTREAM_SMOKE, "upstream_demo": B.SCOPE_UPSTREAM_DEMO,
+        "d3": replay_d3.SCOPE_D3}
     assert "새 seed" in B.SCOPE_NEW_SEED_DEMO and "이미 본 합성 결함 개발 사례" not in B.SCOPE_NEW_SEED_DEMO
     assert "seed 2026" in B.SCOPE_UPSTREAM_SMOKE and "새 seed" in B.SCOPE_UPSTREAM_DEMO
-    for text in (B.SCOPE_COMMON, B.SCOPE_NEW_SEED_DEMO, B.SCOPE_HOLD, B.SCOPE_UPSTREAM_SMOKE, B.SCOPE_UPSTREAM_DEMO):
+    for text in (B.SCOPE_COMMON, B.SCOPE_NEW_SEED_DEMO, B.SCOPE_HOLD, B.SCOPE_UPSTREAM_SMOKE, B.SCOPE_UPSTREAM_DEMO,
+                 replay_d3.SCOPE_D3):
         assert not B.claim_violations(text) and not B.path_violations(text)
     leaked = copy.deepcopy(built)  # 장면 문구 검사가 scope에도 적용된다
     leaked["scenes"][0]["scope"] = "이 방법은 GPU 시간을 절감한다."
@@ -246,10 +249,10 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
                                    check=True, capture_output=True, text=True, encoding="utf-8")
         outputs[name] = json.loads(completed.stdout)
     clean = outputs["clean"]
-    assert len(clean) == 14 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
+    assert len(clean) == 15 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
     assert "<svg" in clean[1] and "polyline" in clean[1]
     dense = [scene["id"] for scene, html in zip(data["scenes"], clean, strict=True) if 'class="blocks dense"' in html]
-    assert dense == ["correction", "demo", "nat_demo", "recovery", "upstream", "upstream_demo", "nvidia", "cost"]
+    assert dense == ["correction", "demo", "nat_demo", "recovery", "upstream", "upstream_demo", "d3", "nvidia", "cost"]
     for scene, html in zip(data["scenes"], clean):
         statuses = {data["sources"][source]["status"] for source in _scene_sources(scene)}
         assert ("waiting" in statuses) == ("대기" in html), scene["id"]

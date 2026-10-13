@@ -9390,6 +9390,138 @@ window.REPLAY_DATA = {
    "number": 12
   },
   {
+   "id": "d3",
+   "title": "변경 여덟 개 중 원인 하나를 확정하는 데 든 확인 재학습",
+   "dense": true,
+   "scope": "승인된 공개 결과만 읽는 발표 재생 화면. 변경 8개·사전등록 사례 3건의 방법 비교이며 결함·무해 변경·검사를 같은 팀이 만들었다. 진단 정확도·일반화·GPU 절감의 근거가 아니다.",
+   "lead": "무해 변경 일곱 개와 섞인 원인 변경 하나를, 그 변경 하나만 되돌린 재학습이 정상일 때만 확정한다. 다섯 방법이 같은 상한(8회)과 같은 확정 규칙으로 쓴 재학습 수를 센다.",
+   "blocks": [
+    {
+     "type": "table",
+     "title": "사례와 사전 예측(상호작용 없음·검사가 원인 범주를 맞힌다는 전제)",
+     "columns": [
+      "사례",
+      "seed",
+      "원인 변경",
+      "위치",
+      "예측 B1 · B2 · B3",
+      "집계"
+     ],
+     "rows": [
+      [
+       "D0",
+       {
+        "value": 2026,
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": 0
+       },
+       {
+        "value": "U1",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       {
+        "value": "1 / 8",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       {
+        "value": "3 · 1 · 1",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       "개발(집계 제외)"
+      ],
+      [
+       "C1",
+       {
+        "value": 2035,
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": 0
+       },
+       {
+        "value": "U1",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       {
+        "value": "2 / 8",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       {
+        "value": "4 · 2 · 2",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       "집계"
+      ],
+      [
+       "C2",
+       {
+        "value": 2036,
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": 0
+       },
+       {
+        "value": "F1",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       {
+        "value": "7 / 8",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       {
+        "value": "3 · 7 · 3",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       "집계"
+      ],
+      [
+       "C3",
+       {
+        "value": 2037,
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": 0
+       },
+       {
+        "value": "F2",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       {
+        "value": "2 / 8",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       {
+        "value": "4 · 2 · 1",
+        "source": "bench/protocols/d3_experiment_v2.json",
+        "digits": null
+       },
+       "집계"
+      ]
+     ],
+     "status_sources": [
+      "bench/protocols/d3_experiment_v2.json"
+     ]
+    },
+    {
+     "type": "slot",
+     "label": "D3 방법 비교 요약(본실험 3사례가 닫힌 뒤 summarize 결과)",
+     "source": "slot:d3_summary"
+    }
+   ],
+   "notes": [
+    "모델 순위(B4)가 재학습을 줄였다고 말하는 것은 사전등록한 네 조건을 모두 채울 때뿐이다. 사례가 세 건이라 통계적 우위나 일반화를 말하지 않는다.",
+    "무해 변경 목록은 무해성 smoke v1 결과를 보고 한 번 바꿨다(v2에서 보상 가중치 변경을 같은 수식 리팩터링으로 교체)."
+   ],
+   "number": 13
+  },
+  {
    "id": "nvidia",
    "title": "NVIDIA 기술의 역할",
    "dense": true,
@@ -9511,7 +9643,7 @@ window.REPLAY_DATA = {
     "NeMo Agent Toolkit 행은 NAT 결정 경로 시연 한 건의 기록이다. HITL 행의 근거는 설정·테스트이며 실행 기록이 아니다. HITL 확인은 선택 기능이고 기록된 시연에는 쓰지 않았다.",
     "재채점은 저장된 출력이 공개 요약과 같은 판정을 내는지 확인한 것이다. 결정의 정확도나 단일 호출과의 우열을 보여 주지 않으며 모델을 다시 부르지 않는다."
    ],
-   "number": 13
+   "number": 14
   },
   {
    "id": "cost",
@@ -9720,7 +9852,7 @@ window.REPLAY_DATA = {
     "parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
     "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."
    ],
-   "number": 14
+   "number": 15
   }
  ],
  "sources": {
@@ -10339,6 +10471,22 @@ window.REPLAY_DATA = {
    "sha256": "a30f841acc064b15b717f066e2ef81afc025f339a8441c22615f2b37c1a4e21e",
    "status": "ready",
    "reason": null
+  },
+  "bench/protocols/d3_experiment_v2.json": {
+   "id": "bench/protocols/d3_experiment_v2.json",
+   "path": "bench/protocols/d3_experiment_v2.json",
+   "kind": "protocol",
+   "sha256": "ced4302df56bfc4e75186887a6fbc0d8e3e3800375d3a687b588582f58cec2b4",
+   "status": "ready",
+   "reason": null
+  },
+  "slot:d3_summary": {
+   "id": "slot:d3_summary",
+   "path": null,
+   "kind": "d3_summary",
+   "sha256": null,
+   "status": "waiting",
+   "reason": "path_not_set"
   },
   "evals/results/t1_agent_20261009/rankings.json": {
    "id": "evals/results/t1_agent_20261009/rankings.json",

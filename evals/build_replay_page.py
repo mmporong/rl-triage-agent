@@ -741,13 +741,14 @@ def scene_cost(sources: Sources, slots: dict) -> dict:
 
 
 def build(root: Path = ROOT) -> dict:
+    import replay_d3
     sources = Sources(root)
     slots = _read(root / SLOTS)
     scenes = [scene_failure(sources, slots), scene_curves(sources), scene_warning(sources),
               scene_probe(sources), scene_correction(sources, slots), scene_demo(sources, slots),
               scene_nat_demo(sources, slots), scene_recovery(sources, slots),
               scene_motor(sources, slots), scene_hold(sources), scene_upstream(sources), scene_upstream_demo(sources, slots),
-              scene_nvidia(sources, slots), scene_cost(sources, slots)]
+              replay_d3.scene_d3(sources, slots), scene_nvidia(sources, slots), scene_cost(sources, slots)]
     for index, scene in enumerate(scenes, start=1):
         scene["number"] = index
     data = {"schema": SCHEMA,
