@@ -181,19 +181,22 @@ def test_verified_recovery_manifest_accepts_exact_three_clip_contract(recovery_r
     assert all(verified.clips[clip]["ffprobe"]["frame_count"] == 299 for clip in verified.clips)
 
 
-def test_current_default_v2_profile_binds_current_recorder_and_previous_v1_protocol():
+def test_current_default_v3_profile_binds_current_recorder_and_original_v1_protocol():
     recorder_spec = importlib.util.spec_from_file_location(
         "record_evidence_media", ROOT / "bench/record_evidence_media.py")
     assert recorder_spec is not None and recorder_spec.loader is not None
     recorder_module = importlib.util.module_from_spec(recorder_spec)
     recorder_spec.loader.exec_module(recorder_module)
-    current = media.load_json(ROOT / "bench/protocols/evidence_media_c01_v2.json")
-    previous = ROOT / "bench/protocols/evidence_media_c01_v1.json"
+    current = media.load_json(ROOT / "bench/protocols/evidence_media_c01_v3.json")
+    superseded = media.load_json(ROOT / "bench/protocols/evidence_media_c01_v2.json")
+    original = ROOT / "bench/protocols/evidence_media_c01_v1.json"
     recorder = ROOT / current["recorder_source"]["path"]
-    assert recorder_module.DEFAULT_PROTOCOL == ROOT / "bench/protocols/evidence_media_c01_v2.json"
+    assert recorder_module.DEFAULT_PROTOCOL == ROOT / "bench/protocols/evidence_media_c01_v3.json"
     assert current["recorder_source"]["sha256_lf"] == media.sha256_lf(recorder)
-    assert current["previous_protocol_sha256_lf"] == media.sha256_lf(previous)
-    assert current["recorder_source"] != media.load_json(previous)["recorder_source"]
+    # v2·v3은 같은 C01 녹화 계약의 소스 결속 갱신이며 둘 다 원래 v1 프로토콜을 가리킨다.
+    assert current["previous_protocol_sha256_lf"] == superseded["previous_protocol_sha256_lf"] == media.sha256_lf(original)
+    assert {key for key in current if current[key] != superseded.get(key)} == {"recorder_source"}
+    assert current["recorder_source"] != superseded["recorder_source"]
 
 
 def test_recovery_option_changes_only_the_two_separate_c01_cards(verified_evidence, recovery_repo):
