@@ -1,0 +1,408 @@
+{
+  "schema": "e2e_demo_result_u1_v1",
+  "tag": "e2e_demo_u1_s2040_20261013",
+  "variant": "u1",
+  "fault": "U1",
+  "mechanism": "reward",
+  "seed": 2040,
+  "case": "u1_s2040",
+  "decision_path": "single",
+  "outcome": "not_recovered",
+  "demo_success": true,
+  "success_conditions": {
+    "protocol_committed": true,
+    "seed_unused": true,
+    "source_failure_present": true,
+    "fresh_diagnosis_call": true,
+    "first_probe_from_model": true,
+    "probes_approved_consumed_once": true,
+    "loop_confirmed_mechanism": true,
+    "confirmation_specific": true,
+    "scope_check_recorded": true,
+    "correction_call_accepted": true,
+    "correction_approved_consumed_once": true,
+    "correction_judged": true,
+    "costs_recorded": true
+  },
+  "unmet_conditions": [],
+  "wording": "등록 결함을 확정하고 승인된 교정까지 실행했지만, 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과하지 못했다. 교정 범위 점검은 재학습 전에 등록 교정 밖의 이상 항을 기록했고, 교정 정책은 실측에서도 회복하지 못했다.",
+  "common_wording": "새 seed 2040에서 설계자 밖 결함 의미(U1, UniLab 공개 수정)를 우리가 이식·주입한 1건을 끝까지 연결하고 교정 범위 점검과 재학습 실측을 대조한 통합 시연이다. probe·범위 점검 규칙·이식은 결함을 안 뒤에 만들었고, 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다.",
+  "b_code_wording": "B-code는 우리 주입 방식 때문에 바로 보이며 원전의 백엔드 0 읽기는 지문으로 보이지 않았을 것[추론]",
+  "steps_sha256": {
+    "begin": "a34c63c507eddef43ebeb0abf718439cfc95eec37702577db96e479c65098153",
+    "train_NONE": "09b7282a2abacbc34539298c36deee0dfcf651505e2df51533fc1f328da9589b",
+    "train_FAULT": "51dcc32cabc709603ea33928ddcea768b8dc0aa08f5db3ca2a120af543c737ac",
+    "alarm": "ca0fbd581efd328fb14ce3d505f95f66603fee8ca837df0a1739abb560546c22",
+    "evaluate": "b78c85b14babb393d660bed8d9395d81025c8c211decc6aff203e894f45d4527",
+    "reference": "a7b0a8dc1a8af59c72b505edcf7413f56e04edbe395143c566aa5bc0ebf08e15",
+    "packet": "0d985c3eb702f3718a639d28323a5a51ac00ea177ff68e5c53e2a569b599c84e",
+    "loop_start": "69ebb5684b12c9533a025f4911dd14e1bc1610f4915d0a5bd865cfa962bd4fca",
+    "loop_close": "7d9f22ad1200fcf9a467b53eba23fb8ebacc31389445e6287714fec8ca1b6544",
+    "specificity": "fcc93a1860ac2823d1f14dcb948a2099b89dd42ba9b15c0140ba7f15939c3c10",
+    "scope_check": "b84e9456e188cd8695619e4e6b4afdbe3d8819cba3ee23a284f9450f9c904e43",
+    "correction": "b95617deb60c80196ea3ea14f50448837810ad7f39d9c7ff71a834a310479487"
+  },
+  "terminal": null,
+  "protocol_sha256_lf": "410e86209c271039f3e93cd05a5c3d440e84e924ff60c2f60c7f85f64c02e52e",
+  "source_commit_sha": [
+    "3f1ceea994633c51552c63b293cbb05f237004e8"
+  ],
+  "predictions": {
+    "source_failure": "U1이 같은 seed NONE 대비 unhealthy이고 정지 비율 ≥ 0.9(smoke seed 2026: unhealthy, 생존·낙상·선속도·yaw 네 검사 모두 실패, 정지 비율 1.040)",
+    "alarm": "R1이 U1에 울리고 NONE에는 울리지 않는다(후보 상수, 판정·게이트에 쓰지 않는다)",
+    "diagnosis": "첫 판단 action=continue, 상위 3가설에 reward 포함",
+    "loop": "P_reward abnormal 뒤 reward 확정(예산 4 이내)",
+    "specificity": "게이트 없음",
+    "scope_check": "scope_insufficient: 이상 항 track_ang_vel_z_exp·track_lin_vel_xy_exp, 등록 표적 밖 track_ang_vel_z_exp[추론: U1은 두 추종 함수를 모두 0 속도 판으로 바꾼다]",
+    "correction_rule": "reward·정지 비율 ≥ 0.9 → restart",
+    "correction": "교정 정책 not_recovered[추론]: 등록 교정 restore_body_frame_reward는 track_lin_vel_xy_exp만 되돌린다. yaw 추종 보상이 여전히 0 속도를 읽어 회전 행동에 학습 신호가 없으므로 err_yaw 비가 밴드(1.1719)를 넘는다",
+    "scope_contrast": "insufficient_and_not_recovered"
+  },
+  "prediction_results": {
+    "source_failure": true,
+    "alarm": true,
+    "diagnosis": true,
+    "loop": true,
+    "specificity": true,
+    "scope_check": true,
+    "correction_rule": true,
+    "correction": true,
+    "scope_contrast": true
+  },
+  "approver_identity_attested": false,
+  "training_parent_wall_s": {
+    "NONE": 559.8,
+    "FAULT": 557.1
+  },
+  "fault_training_readback": {
+    "entry": "bench/upstream_isaac.py train",
+    "readback": {
+      "fault": "U1",
+      "swapped": {
+        "track_lin_vel_xy_exp": true,
+        "track_ang_vel_z_exp": true,
+        "lin_vel_z_l2": true,
+        "ang_vel_xy_l2": true
+      },
+      "bound_to_reward_terms": {
+        "track_lin_vel_xy_exp": true,
+        "track_ang_vel_z_exp": true,
+        "lin_vel_z_l2": true,
+        "ang_vel_xy_l2": true
+      },
+      "ok": true
+    },
+    "aux": {
+      "schema": "upstream_aux_fingerprints_v1",
+      "fault": "U1",
+      "module": "isaaclab.envs.mdp.rewards",
+      "used_for_verdict": false,
+      "note": "보조 기록이며 판정에 쓰지 않는다. 등록 교정 readback은 등록 표적 3개만 대조하므로 그 밖 함수 상태는 이 기록에 있다. 결함을 라이브러리 함수 본문 교체로 이식해서 보이는 비교다",
+      "differs_from_clean": [
+        "ang_vel_xy_l2",
+        "lin_vel_z_l2",
+        "track_ang_vel_z_exp",
+        "track_lin_vel_xy_exp"
+      ],
+      "clean_count": 18,
+      "active_reward_terms": {
+        "track_lin_vel_xy_exp": "track_lin_vel_xy_exp",
+        "track_ang_vel_z_exp": "track_ang_vel_z_exp",
+        "lin_vel_z_l2": "lin_vel_z_l2",
+        "ang_vel_xy_l2": "ang_vel_xy_l2",
+        "dof_torques_l2": "joint_torques_l2",
+        "dof_acc_l2": "joint_acc_l2",
+        "action_rate_l2": "action_rate_l2",
+        "flat_orientation_l2": "flat_orientation_l2",
+        "dof_pos_limits": "joint_pos_limits"
+      },
+      "differing_active_terms": [
+        "ang_vel_xy_l2",
+        "lin_vel_z_l2",
+        "track_ang_vel_z_exp",
+        "track_lin_vel_xy_exp"
+      ]
+    }
+  },
+  "alarm": {
+    "NONE": {
+      "warned": false,
+      "alert_iterations": [],
+      "first_alert_iteration": null,
+      "qualifying_iteration_count": 0,
+      "iterations": 300
+    },
+    "FAULT": {
+      "warned": true,
+      "alert_iterations": [
+        134
+      ],
+      "first_alert_iteration": 134,
+      "qualifying_iteration_count": 175,
+      "iterations": 300
+    }
+  },
+  "evaluation": {
+    "gate": {
+      "none_walks": true,
+      "fault_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "standstill_ratio": {
+        "NONE": 0.12123903536911039,
+        "FAULT": 1.0403000768238857
+      },
+      "outcome": "failure_present"
+    },
+    "reports": {
+      "NONE": {
+        "path": "evals/results/e2e_demo_u1_s2040_20261013/runs/baseline_p0c_s2040.json",
+        "sha256_lf": "191dc2f02d51df1c705e4e41783340607e009d7139b3c409bc1b67771285961a"
+      },
+      "FAULT": {
+        "path": "evals/results/e2e_demo_u1_s2040_20261013/runs/u1_s2040.json",
+        "sha256_lf": "479aafb39938a53dcf566a522247f617ead62211bbfff3212281bb636004872a"
+      }
+    }
+  },
+  "reference_parent_wall_s": 86.3,
+  "diagnosis": {
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "Initial decision: highest uncertainty on reward mechanism; P_reward is the most informative unobserved probe to distinguish reward from other mechanisms.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 11.36961480776469
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.398769823710126
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    },
+    "started": {
+      "hypotheses": [
+        "reward",
+        "actuator",
+        "exploration"
+      ],
+      "model_probe": "P_reward",
+      "rule_probe": "P_noise",
+      "proposed_probe": "P_reward",
+      "model_probe_used": true,
+      "request_id": "5d45005e77ae",
+      "prereg_digest": "dd14d65c6f2963231cbdd069fa9319ad4934207949d82019318cb83031f693df"
+    },
+    "call": {
+      "path": "single",
+      "input_tokens": 2803,
+      "output_tokens": 199,
+      "execution_wall_s": 3.1475669781211764,
+      "llm_calls": null,
+      "precheck_calls": null,
+      "response_id": "chatcmpl-265f7434-1782-4829-b0ca-58ad33549415"
+    }
+  },
+  "loop": {
+    "status": "confirmed",
+    "hypotheses": [
+      "reward"
+    ],
+    "observed": {
+      "P_reward": "abnormal"
+    },
+    "requests": [
+      {
+        "request_id": "5d45005e77ae",
+        "probe": "P_reward",
+        "state": "done",
+        "approver": "claude_operator_user_authorized",
+        "outcome": "abnormal",
+        "measurement": {
+          "track_lin_vel_xy_exp_rel_error": 0.35687676634639504,
+          "track_ang_vel_z_exp_rel_error": 1.3201148624718189
+        },
+        "gpu_s": 20.1,
+        "artifact": {
+          "probe": "evals/results/e2e_demo_u1_s2040_20261013_loop/probes/u1_s2040__P_reward.json",
+          "execution": "evals/results/e2e_demo_u1_s2040_20261013_loop/execution/u1_s2040__P_reward.json"
+        }
+      }
+    ],
+    "probe_costs": [
+      {
+        "gpu_wall_s": 20.1,
+        "cpu_s": 25.96875,
+        "simulator_steps": 51200,
+        "probe": "P_reward"
+      }
+    ]
+  },
+  "specificity": {
+    "required": [],
+    "outcomes": null,
+    "passed": true,
+    "measurements": null,
+    "parent_wall_s": null
+  },
+  "scope_check": {
+    "mode": "contrast",
+    "correction_id": "restore_body_frame_reward",
+    "confirming_request_id": "5d45005e77ae",
+    "result": {
+      "verdict": "scope_insufficient",
+      "probe": "P_reward",
+      "registered_targets": [
+        "track_lin_vel_xy_exp"
+      ],
+      "threshold": 0.05,
+      "rel_errors": {
+        "track_lin_vel_xy_exp": 0.35687676634639504,
+        "track_ang_vel_z_exp": 1.3201148624718189
+      },
+      "abnormal_terms": [
+        "track_ang_vel_z_exp",
+        "track_lin_vel_xy_exp"
+      ],
+      "uncovered_terms": [
+        "track_ang_vel_z_exp"
+      ]
+    },
+    "proceed_to_correction": true,
+    "agent_judgment": false
+  },
+  "correction": {
+    "request_id": "cd43fa7ef110",
+    "request": {
+      "correction_id": "restore_body_frame_reward",
+      "recovery_mode": "restart",
+      "budget_gpu_s": 2400
+    },
+    "model_proposal": {
+      "accepted": true,
+      "decision": "propose",
+      "agrees_with_rule": true,
+      "reasons": [],
+      "unmet_checklist": [
+        "3",
+        "5",
+        "6"
+      ],
+      "rule_visible_to_model": true,
+      "precheck_calls": null
+    },
+    "call": {
+      "path": "single",
+      "input_tokens": 1346,
+      "output_tokens": 150,
+      "execution_wall_s": 1.7517975040245801,
+      "llm_calls": null,
+      "precheck_calls": null,
+      "response_id": "chatcmpl-83d43d8f-2217-4550-b277-b9bb9ba1d40f"
+    },
+    "receipt": {
+      "at": "2026-10-13T13:49:37+00:00",
+      "event": "receipt",
+      "request_id": "cd43fa7ef110",
+      "tag": "e2e_demo_u1_s2040_20261013_fix",
+      "verdict": "not_recovered",
+      "result_sha": "6b28674050a2c2b882ffe0e4bce0f390ef4eeac243cecebec8da597e315a989f",
+      "gpu_s": 578.8,
+      "exit_code": 0,
+      "over_budget": false
+    },
+    "scope_check_bound": true,
+    "result": {
+      "label": "not_recovered",
+      "verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "standstill_ratio": 0.3910500047550451,
+      "costs": {
+        "train_parent_wall_s": 523.436999999918,
+        "eval_parent_wall_s": 55.359999999869615,
+        "per_arm": {
+          "restart_corrected": {
+            "train_parent_wall_s": 523.436999999918
+          }
+        }
+      },
+      "recovery_mode": "restart",
+      "reference": {
+        "name": "original_same_seed_none",
+        "valid": true
+      },
+      "correction_readback": {
+        "note": "등록 표적 복원됨, 그 밖 함수 상태는 보조 지문 기록(aux_fingerprints, 판정에 쓰지 않음)",
+        "registered_target": "isaaclab.envs.mdp.rewards.track_lin_vel_xy_exp",
+        "registered_target_state": "restored_to_clean",
+        "registered_targets_compared": [
+          "restore_body_frame_reward",
+          "restore_configured_timeout",
+          "restore_motor_torque_speed"
+        ],
+        "upstream_swapped_after_correction": {
+          "track_lin_vel_xy_exp": false,
+          "track_ang_vel_z_exp": true,
+          "lin_vel_z_l2": true,
+          "ang_vel_xy_l2": true
+        },
+        "aux_fingerprints": {
+          "used_for_verdict": false,
+          "differs_from_clean": [
+            "ang_vel_xy_l2",
+            "lin_vel_z_l2",
+            "track_ang_vel_z_exp"
+          ],
+          "differing_active_terms": [
+            "ang_vel_xy_l2",
+            "lin_vel_z_l2",
+            "track_ang_vel_z_exp"
+          ],
+          "note": "보조 기록이며 판정에 쓰지 않는다. 등록 교정 readback은 등록 표적 3개만 대조하므로 그 밖 함수 상태는 이 기록에 있다. 결함을 라이브러리 함수 본문 교체로 이식해서 보이는 비교다"
+        }
+      }
+    }
+  },
+  "scope_contrast": {
+    "category": "insufficient_and_not_recovered",
+    "wording": "교정 범위 점검은 재학습 전에 등록 교정 밖의 이상 항을 기록했고, 교정 정책은 실측에서도 회복하지 못했다."
+  }
+}
