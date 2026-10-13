@@ -1,0 +1,283 @@
+{
+  "schema": "e2e_demo_media_artifact_v1",
+  "source_tag": "e2e_reward_s2030_20261013",
+  "demo_seed": 2030,
+  "restart_seed": 3030,
+  "case": "h02_s2030",
+  "source_fault": "F1",
+  "outcome": "recovered",
+  "demo_success": true,
+  "result_wording": "새 Nemotron 판단으로 시작한 승인된 검사가 보상 결함을 확정했고, 승인된 restart 교정 정책이 같은 seed 정상 정책 대비 고정 행동 허용 범위를 통과했다.",
+  "correction_result": {
+    "label": "recovered",
+    "standstill_ratio": 0.12544545755336192
+  },
+  "correction_proposal": {
+    "decision": "propose",
+    "accepted": true,
+    "agrees_with_rule": true,
+    "unmet_checklist_count": 0,
+    "operator_approved": true
+  },
+  "interpretation": "실패 정책·승인된 restart 교정 정책·같은 seed 정상 정책을 같은 stock Play 조건에서 재생한 시각 자료다. 회복 판정은 고정 평가 수치로 하며 영상은 판정 근거가 아니다.",
+  "video_is_recovery_claim": false,
+  "approval": "사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)",
+  "after_checkpoint_equals_reference": false,
+  "source_commit_sha": "8eade585f90aadbcffc3e7e82fdb63eeca90a72f",
+  "recording_commit_sha": "aeee7afda92bd8b33829846edda1b1f4bf6abc24",
+  "protocol": {
+    "path": "bench/protocols/e2e_demo_media_e2e_reward_s2030_20261013.json",
+    "sha256": "283d643b64c6594acdde9babd4cddbb783bf8285a9557168fe6cf679ee6749c0"
+  },
+  "provenance": {
+    "code_sha256_lf": {
+      "bench/demo_restart_correction_v2.py": "317d256a056d432a3c6d83537fcba505531d6f18c766ae8194dadb5fe834090e",
+      "bench/record_correction_media.py": "3c82aefd7933b802aec57da0c1c82f2841216aca8688f71227a2180194faddcd",
+      "bench/record_e2e_demo_media.py": "eb3f6061907b4a7223ab686a279da0aa3143480362491ceecc6610acdfe6d378",
+      "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+      "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+      "evals/e2e_reward_demo_v2.py": "a83a28cc952159d511e88c12caae2e3b8b2a39a32720b93b488bf03e47265a34"
+    },
+    "play_py_sha256": "0966feac5a96812fca880e3731e96b001918b57fa372f69e4cf5fdca538bd7bd",
+    "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "demo_protocol_sha256_lf": "b6b86b0418cb5e28c29b58ee3a00c0023e5def6c59803a22e56692cf48411418",
+    "fixed_eval_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "public_sources": [
+      {
+        "path": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+        "sha256": "fd1a72b73928ad85e3b12b5ee9053957c03529b8e9550fb406016d5a5497b351"
+      },
+      {
+        "path": "evals/results/e2e_reward_s2030_20261013/runs/baseline_p0c_s2030.json",
+        "sha256": "3328f38043d99b9c80f1c12b41c2485cb2fffeb0f8ca073c88af57f619548716"
+      },
+      {
+        "path": "evals/results/e2e_reward_s2030_20261013/runs/h02_s2030.json",
+        "sha256": "a0771acdcd80da76d1e723042d190e90d877338a268998f779a3048b9ed2f5dc"
+      }
+    ],
+    "private_sources": [
+      {
+        "id": "steps/00_begin.json",
+        "sha256": "9351584f1231429f57cbdb8171deaf635284b7ba1e3cdfabb099042e22133b1f"
+      },
+      {
+        "id": "steps/01_train_NONE.json",
+        "sha256": "3f0da4b411361c6cbd5d1a4770f025d8d71ed13678ad5f1d24c9ede866c2aeac"
+      },
+      {
+        "id": "steps/02_train_F1.json",
+        "sha256": "7aea372a21944c5f93497ca1a25207ecdf04c4bbbe64645eee561cff1d770cc3"
+      },
+      {
+        "id": "steps/03_alarm.json",
+        "sha256": "3c5cb5d0c6380459658127d571ee80f369165a8a62fd7b62e7f8292c0f754272"
+      },
+      {
+        "id": "steps/04_evaluate.json",
+        "sha256": "742526a8f2d2bea37d1910a3f42fae847cae4c516c111aa2e8f14c1c402aaced"
+      },
+      {
+        "id": "steps/05_reference.json",
+        "sha256": "a1387793d77da9be732436e46b47771c4c163b21d7f9eb6d615882b59fb7a55e"
+      },
+      {
+        "id": "steps/06_packet.json",
+        "sha256": "04e586c5cfeb2a5ad12226d4d1a6794aeadcdd0afb5f7d0731df075eba8284d2"
+      },
+      {
+        "id": "steps/07_loop_start.json",
+        "sha256": "e29841daaf1a1118874990f1bad21b83c9f98e64b485bfa07fd09064b362ff86"
+      },
+      {
+        "id": "steps/08_loop_close.json",
+        "sha256": "75e03210b68efa143499ea37aee4fb47363cfde101da46387474cd854fb28593"
+      },
+      {
+        "id": "steps/09_correction.json",
+        "sha256": "4f6fa94fd98d439f3bfde635ee3720cc5a50158612b8e670a39db023db8de9ff"
+      },
+      {
+        "id": "result.json",
+        "sha256": "fd1a72b73928ad85e3b12b5ee9053957c03529b8e9550fb406016d5a5497b351"
+      },
+      {
+        "id": "fix/request.json",
+        "sha256": "28c0599a641b43c0be0f937528a8b10f30bec5cad2afe76d6874687b8a5028b2"
+      },
+      {
+        "id": "fix/approval.json",
+        "sha256": "d8543692bbe13d1d756b053ebb03866265a147ce6c2a405231c83b5c5c847011"
+      },
+      {
+        "id": "fix/consumed.json",
+        "sha256": "5749f15fddb015835a99f652b3716db27e0cd5dbcd7e5231207d436fe999bd68"
+      },
+      {
+        "id": "fix/result.json",
+        "sha256": "d7ac5f7553eda7743ba1e4b7b19e6e43b220137b102d5ee3d5ecdcfa10ccb9c1"
+      },
+      {
+        "id": "fix/train/manifest.json",
+        "sha256": "afd49b9b406df5d9f5a8364bf75bace4b52f51e024ffc76466140a6e8214721c"
+      },
+      {
+        "id": "fix/train/initial.json",
+        "sha256": "98850c1aa5115db1d9fe77b2ff5e557177415626e30ae944cf1850cfb0882c76"
+      },
+      {
+        "id": "fix/train/correction.json",
+        "sha256": "064aaa23ac2aa48185dc4a5dcfc6369bec4adeb439ad09123461e4010de5f608"
+      },
+      {
+        "id": "fix/train/receipt.json",
+        "sha256": "329e73ba633403bc12e31f661141f682c584fab5fddab5d7b68459021a6f1166"
+      },
+      {
+        "id": "fix/train/execution.json",
+        "sha256": "a270c6cf2f1141020c9ccc44c1ce923e3f4c52063ed1feb8fae15abc0b4d178d"
+      },
+      {
+        "id": "fix/eval/jobs.json",
+        "sha256": "839439036065b0f3a9d4553d74f8a848178a4e2809aeec47a7105152d243b63a"
+      },
+      {
+        "id": "fix/eval/report.json",
+        "sha256": "ee3e265ff19beba4bbd6930b7765f0f3826f9349b6a08d5167819c41146dcd28"
+      },
+      {
+        "id": "fix/eval/execution.json",
+        "sha256": "5040fc10237212d7b1ec41fff67a36cc85ea7af09eee689ad77a31d0f5e76652"
+      }
+    ]
+  },
+  "playback": {
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+    "seed": 42,
+    "num_envs": 1,
+    "video_length": 300,
+    "kit_args": "--/app/vulkan=false --/app/window/hideUi=true",
+    "overrides": [
+      "env.viewer.eye=[3.0,3.0,2.0]",
+      "env.viewer.lookat=[0.0,0.0,0.35]"
+    ]
+  },
+  "layout": {
+    "grid": {
+      "columns": 3,
+      "rows": 1,
+      "cell_width": 640,
+      "cell_height": 360,
+      "caption_height": 40
+    },
+    "order": [
+      "before_fault",
+      "after_restart_fix",
+      "reference_clean"
+    ],
+    "caption": "Same Play settings for all three. Recovery verdict comes from fixed-eval numbers - not from this video."
+  },
+  "gpu_checks": [
+    {
+      "clip_id": "before_fault",
+      "before_busy": false,
+      "after_busy": false
+    },
+    {
+      "clip_id": "after_restart_fix",
+      "before_busy": false,
+      "after_busy": false
+    },
+    {
+      "clip_id": "reference_clean",
+      "before_busy": false,
+      "after_busy": false
+    }
+  ],
+  "clips": [
+    {
+      "id": "before_fault",
+      "role": "demo_fault_source",
+      "title": "Before - F1 reward fault",
+      "file": "before_fault.mp4",
+      "sha256": "c87ebe2ca6084781f82d41aa491ca4ce5e2bfb748979155d13faefbc812c4e27",
+      "bytes": 418315,
+      "checkpoint_sha256": "6133080cf77710da55c157ba05109c818787cf3c906778b320b2073947dddc39",
+      "params_env_sha256": "e6cb743bdab527d1eff14c94b1946044c4e92295c1406c55c7bfbefb9bd29b3f",
+      "params_agent_sha256": "4aca9dc9b5693094837d4c22b1467dfc38d2b4ab13e9fd0158e1b45c68023ac8",
+      "frame_info": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      },
+      "cleanup_verified": true
+    },
+    {
+      "id": "after_restart_fix",
+      "role": "approved_restart_correction",
+      "title": "After - approved restart fix",
+      "file": "after_restart_fix.mp4",
+      "sha256": "3edf9e248bed4abf9934ba8902383ec6f10eec9639f263dc032adf658196d759",
+      "bytes": 474074,
+      "checkpoint_sha256": "e1b06d6d320023473bc130a6fd7fa5730395e16b595e2f512855b37a33c63b4b",
+      "params_env_sha256": "a3c9818c0e3aff6acdab72b512926b59ea040ac5382cc4ad6062c6a451337815",
+      "params_agent_sha256": "0da74dbee1655a7ce6aeccc37fc6221f1637f5adf6bbf9ad1462bafedd7e4e49",
+      "frame_info": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      },
+      "cleanup_verified": true
+    },
+    {
+      "id": "reference_clean",
+      "role": "demo_clean_source",
+      "title": "Reference - clean policy",
+      "file": "reference_clean.mp4",
+      "sha256": "7c72ecc10763fbad6c86f59b5b14488867973bbb5a8f6740fb341b0bfc6d63d9",
+      "bytes": 482814,
+      "checkpoint_sha256": "2feae4b805a9e5ed37ab29e99b8ba1b348e05837eeccb1ddd42d6cfeb1b1d7a1",
+      "params_env_sha256": "e6cb743bdab527d1eff14c94b1946044c4e92295c1406c55c7bfbefb9bd29b3f",
+      "params_agent_sha256": "73bc836046c44d0a69c213f7af21e4e189905606479c2e4d04f0f03835a48f5d",
+      "frame_info": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      },
+      "cleanup_verified": true
+    }
+  ],
+  "comparison": {
+    "mp4": {
+      "file": "comparison.mp4",
+      "sha256": "21affedd559c3b104dda207d348edbe5943f671d4fa29022ca4250ffb8ee5110",
+      "bytes": 471737,
+      "frame_info": {
+        "width": 1920,
+        "height": 400,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      }
+    },
+    "gif": {
+      "file": "comparison.gif",
+      "sha256": "7d74054e81bb0436cc926bb2ce6e87e04c788df30c21ee54d52683832a5c82c3",
+      "bytes": 1235511,
+      "fps": 15,
+      "frame_info": {
+        "width": 960,
+        "height": 200,
+        "frame_rate": "50/3",
+        "frame_count": 90,
+        "duration_s": 6.0
+      }
+    }
+  }
+}
