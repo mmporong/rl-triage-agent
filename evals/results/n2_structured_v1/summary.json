@@ -1,0 +1,1822 @@
+{
+ "schema": "n2_structured_result_v1",
+ "protocol_sha256_lf": "98a42990449c21c40c21f0784ce91407847bfc45c803113fd7b3b7a1793990e8",
+ "source_commit_sha": "a3c3c40d7b8e76f7fc00ba54c8c52a5f6d66ab06",
+ "complete": true,
+ "budget": {
+  "requests_used": 55,
+  "cap_requests": 60,
+  "exhausted": false
+ },
+ "totals": {
+  "invalid": 37,
+  "invalid_contract": 37,
+  "valid": 18
+ },
+ "mean_pass4": {
+  "diagnosis": 0.0,
+  "correction": 0.6
+ },
+ "improvement": {
+  "decision": "not_improved",
+  "max_invalid_total": 1,
+  "min_mean_pass4_each_kind": 0.8
+ },
+ "wording": [
+  "출력 형식만 바꾼 구조화 arm은 사전등록 개선 기준(무효 ≤ 1/55, 진단·교정 평균 pass^4 ≥ 0.8)을 넘지 못했다: 무효 37/55(문법 0, 계약 37), 평균 pass^4 진단 0.00·교정 0.60. 개선을 주장하지 않는다.",
+  "구조화 arm에서 문법 무효(JSON 파손)는 0이었다. 계약 위반은 따로 센다."
+ ],
+ "use": {
+  "diagnosis": {
+   "stability": "varied",
+   "use": "reconsider",
+   "mean_pass4": 0.0,
+   "mean_pass_k": {
+    "1": 0.03333333333333333,
+    "2": 0.0,
+    "4": 0.0,
+    "5": 0.0
+   },
+   "wording": [
+    "구조화 출력 진단: 같은 packet 반복에서 결정이 흔들렸다. 흔들린 packet과 결정 분포를 그대로 공개한다.",
+    "구조화 출력 진단: 평균 pass^4가 사전등록 하한 0.8 미만이라 다음 시연 결정 단계에 쓰기 전에 재검토한다."
+   ]
+  },
+  "correction": {
+   "stability": "varied",
+   "use": "reconsider",
+   "mean_pass4": 0.6,
+   "mean_pass_k": {
+    "1": 0.6799999999999999,
+    "2": 0.62,
+    "4": 0.6,
+    "5": 0.6
+   },
+   "wording": [
+    "구조화 출력 교정: 같은 packet 반복에서 결정이 흔들렸다. 흔들린 packet과 결정 분포를 그대로 공개한다.",
+    "구조화 출력 교정: 평균 pass^4가 사전등록 하한 0.8 미만이라 다음 시연 결정 단계에 쓰기 전에 재검토한다."
+   ]
+  }
+ },
+ "sets": {
+  "h02_s2027": {
+   "case": "h02_s2027",
+   "seed": 2027,
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "structured": {
+      "counts": {
+       "valid": 0,
+       "invalid": 5,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {},
+      "pass_k": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2843,
+       "min": 2843,
+       "max": 2843,
+       "total": 14215
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 141,
+       "min": 129,
+       "max": 192,
+       "total": 768
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.982604662887752,
+       "min": 1.642905926099047,
+       "max": 17.642562685068697,
+       "total": 25.116532370913774
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": null,
+      "runs": [
+       {
+        "run": 1,
+        "status": "invalid",
+        "input_tokens": 2843,
+        "output_tokens": 141,
+        "wall_s": 2.03931778203696,
+        "llm_calls": 1,
+        "record_sha256": "4837aa1ac9bbb107b1a7d6f5171dad7e9f1279b1e7f470c4540c15591cb09f93",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 2,
+        "status": "invalid",
+        "input_tokens": 2843,
+        "output_tokens": 130,
+        "wall_s": 1.642905926099047,
+        "llm_calls": 1,
+        "record_sha256": "738374b78cfde5cabc07d0fd7592c9730357072ea5701528c061a29dce672d7a",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 3,
+        "status": "invalid",
+        "input_tokens": 2843,
+        "output_tokens": 176,
+        "wall_s": 17.642562685068697,
+        "llm_calls": 1,
+        "record_sha256": "745be9283dfd0d196f7f5eb2afd4e0d9c9565949fff21de9dbce2ae47fef6521",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 4,
+        "status": "invalid",
+        "input_tokens": 2843,
+        "output_tokens": 192,
+        "wall_s": 1.8091413148213178,
+        "llm_calls": 1,
+        "record_sha256": "a28bd2f4b8a302439fad15d0c90cc6f20e2c2b9a0956d1a675810527d5917b79",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 5,
+        "status": "invalid",
+        "input_tokens": 2843,
+        "output_tokens": 129,
+        "wall_s": 1.982604662887752,
+        "llm_calls": 1,
+        "record_sha256": "8173e1c8c59b279d31efd69d1928ce81537243c76fa5f108aade65caef98a74d",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       }
+      ],
+      "top1_is_registered_mechanism": 0,
+      "top1_probe_decisions": {},
+      "invalid_categories": {
+       "contract": 5
+      },
+      "invalid_reasons": [
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+      ],
+      "same_as_n2_decision": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      }
+     }
+    }
+   }
+  },
+  "f2_s2031": {
+   "case": "h06_s2031",
+   "seed": 2031,
+   "mechanism": "actuator",
+   "kinds": {
+    "diagnosis": {
+     "structured": {
+      "counts": {
+       "valid": 0,
+       "invalid": 5,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {},
+      "pass_k": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2849,
+       "min": 2849,
+       "max": 2849,
+       "total": 14245
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 130,
+       "min": 130,
+       "max": 131,
+       "total": 651
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.722086125984788,
+       "min": 1.6056807949207723,
+       "max": 2.4992882369551808,
+       "total": 9.655983277829364
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": null,
+      "runs": [
+       {
+        "run": 1,
+        "status": "invalid",
+        "input_tokens": 2849,
+        "output_tokens": 130,
+        "wall_s": 1.6056807949207723,
+        "llm_calls": 1,
+        "record_sha256": "2576a78500b6cefb63e1333ca87305966e0a2df8a54270076cbdc710908f74c7",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 2,
+        "status": "invalid",
+        "input_tokens": 2849,
+        "output_tokens": 130,
+        "wall_s": 2.157244035974145,
+        "llm_calls": 1,
+        "record_sha256": "6a36a89416f632475d1082bb3ce6b6b88a33653dd4cd39b3226982560f4ca99a",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 3,
+        "status": "invalid",
+        "input_tokens": 2849,
+        "output_tokens": 130,
+        "wall_s": 1.722086125984788,
+        "llm_calls": 1,
+        "record_sha256": "8b6e826b08ffe22fcf9a456f3755de0fc8c15ee1a03c9c90e19afb7b77cae08f",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 4,
+        "status": "invalid",
+        "input_tokens": 2849,
+        "output_tokens": 130,
+        "wall_s": 1.671684083994478,
+        "llm_calls": 1,
+        "record_sha256": "337a75ad411e3633b2c5981cff7cdaaea1ae627d3dd76af892610dfd34b19c58",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 5,
+        "status": "invalid",
+        "input_tokens": 2849,
+        "output_tokens": 131,
+        "wall_s": 2.4992882369551808,
+        "llm_calls": 1,
+        "record_sha256": "8b760a942eea3df3a305d94580d4f1f74180b6af9edac0ed0d78e3d4dd2cd2f2",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       }
+      ],
+      "top1_is_registered_mechanism": 0,
+      "top1_probe_decisions": {},
+      "invalid_categories": {
+       "contract": 5
+      },
+      "invalid_reasons": [
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+      ],
+      "same_as_n2_decision": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      }
+     }
+    },
+    "correction": {
+     "structured": {
+      "counts": {
+       "valid": 0,
+       "invalid": 5,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {},
+      "pass_k": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 1317,
+       "min": 1317,
+       "max": 1317,
+       "total": 6585
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 131,
+       "min": 128,
+       "max": 131,
+       "total": 649
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.5943379530217499,
+       "min": 1.4577255579642951,
+       "max": 2.0455654580146074,
+       "total": 8.31159893493168
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": null,
+      "runs": [
+       {
+        "run": 1,
+        "status": "invalid",
+        "input_tokens": 1317,
+        "output_tokens": 128,
+        "wall_s": 1.5877074568998069,
+        "llm_calls": 1,
+        "record_sha256": "bbb081bfb951549766999fb8740bd72eede3b794d0f27b4025ef9ac6566ae3a6",
+        "category": "contract",
+        "reason": "제안 근거에 없는 인용 ['registry']"
+       },
+       {
+        "run": 2,
+        "status": "invalid",
+        "input_tokens": 1317,
+        "output_tokens": 131,
+        "wall_s": 1.6262625090312213,
+        "llm_calls": 1,
+        "record_sha256": "3a45e11b3b8ac3829740b6d70c272bda529379d53413836742f008db4968408a",
+        "category": "contract",
+        "reason": "제안 근거에 없는 인용 ['registry']"
+       },
+       {
+        "run": 3,
+        "status": "invalid",
+        "input_tokens": 1317,
+        "output_tokens": 131,
+        "wall_s": 1.5943379530217499,
+        "llm_calls": 1,
+        "record_sha256": "91a0171ef320d95330d2bed0f4c84c6861c5984b18ef8df34b80bffbdee40b6d",
+        "category": "contract",
+        "reason": "제안 근거에 없는 인용 ['registry']"
+       },
+       {
+        "run": 4,
+        "status": "invalid",
+        "input_tokens": 1317,
+        "output_tokens": 131,
+        "wall_s": 1.4577255579642951,
+        "llm_calls": 1,
+        "record_sha256": "80a1a03b24a601caafc363b9f2c41e0ee99c16df7609c65c150e53eca853c238",
+        "category": "contract",
+        "reason": "제안 근거에 없는 인용 ['registry']"
+       },
+       {
+        "run": 5,
+        "status": "invalid",
+        "input_tokens": 1317,
+        "output_tokens": 128,
+        "wall_s": 2.0455654580146074,
+        "llm_calls": 1,
+        "record_sha256": "935e6974457647e623d0d8baf4da47d01803aa9f87d34e58b3ba53ac90e7d00f",
+        "category": "contract",
+        "reason": "제안 근거에 없는 인용 ['registry']"
+       }
+      ],
+      "invalid_categories": {
+       "contract": 5
+      },
+      "invalid_reasons": [
+       "제안 근거에 없는 인용 ['registry']",
+       "제안 근거에 없는 인용 ['registry']",
+       "제안 근거에 없는 인용 ['registry']",
+       "제안 근거에 없는 인용 ['registry']",
+       "제안 근거에 없는 인용 ['registry']"
+      ],
+      "same_as_n2_decision": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_motor_torque_speed · restart": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      }
+     }
+    }
+   }
+  },
+  "r_s2030": {
+   "case": "h02_s2030",
+   "seed": 2030,
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "structured": {
+      "counts": {
+       "valid": 1,
+       "invalid": 4,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 1
+      },
+      "pass_k": {
+       "1": 0.2,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.2,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2829,
+       "min": 2829,
+       "max": 2829,
+       "total": 14145
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 130,
+       "min": 129,
+       "max": 132,
+       "total": 650
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 3.9729102009441704,
+       "min": 3.659322059014812,
+       "max": 4.255013674031943,
+       "total": 19.740918138064444
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 14795.0,
+      "runs": [
+       {
+        "run": 1,
+        "status": "invalid",
+        "input_tokens": 2829,
+        "output_tokens": 130,
+        "wall_s": 3.9729102009441704,
+        "llm_calls": 1,
+        "record_sha256": "370cd8e5a81e9f8145a19ee0d09c0169ca924addedb8166b57059386438d7520",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 2,
+        "status": "invalid",
+        "input_tokens": 2829,
+        "output_tokens": 129,
+        "wall_s": 4.255013674031943,
+        "llm_calls": 1,
+        "record_sha256": "a6e9071e7aec95b2b9747b223f4b05b811a09fdca41daa96c0c05880a7fd7931",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 2829,
+        "output_tokens": 132,
+        "wall_s": 3.659322059014812,
+        "llm_calls": 1,
+        "record_sha256": "576fe5d37c72064e8c73a8337200006c5d6bf490b069a52e0358885b2cce5468",
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward"
+       },
+       {
+        "run": 4,
+        "status": "invalid",
+        "input_tokens": 2829,
+        "output_tokens": 130,
+        "wall_s": 4.147275232011452,
+        "llm_calls": 1,
+        "record_sha256": "598e59e607e2ab0408e06d1d2e416de50d36c52448f93df570a6fcec2d2e5598",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 5,
+        "status": "invalid",
+        "input_tokens": 2829,
+        "output_tokens": 129,
+        "wall_s": 3.706396972062066,
+        "llm_calls": 1,
+        "record_sha256": "2a579ceda3ae8236a9355b32346723e2eebc9f1d1fd529960b055df0a67f1271",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       }
+      ],
+      "top1_is_registered_mechanism": 1,
+      "top1_probe_decisions": {
+       "reward · P_reward": 1
+      },
+      "invalid_categories": {
+       "contract": 4
+      },
+      "invalid_reasons": [
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+      ],
+      "same_as_n2_decision": 1
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    },
+    "correction": {
+     "structured": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 1347,
+       "min": 1347,
+       "max": 1347,
+       "total": 6735
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 162,
+       "min": 142,
+       "max": 164,
+       "total": 790
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.8429856530856341,
+       "min": 1.6281569860875607,
+       "max": 2.8651824700646102,
+       "total": 10.347806312376633
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 1505.0,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 1347,
+        "output_tokens": 142,
+        "wall_s": 1.833486557006836,
+        "llm_calls": 1,
+        "record_sha256": "d577ed2bfe7ba75021f2da2452b8de751741631bbe16f7044bf630f8fdda4c11",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 1347,
+        "output_tokens": 164,
+        "wall_s": 2.8651824700646102,
+        "llm_calls": 1,
+        "record_sha256": "5b9e032b9084c5b94a953a50c248016334225c92a80f7b95118ada5717f7d7fb",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 1347,
+        "output_tokens": 164,
+        "wall_s": 2.1779946461319923,
+        "llm_calls": 1,
+        "record_sha256": "037af8a93eba4fec3ebf859d099e91b5cc7a75f7f29c4cc31c1b2a7a6ea763d1",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 1347,
+        "output_tokens": 162,
+        "wall_s": 1.8429856530856341,
+        "llm_calls": 1,
+        "record_sha256": "2976c3ef4bacb19d7e98334c81bc3448c51d9a95dfa05dd6789c8d6c1ff57142",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 1347,
+        "output_tokens": 158,
+        "wall_s": 1.6281569860875607,
+        "llm_calls": 1,
+        "record_sha256": "1d256c1ef5a488b2fde2eafdbcdb331b36149ad81b9eee544f9d9497dc099735",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       }
+      ],
+      "invalid_categories": {},
+      "invalid_reasons": [],
+      "same_as_n2_decision": 5
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    }
+   }
+  },
+  "f2_s2033": {
+   "case": "h06_s2033",
+   "seed": 2033,
+   "mechanism": "actuator",
+   "kinds": {
+    "diagnosis": {
+     "structured": {
+      "counts": {
+       "valid": 0,
+       "invalid": 5,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {},
+      "pass_k": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2845,
+       "min": 2845,
+       "max": 2845,
+       "total": 14225
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 131,
+       "min": 130,
+       "max": 134,
+       "total": 660
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.5739186911378056,
+       "min": 1.493763456121087,
+       "max": 10.800808143801987,
+       "total": 17.178723818156868
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": null,
+      "runs": [
+       {
+        "run": 1,
+        "status": "invalid",
+        "input_tokens": 2845,
+        "output_tokens": 131,
+        "wall_s": 1.7712439310271293,
+        "llm_calls": 1,
+        "record_sha256": "b65f029712954395d84b787d63d475bde85363f3cd2260e34d8fb27fb92c38da",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 2,
+        "status": "invalid",
+        "input_tokens": 2845,
+        "output_tokens": 131,
+        "wall_s": 1.538989596068859,
+        "llm_calls": 1,
+        "record_sha256": "8b1bf94b6cb23bd25736452a60e5fb40161f30b81ede4e2584ddf56e34d767dd",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 3,
+        "status": "invalid",
+        "input_tokens": 2845,
+        "output_tokens": 130,
+        "wall_s": 1.493763456121087,
+        "llm_calls": 1,
+        "record_sha256": "dc388d6dc2dc86e108613d5deccab6bc9a6b6fbb3a9ce474ac400d8389ffb4af",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 4,
+        "status": "invalid",
+        "input_tokens": 2845,
+        "output_tokens": 134,
+        "wall_s": 1.5739186911378056,
+        "llm_calls": 1,
+        "record_sha256": "461089b910c6fdc525051377af81dfc17cf502f37466c4bdeb1ee2248b4da193",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 5,
+        "status": "invalid",
+        "input_tokens": 2845,
+        "output_tokens": 134,
+        "wall_s": 10.800808143801987,
+        "llm_calls": 1,
+        "record_sha256": "15e354c4b5ac21d422f9374cf54dc6db51649b9212ba2fdced6e9e2128ad73b7",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       }
+      ],
+      "top1_is_registered_mechanism": 0,
+      "top1_probe_decisions": {},
+      "invalid_categories": {
+       "contract": 5
+      },
+      "invalid_reasons": [
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+      ],
+      "same_as_n2_decision": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    },
+    "correction": {
+     "structured": {
+      "counts": {
+       "valid": 2,
+       "invalid": 3,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_motor_torque_speed · restart": 2
+      },
+      "pass_k": {
+       "1": 0.4,
+       "2": 0.1,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.4,
+       "2": 0.1,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 1284,
+       "min": 1284,
+       "max": 1284,
+       "total": 6420
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 128,
+       "min": 126,
+       "max": 131,
+       "total": 641
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.8314254849683493,
+       "min": 1.531097344122827,
+       "max": 2.0183380539529026,
+       "total": 8.942946445895359
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 3530.5,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 1284,
+        "output_tokens": 126,
+        "wall_s": 1.531097344122827,
+        "llm_calls": 1,
+        "record_sha256": "0061a2375b9f3520bc5d624ff28b5d51de407cd6fe3fb521d16d200f4d761d85",
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       },
+       {
+        "run": 2,
+        "status": "invalid",
+        "input_tokens": 1284,
+        "output_tokens": 131,
+        "wall_s": 1.9340224748011678,
+        "llm_calls": 1,
+        "record_sha256": "63409bcf56ccd8254116fdef92fbcf45b471766e2facd556d98b927dee650db6",
+        "category": "contract",
+        "reason": "제안 근거에 없는 인용 ['registry']"
+       },
+       {
+        "run": 3,
+        "status": "invalid",
+        "input_tokens": 1284,
+        "output_tokens": 128,
+        "wall_s": 1.6280630880501121,
+        "llm_calls": 1,
+        "record_sha256": "c88f749dbcfd3de8587ce74f0b48aeba6b746c3dffbe6ea8bec8f39132620de0",
+        "category": "contract",
+        "reason": "제안 근거에 없는 인용 ['registry']"
+       },
+       {
+        "run": 4,
+        "status": "invalid",
+        "input_tokens": 1284,
+        "output_tokens": 128,
+        "wall_s": 1.8314254849683493,
+        "llm_calls": 1,
+        "record_sha256": "9db2f13c75ef3c5227f9b0f788deca101e1456d36257c3ebf5b7e8d321a93ce3",
+        "category": "contract",
+        "reason": "제안 근거에 없는 인용 ['registry']"
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 1284,
+        "output_tokens": 128,
+        "wall_s": 2.0183380539529026,
+        "llm_calls": 1,
+        "record_sha256": "2dce692851fdf39fc7d1d922a8fe28423347ff139e1bdfa6e54acfef6502a80f",
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ]
+       }
+      ],
+      "invalid_categories": {
+       "contract": 3
+      },
+      "invalid_reasons": [
+       "제안 근거에 없는 인용 ['registry']",
+       "제안 근거에 없는 인용 ['registry']",
+       "제안 근거에 없는 인용 ['registry']"
+      ],
+      "same_as_n2_decision": 2
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 3,
+       "invalid": 2,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_motor_torque_speed · restart": 3
+      },
+      "pass_k": {
+       "1": 0.6,
+       "2": 0.3,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.6,
+       "2": 0.3,
+       "4": 0.0,
+       "5": 0.0
+      }
+     }
+    }
+   }
+  },
+  "f1_s2034": {
+   "case": "h02_s2034",
+   "seed": 2034,
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "structured": {
+      "counts": {
+       "valid": 0,
+       "invalid": 5,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {},
+      "pass_k": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2848,
+       "min": 2848,
+       "max": 2848,
+       "total": 14240
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 131,
+       "min": 129,
+       "max": 208,
+       "total": 729
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.7402620839420706,
+       "min": 1.4429057650268078,
+       "max": 2.0900528200436383,
+       "total": 8.682224811986089
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": null,
+      "runs": [
+       {
+        "run": 1,
+        "status": "invalid",
+        "input_tokens": 2848,
+        "output_tokens": 208,
+        "wall_s": 1.9403988618869334,
+        "llm_calls": 1,
+        "record_sha256": "9212bbcf0a86dffcb0ee93ae86a960e0a6877894955c9297bacfbe5250bb5874",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 2,
+        "status": "invalid",
+        "input_tokens": 2848,
+        "output_tokens": 131,
+        "wall_s": 1.7402620839420706,
+        "llm_calls": 1,
+        "record_sha256": "abbc3d3e01d090b1691fab150a884343f2d9a5b916cbcc5310ce9d6b407c5ef1",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 3,
+        "status": "invalid",
+        "input_tokens": 2848,
+        "output_tokens": 129,
+        "wall_s": 1.4429057650268078,
+        "llm_calls": 1,
+        "record_sha256": "183f1374b85d8546a678a6b1548dac27067480e6a882096c3ee5f0dd33ea277a",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 4,
+        "status": "invalid",
+        "input_tokens": 2848,
+        "output_tokens": 131,
+        "wall_s": 1.4686052810866386,
+        "llm_calls": 1,
+        "record_sha256": "0331e12ad18c0d942531b8a71e6ff24fe477e8c719d6798b22d15a4f4f249da0",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 5,
+        "status": "invalid",
+        "input_tokens": 2848,
+        "output_tokens": 130,
+        "wall_s": 2.0900528200436383,
+        "llm_calls": 1,
+        "record_sha256": "563ab18cd5a3e17f189f46bc770f0bb504e8d8b759683d46389e606376315ca7",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       }
+      ],
+      "top1_is_registered_mechanism": 0,
+      "top1_probe_decisions": {},
+      "invalid_categories": {
+       "contract": 5
+      },
+      "invalid_reasons": [
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+      ],
+      "same_as_n2_decision": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    },
+    "correction": {
+     "structured": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 1323,
+       "min": 1323,
+       "max": 1323,
+       "total": 6615
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 129,
+       "min": 124,
+       "max": 130,
+       "total": 642
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.682809395948425,
+       "min": 1.6105165388435125,
+       "max": 2.2266208440996706,
+       "total": 8.887077138060704
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 1451.4,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 1323,
+        "output_tokens": 129,
+        "wall_s": 1.6105165388435125,
+        "llm_calls": 1,
+        "record_sha256": "38946dd911947fb5cca314dd93a1654b28f2334fbf03f55be7f23b3a1367b456",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 1323,
+        "output_tokens": 130,
+        "wall_s": 1.6216575591824949,
+        "llm_calls": 1,
+        "record_sha256": "6ae304758c152c37a4e17ec94035225a16f44c3aaa0e9fe93c8ae4ad8b9e63d3",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 1323,
+        "output_tokens": 130,
+        "wall_s": 1.7454727999866009,
+        "llm_calls": 1,
+        "record_sha256": "7369941d467f650535a3613b28a72395dfc052806ed2177da50e5c1e4548768a",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 1323,
+        "output_tokens": 129,
+        "wall_s": 1.682809395948425,
+        "llm_calls": 1,
+        "record_sha256": "8fed0533cc77cb7fefd4824970616ef5fbeac6291a2f6b96cfb95b32b68700bd",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 1323,
+        "output_tokens": 124,
+        "wall_s": 2.2266208440996706,
+        "llm_calls": 1,
+        "record_sha256": "a207e31460b3be1d1b43dd3d34292dd99bb62284942ba3ada56115d4d94e10c1",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       }
+      ],
+      "invalid_categories": {},
+      "invalid_reasons": [],
+      "same_as_n2_decision": 5
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    }
+   }
+  },
+  "u1_s2040": {
+   "case": "u1_s2040",
+   "seed": 2040,
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "structured": {
+      "counts": {
+       "valid": 0,
+       "invalid": 5,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {},
+      "pass_k": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.0,
+       "2": 0.0,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2803,
+       "min": 2803,
+       "max": 2803,
+       "total": 14015
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 131,
+       "min": 129,
+       "max": 190,
+       "total": 713
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 2.2862805258482695,
+       "min": 1.4729611221700907,
+       "max": 3.4952203000430018,
+       "total": 12.019789372803643
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": null,
+      "runs": [
+       {
+        "run": 1,
+        "status": "invalid",
+        "input_tokens": 2803,
+        "output_tokens": 190,
+        "wall_s": 3.4952203000430018,
+        "llm_calls": 1,
+        "record_sha256": "47758980160c95ff69c481f9ea96708018a72fe0cbfd6d7a9f2d189197bb69cd",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 2,
+        "status": "invalid",
+        "input_tokens": 2803,
+        "output_tokens": 129,
+        "wall_s": 1.9918002549093217,
+        "llm_calls": 1,
+        "record_sha256": "171d5825591aa987a3b83c37463290cdb458c8ad841939459db570bbf2a5ba5f",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 3,
+        "status": "invalid",
+        "input_tokens": 2803,
+        "output_tokens": 131,
+        "wall_s": 2.7735271698329598,
+        "llm_calls": 1,
+        "record_sha256": "f533b75f796aea350f5360203e60bfc54d892491c6cb58c28ff1728cd2bf937d",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 4,
+        "status": "invalid",
+        "input_tokens": 2803,
+        "output_tokens": 130,
+        "wall_s": 1.4729611221700907,
+        "llm_calls": 1,
+        "record_sha256": "78962539a7dd94ffb08254591d0ee18493da775183b257c80ba4bc3400b41850",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       },
+       {
+        "run": 5,
+        "status": "invalid",
+        "input_tokens": 2803,
+        "output_tokens": 133,
+        "wall_s": 2.2862805258482695,
+        "llm_calls": 1,
+        "record_sha256": "0ddcb504e99b819a2bacd4c9924fabe28ff193c3563359aa2e173abf7cd9f0c3",
+        "category": "contract",
+        "reason": "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+       }
+      ],
+      "top1_is_registered_mechanism": 0,
+      "top1_probe_decisions": {},
+      "invalid_categories": {
+       "contract": 5
+      },
+      "invalid_reasons": [
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다",
+       "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+      ],
+      "same_as_n2_decision": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      }
+     }
+    },
+    "correction": {
+     "structured": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 1346,
+       "min": 1346,
+       "max": 1346,
+       "total": 6730
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 130,
+       "min": 130,
+       "max": 130,
+       "total": 650
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.6773668078240007,
+       "min": 1.5525161430705339,
+       "max": 1.70913629909046,
+       "total": 8.18849399802275
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 1476.0,
+      "runs": [
+       {
+        "run": 1,
+        "status": "valid",
+        "input_tokens": 1346,
+        "output_tokens": 130,
+        "wall_s": 1.5525161430705339,
+        "llm_calls": 1,
+        "record_sha256": "efd9bd14808bef0bfbe17e26b997bfe92ffc6341fdf0a21984d74c601ca3ec43",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 2,
+        "status": "valid",
+        "input_tokens": 1346,
+        "output_tokens": 130,
+        "wall_s": 1.5556286051869392,
+        "llm_calls": 1,
+        "record_sha256": "b871336ed2b09c7e7ab1696484f960f45e179ffa590afaa86a0f297701021edd",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 3,
+        "status": "valid",
+        "input_tokens": 1346,
+        "output_tokens": 130,
+        "wall_s": 1.70913629909046,
+        "llm_calls": 1,
+        "record_sha256": "e516b19f477a2c144f31181c8c6adf5c219b9f6f7d0ceda1ee41f84c2af33dfb",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 4,
+        "status": "valid",
+        "input_tokens": 1346,
+        "output_tokens": 130,
+        "wall_s": 1.6773668078240007,
+        "llm_calls": 1,
+        "record_sha256": "9368b0e7121ff9432db85e1213fe177a65251628273198990cfa7f40a7cc4d02",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       },
+       {
+        "run": 5,
+        "status": "valid",
+        "input_tokens": 1346,
+        "output_tokens": 130,
+        "wall_s": 1.6938461428508162,
+        "llm_calls": 1,
+        "record_sha256": "75ede8338b81a30f24deeeeb3ca7851386d8fde05c904ee16edaae8b6bdcc8e3",
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ]
+       }
+      ],
+      "invalid_categories": {},
+      "invalid_reasons": [],
+      "same_as_n2_decision": 5
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    }
+   }
+  }
+ },
+ "common_wording": "이미 본 packet을 같은 모델·temperature 0·같은 프롬프트로 반복하고 출력 형식만 바꾼 개발 측정이다. 반복 일관성·유효율은 정확도의 근거가 아니다. N2 결과는 이미 본 값이고 시점이 다른 반복이다. 비용은 토큰·벽시계 기록이며 절감 주장이 아니다.",
+ "n2_baseline": {
+  "path": "evals/results/n2_pass_k_v1/summary.json",
+  "sha256_lf": "5e37cb4e117bceb9d0321347972fcb8caa0e781e0a9595c63e00313c113d5d6b"
+ }
+}
