@@ -1,0 +1,287 @@
+{
+ "schema": "n2_structured_protocol_v1",
+ "question": "N2와 같은 packet·같은 프롬프트에 출력 형식(response_format json_schema strict)만 더하면 계약 위반 출력(문법·계약)과 결정 일치(pass^k)가 어떻게 되는가",
+ "scope": "structured_output_arm_on_already_seen_packets_development_measurement_not_accuracy_superiority_generalization_or_savings",
+ "model": "nvidia/nemotron-3-super-120b-a12b",
+ "temperature": 0,
+ "reasoning_effort": "none",
+ "max_tokens": 16384,
+ "variable": {
+  "changed": "response_format: json_schema(strict) 하나",
+  "same": [
+   "모델",
+   "temperature 0",
+   "reasoning_effort none",
+   "max_tokens 16384",
+   "메시지(active_diagnosis.decision_messages, correction_model_call.build_messages)",
+   "packet(N2 프로토콜이 SHA로 묶은 11개)",
+   "계약 검증기(validate_decision, validate_model_proposal)"
+  ]
+ },
+ "schemas": {
+  "diagnosis": {
+   "type": "object",
+   "properties": {
+    "ranking": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "probe": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "action": {
+     "type": "string"
+    },
+    "reason": {
+     "type": "string"
+    },
+    "claims": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "value": {}
+      },
+      "required": [
+       "id",
+       "value"
+      ],
+      "additionalProperties": false
+     }
+    },
+    "expected_outcomes": {
+     "type": "object",
+     "additionalProperties": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   },
+   "required": [
+    "ranking",
+    "probe",
+    "action",
+    "reason",
+    "claims",
+    "expected_outcomes"
+   ],
+   "additionalProperties": false
+  },
+  "correction": {
+   "type": "object",
+   "properties": {
+    "correction_id": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "recovery_mode": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "cited_facts": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "checklist": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "hold_reason": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "correction_id",
+    "recovery_mode",
+    "cited_facts",
+    "checklist",
+    "hold_reason"
+   ],
+   "additionalProperties": false
+  }
+ },
+ "schema_policy": "구조만: 계약의 필드 이름·필수 여부·형(널 허용 포함)·추가 필드 금지. enum·최소 개수·packet별 규칙(순열, 카탈로그 기대 결과, 사실 id·값, 등록 교정)은 넣지 않는다. 그 의미 위반은 기존 검증기가 센다",
+ "feasibility": {
+  "official_docs": "NIM LLM 문서(1.13)는 nvext.guided_json으로 JSON schema를 주라고 권하고 response_format json_schema는 다루지 않는다. 호스팅 모델 API 참조(nvidia-nemotron-3-super-120b-a12b-infer)는 요청 필드로 response_format·nvext를 나열하지 않는다. 그래서 지원 여부를 합성 최소 입력 호출로 확인했다",
+  "calls": 2,
+  "finding": "평가 packet이 아닌 합성 입력 두 번에서 서버가 strict json_schema를 강제했다: 프롬프트가 다른 JSON({\"answer\": \"hello\"})을 요구했는데 출력이 schema를 따랐다. 널 허용·객체 배열·문자열 맵 schema도 따랐다. 값은 의미 없는 문자열이 나올 수 있었다(형식만 보장)"
+ },
+ "input_sets": "N2 프로토콜(bench/protocols/n2_pass_k_v1.json)의 input_sets 11개 packet·종류 그대로",
+ "runs_per_packet": 5,
+ "k_values": [
+  1,
+  2,
+  4,
+  5
+ ],
+ "order": "N2와 같다: run 번호 1~5를 바깥 반복, 세트 순서·종류를 안쪽 반복",
+ "attempts": "run 번호마다 첫 시도. 인프라 오류(연결·시간 초과·429·5xx·빈 응답·잘림)일 때만 같은 run 번호로 1회 더",
+ "api_budget": {
+  "cap_requests": 60,
+  "planned_requests": 55,
+  "counting": "기록 파일 하나가 요청 하나(인프라 재시도 포함). 상한에 닿으면 남은 실행은 budget_exhausted",
+  "feasibility_requests_outside_cap": 2
+ },
+ "invalid_categories": {
+  "syntax": "응답 본문(```json 울타리 제거 뒤)이 JSON 객체로 읽히지 않는다",
+  "contract": "JSON 객체로 읽히지만 계약 검증기가 거절했다(빈 claim, 카탈로그 밖 expected_outcomes, 필드 불일치 등)"
+ },
+ "pass_k": "N2와 같다: Σ_g C(c_g,k)/C(n,k), n은 인프라 오류를 뺀 실행 수, c_g는 결정 키가 g인 유효 실행 수",
+ "comparison": {
+  "baseline": "evals/results/n2_pass_k_v1/summary.json",
+  "note": "N2 단일 호출(이미 본 결과)과 packet별로 나란히 둔다. 시점이 다른 반복이며 같은 packet·프롬프트다. 유효 결정이 N2의 packet별 결정과 같은지도 센다"
+ },
+ "improvement_rule": {
+  "max_invalid_total": 1,
+  "min_mean_pass4_each_kind": 0.8,
+  "rule": "구조화 arm의 무효(문법+계약)가 55회 중 1 이하이고, 진단·교정 각각 packet 평균 pass^4가 0.8 이상일 때만 '개선'이라고 쓴다. 아니면 개선을 말하지 않고 수치만 적는다. 문법 무효가 0이면 그 사실은 따로 적을 수 있다"
+ },
+ "use_rule": {
+  "threshold_pass4": 0.8,
+  "rule": "N2와 같다: 종류별 packet 평균 pass^4 ≥ 0.8이면 usable, 아니면 reconsider"
+ },
+ "wording": {
+  "improved": "출력 형식만 바꾼 구조화 arm이 사전등록 기준(무효 ≤ 1/55, 진단·교정 평균 pass^4 ≥ 0.8)을 넘었다: 무효 {invalid}/55, 평균 pass^4 진단 {p4d}·교정 {p4c}. 같은 packet의 N2 단일 호출(무효 6/55)보다 개선됐다.",
+  "not_improved": "출력 형식만 바꾼 구조화 arm은 사전등록 개선 기준(무효 ≤ 1/55, 진단·교정 평균 pass^4 ≥ 0.8)을 넘지 못했다: 무효 {invalid}/55(문법 {syntax}, 계약 {contract}), 평균 pass^4 진단 {p4d}·교정 {p4c}. 개선을 주장하지 않는다.",
+  "syntax_zero": "구조화 arm에서 문법 무효(JSON 파손)는 0이었다. 계약 위반은 따로 센다.",
+  "insufficient": "인프라 오류·예산 소진으로 일부 packet의 pass^4를 계산하지 못해 개선 판정을 하지 않는다.",
+  "common": "이미 본 packet을 같은 모델·temperature 0·같은 프롬프트로 반복하고 출력 형식만 바꾼 개발 측정이다. 반복 일관성·유효율은 정확도의 근거가 아니다. N2 결과는 이미 본 값이고 시점이 다른 반복이다. 비용은 토큰·벽시계 기록이며 절감 주장이 아니다."
+ },
+ "forbidden_claims": [
+  "LLM이 규칙보다 우월하다",
+  "GPU·토큰·시간 절감",
+  "일반화",
+  "정확도",
+  "최초",
+  "사전등록 기준 없이 '개선'",
+  "구조화 출력이 진단 내용(순위·probe)을 좋게 했다"
+ ],
+ "source_files": {
+  "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+  "evals/active_model_call.py": "10349545f07071226213e10bcbaf617609bdb32e8f29b734e064fe760356ae3e",
+  "evals/baselines.py": "00b2b5d1f3500ca406da11106a2af9ee3dd40262165ac171684021b6f08b6475",
+  "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+  "evals/e2e_reward_demo_v2.py": "a83a28cc952159d511e88c12caae2e3b8b2a39a32720b93b488bf03e47265a34",
+  "evals/n2_pass_k.py": "b33c93dffe603ba6c233d3171ad6fa0660bcb23df59a77d6cb73a5e7d06dfd8e",
+  "evals/n2_structured.py": "6a3acc401fb4f80735857044c981a2c4db302938b557c3db4693613baada75c8",
+  "evals/replay.py": "b2de9072293b87089c63e1ea246bb9a6bbb81881ebf44e74b7dc0757961024e7",
+  "evals/structured_model_call.py": "c922e047438af3894e8d3ef4c69ac73e1776699cfe5c1f508e58665ed293c322",
+  "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+  "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+  "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+  "src/rl_triage/rules.py": "11298d86f8df8ae2f9553dd77bffd687034c065f246cf3f36689c70c26aa2cfd"
+ },
+ "inputs": {
+  "public": {
+   "bench/answer_key.json": "92671c5ead5f4bd2413c12281d236779e7edd4dbf6d967100b933fa194a5c268",
+   "bench/answer_key_p0c.json": "10a73620fe2a06203239832cd93308bacbb79cd7935ba53205f8c5d1387b831c",
+   "bench/cases.json": "57efbef2d589246766e91aeae7556d81faf68a227d315bf2ae45461e90d0f86f",
+   "bench/protocols/n2_pass_k_v1.json": "decb3d5165bbb8e89a0e34962d8dc79c9e76f020eceec8cef20b90bfa1f00aca",
+   "bench/reference/manifest.json": "50a1568afe721094e0626a0eac9b43eaf76d2c2c1ee6e3961a13371a1da85d2a",
+   "bench/reference/params/p0c_seed2027/env.yaml": "66d90d188ae1193e897bb6f64d127d0c6955fa2352dfdb3b508b69e201ed5fc9",
+   "bench/reference/params/seed42/agent.yaml": "cc10b1b5ad4f5d7e1563f5f6672a3f6bf6ee269e86ec8df7645934f248974807",
+   "bench/reference/params/seed42/env.yaml": "d3df25050872d6d37d1cb1f5c1eda36d1cf11bb7c32c61807af98bc338c5392d",
+   "bench/reference/params/seed7/agent.yaml": "e53bb547e83d1078360479c6fc54f1d6009cda7bdff3a2bb43b975b9e0b9e687",
+   "bench/reference/params/seed7/env.yaml": "bc3c7d0cb590d92a4c603846bdaadae2932854bb9069a39e22f04d9ed2ced4ad",
+   "bench/runs/baseline_s42.telemetry.json": "18b2043f4f645aefc75213670bdda76c52f2fd48357ce848a11db8916c76bde1",
+   "bench/runs/baseline_s7.telemetry.json": "7092e1984209f0b695a29168cf51eb4d48bfe3a158d07326b7de0fc720851b5a",
+   "bench/runs/c01_s42.telemetry.json": "737ba46566d3ef0f956bc9e48a1bc3d852367261050119adcff0dd49e914b943",
+   "bench/runs/c01_s7.telemetry.json": "39ed0f790bef3967f153351056d1f1a70f14cf6a67e55b7b556885e2e1524a64",
+   "bench/runs/c02_s42.telemetry.json": "6390446edbd799fb2871ef20062a0aee9a8c19a0b3b8f489c3e111c08c5cf2c0",
+   "bench/runs/c02_s7.telemetry.json": "4cfc2542ecc3a14599328ce4e5cf460aad7640184bb660231eeb585e7fa44734",
+   "bench/runs/c03_s42.telemetry.json": "671dad97784bee0c0b1463d87b137737da2989c7ee7876fb2b1366e6fbad7de8",
+   "bench/runs/c03_s7.telemetry.json": "21f9f1aff2a45245afe7e46161bebca9f69cb1d52cd8374a523da77718b738fd",
+   "bench/runs/c04_s42.telemetry.json": "7a9613720a6a4b9239cb09ab30a92367ee45de4f126f0c65c322e0853ed1d143",
+   "bench/runs/c04_s7.telemetry.json": "53f862bc71e5e8d21e36220319217780da50eaa87643dff0547ce14fa8022212",
+   "bench/runs/c05_s42.telemetry.json": "7136e84886bde4c831f8db9e17586ad345302acc0e5396e7a516d6d92ddf2219",
+   "bench/runs/c05_s7.telemetry.json": "9d0848365b13abf10cc22297d0ea9ac81e4bf21d2289f482c43400d640bad32f",
+   "bench/runs/c06_s42.telemetry.json": "4d9aa6f7c42f9f05153ba9825d0e834b1d26fb31504ae9da0557880f9d3c59f8",
+   "bench/runs/c06_s7.telemetry.json": "0c7ae504f2747d9f2e9e375084e662f9363b1a5b42293c459eae04df6d2b3e9b",
+   "bench/runs/c07_s42.telemetry.json": "7b9b19020b04682b404c69228a997a91d9d16c7d7496a8ccae3309e6e4b51750",
+   "bench/runs/c07_s7.telemetry.json": "c48bbcfe76a0e384e13c273313140e1b194b5f0dc386183cda0c5aab7f3ff816",
+   "bench/runs/c08_s42.telemetry.json": "1f22d1c564b7c4699dbb7536025b07b3e1db37df141490bf03b69107c1647c13",
+   "bench/runs/c08_s7.telemetry.json": "e0b54b0c3c642d34fb23f40c836e1a309701c8cc4b48a5b566fba5c3b5689322",
+   "bench/runs/c09_s42.telemetry.json": "6831a3acce4684c1c7c2e88050bfd38654d642d2b0eed509eff2a4ea907f0c7d",
+   "bench/runs/c09_s7.telemetry.json": "4cfa5dfccca2d9a4923a3562b211299300fdfbb0da65b62fec076c86545a72ce",
+   "bench/runs/c10_s42.telemetry.json": "d64bdecca1289e3291f51160be877b4426a6edfa6dc86997aee58706b541d165",
+   "bench/runs/c10_s7.telemetry.json": "d0bdbd9ba79145341933a3961de67d533fb0f2646884ae5f89f98cfe963724be",
+   "bench/runs_p0c/baseline_p0c_s2027.telemetry.json": "a2c4d9b9971e2d3b335a542dcb14637f084aedef5ce10e3adfc6e91f4cc8217f",
+   "bench/runs_p0c/baseline_p0c_s2030.telemetry.json": "45baa7c4bba434eea03b3d76f609242a10d2a7834864eb5bfe388dfc7e8857aa",
+   "bench/runs_p0c/baseline_p0c_s2031.telemetry.json": "4dca9dbeb46048d249bac9b8e9ebc2fd01560d900c20b0aa3bfabe07850cf7af",
+   "bench/runs_p0c/baseline_p0c_s2033.telemetry.json": "3d32d81b86203b0042ecdea6db33800090963606e356a1b5c467ccc390ab45c8",
+   "bench/runs_p0c/baseline_p0c_s2034.telemetry.json": "fa834b642fe8e9437d5141dba81ac1cf8b123cb7db9c364a591b86d84f96d2d4",
+   "bench/runs_p0c/baseline_p0c_s2040.telemetry.json": "2611b4d4b6ea2b3cbd2653adc6ea4a4250f225e77cdebce3a6e0e09589d0d623",
+   "bench/runs_p0c/h02_s2027.telemetry.json": "4ad5317ac27a668e0799b9c894a25f2f11565d47edee734cf3b6e6c9b10ba67f",
+   "bench/runs_p0c/h02_s2030.telemetry.json": "a99dd64cd1a44199616e15555076c0546c3770867d8efbba9ef27663a386989e",
+   "bench/runs_p0c/h02_s2034.telemetry.json": "8a0e29467df527e88afe26ed2f34f9cdad1fd35056c5610ac9ca2edf1dbdac50",
+   "bench/runs_p0c/h06_s2031.telemetry.json": "13b95dbea24b9253aecb45e02866666aa53283c5b0c176ee444986d4adbe9ad8",
+   "bench/runs_p0c/h06_s2033.telemetry.json": "b819381828d26b606e500f33fc5522be7e53fb83559949b0022cfcc299edfbd9",
+   "bench/runs_p0c/u1_s2040.telemetry.json": "28c2961596da0cf4dfea91da328fe173a04181d8db7fea9c3804b12dc3273f77",
+   "evals/results/e2e_demo_u1_s2040_20261013/runs/u1_s2040.json": "479aafb39938a53dcf566a522247f617ead62211bbfff3212281bb636004872a",
+   "evals/results/e2e_demo_v3_1_f1_s2034_20261013/runs/h02_s2034.json": "6f4d786f1fd8de21bffaf070e22a37708d2e4b85b9a32fe5b0e8b5918528043e",
+   "evals/results/e2e_demo_v3_1_f2_s2033_20261013/runs/h06_s2033.json": "bc68d85c196ccc3d0d391e98fb67826213e910f588f1ac4e4078e8d43f35427a",
+   "evals/results/e2e_demo_v3_f2_s2031_20261013/runs/h06_s2031.json": "c4c37538f8bbec3392ebd5e280161662af6b9e286a0958aa86c1470077bb404d",
+   "evals/results/e2e_reward_s2030_20261013/runs/h02_s2030.json": "4a778074b843b646cba3f6b45a9f15c83d5454bacba7cce04a065780510ba4c0",
+   "evals/results/e4b_nat_compare_v4/summary.json": "6416fe34d94b8a6b4da1ef5a4868a4917c9298306a6292fd8df8c9b0acb89faf",
+   "evals/results/n2_pass_k_v1/summary.json": "5e37cb4e117bceb9d0321347972fcb8caa0e781e0a9595c63e00313c113d5d6b",
+   "evals/results/p1a_probes_holdout_20261009/probes/baseline_p0c_s2027.json": "d66fd6fd03c2442ed8f541736dafb0e87c566f9476e428cc367ba87f20b793fb",
+   "evals/results/p1a_probes_holdout_20261009/probes/h02_s2027.json": "1fe40e4282d8c9d58d1704a0db5450b6df89b60546fc2920e3a6d0114ab78c41"
+  },
+  "private": {
+   "h02_s2027/diagnosis": {
+    "packet_sha256": "ac4ee4365cd1e304eebfb43b7c56fa91ace1fbec54f38d5ee731f95e58408f4b"
+   },
+   "f2_s2031/diagnosis": {
+    "packet_sha256": "b6c7d41dca3cc58334e694fdc22460dc6bf6dfa70acd70e568ccb164d9a0b19a"
+   },
+   "f2_s2031/correction": {
+    "packet_sha256": "e0a6a2973a11b9a1043e4d57145750590b4f7d046bbd528d20596a67598a5d91"
+   },
+   "r_s2030/diagnosis": {
+    "packet_sha256": "3eb285b648c865eb5057ca80c082a6aaba11c688c60935f46b76a01d27785763"
+   },
+   "r_s2030/correction": {
+    "packet_sha256": "d0807fe22fecb881fc0553345cfa1141eb68a4f47c05e4a00a7155c9bab3a0a1"
+   },
+   "f2_s2033/diagnosis": {
+    "packet_sha256": "28ac8ea2e9ef46a2014338031def62324902579dae82a469f97cfd4bf96e2b32"
+   },
+   "f2_s2033/correction": {
+    "packet_sha256": "076709531d3343220c07dd15643905753f7f6a72e4349c29ce084ae841acc462"
+   },
+   "f1_s2034/diagnosis": {
+    "packet_sha256": "a9707a031f80601152ee60f16e137d09ba790edf6cb7a0be25417957d307d997"
+   },
+   "f1_s2034/correction": {
+    "packet_sha256": "b333115ffa8cf1711d0faa2e28597682aead6b38a6fbc3531d1ed992827422db"
+   },
+   "u1_s2040/diagnosis": {
+    "packet_sha256": "49672a5bd3efd0c469057927fc96e1a91dfdcf9b6f25eee90731f913e48a8d2b"
+   },
+   "u1_s2040/correction": {
+    "packet_sha256": "389fc4dd1e9e061855ad4f8075fb2e7f5f0cbfa978cf8c58829ef3b264755789"
+   }
+  }
+ }
+}
