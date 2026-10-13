@@ -1,0 +1,952 @@
+{
+ "schema": "e4b_nat_compare_result_v4",
+ "protocol_sha256_lf": "b51fabfbb5c5ed3685fc1c7a155c1f3b0a7e53579419c079969b9a0908ca18f3",
+ "source_commit_sha": "8f4b0927d3d2c1c16df285b82debedaaa965a455",
+ "adoption_input": {
+  "tag": "e2e_demo_v3_f2_s2031_20261013",
+  "begin_sha256": "4906cfed8fa90b171bf8c7381bfd9a4e53969c275326b7bf90b2a8bcb498f835",
+  "experiment_commit": "5769970c6cf95d3646723bf6d77cbe804350f0b3",
+  "demo_protocol_sha256_lf": "a9a634ef987654c4d213ee54298a6db922a8451410c5f798c4647567af0cbc08",
+  "kinds": {
+   "diagnosis": {
+    "status": "bound",
+    "packet_sha256": "b6c7d41dca3cc58334e694fdc22460dc6bf6dfa70acd70e568ccb164d9a0b19a",
+    "single_call_sha256": "e95d2dbe397332954999470a56028036837b9a82bf1f7e1427ee82c72755dcfd"
+   },
+   "correction": {
+    "status": "bound",
+    "packet_sha256": "e0a6a2973a11b9a1043e4d57145750590b4f7d046bbd528d20596a67598a5d91",
+    "single_call_sha256": "32f3946c643bba35c4d26763c4dd33ffa232a5b370a06e895d6d50882f9ec8ef"
+   }
+  }
+ },
+ "sets": {
+  "h02_s2027": {
+   "role": "development",
+   "kinds": {
+    "diagnosis": {
+     "not_reached": false,
+     "counts": {
+      "valid": 3,
+      "invalid": 2,
+      "infra_error": 0,
+      "missing": 0
+     },
+     "non_infra_runs": 5,
+     "single_call_available": false,
+     "single_call_valid": false,
+     "agreement_with_single_call": null,
+     "agreement_denominator": 0,
+     "decisions": {
+      "continue": 3
+     },
+     "runs_using_precheck": 5,
+     "tool_sequences": {
+      "e4b4_list_fact_ids > e4b2_probe_catalog > e4b4_get_facts > e4b4_get_facts > e4b4_check_decision > e4b4_check_decision": 1,
+      "e4b4_list_fact_ids > e4b2_probe_catalog > e4b4_get_facts > e4b4_get_facts > e4b4_check_decision > e4b4_check_decision > e4b4_check_decision > e4b4_submit_decision": 1,
+      "e4b4_list_fact_ids > e4b2_probe_catalog > e4b4_get_facts > e4b4_get_facts > e4b4_check_decision > e4b4_submit_decision": 3
+     },
+     "precheck_calls": {
+      "n": 5,
+      "median": 1,
+      "min": 1,
+      "max": 3
+     },
+     "llm_calls": {
+      "n": 5,
+      "median": 7,
+      "min": 7,
+      "max": 8
+     },
+     "input_tokens": {
+      "n": 5,
+      "median": 29495,
+      "min": 29333,
+      "max": 34651
+     },
+     "output_tokens": {
+      "n": 5,
+      "median": 1217,
+      "min": 1039,
+      "max": 1529
+     },
+     "wall_s": {
+      "n": 5,
+      "median": 18.024546697968617,
+      "min": 15.215644323965535,
+      "max": 20.211641322122887
+     },
+     "single_call_costs": null,
+     "runs": [
+      {
+       "run": 1,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "ranking": [
+         "reward",
+         "actuator",
+         "exploration",
+         "optimizer",
+         "physics",
+         "termination"
+        ],
+        "probe": "P_reward",
+        "action": "continue",
+        "reason": "Initial probe to investigate low reward relative to reference value",
+        "claims": [
+         {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 12.570486783981323
+         },
+         {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+         }
+        ],
+        "expected_outcomes": {
+         "actuator": "normal",
+         "exploration": "normal",
+         "reward": "abnormal"
+        }
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b4_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_check_decision",
+        "e4b4_submit_decision"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 29333,
+       "output_tokens": 1039,
+       "wall_s": 15.215644323965535,
+       "atif_sha256": "27ed2917d3913d610bb48cbe8be6bb806049f5b6b1c4eeeb8975c77bb1f849c7"
+      },
+      {
+       "run": 2,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "ranking": [
+         "reward",
+         "exploration",
+         "optimizer",
+         "actuator",
+         "physics",
+         "termination"
+        ],
+        "probe": "P_reward",
+        "action": "continue",
+        "reason": "Initial assessment shows low reward and high velocity error suggesting reward function issues",
+        "claims": [
+         {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 12.570486783981323
+         },
+         {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+         },
+         {
+          "id": "telemetry:case:Metrics/base_velocity/error_vel_xy",
+          "value": 1.5146108249823251
+         },
+         {
+          "id": "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+          "value": 0.19920970598856608
+         }
+        ],
+        "expected_outcomes": {
+         "exploration": "normal",
+         "optimizer": "normal",
+         "reward": "abnormal"
+        }
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b4_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_check_decision",
+        "e4b4_submit_decision"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 29495,
+       "output_tokens": 1171,
+       "wall_s": 18.024546697968617,
+       "atif_sha256": "a168ff36d13dc4bc214b52d809ca04dca59304b08d71b28df736fbe4d56dd895"
+      },
+      {
+       "run": 3,
+       "attempt": 1,
+       "status": "invalid",
+       "decision": null,
+       "error_type": "ToolInvocationError",
+       "precheck_calls": 2,
+       "tool_sequence": [
+        "e4b4_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_check_decision",
+        "e4b4_check_decision"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 29432,
+       "output_tokens": 1529,
+       "wall_s": 16.06878902600147,
+       "atif_sha256": "59de7bf32b975cff8d08c6ba39b750d501f07f9456432559b934bef47c34d227"
+      },
+      {
+       "run": 4,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "ranking": [
+         "reward",
+         "physics",
+         "optimizer",
+         "exploration",
+         "actuator",
+         "termination"
+        ],
+        "probe": "P_reward",
+        "action": "continue",
+        "reason": "Initial assessment shows significantly low reward vs reference, suggesting reward mechanism issues; P_reward probe will test this directly",
+        "claims": [
+         {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 12.570486783981323
+         },
+         {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.80788917541504
+         }
+        ],
+        "expected_outcomes": {
+         "optimizer": "normal",
+         "physics": "normal",
+         "reward": "abnormal"
+        }
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b4_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_check_decision",
+        "e4b4_submit_decision"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 30024,
+       "output_tokens": 1217,
+       "wall_s": 20.211641322122887,
+       "atif_sha256": "1735c9983d683c740949c7bc7cd6ea9c3eeaed4025e572cadece1b9edae88c33"
+      },
+      {
+       "run": 5,
+       "attempt": 1,
+       "status": "invalid",
+       "decision": null,
+       "error_type": "ValueError",
+       "precheck_calls": 3,
+       "tool_sequence": [
+        "e4b4_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_check_decision",
+        "e4b4_check_decision",
+        "e4b4_check_decision",
+        "e4b4_submit_decision"
+       ],
+       "llm_calls": 8,
+       "input_tokens": 34651,
+       "output_tokens": 1249,
+       "wall_s": 19.673134281067178,
+       "atif_sha256": "fec3f463e3df71ad1d037d34f80602b5ee0f57e6ae6b72245faf4e6253c9c432"
+      }
+     ],
+     "complete": true
+    }
+   },
+   "meets_numeric_rule": false
+  },
+  "f2_s2031": {
+   "role": "adoption",
+   "kinds": {
+    "diagnosis": {
+     "not_reached": false,
+     "counts": {
+      "valid": 5,
+      "invalid": 0,
+      "infra_error": 0,
+      "missing": 0
+     },
+     "non_infra_runs": 5,
+     "single_call_available": true,
+     "single_call_valid": true,
+     "agreement_with_single_call": {
+      "action": 5,
+      "top1": 3,
+      "top3_set": 0,
+      "probe": 1
+     },
+     "agreement_denominator": 5,
+     "decisions": {
+      "continue": 5
+     },
+     "runs_using_precheck": 5,
+     "tool_sequences": {
+      "e4b4_list_fact_ids > e4b2_probe_catalog > e4b4_get_facts > e4b4_get_facts > e4b4_check_decision > e4b4_submit_decision": 2,
+      "e4b4_list_fact_ids > e4b2_probe_catalog > e4b4_get_facts > e4b4_get_facts > e4b4_get_facts > e4b4_check_decision > e4b4_submit_decision": 2,
+      "e4b4_list_fact_ids > e4b2_probe_catalog > e4b4_get_facts > e4b4_get_facts > e4b4_get_facts > e4b4_get_facts > e4b4_check_decision > e4b4_submit_decision": 1
+     },
+     "precheck_calls": {
+      "n": 5,
+      "median": 1,
+      "min": 1,
+      "max": 1
+     },
+     "llm_calls": {
+      "n": 5,
+      "median": 8,
+      "min": 7,
+      "max": 9
+     },
+     "input_tokens": {
+      "n": 5,
+      "median": 34900,
+      "min": 29444,
+      "max": 41489
+     },
+     "output_tokens": {
+      "n": 5,
+      "median": 1384,
+      "min": 1062,
+      "max": 1587
+     },
+     "wall_s": {
+      "n": 5,
+      "median": 17.603167770197615,
+      "min": 14.476795048918575,
+      "max": 23.83220640406944
+     },
+     "single_call_costs": {
+      "input_tokens": 2849,
+      "output_tokens": 197,
+      "execution_wall_s": 3.0220878298860043
+     },
+     "runs": [
+      {
+       "run": 1,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "ranking": [
+         "optimizer",
+         "reward",
+         "exploration",
+         "actuator",
+         "physics",
+         "termination"
+        ],
+        "probe": "P_value",
+        "action": "continue",
+        "reason": "Initial investigation: high value function loss suggests optimizer issues needing P_value probe",
+        "claims": [
+         {
+          "id": "telemetry:case:Loss/value_function",
+          "value": 0.017756408856560785
+         },
+         {
+          "id": "telemetry:reference:Loss/value_function",
+          "value": 0.0027400761551689356
+         }
+        ],
+        "expected_outcomes": {
+         "exploration": "normal",
+         "optimizer": "abnormal",
+         "reward": "normal"
+        }
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b4_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_check_decision",
+        "e4b4_submit_decision"
+       ],
+       "llm_calls": 8,
+       "input_tokens": 35483,
+       "output_tokens": 1390,
+       "wall_s": 16.588480673963204,
+       "atif_sha256": "6c6838212d5760d6d41e38e65bdbbb2e1caccc7592a704b39b58931750f88011"
+      },
+      {
+       "run": 2,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "ranking": [
+         "reward",
+         "physics",
+         "optimizer",
+         "exploration",
+         "actuator",
+         "termination"
+        ],
+        "probe": "P_value",
+        "action": "continue",
+        "reason": "Initial assessment shows low reward, high velocity error, and high value function loss suggesting potential issues in reward, physics, or optimizer systems",
+        "claims": [
+         {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 9.908932034174601
+         },
+         {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 34.03828296661377
+         },
+         {
+          "id": "telemetry:case:Metrics/base_velocity/error_vel_xy",
+          "value": 1.4395995676517486
+         },
+         {
+          "id": "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+          "value": 0.19204431548714637
+         },
+         {
+          "id": "telemetry:case:Loss/value_function",
+          "value": 0.017756408856560785
+         },
+         {
+          "id": "telemetry:reference:Loss/value_function",
+          "value": 0.0027400761551689356
+         }
+        ],
+        "expected_outcomes": {
+         "optimizer": "abnormal",
+         "physics": "normal",
+         "reward": "normal"
+        }
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b4_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_check_decision",
+        "e4b4_submit_decision"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 30307,
+       "output_tokens": 1384,
+       "wall_s": 17.603167770197615,
+       "atif_sha256": "295cb10b4ce4b89657e7d27f1162af9730b155d6073c6642172835c06bc54358"
+      },
+      {
+       "run": 3,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "ranking": [
+         "termination",
+         "reward",
+         "exploration",
+         "optimizer",
+         "actuator",
+         "physics"
+        ],
+        "probe": "P_episode",
+        "action": "continue",
+        "reason": "Initial diagnosis: episode length near limit suggests timeout issues as primary hypothesis",
+        "claims": [
+         {
+          "id": "telemetry:case:Train/mean_episode_length",
+          "value": 999.3970011393229
+         },
+         {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 9.908932034174601
+         }
+        ],
+        "expected_outcomes": {
+         "exploration": "normal",
+         "reward": "normal",
+         "termination": "abnormal"
+        }
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b4_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_check_decision",
+        "e4b4_submit_decision"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 29444,
+       "output_tokens": 1062,
+       "wall_s": 14.476795048918575,
+       "atif_sha256": "5303bc855e18b57fe85bb6400c76a4f1ccef104b249ba4eedc0d3dd44fb7a7ca"
+      },
+      {
+       "run": 4,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "ranking": [
+         "reward",
+         "exploration",
+         "optimizer",
+         "actuator",
+         "physics",
+         "termination"
+        ],
+        "probe": "P_value",
+        "action": "continue",
+        "reason": "Initial assessment shows low reward, high noise, and high value loss suggesting reward, exploration, or optimizer issues",
+        "claims": [
+         {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 9.908932034174601
+         },
+         {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 34.03828296661377
+         },
+         {
+          "id": "telemetry:case:Policy/mean_noise_std",
+          "value": 0.5452832162380219
+         },
+         {
+          "id": "telemetry:reference:Policy/mean_noise_std",
+          "value": 0.3645898918310801
+         },
+         {
+          "id": "telemetry:case:Loss/value_function",
+          "value": 0.017756408856560785
+         },
+         {
+          "id": "telemetry:reference:Loss/value_function",
+          "value": 0.0027400761551689356
+         }
+        ],
+        "expected_outcomes": {
+         "exploration": "normal",
+         "optimizer": "abnormal",
+         "reward": "normal"
+        }
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b4_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_check_decision",
+        "e4b4_submit_decision"
+       ],
+       "llm_calls": 8,
+       "input_tokens": 34900,
+       "output_tokens": 1310,
+       "wall_s": 19.709437277866527,
+       "atif_sha256": "fe4160908e8732d04042ea35530d816c0a9c16cf63f8b9b79f7b147a9b3fa966"
+      },
+      {
+       "run": 5,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "ranking": [
+         "reward",
+         "exploration",
+         "physics",
+         "actuator",
+         "optimizer",
+         "termination"
+        ],
+        "probe": "P_reward",
+        "action": "continue",
+        "reason": "Initial assessment: reward tracking errors high, exploration noise elevated, need to verify reward function",
+        "claims": [
+         {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 9.908932034174601
+         },
+         {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 34.03828296661377
+         },
+         {
+          "id": "telemetry:case:Policy/mean_noise_std",
+          "value": 0.5452832162380219
+         },
+         {
+          "id": "telemetry:reference:Policy/mean_noise_std",
+          "value": 0.3645898918310801
+         }
+        ],
+        "expected_outcomes": {
+         "exploration": "normal",
+         "physics": "normal",
+         "reward": "abnormal"
+        }
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b4_list_fact_ids",
+        "e4b2_probe_catalog",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_get_facts",
+        "e4b4_check_decision",
+        "e4b4_submit_decision"
+       ],
+       "llm_calls": 9,
+       "input_tokens": 41489,
+       "output_tokens": 1587,
+       "wall_s": 23.83220640406944,
+       "atif_sha256": "bdb5a542b35a0744d05ba592837ab6117e227723fdb22fed66373baa31915c85"
+      }
+     ],
+     "complete": true
+    },
+    "correction": {
+     "not_reached": false,
+     "counts": {
+      "valid": 5,
+      "invalid": 0,
+      "infra_error": 0,
+      "missing": 0
+     },
+     "non_infra_runs": 5,
+     "single_call_available": true,
+     "single_call_valid": true,
+     "agreement_with_single_call": {
+      "decision": 5,
+      "correction_id": 5,
+      "recovery_mode": 5,
+      "unmet_checklist": 5
+     },
+     "agreement_denominator": 5,
+     "decisions": {
+      "propose": 5
+     },
+     "runs_using_precheck": 5,
+     "tool_sequences": {
+      "e4b2_list_fact_ids > e4b2_get_facts > e4b2_registry > e4b2_skill_checklist > e4b4_check_proposal > e4b4_submit_proposal": 5
+     },
+     "precheck_calls": {
+      "n": 5,
+      "median": 1,
+      "min": 1,
+      "max": 1
+     },
+     "llm_calls": {
+      "n": 5,
+      "median": 7,
+      "min": 7,
+      "max": 7
+     },
+     "input_tokens": {
+      "n": 5,
+      "median": 22377,
+      "min": 22149,
+      "max": 22423
+     },
+     "output_tokens": {
+      "n": 5,
+      "median": 1242,
+      "min": 1122,
+      "max": 1272
+     },
+     "wall_s": {
+      "n": 5,
+      "median": 16.202332307817414,
+      "min": 15.804700687061995,
+      "max": 19.349937030114233
+     },
+     "single_call_costs": {
+      "input_tokens": 1317,
+      "output_tokens": 165,
+      "execution_wall_s": 1.498378830961883
+     },
+     "runs": [
+      {
+       "run": 1,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "probe_observations",
+          "4": "eval_metrics",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "registered_correction"
+         },
+         "cited_facts": [
+          "confirming_probe_outcome",
+          "confirmed_mechanism",
+          "probe_observations",
+          "eval_metrics",
+          "cost_fixed_eval_parent_wall_s",
+          "registered_correction"
+         ],
+         "correction_id": "restore_motor_torque_speed",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b4_check_proposal",
+        "e4b4_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22203,
+       "output_tokens": 1135,
+       "wall_s": 19.349937030114233,
+       "atif_sha256": "2410121f2946d162e4cbbfd6d7e465806fc3fc2ae78dccb4e91c582e435471b5"
+      },
+      {
+       "run": 2,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirmed_mechanism",
+          "2": "confirmed_mechanism",
+          "3": "probe_observations",
+          "4": "eval_metrics",
+          "5": "confirming_probe_measurement",
+          "6": "rule"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "probe_observations",
+          "eval_metrics",
+          "confirming_probe_measurement",
+          "rule"
+         ],
+         "correction_id": "restore_motor_torque_speed",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b4_check_proposal",
+        "e4b4_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22149,
+       "output_tokens": 1122,
+       "wall_s": 16.202332307817414,
+       "atif_sha256": "3eb3984eab1e4e77855dde0c3604ec7e875991f65290933fb751dba7fbf2a209"
+      },
+      {
+       "run": 3,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "probe_observations",
+          "4": "eval_metrics",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "rule"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe_outcome",
+          "probe_observations",
+          "eval_metrics",
+          "cost_fixed_eval_parent_wall_s",
+          "rule"
+         ],
+         "correction_id": "restore_motor_torque_speed",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b4_check_proposal",
+        "e4b4_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22377,
+       "output_tokens": 1242,
+       "wall_s": 15.804700687061995,
+       "atif_sha256": "090c35ef2436263b756e860b17aa6e8d8736960ed54c195046ac4446d9e11d42"
+      },
+      {
+       "run": 4,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe",
+          "4": "eval_metrics",
+          "5": "cost_fixed_eval_parent_wall_s",
+          "6": "rule"
+         },
+         "cited_facts": [
+          "confirmed_mechanism",
+          "confirming_probe_outcome",
+          "registered_correction",
+          "registered_recovery_modes",
+          "rule",
+          "rule_mode"
+         ],
+         "correction_id": "restore_motor_torque_speed",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b4_check_proposal",
+        "e4b4_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22423,
+       "output_tokens": 1272,
+       "wall_s": 16.643044761847705,
+       "atif_sha256": "6fe0f0a4a88d0b13fd109bbdbd42b8021a08c5a072eaa593469ef3dec36d0281"
+      },
+      {
+       "run": 5,
+       "attempt": 1,
+       "status": "valid",
+       "decision": {
+        "proposal": {
+         "checklist": {
+          "1": "confirming_probe_outcome",
+          "2": "confirmed_mechanism",
+          "3": "probe_observations",
+          "4": "eval_metrics",
+          "5": "cost_train_300_updates_parent_wall_s",
+          "6": "rule"
+         },
+         "cited_facts": [
+          "confirming_probe_outcome",
+          "confirmed_mechanism",
+          "probe_observations",
+          "eval_metrics",
+          "cost_train_300_updates_parent_wall_s",
+          "rule"
+         ],
+         "correction_id": "restore_motor_torque_speed",
+         "hold_reason": null,
+         "recovery_mode": "restart"
+        },
+        "accepted": true,
+        "decision": "propose",
+        "reasons": [],
+        "agrees_with_rule": true,
+        "unmet_checklist": []
+       },
+       "error_type": null,
+       "precheck_calls": 1,
+       "tool_sequence": [
+        "e4b2_list_fact_ids",
+        "e4b2_get_facts",
+        "e4b2_registry",
+        "e4b2_skill_checklist",
+        "e4b4_check_proposal",
+        "e4b4_submit_proposal"
+       ],
+       "llm_calls": 7,
+       "input_tokens": 22401,
+       "output_tokens": 1256,
+       "wall_s": 15.82152107800357,
+       "atif_sha256": "091cc22ba4d08de82966b5424b770698b7c0092014258d5231da0b56e9f50a12"
+      }
+     ],
+     "complete": true
+    }
+   },
+   "meets_numeric_rule": true
+  }
+ },
+ "adoption": {
+  "decision": "adopt",
+  "set": "f2_s2031",
+  "rule": "다음 seed 시연에 NAT 결정을 쓰려면 f2_s2031 세트에서 두 종류 모두 인프라 오류를 뺀 실행이 4 이상이고 그중 유효 결정이 4 이상이어야 한다. 수치 조건은 v1~v3과 같다. 시연이 packet 단계 전에 끝나 한 종류라도 입력이 생기지 않으면 no_input이고 채택하지 않는다. 일치율은 채택 조건에 쓰지 않는다. 요약은 모든 세트 실행이 끝난 뒤에만 쓴다",
+  "reason": null
+ },
+ "wording": "실수 표기를 고정한 NAT 도구 호출 워크플로가 사전등록 뒤 생긴 새 seed 시연 입력에서 사전등록 조건만큼 유효한 결정을 냈다. 다음 seed 시연의 결정 단계에 쓸 수 있다. 정확도·우위의 근거가 아니다.",
+ "development_wording": "h02_s2027 세트는 수정의 개발 확인이다. 채택 판정에 쓰지 않고 채택 세트·v1~v3 결과와 분모를 합치지 않는다.",
+ "common_wording": "고정 입력을 반복 호출한 개발 측정이다. 결함과 probe는 같은 설계자가 만들었고, NAT는 근거를 도구로 나눠 조회하고 점검으로 고칠 기회가 있으므로 단일 호출과 조건이 다르다. 일반화·정확도·절감을 주장하지 않는다."
+}
