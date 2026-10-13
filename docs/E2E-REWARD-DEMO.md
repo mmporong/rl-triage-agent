@@ -1,39 +1,51 @@
-# 새 seed 보상 결함 종단 시연
+# 새 seed 결함 종단 시연 (보상·모터)
 
 학습 실패 하나를 끝까지 연결해 같은 사례 이름과 요청 ID로 기록한 통합 시연이다.
 
 - **흐름:** 경고 → 고정 평가 → 새 Nemotron 판단 → 승인된 검사 → 원인 확정 → 교정 제안 → 승인된 교정 → 재학습 → 고정 평가
-- **v1(seed 2029):** 교정 학습 중 커밋 때문에 회복 판정 없이 끝났다(`correction_unknown`).
-- **v2(seed 2030):** 이 문제를 고쳐 끝까지 진행했다(`recovered`).
+- **보상 결함(F1):**
+  - v1(seed 2029): 교정 학습 중 커밋 때문에 회복 판정 없이 끝났다(`correction_unknown`).
+  - v2(seed 2030): 이 문제를 고쳐 끝까지 진행했다(`recovered`).
+  - NAT 결정 경로(seed 2034): 첫 판단과 교정 제안을 NeMo Agent Toolkit 도구 호출 경로로 냈다(`recovered`).
+- **모터 결함(F2):**
+  - v3(seed 2031): 교정 제안까지 진행한 뒤, 교정 요청을 원장에 올리는 단계에서 시연 실행기 결함으로 멈췄다(`harness_failure`, 사후 기록).
+  - v3.1(seed 2033): 실행기 결함을 고쳐 다시 사전등록했고 끝까지 진행했다(`recovered`).
 - 같은 입력으로 잰 개발 측정 두 가지를 함께 적는다.
-  - NAT 도구 호출 경로 비교
+  - NAT 도구 호출 경로 비교(네 판 중 네 번째 판이 채택 조건을 충족했다)
   - 공식 Isaac Lab 디버깅 스킬 유무 프롬프트 비교
 
 이 기록의 범위는 다음과 같다.
 
-- **이미 본 결함 종류(F1, 보상의 world frame 속도 사용)의 새 seed 한 건이다.** 결함·probe·교정 등록을 같은 설계자가 만들었다.
+- **이미 본 결함 종류(F1 보상의 world frame 속도 사용, F2 모터 토크-속도 곡선)의 새 seed 기록이다.** 결함·probe·교정 등록을 같은 설계자가 만들었다.
 - **승인은 사용자가 위임한 운영자 승인이며 사람 승인이 아니다.** 승인자 문자열만 기록하며 신원 인증이 아니다.
-- **진단 정확도·교정 성공률·일반화·다른 방법 대비 우위·GPU 절감을 주장하지 않는다.** v1과 v2를 합친 분모(예: "두 번 중 한 번")를 만들지 않는다.
+- **진단 정확도·교정 성공률·일반화·다른 방법 대비 우위·GPU 절감을 주장하지 않는다.** 시연끼리 합친 분모(예: "다섯 번 중 세 번")를 만들지 않는다.
 
 ## 요약
 
 | 기록 | 대상 | 결과 | 공개 결과 |
 |---|---|---|---|
-| 종단 시연 v2 | seed 2030, 교정 재학습 seed 3030 | `recovered`, 시연 성공. 성공 조건 11/11, 사전 예측 6/6 | `evals/results/e2e_reward_s2030_20261013/demo_result.json` |
-| 종단 시연 v1 | seed 2029, 교정 재학습 seed 3029 | `correction_unknown`. 교정 학습 중 결합 밖 파일 커밋으로 소스 검증이 거부돼 회복 판정 없음. 성공 조건 9/11 | `evals/results/e2e_reward_s2029_20261013/demo_result.json` |
-| NAT 경로 비교(E4b) | v1의 두 모델 결정 입력을 5회씩 | `do_not_adopt`. 유효 결정: 첫 판단 3/5, 교정 제안 0/5 | `evals/results/e4b_e2e_reward_s2029_20261013/summary.json` |
+| 보상 종단 시연 v2 | seed 2030, 교정 재학습 seed 3030 | `recovered`, 시연 성공. 성공 조건 11/11, 사전 예측 6/6 | `evals/results/e2e_reward_s2030_20261013/demo_result.json` |
+| 보상 종단 시연 v1 | seed 2029, 교정 재학습 seed 3029 | `correction_unknown`. 교정 학습 중 결합 밖 파일 커밋으로 소스 검증이 거부돼 회복 판정 없음. 성공 조건 9/11 | `evals/results/e2e_reward_s2029_20261013/demo_result.json` |
+| 모터 종단 시연 v3.1 | seed 2033, 교정 재학습 seed 3033 | `recovered`, 시연 성공. 성공 조건 12/12, 사전 예측 7/7 | `evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json` |
+| 모터 종단 시연 v3 | seed 2031 | `harness_failure`(v3 사전등록에 없던 범주, v3.1 도구로 사후 기록). 교정 제안까지 진행, 교정·회복 판정 없음. 판정까지 간 사전 예측 5/5 | `evals/results/e2e_demo_v3_f2_s2031_20261013/harness_failure_summary.json` |
+| NAT 결정 경로 보상 종단 시연 | seed 2034, 교정 재학습 seed 3034 | `recovered`, 시연 성공. 성공 조건 12/12, 사전 예측 7/7 | `evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json` |
+| NAT 경로 비교 v4 | seed 2031 시연의 두 모델 결정 입력을 5회씩 | `adopt`. 유효 결정: 첫 판단 5/5, 교정 제안 5/5 | `evals/results/e4b_nat_compare_v4/summary.json` |
+| NAT 경로 비교 v1~v3 | 판마다 다른 고정 입력 | 세 판 모두 `do_not_adopt`(아래 "NAT 경로 비교") | `evals/results/e4b_e2e_reward_s2029_20261013/summary.json`, `evals/results/e4b_nat_compare_v2/summary.json`, `evals/results/e4b_nat_compare_v3/summary.json` |
 | 스킬 유무 프롬프트 비교 | 이미 본 사례 h02_s2027, 조건별 15회 | 알려진 실패 모드 해당 0/30(포함) 대 2/30(미포함), 기대 행동 26/50 대 24/50. 우위 근거 아님 | `evals/results/skill_ab_v1/summary.json` |
 
 ## 시연 흐름과 공통 조건
 
-두 시연 모두 실행 전에 프로토콜을 커밋했다.
+모든 시연은 실행 전에 프로토콜을 커밋했다.
 
 | 시연 | 프로토콜 | 커밋 | LF SHA256 |
 |---|---|---|---|
-| v1 | `bench/protocols/e2e_reward_demo_v1.json` | `1a6461e` | `a916049d…` |
-| v2 | `bench/protocols/e2e_reward_demo_v2.json` | `8eade58` | `b6b86b04…` |
+| 보상 v1 | `bench/protocols/e2e_reward_demo_v1.json` | `1a6461e` | `a916049d…` |
+| 보상 v2 | `bench/protocols/e2e_reward_demo_v2.json` | `8eade58` | `b6b86b04…` |
+| 모터 v3 | `bench/protocols/e2e_demo_v3_f2.json` | `5769970` | `a9a634ef…` |
+| 모터 v3.1 | `bench/protocols/e2e_demo_v3_1_f2.json` | `8f4b092` | `1275ec61…` |
+| 보상 NAT 결정 경로(v3.1) | `bench/protocols/e2e_demo_v3_1_f1.json` | `2d83b16` | `16d07abd…` |
 
-v2에서 바뀐 항목은 아래 "v1에서 v2로 바뀐 점"에 있다. 그 밖의 조건은 같다.
+아래 표는 보상 시연 v1·v2의 조건이다. v2에서 바뀐 항목은 "v1에서 v2로 바뀐 점"에, 모터 시연과 NAT 결정 경로 시연의 다른 조건은 각 절에 있다.
 
 | 항목 | 값 |
 |---|---|
@@ -53,14 +65,23 @@ v2에서 바뀐 항목은 아래 "v1에서 v2로 바뀐 점"에 있다. 그 밖�
 
 ## 승인 표기
 
-두 시연의 승인(검사 요청, 교정 요청)은 모두 사용자가 위임한 운영자 승인이다.
+모든 시연의 승인(검사 요청, 교정 요청)은 사용자가 위임한 운영자 승인이다.
 - 승인자 문자열은 `claude_operator_user_authorized`이다.
-- 운영자는 요청마다 등록 여부·예산·제안 출처·근거를 점검한 뒤 원장 CLI로 승인했다.
 - 원장 기록, 요청당 1회 소비, receipt는 사람 승인일 때와 같은 방식으로 남는다.
 - 결과 파일에는 `approver_identity_attested: false`가 적힌다.
-- 승인 정책 코드에 의한 자동 승인은 없다.
+- 저장소의 원장·실행기에는 자동 승인 경로가 없다. 승인은 매번 원장 승인 명령으로 기록됐다.
 
-v2 사전등록은 승인을 "사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)"으로 적었다. v1 사전등록은 승인 주체를 사람으로 적었다(아래 "사전등록과 다른 점").
+승인 방식은 시연마다 다르다(운영 기록 기준).
+
+| 시연 | 검사 요청 | 교정 요청 |
+|---|---|---|
+| 보상 v1·v2(seed 2029·2030) | 운영자가 요청마다 등록 여부·예산·제안 출처·근거를 점검해 운영 메모에 남긴 뒤 승인 | 같은 방식 |
+| 모터 v3(seed 2031) | 운영 스크립트가 고리가 제안한 등록 검사를 차례로 승인. 승인 직전 GPU 상태를 메모에 기록했고, 검사별 예산 재확인은 하지 않았다 | 원장 거부로 승인 단계에 가지 않음 |
+| 모터 v3.1·NAT 결정 경로(seed 2033·2034) | seed 2031과 같은 방식 | 운영 스크립트가 다음을 모두 확인한 경우에만 승인: 등록 교정, 회복 방식이 규칙 값과 같음, 모델 제안 검증 통과·규칙 일치, 체크리스트 미충족 0, 예산 하한(2400 s) 이상 |
+
+seed 2031·2033·2034의 제안→승인 시각 차이가 0~12 s로 짧은 것은 이 방식 때문이다(seed 2031 `P_torque`의 77분은 운영자 세션 중단). 이 승인은 요청별 검토 시간을 뜻하지 않는다.
+
+v2·v3·v3.1 사전등록은 승인을 "사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)"으로 적었다. v1 사전등록은 승인 주체를 사람으로 적었다(아래 "사전등록과 다른 점").
 
 ## 시연 v2 결과 (seed 2030)
 
@@ -200,44 +221,274 @@ v1이 끝난 뒤 운영자가 seed 3029 교정 정책을 같은 고정 평가로
 
 v1 실행기와 v1 프로토콜은 v1 공개 결과의 소스 결합을 지키려고 바꾸지 않았다. v2는 `evals/e2e_reward_demo_v2.py`, `bench/demo_restart_correction_v2.py`로 따로 만들었다. 비용 기록 조건(`costs_recorded`)을 포함한 나머지 성공 조건의 뜻은 v1과 같다.
 
+## 모터 결함 종단 시연 (F2)
+
+같은 흐름을 이미 본 다른 결함 종류 F2의 새 seed에 적용했다. F2는 DC 모터 토크-속도 곡선의 속도 항을 5배로 키워 낮은 관절 속도에서 토크가 포화되게 한다(`bench/hidden_faults.py` 동결 정의).
+
+- **v3.1(seed 2033):** `recovered`, 시연 성공. 성공 조건 12/12, 사전 예측 7/7.
+- **v3(seed 2031):** 교정 요청을 원장에 올리는 단계에서 시연 실행기 결함으로 멈췄다. 결과는 `harness_failure`이다. 이 범주는 v3 사전등록에 없었고 v3.1 도구로 사후 기록했다. 교정·회복은 판정하지 않았다.
+
+### 보상 시연과 다른 조건
+
+| 항목 | 값 |
+|---|---|
+| 결함 | F2: DC 모터 토크-속도 곡선의 속도 항 5배(낮은 관절 속도에서 토크 포화) |
+| 확정 probe | `P_torque`: 낮은 관절 속도에서 토크가 포화되는 비율. 판정선은 3 × max(같은 seed 정상 기준 측정, 0.01)이고 넘으면 abnormal. 아래 두 시연은 정상 기준이 0.01보다 작아 판정선이 0.03이었다 |
+| 특이성 관문 | 고리가 actuator를 확정한 뒤 결함 정책에서 `P_noise`·`P_value`를 따로 잰다. 둘 다 normal이어야 교정 단계로 가고, 아니면 `confirmation_not_specific`으로 끝낸다. 고리 밖 사전등록 측정이라 승인 원장을 거치지 않는다 |
+| 회복 방식 규칙 | actuator → restart(아래 회복 방식 규칙). 보상 결함 규칙(정지 비율 ≥ 0.9이면 restart, 아니면 resume)은 그대로다 |
+| 교정 | 등록 교정 `restore_motor_torque_speed`. restart 재학습 seed는 실패 seed + 1000 |
+| 첫 판단·교정 제안 | 단일 호출(`decision_path: single`) |
+| 결과 범주·성공 조건 | v3 15개·12개, v3.1 16개(`harness_failure` 추가)·12개. 성공 조건에 "확정 메커니즘의 특이성 관문 통과"가 더해졌다 |
+
+특이성 관문의 근거는 이미 본 holdout·dev 실행 31개다. `P_torque` abnormal은 F2 4/4뿐 아니라 F3 4/4·F4 1/4에서도 나왔고, `P_noise`·`P_value` normal을 함께 요구하면 F2 4/4, 그 밖 0/27이었다. 이미 본 seed에서 사후에 고른 시연 게이트이며 진단 정확도의 근거가 아니다.
+
+**회복 방식 규칙.** 모터 결함을 고친 뒤 300회 이어 학습(resume)한 결과를 이미 본 두 seed에서 쟀다([프로토콜](../bench/protocols/training_correction_motor_v1.json)).
+
+| seed | 교정 뒤 이어 학습 선속도 RMSE | 같은 갱신량 정상 이어 학습 | 비 | 라벨 |
+|---|---|---|---|---|
+| 2026 | 0.225 m/s | 0.143 m/s | 1.57 | `not_recovered` |
+| 2028 | 0.208 m/s | 0.133 m/s | 1.57 | `not_recovered` |
+
+- 중간 체크포인트의 선속도 오차는 두 seed 모두 단조로 내려갔다. 이어 학습 갱신 0·51·151·251·299회에서 seed 2026은 1.017·0.877·0.613·0.383·0.225, seed 2028은 1.016·0.945·0.753·0.356·0.208이었다. 두 seed 모두 예산 부족 후보로 기록됐다.
+- 사전 기준에 따른 규칙 갱신 결정은 `change`다. 다음 시연에서 actuator에도 restart를 권고하는 규칙과 restart arm을 사전등록해 시험한다.
+- 결과 문구: "이번 실험은 restart를 시험하지 않았고 이어 학습의 예산 부족 가능성도 남으므로 restart를 택할 근거로 쓰지 않는다." 모터 시연의 restart 교정이 그 시험이다.
+
+### 시연 v3.1 결과 (seed 2033)
+
+결과는 **`recovered`, 시연 성공**이다. 사전등록 결과 문구: "새 판단으로 시작한 승인된 검사가 등록 결함 메커니즘을 확정했고, 승인된 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과했다."
+
+모든 단계가 실험 커밋 `8f4b092` 하나로 기록됐다. 시각은 KST이며 공개 원장(`evals/loops/h06_s2033/`)에서 읽었다.
+
+| 단계 | 기록 |
+|---|---|
+| 정상·결함 학습 | 두 학습 모두 300회 단계 기록 |
+| 경고 R1 | F2 경고(첫 경고 iteration 136), NONE 경고 없음 |
+| 고정 평가 | NONE 보행 통과, F2 unhealthy → 실패 존재 |
+| Nemotron 첫 판단 | 유효한 `continue`. 순위 reward > actuator > exploration > optimizer > physics > termination, probe `P_reward`(동결 규칙 대안은 `P_noise`). 인용 근거는 학습 평균 보상 10.61(결함) 대 33.95(정상) |
+| 검사 `aac77ab711ac` | 20:07:43 제안·승인, 20:07:44 소비, 20:08:04 receipt. `P_reward` normal(`track_lin_vel_xy_exp` 상대 오차 1.8e-08, 임계 0.05) → reward 기각 |
+| 검사 `c324747ced04` | 20:08:04 제안, 20:08:05 승인·소비, 20:08:25 receipt. `P_noise` normal(noise ratio 0.9997) → exploration 기각 |
+| 검사 `095e95df5fae` | 20:08:25 제안, 20:08:26 승인·소비, 20:08:58 receipt. `P_torque` abnormal(포화 비율 0.0633, 판정선 0.03. 정상 기준은 0.00078) |
+| 고리 종료 | actuator 확정(검사 3회, 예산 4) |
+| 특이성 관문 | 통과. `P_noise` normal(0.9997), `P_value` normal(critic 변화 1.931, 정상 기준 1.555) |
+| Nemotron 교정 제안 | `restore_motor_torque_speed` + `restart`. 검증 accepted, 체크리스트 미충족 0, 결정적 규칙과 일치 |
+| 교정 요청 `1e21c7720f44` | 20:10:16 제안·승인, 20:10:31 소비, 20:20:52 receipt `recovered` |
+| 교정 재학습(seed 3033)·고정 평가 | healthy(네 검사 모두 통과) |
+
+첫 판단은 reward를 1위로 두고 `P_reward`를 골랐다. 승인된 `P_reward` 검사가 normal로 나와 reward가 기각됐고, 동결 고리 규칙이 다음 검사 `P_noise`를 제안했다. 관측 뒤에는 모델을 다시 부르지 않는다. `P_noise` normal로 exploration이 기각됐고, `P_torque` abnormal로 actuator가 확정됐다. 첫 판단의 상위 3가설 안에 actuator가 2위로 있었기 때문에 가능한 경로였다. seed 2031에서도 같은 순서였다.
+
+고정 평가:
+
+| 정책 | 선속도 RMSE (m/s) | yaw rate RMSE (rad/s) | 낙상 비율 | 생존 (s) | 정지 비율 | 판정 |
+|---|---|---|---|---|---|---|
+| NONE s2033 | 0.140 | 0.292 | 0 | 20.0 | 0.119 | 보행 통과(기준) |
+| F2 s2033 | 1.048 | 0.461 | 0 | 20.0 | 0.891 | unhealthy(`err_xy_ratio`·`err_yaw_ratio` 실패) |
+| restart 교정 s3033 | — | — | — | — | 0.124 | healthy(생존·낙상·선속도·yaw 검사 통과) |
+
+restart 교정 정책은 공개 결과에 판정과 정지 비율만 남는다.
+
+사전 예측 7개는 모두 적중했다.
+- F2가 같은 seed NONE 대비 unhealthy
+- R1이 F2에 울리고 NONE에는 울리지 않음
+- 첫 판단 `continue`, 상위 3가설에 actuator 포함
+- `P_torque` abnormal 뒤 actuator 확정
+- `P_noise`·`P_value` normal
+- 규칙이 restart를 고름
+- seed 3033 restart 교정 정책 recovered
+
+성공 조건 12개도 모두 참이다.
+
+비용(부모 프로세스 벽시계):
+- 정상 학습 553.6 s, 결함 학습 592.4 s, 정상 기준 probe 92.1 s
+- 고리 검사 GPU 벽시계: `P_reward` 20.7 s, `P_noise` 20.7 s, `P_torque` 32.4 s
+  - CPU: 26.7 s·27.2 s·44.5 s
+  - 시뮬레이터: 51,200·51,200·128,000 step
+- 특이성 관문 20.7 s
+- Nemotron 첫 판단 2.40 s(입력 2,845·출력 186 토큰), 교정 제안 1.89 s(입력 1,284·출력 157 토큰)
+- restart 교정 학습 541.1 s, 교정 정책 고정 평가 54.9 s. 교정 요청 receipt의 gpu_s는 596.0이며 예산 2400 s 안이다.
+- 승인 대기(제안→승인)는 검사 0~1 s, 교정 0 s였다. 운영자 승인의 기록 시각 차이이므로 사람 검토 시간으로 쓰지 않는다.
+
+### 시연 v3 결과 (seed 2031)
+
+결과는 **`harness_failure`**이다. 기록 문구: "시연 실행기 결함으로 등록된 다음 단계를 진행할 수 없어 시연을 멈췄다. 사건(단계·오류·원인·승인 소비 없음)을 기록했고 교정·회복 결과를 판정하지 않는다. v3 사전등록에 없던 범주를 v3.1 도구로 사후 기록했다."
+
+모든 단계가 실험 커밋 `5769970` 하나로 기록됐다. 시각은 KST이며 공개 원장(`evals/loops/h06_s2031/`)에서 읽었다.
+
+| 단계 | 기록 |
+|---|---|
+| 정상·결함 학습 | 두 학습 단계 기록 |
+| 경고 R1 | F2 경고(첫 경고 iteration 136), NONE 경고 없음 |
+| 고정 평가 | NONE 보행 통과, F2 unhealthy → 실패 존재 |
+| Nemotron 첫 판단 | 유효한 `continue`. 순위 reward > actuator > exploration > optimizer > physics > termination, probe `P_reward`(동결 규칙 대안은 `P_noise`). 인용 근거는 학습 평균 보상 9.91(결함) 대 34.04(정상) |
+| 검사 `3c919574ef61` | 16:32:48 제안, 16:32:58 승인·소비, 16:33:20 receipt. `P_reward` normal(상대 오차 1.7e-08) → reward 기각 |
+| 검사 `1422dd3bd3eb` | 16:33:20 제안, 16:33:32 승인·소비, 16:33:53 receipt. `P_noise` normal(noise ratio 1.0004) → exploration 기각 |
+| 검사 `4f5d51855a04` | 16:33:53 제안, 17:51:19 승인·소비, 17:51:51 receipt. `P_torque` abnormal(포화 비율 0.0784, 판정선 0.03. 정상 기준은 0.00055) |
+| 고리 종료 | actuator 확정(검사 3회) |
+| 특이성 관문 | 통과. `P_noise` normal(1.0004), `P_value` normal(critic 변화 1.617, 정상 기준 1.501) |
+| Nemotron 교정 제안 | `restore_motor_torque_speed` + `restart`. 시연 등록 표로 다시 검증해 accepted, 체크리스트 미충족 0, 결정적 규칙과 일치 |
+| 교정 요청 원장 기록 | 거부: "actuator에 등록되지 않은 회복 방식 'restart'". 원장 기록·승인 소비 없음 |
+
+고정 평가:
+
+| 정책 | 선속도 RMSE (m/s) | yaw rate RMSE (rad/s) | 낙상 비율 | 생존 (s) | 정지 비율 | 판정 |
+|---|---|---|---|---|---|---|
+| NONE s2031 | 0.150 | 0.268 | 0 | 20.0 | 0.127 | 보행 통과(기준) |
+| F2 s2031 | 1.025 | 0.490 | 0.030 | 19.74 | 0.871 | unhealthy(`err_xy_ratio`·`err_yaw_ratio` 실패) |
+| restart 교정 s3031 | — | — | — | — | — | 판정 없음(교정 미실행) |
+
+사전 예측 7개 중 판정까지 간 5개(실패 존재, R1, 첫 판단, 고리 확정, 특이성)는 모두 적중했다. 나머지 둘("규칙이 restart를 고름", "restart 교정 정책 recovered")은 교정 단계에 가지 못해 어느 쪽으로도 세지 않는다.
+
+**하네스 실패와 원인.**
+
+- [사실] 시연 v3 실행기는 교정 요청의 제안(`evals/e2e_demo_v3.py:694`)·조회·실행에서 `evals/correct.py`의 기본 원장을 썼다. 기본 원장은 기본 등록 표를 쓰며, 그 표의 actuator 회복 방식은 resume뿐이다.
+- [사실] 교정 packet과 교정 제안 검증은 시연 등록 표(actuator restart·resume)를 썼다. 그래서 규칙과 모델이 모두 restart를 냈는데 원장이 거부했다. 보상 결함은 기본 등록 표도 restart·resume을 모두 허용하므로 이 거부가 나지 않는다.
+- [사실] v3 테스트는 restart 경로의 제안 → 승인 → 실행을 실제 원장 파일로 지나가지 않아 이 결함을 놓쳤다.
+- [사실] 원장 파일(`evals/loops/h06_s2031/correction_ledger.jsonl`)은 만들어지지 않았고 승인 소비도 없었다.
+- 멈춘 시연은 v3.1 실행기(`3869743`)의 `record-harness-failure`로 종료 기록을 남겼다. 기록 내용은 멈춘 단계 `correction-propose`, 오류 문자열 원문, 원인 `evals/e2e_demo_v3.py:694`(실험 커밋 `5769970`의 내용과 같음을 확인), 승인 소비 없음, 고리 상태 `confirmed`, "v3.1 도구로 사후 기록"이다.
+- v3 요약 도구는 이 범주를 모르므로 공개 요약은 `harness-summary`로 만들었다. 이 요약은 진단·고리·특이성·교정 제안까지를 담고 교정·회복을 판정하지 않는다.
+- v3 사전등록 결과 범주 15개 중 어느 것도 이 시연에 붙이지 않았다. 종료 기록이 있으면 v3 실행기는 다음 단계를 거부한다.
+
+비용(부모 프로세스 벽시계):
+- 정상 학습 605.0 s, 결함 학습 622.8 s, 정상 기준 probe 94.7 s
+- 고리 검사 GPU 벽시계: `P_reward` 22.1 s, `P_noise` 21.4 s, `P_torque` 31.5 s
+- 특이성 관문 20.0 s
+- Nemotron 첫 판단 3.02 s(입력 2,849·출력 197 토큰), 교정 제안 1.50 s(입력 1,317·출력 165 토큰)
+- 승인 대기(제안→승인)는 검사 순서대로 10 s, 12 s, 77분 26초였다. 운영 메모에 따르면 `P_torque` 승인은 운영자 세션 중단으로 늦어졌다. 검사는 승인·소비(17:51:19) 뒤에 실행됐으므로 대기 시간은 측정값과 판정에 들어가지 않는다.
+
+### v3에서 v3.1로 바뀐 점
+
+| 항목 | v3 | v3.1 |
+|---|---|---|
+| seed / 재학습 seed | F2 2031 / 3031(F1 2032 / 3032 등록, 미실행) | F2 2033 / 3033, F1 2034 / 3034 |
+| 교정 원장 | 제안·조회·실행에 `correct.py` 기본 등록 표 원장(actuator: resume만) | 원장 함수 하나가 시연 등록 표(actuator: restart·resume)로 제안·승인·거절·소비·실행·조회를 모두 한다 |
+| 승인·거절 | `evals/correct.py approve`·`reject` | `evals/e2e_demo_v3_1.py approve-correction`·`reject-correction`(시연 등록 표로 만든 요청은 `correct.py approve`의 기본 표 원장과 등록 표 digest가 달라 거부된다) |
+| 교정 실행 | `correct.py run`, 실행기 `bench/demo_correction_v3.py` | `run_correction`(같은 순서: 고아 확인 → 승인 소비 → 실행 → receipt), 실행기 `bench/demo_correction_v3_1.py` |
+| 실행 중 끊긴 요청 | 닫는 명령 없음 | `recover-correction`: 재실행 없이 닫는다. 교정 결과 파일이 있으면 스키마·태그·요청·회복 방식·실험 커밋을 대조해 그 판정을, 없으면 unknown |
+| 교정 예산 하한(2400 s) | 승인 뒤 교정 실행 단계에서 검사 | 제안 단계에서 원장에 쓰기 전에 검사 |
+| 종료 뒤 원장 쓰기 | 막지 않음 | 교정 근거·제안·승인·거절을 거부 |
+| 결과 범주 | 15개 | 16개(`harness_failure`) |
+| 결과 스키마 | `e2e_demo_result_v3` | `e2e_demo_result_v3_1`, 교정 결과 `e2e_correction_result_v3_1` |
+
+`harness_failure`는 v3.1에서 사전등록한 범주다. 다음 조건이 모두 맞을 때만 기록한다.
+- 종료 기록과 교정 단계 기록이 없다.
+- 멈춘 단계가 마지막 기록 단계 바로 다음 등록 단계이거나, 특이성 뒤의 교정 명령 중 하나다.
+- 교정 원장에 승인·거절·소비·실행·보류 사건이 없다.
+- 원인 파일이 시연 실험 커밋에 같은 내용으로 있다.
+- 오류 문자열에 절대 경로가 없다.
+- 기록 도구가 커밋돼 있다.
+
+v3 실행기와 프로토콜은 seed 2031 공개 기록의 소스 결합 때문에 바꾸지 않았다. v3.1 회귀 테스트는 F2·F1 restart 경로를 실제 원장 파일로 제안부터 receipt까지 지나간다. 같은 구동을 v3 실행기에 하면 seed 2031과 같은 거부가 재현된다(`tests/test_e2e_demo_v3_1.py`).
+
+## NAT 결정 경로 보상 결함 종단 시연 (seed 2034)
+
+NAT 경로 비교 v4가 채택 조건을 충족한 뒤, 채택 규칙("다음 seed 시연의 결정 단계")에 따라 첫 판단과 교정 제안을 NeMo Agent Toolkit 도구 호출 경로로 낸 시연이다. 실행기·흐름·판정은 모터 v3.1과 같고, 결함은 F1(보상)이다.
+
+결과는 **`recovered`, 시연 성공**이다. 성공 조건 12/12, 사전 예측 7/7. 모든 단계가 실험 커밋 `2d83b16` 하나로 기록됐다.
+
+| 항목 | 값 |
+|---|---|
+| 결정 경로 | `nat_v4`: `evals/nat_decision_call_v4.py`(WSL). 프로토콜이 NAT 경로 비교 v4 공개 요약(`adopt`)을 SHA로 묶는다 |
+| 첫 판단 도구 | 사실 id 목록·사실 값·probe 카탈로그 조회, 제출 전 계약 점검(실행당 최대 2회), 제출. 실수 사실 값은 유효숫자 6자리 문자열로 보여 주고, 보여 준 표기와 같은 근거만 저장 값으로 바꿔 공개 검증기로 검증한다 |
+| 교정 제안 도구 | 사실·교정 등록 표·스킬 체크리스트 조회, 점검, 제출. null 칸이 없는 제출 스키마를 공개 계약 형태로 바꾸고, packet에 실린 시연 등록 표로 검증한다 |
+| 재시도 | 인프라 오류만 다시 호출한다(첫 판단은 사전등록 상한 1회). 의미 재시도 없음 |
+| 회복 방식 규칙 | 보상 결함 규칙(정지 비율 ≥ 0.9이면 restart, 아니면 resume) |
+| 특이성 관문 | 보상 메커니즘에는 등록 관문이 없어 측정 없이 기록만 한다 |
+
+시각은 KST이며 공개 원장(`evals/loops/h02_s2034/`)에서 읽었다.
+
+| 단계 | 기록 |
+|---|---|
+| 정상·결함 학습 | 두 학습 모두 300회 단계 기록 |
+| 경고 R1 | F1 경고(첫 경고 iteration 135), NONE 경고 없음 |
+| 고정 평가 | NONE 보행 통과, F1 unhealthy → 실패 존재 |
+| NAT 첫 판단 | 유효한 `continue`. 순위 reward > exploration > optimizer > physics > actuator > termination, probe `P_reward`(동결 규칙 대안은 `P_value`). 인용 근거는 학습 평균 보상 11.02(결함) 대 33.27(정상). LLM 호출 10회, 계약 점검 1회 |
+| 검사 `b7dcc63c9289` | 20:45:41 제안·승인·소비, 20:46:03 receipt. `P_reward` abnormal(`track_lin_vel_xy_exp` 상대 오차 0.352, 임계 0.05) |
+| 고리 종료 | reward 확정(검사 1회) |
+| NAT 교정 제안 | `restore_body_frame_reward` + `restart`. 검증 accepted, 체크리스트 미충족 0, 결정적 규칙과 일치. LLM 호출 7회, 계약 점검 1회 |
+| 교정 요청 `7bdcd38f0a16` | 20:47:07 제안·승인, 20:47:19 소비, 20:57:02 receipt `recovered` |
+| 교정 재학습(seed 3034)·고정 평가 | healthy(네 검사 모두 통과) |
+
+고정 평가:
+
+| 정책 | 선속도 RMSE (m/s) | yaw rate RMSE (rad/s) | 낙상 비율 | 생존 (s) | 정지 비율 | 판정 |
+|---|---|---|---|---|---|---|
+| NONE s2034 | 0.145 | 0.293 | 0 | 20.0 | 0.123 | 보행 통과(기준) |
+| F1 s2034 | 1.173 | 0.641 | 0 | 20.0 | 0.997 | unhealthy(`err_xy_ratio`·`err_yaw_ratio` 실패) |
+| restart 교정 s3034 | — | — | — | — | 0.124 | healthy(생존·낙상·선속도·yaw 검사 통과) |
+
+사전 예측 7개(실패 존재·정지 비율 ≥ 0.9, R1, 첫 판단 `continue`·상위 3가설에 reward, `P_reward` abnormal 뒤 reward 확정, 특이성 관문 없음, 규칙 restart, restart 교정 정책 recovered)는 모두 적중했다. 성공 조건 12개도 모두 참이다.
+
+비용(부모 프로세스 벽시계):
+- 정상 학습 569.1 s, 결함 학습 559.9 s, 정상 기준 probe 93.3 s
+- `P_reward` 검사 GPU 벽시계 21.8 s, CPU 28.0 s, 시뮬레이터 51,200 step
+- NAT 첫 판단 28.7 s(LLM 호출 10회 합계 입력 47,359·출력 1,632 토큰)
+- NAT 교정 제안 18.8 s(LLM 호출 7회 합계 입력 22,247·출력 1,171 토큰)
+- restart 교정 학습 520.9 s, 교정 정책 고정 평가 50.2 s. 교정 요청 receipt의 gpu_s는 571.1이며 예산 2400 s 안이다.
+- 승인 대기(제안→승인)는 검사·교정 모두 0 s였다. 운영자 승인의 기록 시각 차이이므로 사람 검토 시간으로 쓰지 않는다.
+
+NAT 결정 경로를 쓴 첫 시연이며, 같은 seed를 단일 호출로 돌린 대조는 없다. 단일 호출 시연(보상 v2, 모터 v3.1)의 첫 판단 입력 토큰은 2,829·2,845였다. NAT는 근거를 도구로 나눠 조회하고 점검으로 고칠 기회가 있어 조건이 다르므로, 비용·결과 차이를 우위나 절감으로 읽지 않는다.
+
 ## NAT 경로 비교 (E4b)
 
-v1의 두 모델 결정(첫 판단, 교정 제안)과 같은 고정 입력을 NeMo Agent Toolkit 1.9 도구 호출 워크플로에 반복해 넣고, 계약상 유효한 결정이 얼마나 나오는지 쟀다. GPU를 쓰지 않는 개발 측정이다.
+종단 시연의 두 모델 결정(첫 판단, 교정 제안)과 같은 고정 입력을 NeMo Agent Toolkit 1.9 도구 호출 워크플로에 반복해 넣고, 계약상 유효한 결정이 얼마나 나오는지 쟀다. GPU를 쓰지 않는 개발 측정이다.
 
-`bench/protocols/e4b_nat_compare_v1.json`을 실행 전에 커밋했다(`bbd2ed5`, LF SHA256 `0063a5fb…`). 종류별 5회 실행이며 인프라 오류만 1회 재시도한다. 입력 packet은 SHA로 묶었다.
+네 판 모두 공통으로 다음을 따랐다.
+- 실행 전에 프로토콜을 커밋했다.
+- 종류별 5회 실행하고, 인프라 오류만 1회 재시도했다.
+- 입력 packet은 SHA로 묶었다.
+- 채택 규칙: 다음 seed 시연에 NAT 결정을 쓰려면 채택 세트에서 두 종류 모두 인프라 오류를 뺀 실행이 4 이상이고, 그중 유효 결정이 4 이상이어야 한다.
+- 일치율은 채택 조건에 쓰지 않는다(단일 호출이 정답이 아니다).
+- 판마다 채택 입력을 새로 정했고, 판끼리 분모를 합치지 않는다.
 
 | 같은 것 | 다른 것 |
 |---|---|
 | 모델, temperature 0, `reasoning_effort: none` | NAT는 사실·probe 카탈로그·교정 등록 표·체크리스트를 도구로 여러 턴에 나눠 조회한다. 단일 호출은 packet 전체를 한 번에 받는다 |
 | 같은 packet | NAT 시스템 프롬프트는 계약 프롬프트 뒤에 도구 사용 규칙을 붙인다 |
-| 같은 판단 계약 프롬프트와 검증기 | NAT는 제출 도구가 저장한 파일에서, 단일 호출은 응답 본문에서 결정을 읽는다 |
+| 같은 판단 계약 프롬프트와 검증기 | v2부터 NAT는 제출 전 계약 점검 도구로 실행당 최대 2회 사유를 받아 고칠 수 있다 |
 
-채택 규칙: 다음 seed 시연에 NAT 결정을 쓰려면 두 종류 모두 인프라 오류를 뺀 실행이 4 이상이고 그중 유효 결정이 4 이상이어야 한다. 일치율은 채택 조건에 쓰지 않는다(단일 호출이 정답이 아니다).
+| 판 | 프로토콜(커밋, LF SHA256) | 바꾼 것 | 채택 입력 | 첫 판단 유효 | 교정 제안 유효 | 판정 |
+|---|---|---|---|---|---|---|
+| v1 | `e4b_nat_compare_v1.json`(`bbd2ed5`, `0063a5fb…`) | — | 보상 시연 v1(seed 2029) | 3/5 | 0/5 | `do_not_adopt` |
+| v2 | `e4b_nat_compare_v2.json`(`88ede63`, `e106460d…`) | 입력 스키마 설명에 형식 규칙, 제출 전 계약 점검 도구 | 보상 시연 v2(seed 2030) | 5/5 | 0/5 | `do_not_adopt` |
+| v3 | `e4b_nat_compare_v3.json`(`d330c82`, `14293333…`) | 교정 제출 스키마에서 null 칸을 없앰(propose·hold 판별 칸, 쓰지 않는 칸은 빈 문자열) | 이미 본 사례 h02_s2027(공개 기록에서 만든 packet) | 2/5 | 5/5 | `do_not_adopt` |
+| v4 | `e4b_nat_compare_v4.json`(`b128030`, `b51fabfb…`) | 첫 판단: 실수 사실 표기 고정·표기 일치 치환. 교정: packet 등록 표로 검증 | 사전등록 뒤 시작한 첫 모터 시연(seed 2031)의 packet | 5/5 | 5/5 | `adopt` |
 
-| 종류 | 유효 | 무효 | 인프라 오류 | 단일 호출과 일치(유효 실행 중) | LLM 호출 수 중앙값 | 입력 토큰 중앙값 | 출력 토큰 중앙값 | 벽시계 중앙값 |
-|---|---|---|---|---|---|---|---|---|
-| 첫 판단 | 3 | 2 | 0 | 행동 3/3, 1위 3/3, probe 2/3, 상위 3 집합 1/3 | 5 | 14,687 | 877 | 14.2 s |
-| 교정 제안 | 0 | 5 | 0 | 해당 없음 | 5 | 9,985 | 899 | 15.5 s |
-| (참고) 단일 호출 | 각 1회 유효 | — | — | — | 1 | 2,834 / 1,311 | 212 / 174 | 2.36 s / 2.41 s |
+채택 판정에 쓰지 않은 세트는 다음과 같다.
+- v2: seed 2029 입력(별도 분모). 첫 판단 5/5, 교정 제안 0/5
+- v3: 교정 개발 세트. seed 2030 입력 5/5, seed 2029 입력 5/5, h05_s2027(등록 밖 메커니즘, 보류 분기) 4/5
+- v4: 개발 세트 h02_s2027. 첫 판단 3/5. 무효 2회의 오류 유형은 `ValueError` 1회, `ToolInvocationError` 1회다.
 
-판정은 **`do_not_adopt`**다. 사전등록 문구: "같은 고정 입력에서 NAT 도구 호출 워크플로의 유효 결정이 사전등록 조건에 못 미쳤다. 다음 seed 시연은 단일 호출 결정을 유지한다." v2 시연도 단일 호출 결정을 썼다.
+판마다 무효의 모양과 원인 추정:
 
-무효 사유(검증기 문구):
-- 첫 판단 무효 2회: "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다". 계약은 상위 3가설의 기대 결과만 적게 하는데, 두 실행은 메커니즘 6개 전부를 적었다.
-- 교정 제안 무효 5회:
-  - 5회 모두 "HOLD 제안은 correction_id·recovery_mode가 null이어야 한다". 교정 제안과 함께 `hold_reason`에 문자열 `"None"`을 넣었다.
-  - 4회는 체크리스트 한 칸에 사실 id 여러 개를 쉼표로 이어 적어서도 거절됐다.
-  - 1회는 체크리스트 칸에 사실 id 대신 교정 id를 적었다.
-- 유효한 첫 판단 3회 중 1회는 `P_episode`를 골랐다. 계약상 유효하지만, 종단 시연 실행기였다면 상위 3가설을 가르지 못하는 probe로 보고 동결 규칙 probe로 대체했을 선택이다.
-
-[사실] 교정 제출 도구의 `hold_reason` 인자는 타입이 `str | None`이고 인자 설명이 없다. 같은 계약의 단일 호출은 JSON 본문에 `null`을 적어 통과했다.
-
-[추론] 교정 제안의 무효는 도구 스키마 설명 부족 때문일 가능성이 있다. 이 추론은 검증하지 않았다. 같은 입력으로 도구 설명을 고쳐 다시 재면 개발 측정이 된다.
+1. **v1.**
+   - [사실] 첫 판단 무효 2회는 expected_outcomes에 메커니즘 6개 전부를 적었다. 계약은 상위 3가설의 기대 결과만 적게 한다(v2 프로토콜 `v1_failures_fixed_for`).
+   - [사실] 교정 제안 무효 5회는 모두 `hold_reason`에 문자열 `"None"`을 넣은 채 교정을 제안했다. 4회는 체크리스트 한 칸에 사실 id 여러 개를 쉼표로 이어 적어서도 거절됐고, 1회는 체크리스트 칸에 교정 id를 적었다.
+   - [사실] 유효한 첫 판단 3회 중 1회는 `P_episode`를 골랐고 상위 3가설 모두에 normal을 기대했다.
+   - [추론] 종단 시연 실행기였다면 상위 3가설을 가르지 못하는 probe로 보고 동결 규칙 probe로 대체했을 것이다.
+   - [추론] 도구 스키마 설명이 부족했다. v2에서 형식 규칙을 필드 설명에 넣고 점검 도구를 더했다.
+2. **v2.**
+   - [사실] 교정 제출·점검 인자 20개 중 19개의 `hold_reason`이 문자열 `"None"`이었다.
+   - [사실] 같은 호출의 ATIF 궤적(파싱된 LLM 도구 호출 인자)과 도구 기록(도구가 받은 인자)이 호출마다 같았다.
+   - [사실] langchain은 도구 인자 문자열을 `json.loads`로 파싱하므로 JSON `null`은 `None`이 되고 `"None"`으로 바뀌지 않는다. 같은 계약의 단일 호출은 `null`을 썼다.
+   - [추론] `"None"`은 제공자 쪽 도구 호출 인자 생성·파싱 단계에서 생긴다. 원시 응답을 남기지 않아 모델과 제공자 파서를 가르지 못했다. v3에서 null 칸이 없는 스키마로 바꿨다.
+3. **v3.**
+   - [사실] 채택 입력의 첫 판단 무효 3회는 모두 근거 claim `telemetry:reference:Policy/mean_noise_std`의 값이 0.3697160104910533이었다. packet 사실 값 0.36971601049105324와 다른 double이다.
+   - [사실] 공개 검증기는 claim 값을 사실 값과 `==`로 비교한다. 유효 2회는 17자리 실수 claim 4개를 같은 double로 인용했다.
+   - [추론] 17자리 실수 표기를 옮기는 과정에서 마지막 자리가 바뀌었다. 원시 응답이 없어 모델과 제공자 파서를 가르지 못한다.
+   - v4에서 표기를 고정했다. 허용 오차를 쓰지 않은 이유는 두 가지다. 검증기의 "보여 준 근거를 그대로 인용" 의미가 유지되고, 실패를 본 뒤 오차 크기를 정하지 않아도 된다.
+4. **v4.** 채택 세트 두 종류 모두 5/5 유효로 `adopt`다. 사전등록 문구: "다음 seed 시연의 결정 단계에 쓸 수 있다. 정확도·우위의 근거가 아니다."
+   - 유효 실행 중 단일 호출 결정과의 일치:
+     - 첫 판단: 행동 5/5, 1위 3/5, 상위 3 집합 0/5, probe 1/5
+     - 교정 제안: 결정·교정·회복 방식·미충족 체크리스트 모두 5/5
+   - 비용(중앙값):
+     - 첫 판단: LLM 호출 8회, 입력 34,900·출력 1,384 토큰, 17.6 s
+     - 교정 제안: LLM 호출 7회, 입력 22,377·출력 1,242 토큰, 16.2 s
+     - 같은 입력의 단일 호출: 2,849·197 토큰 3.02 s, 1,317·165 토큰 1.50 s
 
 해석 경계:
-- 한 사례의 고정 입력을 반복 호출한 개발 측정이다.
+- 판마다 고정 입력을 반복 호출한 개발 측정이다. 판마다 입력이 달라, 다음 판의 유효 결정 수를 앞 판 원인 추론의 검증으로 쓰지 않는다.
 - NAT는 근거를 도구로 나눠 조회하고 단일 호출은 한 번에 받으므로, 일치율·비용 차이에는 이 제공 방식 차이가 섞여 있다.
-- `do_not_adopt`는 이 워크플로 구성(도구 설명·스키마 포함)에 대한 기록이며 NAT 자체의 성능 평가가 아니다.
+- 판정은 각 판의 워크플로 구성(도구 설명·스키마·표기 포함)에 대한 기록이며 NAT 자체의 성능 평가가 아니다.
+- v4 채택으로 NAT 경로를 쓴 시연은 위 "NAT 결정 경로 보상 결함 종단 시연(seed 2034)" 한 건이다.
 
 ## 공식 디버깅 스킬 유무 프롬프트 비교
 
@@ -270,12 +521,26 @@ v1의 두 모델 결정(첫 판단, 교정 제안)과 같은 고정 입력을 Ne
    - 단계마다 묶인 소스·프로토콜 SHA를 다시 검사해 통과했으므로 결합 파일은 바뀌지 않았다.
    - 교정 학습 중의 커밋 두 건이 restart 검증 거부로 이어졌다.
 3. **v1 사후 보조 측정.** seed 3029 교정 정책의 고정 평가는 사전등록 실행기 밖에서 사후에 했다. 판정·성공 조건·예측에 쓰지 않는다.
-4. **E4b 무효 원인 표기.** 실행 절차는 사전등록대로 적용했다. `hold_reason`에 문자열 `"None"`을 넣은 것은 사실이고, 그 원인이 도구 스키마 설명 부족이라는 것은 추론이다.
-5. **v2.** 실행·판정 절차에서 사전등록과 다른 점은 없다. 승인은 사전등록 문구대로 사용자가 위임한 운영자 승인으로 했다.
+4. **NAT 경로 비교 무효 원인 표기.** 네 판 모두 실행 절차는 사전등록대로 적용했다. 무효 결정의 모양(6개 기대 결과, 문자열 `"None"`, 다른 double의 실수 claim)은 사실이다. 그 원인(도구 스키마 설명 부족, 제공자 쪽 인자 생성·파싱, 실수 표기 옮김)은 추론이다.
+5. **보상 v2.** 실행·판정 절차에서 사전등록과 다른 점은 없다. 승인은 사전등록 문구대로 사용자가 위임한 운영자 승인으로 했다.
+6. **모터 v3 결과 범주.**
+   - seed 2031 시연은 v3 사전등록 결과 범주 15개 어디에도 해당하지 않는 실행기 결함으로 멈췄다.
+   - `harness_failure` 범주는 v3.1에서 사전등록했고, 이 시연에는 v3.1 도구로 사후 기록했다(기록에 그렇게 적힌다).
+   - v3 결과로 세지 않으며, 교정·회복 예측 둘은 판정하지 않는다.
+7. **모터 시연 seed 교체.** 실행기 결함을 고치려면 시연 중간에 코드를 바꿔야 했다. 같은 시연에서 그렇게 하지 않고, 새 실행기(v3.1)와 새 seed(2033)로 다시 사전등록했다. seed 2031과 2033의 결과를 합친 분모를 만들지 않는다.
+8. **NAT 경로 비교 v4 채택 입력.** 사전등록 규칙("사전등록 뒤 시작한 첫 모터 시연", 종류마다 packet과 단일 호출 기록이 있으면 묶는다)대로 seed 2031의 packet을 묶었다. 하네스 결함은 두 packet과 단일 호출 기록이 만들어진 뒤에 일어났고, 종료 기록은 묶는 조건에 필요하지 않았다. 사전등록과 다른 점은 없다.
+9. **모터 v3.1(seed 2033)·NAT 결정 경로(seed 2034).** 실행·판정 절차에서 사전등록과 다른 점은 없다. 운영 기록 하나를 남긴다.
+   - seed 2033의 첫 정상 학습 시도(18:54)는 GPU 입장 검사에서 사용자 브라우저의 GPU 프로세스 때문에 거부됐다(exit 3). 아무것도 기록하지 않았고 단계도 소비하지 않았다.
+   - 사용자 승인으로 그 프로세스를 닫은 뒤 19:44에 같은 단계부터 진행했다.
+   - 사전등록한 입장 대기 규칙이 설계대로 동작한 것이므로 사전등록과 다른 점으로 세지 않는다. seed 2034에는 해당 사건이 없다.
 
 ## 주장하지 않는 것
 
-- 진단 정확도, 교정 성공률, 일반화. 이미 본 결함 종류의 새 seed 한 건이며, v1·v2를 합친 분모를 만들지 않는다.
+- 진단 정확도, 교정 성공률, 일반화. 이미 본 결함 종류의 새 seed 기록이며, 시연끼리 합친 분모를 만들지 않는다.
+- 모터 결함에서 고리가 첫 판단의 틀린 1위 가설(reward)을 바로잡은 것은 seed 2031·2033 두 건의 고리 동작 기록이며 진단 정확도가 아니다. 특이성 관문은 이미 본 seed에서 사후에 고른 게이트이며 다른 결함과의 구별 성능 근거가 아니다.
+- 모터 결함 restart 교정의 일반적 회복. seed 2033 한 건이며, 회복 방식 규칙의 근거 실험은 resume만 시험했다.
+- NAT 결정 경로의 우위. seed 2034 한 건의 성공이며 같은 seed의 단일 호출 대조가 없다. NAT는 근거를 도구로 나눠 조회하고 점검으로 고칠 기회가 있어 조건이 다르며, 입력 토큰을 더 많이 썼다.
+- `harness_failure` 사후 기록을 v3 사전등록 결과로 쓰지 않는다.
 - 다른 방법 대비 우위. 첫 판단이 reward를 1위로 둔 것은 결함·probe를 같은 설계자가 만든 조건의 결과다. 교정 제안 모델은 결정적 규칙의 결과를 볼 수 있으므로, 규칙과 일치했다는 기록을 독립 검증으로 쓰지 않는다. 교정과 회복 방식은 규칙이 정했다.
 - GPU 절감. 위 시간은 부모 프로세스 벽시계이며 비교 대상이 없다.
 - 사람 승인·신원 인증. 승인은 사용자가 위임한 운영자 승인이다.
@@ -299,6 +564,36 @@ v1의 두 모델 결정(첫 판단, 교정 제안)과 같은 고정 입력을 Ne
   - 검사 `evals/results/e2e_reward_s2029_20261013_loop/`
   - 기준 probe `evals/results/e2e_reward_s2029_20261013_ref/`
   - 원장 `evals/loops/h02_s2029/`
-- E4b: `bench/protocols/e4b_nat_compare_v1.json`, `evals/results/e4b_e2e_reward_s2029_20261013/summary.json`
+- 모터 v3.1(seed 2033):
+  - 프로토콜 `bench/protocols/e2e_demo_v3_1_f2.json`
+  - 실행기 `evals/e2e_demo_v3_1.py`, `bench/demo_correction_v3_1.py`
+  - 결과 `evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json`, `evals/results/e2e_demo_v3_1_f2_s2033_20261013/runs/`
+  - 검사 `evals/results/e2e_demo_v3_1_f2_s2033_20261013_loop/`, 기준 probe `evals/results/e2e_demo_v3_1_f2_s2033_20261013_ref/`, 특이성 `evals/results/e2e_demo_v3_1_f2_s2033_20261013_spec/`
+  - 원장 `evals/loops/h06_s2033/`
+  - 학습 텔레메트리 `bench/runs_p0c/{baseline_p0c_s2033,h06_s2033}.telemetry.json`
+- 모터 v3(seed 2031):
+  - 프로토콜 `bench/protocols/e2e_demo_v3_f2.json`
+  - 실행기 `evals/e2e_demo_v3.py`, `bench/demo_correction_v3.py`
+  - 하네스 실패 요약 `evals/results/e2e_demo_v3_f2_s2031_20261013/harness_failure_summary.json`, 고정 평가 `evals/results/e2e_demo_v3_f2_s2031_20261013/runs/`
+  - 검사 `evals/results/e2e_demo_v3_f2_s2031_20261013_loop/`, 기준 probe `evals/results/e2e_demo_v3_f2_s2031_20261013_ref/`, 특이성 `evals/results/e2e_demo_v3_f2_s2031_20261013_spec/`
+  - 원장 `evals/loops/h06_s2031/`
+  - 학습 텔레메트리 `bench/runs_p0c/{baseline_p0c_s2031,h06_s2031}.telemetry.json`
+- NAT 결정 경로 보상 시연(seed 2034):
+  - 프로토콜 `bench/protocols/e2e_demo_v3_1_f1.json`
+  - 실행기 `evals/e2e_demo_v3_1.py`, NAT worker `evals/nat_decision_call_v4.py`, 도구 `src/rl_triage/nat_demo_tools_v4.py`, 설정 `configs/nat_demo_v4_diagnosis.yml`·`configs/nat_demo_v4_correction.yml`
+  - 결과 `evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json`, `evals/results/e2e_demo_v3_1_f1_s2034_20261013/runs/`
+  - 검사 `evals/results/e2e_demo_v3_1_f1_s2034_20261013_loop/`, 기준 probe `evals/results/e2e_demo_v3_1_f1_s2034_20261013_ref/`
+  - 원장 `evals/loops/h02_s2034/`
+  - 학습 텔레메트리 `bench/runs_p0c/{baseline_p0c_s2034,h02_s2034}.telemetry.json`
+- 모터 회복 방식 규칙: `bench/protocols/training_correction_motor_v1.json`, `evals/results/motor_w1_s2026_20261013/`, `evals/results/motor_w1_s2028_20261013/`
+- NAT 경로 비교:
+  - v1 `bench/protocols/e4b_nat_compare_v1.json`, `evals/results/e4b_e2e_reward_s2029_20261013/summary.json`
+  - v2 `bench/protocols/e4b_nat_compare_v2.json`, `evals/results/e4b_nat_compare_v2/summary.json`
+  - v3 `bench/protocols/e4b_nat_compare_v3.json`, `evals/results/e4b_nat_compare_v3/summary.json`
+  - v4 `bench/protocols/e4b_nat_compare_v4.json`, `evals/results/e4b_nat_compare_v4/summary.json`
 - 스킬 유무 비교: `bench/protocols/skill_ab_v1.json`, `evals/results/skill_ab_v1/summary.json`
-- 테스트: `tests/test_e2e_reward_demo.py`, `tests/test_e2e_reward_demo_v2.py`, `tests/test_e4b_compare.py`, `tests/test_skill_ab_compare.py`
+- 테스트:
+  - 보상 시연 `tests/test_e2e_reward_demo.py`, `tests/test_e2e_reward_demo_v2.py`
+  - 모터·NAT 결정 경로 시연 `tests/test_e2e_demo_v3.py`, `tests/test_e2e_demo_v3_1.py`, `tests/test_e2e_demo_v3_1_nat.py`
+  - NAT 경로 비교 `tests/test_e4b_compare.py`, `tests/test_e4b_compare_v2.py`, `tests/test_e4b_compare_v3.py`, `tests/test_e4b_compare_v4.py`, `tests/test_nat_demo.py`, `tests/test_nat_demo_v2.py`, `tests/test_nat_demo_v3.py`, `tests/test_nat_demo_v4.py`
+  - 스킬 유무 비교 `tests/test_skill_ab_compare.py`
