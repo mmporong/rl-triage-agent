@@ -1,0 +1,198 @@
+{
+  "schema": "training_correction_motor_public_v1",
+  "arms": {
+    "clean_resume_reference": {
+      "receipt_sha256": "6e25d0750e8b38c799dba972677d1269de4b9a715b89fe74c226b434bd139d0c",
+      "recovery_mode": "resume",
+      "checkpoint": {
+        "file": "model_598.pt",
+        "sha256": "f0aacea12b8cd64b6ff5d69657580e8ed40987270cb5bcdbbbcf9e1c0be92c77"
+      },
+      "configs": {
+        "environment": {
+          "file": "env.yaml",
+          "sha256": "2ec1e42b47231ec33d5a91135b63a20912a75de6c1067faf5f3ecff018599638"
+        },
+        "agent": {
+          "file": "agent.yaml",
+          "sha256": "e393122eb89db38baa5cb50901339647d17cab53d87bc865b28888f6501dd6ec"
+        }
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "d8c67eec0b8108b7e7092a80a3efcdc0338285c06c87ca8b9f7b8c65641024e3"
+      },
+      "resume_iteration": 299,
+      "start_iteration": 299,
+      "final_iteration": 598,
+      "checkpoint_load_calls": 1,
+      "std_reset_applied": false,
+      "resume_scope": {
+        "policy_optimizer_restored": true,
+        "full_environment_state_restored": false,
+        "rng_state_restored_from_checkpoint": false,
+        "fresh_initialization": false,
+        "action_std_reset": false
+      },
+      "actual_control_steps": 7200,
+      "aggregate_env_steps": 29491200,
+      "budget": {
+        "seed": 2028,
+        "num_envs": 4096,
+        "max_iterations": 300,
+        "num_steps_per_env": 24,
+        "expected_control_steps": 7200
+      },
+      "observed": {
+        "environment_seed": 2028,
+        "environment_num_envs": 4096,
+        "action_scale": 0.25,
+        "agent_seed": 2028,
+        "agent_max_iterations": 300,
+        "runner_num_steps_per_env": 24
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "parent_wall_s": {
+        "scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "train_s": 566.9060000001919,
+        "fixed_evaluation_s": 64.46899999980815,
+        "total_s": 631.375
+      },
+      "budget_checkpoints": {
+        "350": {
+          "file": "model_350.pt",
+          "sha256": "2083ba28ae3c16a1be3ee62d8acb16bca247c754e01cad0f9bc539eaea85e696",
+          "iteration": 350
+        },
+        "450": {
+          "file": "model_450.pt",
+          "sha256": "cf11a809283855cadb39d2c13699e3d040737d3076f35155638c9eedd4eff293",
+          "iteration": 450
+        },
+        "550": {
+          "file": "model_550.pt",
+          "sha256": "1cafdce0ea1c32d3d963088c12fb347db305edbcf385864b0df856159cfbac98",
+          "iteration": 550
+        }
+      }
+    },
+    "resume_corrected": {
+      "receipt_sha256": "745f776621d7a8489363dcc9ed5f8971c3db79c5e31a84593853ca07330546da",
+      "recovery_mode": "resume",
+      "checkpoint": {
+        "file": "model_598.pt",
+        "sha256": "a6a0fe9013cc5e539ac3eb5a39d5286732b47e992a8612a9ff275875136dd8ab"
+      },
+      "configs": {
+        "environment": {
+          "file": "env.yaml",
+          "sha256": "2ec1e42b47231ec33d5a91135b63a20912a75de6c1067faf5f3ecff018599638"
+        },
+        "agent": {
+          "file": "agent.yaml",
+          "sha256": "8a21f6a44185c00cad81a219225daf3e8b8cf7a514f813b032e65e9184c25552"
+        }
+      },
+      "resume_checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "eaef2349a453cc49310d81d7c265d506a5cfd41480a8d74ca21b08652f84f0fb"
+      },
+      "resume_iteration": 299,
+      "start_iteration": 299,
+      "final_iteration": 598,
+      "checkpoint_load_calls": 1,
+      "std_reset_applied": false,
+      "resume_scope": {
+        "policy_optimizer_restored": true,
+        "full_environment_state_restored": false,
+        "rng_state_restored_from_checkpoint": false,
+        "fresh_initialization": false,
+        "action_std_reset": false
+      },
+      "actual_control_steps": 7200,
+      "aggregate_env_steps": 29491200,
+      "budget": {
+        "seed": 2028,
+        "num_envs": 4096,
+        "max_iterations": 300,
+        "num_steps_per_env": 24,
+        "expected_control_steps": 7200
+      },
+      "observed": {
+        "environment_seed": 2028,
+        "environment_num_envs": 4096,
+        "action_scale": 0.25,
+        "agent_seed": 2028,
+        "agent_max_iterations": 300,
+        "runner_num_steps_per_env": 24
+      },
+      "runtime_versions": {
+        "python": "3.10.15",
+        "python_cache_tag": "cpython-310",
+        "torch_distribution": "2.7.0+cu128",
+        "rsl_rl_distribution": "2.3.3",
+        "isaaclab_distribution": "0.41.3",
+        "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba"
+      },
+      "parent_wall_s": {
+        "scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+        "train_s": 676.2819999998901,
+        "fixed_evaluation_s": 61.640000000130385,
+        "total_s": 737.9220000000205
+      },
+      "budget_checkpoints": {
+        "350": {
+          "file": "model_350.pt",
+          "sha256": "17b0e4e897188cb474a0894cae0c3e40657b665feb8d98c21d8c2736251ce23c",
+          "iteration": 350
+        },
+        "450": {
+          "file": "model_450.pt",
+          "sha256": "05f1ef84fe4a84eab7f645f67892f1170141cb88e41c11410b7c082945dfcc25",
+          "iteration": 450
+        },
+        "550": {
+          "file": "model_550.pt",
+          "sha256": "a34135cf61d30ac98990d6de7546e69252b01926961216ff90dd8d3d8677b9af",
+          "iteration": 550
+        }
+      }
+    }
+  },
+  "budget_curve": {
+    "checkpoints": {
+      "clean_resume_reference_model_350": {
+        "file": "model_350.pt",
+        "sha256": "2083ba28ae3c16a1be3ee62d8acb16bca247c754e01cad0f9bc539eaea85e696"
+      },
+      "clean_resume_reference_model_450": {
+        "file": "model_450.pt",
+        "sha256": "cf11a809283855cadb39d2c13699e3d040737d3076f35155638c9eedd4eff293"
+      },
+      "clean_resume_reference_model_550": {
+        "file": "model_550.pt",
+        "sha256": "1cafdce0ea1c32d3d963088c12fb347db305edbcf385864b0df856159cfbac98"
+      },
+      "resume_corrected_model_350": {
+        "file": "model_350.pt",
+        "sha256": "17b0e4e897188cb474a0894cae0c3e40657b665feb8d98c21d8c2736251ce23c"
+      },
+      "resume_corrected_model_450": {
+        "file": "model_450.pt",
+        "sha256": "05f1ef84fe4a84eab7f645f67892f1170141cb88e41c11410b7c082945dfcc25"
+      },
+      "resume_corrected_model_550": {
+        "file": "model_550.pt",
+        "sha256": "a34135cf61d30ac98990d6de7546e69252b01926961216ff90dd8d3d8677b9af"
+      }
+    },
+    "eval_parent_wall_s": 278.405999999959
+  }
+}
