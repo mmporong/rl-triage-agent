@@ -264,6 +264,55 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
     assert '<span class="pending mismatch">불일치</span>' in outputs["tampered"][0]
 
 
+PAGES = {"protocol": "https:", "hostname": "mmporong.github.io", "pathname": "/rl-triage-agent/replay/"}
+BLOB = "https://github.com/mmporong/rl-triage-agent/blob/main/"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node is required to render the static page")
+def test_github_pages_links_docs_relative_and_other_files_to_the_repository(tmp_path, built):
+    """Pages(/docs가 사이트 루트)에서는 docs/ 아래(영상 포함)를 사이트 상대 경로로, 그 밖 근거를 GitHub 파일 화면으로 연결한다.
+    파일로 열 때와 Pages가 아닌 주소에서는 기존과 같은 저장소 상대 경로다."""
+    script = tmp_path / "render.js"
+    script.write_text(
+        "const app = require(process.argv[2]);\n"
+        "const data = JSON.parse(require('fs').readFileSync(process.argv[3], 'utf8'));\n"
+        "const where = JSON.parse(process.argv[4]);\n"
+        "const out = {};\n"
+        "for (const [name, loc] of Object.entries(where)) out[name] = data.scenes.map((_, i) => app.renderScene(data, i, loc));\n"
+        "const link = app.linker(where.user_site);\n"
+        "out.user_site_link = link('evals/x.json', 'file');\n"
+        "out.unknown_path = app.linker({protocol: 'https:', hostname: 'mmporong.github.io', pathname: '/other/'})('evals/x.json');\n"
+        "out.default = data.scenes.map((_, i) => app.renderScene(data, i));\n"
+        "process.stdout.write(JSON.stringify(out));\n", encoding="utf-8")
+    path = tmp_path / "data.json"
+    path.write_text(json.dumps(built, ensure_ascii=False), encoding="utf-8")
+    where = {"pages": PAGES, "pages_index": {**PAGES, "pathname": "/rl-triage-agent/replay/index.html"},
+             "file": {"protocol": "file:", "hostname": "", "pathname": "/C:/repo/docs/replay/index.html"},
+             "local_http": {"protocol": "http:", "hostname": "localhost", "pathname": "/docs/replay/"},
+             "other_https": {"protocol": "https:", "hostname": "example.com", "pathname": "/rl-triage-agent/replay/"},
+             "user_site": {"protocol": "https:", "hostname": "mmporong.github.io", "pathname": "/replay/"}}
+    out = json.loads(subprocess.run(["node", str(script), str(PAGE / "app.js"), str(path), json.dumps(where)],
+                                    check=True, capture_output=True, text=True, encoding="utf-8").stdout)
+    for name in ("file", "local_http", "other_https"):  # 파일·Pages 밖 주소는 기존과 같다
+        assert out[name] == out["default"], name
+    assert "../../evals/results/p0c_fixed_eval_20261009/runs/h02_s2026.json" in out["default"][0]
+    assert out["pages"] == out["pages_index"]
+    pages = "".join(out["pages"])
+    assert "../../" not in pages
+    assert f'href="{BLOB}evals/results/p0c_fixed_eval_20261009/runs/h02_s2026.json"' in out["pages"][0]
+    videos = sorted({built["sources"][item["source"]]["path"] for scene in built["scenes"] for block in scene["blocks"]
+                     if block["type"] == "video" for item in block["items"]
+                     if built["sources"][item["source"]]["status"] == "ready"})
+    assert videos and all(v.startswith("docs/media/") for v in videos)
+    for video in videos:  # 영상은 GitHub 파일 화면이 아니라 Pages에서 재생한다
+        assert f'<video controls preload="metadata" src="../{video[len("docs/"):]}"></video>' in pages
+        assert f'src="{BLOB}{video}"' not in pages and f'href="{BLOB}{video}"' not in pages
+    others = {row["path"] for row in built["sources"].values() if row.get("path") and not row["path"].startswith("docs/")}
+    assert all(f'href="{BLOB}{p}"' in pages for p in others if any(p in html for html in out["default"]))
+    assert out["user_site_link"] == "https://github.com/mmporong/mmporong.github.io/blob/main/evals/x.json"
+    assert out["unknown_path"] is None
+
+
 def test_demo_scene_puts_both_demos_side_by_side_and_costs_in_the_last_scene(built):
     scenes = {scene["id"]: scene for scene in built["scenes"]}
     slots = B._read(ROOT / B.SLOTS)

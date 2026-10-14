@@ -32,15 +32,34 @@
     return ids;
   }
 
-  function refLink(data, ids, sourceId) {
+  // 근거·영상 주소. 파일로 열거나 저장소 루트를 서빙하면 저장소 상대 경로("../../" + 경로)다. GitHub Pages(main의 /docs가
+  // 사이트 루트, <owner>.github.io/<repo>/replay/)에서 열면 docs/ 아래는 사이트 상대 경로, 그 밖은 같은 저장소 main의
+  // GitHub 파일 화면이다. 영상은 GitHub 파일 화면에서 재생되지 않으므로 docs/ 아래가 아니면 주소를 주지 않는다(null).
+  function linker(location) {
+    var host = (location && location.hostname) || "";
+    var pages = !!location && location.protocol === "https:" && /\.github\.io$/.test(host);
+    // 프로젝트 사이트는 /<repo>/replay/, 사용자 사이트(저장소 이름이 <owner>.github.io)는 /replay/다.
+    var parts = pages ? String(location.pathname || "").split("/").filter(Boolean) : [];
+    var at = parts.indexOf("replay");
+    var repo = at === 1 ? parts[0] : at === 0 ? host : null;
+    var blob = repo ? location.protocol + "//github.com/" + host.slice(0, -".github.io".length) + "/" + repo + "/blob/main/" : null;
+    return function (path, kind) {
+      if (!pages) return "../../" + path;
+      if (path.indexOf("docs/") === 0) return "../" + path.slice("docs/".length);
+      return kind === "video" || !blob ? null : blob + encodeURI(path);
+    };
+  }
+
+  function refLink(data, ids, sourceId, link) {
     var index = ids.indexOf(sourceId) + 1;
     var row = data.sources[sourceId] || {};
     var title = (row.path || "경로 미정") + (row.sha256 ? " · sha256 " + row.sha256 : "") + " · " + statusLabel(data, row.status);
-    if (!row.path) return '<span class="ref" title="' + esc(title) + '">[' + index + "]</span>";
-    return '<a class="ref" href="../../' + esc(row.path) + '" title="' + esc(title) + '">[' + index + "]</a>";
+    var href = row.path ? link(row.path, "file") : null;
+    if (!href) return '<span class="ref" title="' + esc(title) + '">[' + index + "]</span>";
+    return '<a class="ref" href="' + esc(href) + '" title="' + esc(title) + '">[' + index + "]</a>";
   }
 
-  function renderCell(data, ids, cell) {
+  function renderCell(data, ids, cell, link) {
     if (cell === null || cell === undefined) return "<td></td>";
     if (typeof cell !== "object") return "<td>" + esc(cell) + "</td>";
     var row = data.sources[cell.source] || { status: "waiting" };
@@ -54,7 +73,7 @@
       body = esc(cell.value);
     }
     var numeric = typeof cell.value === "number" ? ' class="num"' : "";
-    return "<td" + numeric + ">" + body + refLink(data, ids, cell.source) + "</td>";
+    return "<td" + numeric + ">" + body + refLink(data, ids, cell.source, link) + "</td>";
   }
 
   function sourceSummary(data, ids) {
@@ -65,22 +84,23 @@
     }).join(" ");
   }
 
-  function renderSources(data, ids) {
+  function renderSources(data, ids, link) {
     if (!ids.length) return "";
     return '<details class="evidence"><summary>근거 파일 ' + ids.length + "개 " + sourceSummary(data, ids) + "</summary>" +
       '<ol class="sources">' + ids.map(function (id, index) {
       var row = data.sources[id] || { status: "waiting" };
       var badge = '<span class="status ' + esc(row.status) + '">' + esc(statusLabel(data, row.status)) + "</span>";
-      var path = row.path ? '<a href="../../' + esc(row.path) + '">' + esc(row.path) + "</a>" : "경로 미정";
+      var href = row.path ? link(row.path, "file") : null;
+      var path = !row.path ? "경로 미정" : href ? '<a href="' + esc(href) + '">' + esc(row.path) + "</a>" : esc(row.path);
       var sha = row.sha256 ? ' <span class="sha" title="' + esc(row.sha256) + '">sha256 ' + esc(row.sha256.slice(0, 12)) + "…</span>" : "";
       return "<li>[" + (index + 1) + "] " + badge + " " + path + sha + "</li>";
     }).join("") + "</ol></details>";
   }
 
-  function renderTable(data, block, ids) {
+  function renderTable(data, block, ids, link) {
     var head = "<tr>" + block.columns.map(function (column) { return "<th>" + esc(column) + "</th>"; }).join("") + "</tr>";
     var rows = block.rows.length ? block.rows.map(function (row) {
-      return "<tr>" + row.map(function (cell) { return renderCell(data, ids, cell); }).join("") + "</tr>";
+      return "<tr>" + row.map(function (cell) { return renderCell(data, ids, cell, link); }).join("") + "</tr>";
     }).join("") : '<tr><td colspan="' + block.columns.length + '">' + pendingFor(data, ids) + "</td></tr>";
     return "<table><thead>" + head + "</thead><tbody>" + rows + "</tbody></table>";
   }
@@ -139,11 +159,12 @@
     return '<div class="charts">' + panels + "</div>" + legend;
   }
 
-  function renderVideos(data, block) {
+  function renderVideos(data, block, link) {
     return '<div class="videos">' + block.items.map(function (item) {
       var row = data.sources[item.source] || { status: "waiting" };
-      var media = row.status === "ready"
-        ? '<video controls preload="metadata" src="../../' + esc(row.path) + '"></video>'
+      var src = row.status === "ready" && row.path ? link(row.path, "video") : null;
+      var media = src
+        ? '<video controls preload="metadata" src="' + esc(src) + '"></video>'
         : '<div class="placeholder"><span class="status ' + esc(row.status) + '">' + esc(statusLabel(data, row.status)) + "</span></div>";
       return '<div class="video-cell">' + media + "<div>" + esc(item.label) + "</div></div>";
     }).join("") + "</div>";
@@ -155,20 +176,22 @@
       esc(block.label) + "</span></div>";
   }
 
-  function renderBlock(data, block) {
+  function renderBlock(data, block, link) {
     var ids = collectSources(block);
     var body;
-    if (block.type === "table") body = renderTable(data, block, ids);
+    if (block.type === "table") body = renderTable(data, block, ids, link);
     else if (block.type === "chart") body = renderChart(data, block);
-    else if (block.type === "video") body = renderVideos(data, block);
+    else if (block.type === "video") body = renderVideos(data, block, link);
     else if (block.type === "slot") body = renderSlot(data, block);
     else if (block.type === "commands") body = "<pre>" + block.lines.map(esc).join("\n") + "</pre>";
     else throw new Error("unknown block type: " + block.type);
     var title = block.title ? "<h2>" + esc(block.title) + "</h2>" : "";
-    return '<section class="block' + (block.wide ? " wide" : "") + '">' + title + body + renderSources(data, ids) + "</section>";
+    return '<section class="block' + (block.wide ? " wide" : "") + '">' + title + body + renderSources(data, ids, link) + "</section>";
   }
 
-  function renderScene(data, index) {
+  // location을 주지 않으면(node 렌더 시험 등) 파일로 열 때와 같은 저장소 상대 경로를 쓴다.
+  function renderScene(data, index, location) {
+    var link = linker(location);
     var scene = data.scenes[index];
     var total = data.scenes.length;
     var dots = data.scenes.map(function (item, i) {
@@ -177,7 +200,7 @@
     return '<div class="topline"><span>RL Triage · 발표 재생</span><span class="counter">' + scene.number + " / " + total + "</span></div>" +
       "<header><h1>" + esc(scene.title) + '</h1><p class="lead">' + esc(scene.lead) + "</p></header>" +
       '<div class="blocks' + (scene.blocks.length === 1 ? " single" : "") + (scene.dense ? " dense" : "") + '">' + scene.blocks.map(function (block) {
-        return renderBlock(data, block);
+        return renderBlock(data, block, link);
       }).join("") + "</div>" +
       '<div><ul class="notes">' + (scene.notes || []).map(function (note) { return "<li>" + esc(note) + "</li>"; }).join("") + "</ul>" +
       "<footer><span>" + esc(scene.scope || data.scope) + "</span>" +
@@ -205,7 +228,7 @@
       stage.style.top = ((window.innerHeight - 1080 * scale) / 2) + "px";
     }
     function show() {
-      stage.innerHTML = renderScene(data, sceneIndex(data, window.location.hash));
+      stage.innerHTML = renderScene(data, sceneIndex(data, window.location.hash), window.location);
     }
     function go(step) {
       var next = Math.max(0, Math.min(data.scenes.length - 1, sceneIndex(data, window.location.hash) + step));
@@ -227,7 +250,8 @@
     show();
   }
 
-  var api = { esc: esc, formatNumber: formatNumber, collectSources: collectSources, renderScene: renderScene, sceneIndex: sceneIndex };
+  var api = { esc: esc, formatNumber: formatNumber, collectSources: collectSources, linker: linker, renderScene: renderScene,
+              sceneIndex: sceneIndex };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && root.document) start(root);
 })(typeof window !== "undefined" ? window : null);
