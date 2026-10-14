@@ -1,0 +1,161 @@
+{
+ "schema": "second_task_gate_result_v1",
+ "tag": "anymal_c_gate_20261014",
+ "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+ "seed": 2043,
+ "attempt": 1,
+ "run_name": "anymal_c_gate_none_s2043",
+ "retry_of": null,
+ "source_commit_sha": "1cd510cf2070d841bd88ca01abe533824b6fff1e",
+ "commits_seen": [
+  "1cd510cf2070d841bd88ca01abe533824b6fff1e"
+ ],
+ "protocol_sha256_lf": "35c2b743e84895634f5cfd94f4300417e5bec2aede11bfc5a49f9fd25efa28fd",
+ "seed_evidence": {
+  "seed": 2043,
+  "checked_roots": [
+   "bench/private",
+   "bench/runs_anymal",
+   "bench/runs_d3",
+   "bench/runs_p0c",
+   "bench/runs_upstream",
+   "evals/loops",
+   "evals/results",
+   "isaaclab_logs/*"
+  ],
+  "hits": [],
+  "allowed_hits": []
+ },
+ "checks": {
+  "pipeline_completed": true,
+  "training_exit_zero": true,
+  "final_checkpoint_present": true,
+  "training_readback": true,
+  "params_expected": true,
+  "eval_env_readback": true,
+  "fixed_report_valid": true,
+  "probe_report_bound": true
+ },
+ "failed_checks": [],
+ "gate": {
+  "criteria": {
+   "walks": true,
+   "probes_measured": true,
+   "absolute_probes_normal": true,
+   "cost_within_plan": true
+  },
+  "absolute_probes": {
+   "P_noise": "normal",
+   "P_reward": "normal",
+   "P_physics": "normal",
+   "P_episode": "normal"
+  },
+  "probes_measured": {
+   "P_noise": true,
+   "P_value": true,
+   "P_reward": true,
+   "P_torque": true,
+   "P_physics": true,
+   "P_episode": true
+  },
+  "behavior": {
+   "survival_s": 19.74269287109375,
+   "horizon_s": 20.0,
+   "fall_frac": 0.013461538590490818,
+   "err_xy": 0.18238701824307355,
+   "err_yaw": 0.11888639497344686
+  },
+  "standstill_ratio": 0.1549991608412392,
+  "ratio_probe_measurements": {
+   "P_value": {
+    "critic_change": 1.7784110027852638,
+    "actor_change": 1.8647298995302626,
+    "from": "model_0.pt"
+   },
+   "P_torque": {
+    "low_speed_saturation": 2.1362591538704743e-06,
+    "velocity_limit": 7.5,
+    "effort_limit": 80.0
+   }
+  }
+ },
+ "failed_criteria": [],
+ "invalid_cause": null,
+ "outcome": "pass",
+ "prediction": "pass",
+ "prediction_match": true,
+ "wording": "ANYmal-C flat 정상 학습(새 seed 하나, 4096 env × 300회)이 고정 평가에서 걸었고, 동결 probe 6종이 모두 재졌으며 절대 기준 4종이 normal이었고, 학습 1회 비용이 계획 안이었다. 단계 1로 간다. 단일 seed 이식 관문이며 진단 성능·일반화가 아니다.",
+ "failure": null,
+ "train_exit_code": 0,
+ "readback": [
+  {
+   "fault": "NONE"
+  }
+ ],
+ "eval_env": [
+  {
+   "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+   "disabled": [
+    "push_robot",
+    "base_com"
+   ],
+   "was_enabled": {
+    "push_robot": true,
+    "base_com": true
+   },
+   "now_enabled": {
+    "push_robot": false,
+    "base_com": false
+   }
+  }
+ ],
+ "checkpoint_sha256": "b5d29e888e92b9c1c46f010586c74fa0a94ecc3af314fb1790a613112693eaf6",
+ "telemetry_sha256": "b8757fb7f610bee000bf40dd3f8e88f15cb2aa3efad936ca3bb56482b87853e2",
+ "telemetry_summary": {
+  "Train/mean_reward": {
+   "first": -0.64239,
+   "last": 20.513428,
+   "median": 17.5453835,
+   "n": 300
+  },
+  "Train/mean_episode_length": {
+   "first": 13.1,
+   "last": 950.929993,
+   "median": 963.1499935,
+   "n": 300
+  },
+  "Metrics/base_velocity/error_vel_xy": {
+   "first": 0.020134,
+   "last": 0.212132,
+   "median": 0.230033,
+   "n": 300
+  },
+  "Metrics/base_velocity/error_vel_yaw": {
+   "first": 0.018062,
+   "last": 0.202995,
+   "median": 0.22817300000000001,
+   "n": 300
+  },
+  "Loss/learning_rate": {
+   "first": 0.000667,
+   "last": 0.00039,
+   "median": 0.000585,
+   "n": 300
+  },
+  "Policy/mean_noise_std": {
+   "first": 0.990335,
+   "last": 0.269361,
+   "median": 0.337532,
+   "n": 300
+  }
+ },
+ "parent_wall_s": {
+  "train": 555.4,
+  "fixed_eval": 54.2,
+  "probes": 97.6
+ },
+ "train_wall_per_iteration_s": 1.851,
+ "parent_wall_scope": "부모 프로세스 벽시계(초, 기동 포함). GPU 커널 시간이나 절감량이 아니다",
+ "scope": "두 번째 로봇 task 이식 관문, 새 seed 하나의 정상 학습 1회. 진단 성능·일반화·Go2와의 수치 비교가 아니다",
+ "model_calls": 0
+}

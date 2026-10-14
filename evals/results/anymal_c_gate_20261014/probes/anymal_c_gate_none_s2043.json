@@ -1,0 +1,68 @@
+{
+ "name": "anymal_c_gate_none_s2043",
+ "checkpoint": {
+  "file": "model_299.pt",
+  "sha256": "b5d29e888e92b9c1c46f010586c74fa0a94ecc3af314fb1790a613112693eaf6"
+ },
+ "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+ "seed": 2043,
+ "num_envs": 256,
+ "probes": {
+  "P_episode": {
+   "measurement": {
+    "timeout_count": 250,
+    "median_timeout_step": 1000.0,
+    "timeout_ratio": 1.0
+   },
+   "exit": 0,
+   "elapsed_s": 47.3
+  },
+  "P_noise": {
+   "measurement": {
+    "noise_ratio": 1.0007884502410889,
+    "logged_std_mean": 0.2693612575531006
+   },
+   "exit": 0,
+   "elapsed_s": 7.9
+  },
+  "P_physics": {
+   "measurement": {
+    "mismatch_count": 0,
+    "mismatches": [],
+    "static_friction_mean": 0.8000001311302185,
+    "dynamic_friction_mean": 0.6000000238418579,
+    "mass_delta_min": -4.961387634277344,
+    "mass_delta_max": 4.979560852050781,
+    "physics_dt": 0.005
+   },
+   "exit": 0,
+   "elapsed_s": 0.0
+  },
+  "P_reward": {
+   "measurement": {
+    "track_lin_vel_xy_exp_rel_error": 2.5547526938396458e-08,
+    "track_ang_vel_z_exp_rel_error": 2.5270164023538655e-08
+   },
+   "exit": 0,
+   "elapsed_s": 8.7
+  },
+  "P_torque": {
+   "measurement": {
+    "low_speed_saturation": 2.1362591538704743e-06,
+    "velocity_limit": 7.5,
+    "effort_limit": 80.0
+   },
+   "exit": 0,
+   "elapsed_s": 19.7
+  },
+  "P_value": {
+   "measurement": {
+    "critic_change": 1.7784110027852638,
+    "actor_change": 1.8647298995302626,
+    "from": "model_0.pt"
+   },
+   "exit": 0,
+   "elapsed_s": 0.0
+  }
+ }
+}
