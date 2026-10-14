@@ -1,0 +1,407 @@
+{
+  "schema": "e2e_demo_result_v4",
+  "tag": "e2e_demo_v4_f2_s2046_20261014",
+  "variant": "f2",
+  "fault": "F2",
+  "mechanism": "actuator",
+  "seed": 2046,
+  "case": "h06_s2046",
+  "decision_path": "single_feedback",
+  "outcome": "recovered",
+  "demo_success": true,
+  "success_conditions": {
+    "protocol_committed": true,
+    "seed_unused": true,
+    "source_failure_present": true,
+    "fresh_diagnosis_call": true,
+    "first_probe_from_model": true,
+    "probes_approved_consumed_once": true,
+    "loop_confirmed_mechanism": true,
+    "confirmation_specific": true,
+    "correction_call_accepted": true,
+    "correction_approved_consumed_once": true,
+    "correction_recovered": true,
+    "costs_recorded": true
+  },
+  "unmet_conditions": [],
+  "wording": "새 판단으로 시작한 승인된 검사가 등록 결함 메커니즘을 확정했고, 승인된 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과했다.",
+  "common_wording": "새 seed 2046의 합성 결함(F2) 1건을 끝까지 연결한 통합 시연이다. 결함과 probe는 같은 설계자가 만들었고, 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다. 검증 피드백 재요청은 결정 단계마다 최대 1회이며, 그 발생 여부와 횟수는 단일 시연 기록이다.",
+  "steps_sha256": {
+    "begin": "9a6d786f679f9e07e7d36ff67d855e8a96f985ac41f57e9f0fa2b7028d8272b3",
+    "train_NONE": "f044c659ccb3c1ccde95681aa07f3af6e125c23e383e91960db1cd1df24692d1",
+    "train_FAULT": "bdd655269652acbad87eb98bd85751d56ecd024e4cf80e289a38efafb5b52d15",
+    "alarm": "01a1fb229295f165801d10600bc5f357615d7f98aafb3bc7668b1fce509260c8",
+    "evaluate": "78796ec41999c73b2e8a9919ac1fed129e2f07ea329b886fad75c78e32a3b348",
+    "reference": "683b427a6df2d301f5cef9f031d0955fc4c6d060cbdf2c8c7cb09302e22a77b4",
+    "packet": "b6a5564845ea57d83946b9f44ed0ac1799b481f9d26bc65bf3b96a6ba74f59a2",
+    "loop_start": "99270ea19027d85294be29ea4a0d81a7f3ecdf518716a3b81545cfa5c2e4081a",
+    "loop_close": "bc6220a1535a973ee3c770db041b6ef3bf3ff88897c0912529ec63165157bfac",
+    "specificity": "dc1eb4a1c6d3ed202237ddbd45cbf2e57415d012594878d938963bb97506e435",
+    "correction": "7258098214718df484960e7a8f547ff0c6e6cf5393241f7a32d1bd2da6b7070b"
+  },
+  "terminal": null,
+  "protocol_sha256_lf": "f166882dfb21aa42e459babf90c842746b243440d9f3fb5139242313042515da",
+  "source_commit_sha": [
+    "4c90dcc3b9f13aad34ec4ac1d561488571206a63"
+  ],
+  "predictions": {
+    "source_failure": "F2가 같은 seed NONE 대비 unhealthy(P0-C seed 2026~2028 h06 모두 unhealthy, 정지 비율 0.864~0.907, 시연 v3.1 seed 2033도 unhealthy)",
+    "alarm": "R1이 F2에 울리고 NONE에는 울리지 않는다(이미 본 seed h06 세 개와 시연 v3.1 seed 2033 모두 같았다)",
+    "diagnosis": "첫 판단 최종 결정 action=continue, 상위 3가설에 actuator 포함(시연 v3.1 seed 2033: continue, reward 1위·actuator 상위 3)",
+    "loop": "P_torque abnormal 뒤 actuator 확정(예산 4 이내, 이미 본 F2 4개 실행과 시연 v3.1 seed 2033 모두 abnormal)",
+    "specificity": "P_noise·P_value normal(이미 본 F2 4개 실행과 시연 v3.1 seed 2033 모두 normal)",
+    "correction_rule": "actuator → restart(W1 rule_update change)",
+    "correction": "교정 정책 recovered(시연 v3.1 seed 2033 restart 교정 recovered)"
+  },
+  "prediction_results": {
+    "source_failure": true,
+    "alarm": true,
+    "diagnosis": true,
+    "loop": true,
+    "specificity": true,
+    "correction_rule": true,
+    "correction": true
+  },
+  "model_feedback": {
+    "diagnosis": {
+      "first_valid": true,
+      "retries": 0,
+      "final_valid": true,
+      "first_codes": [],
+      "final_codes": [],
+      "requests": 1,
+      "retry_input_tokens": null,
+      "retry_output_tokens": null,
+      "retry_wall_s": null
+    },
+    "correction": {
+      "first_valid": true,
+      "retries": 0,
+      "final_valid": true,
+      "first_codes": [],
+      "final_codes": [],
+      "requests": 1,
+      "retry_input_tokens": null,
+      "retry_output_tokens": null,
+      "retry_wall_s": null
+    }
+  },
+  "approver_identity_attested": false,
+  "training_parent_wall_s": {
+    "NONE": 519.9,
+    "FAULT": 534.2
+  },
+  "alarm": {
+    "NONE": {
+      "warned": false,
+      "alert_iterations": [],
+      "first_alert_iteration": null,
+      "qualifying_iteration_count": 0,
+      "iterations": 300
+    },
+    "FAULT": {
+      "warned": true,
+      "alert_iterations": [
+        136
+      ],
+      "first_alert_iteration": 136,
+      "qualifying_iteration_count": 173,
+      "iterations": 300
+    }
+  },
+  "evaluation": {
+    "gate": {
+      "none_walks": true,
+      "fault_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "standstill_ratio": {
+        "NONE": 0.12253167851907217,
+        "FAULT": 0.8469574621857949
+      },
+      "outcome": "failure_present"
+    },
+    "reports": {
+      "NONE": {
+        "path": "evals/results/e2e_demo_v4_f2_s2046_20261014/runs/baseline_p0c_s2046.json",
+        "sha256_lf": "a1e0f89b545e6ce8f7159da3806aa5a12eaec9615587bc6f7c457ad5fb216c77"
+      },
+      "FAULT": {
+        "path": "evals/results/e2e_demo_v4_f2_s2046_20261014/runs/h06_s2046.json",
+        "sha256_lf": "a51d8eef0b3579bda01913beb2b55e985a0ce2abb2493977b09125fa93a0a75c"
+      }
+    }
+  },
+  "reference_parent_wall_s": 82.1,
+  "diagnosis": {
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "No observations yet; start with lowest-cost probe that isolates reward mechanism.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 10.38005108833313
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 34.517574818929035
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    },
+    "started": {
+      "hypotheses": [
+        "reward",
+        "actuator",
+        "exploration"
+      ],
+      "model_probe": "P_reward",
+      "rule_probe": "P_noise",
+      "proposed_probe": "P_reward",
+      "model_probe_used": true,
+      "request_id": "58ff030724c2",
+      "prereg_digest": "6d963cfc4b542d23f06e9738470f1454cdba94fb8a8deaf59407f48178bf0de5"
+    },
+    "call": {
+      "path": "single_feedback",
+      "requests": 1,
+      "input_tokens": 2837,
+      "output_tokens": 186,
+      "execution_wall_s": 2.9154986070934683,
+      "calls": [
+        {
+          "step": "first",
+          "status": "valid",
+          "codes": [],
+          "response_id": "chatcmpl-816b7afc-ec5d-45f0-97ff-bbd8bfa5dc7b",
+          "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+          "finish_reason": "stop",
+          "input_tokens": 2837,
+          "output_tokens": 186,
+          "wall_s": 2.14225562592037
+        }
+      ]
+    }
+  },
+  "loop": {
+    "status": "confirmed",
+    "hypotheses": [
+      "actuator"
+    ],
+    "observed": {
+      "P_reward": "normal",
+      "P_noise": "normal",
+      "P_torque": "abnormal"
+    },
+    "requests": [
+      {
+        "request_id": "58ff030724c2",
+        "probe": "P_reward",
+        "state": "done",
+        "approver": "claude_operator_user_authorized",
+        "outcome": "normal",
+        "measurement": {
+          "track_lin_vel_xy_exp_rel_error": 1.785529479825243e-08,
+          "track_ang_vel_z_exp_rel_error": 1.6588440092668578e-08
+        },
+        "gpu_s": 19.3,
+        "artifact": {
+          "probe": "evals/results/e2e_demo_v4_f2_s2046_20261014_loop/probes/h06_s2046__P_reward.json",
+          "execution": "evals/results/e2e_demo_v4_f2_s2046_20261014_loop/execution/h06_s2046__P_reward.json"
+        }
+      },
+      {
+        "request_id": "7d6dc0dbcd98",
+        "probe": "P_noise",
+        "state": "done",
+        "approver": "claude_operator_user_authorized",
+        "outcome": "normal",
+        "measurement": {
+          "noise_ratio": 0.9997346997261047,
+          "logged_std_mean": 0.5373842120170593
+        },
+        "gpu_s": 19.0,
+        "artifact": {
+          "probe": "evals/results/e2e_demo_v4_f2_s2046_20261014_loop/probes/h06_s2046__P_noise.json",
+          "execution": "evals/results/e2e_demo_v4_f2_s2046_20261014_loop/execution/h06_s2046__P_noise.json"
+        }
+      },
+      {
+        "request_id": "781074bea4b5",
+        "probe": "P_torque",
+        "state": "done",
+        "approver": "claude_operator_user_authorized",
+        "outcome": "abnormal",
+        "measurement": {
+          "low_speed_saturation": 0.08125644378711869,
+          "velocity_limit": 30.0,
+          "effort_limit": 23.5
+        },
+        "gpu_s": 29.7,
+        "artifact": {
+          "probe": "evals/results/e2e_demo_v4_f2_s2046_20261014_loop/probes/h06_s2046__P_torque.json",
+          "execution": "evals/results/e2e_demo_v4_f2_s2046_20261014_loop/execution/h06_s2046__P_torque.json"
+        }
+      }
+    ],
+    "probe_costs": [
+      {
+        "gpu_wall_s": 19.3,
+        "cpu_s": 25.375,
+        "simulator_steps": 51200,
+        "probe": "P_reward"
+      },
+      {
+        "gpu_wall_s": 19.0,
+        "cpu_s": 25.140625,
+        "simulator_steps": 51200,
+        "probe": "P_noise"
+      },
+      {
+        "gpu_wall_s": 29.7,
+        "cpu_s": 41.453125,
+        "simulator_steps": 128000,
+        "probe": "P_torque"
+      }
+    ]
+  },
+  "specificity": {
+    "required": [
+      "P_noise",
+      "P_value"
+    ],
+    "outcomes": {
+      "P_noise": "normal",
+      "P_value": "normal"
+    },
+    "passed": true,
+    "measurements": {
+      "P_noise": {
+        "noise_ratio": 0.9997346997261047,
+        "logged_std_mean": 0.5373842120170593
+      },
+      "P_value": {
+        "critic_change": 1.5368954363088057,
+        "actor_change": 1.931706791938811,
+        "from": "model_0.pt"
+      }
+    },
+    "parent_wall_s": 19.3
+  },
+  "correction": {
+    "request_id": "7742cd4e1de3",
+    "request": {
+      "correction_id": "restore_motor_torque_speed",
+      "recovery_mode": "restart",
+      "budget_gpu_s": 2400
+    },
+    "model_proposal": {
+      "accepted": true,
+      "decision": "propose",
+      "agrees_with_rule": true,
+      "reasons": [],
+      "unmet_checklist": [],
+      "rule_visible_to_model": true,
+      "feedback": {
+        "first_status": "valid",
+        "first_codes": [],
+        "retried": false,
+        "final_status": "valid",
+        "final_codes": [],
+        "requests": 1,
+        "calls": [
+          {
+            "step": "first",
+            "input_tokens": 1281,
+            "output_tokens": 157,
+            "wall_s": 1.9804502779152244
+          }
+        ]
+      }
+    },
+    "call": {
+      "path": "single_feedback",
+      "requests": 1,
+      "input_tokens": 1281,
+      "output_tokens": 157,
+      "execution_wall_s": 2.6012051040306687,
+      "calls": [
+        {
+          "step": "first",
+          "status": "valid",
+          "codes": [],
+          "response_id": "chatcmpl-40504ce3-7fd2-4835-9fe2-a6924477b9be",
+          "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+          "finish_reason": "stop",
+          "input_tokens": 1281,
+          "output_tokens": 157,
+          "wall_s": 1.9804502779152244
+        }
+      ]
+    },
+    "receipt": {
+      "at": "2026-10-14T09:05:21+00:00",
+      "event": "receipt",
+      "request_id": "7742cd4e1de3",
+      "tag": "e2e_demo_v4_f2_s2046_20261014_fix",
+      "verdict": "recovered",
+      "result_sha": "f402d18dd02c5fcbcce9e6818194ad211cc5eadce461bff71666ebb1382e1b57",
+      "gpu_s": 542.7,
+      "exit_code": 0,
+      "over_budget": false
+    },
+    "result": {
+      "label": "recovered",
+      "verdict": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "standstill_ratio": 0.13021068411930267,
+      "costs": {
+        "train_parent_wall_s": 494.88596680015326,
+        "eval_parent_wall_s": 47.78558859997429,
+        "per_arm": {
+          "restart_corrected": {
+            "train_parent_wall_s": 494.88596680015326
+          }
+        }
+      },
+      "recovery_mode": "restart",
+      "reference": {
+        "name": "original_same_seed_none",
+        "valid": true
+      }
+    }
+  }
+}
