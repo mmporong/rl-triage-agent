@@ -1,0 +1,282 @@
+{
+ "schema": "second_task_band_result_v1",
+ "tag": "anymal_c_band_20261014",
+ "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+ "seeds": [
+  2043,
+  2044,
+  2045
+ ],
+ "protocol_sha256_lf": "054f288b4248ba89d1e98d28dec9d664f9db83a2fe28d4e5b43fed1376f6885f",
+ "source_commit_sha": "f85c0855bdd78ee6d0009e6d58a1582ff73e16fd",
+ "seed_records": {
+  "2044": {
+   "attempt": 1,
+   "run_name": "anymal_c_band_none_s2044",
+   "valid": true,
+   "invalid_cause": null,
+   "failed_checks": [],
+   "parent_wall_s": {
+    "train": 533.8,
+    "fixed_eval": 53.7,
+    "probes": 89.1
+   }
+  },
+  "2045": {
+   "attempt": 1,
+   "run_name": "anymal_c_band_none_s2045",
+   "valid": true,
+   "invalid_cause": null,
+   "failed_checks": [],
+   "parent_wall_s": {
+    "train": 547.8,
+    "fixed_eval": 72.2,
+    "probes": 98.0
+   }
+  }
+ },
+ "stage0": {
+  "tag": "anymal_c_gate_20261014",
+  "run_name": "anymal_c_gate_none_s2043"
+ },
+ "scope": "두 번째 로봇 task 단계 1. 정상 실행 셋의 변동 기록이며 진단 성능·일반화·Go2와의 수치 비교가 아니다",
+ "model_calls": 0,
+ "outcome": "pass",
+ "failed_criteria": [],
+ "analysis": {
+  "criteria": {
+   "new_runs_walk": true,
+   "absolute_probes_normal": true,
+   "ratio_probes_cross_seed_normal": true,
+   "no_tracking_false_alarm": true
+  },
+  "bands": {
+   "survival_ratio_min": 0.8809606037764762,
+   "err_xy_ratio_max": 1.1767207428933193,
+   "err_yaw_ratio_max": 1.248528339710145,
+   "fall_frac_max": 0.0826923094689846
+  },
+  "comparisons": [
+   {
+    "pair": "s2043 vs s2044",
+    "survival_ratio": 1.014112995510824,
+    "fall_frac": 0.013461538590490818,
+    "err_xy_ratio": 0.9630092101906036,
+    "err_yaw_ratio": 0.9621086463978753,
+    "horizon_ratio": 1.0
+   },
+   {
+    "pair": "s2043 vs s2045",
+    "survival_ratio": 1.0190393962235238,
+    "fall_frac": 0.013461538590490818,
+    "err_xy_ratio": 1.0368919922095352,
+    "err_yaw_ratio": 1.1050090462681266,
+    "horizon_ratio": 1.0
+   },
+   {
+    "pair": "s2044 vs s2043",
+    "survival_ratio": 0.9860834092716512,
+    "fall_frac": 0.02788461558520794,
+    "err_xy_ratio": 1.0384116677368798,
+    "err_yaw_ratio": 1.0393836535447316,
+    "horizon_ratio": 1.0
+   },
+   {
+    "pair": "s2044 vs s2045",
+    "survival_ratio": 1.0048578420102174,
+    "fall_frac": 0.02788461558520794,
+    "err_xy_ratio": 1.0767207428933192,
+    "err_yaw_ratio": 1.148528339710145,
+    "horizon_ratio": 1.0
+   },
+   {
+    "pair": "s2045 vs s2043",
+    "survival_ratio": 0.9813163295805026,
+    "fall_frac": 0.032692309468984604,
+    "err_xy_ratio": 0.9644206026406654,
+    "err_yaw_ratio": 0.904969966876953,
+    "horizon_ratio": 1.0
+   },
+   {
+    "pair": "s2045 vs s2044",
+    "survival_ratio": 0.9951656425345705,
+    "fall_frac": 0.032692309468984604,
+    "err_xy_ratio": 0.928745922840533,
+    "err_yaw_ratio": 0.8706794298627153,
+    "horizon_ratio": 1.0
+   }
+  ],
+  "ratio_probes": [
+   {
+    "pair": "s2043 vs s2044",
+    "probe": "P_value",
+    "outcome": "normal"
+   },
+   {
+    "pair": "s2043 vs s2044",
+    "probe": "P_torque",
+    "outcome": "normal"
+   },
+   {
+    "pair": "s2043 vs s2045",
+    "probe": "P_value",
+    "outcome": "normal"
+   },
+   {
+    "pair": "s2043 vs s2045",
+    "probe": "P_torque",
+    "outcome": "normal"
+   },
+   {
+    "pair": "s2044 vs s2043",
+    "probe": "P_value",
+    "outcome": "normal"
+   },
+   {
+    "pair": "s2044 vs s2043",
+    "probe": "P_torque",
+    "outcome": "normal"
+   },
+   {
+    "pair": "s2044 vs s2045",
+    "probe": "P_value",
+    "outcome": "normal"
+   },
+   {
+    "pair": "s2044 vs s2045",
+    "probe": "P_torque",
+    "outcome": "normal"
+   },
+   {
+    "pair": "s2045 vs s2043",
+    "probe": "P_value",
+    "outcome": "normal"
+   },
+   {
+    "pair": "s2045 vs s2043",
+    "probe": "P_torque",
+    "outcome": "normal"
+   },
+   {
+    "pair": "s2045 vs s2044",
+    "probe": "P_value",
+    "outcome": "normal"
+   },
+   {
+    "pair": "s2045 vs s2044",
+    "probe": "P_torque",
+    "outcome": "normal"
+   }
+  ],
+  "ratio_measurements": {
+   "2043": {
+    "P_value": {
+     "critic_change": 1.7784110027852638,
+     "actor_change": 1.8647298995302626,
+     "from": "model_0.pt"
+    },
+    "P_torque": {
+     "low_speed_saturation": 2.1362591538704743e-06,
+     "velocity_limit": 7.5,
+     "effort_limit": 80.0
+    }
+   },
+   "2044": {
+    "P_value": {
+     "critic_change": 1.8346873454098216,
+     "actor_change": 1.915469062940216,
+     "from": "model_0.pt"
+    },
+    "P_torque": {
+     "low_speed_saturation": 2.086156163391923e-06,
+     "velocity_limit": 7.5,
+     "effort_limit": 80.0
+    }
+   },
+   "2045": {
+    "P_value": {
+     "critic_change": 1.745969730900765,
+     "actor_change": 1.8023860575091037,
+     "from": "model_0.pt"
+    },
+    "P_torque": {
+     "low_speed_saturation": 4.2392775423212375e-06,
+     "velocity_limit": 7.5,
+     "effort_limit": 80.0
+    }
+   }
+  },
+  "tracking_alarm": {
+   "2043": {
+    "warned": false,
+    "alert_iterations": [],
+    "first_alert_iteration": null,
+    "qualifying_iteration_count": 0,
+    "iterations": 300
+   },
+   "2044": {
+    "warned": false,
+    "alert_iterations": [],
+    "first_alert_iteration": null,
+    "qualifying_iteration_count": 0,
+    "iterations": 300
+   },
+   "2045": {
+    "warned": false,
+    "alert_iterations": [],
+    "first_alert_iteration": null,
+    "qualifying_iteration_count": 0,
+    "iterations": 300
+   }
+  },
+  "walks": {
+   "2044": true,
+   "2045": true
+  },
+  "absolute_probes": {
+   "2044": {
+    "P_noise": "normal",
+    "P_reward": "normal",
+    "P_physics": "normal",
+    "P_episode": "normal"
+   },
+   "2045": {
+    "P_noise": "normal",
+    "P_reward": "normal",
+    "P_physics": "normal",
+    "P_episode": "normal"
+   }
+  },
+  "standstill_ratio": {
+   "2043": 0.1549991608412392,
+   "2044": 0.16095293710696806,
+   "2045": 0.14948438410730533
+  },
+  "behavior": {
+   "2043": {
+    "survival_s": 19.74269287109375,
+    "horizon_s": 20.0,
+    "fall_frac": 0.013461538590490818,
+    "err_xy": 0.18238701824307355,
+    "err_yaw": 0.11888639497344686
+   },
+   "2044": {
+    "survival_s": 19.46794189453125,
+    "horizon_s": 20.0,
+    "fall_frac": 0.02788461558520794,
+    "err_xy": 0.1893928077873467,
+    "err_yaw": 0.12356857556426322
+   },
+   "2045": {
+    "survival_s": 19.373826904296877,
+    "horizon_s": 20.0,
+    "fall_frac": 0.032692309468984604,
+    "err_xy": 0.17589779804781902,
+    "err_yaw": 0.10758861692124055
+   }
+  }
+ },
+ "wording": "ANYmal-C flat 정상 실행 셋(새 seed 셋)이 모두 걸었고, 동결 비 기준 probe와 추종 경고 R1이 정상 실행끼리 오경보를 내지 않았다. 이 셋으로 P0-C 방식 밴드를 정했다. 단계 2로 간다. 정상 실행 변동 기록이며 진단 성능·일반화가 아니다.",
+ "prediction": "pass",
+ "prediction_match": true
+}

@@ -1,0 +1,68 @@
+{
+ "schema": "second_task_band_seed_v1",
+ "tag": "anymal_c_band_20261014",
+ "seed": 2044,
+ "attempt": 1,
+ "run_name": "anymal_c_band_none_s2044",
+ "source_commit_sha": "f85c0855bdd78ee6d0009e6d58a1582ff73e16fd",
+ "commits_seen": [
+  "f85c0855bdd78ee6d0009e6d58a1582ff73e16fd"
+ ],
+ "protocol_sha256_lf": "054f288b4248ba89d1e98d28dec9d664f9db83a2fe28d4e5b43fed1376f6885f",
+ "seed_evidence": {
+  "seed": 2044,
+  "checked_roots": [
+   "bench/private",
+   "bench/runs_anymal",
+   "bench/runs_d3",
+   "bench/runs_p0c",
+   "bench/runs_upstream",
+   "evals/loops",
+   "evals/results",
+   "isaaclab_logs/*"
+  ],
+  "hits": [],
+  "allowed_hits": []
+ },
+ "checks": {
+  "pipeline_completed": true,
+  "training_exit_zero": true,
+  "final_checkpoint_present": true,
+  "training_readback": true,
+  "params_expected": true,
+  "eval_env_readback": true,
+  "fixed_report_valid": true,
+  "probe_report_bound": true
+ },
+ "failed_checks": [],
+ "valid": true,
+ "invalid_cause": null,
+ "failure": null,
+ "checkpoint_sha256": "055b4cfc9b602ef97fa7faee4eb6f991a7ed5a39e583818c1b47006580797cb2",
+ "telemetry_sha256": "79fe92939f6f518e3c79ee648efa0830c6092350fe356cce718f73bc71be252b",
+ "telemetry": "bench/runs_anymal/anymal_c_band_none_s2044.telemetry.json",
+ "report": "evals/results/anymal_c_band_20261014/runs/anymal_c_band_none_s2044.json",
+ "probe_report": "evals/results/anymal_c_band_20261014/probes/anymal_c_band_none_s2044.json",
+ "eval_env": [
+  {
+   "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+   "disabled": [
+    "push_robot",
+    "base_com"
+   ],
+   "was_enabled": {
+    "push_robot": true,
+    "base_com": true
+   },
+   "now_enabled": {
+    "push_robot": false,
+    "base_com": false
+   }
+  }
+ ],
+ "parent_wall_s": {
+  "train": 533.8,
+  "fixed_eval": 53.7,
+  "probes": 89.1
+ }
+}
