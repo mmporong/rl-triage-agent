@@ -1,0 +1,266 @@
+{
+ "schema": "upstream_optimizer_fault_smoke_result_v1",
+ "tag": "upstream_r1_smoke_20261014",
+ "fault": "R1",
+ "seed": 2042,
+ "attempt": 1,
+ "run_names": {
+  "reference": "upstream_r1_none_s2042",
+  "fault": "upstream_r1_s2042"
+ },
+ "retry_of": null,
+ "source_commit_sha": "4d4a54504a0f667fd87e85fc8bdbd10ab9301c3d",
+ "commits_seen": [
+  "4d4a54504a0f667fd87e85fc8bdbd10ab9301c3d"
+ ],
+ "protocol_sha256_lf": "72e4d565ac8a584fe59f36e4c46d8ae92b50a1bddc6e98cc3ef6a614a96e825e",
+ "seed_evidence": {
+  "seed": 2042,
+  "checked_roots": [
+   "bench/private",
+   "bench/runs_d3",
+   "bench/runs_p0c",
+   "bench/runs_upstream",
+   "evals/loops",
+   "evals/results",
+   "isaaclab_logs"
+  ],
+  "hits": [],
+  "allowed_hits": []
+ },
+ "checks": {
+  "pipeline_completed": true,
+  "reference_training_exit_zero": true,
+  "reference_final_checkpoint_present": true,
+  "reference_injection_readback": true,
+  "training_exit_zero": true,
+  "final_checkpoint_present": true,
+  "injection_readback": true,
+  "params_match_reference": true,
+  "configured_epochs_in_params": true,
+  "reference_walks": true,
+  "fixed_report_valid": true,
+  "runtime_matches_reference": true,
+  "verdict_determined": true
+ },
+ "failed_checks": [],
+ "verdict": {
+  "label": "unhealthy",
+  "failed": [
+   "err_xy_ratio",
+   "err_yaw_ratio"
+  ],
+  "short_horizon": false,
+  "checks": {
+   "survival_ratio": true,
+   "fall_frac": true,
+   "err_xy_ratio": false,
+   "err_yaw_ratio": false
+  }
+ },
+ "behavior": {
+  "survival_s": 20.0,
+  "horizon_s": 20.0,
+  "fall_frac": 0.0,
+  "err_xy": 1.176740185617463,
+  "err_yaw": 0.82440700460204
+ },
+ "reference_behavior": {
+  "survival_s": 19.8815380859375,
+  "horizon_s": 20.0,
+  "fall_frac": 0.006730769295245409,
+  "err_xy": 0.14441403584767665,
+  "err_yaw": 0.287463002830537
+ },
+ "standstill_ratio": {
+  "reference": 0.12272833113733185,
+  "fault": 1.0000368614820399
+ },
+ "outcome": "failure_present",
+ "invalid_cause": null,
+ "prediction": "failure_present",
+ "prediction_match": true,
+ "wording": "rsl_rl #38에서 보고자가 원인으로 확인한 결함(PPO가 설정의 epoch 수를 쓰지 않음)의 의미를 옮긴 학습이 같은 seed 정상 학습 대비 p0c 밴드를 벗어났다. 새 seed 하나의 단일 실행이며, 진단 성능이나 다른 결함·task로의 일반화를 말하지 않는다.",
+ "failure": null,
+ "runs": {
+  "reference": {
+   "run_name": "upstream_r1_none_s2042",
+   "train_exit_code": 0,
+   "readback": [
+    {
+     "event": "construct",
+     "fault": "NONE",
+     "class": "rsl_rl.algorithms.ppo.PPO",
+     "configured_epochs": 5,
+     "effective_epochs": 5,
+     "num_mini_batches": 4,
+     "schedule": "adaptive",
+     "desired_kl": 0.01
+    },
+    {
+     "event": "first_update",
+     "fault": "NONE",
+     "minibatches": 20,
+     "optimizer_steps": 20,
+     "expected": 20
+    }
+   ],
+   "checkpoint_sha256": "24084323e8523b7a2f2ca37a55b8484aa721a55e46b6fe71e36b88f67df32f1e",
+   "telemetry_sha256": "1a9be0f507a228dd84d673aab57cad025a99e7b9f0a117ce9fc6345776670e87"
+  },
+  "fault": {
+   "run_name": "upstream_r1_s2042",
+   "train_exit_code": 0,
+   "readback": [
+    {
+     "event": "construct",
+     "fault": "R1",
+     "class": "rsl_rl.algorithms.ppo.PPO",
+     "configured_epochs": 5,
+     "effective_epochs": 1,
+     "num_mini_batches": 4,
+     "schedule": "adaptive",
+     "desired_kl": 0.01
+    },
+    {
+     "event": "first_update",
+     "fault": "R1",
+     "minibatches": 4,
+     "optimizer_steps": 4,
+     "expected": 4
+    }
+   ],
+   "checkpoint_sha256": "90d6e0703fc6b1a0850a0550def8956730321e57cae7ebcdf3e0365c6281951e",
+   "telemetry_sha256": "228760235040d5ff1f30135502d4cd0859d4b23c01bd41daad11b3bcf544e85e"
+  }
+ },
+ "params_differences": [
+  "agent.yaml:run_name"
+ ],
+ "epoch_params": {
+  "reference": {
+   "agent.yaml:algorithm.num_learning_epochs": 5
+  },
+  "fault": {
+   "agent.yaml:algorithm.num_learning_epochs": 5
+  }
+ },
+ "telemetry_summary": {
+  "reference": {
+   "Loss/learning_rate": {
+    "first": 0.000667,
+    "last": 0.00039,
+    "min": 0.000116,
+    "max": 0.01,
+    "median": 0.000585,
+    "nonfinite": 0
+   },
+   "Loss/value_function": {
+    "first": 0.115566,
+    "last": 0.002325,
+    "min": 0.001649,
+    "max": 0.115566,
+    "median": 0.0052375,
+    "nonfinite": 0
+   },
+   "Loss/surrogate": {
+    "first": 0.001192,
+    "last": -0.003087,
+    "min": -0.010473,
+    "max": 0.001192,
+    "median": -0.004852,
+    "nonfinite": 0
+   },
+   "Metrics/base_velocity/error_vel_xy": {
+    "first": 0.016235,
+    "last": 0.177231,
+    "min": 0.016235,
+    "max": 1.516379,
+    "median": 0.28839349999999997,
+    "nonfinite": 0
+   },
+   "Train/mean_episode_length": {
+    "first": 13.24,
+    "last": 1000.0,
+    "min": 13.24,
+    "max": 1000.0,
+    "median": 991.4100035,
+    "nonfinite": 0
+   },
+   "Train/mean_reward": {
+    "first": -0.558711,
+    "last": 35.507973,
+    "min": -6.798243,
+    "max": 35.507973,
+    "median": 25.983957500000002,
+    "nonfinite": 0
+   }
+  },
+  "fault": {
+   "Loss/learning_rate": {
+    "first": 0.000667,
+    "last": 0.000878,
+    "min": 0.00026,
+    "max": 0.01,
+    "median": 0.001317,
+    "nonfinite": 0
+   },
+   "Loss/value_function": {
+    "first": 0.145068,
+    "last": 0.011955,
+    "min": 0.008262,
+    "max": 0.145068,
+    "median": 0.012456,
+    "nonfinite": 0
+   },
+   "Loss/surrogate": {
+    "first": 0.018866,
+    "last": 0.005031,
+    "min": 0.000128,
+    "max": 0.018866,
+    "median": 0.003627,
+    "nonfinite": 0
+   },
+   "Metrics/base_velocity/error_vel_xy": {
+    "first": 0.016235,
+    "last": 1.46733,
+    "min": 0.016235,
+    "max": 1.672777,
+    "median": 1.4950995,
+    "nonfinite": 0
+   },
+   "Train/mean_episode_length": {
+    "first": 13.24,
+    "last": 995.840027,
+    "min": 13.24,
+    "max": 1000.0,
+    "median": 1000.0,
+    "nonfinite": 0
+   },
+   "Train/mean_reward": {
+    "first": -0.558711,
+    "last": 11.992511,
+    "min": -7.237429,
+    "max": 12.381655,
+    "median": 6.9425135000000004,
+    "nonfinite": 0
+   }
+  }
+ },
+ "auxiliary": {
+  "learning_rate_median": {
+   "reference": 0.000585,
+   "fault": 0.001317
+  },
+  "fault_higher": true
+ },
+ "parent_wall_s": {
+  "reference_train_s": 525.0,
+  "fault_train_s": 459.8,
+  "telemetry_extract_s": 2.2,
+  "fixed_eval_s": 80.2
+ },
+ "parent_wall_scope": "부모 프로세스 벽시계(초). GPU 커널 시간이나 절감량이 아니다",
+ "scope": "설계자 밖 외부 결함 한 종류·새 seed 하나의 학습 실패 유무 거르기. 진단 성능·일반화·고리 성능 평가가 아니다",
+ "model_calls": 0
+}
