@@ -61,10 +61,9 @@ def scene_d3(sources: Any, slots: dict) -> dict:
         for case, relative in summary["cases"].items():
             result, result_id = _bind(sources, relative, protocol_sha, kind="d3_case_result")
             costs = summary["costs"].get(case)
-            if costs is None:  # 무효·개발 사례는 요약 비용표에 없다
+            if costs is None:  # 무효·개발 사례는 요약 비용표에 없다. 값이 없는 칸이 "대기"로 보이지 않게 "-"로 둔다
                 reason = (result or {}).get("invalid_reason") or ("개발 사례" if result and not result["aggregate"] else None)
-                rows.append([case, *[cell(sources, None, summary_id, 0) for _ in METHODS],
-                             cell(sources, reason and f"집계 제외 · {reason}", result_id, None)])
+                rows.append([case, *["-" for _ in METHODS], cell(sources, reason and f"집계 제외 · {reason}", result_id, None)])
                 continue
             model = ((result or {}).get("methods", {}).get("B4") or {}).get("model") or {}
             top = (model.get("ranking_labels") or [None])[0]

@@ -16,6 +16,8 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "src"))
 OUTPUT = "docs/D3-MULTI-CHANGE.md"
 PROTOCOL = "bench/protocols/d3_experiment_v2.json"
 SMOKE_PROTOCOL = "bench/protocols/d3_harmless_smoke_v2.json"
@@ -118,8 +120,7 @@ def result_section(root: Path, summary: dict, protocol: dict, protocol_sha: str)
              "|---|" + "---|" * (len(METHODS) + 1)]
     for case, result in results.items():
         costs = summary["costs"].get(case)
-        top = ((result["methods"].get("B4") or {}).get("model") or {}).get("ranking_labels") or [None]
-        shown = f"{top[0]} = {result['labels'][top[0]]}" if top[0] else "-"
+        shown = model_top(result, "B4")
         if costs is None:
             reason = result.get("invalid_reason") or ("개발 사례" if not result["aggregate"] else "-")
             lines.append(f"| {case} | " + " | ".join("-" for _ in METHODS) + f" | 집계 제외: {reason} |")
@@ -138,6 +139,11 @@ def result_section(root: Path, summary: dict, protocol: dict, protocol_sha: str)
               "| 모델 토큰 합 | - | - | - | " + " | ".join(
                   str(sum((r["methods"][m].get("model") or {}).get("total_tokens") or 0 for c, r in results.items()
                           if c in summary["costs"])) for m in ("B4", "B5")) + " |", "",
+              "- 미확정·model_invalid는 주 지표에서 상한 8로 세지만 실제로 돈 재학습이 없어 벽시계 합에는 들어가지 않는다.", "",
+              "모델 호출(사례·방법마다 단일 호출, 계약 위반은 재호출 없이 model_invalid):", "",
+              "| 사례 | B4 모델 순위 1위 | B5 모델 순위(probe 없음) 1위 |", "|---|---|---|",
+              *[f"| {case}{'' if result['aggregate'] else '(개발)'}{'' if case in summary['costs'] or not result['aggregate'] else '(집계 제외)'}"
+                f" | {model_top(result, 'B4')} | {model_top(result, 'B5')} |" for case, result in results.items()], "",
               "우위 조건:", "",
               *[f"- {text}: {'충족' if summary['conditions'][key] else '미충족'}"
                 for key, text in zip(CONDITION_KEYS, protocol["advantage_conditions"])], "",
@@ -146,8 +152,52 @@ def result_section(root: Path, summary: dict, protocol: dict, protocol_sha: str)
                   f"{c} {r['shared_parent_wall_s']['none']} · {r['shared_parent_wall_s']['failure']}초"
                   for c, r in results.items() if c in summary["costs"]) + ".", ""]
     if summary["excluded_cases"]:
-        lines += [f"- 집계 제외: {', '.join(f'{c}({why})' for c, why in summary['excluded_cases'].items())}", ""]
+        lines += [f"- 집계 제외: {', '.join(f'{c}({why})' for c, why in summary['excluded_cases'].items())}",
+                  *[f"  - {case}: {line}" for case in summary["excluded_cases"]
+                    for line in excluded_detail(root, summary["cases"][case], results[case], protocol)],
+                  ""]
     return lines
+
+
+def model_top(result: dict, method: str) -> str:
+    """모델 순위 1위 표시. 순위가 없으면(계약 위반 등) 모델 상태를 그대로 쓴다."""
+    model = (result["methods"].get(method) or {}).get("model") or {}
+    top = (model.get("ranking_labels") or [None])[0]
+    if top is None:
+        return model.get("status") or "-"
+    change = result["labels"][top]
+    return f"{top} = {change}" + (" (원인)" if change == result["harmful"] else "")
+
+
+def excluded_detail(root: Path, relative: str, result: dict, protocol: dict) -> list[str]:
+    """집계에서 빠진 사례: 사례 결과의 mask가 되돌린 변경과, 그 재학습의 고정 평가를 같은 사례 NONE 대비 프로토콜 밴드로 다시 계산한 비."""
+    from rl_triage import grounded_recovery as C
+    from rl_triage import recovery as RC
+    masks = ((result.get("terminal") or {}).get("detail") or {}).get("masks") or []
+    order, runs = result.get("order") or [], (root / relative).parent / "runs"
+    reason = result.get("invalid_reason")
+    out = [f"정의: {protocol['case_validity'][reason]}"] if reason in protocol["case_validity"] else []
+    none = _single(root, runs, 0)
+    for mask in masks:
+        reverted = [cid for i, cid in enumerate(order) if not mask >> i & 1]
+        report = _single(root, runs, mask)
+        text = f"mask {mask}(되돌린 변경 {', '.join(reverted)}, 나머지 {len(order) - len(reverted)}개 적용)"
+        if none is None or report is None:
+            out.append(text + ": 고정 평가 보고서를 하나로 찾지 못해 비를 적지 않는다")
+            continue
+        comparison = RC.compare(C._behavior(read(root, report)), C._behavior(read(root, none)))
+        verdict = RC.verdict(comparison, protocol["bands"])
+        out.append(text + f": 같은 사례 NONE 대비 {verdict['label']}(넘은 기준 {', '.join(verdict['failed']) or '-'}). "
+                   f"선속도 오차 비 {r(comparison['err_xy_ratio'])}, 회전 오차 비 {r(comparison['err_yaw_ratio'])}, "
+                   f"낙상 {r(comparison['fall_frac'], 2)}, 생존 비 {r(comparison['survival_ratio'])}. 밴드 err_xy ≤ "
+                   f"{protocol['bands']['err_xy_ratio_max']}, err_yaw ≤ {protocol['bands']['err_yaw_ratio_max']}")
+    return out
+
+
+def _single(root: Path, runs: Path, mask: int) -> str | None:
+    """runs 폴더에서 그 mask의 고정 평가 보고서 하나(재측정 _rep 제외). 하나가 아니면(재시도 등) None."""
+    found = [p for p in runs.glob(f"*_m{mask:02x}*.json") if "_rep" not in p.stem] if runs.is_dir() else []
+    return found[0].relative_to(root).as_posix() if len(found) == 1 else None
 
 
 def determinism_line(root: Path, summary: dict | None) -> str:
@@ -190,6 +240,9 @@ def build(root: Path, summary_path: str | None) -> str:
               "- U1·F1의 diff에는 속도를 0으로 바꾸거나 좌표계를 바꾸는 줄이 보인다. 모델이 이런 흔한 버그 형태를 알아본 것인지 학습 "
               "신호를 읽은 것인지 이 실험으로 가를 수 없다.",
               determinism_line(root, summary),
+              *([f"- 무해성 smoke v2는 무해 목록을 seed {', '.join(v2['seeds'])}에서만 확인했다. 집계 제외된 사례에서 무해 변경만 남긴 "
+                 "재학습이 밴드를 넘은 원인(특정 변경·변경 조합·seed 변동)은 이 실험으로 가르지 않는다."]
+                if summary and "interaction_observed" in summary["excluded_cases"].values() else []),
               f"- 하지 않는 주장: {', '.join(protocol['forbidden_claims'])}.", "",
               "## 재현", "", "```powershell",
               ".\\.venv\\Scripts\\python.exe evals/build_d3_doc.py" + (f" --summary {summary_path}" if summary_path else "") + " --check",

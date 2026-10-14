@@ -78,7 +78,7 @@ def _public_problems(text: str) -> list[str]:
 
 def test_the_result_section_is_filled_from_the_summary_and_case_results(root):
     text = D.build(root, SUMMARY)
-    assert "| C1 | 4 | 2 | 2 | 1 | 3 | change_2 = U1 |" in text
+    assert "| C1 | 4 | 2 | 2 | 1 | 3 | change_2 = U1 (원인) |" in text
     assert "| D0 | - | - | - | - | - | 집계 제외: 개발 사례 |" in text
     assert "| 확인 재학습 합 | 11 | 11 | 6 | 4 | 6 |" in text
     assert "| 확인 재학습 부모 벽시계 합(초) | 6600.0 | 6600.0 | 3600.0 | 2400.0 | 3600.0 |" in text
@@ -87,6 +87,8 @@ def test_the_result_section_is_filled_from_the_summary_and_case_results(root):
     assert "부모 벽시계): C1 610.5 · 620.0초, C2 610.5 · 620.0초, C3 610.5 · 620.0초." in text
     assert f"**결과: 재학습 감소(agent_fewer_retrains).** {SU.WORDING['agent_fewer_retrains']}" in text
     assert "체크포인트 SHA가 같았다(대조 출처 smoke)" in text
+    assert "| C1 | change_2 = U1 (원인) | change_2 = U1 (원인) |" in text and "| D0(개발) |" in text
+    assert "무해성 smoke v2는" not in text  # 상호작용 제외가 없으면 쓰지 않는다
     assert "본실험 요약이 아직 없다" not in text
     assert _public_problems(text) == []
 
@@ -123,6 +125,35 @@ def test_an_excluded_case_shows_its_reason_and_is_left_out_of_the_totals(root):
     text = D.build(root, SUMMARY)
     assert "| C2 | - | - | - | - | - | 집계 제외: interaction_observed |" in text
     assert "D0 결정성 대조 기록이" not in text  # D0 결과에 대조 기록이 있으면 결과 문장으로 쓴다
+    assert "  - C2: 정의: 해로운 변경이 없는 부분집합이 unhealthy" in text and "| C2(집계 제외) |" in text
+    assert "무해성 smoke v2는 무해 목록을 seed 2026, 2027에서만 확인했다" in text
+
+
+def test_an_interaction_case_reports_the_reverted_change_and_its_band_ratios(root):
+    """사례 결과의 mask와 runs 폴더의 고정 평가 보고서(같은 사례 NONE 대비)로 제외 사유를 설명한다."""
+    summary = json.loads((root / SUMMARY).read_text(encoding="utf-8"))
+    del summary["costs"]["C2"]
+    summary["excluded_cases"] = {"C2": "interaction_observed"}
+    path = summary["cases"]["C2"]
+    result = json.loads((root / path).read_text(encoding="utf-8"))
+    protocol = json.loads((root / D.PROTOCOL).read_text(encoding="utf-8"))
+    spec = protocol["cases"]["C2"]
+    mask = 255 & ~(1 << (spec["position"] - 1))  # 원인 F1만 되돌림
+    result.update(valid=False, invalid_reason="interaction_observed", order=spec["order"],
+                  terminal={"outcome": "interaction_observed", "detail": {"masks": [mask]}})
+    _write(root, path, result)
+    _write(root, SUMMARY, summary)
+    runs = (root / path).parent / "runs"
+    p0c = ROOT / "evals/results/p0c_fixed_eval_20261009/runs"
+    for name, source in ((f"d3v2_c2_s2036_m00", "baseline_p0c_s2026"), (f"d3v2_c2_s2036_m{mask:02x}", "h02_s2026")):
+        _write(root, f"{runs.relative_to(root).as_posix()}/{name}.json",
+               json.loads((p0c / f"{source}.json").read_text(encoding="utf-8")))
+    text = D.build(root, SUMMARY)
+    line = next(l for l in text.splitlines() if l.startswith(f"  - C2: mask {mask}"))
+    assert "되돌린 변경 F1, 나머지 7개 적용" in line and "unhealthy" in line and "err_xy_ratio" in line
+    assert f"err_yaw ≤ {protocol['bands']['err_yaw_ratio_max']}" in line
+    (runs / "d3v2_c2_s2036_m00.json").unlink()
+    assert "고정 평가 보고서를 하나로 찾지 못해" in D.build(root, SUMMARY)
     assert "| 모델 토큰 합 | - | - | - | 2000 | 2000 |" in text and "- 집계 제외: C2(interaction_observed)" in text
 
 

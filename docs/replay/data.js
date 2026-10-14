@@ -9510,9 +9510,191 @@ window.REPLAY_DATA = {
      ]
     },
     {
-     "type": "slot",
-     "label": "D3 방법 비교 요약(본실험 3사례가 닫힌 뒤 summarize 결과)",
-     "source": "slot:d3_summary"
+     "type": "table",
+     "title": "확인 재학습 수(그 방법이 혼자 돌았을 때, 미확정은 상한 8로 센다)",
+     "columns": [
+      "사례",
+      "B1 이분 탐색",
+      "B2 하나씩",
+      "B3 probe 범주",
+      "B4 모델 순위",
+      "B5 모델(probe 없음)",
+      "B4 1위"
+     ],
+     "rows": [
+      [
+       "D0",
+       "-",
+       "-",
+       "-",
+       "-",
+       "-",
+       {
+        "value": "집계 제외 · 개발 사례",
+        "source": "evals/results/d3_experiment_v2/D0/case_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "C1",
+       {
+        "value": 4,
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": 0
+       },
+       {
+        "value": 2,
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": 0
+       },
+       {
+        "value": 2,
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": 0
+       },
+       {
+        "value": 8,
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": 0
+       },
+       {
+        "value": 1,
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": 0
+       },
+       {
+        "value": "model_invalid",
+        "source": "evals/results/d3_experiment_v2/C1/case_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "C2",
+       {
+        "value": 3,
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": 0
+       },
+       {
+        "value": 7,
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": 0
+       },
+       {
+        "value": 3,
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": 0
+       },
+       {
+        "value": 1,
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": 0
+       },
+       {
+        "value": 1,
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": 0
+       },
+       {
+        "value": "change_7 = F1 (원인)",
+        "source": "evals/results/d3_experiment_v2/C2/case_result.json",
+        "digits": null
+       }
+      ],
+      [
+       "C3",
+       "-",
+       "-",
+       "-",
+       "-",
+       "-",
+       {
+        "value": "집계 제외 · interaction_observed",
+        "source": "evals/results/d3_experiment_v2/C3/case_result.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/d3_experiment_summary_20261014/summary.json"
+     ]
+    },
+    {
+     "type": "table",
+     "title": "합과 우위 조건",
+     "columns": [
+      "항목",
+      "값"
+     ],
+     "rows": [
+      [
+       "합 B1 · B2 · B3 · B4 · B5",
+       {
+        "value": "7 · 9 · 5 · 9 · 2",
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": null
+       }
+      ],
+      [
+       "① B4 합 < B1·B2·B3 합의 최소",
+       {
+        "value": "미충족",
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": null
+       }
+      ],
+      [
+       "② 어느 사례에서도 B4 ≤ B3",
+       {
+        "value": "미충족",
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": null
+       }
+      ],
+      [
+       "③ B4 틀린 확정·미확정 0",
+       {
+        "value": "미충족",
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": null
+       }
+      ],
+      [
+       "④ 유효 사례 3개",
+       {
+        "value": "미충족",
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": null
+       }
+      ],
+      [
+       "틀린 확정 B1 · B2 · B3 · B4 · B5",
+       {
+        "value": "0 · 0 · 0 · 0 · 0",
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": null
+       }
+      ],
+      [
+       "결과",
+       {
+        "value": "판정 없음(invalid)",
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": null
+       }
+      ],
+      [
+       "결과 문구(사전등록)",
+       {
+        "value": "사례 성립 조건을 채우지 못해 방법 비교를 판정하지 않는다.",
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/d3_experiment_summary_20261014/summary.json"
+     ]
     }
    ],
    "notes": [
@@ -10480,13 +10662,45 @@ window.REPLAY_DATA = {
    "status": "ready",
    "reason": null
   },
-  "slot:d3_summary": {
-   "id": "slot:d3_summary",
-   "path": null,
+  "evals/results/d3_experiment_summary_20261014/summary.json": {
+   "id": "evals/results/d3_experiment_summary_20261014/summary.json",
+   "path": "evals/results/d3_experiment_summary_20261014/summary.json",
    "kind": "d3_summary",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "path_not_set"
+   "sha256": "bc1f657587b2c9d2ad03d1790f83c8a2fe60a68db3a5043309ddcafe9bfbae5c",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/d3_experiment_v2/D0/case_result.json": {
+   "id": "evals/results/d3_experiment_v2/D0/case_result.json",
+   "path": "evals/results/d3_experiment_v2/D0/case_result.json",
+   "kind": "d3_case_result",
+   "sha256": "d07dc39a81112e55a14d0ede5da8de60928298639a7d792a0ce5b6b0af2e50e6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/d3_experiment_v2/C1/case_result.json": {
+   "id": "evals/results/d3_experiment_v2/C1/case_result.json",
+   "path": "evals/results/d3_experiment_v2/C1/case_result.json",
+   "kind": "d3_case_result",
+   "sha256": "9216c75526e3aa61253d33be30a5841d185f2233b44a4716c58a4fede60e9d8b",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/d3_experiment_v2/C2/case_result.json": {
+   "id": "evals/results/d3_experiment_v2/C2/case_result.json",
+   "path": "evals/results/d3_experiment_v2/C2/case_result.json",
+   "kind": "d3_case_result",
+   "sha256": "885f118b1c31377a39e2c31bd822498a48f6a320785d5de48b5278bb65a6eae6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/d3_experiment_v2/C3/case_result.json": {
+   "id": "evals/results/d3_experiment_v2/C3/case_result.json",
+   "path": "evals/results/d3_experiment_v2/C3/case_result.json",
+   "kind": "d3_case_result",
+   "sha256": "7df0cc61a232fdff99b49306174f3b0c6e5a35118dbfa720d91279030a9ab446",
+   "status": "ready",
+   "reason": null
   },
   "evals/results/t1_agent_20261009/rankings.json": {
    "id": "evals/results/t1_agent_20261009/rankings.json",

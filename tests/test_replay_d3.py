@@ -132,7 +132,7 @@ def test_an_excluded_case_is_shown_with_its_reason_and_no_counts(repo):
     _git(repo, "commit", "-q", "-am", "excluded")
     scene, _ = _scene(repo)
     c2 = scene["blocks"][1]["rows"][1]
-    assert [cell["value"] for cell in c2[1:6]] == [None] * 5 and c2[6]["value"] == "집계 제외 · interaction_observed"
+    assert c2[1:6] == ["-"] * 5 and c2[6]["value"] == "집계 제외 · interaction_observed"
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node is required to render the static page")
