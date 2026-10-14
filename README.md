@@ -38,6 +38,7 @@ Unsupported mechanisms and insufficient evidence end as HOLD without a correctio
 | How many probes does it take? | On 18 hidden-fault runs, all six probes confirm 17. Probes ordered from the agent's top-3 hypotheses confirm 14 with 2.1 probes on average and no wrong confirmation. | [Probe loop](#detailed-results) |
 | What happens with faults it was not built for? | Three external-source faults ended unidentified with zero wrong confirmations. | [External faults](docs/T1-EXTERNAL-FAULTS.md) |
 | Are model decisions repeatable? | 55 repeated calls on 11 inputs: every valid output gave the same decision, but 6 outputs broke the output contract. In a separate run, returning the validation errors and asking once more left 1 of 55 invalid. Forcing a JSON schema made it worse (37 of 55 broke the contract). | [Repeated decisions](docs/N2-PASS-K.md) |
+| Can it find the harmful change among several code changes? | Each case mixed one harmful change with seven harmless ones, and confirmation retrains were counted for bisection, one-by-one reverts, a probe-category rule and model rankings. Preregistered verdict: no comparison, because only two cases were valid; in the third, reverting the harmful change alone still left yaw tracking outside the healthy band. In the four model calls on the valid cases the harmful change was ranked first, but one output cited diff line numbers that do not exist and was rejected. | [Multi-change experiment](docs/D3-MULTI-CHANGE.md) |
 | Is it better than rules? | Not claimed. On the hidden-fault set the agent ranked the true mechanism first in 8 of 18 runs against 2 to 6 for the baselines, a small sample. On the first benchmark, simple rules solved all held-out cases. | [Detailed results](#detailed-results) |
 
 [![Six Go2 policies from the recovery-mode comparison](docs/media/go2-correction-reward_v4_s2026_20261013/comparison.gif)](docs/media/go2-correction-reward_v4_s2026_20261013/comparison.mp4)
@@ -259,6 +260,7 @@ Isaac Lab 로봇 강화학습이 실패했을 때 원인을 찾아 고치는 에
 - 다른 프레임워크에서 옮겨 온 보상 버그에서는 재학습 전에 "등록된 수정으로는 부족하다"고 기록했고, 실제로 회복하지 못했습니다.
 - 보상 버그를 고치고 이어서 학습하면 회복하지 못했고, 처음부터 다시 학습하면 회복했습니다.
 - 숨은 결함 18건에서 에이전트가 고른 순서로 평균 2.1번 검사해 14건을 확정했고, 틀린 확정은 없었습니다.
+- 코드 변경 8개 중 원인 하나를 찾는 실험은 유효 사례가 둘뿐이라 사전등록대로 방법 비교를 판정하지 않았습니다. 유효 사례의 모델 호출 네 번 모두 실제 원인을 1위로 냈지만, 한 번은 없는 코드 줄을 근거로 적어 무효 처리됐습니다.
 - 같은 입력으로 모델을 55번 호출하면 유효한 출력의 판단은 늘 같았지만 6번은 출력 형식을 어겼습니다. 틀린 곳을 알려 주고 한 번 더 물으면 1번으로 줄었습니다.
 
 결함·검사·수정을 같은 팀이 만들었고 로봇 작업 하나와 적은 seed로 얻은 결과라, 진단 정확도·일반화·규칙 대비 우위·비용 절감은 주장하지 않습니다. 자세한 수치와 근거 파일은 위 영어 본문과 연결 문서에 있습니다.
