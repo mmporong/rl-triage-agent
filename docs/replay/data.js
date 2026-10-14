@@ -8142,7 +8142,8 @@ window.REPLAY_DATA = {
    ],
    "notes": [
     "결함과 probe는 같은 설계자가 만들었고 이미 본 결함 종류의 새 seed 한 건씩이다. 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다.",
-    "승인은 사용자가 위임한 운영자 승인이며 승인자 신원은 인증하지 않았다."
+    "승인은 사용자가 위임한 운영자 승인이며 승인자 신원은 인증하지 않았다.",
+    "v4(seed 2046, 검증 피드백 1회 재요청)도 같은 검사 경로(P_reward → P_noise → P_torque)를 거쳐 결과가 recovered였다. 재요청은 0회(첫 판단 0회, 교정 제안 0회)였다."
    ],
    "number": 6
   },
@@ -9394,7 +9395,7 @@ window.REPLAY_DATA = {
    "title": "변경 여덟 개 중 원인 하나를 확정하는 데 든 확인 재학습",
    "dense": true,
    "scope": "승인된 공개 결과만 읽는 발표 재생 화면. 변경 8개·사전등록 사례 3건의 방법 비교이며 결함·무해 변경·검사를 같은 팀이 만들었다. 진단 정확도·일반화·GPU 절감의 근거가 아니다.",
-   "lead": "무해 변경 일곱 개와 섞인 원인 변경 하나를, 그 변경 하나만 되돌린 재학습이 정상일 때만 확정한다. 다섯 방법이 같은 상한(8회)과 같은 확정 규칙으로 쓴 재학습 수를 센다.",
+   "lead": "무해 변경 일곱 개와 섞인 원인 하나를, 그 변경만 되돌린 재학습이 정상일 때만 확정한다. 다섯 방법의 재학습 수(상한 8)를 센다.",
    "blocks": [
     {
      "type": "table",
@@ -9511,14 +9512,14 @@ window.REPLAY_DATA = {
     },
     {
      "type": "table",
-     "title": "확인 재학습 수(그 방법이 혼자 돌았을 때, 미확정은 상한 8로 센다)",
+     "title": "확인 재학습 수(방법 하나만 돌 때, 미확정은 상한 8)",
      "columns": [
       "사례",
-      "B1 이분 탐색",
+      "B1 이분",
       "B2 하나씩",
-      "B3 probe 범주",
-      "B4 모델 순위",
-      "B5 모델(probe 없음)",
+      "B3 범주 규칙",
+      "B4 모델+검사",
+      "B5 모델만",
       "B4 1위"
      ],
      "rows": [
@@ -9530,7 +9531,7 @@ window.REPLAY_DATA = {
        "-",
        "-",
        {
-        "value": "집계 제외 · 개발 사례",
+        "value": "집계 제외(개발 사례)",
         "source": "evals/results/d3_experiment_v2/D0/case_result.json",
         "digits": null
        }
@@ -9609,7 +9610,7 @@ window.REPLAY_DATA = {
        "-",
        "-",
        {
-        "value": "집계 제외 · interaction_observed",
+        "value": "집계 제외(상호작용 관측)",
         "source": "evals/results/d3_experiment_v2/C3/case_result.json",
         "digits": null
        }
@@ -9621,7 +9622,7 @@ window.REPLAY_DATA = {
     },
     {
      "type": "table",
-     "title": "합과 우위 조건",
+     "title": "합과 결과",
      "columns": [
       "항목",
       "값"
@@ -9635,6 +9636,43 @@ window.REPLAY_DATA = {
         "digits": null
        }
       ],
+      [
+       "틀린 확정 B1 · B2 · B3 · B4 · B5",
+       {
+        "value": "0 · 0 · 0 · 0 · 0",
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": null
+       }
+      ],
+      [
+       "결과",
+       {
+        "value": "판정 없음(invalid)",
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": null
+       }
+      ],
+      [
+       "결과 문구(사전등록)",
+       {
+        "value": "사례 성립 조건을 채우지 못해 방법 비교를 판정하지 않는다.",
+        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
+        "digits": null
+       }
+      ]
+     ],
+     "status_sources": [
+      "evals/results/d3_experiment_summary_20261014/summary.json"
+     ]
+    },
+    {
+     "type": "table",
+     "title": "우위 조건(넷 모두 충족해야 B4가 재학습을 줄였다고 말한다)",
+     "columns": [
+      "조건",
+      "값"
+     ],
+     "rows": [
       [
        "① B4 합 < B1·B2·B3 합의 최소",
        {
@@ -9663,30 +9701,6 @@ window.REPLAY_DATA = {
        "④ 유효 사례 3개",
        {
         "value": "미충족",
-        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
-        "digits": null
-       }
-      ],
-      [
-       "틀린 확정 B1 · B2 · B3 · B4 · B5",
-       {
-        "value": "0 · 0 · 0 · 0 · 0",
-        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
-        "digits": null
-       }
-      ],
-      [
-       "결과",
-       {
-        "value": "판정 없음(invalid)",
-        "source": "evals/results/d3_experiment_summary_20261014/summary.json",
-        "digits": null
-       }
-      ],
-      [
-       "결과 문구(사전등록)",
-       {
-        "value": "사례 성립 조건을 채우지 못해 방법 비교를 판정하지 않는다.",
         "source": "evals/results/d3_experiment_summary_20261014/summary.json",
         "digits": null
        }
@@ -10531,6 +10545,14 @@ window.REPLAY_DATA = {
    "path": "bench/protocols/e2e_demo_v3_1_f2.json",
    "kind": "file",
    "sha256": "1275ec610dd8be1418afd5c1924cc19d2e885400c1dfa9a01b3dc260fcb37d91",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/e2e_demo_v4_f2_s2046_20261014/demo_result.json": {
+   "id": "evals/results/e2e_demo_v4_f2_s2046_20261014/demo_result.json",
+   "path": "evals/results/e2e_demo_v4_f2_s2046_20261014/demo_result.json",
+   "kind": "motor_feedback_end_to_end",
+   "sha256": "5dced87d92740479037aed0e13296df50d7c20a04b038f24bf47adc3fe9db408",
    "status": "ready",
    "reason": null
   },

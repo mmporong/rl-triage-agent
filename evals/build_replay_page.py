@@ -384,6 +384,7 @@ def scene_demo(sources: Sources, slots: dict) -> dict:
     reward = DS.end_to_end_blocks(sources, slots.get("end_to_end"))
     motor = DS.end_to_end_blocks(sources, slots.get("motor_end_to_end"), kind="motor_end_to_end",
                                  label=DS.MOTOR_END_TO_END_LABEL)
+    feedback = DS.feedback_demo_note(sources, slots.get("motor_feedback_end_to_end"), slots.get("motor_end_to_end"))
     return {
         "id": "demo", "title": "종단 시연: 경고부터 교정 판정까지", "dense": True, "scope": SCOPE_NEW_SEED_DEMO,
         "lead": "새 seed에서 새 Nemotron 판단, 승인된 검사, 교정 제안 승인, Isaac 재학습, 고정 평가 판정을 한 번에 이었다. "
@@ -391,7 +392,8 @@ def scene_demo(sources: Sources, slots: dict) -> dict:
         "blocks": [*reward, *motor],  # 비용은 마지막 장면의 종단 시연 비용 표에 둔다
         "notes": ["결함과 probe는 같은 설계자가 만들었고 이미 본 결함 종류의 새 seed 한 건씩이다. "
                   "진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다.",
-                  "승인은 사용자가 위임한 운영자 승인이며 승인자 신원은 인증하지 않았다."],
+                  "승인은 사용자가 위임한 운영자 승인이며 승인자 신원은 인증하지 않았다.",
+                  *([feedback] if feedback else [])],
     }
 
 

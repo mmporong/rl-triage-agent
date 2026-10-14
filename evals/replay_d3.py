@@ -14,8 +14,10 @@ PROTOCOL = "bench/protocols/d3_experiment_v2.json"
 SLOT = "d3_summary"
 SLOT_LABEL = "D3 방법 비교 요약(본실험 3사례가 닫힌 뒤 summarize 결과)"
 METHODS = ("B1", "B2", "B3", "B4", "B5")
-METHOD_NAMES = {"B1": "B1 이분 탐색", "B2": "B2 하나씩", "B3": "B3 probe 범주", "B4": "B4 모델 순위",
-                "B5": "B5 모델(probe 없음)"}
+# 표 머리글이 단어 중간에서 접히지 않게 짧게 쓴다(1920×1080 한 화면). B4는 검사 결과를 넣은 모델 순위, B5는 뺀 순위다.
+METHOD_NAMES = {"B1": "B1 이분", "B2": "B2 하나씩", "B3": "B3 범주 규칙", "B4": "B4 모델+검사", "B5": "B5 모델만"}
+# 집계 제외 사유는 화면에 짧은 한국어로 쓴다. 사유 코드는 근거 파일(case_result.json의 invalid_reason)에 있다.
+EXCLUDED_NAMES = {"interaction_observed": "상호작용 관측", "case_invalid": "사례 무효"}
 CONDITIONS = {"fewer_than_every_deterministic_sum": "① B4 합 < B1·B2·B3 합의 최소",
               "never_more_than_b3_in_a_case": "② 어느 사례에서도 B4 ≤ B3",
               "no_wrong_or_unresolved": "③ B4 틀린 확정·미확정 0",
@@ -63,7 +65,8 @@ def scene_d3(sources: Any, slots: dict) -> dict:
             costs = summary["costs"].get(case)
             if costs is None:  # 무효·개발 사례는 요약 비용표에 없다. 값이 없는 칸이 "대기"로 보이지 않게 "-"로 둔다
                 reason = (result or {}).get("invalid_reason") or ("개발 사례" if result and not result["aggregate"] else None)
-                rows.append([case, *["-" for _ in METHODS], cell(sources, reason and f"집계 제외 · {reason}", result_id, None)])
+                rows.append([case, *["-" for _ in METHODS],
+                             cell(sources, reason and f"집계 제외({EXCLUDED_NAMES.get(reason, reason)})", result_id, None)])
                 continue
             model = ((result or {}).get("methods", {}).get("B4") or {}).get("model") or {}
             top = (model.get("ranking_labels") or [None])[0]
@@ -73,22 +76,22 @@ def scene_d3(sources: Any, slots: dict) -> dict:
         conditions = [[CONDITIONS[key], cell(sources, "충족" if ok else "미충족", summary_id, None)]
                       for key, ok in summary["conditions"].items()]
         blocks += [
-            {"type": "table", "title": "확인 재학습 수(그 방법이 혼자 돌았을 때, 미확정은 상한 8로 센다)",
+            {"type": "table", "title": "확인 재학습 수(방법 하나만 돌 때, 미확정은 상한 8)",
              "columns": ["사례", *[METHOD_NAMES[m] for m in METHODS], "B4 1위"], "rows": rows,
              "status_sources": [summary_id]},
-            {"type": "table", "title": "합과 우위 조건", "columns": ["항목", "값"], "rows": [
+            {"type": "table", "title": "합과 결과", "columns": ["항목", "값"], "rows": [
                 ["합 B1 · B2 · B3 · B4 · B5", cell(sources, " · ".join(str(summary["sums"][m]) for m in METHODS), summary_id, None)],
-                *conditions,
                 ["틀린 확정 B1 · B2 · B3 · B4 · B5",
                  cell(sources, " · ".join(str(summary["wrong_confirmations"][m]) for m in METHODS), summary_id, None)],
                 ["결과", cell(sources, f"{OUTCOME_NAMES[summary['outcome']]}({summary['outcome']})", summary_id, None)],
                 ["결과 문구(사전등록)", cell(sources, summary["wording"], summary_id, None)]],
              "status_sources": [summary_id]},
+            {"type": "table", "title": "우위 조건(넷 모두 충족해야 B4가 재학습을 줄였다고 말한다)", "columns": ["조건", "값"],
+             "rows": conditions, "status_sources": [summary_id]},
         ]
     return {
         "id": "d3", "title": "변경 여덟 개 중 원인 하나를 확정하는 데 든 확인 재학습", "dense": True, "scope": SCOPE_D3,
-        "lead": ("무해 변경 일곱 개와 섞인 원인 변경 하나를, 그 변경 하나만 되돌린 재학습이 정상일 때만 확정한다. 다섯 방법이 같은 "
-                 "상한(8회)과 같은 확정 규칙으로 쓴 재학습 수를 센다."),
+        "lead": ("무해 변경 일곱 개와 섞인 원인 하나를, 그 변경만 되돌린 재학습이 정상일 때만 확정한다. 다섯 방법의 재학습 수(상한 8)를 센다."),
         "blocks": blocks,
         "notes": ["모델 순위(B4)가 재학습을 줄였다고 말하는 것은 사전등록한 네 조건을 모두 채울 때뿐이다. 사례가 세 건이라 통계적 "
                   "우위나 일반화를 말하지 않는다.",

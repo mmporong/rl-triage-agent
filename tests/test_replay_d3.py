@@ -80,7 +80,7 @@ def _scene(repo: Path, slot: str | None = SUMMARY) -> tuple[dict, B.Sources]:
 
 def test_the_scene_binds_the_summary_and_case_results_and_shows_the_outcome(repo):
     scene, sources = _scene(repo)
-    assert [b["type"] for b in scene["blocks"]] == ["table", "table", "table"]
+    assert [b["type"] for b in scene["blocks"]] == ["table", "table", "table", "table"]
     retrains = scene["blocks"][1]["rows"]
     assert [row[0] for row in retrains] == ["C1", "C2", "C3"]
     assert [cell["value"] for cell in retrains[0][1:6]] == [4, 2, 2, 1, 3]
@@ -88,6 +88,8 @@ def test_the_scene_binds_the_summary_and_case_results_and_shows_the_outcome(repo
     totals = dict((row[0], row[1]["value"]) for row in scene["blocks"][2]["rows"])
     assert totals["합 B1 · B2 · B3 · B4 · B5"] == "11 · 11 · 6 · 4 · 6"
     assert totals["결과"] == "재학습 감소(agent_fewer_retrains)" and totals["결과 문구(사전등록)"] == SU.WORDING["agent_fewer_retrains"]
+    conditions = [(row[0], row[1]["value"]) for row in scene["blocks"][3]["rows"]]
+    assert [label for label, _ in conditions] == list(R.CONDITIONS.values()) and {v for _, v in conditions} == {"충족"}
     assert all(sources.rows[key]["status"] == "ready" for key in sources.rows)
     data = {"scope": B.SCOPE_COMMON, "status_labels": {}, "scenes": [scene], "sources": sources.rows}
     B.check_public(data)
@@ -132,7 +134,7 @@ def test_an_excluded_case_is_shown_with_its_reason_and_no_counts(repo):
     _git(repo, "commit", "-q", "-am", "excluded")
     scene, _ = _scene(repo)
     c2 = scene["blocks"][1]["rows"][1]
-    assert c2[1:6] == ["-"] * 5 and c2[6]["value"] == "집계 제외 · interaction_observed"
+    assert c2[1:6] == ["-"] * 5 and c2[6]["value"] == "집계 제외(상호작용 관측)"
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node is required to render the static page")

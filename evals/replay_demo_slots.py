@@ -22,6 +22,7 @@ DEMO_PROTOCOLS = {
     "e2e_demo_result_u1_v1": "bench/protocols/e2e_demo_u1_v1.json",
 }
 UPSTREAM_SCHEMA = "e2e_demo_result_u1_v1"
+FEEDBACK_SCHEMA = "e2e_demo_result_v4"  # 모터 시연 장면 notes에 한 줄로만 쓴다(장면·자리 없음)
 VARIANTS = ("f1", "f2")
 # 회복 방식을 시연 프로토콜의 등록 규칙이 고르는 판(요청한 방식을 따로 보여 준다)
 RULE_CHOSEN_MODE = ("e2e_demo_result_v3_1", "e2e_demo_result_u1_v1")
@@ -92,6 +93,33 @@ def _path_label(result: dict) -> str:
 def _fault_label(result: dict) -> str:
     """제목 뒤에 붙는 결함 표시. v1·v2 결과에는 결함 필드가 없고 보상 결함(F1)이라 붙이지 않는다."""
     return f" {result['fault']}·{result.get('mechanism')}" if result.get("fault") else ""
+
+
+def _probe_order(result: dict | None) -> list[str]:
+    return [r.get("probe") for r in ((result or {}).get("loop") or {}).get("requests", [])]
+
+
+def feedback_demo_note(sources: Any, relative: str | None, compare: str | None, *,
+                       kind: str = "motor_feedback_end_to_end") -> str | None:
+    """검증 피드백 1회 재요청 시연(v4) 결과 한 줄. 승인되지 않았거나 형식이 다르면 None(줄을 넣지 않는다).
+    검사 경로가 compare 결과(기존 모터 시연)와 같을 때만 "같은 검사 경로"라고 쓴다."""
+    row = sources.file(relative, kind=kind)
+    if row["status"] != "ready":
+        return None
+    result = json.loads((sources.root / relative).read_text(encoding="utf-8"))
+    if not isinstance(result, dict):
+        result = {}
+    feedback = result.get("model_feedback")
+    if (result.get("schema") != FEEDBACK_SCHEMA or result.get("variant") not in VARIANTS or not isinstance(feedback, dict)
+            or any(not isinstance((feedback.get(step) or {}).get("retries"), int) for step in ("diagnosis", "correction"))):
+        row["status"], row["reason"] = "mismatch", "unexpected_schema"
+        return None
+    order = _probe_order(result)
+    _, other = _load(sources, compare, "motor_end_to_end")
+    path = ("같은 검사 경로" if other is not None and _probe_order(other) == order else "검사 경로") + f"({' → '.join(order)})"
+    retries = {step: feedback[step]["retries"] for step in ("diagnosis", "correction")}
+    return (f"v4(seed {result.get('seed')}, 검증 피드백 1회 재요청)도 {path}를 거쳐 결과가 {result.get('outcome')}였다. "
+            f"재요청은 {sum(retries.values())}회(첫 판단 {retries['diagnosis']}회, 교정 제안 {retries['correction']}회)였다.")
 
 
 def end_to_end_blocks(sources: Any, relative: str | None, *, kind: str = "end_to_end",

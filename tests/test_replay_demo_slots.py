@@ -454,3 +454,51 @@ def test_ready_and_waiting_blocks_render(repo, tmp_path):
                           check=True, capture_output=True, text=True, encoding="utf-8").stdout
     assert "recovered · 성공 조건 3/3" in html and "0.131" in html and "restore_body_frame_reward · restart" in html
     assert "대기" in html and DS.END_TO_END_LABEL.split(":")[0] in html
+
+
+# --- 모터 장면 notes의 v4(검증 피드백 1회 재요청) 한 줄 ---
+FEEDBACK_RESULT = "evals/results/demo_v4/demo_result.json"
+
+
+def _feedback_result(retries=(0, 0), probes=("P_reward",)) -> dict:
+    result = demo_result()
+    result.update(schema=DS.FEEDBACK_SCHEMA, variant="f2", seed=2046, decision_path="single_feedback", model_feedback={
+        step: {"first_valid": n == 0, "retries": n, "final_valid": True} for step, n in zip(("diagnosis", "correction"), retries, strict=True)})
+    result["loop"]["requests"] = [{"request_id": str(i), "probe": p, "state": "done"} for i, p in enumerate(probes)]
+    return result
+
+
+def _commit(repo: Path, relative: str, value: dict) -> None:
+    (repo / relative).parent.mkdir(parents=True, exist_ok=True)
+    (repo / relative).write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
+    _git(repo, "add", relative)
+    _git(repo, "commit", "-q", "-m", relative)
+
+
+def test_feedback_demo_note_comes_from_the_committed_v4_result(repo):
+    _commit(repo, FEEDBACK_RESULT, _feedback_result())
+    sources = B.Sources(repo)
+    note = DS.feedback_demo_note(sources, FEEDBACK_RESULT, RESULT)
+    assert note == ("v4(seed 2046, 검증 피드백 1회 재요청)도 같은 검사 경로(P_reward)를 거쳐 결과가 recovered였다. "
+                    "재요청은 0회(첫 판단 0회, 교정 제안 0회)였다.")
+    assert sources.rows[FEEDBACK_RESULT]["status"] == "ready"
+    assert not B.claim_violations(note) and not B.path_violations(note) and "직접" not in note
+    _commit(repo, FEEDBACK_RESULT, _feedback_result(retries=(1, 0), probes=("P_noise", "P_torque")))
+    note = DS.feedback_demo_note(B.Sources(repo), FEEDBACK_RESULT, RESULT)
+    assert "같은 검사 경로" not in note and "검사 경로(P_noise → P_torque)" in note and "재요청은 1회(첫 판단 1회" in note
+
+
+def test_feedback_demo_note_is_left_out_unless_the_result_is_ready_and_well_formed(repo):
+    sources = B.Sources(repo)
+    assert DS.feedback_demo_note(sources, None, RESULT) is None
+    assert sources.rows["slot:motor_feedback_end_to_end"]["status"] == "waiting"
+    bad = _feedback_result()
+    del bad["model_feedback"]["correction"]
+    _commit(repo, FEEDBACK_RESULT, bad)
+    sources = B.Sources(repo)
+    assert DS.feedback_demo_note(sources, FEEDBACK_RESULT, RESULT) is None
+    assert (sources.rows[FEEDBACK_RESULT]["status"], sources.rows[FEEDBACK_RESULT]["reason"]) == ("mismatch", "unexpected_schema")
+    _commit(repo, FEEDBACK_RESULT, {**_feedback_result(), "schema": "e2e_demo_result_v3_1"})
+    assert DS.feedback_demo_note(B.Sources(repo), FEEDBACK_RESULT, RESULT) is None
+    (repo / FEEDBACK_RESULT).write_text(json.dumps(_feedback_result(retries=(1, 1))), encoding="utf-8")  # 커밋 뒤 변경
+    assert DS.feedback_demo_note(B.Sources(repo), FEEDBACK_RESULT, RESULT) is None
