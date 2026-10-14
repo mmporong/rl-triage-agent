@@ -1,0 +1,349 @@
+{
+  "schema": "e2e_demo_result_anymal_c_v1",
+  "tag": "anymal_c_e2e_f1_s2047_20261014",
+  "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+  "variant": "f1",
+  "fault": "F1",
+  "mechanism": "reward",
+  "seed": 2047,
+  "case": "anymal_c_h02_s2047",
+  "decision_path": "single_feedback",
+  "outcome": "recovered",
+  "demo_success": true,
+  "success_conditions": {
+    "protocol_committed": true,
+    "seed_unused": true,
+    "source_failure_present": true,
+    "fresh_diagnosis_call": true,
+    "first_probe_from_model": true,
+    "probes_approved_consumed_once": true,
+    "loop_confirmed_mechanism": true,
+    "confirmation_specific": true,
+    "correction_call_accepted": true,
+    "correction_approved_consumed_once": true,
+    "correction_recovered": true,
+    "costs_recorded": true
+  },
+  "unmet_conditions": [],
+  "wording": "새 판단으로 시작한 승인된 검사가 등록 결함 메커니즘을 확정했고, 승인된 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과했다.",
+  "common_wording": "두 번째 로봇 task(ANYmal-C flat)의 새 seed 2047 합성 결함(F1) 1건을 시연 v4와 같은 흐름으로 끝까지 연결한 통합 시연이다. 결함과 probe는 같은 설계자가 만들었고, 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니며 Go2 결과와 수치를 비교하지 않는다.",
+  "steps_sha256": {
+    "begin": "4d59ebf823711e9f11ebb3596c147217ac0cef9a263e4ceb6e75bfce9810f360",
+    "train_NONE": "f53d618b46fe2e0551d092fb9bd5c904bd82ed833c71b6a027e2c88f32f2b25f",
+    "train_FAULT": "87d92174e7af9eae48cb8f78f8482ef6f243bf33d07a7e9ce1c5ae7cb116e690",
+    "alarm": "3b9cb283111759587db02ea994cbfa70f93758d70bd1f5d55d19aa376a503a96",
+    "evaluate": "94ab109550dc428eb1c8c70d4114660fdc5b385317dbe82f6d0955604db29251",
+    "reference": "8b6b8422faad1334df2a9238cf1a32c5c06c936a2e4e2409c82ada4f30543f93",
+    "packet": "ee9576c16e3248769221c9cd0e26c6d75df86787d9563be234cfcffc1cfcf753",
+    "loop_start": "e6332f059393819cbd17b602e9a5b5445357ff4bab0d6f88c4ded6139898a2f1",
+    "loop_close": "8a07e6d0b6fc3668da5b8506604587ffb085beab58258abdef092cfbf864a845",
+    "specificity": "624b5ca815514df6c628f4e4709cb384b977ecf05e3e53cc1c7609d26cca36dd",
+    "correction": "e176a298c2989716af0d613f5bdb0237856104ea6c96f6bfeed35ebcec23a9de"
+  },
+  "terminal": null,
+  "protocol_sha256_lf": "db13cc86b03d6ddf1ad96c7a9ce5630ac5edab6303a67729d14c46fe6ed19162",
+  "source_commit_sha": [
+    "a6be963efd236b9ded63c4a7d98e20b8f063e03e"
+  ],
+  "stage1": {
+    "path": "evals/results/anymal_c_band_20261014/result.json",
+    "sha256_lf": "9db68f194fadf89faa1fdb29ad0a1e5d590522f7f8f9fc986c2d609ec0e67798"
+  },
+  "predictions": {
+    "source_failure": "F1 정책이 같은 seed NONE 대비 unhealthy이고 정지 대비 오차 비 ≥ 0.9(Go2 F1 실행에서 본 양상을 옮긴 예측이다. 이 task에서 F1 학습은 처음이다)",
+    "alarm": "R1이 F1에 울리고 NONE에는 울리지 않는다(단계 1에서 정상 실행끼리 울리지 않았다는 결과가 전제다)",
+    "diagnosis": "첫 판단 최종 결정 action=continue, 상위 3가설에 reward 포함",
+    "loop": "P_reward abnormal 뒤 reward 확정(예산 4 이내). F1은 보상 함수 본문을 바꾸므로 task와 무관하게 문서 정의 재계산과 기록 보상이 어긋난다고 본다",
+    "specificity": "게이트 없음(reward)",
+    "correction_rule": "reward에서 정지 대비 오차 비 ≥ 0.9 → restart",
+    "correction": "교정 정책 recovered"
+  },
+  "prediction_results": {
+    "source_failure": true,
+    "alarm": true,
+    "diagnosis": true,
+    "loop": true,
+    "specificity": true,
+    "correction_rule": true,
+    "correction": true
+  },
+  "model_feedback": {
+    "diagnosis": {
+      "first_valid": true,
+      "retries": 0,
+      "final_valid": true,
+      "first_codes": [],
+      "final_codes": [],
+      "requests": 1,
+      "retry_input_tokens": null,
+      "retry_output_tokens": null,
+      "retry_wall_s": null
+    },
+    "correction": {
+      "first_valid": true,
+      "retries": 0,
+      "final_valid": true,
+      "first_codes": [],
+      "final_codes": [],
+      "requests": 1,
+      "retry_input_tokens": null,
+      "retry_output_tokens": null,
+      "retry_wall_s": null
+    }
+  },
+  "approver_identity_attested": false,
+  "training_parent_wall_s": {
+    "NONE": 618.2,
+    "FAULT": 582.4
+  },
+  "alarm": {
+    "NONE": {
+      "warned": false,
+      "alert_iterations": [],
+      "first_alert_iteration": null,
+      "qualifying_iteration_count": 0,
+      "iterations": 300
+    },
+    "FAULT": {
+      "warned": true,
+      "alert_iterations": [
+        76
+      ],
+      "first_alert_iteration": 76,
+      "qualifying_iteration_count": 233,
+      "iterations": 300
+    }
+  },
+  "evaluation": {
+    "gate": {
+      "none_walks": true,
+      "fault_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "fall_frac",
+          "err_xy_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": false,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": true
+        }
+      },
+      "standstill_ratio": {
+        "NONE": 0.16406451330009258,
+        "FAULT": 1.015006152334291
+      },
+      "outcome": "failure_present"
+    },
+    "reports": {
+      "NONE": {
+        "path": "evals/results/anymal_c_e2e_f1_s2047_20261014/runs/anymal_c_none_s2047.json",
+        "sha256_lf": "60b14311fe7f56f47ce3bf3b4a4f6c484c2fdbb6999166e001f4ca3384d765d8"
+      },
+      "FAULT": {
+        "path": "evals/results/anymal_c_e2e_f1_s2047_20261014/runs/anymal_c_h02_s2047.json",
+        "sha256_lf": "852472699e762bb31f61af9c0d88498f81e3291ce67ac389123fc3085f17eb80"
+      }
+    }
+  },
+  "reference_parent_wall_s": 102.8,
+  "diagnosis": {
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "Initial decision: highest uncertainty; P_reward distinguishes reward mechanism (expects abnormal) from others (expects normal).",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 8.568125987052918
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 20.473845354715984
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    },
+    "started": {
+      "hypotheses": [
+        "reward",
+        "actuator",
+        "exploration"
+      ],
+      "model_probe": "P_reward",
+      "rule_probe": "P_noise",
+      "proposed_probe": "P_reward",
+      "model_probe_used": true,
+      "request_id": "8a8e2015dc2f",
+      "prereg_digest": "870b04f2f82a18db52874d036660384fd67982a178e0c80692c0e7df5973e1c1"
+    },
+    "call": {
+      "path": "single_feedback",
+      "requests": 1,
+      "input_tokens": 2915,
+      "output_tokens": 197,
+      "execution_wall_s": 3.733824627008289,
+      "calls": [
+        {
+          "step": "first",
+          "status": "valid",
+          "codes": [],
+          "response_id": "chatcmpl-c54bc8d2-7360-4ca7-8704-0cfda989d6c7",
+          "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+          "finish_reason": "stop",
+          "input_tokens": 2915,
+          "output_tokens": 197,
+          "wall_s": 3.0676318199839443
+        }
+      ]
+    }
+  },
+  "loop": {
+    "status": "confirmed",
+    "hypotheses": [
+      "reward"
+    ],
+    "observed": {
+      "P_reward": "abnormal"
+    },
+    "requests": [
+      {
+        "request_id": "8a8e2015dc2f",
+        "probe": "P_reward",
+        "state": "done",
+        "approver": "claude_operator_user_authorized",
+        "outcome": "abnormal",
+        "measurement": {
+          "track_lin_vel_xy_exp_rel_error": 0.3065432034432888,
+          "track_ang_vel_z_exp_rel_error": 2.51756719915619e-08
+        },
+        "gpu_s": 23.1,
+        "artifact": {
+          "probe": "evals/results/anymal_c_e2e_f1_s2047_20261014_loop/probes/anymal_c_h02_s2047__P_reward.json",
+          "execution": "evals/results/anymal_c_e2e_f1_s2047_20261014_loop/execution/anymal_c_h02_s2047__P_reward.json"
+        }
+      }
+    ],
+    "probe_costs": [
+      {
+        "gpu_wall_s": 23.1,
+        "cpu_s": 28.828125,
+        "simulator_steps": 51200,
+        "probe": "P_reward"
+      }
+    ]
+  },
+  "specificity": {
+    "required": [],
+    "outcomes": null,
+    "passed": true,
+    "measurements": null,
+    "parent_wall_s": null
+  },
+  "correction": {
+    "request_id": "7b09e4761730",
+    "request": {
+      "correction_id": "restore_body_frame_reward",
+      "recovery_mode": "restart",
+      "budget_gpu_s": 2400
+    },
+    "model_proposal": {
+      "accepted": true,
+      "decision": "propose",
+      "agrees_with_rule": true,
+      "reasons": [],
+      "unmet_checklist": [],
+      "rule_visible_to_model": true,
+      "feedback": {
+        "first_status": "valid",
+        "first_codes": [],
+        "retried": false,
+        "final_status": "valid",
+        "final_codes": [],
+        "requests": 1,
+        "calls": [
+          {
+            "step": "first",
+            "input_tokens": 1351,
+            "output_tokens": 173,
+            "wall_s": 3.0139392828568816
+          }
+        ]
+      }
+    },
+    "call": {
+      "path": "single_feedback",
+      "requests": 1,
+      "input_tokens": 1351,
+      "output_tokens": 173,
+      "execution_wall_s": 3.750539989909157,
+      "calls": [
+        {
+          "step": "first",
+          "status": "valid",
+          "codes": [],
+          "response_id": "chatcmpl-2ec3bc94-4954-47a3-bc98-68924e273223",
+          "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+          "finish_reason": "stop",
+          "input_tokens": 1351,
+          "output_tokens": 173,
+          "wall_s": 3.0139392828568816
+        }
+      ]
+    },
+    "receipt": {
+      "at": "2026-10-14T10:37:54+00:00",
+      "event": "receipt",
+      "request_id": "7b09e4761730",
+      "tag": "anymal_c_e2e_f1_s2047_20261014_fix",
+      "verdict": "recovered",
+      "result_sha": "0aaca4d99ac084acad623a061538b44eaf0af4af1fcdd0ae1a6542e4015fdbd6",
+      "gpu_s": 654.6,
+      "exit_code": 0,
+      "over_budget": false
+    },
+    "result": {
+      "label": "recovered",
+      "verdict": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "standstill_ratio": 0.1686904095340341,
+      "costs": {
+        "train_parent_wall_s": 586.6085697999224,
+        "eval_parent_wall_s": 67.99753220006824,
+        "per_arm": {
+          "restart_corrected": {
+            "train_parent_wall_s": 586.6085697999224
+          }
+        }
+      },
+      "recovery_mode": "restart",
+      "reference": {
+        "name": "original_same_seed_none",
+        "valid": true
+      }
+    }
+  }
+}
