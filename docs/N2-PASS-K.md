@@ -13,6 +13,7 @@
 범위는 다음과 같다.
 - **입력:** 시연 seed 2030·2031·2033·2034·2040과 E4b 개발 입력 h02_s2027의 packet이다. 모두 이미 본 입력이다.
 - **새 측정은 단일 호출뿐이다.** packet마다 5회, 모두 55회다. NAT v4 반복은 사전등록 전에 본 E4b v4 기록(같은 packet 5회)을 다시 읽었다.
+- **출력 형식만 바꾼 구조화 출력 arm(55회)을 따로 사전등록해 쟀다.** 사전등록 개선 기준에 못 미쳤고 채택하지 않는다(아래 "구조화 출력 arm").
 - **주장하지 않는 것:** 진단 정확도, 다른 방법 대비 우위, 일반화, 토큰·시간·GPU 절감.
 
 ## 요약
@@ -122,6 +123,46 @@ pass^k(결정 일치)는 k개 실행을 비복원으로 뽑았을 때 모두 계
 - [사실] seed 2031 진단: 단일 호출은 유효 4회의 1위가 모두 같았다. NAT는 5회 모두 유효했지만 1위가 갈렸다.
 - [사실] seed 2031 교정: NAT는 5/5 같은 결정이었다. 단일 호출은 1회가 깨진 JSON이었다.
 
+## 구조화 출력 arm(출력 형식만 변경)
+
+N2와 같은 11개 packet × 5회 단일 호출에서 출력 형식 하나만 바꿨다. 요청에 `response_format`(strict json_schema)을 더했고, 모델·temperature 0·`reasoning_effort: none`·프롬프트 본문·계약 검증기는 같다.
+
+- 사전등록: `bench/protocols/n2_structured_v1.json`(`8960da6`, LF SHA256 `98a42990…`)
+- 실행기: `evals/structured_model_call.py`·`evals/n2_structured.py`
+- 결과: `evals/results/n2_structured_v1/summary.json`
+- schema는 구조만 정했다(필드·필수·형·추가 필드 금지). 의미 규칙은 넣지 않아 기존 검증기가 그대로 센다.
+- 지원 확인: 공식 문서로는 확인하지 못했다.
+  - NIM 문서는 `nvext.guided_json`만 다룬다.
+  - 호스팅 모델 API 참조에는 두 파라미터가 없다.
+  - 그래서 평가 packet이 아닌 합성 최소 입력 호출 2회로 서버가 schema를 강제함을 확인했다.
+
+| | 무효(문법 · 계약) | 평균 pass^4 진단 · 교정 |
+|---|---|---|
+| N2 단일 호출(형식 없음) | 6/55(3 · 3) | 0.60 · 0.64 |
+| 구조화 출력 arm | 37/55(0 · 37) | 0.00 · 0.60 |
+
+**문법 무효는 0이 됐지만 계약 위반이 6/55에서 37/55로 늘었다. 이 방식은 시연 결정 단계의 무효 대비책으로 채택하지 않는다.**
+
+사전등록 판정 문구(요약 파일 그대로):
+- "출력 형식만 바꾼 구조화 arm은 사전등록 개선 기준(무효 ≤ 1/55, 진단·교정 평균 pass^4 ≥ 0.8)을 넘지 못했다: 무효 37/55(문법 0, 계약 37), 평균 pass^4 진단 0.00·교정 0.60. 개선을 주장하지 않는다."
+- "구조화 arm에서 문법 무효(JSON 파손)는 0이었다. 계약 위반은 따로 센다."
+
+[사실] 형식 제약 아래에서 바뀐 출력 내용:
+- 키 순서
+  - 진단 무효 29/30은 모두 expected_outcomes가 카탈로그와 달랐다.
+  - 30회 모두 순위 상위 3은 reward · actuator · exploration이었다.
+  - 그런데 29회는 expected_outcomes 키를 알파벳순 첫 세 메커니즘(actuator · exploration · optimizer)으로 적었다.
+  - 같은 packet의 N2 단일 호출은 29/30이 순위 상위 3을 키로 썼다.
+- 인용
+  - 교정 무효 8/25는 모두 근거 인용에 facts에 없는 `registry`를 넣었다.
+  - packet별로는 seed 2031 5/5, seed 2033 3/5다. seed 2030·2034·2040 교정은 5/5 유효였다.
+- 제안 probe: 진단 30회 중 P_episode가 7회였다(N2 유효 27회 중 1회).
+- 문법: 모터 packet의 같은 바이트 JSON 파손(N2 3회)은 사라졌다.
+- 결정 키: 유효 결정의 결정 키(진단 행동·1위, 교정·회복 방식)는 N2와 같았다.
+- 비용: 입력 토큰은 같았다. 출력 토큰 중앙값은 진단 130~141, 교정 128~162다(N2 156~198, 157~174).
+
+[추론] 형식 제약이 출력 내용(키 순서·인용·제안 probe)을 바꾼 것으로 본다. 그 경로는 이 측정으로 가르지 못한다. 서버 쪽 제약 디코딩이 키 생성 순서에 영향을 줬을 수도 있고, 모델 쪽 생성이 달라졌을 수도 있다. 원시 응답은 비공개 기록에 있다.
+
 ## 해석 경계
 
 - 반복 일관성은 결정이 맞다는 뜻이 아니다. 모터 packet에서 단일 호출 결정은 매번 같았지만 1위는 등록 결함과 달랐다.
@@ -146,6 +187,10 @@ pass^k(결정 일치)는 k개 실행을 비복원으로 뽑았을 때 모두 계
 - 프로토콜 `bench/protocols/n2_pass_k_v1.json`
 - 실행기·요약기 `evals/n2_pass_k.py`, 테스트 `tests/test_n2_pass_k.py`
 - 결과 `evals/results/n2_pass_k_v1/summary.json`
+- 구조화 출력 arm
+  - 프로토콜 `bench/protocols/n2_structured_v1.json`
+  - 실행기 `evals/structured_model_call.py`·`evals/n2_structured.py`, 테스트 `tests/test_n2_structured.py`
+  - 결과 `evals/results/n2_structured_v1/summary.json`
 - NAT v4 반복 원천 `evals/results/e4b_nat_compare_v4/summary.json`
 - 동결 기준선
   - 코드: `src/rl_triage/rules.py`, `evals/baselines.py`, 전수 probe `src/rl_triage/probe_loop.py`
