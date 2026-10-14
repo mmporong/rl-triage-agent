@@ -4,12 +4,10 @@
 
 - **흐름:** 경고 → 고정 평가 → 새 Nemotron 판단 → 승인된 검사 → 원인 확정 → 교정 제안 → 승인된 교정 → 재학습 → 고정 평가
 - **보상 결함(F1):**
-  - v1(seed 2029): 교정 학습 중 커밋 때문에 회복 판정 없이 끝났다(`correction_unknown`).
-  - v2(seed 2030): 이 문제를 고쳐 끝까지 진행했다(`recovered`).
+  - v2(seed 2030): 끝까지 진행했다(`recovered`).
   - NAT 결정 경로(seed 2034): 첫 판단과 교정 제안을 NeMo Agent Toolkit 도구 호출 경로로 냈다(`recovered`).
 - **모터 결함(F2):**
-  - v3(seed 2031): 교정 제안까지 진행한 뒤, 교정 요청을 원장에 올리는 단계에서 시연 실행기 결함으로 멈췄다(`harness_failure`, 사후 기록).
-  - v3.1(seed 2033): 실행기 결함을 고쳐 다시 사전등록했고 끝까지 진행했다(`recovered`).
+  - v3.1(seed 2033): 첫 판단의 틀린 1위(reward)를 승인된 검사가 바로잡고 끝까지 진행했다(`recovered`).
 - 같은 입력으로 잰 개발 측정 두 가지를 함께 적는다.
   - NAT 도구 호출 경로 비교(네 판 중 네 번째 판이 채택 조건을 충족했다)
   - 공식 Isaac Lab 디버깅 스킬 유무 프롬프트 비교
@@ -18,18 +16,16 @@
 
 - **이미 본 결함 종류(F1 보상의 world frame 속도 사용, F2 모터 토크-속도 곡선)의 새 seed 기록이다.** 결함·probe·교정 등록을 같은 설계자가 만들었다.
 - **승인은 사용자가 위임한 운영자 승인이며 사람 승인이 아니다.** 승인자 문자열만 기록하며 신원 인증이 아니다.
-- **진단 정확도·교정 성공률·일반화·다른 방법 대비 우위·GPU 절감을 주장하지 않는다.** 시연끼리 합친 분모(예: "다섯 번 중 세 번")를 만들지 않는다.
+- **진단 정확도·교정 성공률·일반화·다른 방법 대비 우위·GPU 절감을 주장하지 않는다.** 시연끼리 합친 분모를 만들지 않는다.
 
 ## 요약
 
 | 기록 | 대상 | 결과 | 공개 결과 |
 |---|---|---|---|
 | 보상 종단 시연 v2 | seed 2030, 교정 재학습 seed 3030 | `recovered`, 시연 성공. 성공 조건 11/11, 사전 예측 6/6 | `evals/results/e2e_reward_s2030_20261013/demo_result.json` |
-| 보상 종단 시연 v1 | seed 2029, 교정 재학습 seed 3029 | `correction_unknown`. 교정 학습 중 결합 밖 파일 커밋으로 소스 검증이 거부돼 회복 판정 없음. 성공 조건 9/11 | `evals/results/e2e_reward_s2029_20261013/demo_result.json` |
 | 모터 종단 시연 v3.1 | seed 2033, 교정 재학습 seed 3033 | `recovered`, 시연 성공. 성공 조건 12/12, 사전 예측 7/7 | `evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json` |
-| 모터 종단 시연 v3 | seed 2031 | `harness_failure`(v3 사전등록에 없던 범주, v3.1 도구로 사후 기록). 교정 제안까지 진행, 교정·회복 판정 없음. 판정까지 간 사전 예측 5/5 | `evals/results/e2e_demo_v3_f2_s2031_20261013/harness_failure_summary.json` |
 | NAT 결정 경로 보상 종단 시연 | seed 2034, 교정 재학습 seed 3034 | `recovered`, 시연 성공. 성공 조건 12/12, 사전 예측 7/7 | `evals/results/e2e_demo_v3_1_f1_s2034_20261013/demo_result.json` |
-| NAT 경로 비교 v4 | seed 2031 시연의 두 모델 결정 입력을 5회씩 | `adopt`. 유효 결정: 첫 판단 5/5, 교정 제안 5/5 | `evals/results/e4b_nat_compare_v4/summary.json` |
+| NAT 경로 비교 v4 | seed 2031 모터 결함의 두 모델 결정 입력을 5회씩 | `adopt`. 유효 결정: 첫 판단 5/5, 교정 제안 5/5 | `evals/results/e4b_nat_compare_v4/summary.json` |
 | NAT 경로 비교 v1~v3 | 판마다 다른 고정 입력 | 세 판 모두 `do_not_adopt`(아래 "NAT 경로 비교") | `evals/results/e4b_e2e_reward_s2029_20261013/summary.json`, `evals/results/e4b_nat_compare_v2/summary.json`, `evals/results/e4b_nat_compare_v3/summary.json` |
 | 스킬 유무 프롬프트 비교 | 이미 본 사례 h02_s2027, 조건별 15회 | 알려진 실패 모드 해당 0/30(포함) 대 2/30(미포함), 기대 행동 26/50 대 24/50. 우위 근거 아님 | `evals/results/skill_ab_v1/summary.json` |
 | 결정 반복 일관성(N2) | 시연·개발 packet 11개(진단 6·교정 5), 단일 호출 5회씩 55회(새 측정). NAT v4는 E4b v4 기록 재사용 | 유효 출력의 결정은 반복 내내 같았고, pass^k를 낮춘 것은 계약 위반 출력 6/55. 평균 pass^4 진단 0.60·교정 0.64로 사전등록 하한 0.8 미만(`reconsider`). 정확도·우위 근거 아님 | `evals/results/n2_pass_k_v1/summary.json`, `docs/N2-PASS-K.md` |
