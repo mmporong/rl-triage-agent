@@ -1,0 +1,179 @@
+{
+ "schema": "upstream_optimizer_fault_loop_protocol_v1",
+ "question": "R1(rsl_rl #38의 의미를 옮긴 optimizer 결함) 정책에서 동결 probe 고리는 맞게 확정하는가, 틀리게 확정하는가, 멈추는가",
+ "scope": "설계자 밖 외부 결함 한 종류·새 seed 하나(2042)의 고리 동작 기록. 진단 정확도·안전성 보장·일반화가 아니다",
+ "fault": {
+  "id": "R1",
+  "category": "optimizer",
+  "smoke_protocol": "bench/protocols/upstream_r1_smoke_v1.json",
+  "note": "결함 정의·seed·학습은 smoke 프로토콜을 따른다. 이 단계는 smoke가 만든 두 정책만 읽는다"
+ },
+ "condition": {
+  "rule": "smoke 프로토콜의 최종 결과(최종 표식이 가리키는 result.json)가 failure_present일 때만 실행한다",
+  "failure_absent": "실행하지 않고 공개 결과에 condition_not_met(조건 미충족)을 한 번 남긴다. probe·모델 호출 0",
+  "pending": "smoke 최종 결과가 없으면(아직 실행 전·invalid만 있음) gate가 거부하고 아무것도 쓰지 않는다",
+  "committed_before_smoke": "이 프로토콜은 smoke 실행 전에 커밋한다. smoke 프로토콜 SHA를 결합해 다른 smoke 결과를 쓰지 못하게 한다"
+ },
+ "observation": {
+  "design": "정상(NONE)·R1 정책의 마지막 체크포인트(model_299.pt)에 동결 probe 6종을 한 번씩 잰다. 방식들은 같은 관측표 위에서 돌린다(P1-A 7절·T1과 같은 비교). 같은 체크포인트·seed에서 probe 결과는 순서와 무관하다는 동결 simulate의 전제를 따른다",
+  "process": "실행마다 Isaac 프로세스 하나(정상 먼저, R1 다음), 프로세스마다 job 하나·probe 6종 이름순. P1-A holdout처럼 실행별 프로세스로 재서 같은 프로세스 안의 job 순서 영향을 두지 않는다. evals/probes.py를 그대로 부른다(fault NONE, seed 2042)",
+  "no_injection_reason": "R1은 PPO.update만 바꾼다. probes.py는 OnPolicyRunner를 만들고 체크포인트를 load_optimizer=False로 읽은 뒤 롤아웃만 하며 update를 부르지 않는다. P_value는 체크포인트 파일(model_0.pt·model_299.pt)만 읽는다",
+  "classification": "probe_loop.classify(같은 seed 정상 측정 대비). 동결 임계값을 바꾸지 않는다",
+  "approval": "probe 측정은 방식의 선택이 아니라 모든 방식이 함께 쓰는 고정 관측이라 원장 승인 없이 운영자 명령으로 잰다(D3와 같다). 승인 고리 실행이 아니다",
+  "retry": "Isaac 프로세스가 끝나지 않았거나 보고서가 없거나 probe 하나라도 exit≠0이면 인프라 실패로 보고 12개를 새 폴더에 한 번 더 잰다. 그 뒤에도 남으면 invalid",
+  "watchdog_s": 1200
+ },
+ "strategies": {
+  "fixed": "FIXED_ORDER(P_episode→P_noise→P_reward→P_torque→P_physics→P_value), 여섯 가설 모두, 예산 6",
+  "exhaustive": "이름순으로 여섯 개를 모두 보고 결론, 예산 6",
+  "random": "seed [0, 1, 2, 3, 4]의 무작위 순서, 예산 6. seed마다 따로 센다",
+  "discriminate": "모델 순위 상위 3가설, 예산 4. 첫 probe는 모델이 고른 probe가 상위 가설을 가르면 그 probe, 아니면 동결 next_probe(종단 시연 start_loop와 같은 규칙). 이후 동결 next_probe·update·status. 관측 뒤 모델 재호출 없음",
+  "simulator": "src/rl_triage/probe_loop.simulate(fixed·exhaustive·random)와 같은 update·status 규칙"
+ },
+ "model": {
+  "id": "nvidia/nemotron-3-super-120b-a12b",
+  "packet": "evals/run_active_diagnosis.input_packet(R1·정상 텔레메트리 summary의 마지막 20% 평균 사실, 공개 probe 카탈로그·임계값, max_probes 4, execution_budget_s 180). 실행 이름·결함 이름·정답을 넣지 않는다",
+  "call": "evals/active_model_call.py(WSL, temperature 0, max_tokens 16384, 단일 호출). 키는 `. ~/.config/nvidia/env`로만",
+  "contract": "e2e_reward_demo_v2.review_diagnosis_record → rl_triage.active_diagnosis.validate_decision",
+  "invalid": "계약 위반이면 model_invalid로 기록하고 재호출하지 않는다. discriminate 칸은 model_invalid로 남긴다",
+  "infra": "빈 응답·잘림·연결·429/5xx(infra_error)만 최대 2회 호출. 그 밖 호출 오류는 model_failed",
+  "hold": "action이 hold이면 discriminate 칸은 model_hold(probe 0)로 남긴다",
+  "basis": "N2 반복 일관성·구조화 출력 결과(계약 위반 6/55, 구조화 arm 37/55)로 단일 호출 경로를 그대로 쓰고 재호출로 무효를 덮지 않는다",
+  "approval": "API 호출은 메인 세션이 WSL에서 실행한다(사용자가 위임한 운영자 승인 또는 사람 승인, 승인자 문자열 기록, 신원 인증 아님)"
+ },
+ "specificity_gate": {
+  "rule": "종단 시연의 특이성 관문을 같은 관측표로 계산만 한다: actuator로 확정한 방식이 있으면 P_noise·P_value가 모두 normal인지 본다. 판정에 쓰지 않는 보조 기록이다",
+  "gates": {
+   "actuator": [
+    "P_noise",
+    "P_value"
+   ]
+  }
+ },
+ "validity_checks": {
+  "smoke_failure_present": "smoke 최종 결과가 failure_present이고 그 결과의 프로토콜 SHA가 결합한 smoke 프로토콜과 같다",
+  "probe_reports_bound": "두 probe 보고서의 실행 이름·seed·체크포인트 SHA가 smoke 결과와 같고 probe 6종이 모두 있다",
+  "probes_complete": "12개 측정이 모두 exit 0(재측정 한 번 뒤)",
+  "model_resolved": "모델 단계가 valid·model_invalid·model_failed 중 하나로 끝났다(discriminate 칸의 상태가 정해짐)"
+ },
+ "outcomes": {
+  "condition_not_met": "smoke가 failure_absent라 실행하지 않았다",
+  "invalid": "유효 조건 중 하나라도 어긋남. 방식별 결론을 판정에 쓰지 않는다",
+  "stopped": "결론을 낸 모든 방식이 확정하지 않았다(none_supported·unidentifiable)",
+  "wrong_confirmation": "어느 한 방식이라도 optimizer가 아닌 범주를 확정했다",
+  "correct_confirmation": "틀린 확정 없이 어느 방식이 optimizer로 확정했다"
+ },
+ "prediction": {
+  "probes": {
+   "P_value": {
+    "outcome": "normal",
+    "basis": "critic 변화가 같은 seed 정상의 10% 이상. P0-C 정상 1.43~1.47, 학습률이 하한에 머문 h05도 0.40~0.60(정상의 27~41%). R1은 갱신 1200회가 남는다"
+   },
+   "P_noise": {
+    "outcome": "normal",
+    "basis": "샘플링 경로를 바꾸지 않는다"
+   },
+   "P_reward": {
+    "outcome": "normal",
+    "basis": "보상 코드를 바꾸지 않는다"
+   },
+   "P_physics": {
+    "outcome": "normal",
+    "basis": "물리 설정을 바꾸지 않는다"
+   },
+   "P_episode": {
+    "outcome": "normal",
+    "basis": "P0-C 실패 정책 중 종료 결함 밖에서는 시간 제한 종료 비 1.0",
+    "risk": "정책이 넘어져 에피소드가 일찍 끝나면 abnormal → termination 틀린 확정"
+   },
+   "P_torque": {
+    "outcome": "normal",
+    "basis": "기준은 바닥값 0.01의 3배인 0.03. P0-C h01·h02·h03은 0.006 이하",
+    "risk": "덜 학습된 정책은 저속 토크 포화가 커질 수 있다. P0-C h04 1/3(0.038), h05 3/3(0.06~0.81)이 넘었다 → actuator 틀린 확정"
+   }
+  },
+  "strategies": {
+   "fixed": "none_supported",
+   "exhaustive": "none_supported",
+   "random": "none_supported(5개 seed 모두)",
+   "discriminate": "action이 continue이면 none_supported(예측한 관측표에서는 어떤 상위 3가설·첫 probe로도 none_supported)"
+  },
+  "outcome": "stopped",
+  "model": "순위 내용·action·계약 통과 여부는 예측하지 않는다(기록만)",
+  "specificity_gate": "actuator 확정이 없으면 계산하지 않는다. P_torque 위험 시나리오에서 actuator로 확정되면 P_noise·P_value가 예측대로 normal이라 관문을 통과해 틀린 확정을 막지 못할 것으로 본다",
+  "scenarios": "P_torque만 abnormal → 네 방식 모두 actuator 확정(틀림, discriminate는 actuator가 상위 3에 있을 때), P_episode만 abnormal → termination 확정(틀림), P_value만 abnormal → optimizer 확정(맞음, 예측하지 않음). 동결 simulate 값이다"
+ },
+ "no_tuning_rule": "관측을 본 뒤 임계값·probe·방식·예산·상위 가설 수를 바꾸지 않는다. 다른 seed나 재학습으로 다시 하지 않는다",
+ "wording": {
+  "condition_not_met": "R1 smoke가 failure_absent라 고리 단계의 실행 조건을 채우지 못했다. 고리를 실행하지 않았다.",
+  "invalid": "고리 단계가 사전등록한 유효 조건을 채우지 못해 방식별 결론을 판정에 쓰지 않는다.",
+  "stopped": "rsl_rl #38의 의미를 옮긴 optimizer 결함에서 동결 probe 고리는 비교한 방식 모두 원인을 확정하지 않고 멈췄다(맞는 확정 0, 틀린 확정 0). 등록 범주 안의 다른 구현을 동결 P_value가 겨누지 못한 새 seed 단일 사례이며, 안전성 보장이나 일반화가 아니다.",
+  "wrong_confirmation": "rsl_rl #38의 의미를 옮긴 optimizer 결함에서 동결 probe 고리의 일부 방식이 원인이 아닌 범주를 확정했다(틀린 확정). 설계 밖 구현의 결함에서 고리가 틀릴 수 있음을 보이는 새 seed 단일 사례다.",
+  "correct_confirmation": "rsl_rl #38의 의미를 옮긴 optimizer 결함에서 동결 probe 고리가 optimizer로 확정했고 틀린 확정은 없었다. 새 seed 단일 사례라 진단 정확도의 근거가 아니다."
+ },
+ "gpu_estimate": {
+  "unit": "부모 프로세스 벽시계(초). GPU 커널 시간이나 절감량이 아니다",
+  "probes_s": [
+   200,
+   400
+  ],
+  "basis": "P1-A holdout 실행 하나의 probe 6종 측정 합 61.9~82.3 s × 2 + Isaac 시작·종료 2회(측정 기록 없음, 추정)"
+ },
+ "api_estimate": {
+  "calls": [
+   1,
+   2
+  ],
+  "note": "인프라 오류일 때만 2회"
+ },
+ "source_files": {
+  "evals/run_upstream_r1_loop.py": "b58d44c4e2eed1d19b515a3581b8bc0a147a0c4ad0f2cec2835ca875d0c90294",
+  "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+  "bench/train_with_optimizer_fault.py": "4cf14df64cf72f6101e5ac762522167b402ad182981c4482a947497016977520",
+  "evals/run_upstream_r1_smoke.py": "a06e582d440b916c75b7e7b5a8cdb521701870f774207f14f01f13439853127c",
+  "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+  "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+  "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+  "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+  "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+  "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+  "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+  "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+  "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+  "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+  "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+  "bench/external_faults.py": "33e0bcb7b4b5db8669bf1aaccd96f4eefe5b542fb5b564f69c1822081f18955d",
+  "evals/run_active_diagnosis.py": "53662a81d57f7b70c0893166ec01bcf1128ba072456b52b7cc19c181a8742fc3",
+  "evals/active_model_call.py": "10349545f07071226213e10bcbaf617609bdb32e8f29b734e064fe760356ae3e",
+  "evals/e2e_reward_demo_v2.py": "a83a28cc952159d511e88c12caae2e3b8b2a39a32720b93b488bf03e47265a34",
+  "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9"
+ },
+ "isaaclab_sources": {
+  "ppo": {
+   "path": "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py",
+   "sha256_lf": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc"
+  },
+  "rollout_storage": {
+   "path": "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/storage/rollout_storage.py",
+   "sha256_lf": "456450bbba03f9f5818f9ec43d2f3bd5d14d2d27f4bf2308838dd580f32ffcf0"
+  },
+  "on_policy_runner": {
+   "path": "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py",
+   "sha256_lf": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d"
+  },
+  "rsl_rl_metadata": {
+   "path": "_isaac_sim/kit/python/Lib/site-packages/rsl_rl_lib-2.3.3.dist-info/METADATA",
+   "sha256_lf": "90fb9745b9f3c70a32758af9f06dd68dae9b7a13f33e3998e99e081b5c09fda9"
+  },
+  "train": {
+   "path": "scripts/reinforcement_learning/rsl_rl/train.py",
+   "sha256_lf": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545"
+  },
+  "go2_agent_cfg": {
+   "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py",
+   "sha256_lf": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290"
+  }
+ },
+ "smoke_protocol_sha256_lf": "72e4d565ac8a584fe59f36e4c46d8ae92b50a1bddc6e98cc3ef6a614a96e825e"
+}
