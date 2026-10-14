@@ -1,0 +1,137 @@
+{
+ "schema": "d3_experiment_summary_v1",
+ "tag": "d3_experiment_summary_20261014",
+ "protocol_sha256_lf": "ced4302df56bfc4e75186887a6fbc0d8e3e3800375d3a687b588582f58cec2b4",
+ "outcome": "invalid",
+ "wording": "사례 성립 조건을 채우지 못해 방법 비교를 판정하지 않는다.",
+ "conditions": {
+  "fewer_than_every_deterministic_sum": false,
+  "never_more_than_b3_in_a_case": false,
+  "no_wrong_or_unresolved": false,
+  "three_valid_cases": false
+ },
+ "sums": {
+  "B1": 7,
+  "B2": 9,
+  "B3": 5,
+  "B4": 9,
+  "B5": 2
+ },
+ "valid_cases": [
+  "C1",
+  "C2"
+ ],
+ "excluded_cases": {
+  "C3": "interaction_observed"
+ },
+ "development_cases": [
+  "D0"
+ ],
+ "costs": {
+  "C1": {
+   "B1": {
+    "retrains": 4,
+    "queried": 4,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "B2": {
+    "retrains": 2,
+    "queried": 2,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "B3": {
+    "retrains": 2,
+    "queried": 2,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "B4": {
+    "retrains": 8,
+    "queried": 0,
+    "wrong": false,
+    "unresolved": true,
+    "reason": "model_invalid"
+   },
+   "B5": {
+    "retrains": 1,
+    "queried": 1,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   }
+  },
+  "C2": {
+   "B1": {
+    "retrains": 3,
+    "queried": 3,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "B2": {
+    "retrains": 7,
+    "queried": 7,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "B3": {
+    "retrains": 3,
+    "queried": 3,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "B4": {
+    "retrains": 1,
+    "queried": 1,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "B5": {
+    "retrains": 1,
+    "queried": 1,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   }
+  }
+ },
+ "wrong_confirmations": {
+  "B1": 0,
+  "B2": 0,
+  "B3": 0,
+  "B4": 0,
+  "B5": 0
+ },
+ "unresolved": {
+  "B1": 0,
+  "B2": 0,
+  "B3": 0,
+  "B4": 1,
+  "B5": 0
+ },
+ "cases": {
+  "D0": "evals/results/d3_experiment_v2/D0/case_result.json",
+  "C1": "evals/results/d3_experiment_v2/C1/case_result.json",
+  "C2": "evals/results/d3_experiment_v2/C2/case_result.json",
+  "C3": "evals/results/d3_experiment_v2/C3/case_result.json"
+ },
+ "forbidden_claims": [
+  "에이전트가 더 정확하다",
+  "일반화",
+  "실제 PR·프로젝트에서의 절감",
+  "통계적 유의",
+  "다른 실험과 합친 분모",
+  "k ≠ 8에서도 성립",
+  "LLM 코드 리뷰가 사람보다 낫다",
+  "B5 결과를 probe 일반의 가치로 확대"
+ ],
+ "approval": "사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)"
+}

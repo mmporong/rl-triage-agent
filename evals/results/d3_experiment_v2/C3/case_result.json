@@ -1,0 +1,190 @@
+{
+ "schema": "d3_case_result_v1",
+ "case": "C3",
+ "seed": 2037,
+ "aggregate": true,
+ "harmful": "F2",
+ "position": 2,
+ "order": [
+  "H1",
+  "F2",
+  "H3",
+  "H4",
+  "H5",
+  "H6",
+  "H7",
+  "S4"
+ ],
+ "labels": {
+  "change_1": "H1",
+  "change_2": "F2",
+  "change_3": "H3",
+  "change_4": "H4",
+  "change_5": "H5",
+  "change_6": "H6",
+  "change_7": "H7",
+  "change_8": "S4"
+ },
+ "valid": false,
+ "invalid_reason": "interaction_observed",
+ "terminal": {
+  "outcome": "interaction_observed",
+  "detail": {
+   "masks": [
+    253
+   ]
+  },
+  "at": "2026-10-14T14:50:59+0900"
+ },
+ "methods": {
+  "B1": {
+   "status": "pending",
+   "reason": null,
+   "confirmed": null,
+   "queries": [
+    {
+     "reverted": [
+      "H1",
+      "F2",
+      "H3",
+      "H4"
+     ],
+     "answer": null
+    }
+   ],
+   "cost": null,
+   "retrain_parent_wall_s": 0,
+   "probe_parent_wall_s": 0.0,
+   "model": null
+  },
+  "B2": {
+   "status": "pending",
+   "reason": null,
+   "confirmed": null,
+   "queries": [
+    {
+     "reverted": [
+      "H1"
+     ],
+     "answer": null
+    }
+   ],
+   "cost": null,
+   "retrain_parent_wall_s": 0,
+   "probe_parent_wall_s": 0.0,
+   "model": null
+  },
+  "B3": {
+   "status": "pending",
+   "reason": null,
+   "confirmed": null,
+   "queries": [
+    {
+     "reverted": [
+      "F2"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "H4"
+     ],
+     "answer": null
+    }
+   ],
+   "cost": null,
+   "retrain_parent_wall_s": 533.9,
+   "probe_parent_wall_s": 201.4,
+   "model": null
+  },
+  "B4": {
+   "status": "pending",
+   "reason": null,
+   "confirmed": null,
+   "queries": [
+    {
+     "reverted": [
+      "F2"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "H3"
+     ],
+     "answer": null
+    }
+   ],
+   "cost": null,
+   "retrain_parent_wall_s": 533.9,
+   "probe_parent_wall_s": 201.4,
+   "model": {
+    "status": "valid",
+    "ranking_labels": [
+     "change_2",
+     "change_3",
+     "change_5",
+     "change_7",
+     "change_1",
+     "change_8",
+     "change_4",
+     "change_6"
+    ],
+    "uncertain": false,
+    "attempts": 1,
+    "total_tokens": 5170
+   }
+  },
+  "B5": {
+   "status": "pending",
+   "reason": null,
+   "confirmed": null,
+   "queries": [
+    {
+     "reverted": [
+      "H3"
+     ],
+     "answer": null
+    }
+   ],
+   "cost": null,
+   "retrain_parent_wall_s": 0,
+   "probe_parent_wall_s": 0.0,
+   "model": {
+    "status": "valid",
+    "ranking_labels": [
+     "change_3",
+     "change_2",
+     "change_5",
+     "change_7",
+     "change_1",
+     "change_8",
+     "change_4",
+     "change_6"
+    ],
+    "uncertain": false,
+    "attempts": 1,
+    "total_tokens": 4560
+   }
+  }
+ },
+ "loop": {
+  "status": "confirmed",
+  "conclusion": "actuator",
+  "probes": [
+   "P_episode",
+   "P_noise",
+   "P_reward",
+   "P_torque"
+  ]
+ },
+ "determinism": null,
+ "shared_parent_wall_s": {
+  "none": 538.4,
+  "failure": 573.4
+ },
+ "source_commit_sha": "6d91f9a2fbee4cab88750ff2cfdb505ab45229f1",
+ "protocol_sha256_lf": "ced4302df56bfc4e75186887a6fbc0d8e3e3800375d3a687b588582f58cec2b4",
+ "approval": "사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)",
+ "model_calls": 2
+}
