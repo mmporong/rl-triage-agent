@@ -1,0 +1,1527 @@
+"""새 seed 결함 종단 시연 v4: v3.1과 같은 흐름·규칙·게이트·원장에서 두 모델 결정 단계(첫 판단, 교정 제안)에만 검증 피드백
+1회 재요청을 넣은 실행기.
+
+근거: N2 검증 피드백 재요청 arm(bench/protocols/n2_feedback_v1.json, 결과 evals/results/n2_feedback_v1/summary.json)이
+이미 본 packet 11개 × 5회에서 사전등록 개선 기준(최종 무효 ≤ 1/55, 진단·교정 평균 pass^4 ≥ 0.8)을 넘었다(최종 무효 1/55).
+그 결과 문구대로 시연 결정 단계에 넣으려고 새 사전등록을 만든다. prepare는 그 요약이 improved일 때만 되고 SHA로 묶는다.
+v3.1 실행기·교정 실행기는 공개 기록 replay의 소스 결합 때문에 바꾸지 않는다. v3.1과 다른 점:
+- 모델 호출: evals/feedback_model_call.py(WSL, temperature 0). 1차 호출은 v3.1 단일 호출과 같은 메시지·요청 설정이다.
+  기존 계약 검증기가 거절하면 문제 코드와 고정 규칙 설명(packet별 값·정답 없음)을 붙여 같은 대화로 한 번만 다시 요청하고,
+  그 결과를 같은 검증기로 최종 판정한다. 기록 파일은 model/diagnosis.feedback<n>.json·model/correction.feedback<n>.json이다.
+- 재요청 뒤에도 무효면(v3.1과 같은 처리):
+  - 첫 판단: model_invalid로 끝낸다. 규칙 probe로 대체하지 않는다.
+  - 교정 제안: 거절된 모델 제안(검증 사유·피드백 기록)을 근거로 붙인 채 교정 요청은 규칙의 교정·회복 방식으로 올린다.
+    성공 조건 correction_call_accepted가 거짓이므로 demo_success가 되지 않는다.
+- 결정 단계마다 1차 유효 여부·재요청 횟수·최종 유효·문제 코드를 따로 기록한다(model_feedback). 재요청 발생은 예측하지 않는다.
+- 인프라 오류(1차·재요청 어느 쪽이든)는 대화 전체를 새 기록 파일로 다시 부른다(첫 판단은 v3.1처럼 최대 2회).
+- 결정 경로는 single_feedback 하나다(NAT 경로 없음). 변형은 모터 F2 하나, 새 seed 2046(재학습 3046).
+  프로토콜 bench/protocols/e2e_demo_v4_f2.json, 출력 bench/private/e2e_demo_v4, 교정 실행기 bench/demo_correction_v4.py.
+- 결과 범주 harness_failure는 v3.1처럼 사전등록하고 이 시연 폴더에만 record-harness-failure로 쓴다.
+
+v3.1 설명(그대로 적용):
+- 교정 원장은 correction_ledger(ctx) 하나로만 만든다(registry=registry_v3()). 승인·거절은 이 파일의
+  approve-correction·reject-correction으로 한다. 교정 실행은 run_correction(고아 확인 → 승인 소비 → 실행 → receipt)이다.
+  실행 중 끊겨 남은 고아 요청은 recover-correction이 재실행 없이 닫는다.
+- 교정 예산 하한(2400 s)을 원장에 쓰기 전(correction-propose)에 검사한다. 종료 기록이 있으면 제안·승인·거절을 거부한다.
+- 흐름: 학습 실패 입력(NONE·결함 새 학습) → 추종 경고 R1 → 고정 평가 → NONE probe 기준 → 첫 판단(새 호출) → 승인된 probe
+  고리 → 확정 → 특이성 게이트(모터: P_noise·P_value) → 교정 근거 packet → 교정 제안(새 호출) → 교정 승인 → 교정 학습·고정
+  평가 → 결과 문구.
+- 회복 방식 규칙(RECOVERY_RULES)과 등록 표(registry_v3)는 v3.1과 같다. 모터(actuator)는 restart다.
+
+  python evals/e2e_demo_v4.py prepare --variant f2 [--isaaclab <경로>]
+  python evals/e2e_demo_v4.py verify --variant f2 [--tag <tag>]
+  python evals/e2e_demo_v4.py begin --variant f2 --tag <tag>
+  python evals/e2e_demo_v4.py train --tag <tag> --arm NONE|FAULT
+  python evals/e2e_demo_v4.py alarm|evaluate|reference|packet|close-loop|specificity|correction-evidence|summarize|status --tag <tag>
+  python evals/e2e_demo_v4.py start-loop --tag <tag> --record <진단 피드백 호출 기록>
+  python evals/e2e_demo_v4.py correction-propose --tag <tag> --record <교정 피드백 호출 기록>
+  python evals/e2e_demo_v4.py correct-run --tag <tag> --request <rid> --correction-record <교정 피드백 호출 기록>
+  python evals/e2e_demo_v4.py approve-correction --tag <tag> --request <rid> --approver <승인자>
+  python evals/e2e_demo_v4.py reject-correction --tag <tag> --request <rid> --approver <승인자> --reason <사유>
+  python evals/e2e_demo_v4.py correction-status --tag <tag>
+  python evals/e2e_demo_v4.py recover-correction --tag <tag> --request <rid> --correction-record <교정 피드백 호출 기록>
+  python evals/e2e_demo_v4.py record-harness-failure --tag <tag> --step <단계> --error <오류 문자열> --cause <파일:줄>
+"""
+from __future__ import annotations
+
+import argparse
+from copy import deepcopy
+from dataclasses import dataclass
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+import time
+
+ROOT = Path(__file__).resolve().parents[1]
+for directory in (ROOT / "src", ROOT / "bench", ROOT / "evals"):
+    if str(directory) not in sys.path:
+        sys.path.insert(0, str(directory))
+
+import e2e_reward_demo_v2 as V2  # noqa: E402
+import feedback_model_call as F  # noqa: E402
+import run_training_correction as V3  # noqa: E402
+import run_runtime_readback_smoke as P  # noqa: E402
+import runtime_readback_smoke as S  # noqa: E402
+from rl_triage import correction_registry as R  # noqa: E402
+from rl_triage import grounded_recovery as C  # noqa: E402
+from rl_triage import probe_loop as L  # noqa: E402
+from rl_triage import recovery as RC  # noqa: E402
+from rl_triage import tracking_alarm as A  # noqa: E402
+from rl_triage.correction_ledger import CorrectionLedger  # noqa: E402
+
+read = V3.read
+write_new = V3.write_new
+sha = V3.sha
+
+PRIVATE = ROOT / "bench/private/e2e_demo_v4"
+CODE_ROOT = ROOT  # 하네스 실패 원인 파일:줄의 기준(입력·출력 위치인 ROOT와 따로 둬 테스트가 ROOT만 바꿀 수 있다)
+RESULTS = ROOT / "evals/results"
+PROTOCOL_DIR = ROOT / "bench/protocols"
+V4_PROTOCOL = V2.V4_PROTOCOL
+FIXED_EVAL = V2.FIXED_EVAL
+BANDS_SOURCE = V2.BANDS_SOURCE
+FEEDBACK_SUMMARY = ROOT / "evals/results/n2_feedback_v1/summary.json"
+RUNS_DIR = V2.RUNS_DIR
+REFERENCE_RUNS = V2.REFERENCE_RUNS
+MODEL = V2.MODEL
+STEPS = ("begin", "train_NONE", "train_FAULT", "alarm", "evaluate", "reference", "packet", "loop_start",
+         "loop_close", "specificity", "correction")
+LOOP_TOP_K, LOOP_BUDGET, PROBE_EXECUTION_BUDGET_S = V2.LOOP_TOP_K, V2.LOOP_BUDGET, V2.PROBE_EXECUTION_BUDGET_S
+CORRECTION_BUDGET_GPU_S = 2400
+MAX_INFRA_ATTEMPTS = 2
+TAG_RE = V2.TAG_RE
+RESTART_OFFSET = 1000
+DECISION_PATHS = ("single_feedback",)
+APPROVAL = V2.APPROVAL
+GPUBusy = V2.GPUBusy
+
+# 변형: 결함·P0-C 사례 id·메커니즘·새 실패 seed. seed는 지금까지 쓴 2026~2037·2040·2042·3029~3034·3040·7·42·123과
+# 개발 실행에 쓰지 않은 값이다(2026-10-14 저장소·bench/private·Isaac Lab 로그 확인, begin에서 다시 검사).
+VARIANTS = {
+    "f2": {"fault": "F2", "case_id": "h06", "mechanism": "actuator", "seed": 2046},
+}
+# 회복 방식 규칙(사전등록). mode가 None이면 그 메커니즘의 변형은 prepare를 거부한다.
+RECOVERY_RULES = {
+    "reward": {"kind": "standstill_threshold", "threshold": 0.9, "at_or_above": "restart", "below": "resume",
+               "source": "v4 사전등록 규칙(seed 2027 단일 관찰에서 만듦), v4 seed 2026·2028 적중, 시연 v2 seed 2030 recovered"},
+    "actuator": {"kind": "fixed", "mode": "restart",
+                 "source": ("W1(bench/protocols/training_correction_motor_v1.json, 결과 evals/results/motor_w1_s2026_20261013·"
+                            "motor_w1_s2028_20261013) rule_update=change, next_rule '(fault_mechanism == reward and "
+                            "original_fault_standstill_ratio >= 0.9) or fault_mechanism == actuator -> restart, otherwise resume'. "
+                            "교정 뒤 이어 학습 300회의 선속도 오차가 seed 2026 0.2247·2028 0.2079로 같은 갱신량 정상 기준 "
+                            "0.1433·0.1327 대비 1.57배라 두 seed 모두 not_recovered였다. 중간 체크포인트 오차는 단조 감소했다"
+                            "(2026: 1.017·0.877·0.613·0.383·0.225, 2028: 1.016·0.945·0.753·0.356·0.208, 이어 학습 갱신 "
+                            "0·51·151·251·299회, budget_limited_candidate 2/2). W1 문구: 이번 실험은 restart를 시험하지 않았고 "
+                            "이어 학습의 예산 부족 가능성도 남으므로 restart를 택할 근거로 쓰지 않는다. 이 시연이 그 restart arm의 "
+                            "사전등록 시험이다")},
+}
+CODE = V2.CODE | {"evals/e2e_reward_demo_v2.py", "evals/e2e_demo_v4.py", "bench/demo_correction_v4.py",
+                  "evals/feedback_model_call.py"}
+# 확정 메커니즘별 특이성 게이트 보조 probe(사전등록). 결함 정책에서 재고 모두 normal이어야 교정으로 간다.
+SPECIFICITY_GATES = {"actuator": ["P_noise", "P_value"]}
+
+
+@dataclass(frozen=True)
+class Ctx:
+    variant: str
+    fault: str
+    case_id: str
+    mechanism: str
+    seed: int
+
+    @property
+    def restart_seed(self) -> int:
+        return self.seed + RESTART_OFFSET
+
+    @property
+    def cases(self) -> dict[str, str]:
+        return {"NONE": f"baseline_p0c_s{self.seed}", "FAULT": f"{self.case_id}_s{self.seed}"}
+
+    @property
+    def correction_id(self) -> str:
+        return R.REGISTRY[self.mechanism]["correction_id"]
+
+    @property
+    def protocol(self) -> Path:
+        return PROTOCOL_DIR / f"e2e_demo_v4_{self.variant}.json"
+
+
+def ctx_of(variant: str) -> Ctx:
+    if variant not in VARIANTS:
+        raise ValueError(f"등록되지 않은 변형 {variant!r}")
+    return Ctx(variant=variant, **VARIANTS[variant])
+
+
+# --- 회복 방식 규칙과 등록 표 ---
+def rule_modes(mechanism: str) -> set[str]:
+    rule = RECOVERY_RULES.get(mechanism)
+    if rule is None:
+        return set()
+    if rule["kind"] == "standstill_threshold":
+        return {rule["at_or_above"], rule["below"]}
+    return set() if rule["mode"] is None else {rule["mode"]}
+
+
+def registry_v3() -> dict:
+    """기본 등록 표에 v3 규칙이 내는 회복 방식을 더한다. 등록 메커니즘·교정은 바꾸지 않는다."""
+    return {mech: {**deepcopy(entry), "recovery_modes": sorted(set(entry["recovery_modes"]) | rule_modes(mech))}
+            for mech, entry in R.REGISTRY.items()}
+
+
+def recommend(mechanism: str, source_report: dict) -> dict:
+    """R.recommend_recovery_mode와 같은 모양. 등록 밖이면 HOLD, 규칙 값이 비었으면 ValueError."""
+    if mechanism not in R.REGISTRY or mechanism not in RECOVERY_RULES:
+        return {"mode": R.HOLD, "mechanism": mechanism, "correction_id": None, "standstill_ratio": None,
+                "rule": "unregistered_mechanism"}
+    rule = RECOVERY_RULES[mechanism]
+    ratio = R.standstill_ratio(source_report)
+    if rule["kind"] == "standstill_threshold":
+        mode = rule["at_or_above"] if ratio >= rule["threshold"] else rule["below"]
+        text = f"{mechanism} and standstill_ratio >= {rule['threshold']} -> {rule['at_or_above']}, otherwise {rule['below']}"
+    else:
+        mode, text = rule["mode"], f"{mechanism} -> {rule['mode']}"
+    if mode is None:
+        raise ValueError(f"{mechanism} 회복 방식 규칙이 아직 비어 있다(사전등록 전)")
+    return {"mode": mode, "mechanism": mechanism, "correction_id": R.REGISTRY[mechanism]["correction_id"],
+            "standstill_ratio": ratio, "rule": text}
+
+
+# --- 사전등록 ---
+OUTCOMES = {
+    "invalid": "출처·커밋·seed·산출물 결합 검증이 맞지 않아 시연 판정을 보류한다.",
+    "baseline_invalid": "같은 seed 정상 정책이 고정 평가에서 걷지 못해 비교 기준이 없다. 원인 진단을 시작하지 않았다.",
+    "source_failure_absent": "결함 학습 정책이 같은 seed 정상 정책 대비 고정 행동 허용 범위를 통과해 진단할 실패가 없었다.",
+    "model_infra_failed": "첫 판단 호출(1차·피드백 재요청)이 인프라 오류로 등록 횟수 안에 응답을 주지 못해 진단을 보류했다.",
+    "model_invalid": "첫 판단 응답이 검증 피드백 재요청 1회 뒤에도 공개 판단 계약을 어겨 검사를 제안하지 않고 보류했다.",
+    "diagnosis_hold": "첫 판단이 근거 부족으로 보류해 검사를 실행하지 않았다.",
+    "loop_not_confirmed": "승인된 검사들로 원인을 하나로 확정하지 못해(식별 불가 또는 지원 가설 없음) 교정을 제안하지 않았다.",
+    "wrong_confirmation": "검사 고리가 등록 결함과 다른 메커니즘을 확정했다. 등록 결함과 다른 확정으로 기록하고 교정하지 않았다.",
+    "confirmation_not_specific": "확정 메커니즘의 특이성 게이트 보조 측정에서 다른 메커니즘의 검사가 abnormal이었거나 판정할 수 없어(unknown) 교정하지 않았다.",
+    "correction_not_proposed": "확정 뒤 교정 단계가 보류(HOLD)했거나 사전등록 회복 방식과 다른 요청이라 교정을 실행하지 않았다.",
+    "correction_rejected": "승인자가 교정 요청을 거절해 교정을 실행하지 않았다.",
+    "correction_unknown": "승인된 교정 실행이 실패·예산 초과·검증 불일치·기준 무효로 끝나 회복 여부를 판정하지 않았다.",
+    "not_recovered": "등록 결함을 확정하고 승인된 교정까지 실행했지만, 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과하지 못했다.",
+    "recovered": "새 판단으로 시작한 승인된 검사가 등록 결함 메커니즘을 확정했고, 승인된 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과했다.",
+    "harness_failure": ("시연 실행기 결함으로 등록된 다음 단계를 진행할 수 없어 시연을 멈췄다. 사건(단계·오류·원인·승인 소비 "
+                        "없음)을 기록했고 교정·회복 결과를 판정하지 않는다."),
+    "in_progress": "아직 끝나지 않은 시연이다.",
+}
+TERMINAL_OUTCOMES = set(OUTCOMES) - {"recovered", "not_recovered", "correction_unknown", "in_progress"}
+# 하네스 실패 기록을 쓸 수 있는 시연 판과 멈춘 단계(단계 기록 이름 또는 그 사이의 명령 이름)
+HARNESS_DEMOS = ("v4",)
+CORRECTION_COMMANDS = ("correction-evidence", "correction-propose", "approve-correction", "reject-correction",
+                       "correct-run")
+# 오류 문자열의 절대 경로: 드라이브(C:\·C:/), UNC(\\서버), 홈(~/), 유닉스·Git Bash(/home/, /c/ 등). URL(https://)은 허용
+ABSOLUTE_PATH = re.compile(r"(?<![A-Za-z])[A-Za-z]:[\\/](?!/)|\\\\|(^|[\s'\"(=])(~[\\/]|/[A-Za-z]{1,8}/)")
+HARNESS_FAILURE_RULE = {
+    "when": ("시연 실행기(이 파일·교정 실행기) 결함으로 등록된 다음 단계 명령이 같은 입력에서 거부되어 그 판의 등록 절차로 "
+             "진행할 수 없을 때"),
+    "not_for": "재시도 규칙이 있는 인프라 오류, 승인자 거절, 사전등록 결과 범주로 끝나는 경우",
+    "preconditions": ["종료 기록이 없다", "교정 단계 기록이 없다",
+                      ("멈춘 단계가 마지막 기록 단계 바로 다음 등록 단계이거나, 마지막 기록이 specificity일 때 교정 명령"
+                       "(correction-evidence·correction-propose·approve-correction·reject-correction·correct-run) 중 하나다"),
+                      "교정 원장에 approved·rejected·consumed·receipt·held 사건이 없다(승인 소비·등록 결과 범주 없음)",
+                      ("원인 '저장소 상대 경로:줄'이 시연 실험 커밋에 같은 내용으로 있는 파일의 범위 안이다(bench/private·.git "
+                       "제외)"), "오류 문자열에 절대 경로가 없다", "기록 도구(이 파일)가 커밋돼 있다"],
+    "fields": ["demo(v4)", "tag", "case", "step", "error", "cause(file·line·text·sha256_lf·commit)",
+               "approval_consumed", "correction_ledger(exists·events)", "probe_loop_status", "recorded_steps", "at",
+               "recorded_by", "tool_commit", "tool_sha256_lf", "category_preregistered_for_demo"],
+    "summary": "summarize가 이 범주를 그대로 요약한다",
+}
+SUCCESS_CONDITIONS = {
+    "protocol_committed": "모든 단계가 실행 전에 커밋된 같은 프로토콜과 하나의 실험 커밋에서 돌았다",
+    "seed_unused": "시작 시 실패 seed·재학습 seed의 학습·평가·고리 산출물이 없었다",
+    "source_failure_present": "같은 seed 정상 정책은 걷고 결함 정책은 unhealthy였다",
+    "fresh_diagnosis_call": ("새 첫 판단 호출(1차와 검증 피드백 재요청 최대 1회)이 기록됐고 최종 결정이 계약상 유효한 "
+                             "continue였다"),
+    "first_probe_from_model": "첫 검사 제안이 모델이 고른 probe였다(규칙 대체가 아님)",
+    "probes_approved_consumed_once": "모든 실행 probe가 승인 기록 뒤 한 번만 소비됐고 산출물 체크포인트 SHA가 사례와 같았다",
+    "loop_confirmed_mechanism": "동결 규칙 갱신으로 등록 결함의 메커니즘이 유일 가설로 확정됐다",
+    "confirmation_specific": "확정 메커니즘의 특이성 게이트 보조 probe가 모두 normal이었거나 게이트가 없는 메커니즘이었다",
+    "correction_call_accepted": ("새 교정 제안 호출(1차와 검증 피드백 재요청 최대 1회)이 기록됐고 최종 제안이 검증을 통과해 "
+                                 "교정 요청의 근거로 결합됐다"),
+    "correction_approved_consumed_once": "승인 기록 뒤 교정 요청이 한 번 소비되고 receipt가 남았다",
+    "correction_recovered": "교정 정책이 사전등록 기준 정책 대비 healthy였다",
+    "costs_recorded": "학습·평가·probe 프로세스 시간과 두 모델 결정 단계(재요청 포함)의 지연·토큰이 모두 기록됐다",
+}
+PREDICTIONS = {
+    "f2": {
+        "source_failure": ("F2가 같은 seed NONE 대비 unhealthy(P0-C seed 2026~2028 h06 모두 unhealthy, 정지 비율 0.864~0.907, "
+                           "시연 v3.1 seed 2033도 unhealthy)"),
+        "alarm": "R1이 F2에 울리고 NONE에는 울리지 않는다(이미 본 seed h06 세 개와 시연 v3.1 seed 2033 모두 같았다)",
+        "diagnosis": ("첫 판단 최종 결정 action=continue, 상위 3가설에 actuator 포함(시연 v3.1 seed 2033: continue, "
+                      "reward 1위·actuator 상위 3)"),
+        "loop": "P_torque abnormal 뒤 actuator 확정(예산 4 이내, 이미 본 F2 4개 실행과 시연 v3.1 seed 2033 모두 abnormal)",
+        "specificity": "P_noise·P_value normal(이미 본 F2 4개 실행과 시연 v3.1 seed 2033 모두 normal)",
+        "correction_rule": "actuator → restart(W1 rule_update change)",
+        "correction": "교정 정책 recovered(시연 v3.1 seed 2033 restart 교정 recovered)",
+    },
+}
+# 검증 피드백 재요청 정책(evals/feedback_model_call.py의 고정 값을 그대로 묶는다)
+FEEDBACK_POLICY = {
+    "caller": "evals/feedback_model_call.py --kind diagnosis|correction(WSL, temperature 0)",
+    "first_call": ("v3.1 단일 호출과 같은 메시지 함수(active_diagnosis.decision_messages, correction_model_call.build_messages)·"
+                   "모델·temperature 0·reasoning_effort none·max_tokens 16384, 출력 형식 없음"),
+    "when": "1차 출력을 기존 계약 검증기(validate_decision, validate_model_proposal)가 거절했을 때만, 결정 단계마다 한 번",
+    "messages": "1차 메시지 + 1차 응답(assistant) + 피드백(user). 요청 설정은 1차와 같다",
+    "feedback_rule": ("검증기 거절 메시지를 등록 문제 코드로 바꾸고 코드마다 고정 설명(프롬프트 계약 규칙을 다시 적은 문장)을 붙인다. "
+                      "정답·카탈로그 값·사실 id·값·등록 교정 같은 packet별 내용과 프롬프트 밖 힌트는 넣지 않는다"),
+    "codes": {"diagnosis": [c for _, c in F.DIAGNOSIS_CODES] + ["D_OTHER"],
+              "correction": sorted({c for _, c in F.CORRECTION_CODES}) + ["C_OTHER"]},
+    "texts": {"diagnosis": F.DIAGNOSIS_TEXT, "correction": F.CORRECTION_TEXT},
+    "frame": {kind: list(parts) for kind, parts in F.FEEDBACK_HEAD.items()},
+    "final": "재요청 결과를 같은 검증기로 다시 판정한다. 재요청 뒤에도 무효면 무효",
+    "review": ("단계 기록 전에 호출 기록을 packet·메시지·요청 설정에 묶어 다시 검증한다. 1차·최종 판정을 검증기로 다시 계산하고, "
+               "피드백 문장이 문제 코드에서 만든 고정 문장과 같은지 확인한다"),
+}
+INVALID_AFTER_RETRY = {
+    "diagnosis": ("재요청 결과도 무효면 model_invalid로 끝낸다. 규칙 probe로 대체하지 않는다(v3.1과 같다). 재요청 결과가 유효하면 "
+                  "그 결정으로 고리를 시작한다"),
+    "correction": ("재요청 결과도 무효면 거절된 모델 제안(검증 사유·피드백 기록)을 근거로 붙인 채 교정 요청은 규칙의 교정·회복 방식으로 "
+                   "올린다(v3.1과 같다). 이때 성공 조건 correction_call_accepted가 거짓이라 demo_success가 되지 않는다"),
+    "infra": ("1차·재요청 어느 쪽이든 인프라 오류(연결·시간 초과·429·5xx·빈 응답·잘림)면 그 기록은 인프라 오류다. 같은 packet으로 대화 "
+              "전체를 새 기록 파일에 다시 부른다. 첫 판단은 최대 2회(v3.1과 같다). 재시도하지 않는 API 오류는 첫 판단에서 "
+              "model_infra_failed, 교정에서는 그 기록으로 제안하지 않는다"),
+}
+MODEL_FEEDBACK_RECORD = {
+    "fields": ["first_valid", "retries(0|1)", "final_valid", "first_codes", "final_codes", "requests",
+               "retry_input_tokens", "retry_output_tokens", "retry_wall_s"],
+    "steps": ["diagnosis(첫 판단)", "correction(교정 제안)"],
+    "prediction": "재요청 발생 여부는 예측하지 않는다. 기록만 한다",
+}
+
+
+def fixed(variant: str, decision_path: str) -> dict:
+    ctx = ctx_of(variant)
+    if decision_path not in DECISION_PATHS:
+        raise ValueError(f"등록되지 않은 결정 경로 {decision_path!r}")
+    rule = RECOVERY_RULES[ctx.mechanism]
+    return {
+        "schema": "e2e_demo_protocol_v4", "variant": variant, "decision_path": decision_path,
+        "question": ("새 seed의 등록 결함 학습 실패 하나를 경고·고정 평가·새 판단(검증 피드백 재요청 최대 1회)·승인 검사·교정 "
+                     "제안(같은 재요청)·승인 교정·고정 평가로 끝까지 연결해 같은 사례/요청 ID로 기록할 수 있는가"),
+        "scope": "single_new_seed_synthetic_fault_integration_demo_not_accuracy_generalization_or_savings",
+        "fault": ctx.fault, "fault_mechanism": ctx.mechanism, "case_id": ctx.case_id, "cases": ctx.cases,
+        "fault_definition": f"bench/hidden_faults.py {ctx.fault}(동결, 크기·정의 변경 없음)",
+        "seed": ctx.seed, "restart_seed": ctx.restart_seed,
+        "seed_selection": ("지금까지 쓴 seed(2026~2037·2040·2042·3029~3034·3040·7·42·123)와 개발 실행에 쓰지 않은 값. 시작 시 "
+                           "실패·재학습 seed 산출물 부재를 다시 확인한다"),
+        "task": C.TASK, "num_envs": 4096, "max_iterations": 300, "num_steps_per_env": 24, "action_scale": 0.25,
+        "telemetry_dir": RUNS_DIR, "approval": APPROVAL, "source_binding": V2.SOURCE_BINDING,
+        "recovery_rule": {"mechanism": ctx.mechanism, **deepcopy(rule)},
+        "registry": registry_v3(),
+        "correction": {
+            "correction_id": ctx.correction_id, "budget_gpu_s_min": CORRECTION_BUDGET_GPU_S,
+            "modes": {
+                "restart": {"arms": ["restart_corrected"], "training_seed": ctx.restart_seed,
+                            "reference": "같은 seed NONE 원 정책(시연 고정 평가)",
+                            "reason": "같은 seed 처음부터 학습은 정상 학습을 바이트 단위로 재현하므로 실패 seed + 1000"},
+                "resume": {"arms": ["clean_resume_reference", "resume_corrected"], "training_seed": ctx.seed,
+                           "resume_iteration": 299, "final_iteration": 598,
+                           "reference": "같은 seed NONE 체크포인트를 같은 갱신량으로 이어 학습한 정책(v4 기준과 같다)",
+                           "reference_validity": "기준이 걷고 같은 seed NONE 원 정책 대비 healthy여야 한다. 아니면 correction_unknown"},
+            },
+            "verdict": "recovery.verdict(p0c 밴드)",
+            "budget_floor_checked_at": "correction-propose(원장에 쓰기 전). 하한 미만·정수 아님이면 요청을 만들지 않는다",
+            "terminal_guard": "종료 기록이 있으면 교정 근거·제안·승인·거절을 거부한다",
+            "recover": ("실행 중 끊겨 결과 없이 남은(고아) 요청만 recover-correction으로 재실행 없이 닫는다. 교정 결과 파일"
+                        "(fix/result.json)이 있고 그 스키마·fix 태그·요청 id·회복 방식·실험 커밋이 요청과 같으면 그 판정·SHA·"
+                        "비용 합으로, 없으면 unknown(orphan_without_artifact)으로 receipt를 쓰고 correction 단계를 같은 모양으로 "
+                        "기록한다(recovered_orphan=true, receipt.recovered_from 공개). 결과 파일이 요청과 다르면 거부한다"),
+            "model_call": "evals/feedback_model_call.py --kind correction(WSL, temperature 0, 검증 피드백 재요청 최대 1회)",
+            "auto_approval": False,
+            "approval": f"evals/e2e_demo_v4.py approve-correction/reject-correction(시연 등록 표 원장). {APPROVAL}",
+            "ledger": ("CorrectionLedger(evals/loops/<사례>/correction_ledger.jsonl, registry=registry_v3())로 제안·승인·"
+                       "소비·실행·조회"),
+            "executor": "bench/demo_correction_v4.py(v3.1 교정 실행기와 arm·manifest·학습 검증·판정이 같다)",
+        },
+        "diagnosis": {"model": MODEL, "packet_schema": "active_decision_packet_v2",
+                      "decision_contract": "rl_triage.active_diagnosis.validate_decision",
+                      "call": "evals/feedback_model_call.py --kind diagnosis(WSL, temperature 0, 검증 피드백 재요청 최대 1회)",
+                      "max_infra_attempts": MAX_INFRA_ATTEMPTS, "blind_inputs": "사례 이름·정답·결함 정의를 넣지 않는다"},
+        "feedback_policy": FEEDBACK_POLICY,
+        "invalid_after_retry": INVALID_AFTER_RETRY,
+        "model_feedback_record": MODEL_FEEDBACK_RECORD,
+        "feedback_adoption_rule": ("N2 검증 피드백 재요청 arm 공개 요약(evals/results/n2_feedback_v1/summary.json)이 complete이고 "
+                                   "improvement.decision이 improved일 때만 prepare하며 그 파일을 SHA로 묶는다. 그 요약은 이미 본 "
+                                   "packet의 개발 측정이고, 이 시연이 그 문구가 요구한 새 사전등록이다"),
+        "specificity_gate": {"probes": SPECIFICITY_GATES.get(ctx.mechanism, []),
+                             "rule": ("고리 확정 뒤 결함 정책에서 보조 probe를 따로 재 같은 seed NONE 기준으로 동결 classify한다. 모두 "
+                                      "normal이면 교정으로 가고, 하나라도 abnormal·unknown이면 confirmation_not_specific로 끝낸다"),
+                             "basis": ("이미 본 holdout·dev 실행 31개에서 P_torque abnormal은 F2 4/4와 F3 4/4·F4 1/4에서 나왔고, P_noise·P_value "
+                                       "normal을 더하면 F2 4/4·그 밖 0/27이었다. 이미 본 seed에서 고른 시연 게이트이며 진단 정확도 근거가 아니다")
+                             if ctx.mechanism in SPECIFICITY_GATES else "게이트 없음",
+                             "approval": "고리 밖 사전등록 측정 단계(정상 기준 probe 단계처럼 승인 원장을 거치지 않는다)"},
+        "loop": {"case": ctx.cases["FAULT"], "top_k": LOOP_TOP_K, "budget_probes": LOOP_BUDGET,
+                 "first_probe": "모델이 고른 probe가 상위 3가설을 가르면 그 probe, 아니면 동결 규칙 probe(대체로 기록)",
+                 "update": "동결 probe_loop.update 규칙. 관측 뒤 모델 재호출 없음", "metered": True,
+                 "approval": f"evals/loop.py approve/reject. {APPROVAL}",
+                 "proceed_rule": f"상태 confirmed이고 유일 가설이 {ctx.mechanism}일 때만 교정 단계로 간다"},
+        "alarm": {**A.R1, "reference_runs": list(REFERENCE_RUNS),
+                  "status": "이미 본 seed 2026~2028에서 사후에 고른 후보 상수. 판정·게이트에 쓰지 않는다"},
+        "evaluation": {"protocol": "bench/protocols/fixed_eval_v1.json", "bands_source": V3.FIXED["bands_source"],
+                       "failure_rule": "같은 seed NONE이 걷고(err_xy < 0.5×제자리, 낙상 ≤ 0.05) 결함 정책이 NONE 대비 unhealthy면 실패 존재"},
+        "gpu_admission_profile": V3.FIXED["gpu_admission_profile"], "isaaclab_commit": V3.FIXED["isaaclab_commit"],
+        "rsl_rl_version": V3.FIXED["rsl_rl_version"], "torch_version": V3.FIXED["torch_version"],
+        "watchdogs_s": {"train": 1800, "fixed_eval": 600, "reference_probes": 900, "specificity_probes": 600,
+                        "correction_train": 1800, "correction_eval": 600},
+        "predictions": PREDICTIONS[variant],
+        "success_conditions": SUCCESS_CONDITIONS,
+        "success_rule": "결과가 recovered이고 성공 조건이 모두 참일 때만 demo_success",
+        "outcomes": OUTCOMES,
+        "common_wording": (f"새 seed {ctx.seed}의 합성 결함({ctx.fault}) 1건을 끝까지 연결한 통합 시연이다. 결함과 probe는 같은 "
+                           "설계자가 만들었고, 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다. 검증 피드백 재요청은 결정 "
+                           "단계마다 최대 1회이며, 그 발생 여부와 횟수는 단일 시연 기록이다."),
+        "gap_wording": "다음 성공 조건을 충족하지 못했다: ",
+        "semantic_retries": {"diagnosis": 1, "correction": 1, "rule": "검증 피드백 재요청만(인프라 재시도와 별개)"},
+        "changes_from_v3_1": ["두 모델 결정 단계를 evals/feedback_model_call.py(1차 → 검증기 거절 시 고정 피드백 1회 재요청)로 부른다",
+                              "재요청 뒤에도 무효면 첫 판단은 model_invalid, 교정은 거절 근거를 붙인 규칙 요청(v3.1과 같은 처리)",
+                              "결정 단계별 model_feedback 기록(1차 유효·재요청 횟수·최종 유효·문제 코드·재요청 비용)",
+                              "결정 경로 single_feedback 하나(NAT 경로 없음), 변형 f2 하나와 새 seed 2046(재학습 3046)",
+                              "N2 피드백 arm 요약(improved)을 SHA로 묶어야 prepare한다",
+                              "교정 실행기 bench/demo_correction_v4.py, 결과 스키마 e2e_demo_result_v4·e2e_correction_result_v4"],
+        "harness_failure_rule": HARNESS_FAILURE_RULE,
+        "forbidden_claims": ["진단 정확도·우월성", "일반화", "교정 성공률", "GPU 절감", "이미 본 seed 결과와 합친 분모",
+                             "승인자 문자열을 신원 인증으로 표기", "운영자 승인을 사람 승인으로 표기",
+                             "재요청이 진단 내용(순위·probe)을 좋게 했다", "N2 피드백 arm 개선 판정을 이 시연의 결과로 표기"],
+    }
+
+
+DYNAMIC = {"source_files", "reference_telemetry", "bands", "bands_summary_sha256_lf", "fixed_eval_sha256_lf",
+           "v4_protocol_sha256_lf", "correction_source_contract", "feedback_adoption"}
+
+
+def _rel(path: Path) -> str:
+    return Path(path).resolve().relative_to(ROOT.resolve()).as_posix()
+
+
+def feedback_adoption() -> dict:
+    """N2 검증 피드백 재요청 arm 공개 요약의 improved 판정을 SHA와 함께 묶는다."""
+    if not FEEDBACK_SUMMARY.is_file():
+        raise ValueError("N2 피드백 arm 공개 요약이 없어 피드백 재요청 경로를 쓸 수 없다")
+    summary = read(FEEDBACK_SUMMARY)
+    if summary.get("complete") is not True or (summary.get("improvement") or {}).get("decision") != "improved":
+        raise ValueError("N2 피드백 arm 판정이 improved가 아니라 피드백 재요청 경로를 쓸 수 없다")
+    return {"summary": _rel(FEEDBACK_SUMMARY), "sha256_lf": sha(FEEDBACK_SUMMARY, True), "decision": "improved",
+            "final_invalid": (summary.get("totals") or {}).get("invalid"), "mean_pass4": summary.get("mean_pass4"),
+            "scope": "이미 본 packet 11개 × 5회 개발 측정"}
+
+
+def dynamic_fields(decision_path: str, isaaclab: Path) -> dict:
+    if decision_path not in DECISION_PATHS:
+        raise ValueError(f"등록되지 않은 결정 경로 {decision_path!r}")
+    v4 = read(V4_PROTOCOL)
+    contract = v4["correction_source_contract"]
+    V3.check_contract(contract, isaaclab)
+    return {
+        "source_files": {name: sha(ROOT / name, True) for name in sorted(CODE)},
+        "reference_telemetry": {name: sha(ROOT / RUNS_DIR / f"{name}.telemetry.json", True) for name in REFERENCE_RUNS},
+        "bands": read(BANDS_SOURCE)["bands"], "bands_summary_sha256_lf": sha(BANDS_SOURCE, True),
+        "fixed_eval_sha256_lf": sha(FIXED_EVAL, True), "v4_protocol_sha256_lf": sha(V4_PROTOCOL, True),
+        "correction_source_contract": contract, "feedback_adoption": feedback_adoption(),
+    }
+
+
+def check_protocol(protocol: dict, dynamic: dict) -> None:
+    expected = fixed(protocol.get("variant"), protocol.get("decision_path"))
+    if set(protocol) != set(expected) | DYNAMIC:
+        raise ValueError("protocol fields differ")
+    if any(protocol[k] != v for k, v in expected.items()):
+        raise ValueError("fixed demo contract changed")
+    changed = sorted(k for k, v in dynamic.items() if protocol[k] != v)
+    if changed:
+        raise ValueError(f"bound sources changed: {changed}")
+
+
+def prepare(variant: str, decision_path: str, isaaclab: Path) -> dict:
+    ctx = ctx_of(variant)
+    if not rule_modes(ctx.mechanism):
+        raise ValueError(f"{ctx.mechanism} 회복 방식 규칙이 비어 있다. W1 결과로 RECOVERY_RULES를 채운 뒤 prepare한다")
+    write_new(ctx.protocol, {**deepcopy(fixed(variant, decision_path)), **dynamic_fields(decision_path, isaaclab)})
+    return {"status": "prepared_commit_before_begin", "path": _rel(ctx.protocol)}
+
+
+def verify_protocol(variant: str, isaaclab: Path, experiment: str | None = None) -> tuple[dict, str]:
+    """프로토콜·결합 파일·Isaac Lab을 검사한다. 실험 커밋이 없으면(begin) HEAD를, 있으면 실험 커밋을 돌려준다."""
+    ctx = ctx_of(variant)
+    protocol = read(ctx.protocol)
+    if protocol.get("variant") != variant:
+        raise ValueError("프로토콜 변형이 다르다")
+    check_protocol(protocol, dynamic_fields(protocol["decision_path"], isaaclab))
+    bound = CODE | {_rel(ctx.protocol), _rel(FIXED_EVAL), _rel(BANDS_SOURCE), _rel(V4_PROTOCOL),
+                    protocol["feedback_adoption"]["summary"],
+                    *(f"{RUNS_DIR}/{name}.telemetry.json" for name in REFERENCE_RUNS)}
+    try:
+        if S._git_head(isaaclab) != protocol["isaaclab_commit"] or not S._git_tracked_clean(isaaclab):
+            raise ValueError("Isaac Lab checkout differs")
+        head = P.verify_committed(ROOT, bound)
+    except subprocess.CalledProcessError as error:
+        raise ValueError(f"git check failed: {' '.join(map(str, error.cmd))[:200]}") from error
+    return protocol, head if experiment is None else V2.frozen_commit(experiment, head, bound)
+
+
+# --- 단계 원장 ---
+def folder_for(tag: str) -> Path:
+    if not isinstance(tag, str) or not re.fullmatch(TAG_RE, tag):
+        raise ValueError("invalid demo tag")
+    folder = PRIVATE / tag
+    if folder.is_symlink() or folder.resolve().parent != PRIVATE.resolve():
+        raise ValueError("demo output escapes its root")
+    return folder
+
+
+def step_path(tag: str, name: str) -> Path:
+    return folder_for(tag) / "steps" / f"{STEPS.index(name):02d}_{name}.json"
+
+
+def step_record(tag: str, name: str) -> dict:
+    path = step_path(tag, name)
+    if not path.is_file():
+        raise FileNotFoundError(f"{name} 단계 기록이 없다")
+    return read(path)
+
+
+def ctx_for(tag: str) -> Ctx:
+    return ctx_of(step_record(tag, "begin")["variant"])
+
+
+def experiment_commit(tag: str) -> str:
+    commit = step_record(tag, "begin").get("source_commit_sha")
+    if not isinstance(commit, str):
+        raise ValueError("begin 기록에 실험 커밋이 없다")
+    return commit
+
+
+def verify_for(tag: str, isaaclab: Path) -> tuple[dict, str]:
+    return verify_protocol(ctx_for(tag).variant, isaaclab, experiment_commit(tag))
+
+
+def _guard(tag: str, name: str) -> Path | None:
+    """앞 단계가 모두 있고 SHA 사슬이 이어지며 이 단계와 종료 기록이 없을 때만 진행한다."""
+    folder = folder_for(tag)
+    if (folder / "terminal.json").exists():
+        raise ValueError(f"시연이 이미 종료됐다: {read(folder / 'terminal.json')['outcome']}")
+    if step_path(tag, name).exists():
+        raise FileExistsError(f"{name} 단계는 이미 기록됐다(한 번만 쓴다)")
+    previous = None
+    for earlier in STEPS[:STEPS.index(name)]:
+        path = step_path(tag, earlier)
+        if not path.is_file():
+            raise ValueError(f"{earlier} 단계가 먼저다")
+        if read(path).get("previous_sha256") != (None if previous is None else sha(previous)):
+            raise ValueError(f"{earlier} 단계의 SHA 사슬이 끊겼다")
+        previous = path
+    return previous
+
+
+def _write_step(tag: str, name: str, previous: Path | None, commit: str, protocol_path: Path, record: dict) -> dict:
+    full = {"step": name, "at": V2.now(), "previous_sha256": None if previous is None else sha(previous),
+            "source_commit_sha": commit, "protocol_sha256_lf": sha(protocol_path, True), **record}
+    write_new(step_path(tag, name), full)
+    return full
+
+
+def _terminal(tag: str, outcome: str, detail: dict) -> dict:
+    if outcome not in TERMINAL_OUTCOMES:
+        raise ValueError(f"등록되지 않은 조기 종료 {outcome}")
+    record = {"outcome": outcome, "at": V2.now(), "detail": detail, "wording": OUTCOMES[outcome]}
+    write_new(folder_for(tag) / "terminal.json", record)
+    return record
+
+
+def _execute(tag: str, step: str, argv: list[str], watchdog_s: float, owned=None) -> tuple[dict, int]:
+    owned = owned or P.run_owned
+    if any(char in arg for arg in argv for char in '\r\n"%&^'):
+        raise ValueError("unsafe Windows batch argument")
+    exec_root = folder_for(tag) / "exec"
+    attempt = 1 + sum(1 for p in exec_root.glob(f"{step}_attempt*") if p.is_dir()) if exec_root.exists() else 1
+    folder = exec_root / f"{step}_attempt{attempt}"
+    folder.mkdir(parents=True)
+    execution = owned(folder, argv, ROOT, watchdog_s)
+    execution = {**execution, "parent_wall_s": round(execution["wall_s"], 1), "attempt": attempt, "folder": _rel(folder)}
+    write_new(folder / "execution.json", execution)
+    return execution, attempt
+
+
+def _gpu_step_failed(tag: str, step: str, execution: dict, attempt: int, output_exists: bool) -> None:
+    detail = {"step": step, "attempt": attempt, "execution": {k: execution.get(k) for k in
+                                                            ("exit_code", "natural_exit", "timed_out", "error_type",
+                                                             "cleanup_verified", "folder")}}
+    if (step in ("evaluate", "reference", "specificity") and attempt == 1 and not output_exists
+            and execution.get("cleanup_verified")):
+        raise RuntimeError(f"{step} 인프라 실패, 결과 파일이 없어 1회 재시도할 수 있다: {detail}")
+    _terminal(tag, "invalid", detail)
+    raise RuntimeError(f"{step} 실패로 시연을 invalid로 종료했다: {detail}")
+
+
+# --- 입력 확인 ---
+def seed_unused_evidence(ctx: Ctx, isaaclab: Path, tag: str) -> dict:
+    log_root = isaaclab / "logs/rsl_rl/unitree_go2_flat"
+    roots = [ROOT / RUNS_DIR, ROOT / "bench/private", ROOT / "evals/loops", log_root]
+    seeds = (ctx.seed, ctx.restart_seed)
+    names = tuple(f"_s{s}" for s in seeds)
+    hits = sorted(str(p) for root in roots if root.exists() for p in root.iterdir() if any(n in p.name for n in names))
+    hits += sorted(f"{run}: seed {seed}" for run, seed in V2._logged_seeds(log_root).items() if seed in seeds)
+    outputs = [str(p) for p in (folder_for(tag), RESULTS / tag, RESULTS / f"{tag}_ref", RESULTS / f"{tag}_loop",
+                                RESULTS / f"{tag}_spec",
+                                *(ROOT / "bench/private" / other / tag for other in ("e2e_demo_v3", "e2e_demo_v3_1",
+                                                                                      "e2e_demo_u1"))) if p.exists()]
+    return {"checked_roots": [str(r) for r in roots], "checked_seeds": list(seeds), "hits": hits,
+            "existing_outputs": outputs}
+
+
+def training_artifacts(ctx: Ctx, arm: str, isaaclab: Path) -> dict:
+    name = ctx.cases[arm]
+    meta_path = ROOT / "bench/private" / f"{name}.meta.json"
+    meta = read(meta_path)
+    expected = {"task": C.TASK, "seed": ctx.seed, "num_envs": 4096, "max_iterations": 300,
+                "fault": "NONE" if arm == "NONE" else ctx.fault, "train_exit_code": 0}
+    if any(type(meta.get(k)) is not type(v) or meta[k] != v for k, v in expected.items()):
+        raise ValueError(f"{name}: training metadata differs")
+    log_root = (isaaclab / "logs/rsl_rl/unitree_go2_flat").resolve()
+    run_dir = Path(meta["run_dir"]).resolve()
+    matches = [p.resolve() for p in log_root.iterdir() if p.is_dir() and p.name.endswith("_" + name)]
+    if run_dir.parent != log_root or matches != [run_dir]:
+        raise ValueError(f"{name}: run must match exactly one SDK log directory")
+    files = {"checkpoint": run_dir / "model_299.pt", "first_checkpoint": run_dir / "model_0.pt",
+             "environment": run_dir / "params/env.yaml", "agent": run_dir / "params/agent.yaml"}
+    telemetry = ROOT / RUNS_DIR / f"{name}.telemetry.json"
+    series = read(telemetry)["series"].get(A.METRIC)
+    if not isinstance(series, list) or len(series) != 300:
+        raise ValueError(f"{name}: telemetry does not cover 300 iterations")
+    if V3.load_config(files["agent"]).get("seed") != ctx.seed:
+        raise ValueError(f"{name}: agent seed differs")
+    return {"run": name, "run_dir": str(run_dir), "meta": {"path": _rel(meta_path), "sha256": sha(meta_path)},
+            **{k: {"path": str(p.resolve()), "sha256": sha(p)} for k, p in files.items()},
+            "telemetry": {"path": _rel(telemetry), "sha256_lf": sha(telemetry, True)}}
+
+
+def _check_artifacts(tag: str, arm: str) -> dict:
+    artifacts = step_record(tag, f"train_{arm}")["artifacts"]
+    for key in ("checkpoint", "first_checkpoint", "environment", "agent"):
+        if sha(Path(artifacts[key]["path"])) != artifacts[key]["sha256"]:
+            raise ValueError(f"{arm} {key} changed after training")
+    if sha(ROOT / artifacts["telemetry"]["path"], True) != artifacts["telemetry"]["sha256_lf"]:
+        raise ValueError(f"{arm} telemetry changed after training")
+    return artifacts
+
+
+def source_gate(none_report: dict, fault_report: dict, bands: dict) -> dict:
+    verdict = RC.verdict(RC.compare(C._behavior(fault_report), C._behavior(none_report)), bands)
+    none_walks = V2.walks(none_report)
+    outcome = ("baseline_invalid" if not none_walks else
+               "failure_present" if verdict["label"] == "unhealthy" else "source_failure_absent")
+    ratio = {arm: r["metrics"]["lin_vel_rmse_mps"] / r["standstill"]["lin_vel_rmse_mps"]
+             for arm, r in (("NONE", none_report), ("FAULT", fault_report))}
+    return {"none_walks": none_walks, "fault_verdict": verdict, "standstill_ratio": ratio, "outcome": outcome}
+
+
+# --- 결정 호출 기록 검토(검증 피드백 재요청) ---
+def review_feedback_record(record_path: Path, packet_path: Path, kind: str) -> dict:
+    """evals/feedback_model_call.py 기록을 packet·메시지·요청 설정에 묶어 다시 검증한다. 상태: valid|invalid|infra_error|call_error.
+
+    1차·최종 판정을 기존 계약 검증기로 다시 계산하고(기록의 판정을 믿지 않는다), 재요청이 있으면 피드백 문장이 1차 문제 코드에서
+    만든 고정 문장이고 보낸 메시지가 1차 메시지 + 1차 응답 + 그 문장인지 확인한다. 형식·결합 불일치는 ValueError."""
+    record, data = read(record_path), Path(packet_path).read_bytes()
+    if record.get("schema") != F.RECORD_SCHEMA or record.get("kind") != kind:
+        raise ValueError("검증 피드백 호출 기록 형식이 아니다")
+    messages, binding = F.first_messages(kind, data)
+    if any(record.get(k) != v for k, v in binding.items()):
+        raise ValueError("호출 기록의 packet·메시지가 이 packet과 다르다")
+    if record.get("request") != F.request_params(MODEL):
+        raise ValueError("등록 모델·요청 설정(temperature 0)으로 부른 호출이 아니다")
+    if record.get("infra_error"):
+        return {"status": "infra_error", "reason": str(record["infra_error"])[:200]}
+    if record.get("error_type") or record.get("exit_code") != 0:
+        return {"status": "call_error", "reason": str(record.get("error_type"))[:200]}
+    calls = record.get("calls") or []
+    if not calls:
+        raise ValueError("호출 기록에 응답이 없다")
+    packet_data = json.loads(data)
+    first = F.validate(kind, calls[0].get("content"), packet_data)
+    if first["status"] == "valid":
+        if len(calls) != 1 or record.get("feedback") is not None:
+            raise ValueError("1차가 유효한데 재요청 기록이 있다")
+        final = first
+    else:
+        if len(calls) != 2:
+            raise ValueError("1차가 무효인데 재요청이 한 번이 아니다")
+        sent = F.retry_messages(messages, calls[0]["content"], kind, first["codes"])
+        feedback = record.get("feedback") or {}
+        if (feedback.get("text") != F.feedback_text(kind, first["codes"]) or feedback.get("codes") != first["codes"]
+                or feedback.get("messages_sha256") != L.digest(sent)):
+            raise ValueError("피드백 문장이 문제 코드에서 만든 고정 문장과 다르다")
+        final = F.validate(kind, calls[1].get("content"), packet_data)
+    if (record.get("final") or {}).get("status") != final["status"]:
+        raise ValueError("기록의 최종 판정이 검증기 재계산과 다르다")
+    summary = {"first_status": first["status"], "first_codes": first["codes"], "retried": len(calls) == 2,
+               "final_status": final["status"], "final_codes": final["codes"], "requests": record.get("requests"),
+               "calls": [{k: c.get(k) for k in ("step", "input_tokens", "output_tokens", "wall_s")} for c in calls]}
+    out = {"status": final["status"], "reason": "; ".join(final["reasons"])[:300] or None, "reasons": final["reasons"],
+           "feedback": summary, "final_content": calls[-1].get("content")}
+    if final["status"] == "valid":
+        out["decision"] = final["decision"]
+    return out
+
+
+def _total(values) -> float | int | None:
+    numbers = [v for v in values if isinstance(v, (int, float))]
+    return sum(numbers) if numbers else None
+
+
+def call_summary(record_path: Path, record: dict) -> dict:
+    """단계 기록에 남길 호출 비용·식별자. 토큰은 1차·재요청 합, 벽시계는 대화 전체 실행 시간이다."""
+    calls = record.get("calls") or []
+    keys = ("step", "status", "codes", "response_id", "provider_model", "finish_reason", "input_tokens", "output_tokens",
+            "wall_s")
+    return {"path": "single_feedback", "record": _rel(record_path), "record_sha256": sha(record_path),
+            "requests": record.get("requests"), "input_tokens": _total(c.get("input_tokens") for c in calls),
+            "output_tokens": _total(c.get("output_tokens") for c in calls),
+            "total_tokens": _total(c.get("total_tokens") for c in calls),
+            "execution_wall_s": record.get("execution_wall_s"), "calls": [{k: c.get(k) for k in keys} for c in calls]}
+
+
+def model_feedback_view(feedback: dict | None) -> dict | None:
+    """결정 단계 하나의 1차 유효·재요청 횟수·최종 유효·재요청 비용(예측하지 않는 기록 항목)."""
+    if not feedback:
+        return None
+    retry = next((c for c in feedback.get("calls", []) if c.get("step") == "retry"), {})
+    return {"first_valid": feedback["first_status"] == "valid", "retries": int(bool(feedback["retried"])),
+            "final_valid": feedback["final_status"] == "valid", "first_codes": feedback["first_codes"],
+            "final_codes": feedback["final_codes"], "requests": feedback.get("requests"),
+            "retry_input_tokens": retry.get("input_tokens"), "retry_output_tokens": retry.get("output_tokens"),
+            "retry_wall_s": retry.get("wall_s")}
+
+
+def model_feedback(steps: dict, terminal: dict | None, ledger: dict) -> dict:
+    """두 결정 단계의 model_feedback. 첫 판단이 model_invalid로 끝났으면 종료 기록의 시도 기록에서, 교정 단계 기록이 없으면
+    교정 원장 요청 근거에서 읽는다."""
+    start = steps.get("loop_start") or {}
+    diagnosis = start.get("feedback") or ((((terminal or {}).get("detail") or {}).get("attempt") or {}).get("feedback"))
+    fix = steps.get("correction") or {}
+    correction = (fix.get("model_proposal") or {}).get("feedback")
+    if correction is None:
+        for request in (ledger or {}).get("requests", {}).values():
+            correction = (((request.get("evidence") or {}).get("model_proposal")) or {}).get("feedback")
+            break
+    return {"diagnosis": model_feedback_view(diagnosis), "correction": model_feedback_view(correction)}
+
+
+def loop_summary(ctx: Ctx, tag: str, checkpoint_sha: str) -> dict:
+    """끝난 고리의 원장·상태를 읽고 실행된 probe마다 산출물의 사례·체크포인트 SHA를 대조한다."""
+    import loop
+    case = ctx.cases["FAULT"]
+    prereg, state, led = loop._load(case)
+    if state["status"] == "open" or state.get("pending") or led.orphans():
+        raise ValueError("고리가 아직 끝나지 않았다(대기·실행 중 요청이 있다)")
+    if prereg["checkpoint_sha256"] != checkpoint_sha:
+        raise ValueError("고리 사전등록의 체크포인트가 시연 결함 실행과 다르다")
+    events = led.events()
+    approvals = {e["request_id"]: e["approver"] for e in events if e["event"] == "approved"}
+    rows, costs = [], []
+    for rid, req in led.requests().items():
+        row = {"request_id": rid, "probe": req["probe"], "state": req["state"], "approver": approvals.get(rid)}
+        if req["state"] == "rejected":
+            row["rejected_reason"] = next(e["reason"] for e in events if e["event"] == "rejected" and e["request_id"] == rid)
+        if req["state"] == "done":
+            receipt = req["receipt"]
+            row.update(outcome=receipt["outcome"], measurement=receipt["measurement"], gpu_s=receipt["gpu_s"])
+            probe_file = RESULTS / f"{tag}_loop" / "probes" / f"{case}__{req['probe']}.json"
+            meta_file = RESULTS / f"{tag}_loop" / "execution" / f"{case}__{req['probe']}.json"
+            if receipt["outcome"] != "unknown":
+                report, meta = read(probe_file), read(meta_file)
+                if (report.get("name") != case or report.get("checkpoint", {}).get("sha256") != checkpoint_sha
+                        or meta.get("checkpoint_sha256") != checkpoint_sha
+                        or meta.get("report_sha256_lf") != sha(probe_file, True)):
+                    raise ValueError(f"{req['probe']}: probe 산출물이 사례·체크포인트와 다르다")
+                if meta.get("metered") is not True:
+                    raise ValueError(f"{req['probe']}: 등록과 달리 --metered 없이 실행됐다")
+                row["artifact"] = {"probe": _rel(probe_file), "execution": _rel(meta_file)}
+                costs.append({k: meta.get(k) for k in ("gpu_wall_s", "cpu_s", "simulator_steps")} | {"probe": req["probe"]})
+        rows.append(row)
+    return {"status": state["status"], "hypotheses": state["hypotheses"], "observed": state["observed"],
+            "history": state["history"], "requests": rows, "probe_costs": costs}
+
+
+# --- 교정 원장(시연 등록 표) ---
+def correction_ledger(ctx: Ctx) -> CorrectionLedger:
+    """이 시연의 교정 원장. 제안·승인·거절·소비·실행·조회 모두 시연 등록 표(registry_v3)로 만든다."""
+    import correct as CR
+    return CorrectionLedger(CR._dir(ctx.cases["FAULT"], CR.LOOPS) / "correction_ledger.jsonl", registry=registry_v3())
+
+
+def run_correction(ctx: Ctx, request_id: str, execute, tag: str) -> dict:
+    """evals/correct.py run과 같은 순서(고아 확인 → 승인 소비 → 실행 → receipt)를 시연 등록 표 원장으로 한다."""
+    import correct as CR
+    case = ctx.cases["FAULT"]
+    led = correction_ledger(ctx)
+    orphans = led.orphans()
+    if orphans:
+        raise L.LedgerError(f"결과 없이 끝난 요청 {orphans}이 있다. 먼저 recover-correction으로 닫는다")
+    req = led.requests().get(request_id)
+    if req is None:
+        raise L.LedgerError(f"{request_id}: 없는 요청")
+    prereg, state, _ = CR._loop_state(case, CR.LOOPS)
+    led.consume(request_id, CR.loop_state_digest(prereg, state))  # 승인 없음·거절·재소비·상태 변경이면 여기서 멈춘다
+    request = {"case": case, "request_id": request_id, "correction_id": req["correction_id"],
+               "recovery_mode": req["recovery_mode"], "protocol_case_arm": req["protocol_case_arm"],
+               "budget_gpu_s": req["budget_gpu_s"], "tag": tag}
+    started = time.perf_counter()
+    result = execute(request)  # 예외는 그대로 전파한다. 요청은 running(고아)으로 남는다
+    gpu_s = result.get("gpu_s", time.perf_counter() - started)
+    return led.receipt(request_id, result.get("tag", tag), result["verdict"], result.get("result_sha"), gpu_s,
+                       result.get("exit_code"))
+
+
+def _require_open(tag: str) -> None:
+    terminal = folder_for(tag) / "terminal.json"
+    if terminal.exists():
+        raise ValueError(f"시연이 이미 종료됐다: {read(terminal)['outcome']}")
+
+
+def approve_correction(tag: str, request_id: str, approver: str) -> dict:
+    _require_open(tag)
+    return correction_ledger(ctx_for(tag)).approve(request_id, approver)
+
+
+def reject_correction(tag: str, request_id: str, approver: str, reason: str) -> dict:
+    _require_open(tag)
+    return correction_ledger(ctx_for(tag)).reject(request_id, approver, reason)
+
+
+def correction_status(tag: str) -> dict:
+    led = correction_ledger(ctx_for(tag))
+    return {"registry_digest": led.registry_digest, "requests": led.requests(),
+            "holds": [e for e in led.events() if e["event"] == "held"], "orphans": led.orphans()}
+
+
+# --- 교정 근거·제안(v3 규칙과 등록 표) ---
+def correction_packet(ctx: Ctx, tag: str) -> dict:
+    """correct.py evidence와 같은 packet을 v3 규칙·등록 표로 만든다."""
+    import correct as CR
+    import correction_model_call as CM
+    case = ctx.cases["FAULT"]
+    prereg, state, loop_led = CR._loop_state(case, CR.LOOPS)
+    mech, req = CR._confirming_request(case, state, loop_led)
+    report_info = step_record(tag, "evaluate")["reports"]["FAULT"]
+    report = read(ROOT / report_info["path"])
+    receipts = [e for e in loop_led.events() if e["event"] == "receipt"]
+    confirming = {"probe": req["probe"], "request_id": req["request_id"], "outcome": req["receipt"]["outcome"],
+                  "measurement": req["receipt"].get("measurement")}
+    return CM.build_packet(case=case, loop_state_digest=CR.loop_state_digest(prereg, state),
+                           receipts_digest=L.digest(receipts), mechanism=mech, confirming=confirming,
+                           observed=state.get("observed", {}), rule=recommend(mech, report), source_report=report,
+                           source_report_sha256=report_info["sha256_lf"], checkpoint_sha256=prereg.get("checkpoint_sha256"),
+                           registry=registry_v3())
+
+
+def _require_specificity(tag: str) -> None:
+    if not step_record(tag, "loop_close")["proceed_to_correction"] or not step_record(tag, "specificity")["passed"]:
+        raise ValueError("고리 확정과 특이성 게이트를 통과한 시연만 교정 단계로 간다")
+
+
+def correction_evidence(tag: str, isaaclab: Path) -> dict:
+    ctx = ctx_for(tag)
+    _require_open(tag)
+    verify_for(tag, isaaclab)
+    _require_specificity(tag)
+    path = folder_for(tag) / "model" / "correction.packet.json"
+    write_new(path, correction_packet(ctx, tag))
+    return {"packet": _rel(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def review_correction_record(protocol: dict, record_path: Path, packet: dict, packet_path: Path) -> dict:
+    """교정 피드백 호출 기록을 packet에 묶어 검증한 원장 근거. 형식·결합 불일치·정상 종료가 아닌 호출은 ValueError.
+
+    판정은 packet에 실린 시연 등록 표(registry_v3)로 한다(correction-propose가 packet이 현재 고리·평가로 만든 것과 같은지 먼저
+    확인한다). 최종 제안이 무효여도 거절 근거로 돌려주고, 교정 요청은 규칙 결과로 올라간다(v3.1과 같다)."""
+    import correction_model_call as CM
+    if protocol["decision_path"] != "single_feedback":
+        raise ValueError("등록되지 않은 결정 경로")
+    review = review_feedback_record(Path(record_path), Path(packet_path), "correction")
+    if review["status"] in ("infra_error", "call_error"):
+        raise ValueError("교정 호출이 정상 종료되지 않았다(인프라 오류면 같은 packet으로 다시 부른다)")
+    record = read(record_path)
+    final_call = record["calls"][-1]
+    decision = review.get("decision") or {}
+    proposal = decision.get("proposal") if review["status"] == "valid" else CM.parse_content(review["final_content"])[0]
+    return {"schema": "e2e_feedback_correction_review_v4", "record_sha256": sha(record_path, True),
+            "packet_digest": CM.packet_digest(packet), "messages_sha256": record.get("messages_sha256"),
+            "model": record["request"]["model"], "provider_model": final_call.get("provider_model"),
+            "response_id": final_call.get("response_id"), "rule_visible_to_model": True, "proposal": proposal,
+            "accepted": review["status"] == "valid", "decision": decision.get("decision"), "reasons": review["reasons"],
+            "agrees_with_rule": decision.get("agrees_with_rule", False),
+            "unmet_checklist": decision.get("unmet_checklist", []), "feedback": review["feedback"]}
+
+
+def correction_propose(tag: str, isaaclab: Path, record_path: Path, budget_gpu_s: int = CORRECTION_BUDGET_GPU_S) -> dict:
+    """확정된 고리에서 v3 규칙의 교정 요청 하나를 원장에 올린다(correct.py propose의 v3 규칙판)."""
+    import correct as CR
+    ctx = ctx_for(tag)
+    _require_open(tag)
+    if type(budget_gpu_s) is not int or budget_gpu_s < CORRECTION_BUDGET_GPU_S:
+        raise ValueError(f"교정 예산은 등록 하한 {CORRECTION_BUDGET_GPU_S} s 이상의 정수여야 한다(원장에 쓰지 않았다)")
+    protocol, _ = verify_for(tag, isaaclab)
+    _require_specificity(tag)
+    packet_path = folder_for(tag) / "model" / "correction.packet.json"
+    packet = read(packet_path)
+    if packet != correction_packet(ctx, tag):
+        raise ValueError("교정 packet이 현재 고리·평가와 다르다")
+    review = review_correction_record(protocol, Path(record_path), packet, packet_path)
+    case = ctx.cases["FAULT"]
+    prereg, state, loop_led = CR._loop_state(case, CR.LOOPS)
+    mech, req = CR._confirming_request(case, state, loop_led)
+    rule = recommend(mech, read(ROOT / step_record(tag, "evaluate")["reports"]["FAULT"]["path"]))
+    receipts = [e for e in loop_led.events() if e["event"] == "receipt"]
+    evidence = {"confirming_probe": req["probe"], "confirming_request_id": req["request_id"],
+                "standstill_ratio": rule["standstill_ratio"], "rule": rule["rule"], "rule_mode": rule["mode"],
+                "source_report_sha256": step_record(tag, "evaluate")["reports"]["FAULT"]["sha256_lf"],
+                "model_proposal": review, "registry_v3": registry_v3()[mech]}
+    event = correction_ledger(ctx).propose(CR.loop_state_digest(prereg, state), mech, L.digest(receipts),
+                                           rule["correction_id"], rule["mode"], R.protocol_case_arm(mech, registry_v3()),
+                                           budget_gpu_s, evidence)
+    return {"decision": "proposed", **event}
+
+
+def correction_approval(ctx: Ctx, request_id: str) -> dict:
+    events = correction_ledger(ctx).events()
+    approved = [e for e in events if e.get("event") == "approved" and e.get("request_id") == request_id]
+    if len(approved) != 1:
+        raise ValueError("교정 요청의 승인 사건이 하나가 아니다")
+    return {"approver": approved[0]["approver"], "at": approved[0]["at"]}
+
+
+# --- 단계 ---
+def begin(tag: str, variant: str, isaaclab: Path) -> dict:
+    ctx = ctx_of(variant)
+    previous = _guard(tag, "begin")
+    protocol, commit = verify_protocol(variant, isaaclab)  # 이 HEAD가 실험 커밋이 된다
+    evidence = seed_unused_evidence(ctx, isaaclab, tag)
+    if evidence["hits"] or evidence["existing_outputs"]:
+        raise ValueError(f"seed {ctx.seed}/{ctx.restart_seed} 또는 tag 산출물이 이미 있다: {evidence}")
+    return _write_step(tag, "begin", previous, commit, ctx.protocol, {
+        "tag": tag, "variant": variant, "decision_path": protocol["decision_path"],
+        "isaaclab_root": str(isaaclab.resolve()), "seed_unused": evidence})
+
+
+def train(tag: str, arm: str, isaaclab: Path, owned=None) -> dict:
+    ctx = ctx_for(tag)
+    previous = _guard(tag, f"train_{arm}")
+    protocol, commit = verify_for(tag, isaaclab)
+    gpu = V2._admit_gpu(protocol)
+    argv = ["pwsh", "-NoProfile", "-File", str(ROOT / "bench/run_case.ps1"),
+            "-CaseId", "baseline_p0c" if arm == "NONE" else ctx.case_id, "-Seed", str(ctx.seed),
+            "-NumEnvs", str(protocol["num_envs"]), "-MaxIterations", str(protocol["max_iterations"]),
+            "-Fault", "NONE" if arm == "NONE" else ctx.fault, "-OutDir", str(ROOT / RUNS_DIR), "-IsaacLab", str(isaaclab)]
+    execution, attempt = _execute(tag, f"train_{arm}", argv, protocol["watchdogs_s"]["train"], owned)
+    if not V3.execution_valid(execution):
+        _gpu_step_failed(tag, f"train_{arm}", execution, attempt, True)
+    return _write_step(tag, f"train_{arm}", previous, commit, ctx.protocol, {
+        "arm": arm, "gpu_before": gpu, "execution": execution, "artifacts": training_artifacts(ctx, arm, isaaclab)})
+
+
+def alarm(tag: str, isaaclab: Path) -> dict:
+    """R1을 기록한다. 판정·게이트가 아니므로 계산 오류도 기록하고 다음 단계로 간다."""
+    ctx = ctx_for(tag)
+    previous = _guard(tag, "alarm")
+    _, commit = verify_for(tag, isaaclab)
+    refs = [read(ROOT / RUNS_DIR / f"{name}.telemetry.json")["series"][A.METRIC] for name in REFERENCE_RUNS]
+    results = {}
+    for arm in ("NONE", "FAULT"):
+        artifacts = _check_artifacts(tag, arm)
+        try:
+            results[arm] = A.r1(read(ROOT / artifacts["telemetry"]["path"])["series"][A.METRIC], refs)
+        except ValueError as error:
+            results[arm] = {"error": str(error)[:200]}
+    return _write_step(tag, "alarm", previous, commit, ctx.protocol,
+                       {"rule": A.R1, "reference_runs": list(REFERENCE_RUNS), "results": results})
+
+
+def evaluate(tag: str, isaaclab: Path, owned=None) -> dict:
+    ctx = ctx_for(tag)
+    previous = _guard(tag, "evaluate")
+    protocol, commit = verify_for(tag, isaaclab)
+    artifacts = {arm: _check_artifacts(tag, arm) for arm in ("NONE", "FAULT")}
+    gpu = V2._admit_gpu(protocol)
+    argv = [sys.executable, str(ROOT / "evals/run_fixed_eval.py"), "--tag", tag, "--runs", ctx.cases["NONE"],
+            ctx.cases["FAULT"], "--isaaclab", str(isaaclab)]
+    execution, attempt = _execute(tag, "evaluate", argv, protocol["watchdogs_s"]["fixed_eval"], owned)
+    outputs = {arm: RESULTS / tag / "runs" / f"{ctx.cases[arm]}.json" for arm in ("NONE", "FAULT")}
+    if not V3.execution_valid(execution) or not all(p.is_file() for p in outputs.values()):
+        _gpu_step_failed(tag, "evaluate", execution, attempt, any(p.exists() for p in outputs.values()))
+    reports, paths = {}, {}
+    for arm, path in outputs.items():
+        reports[arm] = C.validate_fixed_report(read(path), {
+            "name": ctx.cases[arm], "checkpoint_file": "model_299.pt",
+            "checkpoint_sha256": artifacts[arm]["checkpoint"]["sha256"], "action_scale": protocol["action_scale"],
+            "protocol_sha256_lf": protocol["fixed_eval_sha256_lf"]})
+        paths[arm] = {"path": _rel(path), "sha256_lf": sha(path, True)}
+    versions = reports["NONE"]["versions"]
+    if (versions != reports["FAULT"]["versions"] or versions["torch"] != protocol["torch_version"]
+            or versions["rsl-rl-lib"] != protocol["rsl_rl_version"]):
+        raise ValueError("fixed evaluation runtimes differ")
+    gate = source_gate(reports["NONE"], reports["FAULT"], protocol["bands"])
+    record = _write_step(tag, "evaluate", previous, commit, ctx.protocol,
+                         {"gpu_before": gpu, "execution": execution, "reports": paths, "gate": gate})
+    if gate["outcome"] != "failure_present":
+        _terminal(tag, gate["outcome"], {"gate": gate})
+    return record
+
+
+def reference(tag: str, isaaclab: Path, owned=None) -> dict:
+    ctx = ctx_for(tag)
+    previous = _guard(tag, "reference")
+    protocol, commit = verify_for(tag, isaaclab)
+    checkpoint = _check_artifacts(tag, "NONE")["checkpoint"]["sha256"]
+    out = RESULTS / f"{tag}_ref" / "probes" / f"{ctx.cases['NONE']}.json"
+    if out.exists():
+        raise FileExistsError("NONE probe 기준이 이미 있다")
+    gpu = V2._admit_gpu(protocol)
+    argv = [sys.executable, str(ROOT / "evals/run_probes.py"), "--tag", f"{tag}_ref", "--runs", ctx.cases["NONE"],
+            "--isaaclab", str(isaaclab)]
+    execution, attempt = _execute(tag, "reference", argv, protocol["watchdogs_s"]["reference_probes"], owned)
+    if not V3.execution_valid(execution) or not out.is_file():
+        _gpu_step_failed(tag, "reference", execution, attempt, out.exists())
+    report = read(out)
+    probes = report.get("probes", {})
+    if (report.get("name") != ctx.cases["NONE"] or report.get("checkpoint", {}).get("sha256") != checkpoint
+            or report.get("seed") != ctx.seed or set(probes) != set(L.PROBES)
+            or any(v.get("exit") != 0 or v.get("measurement") is None for v in probes.values())):
+        raise ValueError("NONE probe 기준이 여섯 probe를 같은 체크포인트로 모두 재지 못했다")
+    return _write_step(tag, "reference", previous, commit, ctx.protocol, {
+        "gpu_before": gpu, "execution": execution, "report": {"path": _rel(out), "sha256_lf": sha(out, True)}})
+
+
+def packet(tag: str, isaaclab: Path) -> dict:
+    import run_active_diagnosis as RA
+    ctx = ctx_for(tag)
+    previous = _guard(tag, "packet")
+    _, commit = verify_for(tag, isaaclab)
+    sources = {"telemetry": _check_artifacts(tag, "FAULT")["telemetry"],
+               "reference_telemetry": _check_artifacts(tag, "NONE")["telemetry"]}
+    built = RA.input_packet({"sources": sources}, {"max_probes": LOOP_BUDGET,
+                                                   "probe_execution_budget_s": PROBE_EXECUTION_BUDGET_S})
+    path = folder_for(tag) / "model" / "diagnosis.packet.json"
+    write_new(path, built)
+    return _write_step(tag, "packet", previous, commit, ctx.protocol,
+                       {"packet": {"path": _rel(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}})
+
+
+def _record_name(decision_path: str) -> str:
+    if decision_path not in DECISION_PATHS:
+        raise ValueError("등록되지 않은 결정 경로")
+    return "feedback"
+
+
+def loop_start(tag: str, isaaclab: Path, record_path: Path) -> dict:
+    ctx = ctx_for(tag)
+    previous = _guard(tag, "loop_start")
+    protocol, commit = verify_for(tag, isaaclab)
+    kind = _record_name(protocol["decision_path"])
+    folder = folder_for(tag)
+    model_dir = (folder / "model").resolve()
+    attempts = sorted(model_dir.glob("diagnosis.attempt*.json"))
+    expected = model_dir / f"diagnosis.{kind}{len(attempts) + 1}.json"
+    if Path(record_path).resolve() != expected:
+        raise ValueError(f"다음 진단 호출 기록은 {expected.name}이어야 한다(model 폴더, 순서대로)")
+    later = [p.name for p in model_dir.glob(f"diagnosis.{kind}*.json")
+             if re.fullmatch(rf"diagnosis\.{kind}(\d+)\.json", p.name)
+             and int(re.fullmatch(rf"diagnosis\.{kind}(\d+)\.json", p.name)[1]) > len(attempts) + 1]
+    if later:
+        raise ValueError(f"제출하지 않은 호출 기록이 있다: {later}")
+    packet_info = step_record(tag, "packet")["packet"]
+    packet_path = ROOT / packet_info["path"]
+    if hashlib.sha256(packet_path.read_bytes()).hexdigest() != packet_info["sha256"]:
+        raise ValueError("진단 packet이 바뀌었다")
+    record = read(record_path)
+    review = review_feedback_record(Path(record_path), packet_path, "diagnosis")
+    call = call_summary(Path(record_path), record)
+    attempt = {"record": _rel(record_path), "record_sha256": sha(record_path), "status": review["status"],
+               "reason": review.get("reason"), "feedback": review.get("feedback"), "call": call}
+    write_new(folder / "model" / f"diagnosis.attempt{len(attempts) + 1}.json", attempt)
+    if review["status"] == "infra_error":
+        if len(attempts) + 1 < MAX_INFRA_ATTEMPTS:
+            return {"status": "retry_allowed", "attempt": len(attempts) + 1}
+        return _terminal(tag, "model_infra_failed", {"attempts": len(attempts) + 1, "last": attempt})
+    if review["status"] == "call_error":
+        return _terminal(tag, "model_infra_failed", {"attempt": attempt})
+    if review["status"] == "invalid":
+        return _terminal(tag, "model_invalid", {"attempt": attempt})
+    decision, feedback = review["decision"], review["feedback"]
+    if decision["action"] != "continue":
+        _write_step(tag, "loop_start", previous, commit, ctx.protocol,
+                    {"call": call, "feedback": feedback, "decision": decision, "started": None})
+        return _terminal(tag, "diagnosis_hold", {"decision": decision})
+    ref = read(ROOT / step_record(tag, "reference")["report"]["path"])
+    started = V2.start_loop(ctx.cases["FAULT"], decision["ranking"], _check_artifacts(tag, "FAULT")["checkpoint"]["sha256"],
+                            {p: v.get("measurement") for p, v in ref["probes"].items()}, decision["probe"])
+    record_out = _write_step(tag, "loop_start", previous, commit, ctx.protocol,
+                             {"call": call, "feedback": feedback, "decision": decision, "started": started})
+    if started["request_id"] is None:
+        _terminal(tag, "loop_not_confirmed", {"reason": "상위 가설을 가르는 probe가 없다", "started": started})
+        return record_out
+    rid, case = started["request_id"], ctx.cases["FAULT"]
+    return {**record_out, "next_commands": [
+        f"python evals/loop.py approve {case} {rid} --approver <승인자>   # 또는 reject ... --reason <사유>",
+        f"python evals/loop.py run {case} {rid} --tag {tag}_loop --metered",
+        "다음 제안이 나오면 approve → run을 반복하고, 종료 메시지 뒤 close-loop를 실행한다"]}
+
+
+def loop_close(tag: str, isaaclab: Path) -> dict:
+    ctx = ctx_for(tag)
+    previous = _guard(tag, "loop_close")
+    protocol, commit = verify_for(tag, isaaclab)
+    summary = loop_summary(ctx, tag, _check_artifacts(tag, "FAULT")["checkpoint"]["sha256"])
+    confirmed = summary["status"] == "confirmed"
+    proceed = confirmed and summary["hypotheses"] == [ctx.mechanism]
+    record = _write_step(tag, "loop_close", previous, commit, ctx.protocol, {"loop": summary, "proceed_to_correction": proceed})
+    if not proceed:
+        _terminal(tag, "wrong_confirmation" if confirmed else "loop_not_confirmed",
+                  {"loop_status": summary["status"], "hypotheses": summary["hypotheses"]})
+        return record
+    gpu = " # GPU, 실행 중 커밋 금지" if SPECIFICITY_GATES.get(ctx.mechanism) else " # 게이트 없음(CPU 기록만)"
+    return {**record, "next_commands": [f"python evals/e2e_demo_v4.py specificity --tag {tag}{gpu}"]}
+
+
+def specificity(tag: str, isaaclab: Path, owned=None) -> dict:
+    """확정 메커니즘의 보조 probe를 결함 정책에서 재 동결 classify한다. 모두 normal이면 교정으로 간다."""
+    ctx = ctx_for(tag)
+    previous = _guard(tag, "specificity")
+    protocol, commit = verify_for(tag, isaaclab)
+    required = protocol["specificity_gate"]["probes"]
+    if not required:
+        record = _write_step(tag, "specificity", previous, commit, ctx.protocol, {"required": [], "passed": True})
+        return {**record, "next_commands": correction_commands(ctx, tag, protocol)}
+    checkpoint = _check_artifacts(tag, "FAULT")["checkpoint"]["sha256"]
+    out = RESULTS / f"{tag}_spec" / "probes" / f"{ctx.cases['FAULT']}.json"
+    if out.exists():
+        raise FileExistsError("특이성 게이트 측정이 이미 있다")
+    gpu = V2._admit_gpu(protocol)
+    argv = [sys.executable, str(ROOT / "evals/run_probes.py"), "--tag", f"{tag}_spec", "--runs", ctx.cases["FAULT"],
+            "--probes", *required, "--isaaclab", str(isaaclab)]
+    execution, attempt = _execute(tag, "specificity", argv, protocol["watchdogs_s"]["specificity_probes"], owned)
+    if not V3.execution_valid(execution) or not out.is_file():
+        _gpu_step_failed(tag, "specificity", execution, attempt, out.exists())
+    report = read(out)
+    if (report.get("name") != ctx.cases["FAULT"] or report.get("checkpoint", {}).get("sha256") != checkpoint
+            or report.get("seed") != ctx.seed or set(report.get("probes", {})) != set(required)):
+        raise ValueError("특이성 게이트 측정이 결함 체크포인트의 등록 probe와 다르다")
+    reference_probes = read(ROOT / step_record(tag, "reference")["report"]["path"])["probes"]
+    outcomes = {probe: L.classify(probe, report["probes"][probe].get("measurement") if report["probes"][probe].get("exit") == 0
+                                  else None, reference_probes[probe]["measurement"]) for probe in required}
+    passed = all(value == "normal" for value in outcomes.values())
+    record = _write_step(tag, "specificity", previous, commit, ctx.protocol, {
+        "required": required, "outcomes": outcomes, "passed": passed, "gpu_before": gpu, "execution": execution,
+        "measurements": {p: report["probes"][p].get("measurement") for p in required},
+        "report": {"path": _rel(out), "sha256_lf": sha(out, True)}})
+    if not passed:
+        _terminal(tag, "confirmation_not_specific", {"outcomes": outcomes})
+        return record
+    return {**record, "next_commands": correction_commands(ctx, tag, protocol)}
+
+
+def correction_commands(ctx: Ctx, tag: str, protocol: dict) -> list[str]:
+    model = f"bench/private/e2e_demo_v4/{tag}/model"
+    record_file = f"{model}/correction.{_record_name(protocol['decision_path'])}1.json"
+    call = (f"(WSL) evals/feedback_model_call.py --kind correction --packet {model}/correction.packet.json "
+            f"--output {record_file} --model {MODEL}")
+    return [f"python evals/e2e_demo_v4.py correction-evidence --tag {tag}", call,
+            f"python evals/e2e_demo_v4.py correction-propose --tag {tag} --record {record_file}",
+            f"python evals/e2e_demo_v4.py approve-correction --tag {tag} --request <rid> --approver <승인자>   "
+            "# 또는 reject-correction ... --reason <사유>",
+            f"python evals/e2e_demo_v4.py correct-run --tag {tag} --request <rid> --correction-record {record_file}",
+            f"(실행이 끊겨 고아 요청이 남으면) python evals/e2e_demo_v4.py recover-correction --tag {tag} --request <rid> "
+            f"--correction-record {record_file}"]
+
+
+def correction(tag: str, isaaclab: Path, request_id: str, record_path: Path) -> dict:
+    import demo_correction_v4 as DC
+    ctx = ctx_for(tag)
+    previous = _guard(tag, "correction")
+    protocol, commit = verify_for(tag, isaaclab)
+    request = correction_ledger(ctx).requests().get(request_id)
+    if request is None or request["state"] != "approved":
+        raise ValueError("승인된 교정 요청이 아니다")
+    proposal, record = _bound_proposal(request, record_path)
+    rule = recommend(ctx.mechanism, read(ROOT / step_record(tag, "evaluate")["reports"]["FAULT"]["path"]))
+    if request["correction_id"] != ctx.correction_id or request["recovery_mode"] != rule["mode"]:
+        return _terminal(tag, "correction_not_proposed", {
+            "request_id": request_id, "reason": "사전등록 교정·회복 방식과 다른 요청",
+            "correction_id": request["correction_id"], "recovery_mode": request["recovery_mode"], "rule_mode": rule["mode"]})
+    if request["budget_gpu_s"] < CORRECTION_BUDGET_GPU_S:
+        raise ValueError(f"교정 요청 예산 {request['budget_gpu_s']} s가 등록 하한 {CORRECTION_BUDGET_GPU_S} s보다 작다. "
+                         "승인을 소비하지 않았다. 요청을 reject하고 2400으로 다시 propose한다")
+    if DC.fix_folder(tag).exists():
+        raise FileExistsError("교정 출력이 이미 있다")
+    log_root = isaaclab / "logs/rsl_rl/unitree_go2_flat"
+    if any(p.name.endswith(f"_{DC.fix_tag(tag)}_{arm}") for p in log_root.iterdir() for arm in DC.ARMS[rule["mode"]]):
+        raise FileExistsError("교정 arm의 SDK 로그 폴더가 이미 있다")
+    V2._admit_gpu(protocol)
+    receipt = run_correction(ctx, request_id, DC.make_executor(tag, isaaclab), DC.fix_tag(tag))
+    return _write_step(tag, "correction", previous, commit, ctx.protocol,
+                       _correction_record(tag, request_id, request, proposal, record_path, record, receipt))
+
+
+def _bound_proposal(request: dict, record_path: Path) -> tuple[dict, dict]:
+    proposal = request["evidence"].get("model_proposal")
+    record = read(record_path)
+    if proposal is None or proposal.get("record_sha256") != sha(record_path, True):
+        raise ValueError("교정 요청에 결합된 모델 호출 기록이 아니다")
+    return proposal, record
+
+
+def _correction_record(tag: str, request_id: str, request: dict, proposal: dict, record_path: Path, record: dict,
+                       receipt: dict, recovered: bool = False) -> dict:
+    import demo_correction_v4 as DC
+    result_path = DC.fix_folder(tag) / "result.json"
+    return {
+        "request_id": request_id, "request": {k: request.get(k) for k in ("correction_id", "recovery_mode", "budget_gpu_s")},
+        "rule": {k: request["evidence"].get(k) for k in ("rule_mode", "rule", "standstill_ratio")},
+        "model_proposal": {k: proposal.get(k) for k in ("accepted", "decision", "agrees_with_rule", "reasons",
+                                                         "unmet_checklist", "rule_visible_to_model", "feedback")},
+        "call": call_summary(Path(record_path), record), "receipt": receipt,
+        "result": read(result_path) if result_path.is_file() else None, "recovered_orphan": recovered}
+
+
+def recover_correction(tag: str, isaaclab: Path, request_id: str, record_path: Path) -> dict:
+    """실행 중 끊겨 결과 없이 남은 교정 요청을 재실행 없이 닫고 correction 단계를 기록한다.
+
+    교정 결과 파일(fix/result.json)이 있으면 그 판정·SHA·비용으로, 없으면 unknown으로 receipt를 쓴다(원장 recover).
+    """
+    import demo_correction_v4 as DC
+    ctx = ctx_for(tag)
+    previous = _guard(tag, "correction")
+    _, commit = verify_for(tag, isaaclab)
+    led = correction_ledger(ctx)
+    if request_id not in led.orphans():
+        raise ValueError("결과 없이 남은(고아) 교정 요청이 아니다")
+    request = led.requests()[request_id]
+    proposal, record = _bound_proposal(request, record_path)
+    result_path = DC.fix_folder(tag) / "result.json"
+    artifact = None
+    if result_path.is_file():
+        result = read(result_path)
+        expected = {"schema": "e2e_correction_result_v4", "tag": DC.fix_tag(tag), "correction_request_id": request_id,
+                    "recovery_mode": request["recovery_mode"], "source_commit_sha": commit}
+        if any(result.get(k) != v for k, v in expected.items()):
+            raise ValueError("교정 결과 파일이 이 요청·시연·실험 커밋의 결과가 아니다(복구하지 않았다)")
+        gpu_s = sum(v for v in result["costs"].values() if isinstance(v, (int, float)))
+        artifact = {"tag": DC.fix_tag(tag), "verdict": result["label"], "result_sha": sha(result_path),
+                    "gpu_s": round(gpu_s, 1), "exit_code": 0, "source": _rel(result_path)}
+    receipt = led.recover(request_id, artifact)
+    return _write_step(tag, "correction", previous, commit, ctx.protocol,
+                       _correction_record(tag, request_id, request, proposal, record_path, record, receipt, True))
+
+
+# --- 판정 ---
+def _correction_ledger_state(ctx: Ctx) -> dict:
+    led = correction_ledger(ctx)
+    return {"requests": led.requests(), "holds": [e for e in led.events() if e["event"] == "held"]}
+
+
+def conditions(steps: dict, outcome: str) -> dict:
+    begin_step, evaluate_step = steps.get("begin"), steps.get("evaluate")
+    start, close, fix = steps.get("loop_start"), steps.get("loop_close"), steps.get("correction")
+    spec = steps.get("specificity")
+    done = [r for r in (close or {}).get("loop", {}).get("requests", []) if r["state"] == "done"]
+    call = (start or {}).get("call") or {}
+    fix_call = (fix or {}).get("call") or {}
+    costs = [step.get("execution", {}).get("parent_wall_s") for name, step in steps.items()
+             if name in ("train_NONE", "train_FAULT", "evaluate", "reference")]
+    spec_cost_ok = bool(spec) and (not spec["required"]
+                                   or isinstance((spec.get("execution") or {}).get("parent_wall_s"), (int, float)))
+    fix_costs = ((fix or {}).get("result") or {}).get("costs", {})
+    return {
+        "protocol_committed": (len({s["protocol_sha256_lf"] for s in steps.values()}) == 1
+                               and len({s["source_commit_sha"] for s in steps.values()}) == 1 and bool(steps)),
+        "seed_unused": bool(begin_step) and not begin_step["seed_unused"]["hits"],
+        "source_failure_present": bool(evaluate_step) and evaluate_step["gate"]["outcome"] == "failure_present",
+        "fresh_diagnosis_call": bool(start) and bool(call.get("record_sha256")) and start["decision"]["action"] == "continue",
+        "first_probe_from_model": bool(start) and bool((start.get("started") or {}).get("model_probe_used")),
+        "probes_approved_consumed_once": bool(done) and all(r.get("approver") and (r.get("artifact") or r["outcome"] == "unknown")
+                                                            for r in done),
+        "loop_confirmed_mechanism": bool(close) and close["proceed_to_correction"],
+        "confirmation_specific": bool(spec) and spec["passed"] is True,
+        "correction_call_accepted": bool(fix) and fix["model_proposal"]["accepted"] is True and bool(fix_call.get("record_sha256")),
+        "correction_approved_consumed_once": bool(fix) and fix["receipt"].get("event") == "receipt",
+        "correction_recovered": outcome == "recovered",
+        "costs_recorded": (len(costs) == 4 and all(isinstance(c, (int, float)) for c in costs) and spec_cost_ok
+                           and all(isinstance(r.get("gpu_s"), (int, float)) for r in done) and bool(done)
+                           and all(isinstance(fix_costs.get(k), (int, float)) for k in ("train_parent_wall_s", "eval_parent_wall_s"))
+                           and all(isinstance(c.get(k), (int, float)) for c in (call, fix_call)
+                                   for k in ("execution_wall_s", "input_tokens", "output_tokens"))),
+    }
+
+
+def prediction_results(ctx: Ctx, steps: dict) -> dict:
+    """사전등록 예측의 적중(True/False). 그 단계까지 가지 못했으면 None. 성공 조건과 별개다."""
+    evaluate_step, alarm_step = steps.get("evaluate"), steps.get("alarm")
+    start, close, fix = steps.get("loop_start"), steps.get("loop_close"), steps.get("correction")
+    gate = (evaluate_step or {}).get("gate") or {}
+    alarms = (alarm_step or {}).get("results") or {}
+    decision = (start or {}).get("decision") or {}
+    observed = ((close or {}).get("loop") or {}).get("observed", {})
+    failure = None
+    if evaluate_step:
+        failure = gate["outcome"] == "failure_present" and (ctx.mechanism != "reward" or gate["standstill_ratio"]["FAULT"] >= 0.9)
+    return {
+        "source_failure": failure,
+        "alarm": None if not alarm_step else (alarms.get("FAULT", {}).get("warned") is True
+                                              and alarms.get("NONE", {}).get("warned") is False),
+        "diagnosis": None if not start else (decision.get("action") == "continue"
+                                             and ctx.mechanism in decision.get("ranking", [])[:LOOP_TOP_K]),
+        "loop": None if not close else (close["proceed_to_correction"]
+                                        and observed.get(L.confirming_probe(ctx.mechanism)) == "abnormal"),
+        "specificity": None if not steps.get("specificity") else steps["specificity"]["passed"] is True,
+        "correction_rule": None if not fix else fix["rule"].get("rule_mode") == fix["request"].get("recovery_mode"),
+        "correction": None if not fix else fix["receipt"].get("verdict") == "recovered",
+    }
+
+
+def public_view(steps: dict) -> dict:
+    """공개 결과에 남길 수치·판정. 절대 경로·PID·로그 원문은 넣지 않는다."""
+    start, close, fix = steps.get("loop_start"), steps.get("loop_close"), steps.get("correction")
+    call_keys = ("path", "requests", "input_tokens", "output_tokens", "execution_wall_s", "calls")
+    return {
+        "training_parent_wall_s": {arm: (steps.get(f"train_{arm}") or {}).get("execution", {}).get("parent_wall_s")
+                                   for arm in ("NONE", "FAULT")},
+        "alarm": (steps.get("alarm") or {}).get("results"),
+        "evaluation": {k: (steps.get("evaluate") or {}).get(k) for k in ("gate", "reports")},
+        "reference_parent_wall_s": (steps.get("reference") or {}).get("execution", {}).get("parent_wall_s"),
+        "diagnosis": None if not start else {"decision": start["decision"], "started": start.get("started"),
+                                             "call": {k: start["call"].get(k) for k in call_keys}},
+        "loop": None if not close else {k: close["loop"][k] for k in ("status", "hypotheses", "observed", "requests",
+                                                                       "probe_costs")},
+        "specificity": None if not steps.get("specificity") else {
+            k: steps["specificity"].get(k) for k in ("required", "outcomes", "passed", "measurements")}
+        | {"parent_wall_s": (steps["specificity"].get("execution") or {}).get("parent_wall_s")},
+        "correction": None if not fix else {
+            "request_id": fix["request_id"], "request": fix["request"], "model_proposal": fix["model_proposal"],
+            "call": {k: fix["call"].get(k) for k in call_keys}, "receipt": fix["receipt"],
+            "result": {k: (fix.get("result") or {}).get(k) for k in ("label", "verdict", "standstill_ratio", "costs",
+                                                                     "recovery_mode", "reference")}},
+    }
+
+
+def summarize(tag: str) -> dict:
+    folder = folder_for(tag)
+    if (folder / "result.json").exists():
+        return read(folder / "result.json")
+    ctx = ctx_for(tag)
+    protocol = read(ctx.protocol)
+    steps = {name: step_record(tag, name) for name in STEPS if step_path(tag, name).is_file()}
+    terminal = read(folder / "terminal.json") if (folder / "terminal.json").exists() else None
+    ledger = _correction_ledger_state(ctx) if "loop_close" in steps else {"requests": {}, "holds": []}
+    outcome = V2.classify(steps, terminal, ledger)
+    checks = conditions(steps, outcome)
+    success = outcome == "recovered" and all(checks.values())
+    unmet = [k for k, v in checks.items() if not v]
+    wording = OUTCOMES[outcome] + (" " + protocol["gap_wording"] + ", ".join(unmet) if unmet and outcome != "in_progress" else "")
+    result = {"schema": "e2e_demo_result_v4", "tag": tag, "variant": ctx.variant, "fault": ctx.fault,
+              "mechanism": ctx.mechanism, "seed": ctx.seed, "case": ctx.cases["FAULT"],
+              "decision_path": protocol["decision_path"], "outcome": outcome, "demo_success": success,
+              "success_conditions": checks, "unmet_conditions": unmet, "wording": wording,
+              "common_wording": protocol["common_wording"], "steps_sha256": {k: sha(step_path(tag, k)) for k in steps},
+              "terminal": terminal, "protocol_sha256_lf": sha(ctx.protocol, True),
+              "source_commit_sha": sorted({s["source_commit_sha"] for s in steps.values()}),
+              "predictions": protocol["predictions"], "prediction_results": prediction_results(ctx, steps),
+              "model_feedback": model_feedback(steps, terminal, ledger),
+              "approver_identity_attested": False, **public_view(steps)}
+    if outcome != "in_progress":
+        write_new(RESULTS / tag / "demo_result.json", result)
+        write_new(folder / "result.json", result)
+    return result
+
+
+def status(tag: str) -> dict:
+    folder = folder_for(tag)
+    done = [name for name in STEPS if step_path(tag, name).is_file()]
+    terminal = read(folder / "terminal.json") if (folder / "terminal.json").exists() else None
+    following = None if terminal or len(done) == len(STEPS) else STEPS[len(done)]
+    return {"tag": tag, "done": done, "next": following, "terminal": terminal}
+
+
+# --- 하네스 실패(사전등록 범주) ---
+def _harness_root(demo: str) -> Path:
+    if demo not in HARNESS_DEMOS:
+        raise ValueError(f"모르는 시연 판 {demo!r}")
+    return PRIVATE
+
+
+def harness_folder(demo: str, tag: str) -> Path:
+    root = _harness_root(demo)
+    if not isinstance(tag, str) or not re.fullmatch(TAG_RE, tag):
+        raise ValueError("invalid demo tag")
+    folder = root / tag
+    if not folder.is_dir() or folder.is_symlink() or folder.resolve().parent != root.resolve():
+        raise ValueError("시연 폴더가 없거나 출력 위치를 벗어난다")
+    return folder
+
+
+def _demo_protocol(demo: str, begin: dict) -> dict:
+    """begin 기록에 묶인 그 판의 시연 프로토콜."""
+    path = PROTOCOL_DIR / f"e2e_demo_v4_{begin.get('variant')}.json"
+    if not path.is_file() or sha(path, True) != begin.get("protocol_sha256_lf"):
+        raise ValueError("시연 프로토콜이 begin 기록과 다르다")
+    return read(path)
+
+
+def _recorded_steps(folder: Path) -> dict[str, Path]:
+    steps = {p.name.split("_", 1)[1][:-5]: p for p in sorted((folder / "steps").glob("[0-9][0-9]_*.json"))}
+    if "begin" not in steps or set(steps) - set(STEPS):
+        raise ValueError("시연 단계 기록이 등록 단계와 다르다")
+    return steps
+
+
+def committed_blob_lf(commit: str, relative: str) -> str | None:
+    """커밋에 있는 파일의 LF 정규화 SHA. 커밋 형식이 틀리거나 파일이 없으면 None."""
+    if not isinstance(commit, str) or re.fullmatch(r"[0-9a-f]{40}", commit) is None:
+        return None
+    shown = subprocess.run(["git", "-C", str(CODE_ROOT), "show", f"{commit}:{relative}"], capture_output=True)
+    return hashlib.sha256(shown.stdout.replace(b"\r\n", b"\n")).hexdigest() if shown.returncode == 0 else None
+
+
+def _cause(cause: str, commit: str) -> dict:
+    """원인 위치 '저장소 상대 경로:줄'. 시연 실험 커밋에 같은 내용으로 있는 파일(실행된 코드)이고 줄이 범위 안이어야 한다."""
+    match = re.fullmatch(r"([A-Za-z0-9_./-]+):(\d+)", cause or "")
+    if match is None:
+        raise ValueError("원인은 '저장소 상대 경로:줄' 형식이어야 한다")
+    relative = match[1]
+    if relative.startswith(("bench/private/", ".git/")) or "/.git/" in relative:
+        raise ValueError(f"원인 파일로 비공개·git 내부 파일을 쓰지 않는다: {relative}")
+    target = (CODE_ROOT / relative).resolve()
+    if CODE_ROOT.resolve() not in target.parents or not target.is_file():
+        raise ValueError(f"원인 파일이 저장소에 없다: {relative}")
+    if committed_blob_lf(commit, relative) != sha(target, True):
+        raise ValueError(f"원인 파일이 시연 실험 커밋 {commit[:12]}의 내용과 다르다(추적되지 않았거나 바뀌었다): {relative}")
+    lines = target.read_text(encoding="utf-8").splitlines()
+    line = int(match[2])
+    if not 1 <= line <= len(lines):
+        raise ValueError(f"원인 줄이 파일 범위 밖이다: {line}")
+    return {"file": relative, "line": line, "text": lines[line - 1].strip()[:200], "sha256_lf": sha(target, True),
+            "commit": commit}
+
+
+def tool_commit() -> str:
+    """이 기록 도구가 커밋된 상태의 HEAD. 미추적·변경 상태면 거부한다."""
+    try:
+        return P.verify_committed(ROOT, {"evals/e2e_demo_v4.py"})
+    except subprocess.CalledProcessError as error:
+        raise ValueError(f"git check failed: {' '.join(map(str, error.cmd))[:200]}") from error
+
+
+def record_harness_failure(demo: str, tag: str, step: str, error: str, cause: str) -> dict:
+    """시연 실행기 결함으로 멈춘 시연의 종료 기록(harness_failure)을 한 번 쓴다. 판정 범주를 새로 만들지 않는다."""
+    import correct as CR
+    folder = harness_folder(demo, tag)
+    if (folder / "terminal.json").exists():
+        raise FileExistsError("종료 기록이 이미 있다")
+    recorded = _recorded_steps(folder)
+    if "correction" in recorded:
+        raise ValueError("교정 단계가 기록된 시연은 하네스 실패로 닫지 않는다")
+    last = list(recorded)[-1]
+    allowed = {STEPS[STEPS.index(last) + 1]} | (set(CORRECTION_COMMANDS) if last == "specificity" else set())
+    if step not in allowed:
+        raise ValueError(f"멈춘 단계는 마지막 기록 단계({last}) 바로 다음 등록 단계·명령이어야 한다: {step!r}")
+    if not isinstance(error, str) or not error.strip():
+        raise ValueError("오류 문자열이 비었다")
+    if ABSOLUTE_PATH.search(error):
+        raise ValueError("오류 문자열에 절대 경로를 넣지 않는다(공개 요약에 실린다)")
+    begin = read(recorded["begin"])
+    protocol = _demo_protocol(demo, begin)
+    case = protocol["cases"]["FAULT"]
+    ledger_path = CR._dir(case, CR.LOOPS) / "correction_ledger.jsonl"
+    events = CorrectionLedger(ledger_path).events()  # 읽기만 한다(사건 순서 검사 포함, 등록 표와 무관)
+    if any(e["event"] in ("approved", "rejected", "consumed", "receipt", "held") for e in events):
+        raise ValueError("교정 원장에 승인·거절·소비·실행·보류 사건이 있어 하네스 실패로 닫지 않는다(등록 결과 범주로 끝난다)")
+    counts = {kind: sum(1 for e in events if e["event"] == kind) for kind in sorted({e["event"] for e in events})}
+    loop_state = CR._dir(case, CR.LOOPS) / "state.json"
+    detail = {"demo": demo, "tag": tag, "case": case, "step": step, "error": error.strip()[:500],
+              "cause": _cause(cause, begin["source_commit_sha"]), "approval_consumed": False,
+              "correction_ledger": {"exists": ledger_path.exists(), "events": counts},
+              "probe_loop_status": read(loop_state).get("status") if loop_state.is_file() else None,
+              "recorded_steps": list(recorded),
+              "recorded_by": "v4 도구로 기록(evals/e2e_demo_v4.py record-harness-failure)",
+              "tool_commit": tool_commit(), "tool_sha256_lf": sha(Path(__file__), True),
+              "category_preregistered_for_demo": True}
+    record = {"outcome": "harness_failure", "at": V2.now(), "detail": detail, "wording": OUTCOMES["harness_failure"]}
+    write_new(folder / "terminal.json", record)
+    return record
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description="새 seed 결함 종단 시연 v4(검증 피드백 1회 재요청)")
+    ap.add_argument("command", choices=("prepare", "verify", "begin", "train", "alarm", "evaluate", "reference", "packet",
+                                        "start-loop", "close-loop", "specificity", "correction-evidence", "correction-propose",
+                                        "correct-run", "approve-correction", "reject-correction", "correction-status",
+                                        "recover-correction",
+                                        "record-harness-failure", "summarize", "status"))
+    ap.add_argument("--isaaclab", type=Path, default=Path.home() / "IsaacLab")
+    ap.add_argument("--variant", choices=tuple(VARIANTS))
+    ap.add_argument("--decision-path", choices=DECISION_PATHS, default="single_feedback")
+    ap.add_argument("--tag")
+    ap.add_argument("--arm", choices=("NONE", "FAULT"))
+    ap.add_argument("--record", type=Path)
+    ap.add_argument("--request")
+    ap.add_argument("--correction-record", type=Path)
+    ap.add_argument("--budget-gpu-s", type=int, default=CORRECTION_BUDGET_GPU_S)
+    ap.add_argument("--approver")
+    ap.add_argument("--reason")
+    ap.add_argument("--demo", choices=HARNESS_DEMOS, default="v4")
+    ap.add_argument("--step")
+    ap.add_argument("--error")
+    ap.add_argument("--cause")
+    args = ap.parse_args(argv)
+    required = {"prepare": ("variant",), "verify": ("variant",), "begin": ("variant", "tag"), "train": ("tag", "arm"),
+                "start-loop": ("tag", "record"), "correction-propose": ("tag", "record"),
+                "correct-run": ("tag", "request", "correction_record"),
+                "recover-correction": ("tag", "request", "correction_record"),
+                "approve-correction": ("tag", "request", "approver"),
+                "reject-correction": ("tag", "request", "approver", "reason"),
+                "record-harness-failure": ("tag", "step", "error", "cause")}
+    for name in required.get(args.command, ("tag",)):
+        if getattr(args, name) is None:
+            ap.error(f"{args.command}에는 --{name.replace('_', '-')}가 필요하다")
+    os.environ.update(V2.UTF8_ENV)  # Isaac 하위 프로세스(cp949 콘솔) 출력 오류 방지
+    commands = {
+        "prepare": lambda: prepare(args.variant, args.decision_path, args.isaaclab),
+        "verify": lambda: {"status": "pass", "source_commit_sha": verify_protocol(
+            args.variant, args.isaaclab, experiment_commit(args.tag) if args.tag else None)[1]},
+        "begin": lambda: begin(args.tag, args.variant, args.isaaclab),
+        "train": lambda: train(args.tag, args.arm, args.isaaclab),
+        "alarm": lambda: alarm(args.tag, args.isaaclab),
+        "evaluate": lambda: evaluate(args.tag, args.isaaclab),
+        "reference": lambda: reference(args.tag, args.isaaclab),
+        "packet": lambda: packet(args.tag, args.isaaclab),
+        "start-loop": lambda: loop_start(args.tag, args.isaaclab, args.record),
+        "close-loop": lambda: loop_close(args.tag, args.isaaclab),
+        "specificity": lambda: specificity(args.tag, args.isaaclab),
+        "correction-evidence": lambda: correction_evidence(args.tag, args.isaaclab),
+        "correction-propose": lambda: correction_propose(args.tag, args.isaaclab, args.record, args.budget_gpu_s),
+        "correct-run": lambda: correction(args.tag, args.isaaclab, args.request, args.correction_record),
+        "approve-correction": lambda: approve_correction(args.tag, args.request, args.approver),
+        "reject-correction": lambda: reject_correction(args.tag, args.request, args.approver, args.reason),
+        "correction-status": lambda: correction_status(args.tag),
+        "recover-correction": lambda: recover_correction(args.tag, args.isaaclab, args.request, args.correction_record),
+        "record-harness-failure": lambda: record_harness_failure(args.demo, args.tag, args.step, args.error, args.cause),
+        "summarize": lambda: summarize(args.tag),
+        "status": lambda: status(args.tag),
+    }
+    try:
+        out = commands[args.command]()
+    except GPUBusy as error:
+        print(f"대기: {error}. 아무것도 기록하지 않았다", file=sys.stderr)
+        return 3
+    except (ValueError, FileExistsError, FileNotFoundError, RuntimeError, L.LedgerError) as error:
+        print(f"거부: {error}", file=sys.stderr)
+        return 2
+    print(json.dumps(out, ensure_ascii=False, indent=1, default=str))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
