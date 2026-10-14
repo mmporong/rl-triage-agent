@@ -1,0 +1,31 @@
+{
+ "name": "fixed_eval_v1_anymal_c",
+ "purpose": "Evaluate an Isaac-Velocity-Flat-Anymal-C-v0 run's final checkpoint under the fixed_eval_v1 condition (same grid, horizon, seed, accounting), independent of the run's own training settings. Training randomization events that the Go2 task does not have are disabled in the evaluation environment only.",
+ "derived_from": "bench/protocols/fixed_eval_v1.json",
+ "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+ "eval_seed": 2026,
+ "envs_per_condition": 40,
+ "horizon_steps": 1000,
+ "step_dt": 0.02,
+ "episode_length_s": 20.0,
+ "command_grid": {
+  "vx_mps": [-1.0, 0.0, 1.0],
+  "vy_mps": [-1.0, 0.0, 1.0],
+  "yaw_rate_radps": [-1.0, 0.0, 1.0],
+  "exclude": [[0.0, 0.0, 0.0]]
+ },
+ "env_changes": {
+  "events.add_base_mass": "disabled (default base mass)",
+  "events.push_robot": "disabled (interval push during training only)",
+  "events.base_com": "disabled (default center of mass)",
+  "observations.policy.enable_corruption": false,
+  "commands.base_velocity.heading_command": false,
+  "commands.base_velocity.rel_standing_envs": 0.0,
+  "commands.base_velocity.resampling_time_range": [1.0e9, 1.0e9],
+  "commands": "overwritten every step with the grid command assigned to each env"
+ },
+ "env_events_disabled": ["push_robot", "base_com"],
+ "driver": "evals/fixed_eval_task.py (frozen evals/fixed_eval.py with the env_events_disabled events set to None after parse_env_cfg)",
+ "policy_interface_from_run": ["env.actions.joint_pos.scale"],
+ "accounting": "each env contributes only its first episode; a fall is base_contact before the time limit"
+}
