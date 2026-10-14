@@ -33,6 +33,7 @@ Unsupported mechanisms and insufficient evidence end as HOLD without a correctio
 | Question | Result | Evidence |
 | --- | --- | --- |
 | Does the full loop recover a failed run? | Three runs on new seeds recovered under preregistered criteria: a reward-frame fault (seed 2030), a motor torque-speed fault (seed 2033) and a reward-frame fault decided through the NeMo Agent Toolkit tool-calling path (seed 2034). In the motor run the first judgment ranked reward first; three approved probes rejected reward and exploration and confirmed the actuator. A fourth motor-fault run (seed 2046) added a validation-feedback retry to both model decisions and also recovered; both first answers were valid, so no retry was used. | [End-to-end demonstration](docs/E2E-REWARD-DEMO.md) |
+| Does the loop carry over to a second robot? | On ANYmal-C flat, a robot with an LSTM actuator network and push and center-of-mass randomization during training, the frozen probes, fixed evaluation contract, registered corrections and model decision path were reused; only the task id, the training and evaluation entry points and the packet's task text changed, and the fixed evaluation turns the two randomization events off. Three healthy runs set the ANYmal-C judgment band, with no false alarm from the probes or the tracking alarm between them. A reward-frame fault on a new seed (2047) was then confirmed with one approved probe, and the retrained policy recovered under the preregistered criteria. | [ANYmal-C port](docs/ANYMAL-C-PORT.md) |
 | Does it notice when its correction is not enough? | A reward fault ported from UniLab PR #1254 was confirmed with one probe. Before retraining, the scope check recorded that the yaw-tracking term lies outside the registered correction. Retraining then did not recover, as predicted. | [Result](evals/results/e2e_demo_u1_s2040_20261013/demo_result.json) |
 | Fix and continue training, or retrain? | After the reward-frame correction, continued training and continued training with reset action noise did not recover on two seeds; retraining from scratch did. | [Recovery-mode comparison](docs/TRAINING-CORRECTION.md#회복-방식-비교-v4) |
 | How many probes does it take? | On 18 hidden-fault runs, all six probes confirm 17. Probes ordered from the agent's top-3 hypotheses confirm 14 with 2.1 probes on average and no wrong confirmation. | [Probe loop](#detailed-results) |
@@ -45,7 +46,7 @@ Unsupported mechanisms and insufficient evidence end as HOLD without a correctio
 
 *Recovery-mode comparison, seed 2026: the failed policy, the corrected policy after continued training, after continued training with reset noise and after retraining, and two healthy references. Among the corrected policies, only the retrained one walks. The retrained checkpoint is byte-identical to the original healthy checkpoint, so this recovery confirms that the correction restores the code path rather than showing a new effect.*
 
-**What these results do not show.** Faults, probes and corrections were written by the same team, and each result comes from one task (Go2 flat) and a few seeds. They are integration evidence, not evidence of diagnosis accuracy, generalization, an advantage of the model over rules, or GPU savings. Approvals were operator approvals delegated by the user; approver strings are recorded, not authenticated.
+**What these results do not show.** Faults, probes and corrections were written by the same team, and each result comes from two flat-terrain locomotion tasks (mostly Go2; one fault demonstration on ANYmal-C) and a few seeds. They are integration evidence, not evidence of diagnosis accuracy, generalization, an advantage of the model over rules, or GPU savings. Approvals were operator approvals delegated by the user; approver strings are recorded, not authenticated.
 
 ## At A Glance
 
@@ -201,7 +202,7 @@ ok_request_eval        result=within_boundary   gate=human_review PASS
 
 **This verifies:** permission proofs, kernel enforcement inside a live OpenShell sandbox, agent scores on recorded Isaac Lab telemetry, and the approve → retrain → verdict loop on a real Isaac Lab run.
 
-**This does not verify:** faults that only appear in long training (>100 iterations), rough terrain, robots other than Go2, manipulation tasks, real robots, or multi-sandbox fleets.
+**This does not verify:** faults that only appear in long training (>100 iterations), rough terrain, robots other than Go2 and ANYmal-C, manipulation tasks, real robots, or multi-sandbox fleets.
 
 ### Offline replay (no API key, network or GPU)
 
@@ -246,7 +247,7 @@ Earlier development steps, each with its own protocol, results and limits:
 ## Limitations
 
 - Benchmark circularity: faults, probes, corrections and the agent were built by the same team. Mitigations: benign changes mixed in with a secret seed, prompts committed before each evaluation, same-model single-prompt baseline, held-out seeds, and a small number of faults ported from external sources.
-- One task: all results use `Isaac-Velocity-Flat-Unitree-Go2-v0` on flat terrain.
+- Two flat-terrain locomotion tasks: most results use `Isaac-Velocity-Flat-Unitree-Go2-v0`; `Isaac-Velocity-Flat-Anymal-C-v0` has three healthy runs and one reward-fault demonstration.
 - The registered corrections cover three mechanisms. Other faults end as HOLD or, as with the ported UniLab fault, are flagged as out of scope before retraining.
 - Single model calls sometimes break the output contract; a validation-feedback retry reduced this on already seen inputs and is not yet part of the demonstrations.
 - The skill's mechanism table (`skills/isaaclab-rl-triage/SKILL.md`) was written after looking at benchmark telemetry; scored runs do not load the skill.
@@ -256,11 +257,12 @@ Earlier development steps, each with its own protocol, results and limits:
 
 Isaac Lab 로봇 강화학습이 실패했을 때 원인을 찾아 고치는 에이전트입니다. 학습 기록을 읽어 원인 후보를 고르고(Nemotron), 20초 정도 걸리는 검사로 원인을 확인한 뒤, 미리 등록한 수정과 재학습을 승인받아 실행합니다. 회복 여부는 26개 속도 명령으로 정책을 돌리는 고정 평가로 판정합니다.
 
-- 새 seed에서 학습부터 수정·재학습까지 이어 본 세 번의 실행이 모두 회복했습니다. 모터 결함에서는 첫 판단이 보상을 의심했지만 검사 세 번으로 바로잡았습니다.
+- Go2의 새 seed에서 학습부터 수정·재학습까지 이어 본 네 번의 실행이 모두 회복했습니다. 모터 결함에서는 첫 판단이 보상을 의심했지만 검사 세 번으로 바로잡았습니다.
+- 다른 로봇(ANYmal-C 평지 보행)에서도 같은 검사·평가·교정 코드를 그대로 썼습니다. 정상 학습 세 번으로 판정 기준을 정했고, 새 seed의 보상 결함 한 건을 검사 한 번으로 확정한 뒤 재학습으로 회복했습니다.
 - 다른 프레임워크에서 옮겨 온 보상 버그에서는 재학습 전에 "등록된 수정으로는 부족하다"고 기록했고, 실제로 회복하지 못했습니다.
 - 보상 버그를 고치고 이어서 학습하면 회복하지 못했고, 처음부터 다시 학습하면 회복했습니다.
 - 숨은 결함 18건에서 에이전트가 고른 순서로 평균 2.1번 검사해 14건을 확정했고, 틀린 확정은 없었습니다.
 - 코드 변경 8개 중 원인 하나를 찾는 실험은 유효 사례가 둘뿐이라 사전등록대로 방법 비교를 판정하지 않았습니다. 유효 사례의 모델 호출 네 번 모두 실제 원인을 1위로 냈지만, 한 번은 없는 코드 줄을 근거로 적어 무효 처리됐습니다.
 - 같은 입력으로 모델을 55번 호출하면 유효한 출력의 판단은 늘 같았지만 6번은 출력 형식을 어겼습니다. 틀린 곳을 알려 주고 한 번 더 물으면 1번으로 줄었습니다.
 
-결함·검사·수정을 같은 팀이 만들었고 로봇 작업 하나와 적은 seed로 얻은 결과라, 진단 정확도·일반화·규칙 대비 우위·비용 절감은 주장하지 않습니다. 자세한 수치와 근거 파일은 위 영어 본문과 연결 문서에 있습니다.
+결함·검사·수정을 같은 팀이 만들었고 평지 보행 로봇 작업 둘(대부분 Go2, ANYmal-C는 결함 시연 한 건)과 적은 seed로 얻은 결과라, 진단 정확도·일반화·규칙 대비 우위·비용 절감은 주장하지 않습니다. 자세한 수치와 근거 파일은 위 영어 본문과 연결 문서에 있습니다.
