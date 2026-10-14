@@ -1,0 +1,330 @@
+{
+ "schema": "upstream_optimizer_fault_smoke_protocol_v1",
+ "question": "다른 구현에서 원인이 밝혀진 옵티마이저 결함 R1(PPO가 num_learning_epochs를 쓰지 않음)의 의미를 RSL-RL 2.3.3에 옮기면 Go2 flat 4096 env × 300회 학습이 같은 seed 정상 학습 대비 실제로 실패하는가",
+ "scope": "설계자 밖 외부 결함 한 종류·새 seed 하나의 학습 실패 유무 거르기. 진단 성능·일반화·고리 성능 평가가 아니다",
+ "fault": {
+  "id": "R1",
+  "category": "optimizer",
+  "definition": "RSL-RL 2.3.3 PPO 인스턴스가 만들어진 직후 num_learning_epochs만 1로 바꾼다(bench/optimizer_faults.py). 설정(agent_cfg, params/agent.yaml)의 값 5는 그대로 둔다. 2.3.3 update는 이 값을 미니배치 생성기의 epoch 수와 손실 평균의 분모에 함께 쓰므로, iteration마다 롤아웃 배치를 미니배치 4개로 한 번 돌아 경사 단계가 20회에서 4회로 줄고, 기록되는 손실은 실제 갱신 4회의 평균이다",
+  "injection_point": "gymnasium.make 첫 호출(train.py가 Isaac Sim을 띄운 뒤, OnPolicyRunner가 PPO를 만들기 전)에 PPO 클래스의 __init__·update를 감싼다. 생성 직후 확인 줄 하나, 첫 update 뒤 생성기 미니배치 수·optimizer.step 호출 수 확인 줄 하나",
+  "unchanged": [
+   "적응 학습률 규칙(미니배치마다 KL > 2·desired_kl이면 ÷1.5, < desired_kl/2면 ×1.5, 1e-5~1e-2): 원 브랜치와 2.3.3이 같다",
+   "미니배치 분할(2.3.3은 한 번 섞은 순서를 epoch마다 다시 쓰므로 epoch 1이면 원 브랜치처럼 각 표본을 한 번 쓴다)",
+   "clip·value loss·entropy·gradient clip·관측·보상·환경"
+  ],
+  "not_ported": [
+   "algorithms 브랜치의 다른 구현 차이(망 구성, 이점 정규화 위치, GAE λ 기본값 등). 보고자는 epoch만 되돌려 해결했다고 적었으므로 원인으로 적힌 epoch 무시만 옮긴다",
+   "원 보고의 과제는 Isaac Lab flat ANYmal(2024-08)이고 여기는 Go2 flat이다. 300회·적응 학습률·미니배치 4·epoch 5 설정은 같다"
+  ],
+  "cpu_check": "실제 rsl_rl 2.3.3 PPO(번들 파이썬, CUDA 숨김, Isaac 앱 없음)에 같은 주입을 걸고 무작위 롤아웃으로 update를 돌렸다. NONE은 설정 5·실제 5·첫 update 미니배치 20·optimizer.step 20, R1은 설정 5·실제 1·미니배치 4·optimizer.step 4(backward 호출도 따로 세어 20·4). 2026-10-14 sub_1 확인, 기록은 비공개",
+  "no_tuning_rule": "결함 정의는 원전에서만 정한다. 이번 결과를 보고 epoch 수·주입 방식·seed를 바꾸거나 다른 seed로 재시도하지 않는다. 시도·최종 표식은 프로토콜 SHA별이므로, 최종 결과가 나온 뒤 같은 결함으로 새 프로토콜 버전을 만들지 않는다(만들어야 하면 그 사유를 새 프로토콜에 적는다)"
+ },
+ "source": {
+  "framework": "RSL-RL algorithms 브랜치(지금은 지워짐). RSL-RL 2.3.3(main)과 Isaac Lab의 버그가 아니다",
+  "issue": {
+   "url": "https://github.com/leggedrobotics/rsl_rl/issues/38",
+   "title": "Huge performance gaps between algorithms and master on base IsaacLab tasks",
+   "opened": "2024-08-30T11:00:00Z",
+   "closed": "2024-08-30T11:31:27Z(보고자가 원인 댓글과 함께 닫음)",
+   "excerpts": [
+    "does not learn to follow the velocity commands at all in the 300 update steps",
+    "num_learning_epochs is not used as a parameter in the new version (so each batch is used once only for updating)",
+    "If you modify the code and run it with 5 epochs (like the master branch PPO), it works fine"
+   ],
+   "second_user": "2024-12-09 다른 사용자가 같은 문제를 보고하고, 보고자 안내(배치 생성 호출을 epoch 바깥 반복으로 감싸기)로 해결했다고 적었다",
+   "maintainer_response": "없음. 원인 확정은 보고자의 재실행 확인이며 메인테이너 확정이나 수정 PR이 아니다"
+  },
+  "code": {
+   "commit": "96393c41c55c0a905eff035875b97f3b837225fe",
+   "commit_date": "2024-04-03T20:25:58Z(이슈보다 앞선 algorithms 브랜치 끝 커밋)",
+   "legacy_runner_mapping": {
+    "url": "https://github.com/leggedrobotics/rsl_rl/blob/96393c41c55c0a905eff035875b97f3b837225fe/rsl_rl/runners/legacy_runner.py#L38",
+    "excerpts": [
+     "(\"num_learning_epochs\", None),",
+     "(\"num_mini_batches\", \"batch_count\"),"
+    ]
+   },
+   "ppo_update": {
+    "url": "https://github.com/leggedrobotics/rsl_rl/blob/96393c41c55c0a905eff035875b97f3b837225fe/rsl_rl/algorithms/ppo.py#L215",
+    "excerpt": "for idx, batch in enumerate(self.storage.batch_generator(self._batch_count, trajectories=self.recurrent)):",
+    "note": "batch_generator는 한 번 섞은 순서로 batch_count개 미니배치를 낸다. 손실은 batch_count개의 평균이다"
+   },
+   "branch_removed": {
+    "url": "https://github.com/leggedrobotics/rsl_rl/issues/149",
+    "excerpt": "we switched to having a single branch, since the algorithms branch was very outdated"
+   },
+   "access_note": "브랜치는 지워졌지만 커밋은 원 저장소에서 SHA로 읽히고 여러 포크(ClemensSchwarke/rsl_rl 등)의 algorithms 브랜치 끝이 같은 커밋이다(gh api, 2026-10-14)"
+  }
+ },
+ "mapping": {
+  "rsl_rl_version": "2.3.3",
+  "ppo_epoch_lines": {
+   "105": "self.num_learning_epochs = num_learning_epochs",
+   "205": "generator = self.storage.recurrent_mini_batch_generator(self.num_mini_batches, self.num_learning_epochs)",
+   "207": "generator = self.storage.mini_batch_generator(self.num_mini_batches, self.num_learning_epochs)",
+   "405": "num_updates = self.num_learning_epochs * self.num_mini_batches"
+  },
+  "go2_cfg_lines": {
+   "29": "num_learning_epochs=5,",
+   "30": "num_mini_batches=4,",
+   "31": "learning_rate=1.0e-3,",
+   "32": "schedule=\"adaptive\",",
+   "35": "desired_kl=0.01,",
+   "45": "self.max_iterations = 300"
+  },
+  "effect": {
+   "gradient_steps_per_iteration": [
+    20,
+    4
+   ],
+   "loss_mean_denominator": "실제 갱신 수(정상 20, R1 4). 원 브랜치도 batch_count개의 평균이었다",
+   "params_visibility": "agent.yaml에는 num_learning_epochs 5가 그대로 남아 설정 diff로 보이지 않는다"
+  }
+ },
+ "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+ "seed": 2042,
+ "num_envs": 4096,
+ "max_iterations": 300,
+ "action_scale": 0.25,
+ "final_checkpoint": "model_299.pt",
+ "training_entry": "bench/train_with_optimizer_fault.py(TRIAGE_OPTIMIZER_FAULT=NONE 또는 R1), U1 smoke와 같은 train.py 인자",
+ "reference": {
+  "arm": "같은 seed·예산·진입점의 정상 학습(TRIAGE_OPTIMIZER_FAULT=NONE)을 이 실행 안에서 R1 직전에 한다",
+  "bands_source": "evals/results/p0c_fixed_eval_20261009/summary.json(bands)",
+  "evaluation": "두 체크포인트를 한 고정 평가 프로세스(evals/fixed_eval.py, jobs 2개)에서 평가한다"
+ },
+ "seed_choice": {
+  "decision": "새 seed 2042, 정상 학습을 같은 날 같은 진입점으로 새로 한다(학습 2회)",
+  "pros": [
+   "seed 2042는 저장소 결과·비공개 meta·Isaac Lab 로그 어디에도 쓰인 기록이 없다(실행 시 다시 검사해 결과에 남긴다)",
+   "정상·결함 학습의 날짜·런타임·진입점이 같다(U1 smoke는 다른 진입점·날짜의 P0-C 기준을 다시 썼다)",
+   "smoke가 failure_present면 이어지는 고리 단계가 같은 seed 정상 학습의 체크포인트(model_0.pt 포함)를 기준으로 쓸 수 있다"
+  ],
+  "cons": [
+   "학습이 2회라 U1 smoke(1회)보다 GPU 시간이 약 두 배다",
+   "정상 학습이 이 seed에서 걷지 못하면(reference_walks) 결과는 invalid이고 실패 유무를 말하지 않는다"
+  ],
+  "alternative": "seed 2026 + P0-C baseline_p0c_s2026 재사용(학습 1회): GPU는 절반이지만 이미 본 seed이고 기준 진입점·날짜가 다르다"
+ },
+ "execution": {
+  "owned_process": "bench/run_runtime_readback_smoke.run_owned: 소유 Windows Job, 시간 초과 시 프로세스 트리 종료, stdout·stderr 분리",
+  "watchdog_s": {
+   "training": 2700,
+   "telemetry_extract": 300,
+   "fixed_evaluation": 600
+  },
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "gpu_admission": "학습 전 GPU가 사용 중이면 아무것도 쓰지 않고 실행하지 않는다. 고정 평가 전에는 최대 1800초 동안 60초 간격으로 다시 확인한다",
+  "order": "정상 학습 → (정상 학습 측 검사 통과 시) R1 학습 → 두 실행 텔레메트리 추출 → params 대조 → 평가 전 재확인 → 고정 평가(jobs 2개) → 사후 확인 → 판정",
+  "seed_unused": "시작 전에 저장소·비공개 meta·고리 기록·Isaac Lab 로그에서 seed 2042 흔적을 찾는다. 시도 1은 흔적이 없어야 하고, 시도 2는 시도 1의 두 실행 이름만 허용한다",
+  "reverify": "고정 평가 직전과 평가 뒤에 프로토콜·결합 코드·Isaac Lab·rsl_rl 소스를 다시 확인하고(결합 경로 clean·커밋됨, 시작 커밋과 현재 HEAD 사이 결합 경로 diff 없음), 평가 뒤 두 체크포인트 SHA를 다시 계산한다",
+  "skip_rule": "정상 학습 측 검사가 하나라도 어긋나면 R1 학습을 하지 않는다. 학습 측 검사(두 실행의 종료 코드·체크포인트·확인 줄, params)가 하나라도 어긋나면 고정 평가를 하지 않는다",
+  "attempts": {
+   "1": {
+    "reference": "upstream_r1_none_s2042",
+    "fault": "upstream_r1_s2042"
+   },
+   "2": {
+    "reference": "upstream_r1_none_s2042_a2",
+    "fault": "upstream_r1_s2042_a2"
+   }
+  },
+  "retry_rule": "시도 2는 시도 1의 결과가 끝났고 invalid_cause가 infrastructure일 때 그 tag를 지정해 한 번만 한다. 두 학습을 새 실행 이름으로 처음부터 다시 하며, 결함 정의·seed·판정 기준은 같다. 이어 하기(학습을 두고 평가만 다시)는 두지 않는다",
+  "final_rule": "처음 나온 유효 결과(failure_present 또는 failure_absent)가 최종이다. 그 뒤로는 시도 2를 거부한다"
+ },
+ "outcomes": {
+  "failure_present": "유효 조건을 모두 채우고, R1 고정 평가가 같은 seed 정상 고정 평가 대비 p0c 밴드에서 unhealthy",
+  "failure_absent": "유효 조건을 모두 채우고 healthy",
+  "invalid": "아래 유효 조건 중 하나라도 어긋남(판정이 undetermined인 경우 포함). 실패 유무를 판정하지 않는다"
+ },
+ "validity_checks": {
+  "pipeline_completed": "실행기 단계가 예외·시간 초과·소스 변경 없이 끝남",
+  "reference_training_exit_zero": "정상 학습 프로세스 종료 코드 0",
+  "reference_final_checkpoint_present": "정상 실행 폴더에 model_299.pt",
+  "reference_injection_readback": "정상 학습 stdout의 [optimizer_fault] 줄 두 개: NONE, 설정·실제 epoch 5, 첫 update 미니배치·optimizer.step 20",
+  "training_exit_zero": "R1 학습 프로세스 종료 코드 0",
+  "final_checkpoint_present": "R1 실행 폴더에 model_299.pt",
+  "injection_readback": "R1 학습 stdout의 [optimizer_fault] 줄 두 개: R1, 설정 epoch 5·실제 1, 첫 update 미니배치·optimizer.step 4",
+  "params_match_reference": "params/env.yaml·agent.yaml이 정상 실행과 agent run_name 외에 같다",
+  "configured_epochs_in_params": "두 실행의 agent.yaml algorithm.num_learning_epochs가 5다(결함이 설정에 드러나지 않음)",
+  "reference_walks": "정상 정책이 고정 평가에서 걷는다(정지 대비 오차 비 0.5 미만, 낙상 0.05 이하)",
+  "fixed_report_valid": "두 고정 평가 보고서가 결합한 fixed_eval_v1 계약 SHA·체크포인트 SHA·action scale을 통과",
+  "runtime_matches_reference": "두 보고서의 런타임 버전이 같다",
+  "verdict_determined": "p0c 밴드 판정이 healthy 또는 unhealthy다"
+ },
+ "invalid_causes": {
+  "rule": "validity_checks 순서에서 처음 어긋난 검사의 원인 하나를 invalid_cause로 적고, 어긋난 검사 전체는 failed_checks에 남긴다. 학습 뒤 단계에서 실행기가 멈췄어도 학습 측 검사 중 어긋난 것이 있으면 그 원인을 적는다",
+  "by_check": {
+   "pipeline_completed": "infrastructure",
+   "reference_training_exit_zero": "training_process",
+   "reference_final_checkpoint_present": "training_process",
+   "reference_injection_readback": "injection",
+   "training_exit_zero": "training_process",
+   "final_checkpoint_present": "training_process",
+   "injection_readback": "injection",
+   "params_match_reference": "comparability",
+   "configured_epochs_in_params": "comparability",
+   "reference_walks": "comparability",
+   "fixed_report_valid": "evaluation",
+   "runtime_matches_reference": "comparability",
+   "verdict_determined": "evaluation"
+  },
+  "fault_induced_crash": "결함 때문에 R1 학습이 죽거나(종료 코드≠0) 체크포인트가 없어도 training_process로 invalid다. 실행 한 번으로 결함 원인과 인프라 원인을 가를 수 없어 failure_present로 세지 않는다. 학습 watchdog 초과는 infrastructure다",
+  "judge_failure": "판정 계산 자체가 예외로 끝나면 실패 단계 judge, invalid_cause runner로 남긴다. 실행기 결함이라 재실행 대상이 아니다"
+ },
+ "prediction": {
+  "outcome": "failure_present",
+  "reason": "원 보고가 같은 적응 학습률 규칙·같은 300회·같은 epoch 5·미니배치 4 설정의 Isaac Lab flat 과제에서 속도 명령을 전혀 따르지 못했다고 적었다. iteration당 경사 단계가 20회에서 4회로 줄어 300회 안에 추종을 배우지 못하고, 고정 평가 선속도 오차 비가 p0c 밴드를 넘을 것으로 본다",
+  "competing": {
+   "outcome": "failure_absent",
+   "mechanism": "적응 학습률은 iteration 안의 KL을 desired_kl 근처로 맞추려 한다. 갱신이 4회뿐이면 KL이 작아 학습률이 더 오르고, iteration당 정책 이동이 정상과 비슷해질 수 있다",
+   "evidence": "P0-C 정상 학습 seed 2026의 Loss/learning_rate 중앙값은 5.85e-4이고 상한 1e-2까지 약 17배 여유가 있다. CPU 확인의 무작위 롤아웃에서도 R1의 학습률이 정상보다 빨리 올랐다(Go2 학습이 아니다)",
+   "note": "이 경로가 맞으면 failure_absent이며, 결함 크기(epoch 수)나 다른 seed로 다시 시도하지 않는다"
+  },
+  "auxiliary": {
+   "statement": "R1 학습의 Loss/learning_rate 300회 중앙값이 같은 seed 정상 학습의 중앙값보다 크다",
+   "use": "기록만 한다. 판정·유효 조건에 쓰지 않고, 결과가 failure_absent여도 적응 학습률이 보상했다는 인과로 쓰지 않는다"
+  }
+ },
+ "loop_stage": {
+  "status": "smoke가 failure_present일 때만 별도 사전등록으로 연다. 이 smoke는 probe를 재지 않는다",
+  "plan": "동결 evals/probes.py·src/rl_triage/probe_loop.py를 바꾸지 않고, 같은 seed 정상 실행과 R1 실행의 체크포인트에 6개 probe를 한 번씩 잰 뒤 fixed·exhaustive 순서로 고리를 돈다. R1은 학습 update만 바꾸고 롤아웃·환경은 바꾸지 않으므로 probe 프로세스에는 결함을 걸지 않는다(TRIAGE_FAULT=NONE). 모델 순위(discriminate) 고리는 새 모델 호출이 필요해 그 사전등록에서 따로 정한다",
+  "probe_predictions": {
+   "P_value": {
+    "prediction": "normal",
+    "reason": "critic 파라미터 상대 변화(model_0.pt→마지막)가 같은 seed 정상의 10% 이상일 것이다. P0-C 정상은 1.43~1.47, 학습률이 대부분 하한 1e-5에 머문 h05(노이즈 0.05)도 0.40~0.60(정상의 27~41%)이었고, R1은 갱신 1200회가 남는다",
+    "consequence": "optimizer 가설이 기각된다. 동결 probe로는 R1을 optimizer로 확정하지 못한다"
+   },
+   "P_noise": {
+    "prediction": "normal",
+    "reason": "행동 샘플링 경로를 바꾸지 않는다"
+   },
+   "P_reward": {
+    "prediction": "normal",
+    "reason": "보상 코드를 바꾸지 않는다"
+   },
+   "P_physics": {
+    "prediction": "normal",
+    "reason": "물리 설정을 바꾸지 않는다"
+   },
+   "P_episode": {
+    "prediction": "normal",
+    "reason": "P0-C 실패 정책 중 종료 결함(h03) 밖에서는 시간 제한 종료 비가 1.0이었다",
+    "risk": "R1 정책이 넘어져 에피소드가 일찍 끝나면 abnormal → termination으로 틀린 확정"
+   },
+   "P_torque": {
+    "prediction": "normal",
+    "reason": "정상 0.0003~0.0006이라 기준은 바닥값 0.01의 3배인 0.03이다. P0-C 실패 정책 중 h01·h02·h03은 0.006 이하였다",
+    "risk": "학습이 덜 된 정책은 저속 토크 포화가 커질 수 있다. P0-C h04(critic 기울기 0) 3개 중 1개(0.038), h05(노이즈 0.05) 3개 모두(0.06~0.81)가 0.03을 넘었다. 넘으면 actuator로 틀린 확정"
+   }
+  },
+  "predicted_conclusion": {
+   "fixed": "none_supported",
+   "exhaustive": "none_supported",
+   "meaning": "맞는 확정 0·틀린 확정 0. 등록 범주(optimizer) 안의 다른 구현을 동결 P_value가 겨누지 못해 모든 가설이 기각되는 경우"
+  },
+  "scenarios": [
+   {
+    "if": "P_torque abnormal(나머지 예측대로)",
+    "fixed": "confirmed actuator",
+    "exhaustive": "confirmed actuator",
+    "meaning": "틀린 확정"
+   },
+   {
+    "if": "P_episode abnormal(나머지 예측대로)",
+    "fixed": "confirmed termination",
+    "exhaustive": "confirmed termination",
+    "meaning": "틀린 확정"
+   },
+   {
+    "if": "P_value abnormal(나머지 예측대로)",
+    "fixed": "confirmed optimizer",
+    "exhaustive": "confirmed optimizer",
+    "meaning": "맞는 확정(예측하지 않음)"
+   }
+  ],
+  "scenario_rule": "결론은 src/rl_triage/probe_loop.simulate를 같은 관측표에 돌린 값이다(tests/test_upstream_r1_smoke.py가 대조)"
+ },
+ "later_uses": {
+  "failure_present": [
+   "고리 단계(loop_stage)를 별도로 사전등록하고 잰다. 이 smoke 결과로 진단 성능을 말하지 않는다",
+   "D3 해로운 변경 후보로 쓸지는 그 판의 사전등록에서 정한다"
+  ],
+  "failure_absent": "이 task·예산·seed에서 실패 없음으로 기록하고 후보에서 내린다. epoch 수나 정의를 바꿔 키우지 않는다",
+  "invalid": "invalid_cause와 실패 단계를 기록한다. 다시 실행하는 것은 execution.retry_rule만 따른다"
+ },
+ "used_for": "실패 유무 판정만. 고리·교정·D3에는 이번 판정을 쓰지 않는다",
+ "gpu_estimate": {
+  "unit": "부모 프로세스 벽시계(초). GPU 커널 시간이나 절감량이 아니다",
+  "train_s_each": [
+   429.3,
+   873.6
+  ],
+  "train_basis": "U1 smoke 프로토콜의 P0-C·T1 4096 env × 300회 신규 학습 26건 범위(GPU 경합 1건 제외), 학습 2회",
+  "fixed_eval_s": [
+   102.4,
+   129.0
+  ],
+  "fixed_eval_basis": "v4·W1 단일 고정 평가 51.2~64.5 s의 두 배로 잡은 추정(체크포인트 2개를 한 프로세스에서 평가한 기록은 없다)",
+  "total_s": [
+   1000,
+   1900
+  ]
+ },
+ "wording": {
+  "failure_present": "rsl_rl #38에서 보고자가 원인으로 확인한 결함(PPO가 설정의 epoch 수를 쓰지 않음)의 의미를 옮긴 학습이 같은 seed 정상 학습 대비 p0c 밴드를 벗어났다. 새 seed 하나의 단일 실행이며, 진단 성능이나 다른 결함·task로의 일반화를 말하지 않는다.",
+  "failure_absent": "rsl_rl #38에서 보고자가 원인으로 확인한 결함의 의미를 옮긴 학습이 같은 seed 정상 학습 대비 p0c 밴드 안이었다. 이 task·예산·seed에서 학습 실패가 재현되지 않았고, epoch 수나 정의를 바꿔 다시 시도하지 않는다.",
+  "invalid": "smoke가 사전등록한 유효 조건을 채우지 못해 학습 실패 유무를 판정하지 않는다."
+ },
+ "source_files": {
+  "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+  "bench/train_with_optimizer_fault.py": "4cf14df64cf72f6101e5ac762522167b402ad182981c4482a947497016977520",
+  "evals/run_upstream_r1_smoke.py": "a06e582d440b916c75b7e7b5a8cdb521701870f774207f14f01f13439853127c",
+  "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+  "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+  "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+  "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+  "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+  "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+  "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+  "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+  "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e"
+ },
+ "isaaclab_sources": {
+  "ppo": {
+   "path": "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py",
+   "sha256_lf": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc"
+  },
+  "rollout_storage": {
+   "path": "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/storage/rollout_storage.py",
+   "sha256_lf": "456450bbba03f9f5818f9ec43d2f3bd5d14d2d27f4bf2308838dd580f32ffcf0"
+  },
+  "on_policy_runner": {
+   "path": "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py",
+   "sha256_lf": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d"
+  },
+  "rsl_rl_metadata": {
+   "path": "_isaac_sim/kit/python/Lib/site-packages/rsl_rl_lib-2.3.3.dist-info/METADATA",
+   "sha256_lf": "90fb9745b9f3c70a32758af9f06dd68dae9b7a13f33e3998e99e081b5c09fda9"
+  },
+  "train": {
+   "path": "scripts/reinforcement_learning/rsl_rl/train.py",
+   "sha256_lf": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545"
+  },
+  "go2_agent_cfg": {
+   "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py",
+   "sha256_lf": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290"
+  }
+ },
+ "reference_inputs": {
+  "bands": {
+   "survival_ratio_min": 0.9,
+   "err_xy_ratio_max": 1.1513,
+   "err_yaw_ratio_max": 1.1719,
+   "fall_frac_max": 0.05
+  },
+  "bands_summary_sha256_lf": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+  "fixed_eval_protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46"
+ }
+}
