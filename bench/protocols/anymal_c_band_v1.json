@@ -1,0 +1,147 @@
+{
+ "schema": "second_task_band_protocol_v1",
+ "question": "ANYmal-C flat 정상 실행 셋(seed 2043·2044·2045)으로 P0-C 방식 밴드를 만들 수 있고, 동결 비 기준 probe와 추종 경고 R1이 정상 실행끼리 오경보를 내지 않는가",
+ "scope": "두 번째 로봇 task 단계 1. 정상 실행 셋의 변동 기록이며 진단 성능·일반화·Go2와의 수치 비교가 아니다",
+ "stage": {
+  "index": 1,
+  "previous": "단계 0 pass(evals/results/anymal_c_gate_20261014/result.json, 5ea5557). 그 정상 실행(seed 2043)을 셋 중 하나로 쓴다",
+  "next": "pass일 때만 단계 2(보상 좌표 결함 F1 종단 시연)를 따로 사전등록한다. 단계 2의 판정 밴드·R1 참조·probe 기준은 이 단계 결과를 쓴다"
+ },
+ "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+ "seeds": [
+  2044,
+  2045
+ ],
+ "stage0_seed": 2043,
+ "num_envs": 4096,
+ "max_iterations": 300,
+ "action_scale": 0.5,
+ "procedure": "seed마다 단계 0과 같다: bench/train_with_fault.py(TRIAGE_FAULT=NONE) 학습 → 텔레메트리 추출 → evals/fixed_eval_task.py 고정 평가(fixed_eval_v1_anymal_c, 평가 환경 push_robot·base_com 끔) → evals/probes_task.py probe 6종(task 등록 학습 설정). 유효 조건도 단계 0과 같다(seed만 다름). seed 2044 다음 2045 순서",
+ "bands": {
+  "method": "P0-C와 같다: 정상 실행 셋의 순서쌍 6개(실행 i 대 다른 seed 실행 j)를 recovery.compare로 비교하고 recovery.derive_bands(여유 비 0.10, 낙상 0.05)로 정한다",
+  "use": "단계 2 판정에 쓴다. 이 단계의 통과 기준이 아니라 기록이다(정상끼리는 정의상 밴드 안이다)"
+ },
+ "ratio_probes": {
+  "method": "P_value·P_torque 측정을 순서쌍 6개마다 probe_loop.classify(probe, 실행 i 측정, 실행 j 측정)에 넣는다(12개). 동결 임계값: P_value는 기준의 10% 미만이면 abnormal, P_torque는 3 × max(기준, 0.01) 초과면 abnormal",
+  "use": "단계 2에서 같은 seed 정상 실행을 기준으로 쓰기 전에, 정상 실행끼리 abnormal이 나오지 않는지 본다"
+ },
+ "tracking_alarm": {
+  "method": "rl_triage.tracking_alarm.r1(실행 i의 Metrics/base_velocity/error_vel_xy, 다른 두 정상 실행의 같은 시계열). 규칙(20회 평균, 60회 이후, 2배, 10회 연속)은 동결 상수 그대로",
+  "use": "단계 2의 경고 단계 참조로 쓰기 전에 정상 실행끼리 울리지 않는지 본다"
+ },
+ "criteria": {
+  "new_runs_walk": "seed 2044·2045 정상 정책이 고정 평가에서 걷는다(정지 대비 오차 비 < 0.5, 낙상 ≤ 0.05)",
+  "absolute_probes_normal": "seed 2044·2045의 절대 기준 probe 4종이 normal",
+  "ratio_probes_cross_seed_normal": "비 기준 probe 순서쌍 12개가 모두 normal",
+  "no_tracking_false_alarm": "정상 실행 셋 모두에서 R1이 울리지 않는다"
+ },
+ "outcomes": {
+  "pass": "두 seed가 유효하고 기준 네 개를 모두 채움 → 단계 2를 사전등록한다",
+  "fail": "유효하지만 기준 하나 이상이 어긋남 → 멈춘다. 단계 2로 가지 않는다",
+  "invalid": "어느 seed든 유효 조건을 채우지 못한 채 끝남(재시도 뒤 포함). 판정하지 않는다"
+ },
+ "stop_rule": "fail이면 이 task로 단계 2를 하지 않는다. 임계값·R1 규칙·밴드 여유·seed를 바꿔 다시 시도하지 않는다. 다음 결정은 사용자가 한다",
+ "validity": "seed마다 단계 0의 validity_checks 8개(파이프라인·종료 코드·체크포인트 둘·[hidden_fault] NONE·params·[eval_env]·고정 평가 보고서·probe 보고서 결합). 단계 0 입력은 결과 pass·프로토콜 SHA·보고서·텔레메트리 SHA가 결합값과 같아야 쓴다",
+ "execution": {
+  "watchdog_s": {
+   "training": 3600,
+   "telemetry_extract": 300,
+   "fixed_evaluation": 600,
+   "probes": 1200
+  },
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "seed_unused": "seed마다 실행 직전에 단계 0과 같은 범위(저장소 bench/runs_*·bench/private·evals/results·evals/loops, Isaac Lab 로그 전체)에서 흔적을 찾는다. 시도 1은 흔적이 없어야 하고 시도 2는 그 seed 시도 1 실행 이름만 허용한다",
+  "retry_rule": "seed마다 시도 1이 인프라 원인 invalid면 retry로 새 실행 이름(_a2)으로 한 번 더 한다. 그 밖 원인의 invalid나 시도 2의 invalid는 그 seed의 최종이다",
+  "summary_rule": "두 seed가 모두 최종이 되면 요약을 한 번 쓴다(공개 result.json). 다시 쓰지 않는다"
+ },
+ "prediction": {
+  "outcome": "pass",
+  "basis": {
+   "ratio_probes": "단계 0 정상 실행의 P_value critic 변화 1.778, P_torque 저속 포화 2.1e-6이다. seed 간 critic 변화 비는 1 근처, 포화는 바닥값 0.01의 3배(0.03)보다 훨씬 작을 것으로 본다",
+   "tracking_alarm": "정상 실행끼리 추종 오차가 2배 차이 나는 구간이 10회 이어지지 않을 것으로 본다",
+   "walk": "단계 0 정상 실행이 걸었다(정지 대비 0.155, 낙상 0.013)"
+  },
+  "risk": "seed에 따라 300회에서 덜 걷는 실행이 나오면 new_runs_walk가 어긋나고, 학습 초반 오차 차이로 R1이 울릴 수 있다"
+ },
+ "no_tuning_rule": "결과를 본 뒤 기준·임계값·R1 상수·밴드 여유·seed·평가 환경을 바꾸지 않는다",
+ "wording": {
+  "pass": "ANYmal-C flat 정상 실행 셋(새 seed 셋)이 모두 걸었고, 동결 비 기준 probe와 추종 경고 R1이 정상 실행끼리 오경보를 내지 않았다. 이 셋으로 P0-C 방식 밴드를 정했다. 단계 2로 간다. 정상 실행 변동 기록이며 진단 성능·일반화가 아니다.",
+  "fail": "ANYmal-C flat 단계 1의 사전등록 기준 일부를 채우지 못해 단계 2로 가지 않는다. 기준·임계값을 바꿔 다시 시도하지 않는다.",
+  "invalid": "단계 1 실행이 사전등록한 유효 조건을 채우지 못해 판정하지 않는다."
+ },
+ "source_files": {
+  "evals/run_anymal_c_band.py": "6854041e2c48a0013625f9112d19ea4f875faf9d3f28c66b94cc235cf09415fc",
+  "evals/run_anymal_c_gate.py": "040a3fa1c6a39b61bd836202f659729a4afb17beb3347d7c47a2ce387a41a7a4",
+  "evals/fixed_eval_task.py": "d6b903b98c25d51a03cfd9f134482554211144ca268c2457512c3d94478c65b7",
+  "evals/probes_task.py": "36271fbe40a50392e97ffb9f4fdd93439738e7334f4418fb2fddfa55e04aa14d",
+  "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+  "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+  "bench/protocols/fixed_eval_v1_anymal_c.json": "d5dbc5c92bb6e14c47c73bd70a6df52ece3de4bc3557558c35534f878cffcbd7",
+  "bench/train_with_fault.py": "e4b3b698cc2b8823e50feec9aa22f8c07afe3b49cfe7750ae23cf5313554543c",
+  "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+  "bench/external_faults.py": "33e0bcb7b4b5db8669bf1aaccd96f4eefe5b542fb5b564f69c1822081f18955d",
+  "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+  "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+  "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+  "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+  "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+  "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+  "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+  "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+  "src/rl_triage/tracking_alarm.py": "31d457c6f77ec77a274c3e7a627899ebe1711ddc4c03832c6a2cd5c2ed88e24c",
+  "bench/protocols/anymal_c_gate_v1.json": "35c2b743e84895634f5cfd94f4300417e5bec2aede11bfc5a49f9fd25efa28fd"
+ },
+ "isaaclab_sources": {
+  "flat_env_cfg": {
+   "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/flat_env_cfg.py",
+   "sha256_lf": "582aa91a13cdafd0e5a3abf7c39dd473278bf8db3bbfa89b21c4f03512420603"
+  },
+  "rough_env_cfg": {
+   "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/rough_env_cfg.py",
+   "sha256_lf": "bed7c457e1271f37e38ebf7c2a26bacd0bade2ffb41939e779dfac37f442aded"
+  },
+  "agent_cfg": {
+   "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/agents/rsl_rl_ppo_cfg.py",
+   "sha256_lf": "956ba2706e0fff48a2dfab9c71f83efe1f2171d33ad64308523e4bef2fc60bf2"
+  },
+  "registration": {
+   "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/__init__.py",
+   "sha256_lf": "aa2976b6a44d6d86642da8ffe0b85f4b78cb9ca0885788f2475ee32f03300f52"
+  },
+  "velocity_env_cfg": {
+   "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py",
+   "sha256_lf": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+  },
+  "robot_cfg": {
+   "path": "source/isaaclab_assets/isaaclab_assets/robots/anymal.py",
+   "sha256_lf": "4d77e1f8ff0a228b2eb037f55d25fe3957225af767f97c4bbb7033ee3741cc35"
+  },
+  "actuator_net": {
+   "path": "source/isaaclab/isaaclab/actuators/actuator_net.py",
+   "sha256_lf": "e9cc9a8799f9e53ac9303dd3e1343dfd5b74b5927f7e92421a59eb610cda9b3f"
+  },
+  "train": {
+   "path": "scripts/reinforcement_learning/rsl_rl/train.py",
+   "sha256_lf": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545"
+  }
+ },
+ "eval_protocol_sha256_lf": "d5dbc5c92bb6e14c47c73bd70a6df52ece3de4bc3557558c35534f878cffcbd7",
+ "stage0_inputs": {
+  "result": {
+   "path": "evals/results/anymal_c_gate_20261014/result.json",
+   "sha256_lf": "989c81ed2b8d6c5eded5c153795ed536879ee6b9471926c33779651c01500128"
+  },
+  "report": {
+   "path": "evals/results/anymal_c_gate_20261014/runs/anymal_c_gate_none_s2043.json",
+   "sha256_lf": "87098bba7f0201945e81427c07d90d8f9164f467535fe877aefaaa23acd5954e"
+  },
+  "probe_report": {
+   "path": "evals/results/anymal_c_gate_20261014/probes/anymal_c_gate_none_s2043.json",
+   "sha256_lf": "e4aecc4ab8481d1b980847d8494f99cb3dbb09c544697ac74fdd10cc2c310301"
+  },
+  "telemetry": {
+   "path": "bench/runs_anymal/anymal_c_gate_none_s2043.telemetry.json",
+   "sha256_lf": "928087a354943eeef7a3c833d75e32db437996cd58a8ccd989423e2bb7fe27e4"
+  }
+ }
+}
