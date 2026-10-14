@@ -1,0 +1,2775 @@
+{
+ "schema": "n2_feedback_result_v1",
+ "protocol_sha256_lf": "f76a2ad2ee795f48798c45c187a1982de6c95aaa94e530cce47b99510b459bbb",
+ "source_commit_sha": "08ec3b955103823059c48c8e8e9f1c3a915d4416",
+ "complete": true,
+ "budget": {
+  "requests_used": 61,
+  "cap_requests": 120,
+  "exhausted": false
+ },
+ "totals": {
+  "first_valid": 49,
+  "invalid": 1,
+  "recovered_by_retry": 5,
+  "retried": 6,
+  "valid": 54
+ },
+ "mean_pass4": {
+  "diagnosis": 0.8666666666666667,
+  "correction": 1.0
+ },
+ "improvement": {
+  "decision": "improved",
+  "max_invalid_total": 1,
+  "min_mean_pass4_each_kind": 0.8
+ },
+ "wording": [
+  "검증 피드백 1회 재요청 arm이 사전등록 기준(최종 무효 ≤ 1/55, 진단·교정 평균 pass^4 ≥ 0.8)을 넘었다: 1차 유효 49/55, 재요청 6회, 최종 무효 1/55, 평균 pass^4 진단 0.87·교정 1.00. 같은 packet의 N2 단일 호출(무효 6/55)보다 개선됐다. 이미 본 packet의 개발 측정이며, 시연 결정 단계에 넣으려면 새 사전등록이 필요하다."
+ ],
+ "use": {
+  "diagnosis": {
+   "stability": "varied",
+   "use": "usable",
+   "mean_pass4": 0.8666666666666667,
+   "mean_pass_k": {
+    "1": 0.9666666666666667,
+    "2": 0.9333333333333332,
+    "4": 0.8666666666666667,
+    "5": 0.8333333333333334
+   },
+   "wording": [
+    "피드백 재요청 진단: 같은 packet 반복에서 결정이 흔들렸다. 흔들린 packet과 결정 분포를 그대로 공개한다.",
+    "피드백 재요청 진단: 평균 pass^4가 사전등록 하한 0.8 이상이라 다음 시연 결정 단계에 계속 쓸 수 있다."
+   ]
+  },
+  "correction": {
+   "stability": "stable",
+   "use": "usable",
+   "mean_pass4": 1.0,
+   "mean_pass_k": {
+    "1": 1.0,
+    "2": 1.0,
+    "4": 1.0,
+    "5": 1.0
+   },
+   "wording": [
+    "피드백 재요청 교정: 같은 packet을 5회 반복한 결정이 모든 packet에서 유효했고 서로 같았다.",
+    "피드백 재요청 교정: 평균 pass^4가 사전등록 하한 0.8 이상이라 다음 시연 결정 단계에 계속 쓸 수 있다."
+   ]
+  }
+ },
+ "sets": {
+  "h02_s2027": {
+   "case": "h02_s2027",
+   "seed": 2027,
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "feedback": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2843,
+       "min": 2843,
+       "max": 2843,
+       "total": 14215
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 204,
+       "min": 190,
+       "max": 207,
+       "total": 1004
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 5.158228109125048,
+       "min": 4.254759901901707,
+       "max": 10.44576273788698,
+       "total": 30.2767584847752
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 3043.8,
+      "runs": [
+       {
+        "run": 1,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "ba6c3f5995e53d5cbbeecf2c1be01aad0ef27d6957cf4d85ae683a14bcb51a74",
+        "input_tokens": 2843,
+        "output_tokens": 198,
+        "wall_s": 4.254759901901707,
+        "llm_calls": 1,
+        "first_tokens": 3041,
+        "retry_tokens": 0,
+        "first_wall_s": 4.254759901901707,
+        "retry_wall_s": null
+       },
+       {
+        "run": 2,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "8504f96c52d9fe57102d9a82613d138113f2af3b0e84b5f8a55659ac359c9f59",
+        "input_tokens": 2843,
+        "output_tokens": 204,
+        "wall_s": 10.44576273788698,
+        "llm_calls": 1,
+        "first_tokens": 3047,
+        "retry_tokens": 0,
+        "first_wall_s": 10.44576273788698,
+        "retry_wall_s": null
+       },
+       {
+        "run": 3,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "7831ef06f1bec62378db291dfac899a021598f601c17f75c38286ca3d1212758",
+        "input_tokens": 2843,
+        "output_tokens": 207,
+        "wall_s": 4.927972582867369,
+        "llm_calls": 1,
+        "first_tokens": 3050,
+        "retry_tokens": 0,
+        "first_wall_s": 4.927972582867369,
+        "retry_wall_s": null
+       },
+       {
+        "run": 4,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "221a5cad2d495527e69f64787ba10e752fca4dee34fdb843bd0ad88b7988304a",
+        "input_tokens": 2843,
+        "output_tokens": 205,
+        "wall_s": 5.158228109125048,
+        "llm_calls": 1,
+        "first_tokens": 3048,
+        "retry_tokens": 0,
+        "first_wall_s": 5.158228109125048,
+        "retry_wall_s": null
+       },
+       {
+        "run": 5,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "4ed62ee85965247665ba5915860685bbcd5265f40c66e2fcf936491edcb622fa",
+        "input_tokens": 2843,
+        "output_tokens": 190,
+        "wall_s": 5.490035152994096,
+        "llm_calls": 1,
+        "first_tokens": 3033,
+        "retry_tokens": 0,
+        "first_wall_s": 5.490035152994096,
+        "retry_wall_s": null
+       }
+      ],
+      "top1_is_registered_mechanism": 5,
+      "top1_probe_decisions": {
+       "reward · P_reward": 5
+      },
+      "first_valid": 5,
+      "retried": 0,
+      "recovered_by_retry": 0,
+      "first_codes": {},
+      "final_codes": {},
+      "key_change": {
+       "not_comparable": 0,
+       "raw_first_key_same": 0,
+       "raw_first_key_differs": 0
+      },
+      "first_only_pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "same_as_n2_decision": 5,
+      "first_tokens_total": 15219,
+      "retry_tokens_total": 0,
+      "retry_wall_s_total": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      }
+     }
+    }
+   }
+  },
+  "f2_s2031": {
+   "case": "h06_s2031",
+   "seed": 2031,
+   "mechanism": "actuator",
+   "kinds": {
+    "diagnosis": {
+     "feedback": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2849,
+       "min": 2849,
+       "max": 2849,
+       "total": 14245
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 195,
+       "min": 184,
+       "max": 209,
+       "total": 992
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 2.798513982910663,
+       "min": 2.3448658960405737,
+       "max": 3.4005605871789157,
+       "total": 14.07225654553622
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 3047.4,
+      "runs": [
+       {
+        "run": 1,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "326600f8aa75c572d321cbd298428099187ecf7244cec3854c6f263de538d526",
+        "input_tokens": 2849,
+        "output_tokens": 209,
+        "wall_s": 3.4005605871789157,
+        "llm_calls": 1,
+        "first_tokens": 3058,
+        "retry_tokens": 0,
+        "first_wall_s": 3.4005605871789157,
+        "retry_wall_s": null
+       },
+       {
+        "run": 2,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "46550ed90145dbe60d4640d3068ec6311ffb0f53e92ebf63c446af8927d4eefc",
+        "input_tokens": 2849,
+        "output_tokens": 209,
+        "wall_s": 2.5138415892142802,
+        "llm_calls": 1,
+        "first_tokens": 3058,
+        "retry_tokens": 0,
+        "first_wall_s": 2.5138415892142802,
+        "retry_wall_s": null
+       },
+       {
+        "run": 3,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "d9e7d7f9a7eb076c165dd4487bbf5d41a883b6d643173f0dae0ba96724bc1c42",
+        "input_tokens": 2849,
+        "output_tokens": 184,
+        "wall_s": 2.798513982910663,
+        "llm_calls": 1,
+        "first_tokens": 3033,
+        "retry_tokens": 0,
+        "first_wall_s": 2.798513982910663,
+        "retry_wall_s": null
+       },
+       {
+        "run": 4,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "09523d751f93452adedce17cf2761746e7b4b0ed672c0170a8acc3392bddc2a3",
+        "input_tokens": 2849,
+        "output_tokens": 195,
+        "wall_s": 2.3448658960405737,
+        "llm_calls": 1,
+        "first_tokens": 3044,
+        "retry_tokens": 0,
+        "first_wall_s": 2.3448658960405737,
+        "retry_wall_s": null
+       },
+       {
+        "run": 5,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "08d38574eed1f354f5adf66267123030826c52c8d771bfeb97018786691ab289",
+        "input_tokens": 2849,
+        "output_tokens": 195,
+        "wall_s": 3.0144744901917875,
+        "llm_calls": 1,
+        "first_tokens": 3044,
+        "retry_tokens": 0,
+        "first_wall_s": 3.0144744901917875,
+        "retry_wall_s": null
+       }
+      ],
+      "top1_is_registered_mechanism": 0,
+      "top1_probe_decisions": {
+       "reward · P_reward": 5
+      },
+      "first_valid": 5,
+      "retried": 0,
+      "recovered_by_retry": 0,
+      "first_codes": {},
+      "final_codes": {},
+      "key_change": {
+       "not_comparable": 0,
+       "raw_first_key_same": 0,
+       "raw_first_key_differs": 0
+      },
+      "first_only_pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "same_as_n2_decision": 5,
+      "first_tokens_total": 15237,
+      "retry_tokens_total": 0,
+      "retry_wall_s_total": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      }
+     }
+    },
+    "correction": {
+     "feedback": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_motor_torque_speed · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 1317,
+       "min": 1317,
+       "max": 2849,
+       "total": 9641
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 165,
+       "min": 165,
+       "max": 314,
+       "total": 1083
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 3.2250089140143245,
+       "min": 1.8902465999126434,
+       "max": 3.33962768712081,
+       "total": 13.903045776998624
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 2,
+       "total": 7
+      },
+      "tokens_per_valid_decision": 2144.8,
+      "runs": [
+       {
+        "run": 1,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ],
+        "record_sha256": "567b1ad6f43881917ae754f5e371a089803bdf61a9d63fe39a8ae26d235641a7",
+        "input_tokens": 1317,
+        "output_tokens": 165,
+        "wall_s": 2.177041610935703,
+        "llm_calls": 1,
+        "first_tokens": 1482,
+        "retry_tokens": 0,
+        "first_wall_s": 2.177041610935703,
+        "retry_wall_s": null
+       },
+       {
+        "run": 2,
+        "first_status": "invalid",
+        "first_codes": [
+         "C_JSON"
+        ],
+        "first_reasons": [
+         "JSON 파손: Expecting ',' delimiter"
+        ],
+        "retried": true,
+        "requests": 2,
+        "raw_first_key": null,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ],
+        "record_sha256": "175636a7670cd3c606f74ebb89eb5bd8faeecf04ee64076ffb4b3c0e5a64cd66",
+        "input_tokens": 2841,
+        "output_tokens": 274,
+        "wall_s": 3.2250089140143245,
+        "llm_calls": 2,
+        "first_tokens": 1466,
+        "retry_tokens": 1649,
+        "first_wall_s": 1.8253071620129049,
+        "retry_wall_s": 1.3997017520014197,
+        "key_change": {
+         "comparable": false,
+         "raw_first_key": null,
+         "raw_first_key_same": null
+        }
+       },
+       {
+        "run": 3,
+        "first_status": "invalid",
+        "first_codes": [
+         "C_JSON"
+        ],
+        "first_reasons": [
+         "JSON 파손: Expecting ',' delimiter"
+        ],
+        "retried": true,
+        "requests": 2,
+        "raw_first_key": null,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ],
+        "record_sha256": "10b176284b96d58737c797ffc29cea22339fb0ceb3e8ef7f7d54ce96d99961b3",
+        "input_tokens": 2849,
+        "output_tokens": 314,
+        "wall_s": 3.271120965015143,
+        "llm_calls": 2,
+        "first_tokens": 1474,
+        "retry_tokens": 1689,
+        "first_wall_s": 1.8796726760920137,
+        "retry_wall_s": 1.3914482889231294,
+        "key_change": {
+         "comparable": false,
+         "raw_first_key": null,
+         "raw_first_key_same": null
+        }
+       },
+       {
+        "run": 4,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ],
+        "record_sha256": "7c4d6cc1dbf26d1f88172f4d85354c22890bd89d8e3c4e77f216ecb3ae15cf9f",
+        "input_tokens": 1317,
+        "output_tokens": 165,
+        "wall_s": 3.33962768712081,
+        "llm_calls": 1,
+        "first_tokens": 1482,
+        "retry_tokens": 0,
+        "first_wall_s": 3.33962768712081,
+        "retry_wall_s": null
+       },
+       {
+        "run": 5,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ],
+        "record_sha256": "d73af21603cb0fc204b8c98978f0272e4aba77b1b757f7dcece41b2f61621131",
+        "input_tokens": 1317,
+        "output_tokens": 165,
+        "wall_s": 1.8902465999126434,
+        "llm_calls": 1,
+        "first_tokens": 1482,
+        "retry_tokens": 0,
+        "first_wall_s": 1.8902465999126434,
+        "retry_wall_s": null
+       }
+      ],
+      "first_valid": 3,
+      "retried": 2,
+      "recovered_by_retry": 2,
+      "first_codes": {
+       "C_JSON": 2
+      },
+      "final_codes": {},
+      "key_change": {
+       "not_comparable": 2,
+       "raw_first_key_same": 0,
+       "raw_first_key_differs": 0
+      },
+      "first_only_pass_k": {
+       "1": 0.6,
+       "2": 0.3,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "same_as_n2_decision": 5,
+      "first_tokens_total": 7386,
+      "retry_tokens_total": 3338,
+      "retry_wall_s_total": 2.791150040924549
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_motor_torque_speed · restart": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      }
+     }
+    }
+   }
+  },
+  "r_s2030": {
+   "case": "h02_s2030",
+   "seed": 2030,
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "feedback": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2829,
+       "min": 2829,
+       "max": 2829,
+       "total": 14145
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 194,
+       "min": 187,
+       "max": 223,
+       "total": 1014
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 6.365977314999327,
+       "min": 5.637124903034419,
+       "max": 7.940660705789924,
+       "total": 32.43384915101342
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 3031.8,
+      "runs": [
+       {
+        "run": 1,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "761b3639c258cb40e233cb6bccd391a4b06679f07869fa7d658660cb5299f561",
+        "input_tokens": 2829,
+        "output_tokens": 187,
+        "wall_s": 6.061937790131196,
+        "llm_calls": 1,
+        "first_tokens": 3016,
+        "retry_tokens": 0,
+        "first_wall_s": 6.061937790131196,
+        "retry_wall_s": null
+       },
+       {
+        "run": 2,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "e6f63e008d60eb557bb43898dfbdd85da4b2b1e929688583cc7d1a8ff7712b0c",
+        "input_tokens": 2829,
+        "output_tokens": 187,
+        "wall_s": 6.365977314999327,
+        "llm_calls": 1,
+        "first_tokens": 3016,
+        "retry_tokens": 0,
+        "first_wall_s": 6.365977314999327,
+        "retry_wall_s": null
+       },
+       {
+        "run": 3,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "829fd1b71ab7451e76aca9b46b523bdc74d766ad0c89fabcdeed817c462fa22c",
+        "input_tokens": 2829,
+        "output_tokens": 194,
+        "wall_s": 7.940660705789924,
+        "llm_calls": 1,
+        "first_tokens": 3023,
+        "retry_tokens": 0,
+        "first_wall_s": 7.940660705789924,
+        "retry_wall_s": null
+       },
+       {
+        "run": 4,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "40c7e416966f5ab966ccea07f88fe8c3cc6d6573606a9d5c6a947d274be321f2",
+        "input_tokens": 2829,
+        "output_tokens": 223,
+        "wall_s": 6.428148437058553,
+        "llm_calls": 1,
+        "first_tokens": 3052,
+        "retry_tokens": 0,
+        "first_wall_s": 6.428148437058553,
+        "retry_wall_s": null
+       },
+       {
+        "run": 5,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "a39a2e12fefdbbb7fce2874466525206f7419280b2564d3824999b409f2fccf3",
+        "input_tokens": 2829,
+        "output_tokens": 223,
+        "wall_s": 5.637124903034419,
+        "llm_calls": 1,
+        "first_tokens": 3052,
+        "retry_tokens": 0,
+        "first_wall_s": 5.637124903034419,
+        "retry_wall_s": null
+       }
+      ],
+      "top1_is_registered_mechanism": 5,
+      "top1_probe_decisions": {
+       "reward · P_reward": 5
+      },
+      "first_valid": 5,
+      "retried": 0,
+      "recovered_by_retry": 0,
+      "first_codes": {},
+      "final_codes": {},
+      "key_change": {
+       "not_comparable": 0,
+       "raw_first_key_same": 0,
+       "raw_first_key_differs": 0
+      },
+      "first_only_pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "same_as_n2_decision": 5,
+      "first_tokens_total": 15159,
+      "retry_tokens_total": 0,
+      "retry_wall_s_total": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    },
+    "correction": {
+     "feedback": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 1347,
+       "min": 1347,
+       "max": 1347,
+       "total": 6735
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 174,
+       "min": 174,
+       "max": 175,
+       "total": 872
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 1.9689237519633025,
+       "min": 1.6936766961589456,
+       "max": 7.141650003846735,
+       "total": 14.738679312868044
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 1521.4,
+      "runs": [
+       {
+        "run": 1,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "44cd7934301ba198a05e4acfc65dbd793b05d92b2899f3af17f5d2c29cb85af3",
+        "input_tokens": 1347,
+        "output_tokens": 175,
+        "wall_s": 1.9689237519633025,
+        "llm_calls": 1,
+        "first_tokens": 1522,
+        "retry_tokens": 0,
+        "first_wall_s": 1.9689237519633025,
+        "retry_wall_s": null
+       },
+       {
+        "run": 2,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "4acfb2c2996716185e716529ae22a8e4834c9d15159c7b944f6ddaadc606862f",
+        "input_tokens": 1347,
+        "output_tokens": 174,
+        "wall_s": 1.862897315993905,
+        "llm_calls": 1,
+        "first_tokens": 1521,
+        "retry_tokens": 0,
+        "first_wall_s": 1.862897315993905,
+        "retry_wall_s": null
+       },
+       {
+        "run": 3,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "f437286568167b04e7009865b3d651d228510652563325ffb3b145ae78b6def8",
+        "input_tokens": 1347,
+        "output_tokens": 174,
+        "wall_s": 7.141650003846735,
+        "llm_calls": 1,
+        "first_tokens": 1521,
+        "retry_tokens": 0,
+        "first_wall_s": 7.141650003846735,
+        "retry_wall_s": null
+       },
+       {
+        "run": 4,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "51c31073a796b2a4ef354781b4382a814f350233cf21356e56c612f5fa1224c3",
+        "input_tokens": 1347,
+        "output_tokens": 174,
+        "wall_s": 2.071531544905156,
+        "llm_calls": 1,
+        "first_tokens": 1521,
+        "retry_tokens": 0,
+        "first_wall_s": 2.071531544905156,
+        "retry_wall_s": null
+       },
+       {
+        "run": 5,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "45f4ab9e5fd374b7b6f542815dc640e17a19cf12717bf43248208c9ecd549f24",
+        "input_tokens": 1347,
+        "output_tokens": 175,
+        "wall_s": 1.6936766961589456,
+        "llm_calls": 1,
+        "first_tokens": 1522,
+        "retry_tokens": 0,
+        "first_wall_s": 1.6936766961589456,
+        "retry_wall_s": null
+       }
+      ],
+      "first_valid": 5,
+      "retried": 0,
+      "recovered_by_retry": 0,
+      "first_codes": {},
+      "final_codes": {},
+      "key_change": {
+       "not_comparable": 0,
+       "raw_first_key_same": 0,
+       "raw_first_key_differs": 0
+      },
+      "first_only_pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "same_as_n2_decision": 5,
+      "first_tokens_total": 7607,
+      "retry_tokens_total": 0,
+      "retry_wall_s_total": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    }
+   }
+  },
+  "f2_s2033": {
+   "case": "h06_s2033",
+   "seed": 2033,
+   "mechanism": "actuator",
+   "kinds": {
+    "diagnosis": {
+     "feedback": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2845,
+       "min": 2845,
+       "max": 2845,
+       "total": 14225
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 190,
+       "min": 185,
+       "max": 196,
+       "total": 957
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 2.1038983969483525,
+       "min": 1.8989775739610195,
+       "max": 3.317786636063829,
+       "total": 12.674117780057713
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 3036.4,
+      "runs": [
+       {
+        "run": 1,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "3dbc3c2bb3f06b9bfcd6b5c826567b47815ca50a9420465942f00843cd984640",
+        "input_tokens": 2845,
+        "output_tokens": 185,
+        "wall_s": 3.317786636063829,
+        "llm_calls": 1,
+        "first_tokens": 3030,
+        "retry_tokens": 0,
+        "first_wall_s": 3.317786636063829,
+        "retry_wall_s": null
+       },
+       {
+        "run": 2,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "a9a9f0d99c299bbf5ba064e429b4542a884f84f1d291e1a0a2272dca40c107db",
+        "input_tokens": 2845,
+        "output_tokens": 190,
+        "wall_s": 2.0500745431054384,
+        "llm_calls": 1,
+        "first_tokens": 3035,
+        "retry_tokens": 0,
+        "first_wall_s": 2.0500745431054384,
+        "retry_wall_s": null
+       },
+       {
+        "run": 3,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "d086f9d46da16d56cb59513f93fd936e31c1153a05c8f12bba12e6634afeb59b",
+        "input_tokens": 2845,
+        "output_tokens": 196,
+        "wall_s": 3.303380629979074,
+        "llm_calls": 1,
+        "first_tokens": 3041,
+        "retry_tokens": 0,
+        "first_wall_s": 3.303380629979074,
+        "retry_wall_s": null
+       },
+       {
+        "run": 4,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "cf07b931543bcb6fd1a0330b614417569f622099aff353dd3e832ced8cd6e837",
+        "input_tokens": 2845,
+        "output_tokens": 190,
+        "wall_s": 1.8989775739610195,
+        "llm_calls": 1,
+        "first_tokens": 3035,
+        "retry_tokens": 0,
+        "first_wall_s": 1.8989775739610195,
+        "retry_wall_s": null
+       },
+       {
+        "run": 5,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "5ca2892060411766283818d12ed573bc58545584ebb50b5d486c2c140f1ae14a",
+        "input_tokens": 2845,
+        "output_tokens": 196,
+        "wall_s": 2.1038983969483525,
+        "llm_calls": 1,
+        "first_tokens": 3041,
+        "retry_tokens": 0,
+        "first_wall_s": 2.1038983969483525,
+        "retry_wall_s": null
+       }
+      ],
+      "top1_is_registered_mechanism": 0,
+      "top1_probe_decisions": {
+       "reward · P_reward": 5
+      },
+      "first_valid": 5,
+      "retried": 0,
+      "recovered_by_retry": 0,
+      "first_codes": {},
+      "final_codes": {},
+      "key_change": {
+       "not_comparable": 0,
+       "raw_first_key_same": 0,
+       "raw_first_key_differs": 0
+      },
+      "first_only_pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "same_as_n2_decision": 5,
+      "first_tokens_total": 15182,
+      "retry_tokens_total": 0,
+      "retry_wall_s_total": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    },
+    "correction": {
+     "feedback": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_motor_torque_speed · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 1284,
+       "min": 1284,
+       "max": 2783,
+       "total": 7919
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 165,
+       "min": 157,
+       "max": 289,
+       "total": 933
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 3.0186526640318334,
+       "min": 1.7729585031047463,
+       "max": 3.2962338109500706,
+       "total": 13.455819746246561
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 2,
+       "total": 6
+      },
+      "tokens_per_valid_decision": 1770.4,
+      "runs": [
+       {
+        "run": 1,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ],
+        "record_sha256": "859617e16d985f08004de83b598ae843139141f99432d4e71810c523c0296d4d",
+        "input_tokens": 1284,
+        "output_tokens": 157,
+        "wall_s": 2.1421198290772736,
+        "llm_calls": 1,
+        "first_tokens": 1441,
+        "retry_tokens": 0,
+        "first_wall_s": 2.1421198290772736,
+        "retry_wall_s": null
+       },
+       {
+        "run": 2,
+        "first_status": "invalid",
+        "first_codes": [
+         "C_JSON"
+        ],
+        "first_reasons": [
+         "JSON 파손: Expecting ',' delimiter"
+        ],
+        "retried": true,
+        "requests": 2,
+        "raw_first_key": null,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ],
+        "record_sha256": "4c0f1d0f4f2895144dbbb1bb97530607a332bcccedb2b79f95c8d695ab99ffa0",
+        "input_tokens": 2783,
+        "output_tokens": 289,
+        "wall_s": 3.2258549390826374,
+        "llm_calls": 2,
+        "first_tokens": 1441,
+        "retry_tokens": 1631,
+        "first_wall_s": 1.7237934360746294,
+        "retry_wall_s": 1.502061503008008,
+        "key_change": {
+         "comparable": false,
+         "raw_first_key": null,
+         "raw_first_key_same": null
+        }
+       },
+       {
+        "run": 3,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ],
+        "record_sha256": "890bebb18796f0b0975b64d4e83cbd03c03ef753fd8e0340f64478b11a217a73",
+        "input_tokens": 1284,
+        "output_tokens": 165,
+        "wall_s": 3.2962338109500706,
+        "llm_calls": 1,
+        "first_tokens": 1449,
+        "retry_tokens": 0,
+        "first_wall_s": 3.2962338109500706,
+        "retry_wall_s": null
+       },
+       {
+        "run": 4,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ],
+        "record_sha256": "f54e99bb85e13ebfe9de794ef3040b120ea44c874fb2b0c92ed75871e1562a10",
+        "input_tokens": 1284,
+        "output_tokens": 157,
+        "wall_s": 1.7729585031047463,
+        "llm_calls": 1,
+        "first_tokens": 1441,
+        "retry_tokens": 0,
+        "first_wall_s": 1.7729585031047463,
+        "retry_wall_s": null
+       },
+       {
+        "run": 5,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_motor_torque_speed",
+         "restart"
+        ],
+        "record_sha256": "420c47ede71067a93b50f0eb6d664b092f6507b257e7ab980eddfc8ab72a1fc6",
+        "input_tokens": 1284,
+        "output_tokens": 165,
+        "wall_s": 3.0186526640318334,
+        "llm_calls": 1,
+        "first_tokens": 1449,
+        "retry_tokens": 0,
+        "first_wall_s": 3.0186526640318334,
+        "retry_wall_s": null
+       }
+      ],
+      "first_valid": 4,
+      "retried": 1,
+      "recovered_by_retry": 1,
+      "first_codes": {
+       "C_JSON": 1
+      },
+      "final_codes": {},
+      "key_change": {
+       "not_comparable": 1,
+       "raw_first_key_same": 0,
+       "raw_first_key_differs": 0
+      },
+      "first_only_pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "same_as_n2_decision": 5,
+      "first_tokens_total": 7221,
+      "retry_tokens_total": 1631,
+      "retry_wall_s_total": 1.502061503008008
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 3,
+       "invalid": 2,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_motor_torque_speed · restart": 3
+      },
+      "pass_k": {
+       "1": 0.6,
+       "2": 0.3,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.6,
+       "2": 0.3,
+       "4": 0.0,
+       "5": 0.0
+      }
+     }
+    }
+   }
+  },
+  "f1_s2034": {
+   "case": "h02_s2034",
+   "seed": 2034,
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "feedback": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2848,
+       "min": 2848,
+       "max": 5879,
+       "total": 17271
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 191,
+       "min": 187,
+       "max": 232,
+       "total": 1012
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 2.988303668797016,
+       "min": 1.9292963379994035,
+       "max": 6.729907836066559,
+       "total": 18.258330401033163
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 2,
+       "total": 6
+      },
+      "tokens_per_valid_decision": 4570.75,
+      "runs": [
+       {
+        "run": 1,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "6ae8e98d155dc3461709ab694cb953c0e2afe0061073437ee924cbfc432d1cee",
+        "input_tokens": 2848,
+        "output_tokens": 215,
+        "wall_s": 6.729907836066559,
+        "llm_calls": 1,
+        "first_tokens": 3063,
+        "retry_tokens": 0,
+        "first_wall_s": 6.729907836066559,
+        "retry_wall_s": null
+       },
+       {
+        "run": 2,
+        "first_status": "invalid",
+        "first_codes": [
+         "D_EXPECTED"
+        ],
+        "first_reasons": [
+         "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+        ],
+        "retried": true,
+        "requests": 2,
+        "raw_first_key": [
+         "continue",
+         "reward"
+        ],
+        "status": "invalid",
+        "final_codes": [
+         "D_EXPECTED"
+        ],
+        "final_reasons": [
+         "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+        ],
+        "record_sha256": "53e45ae4dab5095bc8fbaf2c347a8c8de9d12eac2482ca34cc85f445891757ae",
+        "input_tokens": 5879,
+        "output_tokens": 232,
+        "wall_s": 2.988303668797016,
+        "llm_calls": 2,
+        "first_tokens": 2964,
+        "retry_tokens": 3147,
+        "first_wall_s": 1.772707253927365,
+        "retry_wall_s": 1.2155964148696512,
+        "key_change": {
+         "comparable": false,
+         "raw_first_key": [
+          "continue",
+          "reward"
+         ],
+         "raw_first_key_same": null
+        }
+       },
+       {
+        "run": 3,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "72e04481e2d67dbe1478582a3e9a0b3d5addcccc745a0e62ee988b5fc6074603",
+        "input_tokens": 2848,
+        "output_tokens": 187,
+        "wall_s": 1.9292963379994035,
+        "llm_calls": 1,
+        "first_tokens": 3035,
+        "retry_tokens": 0,
+        "first_wall_s": 1.9292963379994035,
+        "retry_wall_s": null
+       },
+       {
+        "run": 4,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "09b605da1fb4fdf9bf65ee92fc3f58c52e85be7cac44df80e4398a4ece58a9f9",
+        "input_tokens": 2848,
+        "output_tokens": 191,
+        "wall_s": 2.129287833115086,
+        "llm_calls": 1,
+        "first_tokens": 3039,
+        "retry_tokens": 0,
+        "first_wall_s": 2.129287833115086,
+        "retry_wall_s": null
+       },
+       {
+        "run": 5,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "2e6f23e172ed403dedf4824273f0cfa92f21d9d281705fc0a55ed6b5b1d18735",
+        "input_tokens": 2848,
+        "output_tokens": 187,
+        "wall_s": 4.4815347250550985,
+        "llm_calls": 1,
+        "first_tokens": 3035,
+        "retry_tokens": 0,
+        "first_wall_s": 4.4815347250550985,
+        "retry_wall_s": null
+       }
+      ],
+      "top1_is_registered_mechanism": 4,
+      "top1_probe_decisions": {
+       "reward · P_reward": 4
+      },
+      "first_valid": 4,
+      "retried": 1,
+      "recovered_by_retry": 0,
+      "first_codes": {
+       "D_EXPECTED": 1
+      },
+      "final_codes": {
+       "D_EXPECTED": 1
+      },
+      "key_change": {
+       "not_comparable": 1,
+       "raw_first_key_same": 0,
+       "raw_first_key_differs": 0
+      },
+      "first_only_pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "same_as_n2_decision": 4,
+      "first_tokens_total": 15136,
+      "retry_tokens_total": 3147,
+      "retry_wall_s_total": 1.2155964148696512
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    },
+    "correction": {
+     "feedback": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 1323,
+       "min": 1323,
+       "max": 1323,
+       "total": 6615
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 173,
+       "min": 165,
+       "max": 173,
+       "total": 857
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 2.0159370170440525,
+       "min": 1.831745038041845,
+       "max": 3.1018658969551325,
+       "total": 11.710796126164496
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 1494.4,
+      "runs": [
+       {
+        "run": 1,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "387afe6fcf777f1abc0edb2e7c174bb383806516cdb971c2ddcac07ce4668fa5",
+        "input_tokens": 1323,
+        "output_tokens": 165,
+        "wall_s": 3.1018658969551325,
+        "llm_calls": 1,
+        "first_tokens": 1488,
+        "retry_tokens": 0,
+        "first_wall_s": 3.1018658969551325,
+        "retry_wall_s": null
+       },
+       {
+        "run": 2,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "eed1f086772691b2dc584a16c287635229b1adf6b0fa646bd77dd8f5032e0bf2",
+        "input_tokens": 1323,
+        "output_tokens": 173,
+        "wall_s": 2.793513288954273,
+        "llm_calls": 1,
+        "first_tokens": 1496,
+        "retry_tokens": 0,
+        "first_wall_s": 2.793513288954273,
+        "retry_wall_s": null
+       },
+       {
+        "run": 3,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "4521ae10166475fb465340681b4eff213615c2a361afe9c5ad49d85fa48593f2",
+        "input_tokens": 1323,
+        "output_tokens": 173,
+        "wall_s": 2.0159370170440525,
+        "llm_calls": 1,
+        "first_tokens": 1496,
+        "retry_tokens": 0,
+        "first_wall_s": 2.0159370170440525,
+        "retry_wall_s": null
+       },
+       {
+        "run": 4,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "49e42747b7d95eafe20385b19bb2b9aed0a334170aba1e0264564f9d5d693e35",
+        "input_tokens": 1323,
+        "output_tokens": 173,
+        "wall_s": 1.831745038041845,
+        "llm_calls": 1,
+        "first_tokens": 1496,
+        "retry_tokens": 0,
+        "first_wall_s": 1.831745038041845,
+        "retry_wall_s": null
+       },
+       {
+        "run": 5,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "e09c7d1265daa007c142434de2c17daece1501c6bdd52b0da5ad188b8d669e9f",
+        "input_tokens": 1323,
+        "output_tokens": 173,
+        "wall_s": 1.9677348851691931,
+        "llm_calls": 1,
+        "first_tokens": 1496,
+        "retry_tokens": 0,
+        "first_wall_s": 1.9677348851691931,
+        "retry_wall_s": null
+       }
+      ],
+      "first_valid": 5,
+      "retried": 0,
+      "recovered_by_retry": 0,
+      "first_codes": {},
+      "final_codes": {},
+      "key_change": {
+       "not_comparable": 0,
+       "raw_first_key_same": 0,
+       "raw_first_key_differs": 0
+      },
+      "first_only_pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "same_as_n2_decision": 5,
+      "first_tokens_total": 7472,
+      "retry_tokens_total": 0,
+      "retry_wall_s_total": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    }
+   }
+  },
+  "u1_s2040": {
+   "case": "u1_s2040",
+   "seed": 2040,
+   "mechanism": "reward",
+   "kinds": {
+    "diagnosis": {
+     "feedback": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 2803,
+       "min": 2803,
+       "max": 5788,
+       "total": 19985
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 260,
+       "min": 190,
+       "max": 376,
+       "total": 1371
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 3.4378913301043212,
+       "min": 2.6951845390722156,
+       "max": 3.6497504198923707,
+       "total": 16.521690469468012
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 2,
+       "total": 7
+      },
+      "tokens_per_valid_decision": 4271.2,
+      "runs": [
+       {
+        "run": 1,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "978dfb4519dfc14d55671facccf3884e3e6c0c6ab894afbad6d81d493f336adf",
+        "input_tokens": 2803,
+        "output_tokens": 190,
+        "wall_s": 2.6951845390722156,
+        "llm_calls": 1,
+        "first_tokens": 2993,
+        "retry_tokens": 0,
+        "first_wall_s": 2.6951845390722156,
+        "retry_wall_s": null
+       },
+       {
+        "run": 2,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "e7e72b2203c419c0028c7e9767eafa10f209826a0a580da5e98dae0e2e79ad1b",
+        "input_tokens": 2803,
+        "output_tokens": 285,
+        "wall_s": 3.6497504198923707,
+        "llm_calls": 1,
+        "first_tokens": 3088,
+        "retry_tokens": 0,
+        "first_wall_s": 3.6497504198923707,
+        "retry_wall_s": null
+       },
+       {
+        "run": 3,
+        "first_status": "invalid",
+        "first_codes": [
+         "D_CLAIMS_EMPTY"
+        ],
+        "first_reasons": [
+         "claims는 하나 이상의 근거 claim이어야 한다"
+        ],
+        "retried": true,
+        "requests": 2,
+        "raw_first_key": [
+         "continue",
+         "reward"
+        ],
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "cd3bd8cd06a913ba21de7123f7444ca569247e4031a53868bcd05d306f7757b1",
+        "input_tokens": 5788,
+        "output_tokens": 260,
+        "wall_s": 3.4755360102280974,
+        "llm_calls": 2,
+        "first_tokens": 2914,
+        "retry_tokens": 3134,
+        "first_wall_s": 1.6565699400380254,
+        "retry_wall_s": 1.818966070190072,
+        "key_change": {
+         "comparable": false,
+         "raw_first_key": [
+          "continue",
+          "reward"
+         ],
+         "raw_first_key_same": true
+        }
+       },
+       {
+        "run": 4,
+        "first_status": "invalid",
+        "first_codes": [
+         "D_CLAIMS_EMPTY"
+        ],
+        "first_reasons": [
+         "claims는 하나 이상의 근거 claim이어야 한다"
+        ],
+        "retried": true,
+        "requests": 2,
+        "raw_first_key": [
+         "continue",
+         "reward"
+        ],
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "13652e7d66e441c486802417894501e8387071ea9416999edc976135f898abf9",
+        "input_tokens": 5788,
+        "output_tokens": 260,
+        "wall_s": 3.2633281701710075,
+        "llm_calls": 2,
+        "first_tokens": 2914,
+        "retry_tokens": 3134,
+        "first_wall_s": 1.9560814471915364,
+        "retry_wall_s": 1.307246722979471,
+        "key_change": {
+         "comparable": false,
+         "raw_first_key": [
+          "continue",
+          "reward"
+         ],
+         "raw_first_key_same": true
+        }
+       },
+       {
+        "run": 5,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "continue",
+         "reward"
+        ],
+        "probe": "P_reward",
+        "record_sha256": "9e120699c2f3103d9249c5baa808137c9d9ec37f690f1dcaf2b2aa1b34eff145",
+        "input_tokens": 2803,
+        "output_tokens": 376,
+        "wall_s": 3.4378913301043212,
+        "llm_calls": 1,
+        "first_tokens": 3179,
+        "retry_tokens": 0,
+        "first_wall_s": 3.4378913301043212,
+        "retry_wall_s": null
+       }
+      ],
+      "top1_is_registered_mechanism": 5,
+      "top1_probe_decisions": {
+       "reward · P_reward": 5
+      },
+      "first_valid": 3,
+      "retried": 2,
+      "recovered_by_retry": 2,
+      "first_codes": {
+       "D_CLAIMS_EMPTY": 2
+      },
+      "final_codes": {},
+      "key_change": {
+       "not_comparable": 2,
+       "raw_first_key_same": 2,
+       "raw_first_key_differs": 0
+      },
+      "first_only_pass_k": {
+       "1": 0.6,
+       "2": 0.3,
+       "4": 0.0,
+       "5": 0.0
+      },
+      "same_as_n2_decision": 5,
+      "first_tokens_total": 15088,
+      "retry_tokens_total": 6268,
+      "retry_wall_s_total": 3.126212793169543
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 4,
+       "invalid": 1,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "continue · reward": 4
+      },
+      "pass_k": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      },
+      "pass_k_valid": {
+       "1": 0.8,
+       "2": 0.6,
+       "4": 0.2,
+       "5": 0.0
+      }
+     }
+    },
+    "correction": {
+     "feedback": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "agree_with_recorded": null,
+      "recorded": null,
+      "input_tokens": {
+       "n": 5,
+       "median": 1346,
+       "min": 1346,
+       "max": 1346,
+       "total": 6730
+      },
+      "output_tokens": {
+       "n": 5,
+       "median": 173,
+       "min": 157,
+       "max": 173,
+       "total": 849
+      },
+      "wall_s": {
+       "n": 5,
+       "median": 2.5301241311244667,
+       "min": 2.063886167947203,
+       "max": 5.259451190941036,
+       "total": 15.15294730802998
+      },
+      "llm_calls": {
+       "n": 5,
+       "median": 1,
+       "min": 1,
+       "max": 1,
+       "total": 5
+      },
+      "tokens_per_valid_decision": 1515.8,
+      "runs": [
+       {
+        "run": 1,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "1af09d0516df79cb26d56803f8cc56b32abcfc570675360cd7d49a1c448161d7",
+        "input_tokens": 1346,
+        "output_tokens": 173,
+        "wall_s": 3.111235609976575,
+        "llm_calls": 1,
+        "first_tokens": 1519,
+        "retry_tokens": 0,
+        "first_wall_s": 3.111235609976575,
+        "retry_wall_s": null
+       },
+       {
+        "run": 2,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "ba5afc22cb02f2d20bfd123dc661f1576fa908339312825074a86349223b413c",
+        "input_tokens": 1346,
+        "output_tokens": 173,
+        "wall_s": 2.063886167947203,
+        "llm_calls": 1,
+        "first_tokens": 1519,
+        "retry_tokens": 0,
+        "first_wall_s": 2.063886167947203,
+        "retry_wall_s": null
+       },
+       {
+        "run": 3,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "90c88914c220a0dbae10e72c4b3d4d5f3ef28825cd74855c684c59c67d8851eb",
+        "input_tokens": 1346,
+        "output_tokens": 157,
+        "wall_s": 2.1882502080406994,
+        "llm_calls": 1,
+        "first_tokens": 1503,
+        "retry_tokens": 0,
+        "first_wall_s": 2.1882502080406994,
+        "retry_wall_s": null
+       },
+       {
+        "run": 4,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "fc266880e955d8cd43b9221d6b95c6e2d6dead07941dc063954b06942b73b42e",
+        "input_tokens": 1346,
+        "output_tokens": 173,
+        "wall_s": 5.259451190941036,
+        "llm_calls": 1,
+        "first_tokens": 1519,
+        "retry_tokens": 0,
+        "first_wall_s": 5.259451190941036,
+        "retry_wall_s": null
+       },
+       {
+        "run": 5,
+        "first_status": "valid",
+        "first_codes": [],
+        "first_reasons": [],
+        "retried": false,
+        "requests": 1,
+        "status": "valid",
+        "final_codes": [],
+        "final_reasons": [],
+        "key": [
+         "propose",
+         "restore_body_frame_reward",
+         "restart"
+        ],
+        "record_sha256": "4712cf79bbdbb67379abd8cee8883c928be2d8833bdaeca59edd958aee32e48a",
+        "input_tokens": 1346,
+        "output_tokens": 173,
+        "wall_s": 2.5301241311244667,
+        "llm_calls": 1,
+        "first_tokens": 1519,
+        "retry_tokens": 0,
+        "first_wall_s": 2.5301241311244667,
+        "retry_wall_s": null
+       }
+      ],
+      "first_valid": 5,
+      "retried": 0,
+      "recovered_by_retry": 0,
+      "first_codes": {},
+      "final_codes": {},
+      "key_change": {
+       "not_comparable": 0,
+       "raw_first_key_same": 0,
+       "raw_first_key_differs": 0
+      },
+      "first_only_pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "same_as_n2_decision": 5,
+      "first_tokens_total": 7579,
+      "retry_tokens_total": 0,
+      "retry_wall_s_total": 0
+     },
+     "n2_single": {
+      "counts": {
+       "valid": 5,
+       "invalid": 0,
+       "call_error": 0,
+       "infra_error": 0,
+       "missing": 0,
+       "budget_exhausted": 0
+      },
+      "n": 5,
+      "decisions": {
+       "propose · restore_body_frame_reward · restart": 5
+      },
+      "pass_k": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      },
+      "pass_k_valid": {
+       "1": 1.0,
+       "2": 1.0,
+       "4": 1.0,
+       "5": 1.0
+      }
+     }
+    }
+   }
+  }
+ },
+ "common_wording": "이미 본 packet을 같은 모델·temperature 0으로 반복하고, 계약 검증기가 거절한 출력에만 고정 피드백으로 한 번 다시 요청한 개발 측정이다. 재요청은 요청 수와 토큰을 늘린다. 반복 일관성·유효율은 정확도의 근거가 아니다. N2 결과는 이미 본 값이고 시점이 다른 반복이다. 비용은 토큰·벽시계 기록이며 절감 주장이 아니다.",
+ "n2_baseline": {
+  "path": "evals/results/n2_pass_k_v1/summary.json",
+  "sha256_lf": "5e37cb4e117bceb9d0321347972fcb8caa0e781e0a9595c63e00313c113d5d6b"
+ },
+ "feedback_policy_sha256": "b53123cf0ee206f4a260358ea2434042a14e27887058af53268eac4635316e3f"
+}
