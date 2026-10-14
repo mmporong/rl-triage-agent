@@ -1,0 +1,260 @@
+{
+ "schema": "d3_case_result_v1",
+ "case": "C2",
+ "seed": 2036,
+ "aggregate": true,
+ "harmful": "F1",
+ "position": 7,
+ "order": [
+  "H1",
+  "H3",
+  "H4",
+  "H5",
+  "H6",
+  "H7",
+  "F1",
+  "S4"
+ ],
+ "labels": {
+  "change_1": "H1",
+  "change_2": "H3",
+  "change_3": "H4",
+  "change_4": "H5",
+  "change_5": "H6",
+  "change_6": "H7",
+  "change_7": "F1",
+  "change_8": "S4"
+ },
+ "valid": true,
+ "invalid_reason": null,
+ "terminal": null,
+ "methods": {
+  "B1": {
+   "status": "confirmed",
+   "reason": null,
+   "confirmed": "F1",
+   "queries": [
+    {
+     "reverted": [
+      "H1",
+      "H3",
+      "H4",
+      "H5"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "H6",
+      "H7"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "F1"
+     ],
+     "answer": "healthy"
+    }
+   ],
+   "cost": {
+    "retrains": 3,
+    "queried": 3,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "retrain_parent_wall_s": 1666.5,
+   "probe_parent_wall_s": 0.0,
+   "model": null
+  },
+  "B2": {
+   "status": "confirmed",
+   "reason": null,
+   "confirmed": "F1",
+   "queries": [
+    {
+     "reverted": [
+      "H1"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "H3"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "H4"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "H5"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "H6"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "H7"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "F1"
+     ],
+     "answer": "healthy"
+    }
+   ],
+   "cost": {
+    "retrains": 7,
+    "queried": 7,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "retrain_parent_wall_s": 3772.2,
+   "probe_parent_wall_s": 0.0,
+   "model": null
+  },
+  "B3": {
+   "status": "confirmed",
+   "reason": null,
+   "confirmed": "F1",
+   "queries": [
+    {
+     "reverted": [
+      "H1"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "H3"
+     ],
+     "answer": "unhealthy"
+    },
+    {
+     "reverted": [
+      "F1"
+     ],
+     "answer": "healthy"
+    }
+   ],
+   "cost": {
+    "retrains": 3,
+    "queried": 3,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "retrain_parent_wall_s": 1636.8,
+   "probe_parent_wall_s": 170.7,
+   "model": null
+  },
+  "B4": {
+   "status": "confirmed",
+   "reason": null,
+   "confirmed": "F1",
+   "queries": [
+    {
+     "reverted": [
+      "F1"
+     ],
+     "answer": "healthy"
+    }
+   ],
+   "cost": {
+    "retrains": 1,
+    "queried": 1,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "retrain_parent_wall_s": 552.4,
+   "probe_parent_wall_s": 170.7,
+   "model": {
+    "status": "valid",
+    "ranking_labels": [
+     "change_7",
+     "change_4",
+     "change_2",
+     "change_6",
+     "change_1",
+     "change_8",
+     "change_3",
+     "change_5"
+    ],
+    "uncertain": false,
+    "attempts": 1,
+    "total_tokens": 4711
+   }
+  },
+  "B5": {
+   "status": "confirmed",
+   "reason": null,
+   "confirmed": "F1",
+   "queries": [
+    {
+     "reverted": [
+      "F1"
+     ],
+     "answer": "healthy"
+    }
+   ],
+   "cost": {
+    "retrains": 1,
+    "queried": 1,
+    "wrong": false,
+    "unresolved": false,
+    "reason": null
+   },
+   "retrain_parent_wall_s": 552.4,
+   "probe_parent_wall_s": 0.0,
+   "model": {
+    "status": "valid",
+    "ranking_labels": [
+     "change_7",
+     "change_4",
+     "change_6",
+     "change_2",
+     "change_1",
+     "change_8",
+     "change_3",
+     "change_5"
+    ],
+    "uncertain": false,
+    "attempts": 1,
+    "total_tokens": 4406
+   }
+  }
+ },
+ "loop": {
+  "status": "confirmed",
+  "conclusion": "reward",
+  "probes": [
+   "P_episode",
+   "P_noise",
+   "P_reward"
+  ]
+ },
+ "determinism": null,
+ "shared_parent_wall_s": {
+  "none": 565.8,
+  "failure": 584.5
+ },
+ "source_commit_sha": "9dc7e54a7da4462ae7c26ac5b53d51f43c97b119",
+ "protocol_sha256_lf": "ced4302df56bfc4e75186887a6fbc0d8e3e3800375d3a687b588582f58cec2b4",
+ "approval": "사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)",
+ "model_calls": 2
+}
