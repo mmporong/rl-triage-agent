@@ -1,0 +1,761 @@
+{
+ "schema": "upstream_optimizer_fault_loop_result_v1",
+ "tag": "upstream_r1_loop_20261014",
+ "protocol_sha256_lf": "5cdd08029b57a8b6c1bc29ac97506d7ce7e8d7ba169a9bf339d27b61f055c62a",
+ "source_commit_sha": "c7233edf832754e7f341db8b6f900db4b2865440",
+ "smoke": {
+  "tag": "upstream_r1_smoke_20261014",
+  "outcome": "failure_present"
+ },
+ "truth_category": "optimizer",
+ "checks": {
+  "smoke_failure_present": true,
+  "probe_reports_bound": true,
+  "probes_complete": true,
+  "model_resolved": true
+ },
+ "model": {
+  "status": "valid",
+  "reason": null,
+  "decision": {
+   "ranking": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer",
+    "physics",
+    "termination"
+   ],
+   "probe": "P_reward",
+   "action": "continue",
+   "reason": "No observations yet; starting with highest-cost abnormal-expectation probe to discriminate reward mechanism.",
+   "claims": [
+    {
+     "id": "telemetry:case:Train/mean_reward",
+     "value": 11.08487769762675
+    },
+    {
+     "id": "telemetry:reference:Train/mean_reward",
+     "value": 34.881903902689615
+    }
+   ],
+   "expected_outcomes": {
+    "reward": "abnormal",
+    "actuator": "normal",
+    "exploration": "normal"
+   }
+  },
+  "attempts": 1
+ },
+ "model_calls": 1,
+ "model_tokens": 3033,
+ "probe_attempts": 1,
+ "probe_process_wall_s": {
+  "reference": 81.2,
+  "fault": 83.2
+ },
+ "scope": "설계자 밖 외부 결함 한 종류·새 seed 하나(2042)의 고리 동작 기록. 진단 정확도·안전성 보장·일반화가 아니다",
+ "outcome": "stopped",
+ "failed_checks": [],
+ "table": {
+  "P_noise": "normal",
+  "P_value": "normal",
+  "P_reward": "normal",
+  "P_torque": "normal",
+  "P_physics": "normal",
+  "P_episode": "normal"
+ },
+ "measurements": {
+  "reference": {
+   "P_episode": {
+    "timeout_count": 256,
+    "median_timeout_step": 1000.0,
+    "timeout_ratio": 1.0
+   },
+   "P_noise": {
+    "noise_ratio": 1.0013198852539062,
+    "logged_std_mean": 0.3309056758880615
+   },
+   "P_physics": {
+    "mismatch_count": 0,
+    "mismatches": [],
+    "static_friction_mean": 0.8000000715255737,
+    "dynamic_friction_mean": 0.5999999642372131,
+    "mass_delta_min": -0.9861373901367188,
+    "mass_delta_max": 2.9666595458984375,
+    "physics_dt": 0.005
+   },
+   "P_reward": {
+    "track_lin_vel_xy_exp_rel_error": 1.735140852332506e-08,
+    "track_ang_vel_z_exp_rel_error": 1.664611146701134e-08
+   },
+   "P_torque": {
+    "low_speed_saturation": 0.0003869257032427323,
+    "velocity_limit": 30.0,
+    "effort_limit": 23.5
+   },
+   "P_value": {
+    "critic_change": 1.5338612464921464,
+    "actor_change": 2.030161266853816,
+    "from": "model_0.pt"
+   }
+  },
+  "fault": {
+   "P_episode": {
+    "timeout_count": 255,
+    "median_timeout_step": 1000.0,
+    "timeout_ratio": 1.0
+   },
+   "P_noise": {
+    "noise_ratio": 0.9999546408653259,
+    "logged_std_mean": 0.5540606379508972
+   },
+   "P_physics": {
+    "mismatch_count": 0,
+    "mismatches": [],
+    "static_friction_mean": 0.8000000715255737,
+    "dynamic_friction_mean": 0.5999999642372131,
+    "mass_delta_min": -0.9861373901367188,
+    "mass_delta_max": 2.9666595458984375,
+    "physics_dt": 0.005
+   },
+   "P_reward": {
+    "track_lin_vel_xy_exp_rel_error": 1.8043756413455014e-08,
+    "track_ang_vel_z_exp_rel_error": 1.671838058658892e-08
+   },
+   "P_torque": {
+    "low_speed_saturation": 0.00040839640942291934,
+    "velocity_limit": 30.0,
+    "effort_limit": 23.5
+   },
+   "P_value": {
+    "critic_change": 1.0350208683274777,
+    "actor_change": 1.0141812511014776,
+    "from": "model_0.pt"
+   }
+  }
+ },
+ "strategies": [
+  {
+   "strategy": "fixed",
+   "status": "none_supported",
+   "conclusion": null,
+   "probes_used": 6,
+   "steps": [
+    {
+     "probe": "P_episode",
+     "outcome": "normal",
+     "dropped": [
+      "termination"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_noise",
+     "outcome": "normal",
+     "dropped": [
+      "exploration"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "optimizer",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_reward",
+     "outcome": "normal",
+     "dropped": [
+      "reward"
+     ],
+     "left": [
+      "actuator",
+      "optimizer",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_torque",
+     "outcome": "normal",
+     "dropped": [
+      "actuator"
+     ],
+     "left": [
+      "optimizer",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_physics",
+     "outcome": "normal",
+     "dropped": [
+      "physics"
+     ],
+     "left": [
+      "optimizer"
+     ]
+    },
+    {
+     "probe": "P_value",
+     "outcome": "normal",
+     "dropped": [
+      "optimizer"
+     ],
+     "left": []
+    }
+   ],
+   "correct": false,
+   "wrong": false
+  },
+  {
+   "strategy": "exhaustive",
+   "status": "none_supported",
+   "conclusion": null,
+   "probes_used": 6,
+   "steps": [
+    {
+     "probe": "P_episode",
+     "outcome": "normal",
+     "dropped": [
+      "termination"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_noise",
+     "outcome": "normal",
+     "dropped": [
+      "exploration"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "optimizer",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_physics",
+     "outcome": "normal",
+     "dropped": [
+      "physics"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "optimizer"
+     ]
+    },
+    {
+     "probe": "P_reward",
+     "outcome": "normal",
+     "dropped": [
+      "reward"
+     ],
+     "left": [
+      "actuator",
+      "optimizer"
+     ]
+    },
+    {
+     "probe": "P_torque",
+     "outcome": "normal",
+     "dropped": [
+      "actuator"
+     ],
+     "left": [
+      "optimizer"
+     ]
+    },
+    {
+     "probe": "P_value",
+     "outcome": "normal",
+     "dropped": [
+      "optimizer"
+     ],
+     "left": []
+    }
+   ],
+   "correct": false,
+   "wrong": false
+  },
+  {
+   "strategy": "random0",
+   "status": "none_supported",
+   "conclusion": null,
+   "probes_used": 6,
+   "steps": [
+    {
+     "probe": "P_reward",
+     "outcome": "normal",
+     "dropped": [
+      "reward"
+     ],
+     "left": [
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+     ]
+    },
+    {
+     "probe": "P_value",
+     "outcome": "normal",
+     "dropped": [
+      "optimizer"
+     ],
+     "left": [
+      "actuator",
+      "exploration",
+      "physics",
+      "termination"
+     ]
+    },
+    {
+     "probe": "P_episode",
+     "outcome": "normal",
+     "dropped": [
+      "termination"
+     ],
+     "left": [
+      "actuator",
+      "exploration",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_noise",
+     "outcome": "normal",
+     "dropped": [
+      "exploration"
+     ],
+     "left": [
+      "actuator",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_physics",
+     "outcome": "normal",
+     "dropped": [
+      "physics"
+     ],
+     "left": [
+      "actuator"
+     ]
+    },
+    {
+     "probe": "P_torque",
+     "outcome": "normal",
+     "dropped": [
+      "actuator"
+     ],
+     "left": []
+    }
+   ],
+   "correct": false,
+   "wrong": false
+  },
+  {
+   "strategy": "random1",
+   "status": "none_supported",
+   "conclusion": null,
+   "probes_used": 6,
+   "steps": [
+    {
+     "probe": "P_noise",
+     "outcome": "normal",
+     "dropped": [
+      "exploration"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "optimizer",
+      "physics",
+      "termination"
+     ]
+    },
+    {
+     "probe": "P_torque",
+     "outcome": "normal",
+     "dropped": [
+      "actuator"
+     ],
+     "left": [
+      "reward",
+      "optimizer",
+      "physics",
+      "termination"
+     ]
+    },
+    {
+     "probe": "P_episode",
+     "outcome": "normal",
+     "dropped": [
+      "termination"
+     ],
+     "left": [
+      "reward",
+      "optimizer",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_value",
+     "outcome": "normal",
+     "dropped": [
+      "optimizer"
+     ],
+     "left": [
+      "reward",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_reward",
+     "outcome": "normal",
+     "dropped": [
+      "reward"
+     ],
+     "left": [
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_physics",
+     "outcome": "normal",
+     "dropped": [
+      "physics"
+     ],
+     "left": []
+    }
+   ],
+   "correct": false,
+   "wrong": false
+  },
+  {
+   "strategy": "random2",
+   "status": "none_supported",
+   "conclusion": null,
+   "probes_used": 6,
+   "steps": [
+    {
+     "probe": "P_episode",
+     "outcome": "normal",
+     "dropped": [
+      "termination"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_value",
+     "outcome": "normal",
+     "dropped": [
+      "optimizer"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "exploration",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_torque",
+     "outcome": "normal",
+     "dropped": [
+      "actuator"
+     ],
+     "left": [
+      "reward",
+      "exploration",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_noise",
+     "outcome": "normal",
+     "dropped": [
+      "exploration"
+     ],
+     "left": [
+      "reward",
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_reward",
+     "outcome": "normal",
+     "dropped": [
+      "reward"
+     ],
+     "left": [
+      "physics"
+     ]
+    },
+    {
+     "probe": "P_physics",
+     "outcome": "normal",
+     "dropped": [
+      "physics"
+     ],
+     "left": []
+    }
+   ],
+   "correct": false,
+   "wrong": false
+  },
+  {
+   "strategy": "random3",
+   "status": "none_supported",
+   "conclusion": null,
+   "probes_used": 6,
+   "steps": [
+    {
+     "probe": "P_noise",
+     "outcome": "normal",
+     "dropped": [
+      "exploration"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "optimizer",
+      "physics",
+      "termination"
+     ]
+    },
+    {
+     "probe": "P_torque",
+     "outcome": "normal",
+     "dropped": [
+      "actuator"
+     ],
+     "left": [
+      "reward",
+      "optimizer",
+      "physics",
+      "termination"
+     ]
+    },
+    {
+     "probe": "P_value",
+     "outcome": "normal",
+     "dropped": [
+      "optimizer"
+     ],
+     "left": [
+      "reward",
+      "physics",
+      "termination"
+     ]
+    },
+    {
+     "probe": "P_reward",
+     "outcome": "normal",
+     "dropped": [
+      "reward"
+     ],
+     "left": [
+      "physics",
+      "termination"
+     ]
+    },
+    {
+     "probe": "P_physics",
+     "outcome": "normal",
+     "dropped": [
+      "physics"
+     ],
+     "left": [
+      "termination"
+     ]
+    },
+    {
+     "probe": "P_episode",
+     "outcome": "normal",
+     "dropped": [
+      "termination"
+     ],
+     "left": []
+    }
+   ],
+   "correct": false,
+   "wrong": false
+  },
+  {
+   "strategy": "random4",
+   "status": "none_supported",
+   "conclusion": null,
+   "probes_used": 6,
+   "steps": [
+    {
+     "probe": "P_noise",
+     "outcome": "normal",
+     "dropped": [
+      "exploration"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "optimizer",
+      "physics",
+      "termination"
+     ]
+    },
+    {
+     "probe": "P_physics",
+     "outcome": "normal",
+     "dropped": [
+      "physics"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "optimizer",
+      "termination"
+     ]
+    },
+    {
+     "probe": "P_episode",
+     "outcome": "normal",
+     "dropped": [
+      "termination"
+     ],
+     "left": [
+      "reward",
+      "actuator",
+      "optimizer"
+     ]
+    },
+    {
+     "probe": "P_torque",
+     "outcome": "normal",
+     "dropped": [
+      "actuator"
+     ],
+     "left": [
+      "reward",
+      "optimizer"
+     ]
+    },
+    {
+     "probe": "P_value",
+     "outcome": "normal",
+     "dropped": [
+      "optimizer"
+     ],
+     "left": [
+      "reward"
+     ]
+    },
+    {
+     "probe": "P_reward",
+     "outcome": "normal",
+     "dropped": [
+      "reward"
+     ],
+     "left": []
+    }
+   ],
+   "correct": false,
+   "wrong": false
+  },
+  {
+   "strategy": "discriminate",
+   "status": "none_supported",
+   "conclusion": null,
+   "probes_used": 3,
+   "steps": [
+    {
+     "probe": "P_reward",
+     "outcome": "normal",
+     "dropped": [
+      "reward"
+     ],
+     "left": [
+      "actuator",
+      "exploration"
+     ]
+    },
+    {
+     "probe": "P_noise",
+     "outcome": "normal",
+     "dropped": [
+      "exploration"
+     ],
+     "left": [
+      "actuator"
+     ]
+    },
+    {
+     "probe": "P_torque",
+     "outcome": "normal",
+     "dropped": [
+      "actuator"
+     ],
+     "left": []
+    }
+   ],
+   "hypotheses": [
+    "reward",
+    "actuator",
+    "exploration"
+   ],
+   "model_probe": "P_reward",
+   "model_probe_used": true,
+   "rule_probe": "P_noise",
+   "correct": false,
+   "wrong": false
+  }
+ ],
+ "specificity_gate": {},
+ "counts": {
+  "correct": 0,
+  "wrong": 0,
+  "stopped": 8
+ },
+ "prediction_match": {
+  "probes": {
+   "P_noise": true,
+   "P_value": true,
+   "P_reward": true,
+   "P_torque": true,
+   "P_physics": true,
+   "P_episode": true
+  },
+  "strategies": {
+   "fixed": true,
+   "exhaustive": true,
+   "random0": true,
+   "random1": true,
+   "random2": true,
+   "random3": true,
+   "random4": true,
+   "discriminate": true
+  },
+  "outcome": true
+ },
+ "wording": "rsl_rl #38의 의미를 옮긴 optimizer 결함에서 동결 probe 고리는 비교한 방식 모두 원인을 확정하지 않고 멈췄다(맞는 확정 0, 틀린 확정 0). 등록 범주 안의 다른 구현을 동결 P_value가 겨누지 못한 새 seed 단일 사례이며, 안전성 보장이나 일반화가 아니다."
+}
