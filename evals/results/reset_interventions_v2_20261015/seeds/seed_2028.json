@@ -1,0 +1,107 @@
+{
+  "schema": "public_recovery_reset_seed_v1",
+  "measurement_kind": "development",
+  "seed": 2028,
+  "status": "complete",
+  "arms": {
+    "optimizer_only": {
+      "label": "not_recovered",
+      "fixed_evaluation": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 1.164002948236173,
+        "yaw_rate_rmse_radps": 0.3569298990582867,
+        "standstill_lin_vel_rmse_mps": 1.1766968108291043,
+        "standstill_yaw_rate_rmse_radps": 0.8320502943378437,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        },
+        "failed_checks": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ]
+      },
+      "budget": {
+        "training_updates": 300,
+        "num_envs": 4096
+      },
+      "artifact_sha256_lf": {
+        "manifest": "fb21277b7d001cac9595bc40108ac4e5d5e512b23558a48c249e66922d6a3abd",
+        "intervention": "a030d2bfa9e64a5ed65f13cf0af703b6d032ca1a88cbde5e19a686b5c26a710b",
+        "training_receipt": "1222224620e89f4293f795dc6676994ae8106176fe147e2154a8373159e3e13a",
+        "fixed_evaluation": "29a798eb626816c0c8916aa16aee94a44f3804957c006b8394d4285d36cdfffc",
+        "parent": "165a96c41e2a99c3acdc3311efd6d1d440e0f67e7777d778c3ef10174b40681c"
+      }
+    },
+    "critic_reset": {
+      "label": "not_recovered",
+      "fixed_evaluation": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 1.1474596388789193,
+        "yaw_rate_rmse_radps": 0.37382043653213165,
+        "standstill_lin_vel_rmse_mps": 1.1766968108291043,
+        "standstill_yaw_rate_rmse_radps": 0.8320502943378437,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        },
+        "failed_checks": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ]
+      },
+      "budget": {
+        "training_updates": 300,
+        "num_envs": 4096
+      },
+      "artifact_sha256_lf": {
+        "manifest": "249215cfa731e9bf1281ba2c4fee15f00f3d223b4e98e2473c3b3c8ebbfb5de9",
+        "intervention": "d355dbc8a5048c124939928be9bcffb71f8401d613070f3bba61e8fb1db2b24e",
+        "training_receipt": "c09979e0f55477270752c697a35ecc678594eb900b3c753936d941e8220fe6dc",
+        "fixed_evaluation": "bcd6316ccd928e88d4ef111f9b386e4cf0b4a3b961695657efa2b701a929c8b5",
+        "parent": "29ff18c6647754e7d9c45f1b0e9788798afdf33921ad211f237395e7999905b1"
+      }
+    },
+    "actor_last_layer_reset": {
+      "label": "not_recovered",
+      "fixed_evaluation": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 0.15465310778868374,
+        "yaw_rate_rmse_radps": 0.2975389434665974,
+        "standstill_lin_vel_rmse_mps": 1.1766968108291043,
+        "standstill_yaw_rate_rmse_radps": 0.8320502943378437,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        },
+        "failed_checks": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ]
+      },
+      "budget": {
+        "training_updates": 300,
+        "num_envs": 4096
+      },
+      "artifact_sha256_lf": {
+        "manifest": "36d3a4c0441880435dfe169a6cfc0386ca85c486ab3e8b21a982a60303cd791f",
+        "intervention": "c6c2cca088443dd5d4e3c543a637021caf937c0a40d676d4304f5272131041c0",
+        "training_receipt": "ef73c4245fad700f75f3d46766d53288dcacb30e1097ae227c62b2a62384fc0a",
+        "fixed_evaluation": "b81de48fc5e82f4c9db29a67cd17d8e0693b77539f9111d8f79baf5dac438d19",
+        "parent": "219352cc7cf540e5f3df07140f2c36bdcc4841a07106b488a868c2b23c3957bb"
+      }
+    }
+  },
+  "source_commit_sha": "a902db8e61a8b9a6937d685b52471b0e971319c4",
+  "protocol_sha256_lf": "a02e09de159a62336b313714988df38bc5d24d21d5290f9d8a667cba3bddf845",
+  "source_result_sha256_lf": "3c7425c5c7cbba3215857646b048a11c73fa56f4d22a1230e3e0d32f24e48b76"
+}

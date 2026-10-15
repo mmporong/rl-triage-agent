@@ -1,0 +1,130 @@
+{
+  "schema": "public_optimizer_observability_run_v1",
+  "measurement_kind": "development",
+  "run_id": "h01_s2027",
+  "arm": "h01",
+  "seed": 2027,
+  "status": "normal",
+  "updates": [
+    {
+      "update_index": 0,
+      "declared_learning_epochs": 5,
+      "declared_mini_batches": 4,
+      "runtime_learning_epochs": 5,
+      "runtime_mini_batches": 4,
+      "expected_optimizer_steps": 20,
+      "observed_optimizer_steps": 20,
+      "expected_minibatches": 20,
+      "observed_minibatches": 20,
+      "pre_step_gradient_norm": {
+        "count": 20,
+        "min": 0.18875318842534222,
+        "max": 0.9999994337072341,
+        "mean": 0.4491891941299338,
+        "last": 0.22206895387451184
+      },
+      "learning_rate": {
+        "count": 20,
+        "min": 0.0006666666666666666,
+        "max": 0.0015,
+        "mean": 0.000725,
+        "last": 0.0006666666666666666
+      },
+      "approx_kl": {
+        "status": "unavailable"
+      },
+      "clip_fraction": {
+        "status": "unavailable"
+      }
+    },
+    {
+      "update_index": 1,
+      "declared_learning_epochs": 5,
+      "declared_mini_batches": 4,
+      "runtime_learning_epochs": 5,
+      "runtime_mini_batches": 4,
+      "expected_optimizer_steps": 20,
+      "observed_optimizer_steps": 20,
+      "expected_minibatches": 20,
+      "observed_minibatches": 20,
+      "pre_step_gradient_norm": {
+        "count": 20,
+        "min": 0.23201228994540862,
+        "max": 0.8891379513486584,
+        "mean": 0.41251402656947594,
+        "last": 0.23201228994540862
+      },
+      "learning_rate": {
+        "count": 20,
+        "min": 0.001,
+        "max": 0.0015,
+        "mean": 0.0014750000000000002,
+        "last": 0.0015
+      },
+      "approx_kl": {
+        "status": "unavailable"
+      },
+      "clip_fraction": {
+        "status": "unavailable"
+      }
+    },
+    {
+      "update_index": 2,
+      "declared_learning_epochs": 5,
+      "declared_mini_batches": 4,
+      "runtime_learning_epochs": 5,
+      "runtime_mini_batches": 4,
+      "expected_optimizer_steps": 20,
+      "observed_optimizer_steps": 20,
+      "expected_minibatches": 20,
+      "observed_minibatches": 20,
+      "pre_step_gradient_norm": {
+        "count": 20,
+        "min": 0.27361257669969163,
+        "max": 0.603573362404147,
+        "mean": 0.4113205085858991,
+        "last": 0.27361257669969163
+      },
+      "learning_rate": {
+        "count": 20,
+        "min": 0.0022500000000000003,
+        "max": 0.0033750000000000004,
+        "mean": 0.00331875,
+        "last": 0.0033750000000000004
+      },
+      "approx_kl": {
+        "status": "unavailable"
+      },
+      "clip_fraction": {
+        "status": "unavailable"
+      }
+    }
+  ],
+  "primitive_status": {
+    "optimizer_step_count": {
+      "status": "normal",
+      "first_mismatch_update": null
+    },
+    "minibatch_count": {
+      "status": "normal",
+      "first_mismatch_update": null
+    },
+    "adam_step_delta": {
+      "status": "unknown",
+      "first_mismatch_update": null
+    },
+    "approx_kl": {
+      "status": "unavailable"
+    },
+    "clip_fraction": {
+      "status": "unavailable"
+    }
+  },
+  "source_commit_sha": "a902db8e61a8b9a6937d685b52471b0e971319c4",
+  "protocol_sha256_lf": "c1fd244e388a0ab6153ff779ae485d30829f490506c4affae8b300c6794ecfab",
+  "artifact_sha256_lf": {
+    "manifest": "01ab3f219cd0d5eb366afe361bf027976435967b6a28994a658e26cb098c380d",
+    "records": "64e4b89a21462f992e6a010e691ad28dcd88bb5139728231f44aaabf85300959",
+    "report": "f6dfed0e2c8cc283023b5c90543a8474c6aec119320f0b560457b92005cf97d6"
+  }
+}

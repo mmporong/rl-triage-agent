@@ -1,0 +1,40 @@
+{
+  "schema": "public_recovery_reset_summary_v1",
+  "status": "complete",
+  "measurement_kind": "development",
+  "seeds": [
+    2026,
+    2028
+  ],
+  "arm_results": {
+    "optimizer_only": {
+      "recovered": 0,
+      "evaluated": 2,
+      "labels_by_seed": {
+        "2026": "not_recovered",
+        "2028": "not_recovered"
+      }
+    },
+    "critic_reset": {
+      "recovered": 0,
+      "evaluated": 2,
+      "labels_by_seed": {
+        "2026": "not_recovered",
+        "2028": "not_recovered"
+      }
+    },
+    "actor_last_layer_reset": {
+      "recovered": 1,
+      "evaluated": 2,
+      "labels_by_seed": {
+        "2026": "recovered",
+        "2028": "not_recovered"
+      }
+    }
+  },
+  "recovery_rule_decision": "keep_existing_rule",
+  "mechanism_status": "unresolved",
+  "claim_limit": "두 seed의 개발 측정이다. 혼합 결과이므로 회복 규칙을 바꾸지 않으며 메커니즘, 일반화 또는 GPU 절감을 입증하지 않는다.",
+  "source_commit_sha": "a902db8e61a8b9a6937d685b52471b0e971319c4",
+  "protocol_sha256_lf": "a02e09de159a62336b313714988df38bc5d24d21d5290f9d8a667cba3bddf845"
+}

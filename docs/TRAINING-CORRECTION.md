@@ -202,6 +202,20 @@ cd "$HOME/rl-triage-agent"
 
 미디어 프로토콜은 개정판 r2(`bench/protocols/training_correction_media_v4_<tag>_r2.json`)를 쓴다. 같은 tag의 r1은 원 실행 seed를 담은 생성 키가 Play 재생 seed(42)를 덮어써 `record`가 녹화 전에 거부했고(GPU 미사용), 파일은 바꾸지 않은 채 r2의 `supersedes`에 r1의 SHA와 거부 이유를 결합했다. r2는 원 실행 seed를 `source_seed`로 따로 둔다.
 
+## 재설정 개입 v2
+
+v4에서 보상 결함을 고친 뒤 이어 학습한 두 seed가 모두 회복하지 않았고, action noise std 재설정도 결과를 바꾸지 못했다. 후속 개발 측정은 체크포인트의 어떤 상태가 이어 학습을 막는지 좁히려고 세 개입을 [프로토콜 v2](../bench/protocols/recovery_reset_v2.json)에 고정했다. 입력은 이미 본 F1 seed 2026·2028이며, 각 arm은 결함을 고친 뒤 300회 이어 학습하고 같은 고정 행동 평가로 판정했다.
+
+| arm | 재설정 범위 | seed 2026 | seed 2028 | 두 seed 회복 |
+|---|---|---|---|---:|
+| `optimizer_only` | 정책 텐서를 유지하고 공유 Adam 상태 제거 | `not_recovered` | `not_recovered` | 0/2 |
+| `critic_reset` | critic의 모든 Linear와 해당 Adam 상태 재설정 | `not_recovered` | `not_recovered` | 0/2 |
+| `actor_last_layer_reset` | actor 마지막 Linear와 해당 Adam 상태 재설정 | `recovered` | `not_recovered` | 1/2 |
+
+[사실] 여섯 실행은 모두 출처·개입·학습량·평가·종료 계약을 통과했다. `optimizer_only`와 `critic_reset`은 두 seed에서 정상 이어 학습 기준의 행동 허용 범위를 통과하지 못했다. `actor_last_layer_reset`은 seed 2026에서 통과했지만 seed 2028에서는 통과하지 못했다. 공개 요약은 [재설정 개입 결과](../evals/results/reset_interventions_v2_20261015/summary.json)에 있다.
+
+[추론] actor 마지막 층 상태가 seed 2026의 회복을 막았을 가능성은 후속 가설이다. seed 2028에서 같은 개입이 회복하지 않았으므로 가소성 상실이나 특정 층을 실패 원인으로 확정할 수 없다. 사전등록한 `mixed` 규칙에 따라 회복 방식은 바꾸지 않고 메커니즘을 미확정으로 둔다. 이 비교는 이미 본 합성 결함 두 seed의 개발 측정이며, 회복 규칙 변경이나 비용 효과의 근거가 아니다.
+
 ## 액추에이터 곡선 검사
 
 `src/rl_triage/actuator_envelope.py`의 `inspect_actuator_envelope`는 정책 rollout 없이 등록 속도 격자에서 DC motor `_clip_effort`의 양·음 포화 출력을 읽고 설정에서 계산한 토크–속도 곡선과 비교한다. 측정 중 교체한 `_joint_vel`은 `finally`에서 원 객체로 복원한다. 설정·shape·유한성 검증이 실패하면 곡선 이상으로 확정하지 않고 `invalid`를 반환한다.

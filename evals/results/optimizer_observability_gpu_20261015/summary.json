@@ -1,0 +1,46 @@
+{
+  "schema": "public_optimizer_observability_summary_v1",
+  "status": "complete",
+  "measurement_kind": "development",
+  "run_count": 23,
+  "classification_counts": {
+    "abnormal": 1,
+    "normal": 22,
+    "unknown": 0
+  },
+  "r1_pair": {
+    "none_s2042": "normal",
+    "r1_s2042": "abnormal"
+  },
+  "controls": {
+    "evaluated": 22,
+    "normal": 22,
+    "run_ids": [
+      "none_s2042",
+      "none_s2026",
+      "h01_s2026",
+      "h02_s2026",
+      "h03_s2026",
+      "h04_s2026",
+      "h05_s2026",
+      "h06_s2026",
+      "none_s2027",
+      "h01_s2027",
+      "h02_s2027",
+      "h03_s2027",
+      "h04_s2027",
+      "h05_s2027",
+      "h06_s2027",
+      "none_s2028",
+      "h01_s2028",
+      "h02_s2028",
+      "h03_s2028",
+      "h04_s2028",
+      "h05_s2028",
+      "h06_s2028"
+    ]
+  },
+  "claim_limit": "R1은 한 seed에서 수행한 개발 측정이다. h01~h06의 normal은 epoch/update 횟수 검사에서 음성이었다는 뜻이며 해당 결함 전체가 정상이라는 뜻이 아니다.",
+  "source_commit_sha": "a902db8e61a8b9a6937d685b52471b0e971319c4",
+  "protocol_sha256_lf": "c1fd244e388a0ab6153ff779ae485d30829f490506c4affae8b300c6794ecfab"
+}

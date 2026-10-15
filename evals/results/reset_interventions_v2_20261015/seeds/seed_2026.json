@@ -1,0 +1,104 @@
+{
+  "schema": "public_recovery_reset_seed_v1",
+  "measurement_kind": "development",
+  "seed": 2026,
+  "status": "complete",
+  "arms": {
+    "optimizer_only": {
+      "label": "not_recovered",
+      "fixed_evaluation": {
+        "fall_rate": 0.07692307978868484,
+        "mean_survival_s": 18.691673583984375,
+        "lin_vel_rmse_mps": 1.1429813032314846,
+        "yaw_rate_rmse_radps": 0.18800400507178766,
+        "standstill_lin_vel_rmse_mps": 1.1766968108291043,
+        "standstill_yaw_rate_rmse_radps": 0.8320502943378437,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": false,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": true
+        },
+        "failed_checks": [
+          "fall_frac",
+          "err_xy_ratio"
+        ]
+      },
+      "budget": {
+        "training_updates": 300,
+        "num_envs": 4096
+      },
+      "artifact_sha256_lf": {
+        "manifest": "1601598f449613434b91aba71bc946a2dd2f0bb5fd6b57a65c7fd3c6e3d8f9fd",
+        "intervention": "e9b6d0d2b37f908a168e80234c21f297e84a37428ef56d3463f7ef21c746597c",
+        "training_receipt": "5d313ebb59f977dff0050f092d3e1e865c261c150d4371188d1fdceafc74946a",
+        "fixed_evaluation": "501f2144ca5edc5eaef3c7c5e6593cc0c2ef3a5a951ecf8ba2efa025a3b7b5c4",
+        "parent": "26e5fe6b8a583122395b66848410a12977cc307d65cf19a029c12326ea94a06d"
+      }
+    },
+    "critic_reset": {
+      "label": "not_recovered",
+      "fixed_evaluation": {
+        "fall_rate": 0.004807692486792803,
+        "mean_survival_s": 19.93142333984375,
+        "lin_vel_rmse_mps": 1.1524352473771695,
+        "yaw_rate_rmse_radps": 0.3374819295955213,
+        "standstill_lin_vel_rmse_mps": 1.1766968108291043,
+        "standstill_yaw_rate_rmse_radps": 0.8320502943378437,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        },
+        "failed_checks": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ]
+      },
+      "budget": {
+        "training_updates": 300,
+        "num_envs": 4096
+      },
+      "artifact_sha256_lf": {
+        "manifest": "3737bb927d2474e91bef10b9e602dbf25365181c0c5444f595c03ca0e094e90e",
+        "intervention": "59a849df0b454fc06c45b9361b1f498b9d4fea5edfd03e7968bd8a7b057c6848",
+        "training_receipt": "dde65ee3b53767e47e91d8565a8f5b8d386f1def285c2363cddb807a6a6364b4",
+        "fixed_evaluation": "c3e563137002ed13b39352d3b3e8ad7695cc3497d21141cbcafa80e142a086c6",
+        "parent": "f60a1c184b730e385c159ad18b1cf231200e96e592acbfd4287e70d87b56084e"
+      }
+    },
+    "actor_last_layer_reset": {
+      "label": "recovered",
+      "fixed_evaluation": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 0.15230317064397267,
+        "yaw_rate_rmse_radps": 0.1902889024734059,
+        "standstill_lin_vel_rmse_mps": 1.1766968108291043,
+        "standstill_yaw_rate_rmse_radps": 0.8320502943378437,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        },
+        "failed_checks": []
+      },
+      "budget": {
+        "training_updates": 300,
+        "num_envs": 4096
+      },
+      "artifact_sha256_lf": {
+        "manifest": "d2fb1c369ee83795a5836e50bb1354b6dc3e918ec160b529944c27f6cb91809d",
+        "intervention": "1358065fba13ae0f0b30ac482529787b2643eae49791d29b39844cbd69293c7f",
+        "training_receipt": "c0c6b4929980d57279b439ce431b9af4ff5ccc93223737464217cf06b7aaa6cf",
+        "fixed_evaluation": "96cfe67ffd13d25f56e4abe2bd9ee8e6925f674c6930236768b8ed5c8be7a0f8",
+        "parent": "28473b8e546b683e25c485152f5078b15149a2304df30b9b5b67b126dff6ad5d"
+      }
+    }
+  },
+  "source_commit_sha": "a902db8e61a8b9a6937d685b52471b0e971319c4",
+  "protocol_sha256_lf": "a02e09de159a62336b313714988df38bc5d24d21d5290f9d8a667cba3bddf845",
+  "source_result_sha256_lf": "4d1958f9d2c950b842dfa9d4edccd31415bbaa057da1c302d455a5481bfd5f0a"
+}
