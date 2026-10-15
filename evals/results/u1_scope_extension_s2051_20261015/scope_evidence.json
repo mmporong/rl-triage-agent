@@ -1,0 +1,37 @@
+{
+  "schema": "public_u1_scope_evidence_v1",
+  "fault": "U1",
+  "source_training_seed": 2051,
+  "fault_family": "root_body_velocity_reward_family",
+  "diagnosis": "known_u1_reward_family",
+  "scope_verdict": "scope_insufficient",
+  "measured_probe_terms": [
+    "track_lin_vel_xy_exp",
+    "track_ang_vel_z_exp"
+  ],
+  "measured_probe_term_count": 2,
+  "probe_measurement": {
+    "track_lin_vel_xy_exp_rel_error": 0.3903919456526637,
+    "track_ang_vel_z_exp_rel_error": 1.3198045900464057
+  },
+  "probe_outcome": "abnormal",
+  "source_registered_terms": [
+    "track_lin_vel_xy_exp",
+    "track_ang_vel_z_exp",
+    "lin_vel_z_l2",
+    "ang_vel_xy_l2"
+  ],
+  "source_registered_term_count": 4,
+  "uncovered_terms": [
+    "track_ang_vel_z_exp",
+    "lin_vel_z_l2",
+    "ang_vel_xy_l2"
+  ],
+  "design_coupling": "known_u1_post_result_development_registration",
+  "api_calls": 0,
+  "model_loop": "inactive",
+  "artifact_sha256_lf": {
+    "scope": "d5fe411c5a3db0fc4d9425338d796d63340ef0491875dab5d91e57ce30373984",
+    "probe_receipt": "e61133e1017c5d0e3167c21b518e27b93bf32b8c011fc50ddf3cfbf18870310c"
+  }
+}
