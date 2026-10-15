@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -232,16 +233,19 @@ def test_cli_inspect_writes_new_report(tmp_path):
     finally:
         observer.remove()
     records_path.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+    child_env = os.environ.copy()
+    child_env["PYTHONIOENCODING"] = "utf-8"
     process = subprocess.run([sys.executable, str(ROOT / "bench/inspect_optimizer_observability.py"), "inspect",
                               "--manifest", str(manifest_path), "--records", str(records_path), "--output", str(output)],
-                             capture_output=True, text=True)
+                             capture_output=True, text=True, encoding="utf-8", errors="strict", env=child_env)
     assert process.returncode == 0, process.stderr
     assert json.loads(output.read_text(encoding="utf-8"))["status"] == "normal"
     bound["source_sha256_lf"]["evals/optimizer_observability.py"] = "0" * 64
     manifest_path.write_text(json.dumps(bound), encoding="utf-8")
     rejected = subprocess.run([sys.executable, str(ROOT / "bench/inspect_optimizer_observability.py"), "inspect",
                                "--manifest", str(manifest_path), "--records", str(records_path),
-                               "--output", str(tmp_path / "rejected.json")], capture_output=True, text=True)
+                               "--output", str(tmp_path / "rejected.json")], capture_output=True, text=True,
+                              encoding="utf-8", errors="strict", env=child_env)
     assert rejected.returncode == 2 and "source hash commitment" in rejected.stderr
 
 
