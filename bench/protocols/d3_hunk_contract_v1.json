@@ -1,0 +1,60 @@
+{
+  "schema": "d3_hunk_contract_protocol_v1",
+  "question": "저장된 D3 B4·B5 packet에 같은 모델·요청 설정을 적용할 때, 줄 번호 근거 계약을 hunk 번호와 diff 원문 코드 조각 계약으로 바꾸면 근거가 검증되지 않는 응답의 비율이 어떻게 달라지는가",
+  "development_measurement": true,
+  "design_disclosure": "D3 모델이 원인 변경을 1위로 맞혔지만 diff에 없는 줄 번호를 근거로 내어 무효가 된 저장 결과를 본 뒤 설계한 계약이다. 이미 본 4사례 8 packet을 사용하므로 일반화나 모델 능력의 우위를 주장하지 않는다.",
+  "source_experiment": "bench/private/d3_experiment/ced4302df56bfc4e",
+  "source_commit": "e4603ed386cf98c98c14922007e9abe942a0ded2",
+  "packets": {
+    "C1_B4": "b16983af62afa0bf4ea2996c86f6fd7e95b06aa751274ed64284edbce1d2e7d5",
+    "C1_B5": "f9836641f3b71f533abef986448dcdf49ef85a4f7dc6f7c0d6f9a8ca1f966de4",
+    "C2_B4": "b0dde82b1df50de25477661ac19da4ccafe46efcd48d3e17c29645cfef1bee5f",
+    "C2_B5": "b03df521f3a510eda22c8e32485f4a2e53a6177302ce1678c0fa108f3243baec",
+    "C3_B4": "b84c947a61069501bb6727c170f269ba0b889c7e1319b56c4170021b4aa6524d",
+    "C3_B5": "576804ab5a1dfe747b4d410897a0e4a25edfcc14d6423254c4f0e37846f8929d",
+    "D0_B4": "1bfd371339749be8eb82fd89b392349e7f327426d3a869579f2fbd769002df6f",
+    "D0_B5": "0f176a523d7b4aaa92a2fedfea2a5e0fa05e231b9099c50a60e5d834b5ea1b04"
+  },
+  "arms": {
+    "old": "evals/d3_agent.py의 diff 새 줄 번호 계약과 검증기",
+    "hunk": "change별 H1..Hn과 그 hunk 안의 연속 코드 조각을 요구하는 evals/d3_hunk_contract.py 계약"
+  },
+  "repeats": 3,
+  "base_calls": 48,
+  "call_order_rule": "repeat 1..3마다 packet 8개 x arm 2개를 만들고 sha256('d3_hunk_contract_v1:<repeat>:<packet_id>:<arm>') 오름차순으로 고정한다",
+  "call_order_sha256": "8830cc716b0b03cc07a7bb1d3fc92200db16d60d7d5a98e1aea674c7de4361dd",
+  "request": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "infra_retry_cap": 12,
+  "total_api_cap": 60,
+  "semantic_retry_cap": 0,
+  "retry_rule": "빈 응답, 길이 잘림, 연결, 시간 초과, 429, 5xx만 동일 논리 호출을 한 번 재시도한다. 공용 재시도 12회 또는 실제 요청 60회에 닿으면 더 부르지 않는다.",
+  "new_contract": {
+    "binding": "reason.change가 가리키는 change 안에서 reason.hunk를 찾는다",
+    "exact_quote": "reason.quote를 줄 단위로 나눴을 때 해당 hunk의 +/- 접두사를 뺀 코드 줄과 연속으로 정확히 같아야 한다",
+    "changed_line": "일치 구간에 추가 또는 삭제 줄이 하나 이상 있어야 한다",
+    "minimum_anchor": "앞뒤 개행을 허용하지 않고 공백 제거 길이 20자 이상이며 길이 3 이상의 코드 식별자가 있어야 한다",
+    "top_binding": "첫 reason.change는 ranking[0]과 같아야 한다",
+    "failure": "하나라도 어기면 invalid이며 모델이 낸 조각을 실행기가 고치거나 다른 hunk에서 찾지 않는다"
+  },
+  "primary_metric": "arm별 invalid 논리 호출 수 / 사전등록 논리 호출 24개",
+  "denominator": "거절, JSON 파싱 실패, 계약 위반, 호출 오류, 인프라 재시도 소진을 포함한 24개 전체",
+  "transport_condition": "48개 논리 호출이 모두 종단 상태일 때만 두 arm의 invalid 비율을 함께 제시한다. 진행 중 인프라 재시도가 있으면 incomplete로 남긴다.",
+  "predictions": {
+    "old": "저장 D3에서 관찰한 줄 번호 근거 무효 유형이 반복될 수 있다",
+    "hunk": "diff에 없는 코드 조각, 다른 hunk 조각, 변경 줄이 없는 문맥 조각은 검증기가 거부한다. 유효 응답 비율의 방향은 미리 정하지 않는다"
+  },
+  "result_wording": {
+    "complete": "저장 D3 packet 개발 측정에서 기존 줄 번호 계약과 hunk 코드 조각 계약의 무효 응답 비율은 각각 <old_invalid>/24와 <hunk_invalid>/24였다. 이는 인용 계약 검증 결과이며 모델 능력의 우위나 다른 사례에 대한 일반화 근거가 아니다.",
+    "incomplete": "전송 종단 조건을 충족하지 못해 계약 간 무효 응답 비율을 비교하지 않는다. 완료된 호출과 인프라 상태만 기록한다."
+  },
+  "execution": "새 코드와 이 프로토콜이 같은 Git HEAD에 커밋된 경우에만 WSL의 기존 NVIDIA 자격증명 환경에서 호출한다. 결과 파일은 새로 만들며 덮어쓰지 않고, 호출 기록과 hash-chain ledger를 남긴다.",
+  "reservation": "API 요청 전에 전역 배타 lock을 얻고 불변 reservation과 ledger reserved 사건을 fsync한다. 요청 도중 프로세스가 사라져 record가 없는 reservation도 실제 요청 상한에 포함하고 해당 논리 호출을 unknown/invalid 종단으로 센다. 자동 재호출하지 않는다. 남은 lock은 운영자가 호출 프로세스 부재와 lock SHA를 확인한 뒤 resolve-lock로만 해제한다."
+}
