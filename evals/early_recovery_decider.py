@@ -14,12 +14,13 @@ import math
 import re
 import statistics
 from collections import Counter, defaultdict
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_PROTOCOL = ROOT / "bench/protocols/early_recovery_decider_v1.json"
+LEGACY_PROTOCOL = ROOT / "bench/protocols/early_recovery_decider_v1.json"
+DEFAULT_PROTOCOL = ROOT / "bench/protocols/early_recovery_decider_v2.json"
 DEFAULT_OUTPUT = ROOT / "bench/private/codex_support_20261015/task3"
 SEED_RE = re.compile(r"_s(\d+)")
 MASK_RE = re.compile(r"^(d3v2_[a-z0-9]+_s\d+)_m([0-9a-f]{2})$")
@@ -44,26 +45,64 @@ def write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def inventory(protocol: dict[str, Any]) -> list[Path]:
+def _input_inventory(protocol: dict[str, Any]) -> dict[str, Any]:
+    if protocol["schema"] == "early_recovery_decider_protocol_v2":
+        return protocol["inventory"]
+    if protocol["schema"] != "early_recovery_decider_protocol_v1":
+        raise ValueError("지원하지 않는 조기 판정 프로토콜")
+    # v1 파일을 보존하면서 당시 입력을 명시한 v2 목록으로 재생한다.
+    frozen = read_json(DEFAULT_PROTOCOL)
+    if sha256(LEGACY_PROTOCOL) != frozen["revision"]["source_protocol"]["sha256_lf"]:
+        raise ValueError("v1 원본 프로토콜 SHA 불일치")
+    if protocol["inventory"] != read_json(LEGACY_PROTOCOL)["inventory"]:
+        raise ValueError("v1 입력 정의 변경은 새 프로토콜이 필요하다")
+    return frozen["inventory"]
+
+
+def _bound_files(entries: list[dict[str, Any]]) -> list[Path]:
     paths = []
-    for rel in protocol["inventory"]["telemetry_roots"]:
-        paths.extend(sorted((ROOT / rel).glob("*.telemetry.json")))
-    expected = protocol["inventory"]["expected_file_count"]
-    if len(paths) != expected:
-        raise ValueError(f"텔레메트리 파일 수 {len(paths)} != 사전등록 {expected}")
+    seen = set()
+    for entry in entries:
+        relative = entry["path"]
+        if (not isinstance(relative, str) or not relative or "\\" in relative or ":" in relative
+                or PurePosixPath(relative).is_absolute() or ".." in PurePosixPath(relative).parts):
+            raise ValueError("등록 입력은 저장소 내부 상대경로여야 한다")
+        path = ROOT / relative
+        resolved = path.resolve()
+        if not resolved.is_relative_to(ROOT.resolve()) or path.is_symlink() or not path.is_file():
+            raise ValueError(f"등록 입력 누락 또는 허용되지 않는 경로: {relative}")
+        if resolved in seen:
+            raise ValueError(f"등록 입력 중복: {relative}")
+        seen.add(resolved)
+        expected = entry["sha256_lf"]
+        if not isinstance(expected, str) or not re.fullmatch(r"[0-9a-f]{64}", expected) or sha256(path) != expected:
+            raise ValueError(f"등록 입력 SHA 불일치: {relative}")
+        paths.append(path)
     return paths
 
 
-def report_index() -> dict[str, list[Path]]:
+def inventory(protocol: dict[str, Any]) -> list[Path]:
+    registered = _input_inventory(protocol)
+    paths = _bound_files(registered["telemetry_files"])
+    expected = registered["expected_file_count"]
+    if len(paths) != expected:
+        raise ValueError(f"텔레메트리 파일 수 {len(paths)} != 사전등록 {expected}")
+    for path, entry in zip(paths, registered["telemetry_files"]):
+        if (path.parent.relative_to(ROOT).as_posix() not in registered["telemetry_roots"]
+                or path.name != entry["run"] + ".telemetry.json"):
+            raise ValueError("등록 telemetry 경로·실행 이름 불일치")
+    return paths
+
+
+def report_index(protocol: dict[str, Any]) -> dict[str, list[Path]]:
     found: dict[str, list[Path]] = defaultdict(list)
-    for path in sorted((ROOT / "evals/results").glob("**/runs/*.json")):
-        try:
-            record = read_json(path)
-        except (OSError, json.JSONDecodeError):
-            continue
-        name = record.get("name") or path.stem
-        if isinstance(name, str):
-            found[name].append(path)
+    entries = _input_inventory(protocol)["fixed_reports"]
+    for path, entry in zip(_bound_files(entries), entries):
+        record = read_json(path)
+        name = entry["run"]
+        if not isinstance(record, dict) or record.get("name") != name or name in found:
+            raise ValueError(f"등록 고정 평가 실행 이름 불일치 또는 중복: {entry['path']}")
+        found[name].append(path)
     return found
 
 
@@ -165,12 +204,15 @@ def _behavior_label(name: str, report: dict[str, Any], reference: dict[str, Any]
 
 
 def build_catalog(protocol: dict[str, Any]) -> dict[str, Any]:
-    reports = report_index()
-    p0c = read_json(ROOT / "evals/results/p0c_fixed_eval_20261009/summary.json")["bands"]
-    anymal = read_json(ROOT / "evals/results/anymal_c_band_20261014/result.json")["analysis"]["bands"]
+    reports = report_index(protocol)
+    bands = _input_inventory(protocol)["band_summaries"]
+    p0c_path, anymal_path = _bound_files([bands["go2"], bands["anymal"]])
+    p0c = read_json(p0c_path)["bands"]
+    anymal = read_json(anymal_path)["analysis"]["bands"]
+    telemetry_paths = inventory(protocol)
     included = []
     excluded = []
-    for telemetry_path in inventory(protocol):
+    for telemetry_path in telemetry_paths:
         name = telemetry_path.name.removesuffix(".telemetry.json")
         picked = _pick_report(name, reports)
         ref_name = _reference_name(name)
@@ -228,7 +270,7 @@ def build_catalog(protocol: dict[str, Any]) -> dict[str, Any]:
         else:
             row["split"] = "evaluation"
     return {
-        "inventory_count": len(inventory(protocol)),
+        "inventory_count": len(telemetry_paths),
         "joined_before_dedup": len(included),
         "included_after_dedup": len(deduped),
         "excluded_missing_label": excluded,
