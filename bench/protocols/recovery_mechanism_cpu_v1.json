@@ -1,0 +1,32 @@
+{
+  "schema": "recovery_mechanism_cpu_v1",
+  "registered_before_new_checkpoint_measurement": true,
+  "scope": "seen_seed_development_descriptive_analysis",
+  "design_dependence": "설계자가 v4 회복 결과와 2027 가중치 갱신 결과를 본 뒤 작성했다. 새로운 인과 검증이 아니다.",
+  "seeds": [2026, 2028],
+  "arms": ["original_none", "original_fault", "clean_resume_reference", "resume_corrected", "resume_corrected_std_reset", "restart_corrected"],
+  "checkpoint_device": "cpu",
+  "metrics": ["layer_l2_norm", "weight_matrix_effective_rank", "relative_parameter_change", "policy_std", "adam_step", "optimizer_lr", "telemetry_first_last_60"],
+  "required_observation_metrics": {
+    "dormant_neuron_ratio": "실제 관측 배치 없으면 미측정",
+    "feature_effective_rank": "실제 관측 배치 없으면 미측정; 가중치 행렬 rank로 대체하지 않음",
+    "actor_critic_output_distribution": "실제 관측 배치 없으면 미측정",
+    "critic_calibration": "같은 관측과 회수 목표 없으면 미측정"
+  },
+  "unavailable_telemetry": "KL·clip fraction 미기록은 0이나 정상으로 해석하지 않음",
+  "hypotheses": {
+    "no_parameter_updates": "actor 상대 변화 > 1e-6 및 Adam step 증가면 가중치가 전혀 갱신되지 않았다는 설명 기각",
+    "low_action_std": "실패 arm의 마지막 60회 std가 정상보다 낮지 않으면 단순한 std 부족 설명 불일치. 상태 탐색의 충분함은 증명하지 않음",
+    "learning_rate_collapse": "실패 arm LR이 정상보다 지속적으로 낮다는 관측 없으면 지지하지 않음. 동일 LR도 인과 기각은 아님",
+    "plasticity_loss": "가중치 rank·노름만으로 확정하지 않음. 동일 관측에서 특징과 새 목표 학습 반응이 필요",
+    "critic_mismatch": "value loss만으로 확정하지 않음. 동일 정책 분포에서 bootstrap/return과 값 비교 필요",
+    "local_optimum": "재시작 성공·이어 학습 실패는 초기 상태 의존성에 부합하나 메커니즘 확정 불가"
+  },
+  "result_wording": {
+    "supported": "측정된 패턴이 가설과 부합한다. 인과 메커니즘은 미확정이다.",
+    "contradicted": "이 자료는 해당 가설의 단순한 설명과 맞지 않는다.",
+    "unmeasured": "필요한 표본이 저장되지 않아 해당 지표를 측정하지 못했다."
+  },
+  "no_gpu_no_api": true,
+  "overwrite": false
+}
