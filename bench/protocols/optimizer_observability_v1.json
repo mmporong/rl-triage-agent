@@ -1,0 +1,110 @@
+{
+  "schema": "optimizer_observability_protocol_v1",
+  "status": "preregistered_before_measurement",
+  "question": "동결 행동 probe가 놓친 학습 루프 결함을 재사용 가능한 실행 계측 기본 단위로 구분할 수 있는가",
+  "disclosure": "R1과 h01~h06 결과를 본 뒤 설계한 개발 측정이다. 진단 정확도, 절감, 일반화를 주장하지 않는다.",
+  "expected_configuration_source": "실행 중 PPO 객체가 아니라 실행 전에 고정한 arm manifest",
+  "record_binding": "각 JSONL record는 전체 manifest의 canonical SHA-256과 arm·seed·task·num_envs·max_iterations·source commit·protocol/source hash binding을 포함한다. inspect는 현재 결합 소스 hash와 모든 record의 commitment·expected 값을 다시 대조하고 하나라도 다르면 거부한다.",
+  "registry_contract": "PrimitiveSpec(name, evaluator, decisive)를 PrimitiveRegistry에 등록하고 manifest의 inspection_primitives 순서로 조립한다. 새 기본 단위는 assembler 분기 수정 없이 registry 등록으로 추가한다.",
+  "primitives": {
+    "optimizer_step_count": "PPO update마다 optimizer.step 호출 수",
+    "minibatch_count": "PPO update마다 rollout storage 생성기가 낸 미니배치 수",
+    "adam_step_delta": "학습 가능한 정책 파라미터별 Adam step의 update 전후 차이",
+    "pre_step_gradient_norm": "clip_grad_norm 뒤 optimizer.step 직전 전역 L2 gradient norm",
+    "learning_rate_trajectory": "optimizer.step 직전 param group별 learning rate",
+    "approx_kl": "RSL-RL 2.3.3 지역 변수라 안전한 공개 hook이 없어 unavailable",
+    "clip_fraction": "RSL-RL 2.3.3이 기록하지 않아 unavailable"
+  },
+  "reference_manifest": {
+    "schema": "optimizer_observability_manifest_v1",
+    "configured_learning_epochs": 5,
+    "configured_mini_batches": 4,
+    "expected_optimizer_steps_per_update": 20,
+    "expected_minibatches_per_update": 20,
+    "runtime_updates_to_observe": 3,
+    "inspection_primitives": [
+      "optimizer_step_count",
+      "minibatch_count",
+      "adam_step_delta",
+      "pre_step_gradient_norm",
+      "learning_rate_trajectory",
+      "approx_kl",
+      "clip_fraction"
+    ],
+    "arm": "arm별 manifest에서 NONE/R1/h01~h06 중 하나",
+    "seed": "arm별 고정 정수",
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+    "num_envs": 4096,
+    "max_iterations": 3,
+    "source_commit_sha": "GPU 실행 전 같은 commit으로 고정",
+    "protocol_path": "bench/protocols/optimizer_observability_v1.json",
+    "protocol_sha256_lf": "manifest 생성 때 계산",
+    "source_sha256_lf": "manifest 생성 때 두 결합 소스에 대해 계산",
+    "checkpoint_semantics_source_verified": true,
+    "model_0_completed_updates": 1
+  },
+  "classification": {
+    "abnormal": "실제 optimizer step 또는 미니배치 수가 manifest 기대값과 다름",
+    "normal": "관측한 모든 update에서 두 수가 기대값과 같고, 계측 오류가 없음",
+    "unknown": "update가 없거나 예외·불완전 기록이 있거나 checkpoint 비교의 iteration·reset·frozen parameter 조건을 확인하지 못함",
+    "adam_rule": "동일 update 안에서 모든 학습 가능 파라미터에 gradient가 있었고 optimizer reset이 없을 때만 step delta를 일치/불일치로 판정한다. frozen·gradient 없음·reset 불명은 unknown이다"
+  },
+  "development_arms": [
+    "NONE",
+    "R1",
+    "h01",
+    "h02",
+    "h03",
+    "h04",
+    "h05",
+    "h06"
+  ],
+  "prediction": {
+    "R1": "첫 update부터 optimizer step과 미니배치가 4로 관측되어 manifest 기대 20과 불일치",
+    "NONE": "두 count가 20으로 일치",
+    "h01_h02_h03_h05_h06": "결함이 PPO 반복 수를 바꾸지 않으므로 count는 일치할 것으로 예상하며, gradient norm·LR은 서술 자료로만 기록",
+    "h04": "기존 숨은 결함 정의가 critic gradient tensor를 0으로 바꾸지만 optimizer는 해당 파라미터 step을 수행하므로 count와 Adam step은 일치할 것으로 예상한다. gradient norm은 threshold 없이 기록만 한다"
+  },
+  "specificity_measurement": {
+    "kind": "development",
+    "unit": "arm-seed 실행",
+    "seeds": [2026, 2027, 2028],
+    "training_budget": "각 arm은 4096 env로 첫 3 update만 새로 실행한다. 기존 300회 행동 라벨과 결합하되 이번 계측이 행동 결과를 다시 측정한 것으로 쓰지 않는다",
+    "primary_table": "arm별 첫 3 update의 count abnormal/normal/unknown과 첫 불일치 update",
+    "claim_limit": "이미 본 결함과 seed의 사후 개발 측정이며 보류 성능이 아니다"
+  },
+  "r1_loop_rerun": {
+    "seed": 2042,
+    "arms": ["NONE", "R1"],
+    "order": "같은 seed 정상 기준 뒤 R1, 각 3 update 계측",
+    "decision": "R1 count abnormal이고 NONE count normal이면 새 optimizer-loop inspection이 R1을 가른 개발 증거로 기록",
+    "behavior_evaluation": "기존 upstream_r1 고정 평가 결과와 결합하되 새 성능 주장에 쓰지 않음"
+  },
+  "checkpoint_comparison": {
+    "rule": "파일명의 숫자를 update 수로 해석하지 않는다",
+    "model_0": "OnPolicyRunner 소스에서 save가 첫 update 뒤 호출됨을 검증한 메타데이터가 있어야 completed_updates=1로 사용",
+    "unknown_conditions": [
+      "iteration semantics 미검증",
+      "optimizer reset 여부 불명",
+      "frozen parameter 여부 불명",
+      "비교 구간 update 수 불명"
+    ]
+  },
+  "validity": [
+    "계측 설치와 제거가 성공하고 예외 때도 원래 메서드가 복원됨",
+    "계측 전후 동일 입력 synthetic PPO의 파라미터가 일치함",
+    "manifest 기대값은 runtime PPO 속성에서 만들지 않음",
+    "소스·protocol SHA를 GPU 실행 전에 별도 run manifest에 고정함"
+  ],
+  "wording": {
+    "r1_detected": "개발 측정에서 R1은 설정 manifest의 update당 20회와 달리 실제 미니배치·optimizer step이 4회였다. 학습 루프 계측이 동결 행동 probe가 관측하지 않은 차이를 기록했다.",
+    "not_specific": "개발 측정에서 R1 밖 arm도 count 불일치가 나타나 이 판정은 R1 구분 근거로 쓰지 않는다.",
+    "unknown": "필수 실행 계측 또는 상태 연속성 근거가 없어 optimizer 학습 루프를 판정하지 않는다."
+  },
+  "execution": {
+    "gpu_owner": "Claude main",
+    "api_calls": 0,
+    "retry": "인프라 오류만 새 tag로 한 번",
+    "result_immutability": "기존 결과를 덮어쓰지 않음"
+  }
+}
