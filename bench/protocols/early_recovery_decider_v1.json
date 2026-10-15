@@ -1,0 +1,96 @@
+{
+  "schema": "early_recovery_decider_protocol_v1",
+  "status": "preregistered_before_offline_measurement",
+  "created_on": "2026-10-15",
+  "scope": {
+    "question": "300회 학습의 앞 N회 공개 텔레메트리만으로 최종 고정 평가의 healthy/unhealthy를 보수적으로 조기 판정할 수 있는가",
+    "recovery_question": "post-correction 실행은 별도 recovery 라벨이 확인될 때만 평가한다",
+    "development_disclosure": "설계자는 P0-C와 후속 시연 결과를 이미 본 뒤 이 판정기를 설계했다. 모든 수치는 개발 측정이며 새 seed 일반화 근거가 아니다.",
+    "forbidden_claims": [
+      "GPU 시간 절감",
+      "실측 비용 절감",
+      "새 seed 일반화",
+      "healthy를 recovered와 동일시",
+      "라벨 없는 실행의 결과 추정"
+    ]
+  },
+  "inventory": {
+    "telemetry_roots": [
+      "bench/runs_p0c",
+      "bench/runs_d3",
+      "bench/runs_upstream",
+      "bench/runs_anymal"
+    ],
+    "expected_file_count": 72,
+    "join_rule": "공개 고정 평가 또는 그 집계 결과에서 run 이름과 최종 판정을 추적할 수 있는 파일만 포함한다",
+    "missing_join_rule": "명시적으로 excluded_missing_label에 기록하고 학습·평가에서 제외한다",
+    "duplicate_rule": "같은 checkpoint_sha256은 하나의 표본만 남기고 이름순 첫 표본을 대표로 삼는다. 충돌 라벨은 전체 중단한다"
+  },
+  "leakage_controls": {
+    "allowed_inputs": "telemetry.series의 prefix[0:N]만",
+    "forbidden_inputs": [
+      "telemetry.summary",
+      "N 이후 series 값",
+      "고정 평가 수치",
+      "고정 평가 실패 항목",
+      "run 이름에서 유도한 fault 종류",
+      "최종 checkpoint 값"
+    ],
+    "split_unit": "task + seed lineage",
+    "development_lineages": {
+      "Isaac-Velocity-Flat-Unitree-Go2-v0": [2026, 2027]
+    },
+    "evaluation_lineages": {
+      "Isaac-Velocity-Flat-Unitree-Go2-v0": "seed >= 2028"
+    },
+    "transfer_audit": {
+      "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+      "use_for_selection": false,
+      "wording": "별도 task 기술 점검이며 일반화 평가가 아니다"
+    }
+  },
+  "features": {
+    "candidate_prefix_iterations": [50, 75, 100, 125, 150],
+    "tail_window": 20,
+    "series": [
+      "Metrics/base_velocity/error_vel_xy",
+      "Episode_Reward/track_lin_vel_xy_exp",
+      "Train/mean_episode_length",
+      "Train/mean_reward",
+      "Policy/mean_noise_std",
+      "Loss/value_function",
+      "Loss/surrogate",
+      "Loss/entropy",
+      "Loss/learning_rate"
+    ],
+    "transforms": ["tail_mean", "tail_minus_head_mean"],
+    "missing_feature_rule": "개별 실행이 필수 series 하나라도 N개 미만이면 그 N 평가에서 abstain_missing_input"
+  },
+  "classifier": {
+    "family": "standardized_nearest_centroid_with_abstention",
+    "fit": "개발 표본에서 feature별 median과 MAD(0이면 population standard deviation, 다시 0이면 1)를 구하고 healthy/unhealthy centroid를 계산한다",
+    "score": "표준화 공간에서 unhealthy centroid까지의 제곱거리 - healthy centroid까지의 제곱거리; 양수일수록 healthy",
+    "abstention": "|score|가 margin 미만이면 abstain",
+    "candidate_margins": [0.0, 0.25, 0.5, 1.0, 2.0, 4.0],
+    "selection": "개발 표본에서 false_healthy가 0인 후보만 남긴 뒤 healthy 정답 수, 전체 정답 수, 작은 N, 큰 margin 순으로 사전순 선택한다. 후보가 없으면 판정기를 unreliable로 끝낸다"
+  },
+  "labels": {
+    "behavior": ["healthy", "unhealthy"],
+    "recovery": ["recovered", "not_recovered"],
+    "separation": "behavior healthy는 원인 교정 전후를 말하지 않는다. recovery 평가는 correction lineage와 판정 receipt가 모두 연결된 경우에만 한다"
+  },
+  "acceptance": {
+    "critical_error": "unhealthy를 healthy로 판정",
+    "reliable_behavior_gate": "evaluation false_healthy == 0 and evaluation healthy_coverage >= 0.5 and evaluation unhealthy_detection >= 0.5",
+    "reliable_recovery_gate": "서로 다른 seed lineage의 recovered와 not_recovered가 각각 2개 이상이고 false_recovered == 0",
+    "counterfactual_iterations": "결정된 표본마다 max(0, 300-N)를 합산하되 오프라인 가상 반복 수로만 표기한다",
+    "unreliable_wording": "이 자료에서는 앞 N회 텔레메트리만으로 확인 재학습을 대체할 만큼 신뢰할 수 있는 판정기를 만들지 못했다.",
+    "behavior_only_wording": "앞 N회 텔레메트리와 최종 행동 건강성 사이의 개발 측정이며, 교정 성공이나 비용 절감을 뜻하지 않는다."
+  },
+  "outputs": [
+    "bench/private/codex_support_20261015/task3/report.json",
+    "bench/private/codex_support_20261015/task3/predictions.csv",
+    "bench/private/codex_support_20261015/task3/catalog.json",
+    "bench/private/codex_support_20261015/task3/VERIFICATION.md"
+  ]
+}
