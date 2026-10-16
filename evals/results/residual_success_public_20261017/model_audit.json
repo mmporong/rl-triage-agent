@@ -1,0 +1,471 @@
+{
+  "schema": "residual_success_model_decisions_v2",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "diagnosis_rows": [
+    {
+      "seed": 2120,
+      "epoch": 1,
+      "applied_before": [],
+      "selected_by": "model",
+      "probe": "P_reward",
+      "fact_ids": [
+        "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+        "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+        "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+        "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+      ],
+      "host_claims": [
+        {
+          "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 0.3060898169875145
+        },
+        {
+          "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+          "value": 0.547065778573354
+        },
+        {
+          "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 1.4118535081545511
+        },
+        {
+          "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+          "value": 0.6297692159811655
+        }
+      ],
+      "host_expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      },
+      "confirmed_component": "reward",
+      "correction_id": "restore_body_frame_reward",
+      "recovery_verdict": "not_recovered",
+      "diagnosis": {
+        "status": "valid",
+        "codes": [],
+        "requests": 1,
+        "first_status": "valid",
+        "retried": false,
+        "packet_sha256": "eff81bc75a7df599fa803f0afdda019dcdb991db8d639c00c0bcae50247ba039",
+        "record_sha256": "8e6bec3b0eb77e3eaf7fdc83848bfd04db27121e111a96c9a88f4ccdac6ec88a",
+        "api_receipts_verified": true
+      },
+      "correction": {
+        "status": "valid",
+        "codes": [],
+        "requests": 1,
+        "first_status": "valid",
+        "retried": false,
+        "packet_sha256": "52badb71517d6f916cfb32fdfec94109ac16b644a14bf68871cd92ecc9b7d01d",
+        "record_sha256": "3f804b0b2d37a6839a40125167eb17d108bd45bb3892a1aa0d774102e275e9f3",
+        "api_receipts_verified": true
+      }
+    },
+    {
+      "seed": 2120,
+      "epoch": 2,
+      "applied_before": [
+        "restore_body_frame_reward"
+      ],
+      "selected_by": "model",
+      "probe": "P_optimizer_updates",
+      "fact_ids": [
+        "telemetry:case:Loss/value_function",
+        "telemetry:case:Loss/surrogate",
+        "telemetry:case:Loss/entropy",
+        "telemetry:reference:Loss/value_function",
+        "telemetry:reference:Loss/surrogate",
+        "telemetry:reference:Loss/entropy"
+      ],
+      "host_claims": [
+        {
+          "id": "telemetry:case:Loss/value_function",
+          "value": 0.012169856779898207
+        },
+        {
+          "id": "telemetry:case:Loss/surrogate",
+          "value": 0.003930539628102755
+        },
+        {
+          "id": "telemetry:case:Loss/entropy",
+          "value": 9.649559831619262
+        },
+        {
+          "id": "telemetry:reference:Loss/value_function",
+          "value": 0.0030208462189572553
+        },
+        {
+          "id": "telemetry:reference:Loss/surrogate",
+          "value": -0.0043534890476924675
+        },
+        {
+          "id": "telemetry:reference:Loss/entropy",
+          "value": 4.965424680709839
+        }
+      ],
+      "host_expected_outcomes": {
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "normal"
+      },
+      "confirmed_component": "optimizer_update_count",
+      "correction_id": "restore_configured_ppo_epochs",
+      "recovery_verdict": "recovered",
+      "diagnosis": {
+        "status": "valid",
+        "codes": [],
+        "requests": 1,
+        "first_status": "valid",
+        "retried": false,
+        "packet_sha256": "2ed2b5d8e3fbacc1b518a1f68e5de312b7d3d8e776cbffccc5f6640b03ab02cf",
+        "record_sha256": "aeb5c0d49c7173114723786cfe2fd2fcf06b763aeec878ca95afbe1e5fab5fba",
+        "api_receipts_verified": true
+      },
+      "correction": {
+        "status": "valid",
+        "codes": [],
+        "requests": 1,
+        "first_status": "valid",
+        "retried": false,
+        "packet_sha256": "8ecd6a95dc7fcabb002ec64b4bf2eca88b218042e06e76c292303f94d7a0626a",
+        "record_sha256": "b1acc0a077b124581cf627b593e60bfde25cdc88b8729ca6887600c30455fe7c",
+        "api_receipts_verified": true
+      }
+    },
+    {
+      "seed": 2121,
+      "epoch": 1,
+      "applied_before": [],
+      "selected_by": "model",
+      "probe": "P_optimizer_updates",
+      "fact_ids": [
+        "telemetry:case:Train/mean_episode_length",
+        "telemetry:reference:Train/mean_episode_length",
+        "telemetry:case:Train/mean_reward",
+        "telemetry:reference:Train/mean_reward"
+      ],
+      "host_claims": [
+        {
+          "id": "telemetry:case:Train/mean_episode_length",
+          "value": 999.838833618164
+        },
+        {
+          "id": "telemetry:reference:Train/mean_episode_length",
+          "value": 998.5866678873698
+        },
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 11.644081846872966
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 34.06606222788493
+        }
+      ],
+      "host_expected_outcomes": {
+        "reward": "normal",
+        "actuator": "normal",
+        "exploration": "normal"
+      },
+      "confirmed_component": "optimizer_update_count",
+      "correction_id": "restore_configured_ppo_epochs",
+      "recovery_verdict": "not_recovered",
+      "diagnosis": {
+        "status": "valid",
+        "codes": [],
+        "requests": 1,
+        "first_status": "valid",
+        "retried": false,
+        "packet_sha256": "857c012f2b8635424681b53630861b0472ed6ac217f5eb8dfcaee13484a923dd",
+        "record_sha256": "7def410d92c2e7ad8a4de8a10743051b408c9aba2d43119a79f8a3577356f156",
+        "api_receipts_verified": true
+      },
+      "correction": {
+        "status": "valid",
+        "codes": [],
+        "requests": 1,
+        "first_status": "valid",
+        "retried": false,
+        "packet_sha256": "ed9974b4daa86dd9d5f1e7a0a299a0f672386d01d68aa642d830ae86c0b9b8a1",
+        "record_sha256": "d7b9b30faa3a7f11cb09718b403bb751411ea3ee630899da80dc31c0157cee99",
+        "api_receipts_verified": true
+      }
+    },
+    {
+      "seed": 2121,
+      "epoch": 2,
+      "applied_before": [
+        "restore_configured_ppo_epochs"
+      ],
+      "selected_by": "model",
+      "probe": "P_reward",
+      "fact_ids": [
+        "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+        "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+        "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+        "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+      ],
+      "host_claims": [
+        {
+          "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 0.31583170890808104
+        },
+        {
+          "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+          "value": 0.6009534239768982
+        },
+        {
+          "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+          "value": 1.420986419916153
+        },
+        {
+          "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+          "value": 0.638891746600469
+        }
+      ],
+      "host_expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      },
+      "confirmed_component": "reward",
+      "correction_id": "restore_body_frame_reward",
+      "recovery_verdict": "recovered",
+      "diagnosis": {
+        "status": "valid",
+        "codes": [],
+        "requests": 1,
+        "first_status": "valid",
+        "retried": false,
+        "packet_sha256": "9dfe0c026425c39731baa4a1864e4c8c66da6db6c4ee517709016957c284be51",
+        "record_sha256": "a398bd69795c7c63c442033b02f9f985304e5b32523978dd6941c39e00af65ff",
+        "api_receipts_verified": true
+      },
+      "correction": {
+        "status": "valid",
+        "codes": [],
+        "requests": 1,
+        "first_status": "valid",
+        "retried": false,
+        "packet_sha256": "5b289fe8cc872cfe111f46bb4809d349d291ed3120d3d403d8ede7e47ecdb2fd",
+        "record_sha256": "a0e0bbe9145ab5e72506d182ec7d16f3546c58dbcd8ae57c1b84ff3dd05ec415",
+        "api_receipts_verified": true
+      }
+    }
+  ],
+  "raw_calls": [
+    {
+      "seed": 2120,
+      "epoch": 1,
+      "kind": "diagnosis",
+      "request_index": 1,
+      "reservation_sha256": "18ee89b63a02f0f2923918ccb02237b55ff52cf3bf4438001f247c4beca8ec80",
+      "response_sha256": "052487684bdc3a91637324f0930b3e867ce7bb1a98e613be48e3e85e09262973",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"action\": \"continue\",\n  \"probe\": \"P_reward\",\n  \"fact_ids\": [\n    \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\",\n    \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\",\n    \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\",\n    \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\"\n  ]\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 2256,
+      "output_tokens": 109,
+      "total_tokens": 2365,
+      "wall_s": 1.9001199959311634
+    },
+    {
+      "seed": 2120,
+      "epoch": 1,
+      "kind": "correction",
+      "request_index": 2,
+      "reservation_sha256": "fb18b00ac60a58a654ede43698f29ccd302ebc11f85190eab1e4a651adfd2dae",
+      "response_sha256": "5a84274e5c944c57cdb93b130c8a35a2fc725a8b8dd26f536c5bd786dfc06ab9",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"correction_id\": \"restore_body_frame_reward\",\n  \"recovery_mode\": \"restart\",\n  \"cited_facts\": [\n    \"confirmed_mechanism\",\n    \"confirmed_subtype\",\n    \"confirming_probe\",\n    \"confirming_probe_outcome\",\n    \"confirming_probe_measures\",\n    \"registered_correction\",\n    \"registered_recovery_modes\",\n    \"rule\",\n    \"rule_mode\"\n  ],\n  \"checklist\": {\n    \"1\": \"confirmed_mechanism\",\n    \"2\": \"confirmed_mechanism\",\n    \"3\": \"confirming_probe_measures\",\n    \"4\": \"confirming_probe_measures\",\n    \"5\": \"confirming_probe_outcome\",\n    \"6\": \"rule\"\n  },\n  \"hold_reason\": null\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 1236,
+      "output_tokens": 182,
+      "total_tokens": 1418,
+      "wall_s": 5.591140334960073
+    },
+    {
+      "seed": 2120,
+      "epoch": 2,
+      "kind": "diagnosis",
+      "request_index": 3,
+      "reservation_sha256": "59a2dcc2cc8447133a4eb66d6e8076d75dbeb9b4432490e8f699e265e30514c1",
+      "response_sha256": "3b300efad88a3ef6778b9f610202a38b871f7aca756b7b7d8f6baff6b6420993",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"action\": \"continue\",\n  \"probe\": \"P_optimizer_updates\",\n  \"fact_ids\": [\n    \"telemetry:case:Loss/value_function\",\n    \"telemetry:case:Loss/surrogate\",\n    \"telemetry:case:Loss/entropy\",\n    \"telemetry:reference:Loss/value_function\",\n    \"telemetry:reference:Loss/surrogate\",\n    \"telemetry:reference:Loss/entropy\"\n  ]\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 2359,
+      "output_tokens": 99,
+      "total_tokens": 2458,
+      "wall_s": 1.7148711429908872
+    },
+    {
+      "seed": 2120,
+      "epoch": 2,
+      "kind": "correction",
+      "request_index": 4,
+      "reservation_sha256": "34c5f400f0e1d976262ce09f21c37b4b60abce5b6aae4297f0e5c953b77c55b6",
+      "response_sha256": "10058f40b4bd782787bf2fa0cf379721ab5a2ee26c18c8e7eb443ec6016285f5",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"correction_id\": \"restore_configured_ppo_epochs\",\n  \"recovery_mode\": \"restart\",\n  \"cited_facts\": [\n    \"confirmed_mechanism\",\n    \"confirmed_subtype\",\n    \"confirming_probe\",\n    \"confirming_probe_measurement\",\n    \"confirming_probe_outcome\",\n    \"registered_correction\",\n    \"registered_recovery_modes\",\n    \"rule\",\n    \"rule_mode\"\n  ],\n  \"checklist\": {\n    \"1\": \"confirmed_mechanism\",\n    \"2\": \"confirmed_mechanism\",\n    \"3\": \"confirming_probe_measurement\",\n    \"4\": \"eval_metrics\",\n    \"5\": \"confirming_probe_measurement\",\n    \"6\": \"rule\"\n  },\n  \"hold_reason\": null\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 1405,
+      "output_tokens": 185,
+      "total_tokens": 1590,
+      "wall_s": 4.140953850932419
+    },
+    {
+      "seed": 2121,
+      "epoch": 1,
+      "kind": "diagnosis",
+      "request_index": 5,
+      "reservation_sha256": "5661512f908e655bd7158e34240e8353eee05f4cb3fb95477c56eaf0ec7ccde9",
+      "response_sha256": "4e81b8a93879f9630c8a72b2329bbc27f28081d20abf95e951dd14b74921ec7c",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"action\": \"continue\",\n  \"probe\": \"P_optimizer_updates\",\n  \"fact_ids\": [\n    \"telemetry:case:Train/mean_episode_length\",\n    \"telemetry:reference:Train/mean_episode_length\",\n    \"telemetry:case:Train/mean_reward\",\n    \"telemetry:reference:Train/mean_reward\"\n  ]\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 2271,
+      "output_tokens": 83,
+      "total_tokens": 2354,
+      "wall_s": 5.832364221103489
+    },
+    {
+      "seed": 2121,
+      "epoch": 1,
+      "kind": "correction",
+      "request_index": 6,
+      "reservation_sha256": "390e932dea79b3968b591f4d5821bcde18c304341504d3dbbaabc5ac6244f43a",
+      "response_sha256": "b4596dd937db3a570822c1fb2271d60ccba5c2afb564551b6ff6435e8267b9ae",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"correction_id\": \"restore_configured_ppo_epochs\",\n  \"recovery_mode\": \"restart\",\n  \"cited_facts\": [\n    \"confirmed_mechanism\",\n    \"confirmed_subtype\",\n    \"confirming_probe\",\n    \"confirming_probe_outcome\",\n    \"registered_correction\",\n    \"registered_recovery_modes\",\n    \"rule\",\n    \"rule_mode\"\n  ],\n  \"checklist\": {\n    \"1\": \"confirmed_mechanism\",\n    \"2\": \"confirmed_mechanism\",\n    \"3\": \"confirming_probe\",\n    \"4\": \"eval_metrics\",\n    \"5\": \"confirming_probe_measurement\",\n    \"6\": \"rule\"\n  },\n  \"hold_reason\": null\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 1394,
+      "output_tokens": 172,
+      "total_tokens": 1566,
+      "wall_s": 4.391473130090162
+    },
+    {
+      "seed": 2121,
+      "epoch": 2,
+      "kind": "diagnosis",
+      "request_index": 7,
+      "reservation_sha256": "a2db57ae14dea9faa771b69861ea72adb8b84cd71766510e44faa59e668ce39d",
+      "response_sha256": "37f447de91165da826927f9030b48ad233adf1ae64c08807b40b3e9ccf5999c3",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"action\": \"continue\",\n  \"probe\": \"P_reward\",\n  \"fact_ids\": [\n    \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\",\n    \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\",\n    \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\",\n    \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\"\n  ]\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 2361,
+      "output_tokens": 109,
+      "total_tokens": 2470,
+      "wall_s": 1.8147934270091355
+    },
+    {
+      "seed": 2121,
+      "epoch": 2,
+      "kind": "correction",
+      "request_index": 8,
+      "reservation_sha256": "529ba141a314353d040405ca72c88af33e6d3121a8d93cddfc8258d4fdca0572",
+      "response_sha256": "4080ef36f1813b657c8cdfe6d8a136ee3706ee7b4b8a13e7064e53864eaea28c",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"correction_id\": \"restore_body_frame_reward\",\n  \"recovery_mode\": \"restart\",\n  \"cited_facts\": [\n    \"confirmed_mechanism\",\n    \"confirmed_subtype\",\n    \"confirming_probe\",\n    \"confirming_probe_outcome\",\n    \"probe_observations\",\n    \"registered_correction\",\n    \"registered_recovery_modes\"\n  ],\n  \"checklist\": {\n    \"1\": \"confirmed_mechanism\",\n    \"2\": \"confirmed_mechanism\",\n    \"3\": \"confirmation_scope\",\n    \"4\": \"confirming_probe_measures\",\n    \"5\": \"confirming_probe_outcome\",\n    \"6\": \"rule\"\n  },\n  \"hold_reason\": null\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 1250,
+      "output_tokens": 168,
+      "total_tokens": 1418,
+      "wall_s": 2.2936585401184857
+    }
+  ],
+  "decision_metrics": {
+    "diagnosis_opportunities": 4,
+    "completed_diagnoses": 4,
+    "infrastructure_or_call_errors": 0,
+    "model_validity": {
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "format_validity": {
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "semantic_validity_given_format": {
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "first_pass_validity": {
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "rule_transition": {
+      "numerator": 0,
+      "denominator": 4,
+      "rate": 0.0
+    },
+    "rule_transition_given_invalid": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    }
+  },
+  "model_validity": {
+    "numerator": 4,
+    "denominator": 4,
+    "rate": 1.0
+  },
+  "format_validity": {
+    "numerator": 4,
+    "denominator": 4,
+    "rate": 1.0
+  },
+  "semantic_validity_given_format": {
+    "numerator": 4,
+    "denominator": 4,
+    "rate": 1.0
+  },
+  "first_pass_validity": {
+    "numerator": 4,
+    "denominator": 4,
+    "rate": 1.0
+  },
+  "rule_transition": {
+    "numerator": 0,
+    "denominator": 4,
+    "rate": 0.0
+  },
+  "rule_transition_effect_claimed": false
+}

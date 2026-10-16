@@ -1,0 +1,49 @@
+{
+  "schema": "residual_success_costs_v2",
+  "cases": [
+    {
+      "seed": 2120,
+      "stages_wall_s": {
+        "train_NONE": 452.0620000001509,
+        "train_COMPOUND": 418.64099999982864,
+        "source_evaluation": 73.54700000002049,
+        "reference": 77.57800000021234,
+        "epoch1_probe1_P_reward": 21.718999999808148,
+        "epoch1_training": 433.8900000001304,
+        "epoch1_evaluation": 42.75,
+        "epoch2_probe1_P_optimizer_updates": 54.48399999993853,
+        "epoch2_training": 451.7970000000205,
+        "epoch2_evaluation": 44.32799999997951
+      },
+      "owned_process_wall_sum_s": 2070.7960000000894
+    },
+    {
+      "seed": 2121,
+      "stages_wall_s": {
+        "train_NONE": 452.6879999998491,
+        "train_COMPOUND": 424.65600000019185,
+        "source_evaluation": 76.73399999993853,
+        "reference": 77.06199999991804,
+        "epoch1_probe1_P_optimizer_updates": 54.25000000023283,
+        "epoch1_training": 449.125,
+        "epoch1_evaluation": 44.625,
+        "epoch2_probe1_P_reward": 20.031000000191852,
+        "epoch2_training": 453.030999999959,
+        "epoch2_evaluation": 45.15600000019185
+      },
+      "owned_process_wall_sum_s": 2097.358000000473
+    }
+  ],
+  "owned_process_wall_sum_s": 4168.1540000005625,
+  "wall_definition": "각 소유 프로세스 실행 구간의 벽시계 합계다.",
+  "api": {
+    "requests": 8,
+    "cap": 20,
+    "input_tokens": 14532,
+    "output_tokens": 1107,
+    "total_tokens": 15639,
+    "wall_s": 27.679374643135816
+  },
+  "export_gpu_executions": 0,
+  "export_model_requests": 0
+}

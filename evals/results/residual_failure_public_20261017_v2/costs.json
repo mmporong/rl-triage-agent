@@ -1,0 +1,43 @@
+{
+  "schema": "residual_failure_costs_v1",
+  "cases": [
+    {
+      "seed": 2110,
+      "stages_wall_s": {
+        "train_NONE": 493.84399999980815,
+        "train_COMPOUND": 422.56199999991804,
+        "source_evaluation": 77.2960000000894,
+        "reference": 77.9539999999106,
+        "epoch1_probe1_P_reward": 19.936999999918044,
+        "epoch1_training": 425.01600000006147,
+        "epoch1_evaluation": 43.40600000019185
+      },
+      "owned_process_wall_sum_s": 1560.0149999998976
+    },
+    {
+      "seed": 2111,
+      "stages_wall_s": {
+        "train_NONE": 456.5629999998491,
+        "train_COMPOUND": 421.125,
+        "source_evaluation": 74.17199999978766,
+        "reference": 77.95300000021234,
+        "epoch1_probe1_P_reward": 19.79700000002049,
+        "epoch1_training": 427.2970000000205,
+        "epoch1_evaluation": 42.71899999980815
+      },
+      "owned_process_wall_sum_s": 1519.6259999996983
+    }
+  ],
+  "owned_process_wall_sum_s": 3079.640999999596,
+  "wall_definition": "각 소유 프로세스 실행 구간의 벽시계 합계. GPU 커널 시간이나 전체 lease 경과 시간이 아니다.",
+  "api": {
+    "requests": 10,
+    "cap": 20,
+    "input_tokens": 36961,
+    "output_tokens": 3452,
+    "total_tokens": 40413,
+    "wall_s": 66.04406860959716
+  },
+  "audit_gpu_executions": 0,
+  "audit_model_requests": 0
+}

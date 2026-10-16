@@ -24,16 +24,16 @@ FORBIDDEN = re.compile(r"[A-Za-z]:[\\/]|/(?:home|Users|mnt)/|bench[\\/]private|c
 # 고정 원본을 검증해 만든 공개 payload의 canonical SHA. 공개본 자체의 manifest와
 # payload를 함께 바꿔도 검증을 통과하지 못하도록 코드에 결합한다.
 PUBLIC_SHA256 = {
-    "evaluations/s2110_none.json": "69bc079a21c129e660f78e56923511f2e2f71b7363af35e7b3f57be3a466dca5",
-    "evaluations/s2110_compound.json": "0900c9c3b16f3ee48d6097185753cdf124e5a75e974fa62b2a687319778e5129",
-    "evaluations/s2110_first.json": "736560dc0224baac5d4e37d92b9a31f340d1e307601b844e8693aa9f384f142b",
-    "evaluations/s2111_none.json": "b28bf2ad483eb337e25993a0a08c485d3023ada2b6a2c4ededb6c3ca29db52b5",
-    "evaluations/s2111_compound.json": "d30bd075ca364d0abfe151570b60e8fd188803ac5b6d727d398765f5d5449141",
-    "evaluations/s2111_first.json": "509573dc9beeef03d6792c1408683c36f525fdd69c45992c600df4e259612891",
+    "evaluations/s2110_none.json": "58f20f3fea9b6623c6bb6729633c1b388aa0e8b13229cf2d75bfe15d9465ba63",
+    "evaluations/s2110_compound.json": "75ce80100be03e11335243295afac61e3d74dcc7da48b01ada5a629531430202",
+    "evaluations/s2110_first.json": "961de57aa643e8741ad289badf14e2ddd7065bdf7a1f058f72bed9aa72c53a21",
+    "evaluations/s2111_none.json": "3d166cc7f7d7462fce3381ff3abc3be7daad8ec37cb318530c18f7658bc703f3",
+    "evaluations/s2111_compound.json": "b4d416ab08bee53216b149dc793f68f389a132a58b5a63f78b09f561ff8ca98e",
+    "evaluations/s2111_first.json": "399c7a74d2ca65e699c483ebee20beb60b0f1ae768adec28af254102b78eb323",
     "summary.json": "1645c3e0ea10785d947ebfec2d57529909808b738175d23e6ef3b9d7e127afa0",
     "model_contract_audit.json": "d18f1ac8b8bfa5b4a5213732a3e5838f57faf2ec859070bbd40d0b0456dd8763",
     "costs.json": "bd7c0ac89abe812f309ea48c21c3aa791c397ee9bb6b7647f346c94935bf9b8b",
-    "provenance.json": "c1a6531479f9b07df2d5b8bdaf19c2909ea77fbe134347886181848d096a2640",
+    "provenance.json": "db53996d596d94a1e14d554b77d76baef62d4f41f9209b22d18a859e44fbb0af",
 }
 
 

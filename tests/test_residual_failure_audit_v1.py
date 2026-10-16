@@ -91,6 +91,29 @@ def test_public_record_keeps_epoch2_hold_and_all_calls_visible():
                 if row["seed"] == seed and row["epoch"] == 2] == [["D_RANKING"], ["D_EXPECTED"]]
 
 
+def test_public_evaluation_separates_report_and_training_artifact_sources():
+    roles = A.D.read(A.OUTPUT / "provenance.json")["source_roles_sha256"]
+    for seed in (2110, 2111):
+        for arm in ("NONE", "COMPOUND", "FIRST"):
+            value = A.D.read(A.OUTPUT / f"evaluations/s{seed}_{arm.lower()}.json")
+            assert value["source_evaluation_report_sha256"] == roles[f"s{seed}.{arm}.evaluation"]
+            assert value["source_training_artifact_sha256"] == roles[f"s{seed}.{arm}.training_artifact"]
+            assert value["source_evaluation_report_sha256"] != value["source_training_artifact_sha256"]
+
+
+def test_export_rejects_noncanonical_payload_before_creating_files(tmp_path, monkeypatch):
+    output, receipt = tmp_path / "public", tmp_path / "receipt.json"
+    payloads = {name: A.D.read(A.OUTPUT / name) for name in A.PUBLIC_SHA256}
+    payloads["summary.json"]["demo_success"] = True
+    monkeypatch.setattr(A, "OUTPUT", output)
+    monkeypatch.setattr(A, "AUDIT", receipt)
+    monkeypatch.setattr(A, "RUN", tmp_path / "source")
+    monkeypatch.setattr(A, "verify_and_build", lambda _: payloads)
+    with pytest.raises(ValueError, match="고정 내용 결합"):
+        A.export(tmp_path)
+    assert not output.exists() and not receipt.exists()
+
+
 @pytest.mark.parametrize("with_manifest", [False, True])
 def test_public_verifier_rejects_payload_and_manifest_tamper(tmp_path, with_manifest):
     folder = tmp_path / "public"
