@@ -52,7 +52,7 @@ Isaac Lab v2.1.1, Isaac Sim 4.5, RSL-RL 2.3.3을 사용한다. 원본은 P0-C에
 | 잘못된 교정 | 1.2004034794554577 | 0.537657828779045 | 20.0 | 0.0 |
 | 등록 교정 | 1.160934033395102 | 0.6699384014437818 | 20.0 | 0.0 |
 
-학습과 고정 평가를 합친 세 조건의 parent wall time은 1606.500999999931초다. 이 값의 범위는 각 프로세스의 parent launch부터 종료와 소유 작업 정리 확인까지다. GPU 커널 시간이나 다른 방법 대비 GPU 절감량이 아니다. 공개 결과는 `evals/results/reward_resume_dev3_20261013/`에 있으며, 원본 검증 자료는 `bench/private/training_correction/reward_resume_dev3_20261013/`에 보존한다.
+학습과 고정 평가를 합친 세 조건의 parent wall time은 1606.500999999931초다. 이 값의 범위는 각 프로세스의 parent launch부터 종료와 소유 작업 정리 확인까지다. GPU 커널 시간이나 다른 방법 대비 GPU 절감량이 아니다. 공개 결과는 `evals/results/reward_resume_dev3_20261013/`에 있으며, 원본 검증 자료는 로컬 감사 기록으로 보존한다.
 
 `case_02`의 등록 실행 `motor_resume_dev_20261013`도 `no_recovery`였다. 등록 교정의 추종 오차는 대조보다 낮았지만 같은 예산의 정상 정책에서 정한 허용 범위를 통과하지 못했다. 아래 차이는 이미 본 seed의 단일 비교이며 반복 실험의 효과 추정이 아니다.
 
@@ -231,6 +231,29 @@ v2에서 seed 2026은 회복하고 seed 2028은 회복하지 않은 혼합 결�
 
 이 결과만으로 전체 회복 규칙을 자동 변경하지 않는다. 기존 혼합 결과를 본 뒤 설계한 두 seed의 개발 확인이므로 실패 원인, 일반화, 비용 절감이나 모델 우월을 확정하지 않는다. 메커니즘은 계속 미확정으로 둔다.
 
+## 출력층 재설정의 단축 예산 확인
+
+300회 actor 재설정의 기존 결과를 본 뒤, 새 F1 seed 2090·2091에서 더 적은 학습 갱신으로 회복할 수 있는지 [사전등록](../bench/protocols/actor_reset_budget_v1.json)했다. seed마다 같은 결함 체크포인트에서 마지막 Linear와 해당 Adam 상태를 재설정하고 100·150회를 각각 실행했다. 두 예산 모두 공통 2/2 회복 조건을 충족하지 않아 등록된 분기에 따라 200회도 실행했다. 각 실행은 같은 결함 체크포인트에서 시작했으며, 짧은 실행을 이어서 연장하지 않았다. 비교 대조는 같은 seed의 checkpoint 없는 재학습 300회다.
+
+| seed | 교정 후 회복 방식 | 학습 갱신 수 | 판정 | 선속도 RMSE (m/s) | 학습 작업 벽시계 (초) |
+|---|---|---:|---|---:|---:|
+| 2090 | actor 마지막 층 재설정 | 100 | `not_recovered` | 1.135 | 177.609 |
+| 2090 | actor 마지막 층 재설정 | 150 | `not_recovered` | 0.862 | 236.375 |
+| 2090 | actor 마지막 층 재설정 | 200 | `not_recovered` | 0.365 | 307.922 |
+| 2090 | 처음부터 재학습 | 300 | `recovered` | 0.136 | 452.359 |
+| 2091 | actor 마지막 층 재설정 | 100 | `not_recovered` | 1.149 | 167.531 |
+| 2091 | actor 마지막 층 재설정 | 150 | `not_recovered` | 0.852 | 235.125 |
+| 2091 | actor 마지막 층 재설정 | 200 | `not_recovered` | 0.272 | 307.016 |
+| 2091 | 처음부터 재학습 | 300 | `recovered` | 0.147 | 461.437 |
+
+[사실] 100·150·200회는 각각 0/2 회복, 재학습 300회는 2/2 회복이었다. 200회의 선속도 오차는 원본 F1의 1.178·1.178m/s보다 낮았지만, 정상 대비 오차 비가 2.678·1.847로 상한 1.1513을 넘었다. 두 seed 모두 선속도 추종 조건만 통과하지 못했다. 150·200회가 두 seed에서 회복할 것이라는 사전 예측은 맞지 않았다. 판정은 `keep_current_rule`이며 단축 예산 후보를 등록하지 않는다. [공개 요약](../evals/results/actor_reset_budget_public_20261017/summary.json)에 각 예산의 판정과 근거가 있다.
+
+두 seed의 재학습 최종 체크포인트는 각각 source NONE와 SHA가 같았다. 같은 seed·학습량·교정한 함수로 정상 학습을 재현한 대조이며 별도 독립 표본으로 세지 않는다. reset arm끼리는 초기 policy·optimizer·RNG 해시가 일치했다. 여덟 회복 실행 모두 등록 예산·개입·고정 평가·출처 검증을 통과했다.
+
+시간은 부모 실행부터 자연 종료와 소유 프로세스 정리 확인까지의 벽시계이며 GPU 커널 실행 시간이 아니다. 학습·고정 평가를 합친 회복 비교 비용은 2,710.563초, source 준비는 2,097.441초, 합계는 4,808.004초였다. 짧은 실행은 빨리 끝났지만 회복하지 못했으므로 더 싼 회복 경로를 확인한 결과로 쓰지 않는다. 갱신 수는 learning iteration이며 `optimizer.step()` 횟수는 아니다.
+
+[추론] 200회에서 추종 오차가 낮아진 관찰은 추가 학습 가능성을 검토할 자료다. 이번 seed에서는 actor 재설정 300회를 실행하지 않았으므로, 과거 seed 2063·2064의 300회 2/2 결과와 묶어 예산 차이만이 미회복 원인이라고 판단할 수 없다. 기존 300회 등록 조건부 후보 기록은 유지하고, 전역 회복 규칙과 메커니즘 미확정 상태도 유지한다.
+
 ## 액추에이터 곡선 검사
 
 `src/rl_triage/actuator_envelope.py`의 `inspect_actuator_envelope`는 정책 rollout 없이 등록 속도 격자에서 DC motor `_clip_effort`의 양·음 포화 출력을 읽고 설정에서 계산한 토크–속도 곡선과 비교한다. 측정 중 교체한 `_joint_vel`은 `finally`에서 원 객체로 복원한다. 설정·shape·유한성 검증이 실패하면 곡선 이상으로 확정하지 않고 `invalid`를 반환한다.
@@ -268,20 +291,21 @@ cd "$HOME/rl-triage-agent"
 ```powershell
 cd "$HOME/rl-triage-agent"
 # 최초 프로토콜 작성 시에만: 새 CPU 결과 폴더에서 검사 후 코드와 함께 커밋한다.
+$auditRoot = Join-Path $HOME ('rl-triage-local-audit/correction-cpu-' + [guid]::NewGuid().ToString('N'))
 $matrix = @{ F1=@('restore_body_frame_reward','restore_motor_torque_speed'); F2=@('restore_motor_torque_speed','restore_configured_timeout'); F6=@('restore_configured_timeout','restore_body_frame_reward') }
 foreach ($fault in $matrix.Keys) {
     foreach ($index in 0,1) {
         $suffix = @('match','wrong')[$index]
-        & "$HOME/IsaacLab/_isaac_sim/python.bat" bench/check_correction_cpu.py --isaaclab "$HOME/IsaacLab" --fault $fault --correction $matrix[$fault][$index] --output "bench/private/correction_cpu/$($fault.ToLower())_$suffix.json"
+        & "$HOME/IsaacLab/_isaac_sim/python.bat" bench/check_correction_cpu.py --isaaclab "$HOME/IsaacLab" --fault $fault --correction $matrix[$fault][$index] --output "$auditRoot/$($fault.ToLower())_$suffix.json"
         if ($LASTEXITCODE -ne 0) { throw 'CPU correction check failed' }
     }
 }
-& "$HOME/IsaacLab/_isaac_sim/python.bat" bench/check_correction_cpu.py --isaaclab "$HOME/IsaacLab" --contract-output bench/private/correction_cpu/source_contract.json
-.\.venv\Scripts\python.exe evals/run_training_correction.py prepare --contract bench/private/correction_cpu/source_contract.json
+& "$HOME/IsaacLab/_isaac_sim/python.bat" bench/check_correction_cpu.py --isaaclab "$HOME/IsaacLab" --contract-output "$auditRoot/source_contract.json"
+.\.venv\Scripts\python.exe evals/run_training_correction.py prepare --contract "$auditRoot/source_contract.json"
 # 커밋된 소스·프로토콜·기존 입력을 확인한다.
 .\.venv\Scripts\python.exe evals/run_training_correction.py verify
 # 다른 GPU 작업이 없을 때 등록된 한 사례를 새 태그로 실행한다.
 .\.venv\Scripts\python.exe evals/run_training_correction.py execute --case case_01 --tag correction_reward_dev
 ```
 
-이미 작성된 프로토콜은 `prepare`로 덮어쓰지 않는다. 결과와 실행 로그는 `bench/private/training_correction/<tag>/`에 보존한다. 한 프로토콜의 같은 사례를 의미 재시도하지 않는다. GPU 점유를 확인해 실행 전 대기하며, 다른 세션의 프로세스를 종료하지 않는다. 승인 기록은 사용자가 허용한 개발 실험의 호스트 기록이고, 사람의 신원을 인증하는 기능은 아니다.
+이미 작성된 프로토콜은 `prepare`로 덮어쓰지 않는다. 결과와 실행 로그는 로컬 감사 폴더에 보존한다. 한 프로토콜의 같은 사례를 의미 재시도하지 않는다. GPU 점유를 확인해 실행 전 대기하며, 다른 세션의 프로세스를 종료하지 않는다. 승인 기록은 사용자가 허용한 개발 실험의 호스트 기록이고, 사람의 신원을 인증하는 기능은 아니다.

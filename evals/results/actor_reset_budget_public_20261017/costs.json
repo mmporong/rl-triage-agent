@@ -1,0 +1,101 @@
+{
+  "schema": "public_actor_reset_budget_costs_v1",
+  "measurement": "GPU 작업을 실행한 부모 프로세스의 시작부터 자연 종료와 소유 프로세스 정리 확인까지의 벽시계 시간",
+  "not_gpu_kernel_time": true,
+  "used_for_candidate_decision": false,
+  "source_preparation": {
+    "2090": {
+      "NONE": {
+        "training_wall_s": 478.39099999982864,
+        "fixed_eval_wall_s": 44.82899999991059,
+        "total_wall_s": 523.2199999997392
+      },
+      "F1": {
+        "training_wall_s": 476.625,
+        "fixed_eval_wall_s": 45.687999999849126,
+        "total_wall_s": 522.3129999998491
+      }
+    },
+    "2091": {
+      "NONE": {
+        "training_wall_s": 481.17199999978766,
+        "fixed_eval_wall_s": 47.07899999991059,
+        "total_wall_s": 528.2509999996983
+      },
+      "F1": {
+        "training_wall_s": 476.6879999998491,
+        "fixed_eval_wall_s": 46.96899999980815,
+        "total_wall_s": 523.6569999996573
+      }
+    }
+  },
+  "recovery_arms": {
+    "100": {
+      "2090": {
+        "training_wall_s": 177.60900000017136,
+        "fixed_eval_wall_s": 50.437999999849126,
+        "total_wall_s": 228.0470000000205
+      },
+      "2091": {
+        "training_wall_s": 167.53100000019185,
+        "fixed_eval_wall_s": 43.89099999982864,
+        "total_wall_s": 211.4220000000205
+      }
+    },
+    "150": {
+      "2090": {
+        "training_wall_s": 236.375,
+        "fixed_eval_wall_s": 45.67200000002049,
+        "total_wall_s": 282.0470000000205
+      },
+      "2091": {
+        "training_wall_s": 235.125,
+        "fixed_eval_wall_s": 44.688000000081956,
+        "total_wall_s": 279.81300000008196
+      }
+    },
+    "restart_300": {
+      "2090": {
+        "training_wall_s": 452.35900000017136,
+        "fixed_eval_wall_s": 42.70299999997951,
+        "total_wall_s": 495.0620000001509
+      },
+      "2091": {
+        "training_wall_s": 461.4370000001509,
+        "fixed_eval_wall_s": 44.34400000004098,
+        "total_wall_s": 505.78100000019185
+      }
+    },
+    "200": {
+      "2090": {
+        "training_wall_s": 307.9220000000205,
+        "fixed_eval_wall_s": 48.234999999869615,
+        "total_wall_s": 356.1569999998901
+      },
+      "2091": {
+        "training_wall_s": 307.01600000006147,
+        "fixed_eval_wall_s": 45.218000000109896,
+        "total_wall_s": 352.23400000017136
+      }
+    }
+  },
+  "totals_wall_s": {
+    "source_preparation": 2097.440999998944,
+    "recovery_experiment": 2710.5630000005476,
+    "whole_experiment_accounted": 4808.0039999994915
+  },
+  "training_wall_ratio_vs_same_seed_restart": {
+    "2090": {
+      "100": 0.39262842123203934,
+      "150": 0.5225385147635184,
+      "200": 0.6807027162052791
+    },
+    "2091": {
+      "100": 0.3630636468253241,
+      "150": 0.5095495159684271,
+      "200": 0.6653475989137435
+    }
+  },
+  "short_arms_were_faster_but_recovered": false,
+  "whole_experiment_cheaper_claimed": false
+}

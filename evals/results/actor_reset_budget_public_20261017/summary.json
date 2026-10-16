@@ -1,0 +1,71 @@
+{
+  "schema": "public_actor_reset_budget_summary_v1",
+  "status": "complete",
+  "measurement_kind": "post_result_novel_seed_budget_confirmation",
+  "seeds": [
+    2090,
+    2091
+  ],
+  "fault": "F1",
+  "correction": "restore_body_frame_reward",
+  "fixed_evaluation": {
+    "conditions": 26,
+    "labels": {
+      "100": {
+        "2090": "not_recovered",
+        "2091": "not_recovered"
+      },
+      "150": {
+        "2090": "not_recovered",
+        "2091": "not_recovered"
+      },
+      "200": {
+        "2090": "not_recovered",
+        "2091": "not_recovered"
+      },
+      "restart_300": {
+        "2090": "recovered",
+        "2091": "recovered"
+      }
+    }
+  },
+  "outcome": {
+    "decision": "keep_current_rule",
+    "reset_100_recovered": "0/2",
+    "reset_150_recovered": "0/2",
+    "reset_200_recovered": "0/2",
+    "restart_300_recovered": "2/2",
+    "candidate_budget_learning_iterations": null,
+    "automatic_global_change": false
+  },
+  "prediction_match": {
+    "100": {
+      "2090": true,
+      "2091": true
+    },
+    "150": {
+      "2090": false,
+      "2091": false
+    },
+    "restart_300": {
+      "2090": true,
+      "2091": true
+    },
+    "200": {
+      "2090": false,
+      "2091": false
+    }
+  },
+  "wording": "등록된 단축 예산이 두 seed 공통 회복 조건을 충족하지 않아 기존 회복 규칙을 유지한다.",
+  "interpretation": "100·150·조건부 200회 출력층 재설정은 두 seed 모두 미회복이었고 restart300은 두 seed 모두 회복했다. 기존 회복 규칙을 유지한다.",
+  "comparison_boundary": "이번 seed에서 300회 출력층 재설정은 실행하지 않았다. 과거 seed의 300회 결과와 학습 예산의 인과 관계를 비교하지 않는다.",
+  "cost_boundary": "단축 arm의 벽시계가 restart300보다 짧았지만 모두 미회복이었다. 단일 arm 시간과 전체 탐색 비용을 구분한다.",
+  "claims": {
+    "generalization": false,
+    "causal_budget_comparison": false,
+    "gpu_savings": false,
+    "model_superiority": false
+  },
+  "source_commit_sha": "a8e1b45438111786280798751006678e1ed0b158",
+  "protocol_sha256_lf": "1cf9c53a1623c6aaf58932bc6dbab0d7a6938f1acc27f78ea4d86c81d7544397"
+}

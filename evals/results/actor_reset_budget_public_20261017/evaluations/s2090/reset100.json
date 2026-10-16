@@ -1,0 +1,386 @@
+{
+  "schema": "public_actor_reset_budget_evaluation_v1",
+  "seed": 2090,
+  "arm": "reset100",
+  "label": "unhealthy",
+  "verdict": {
+    "label": "unhealthy",
+    "checks": {
+      "survival_ratio": true,
+      "fall_frac": false,
+      "err_xy_ratio": false,
+      "err_yaw_ratio": false
+    },
+    "failed_checks": [
+      "fall_frac",
+      "err_xy_ratio",
+      "err_yaw_ratio"
+    ],
+    "short_horizon": false
+  },
+  "protocol": {
+    "name": "fixed_eval_v1",
+    "sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+    "eval_seed": 2026,
+    "num_envs": 1040,
+    "horizon_steps": 1000,
+    "step_dt": 0.02,
+    "action_scale": 0.25
+  },
+  "checkpoint": {
+    "file": "model_398.pt",
+    "sha256": "c6042572eebc3e3ebb123962900e38600b9a365d797edddb64418d7e57e16822"
+  },
+  "metrics": {
+    "fall_rate": 0.11249999701976776,
+    "mean_survival_s": 18.25765380859375,
+    "lin_vel_rmse_mps": 1.1347065317653264,
+    "yaw_rate_rmse_radps": 0.5935968151249363
+  },
+  "standstill": {
+    "lin_vel_rmse_mps": 1.1766968108291043,
+    "yaw_rate_rmse_radps": 0.8320502943378437
+  },
+  "conditions": [
+    {
+      "command": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.2324557468602069,
+      "yaw_rate_rmse_radps": 0.16097227324575575
+    },
+    {
+      "command": [
+        -1.0,
+        -1.0,
+        0.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.4117427450229734,
+      "yaw_rate_rmse_radps": 0.013786084769442833
+    },
+    {
+      "command": [
+        -1.0,
+        -1.0,
+        1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.326009049742874,
+      "yaw_rate_rmse_radps": 0.30994207025517284
+    },
+    {
+      "command": [
+        -1.0,
+        0.0,
+        -1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 39,
+      "alive_steps_sum": 16154,
+      "fall_rate": 0.9750000238418579,
+      "lin_vel_rmse_mps": 0.9553268256548506,
+      "yaw_rate_rmse_radps": 0.7953470016682712
+    },
+    {
+      "command": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 0.9913389580196574,
+      "yaw_rate_rmse_radps": 0.028687457182276735
+    },
+    {
+      "command": [
+        -1.0,
+        0.0,
+        1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 0.8483507667453952,
+      "yaw_rate_rmse_radps": 0.29796916991645817
+    },
+    {
+      "command": [
+        -1.0,
+        1.0,
+        -1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 38,
+      "alive_steps_sum": 7638,
+      "fall_rate": 0.949999988079071,
+      "lin_vel_rmse_mps": 1.30856818317278,
+      "yaw_rate_rmse_radps": 1.0663824901024215
+    },
+    {
+      "command": [
+        -1.0,
+        1.0,
+        0.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.3965633740767012,
+      "yaw_rate_rmse_radps": 0.0360018477495508
+    },
+    {
+      "command": [
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.2604210141109597,
+      "yaw_rate_rmse_radps": 0.635395134966473
+    },
+    {
+      "command": [
+        0.0,
+        -1.0,
+        -1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 0.9159194279179256,
+      "yaw_rate_rmse_radps": 0.15766483461204084
+    },
+    {
+      "command": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 0.997276466965154,
+      "yaw_rate_rmse_radps": 0.02122663672149565
+    },
+    {
+      "command": [
+        0.0,
+        -1.0,
+        1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.028114076689693,
+      "yaw_rate_rmse_radps": 0.6321949726140168
+    },
+    {
+      "command": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 0.2688329949973008,
+      "yaw_rate_rmse_radps": 0.16055372742371457
+    },
+    {
+      "command": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 0.06535868348830336,
+      "yaw_rate_rmse_radps": 0.9324987432967403
+    },
+    {
+      "command": [
+        0.0,
+        1.0,
+        -1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.0034794447788904,
+      "yaw_rate_rmse_radps": 0.9785929890824121
+    },
+    {
+      "command": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 0.9991132787377015,
+      "yaw_rate_rmse_radps": 0.014324639049196685
+    },
+    {
+      "command": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 0.9628525125570894,
+      "yaw_rate_rmse_radps": 0.7661714886368456
+    },
+    {
+      "command": [
+        1.0,
+        -1.0,
+        -1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 40,
+      "alive_steps_sum": 5606,
+      "fall_rate": 1.0,
+      "lin_vel_rmse_mps": 1.3514488567202751,
+      "yaw_rate_rmse_radps": 1.2054595965764787
+    },
+    {
+      "command": [
+        1.0,
+        -1.0,
+        0.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.4127661530221483,
+      "yaw_rate_rmse_radps": 0.018534807658158386
+    },
+    {
+      "command": [
+        1.0,
+        -1.0,
+        1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.415068116182928,
+      "yaw_rate_rmse_radps": 0.9632394683761146
+    },
+    {
+      "command": [
+        1.0,
+        0.0,
+        -1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.034849258723825,
+      "yaw_rate_rmse_radps": 0.8737212195724962
+    },
+    {
+      "command": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 0.9992676028909874,
+      "yaw_rate_rmse_radps": 0.01613776844371667
+    },
+    {
+      "command": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.0026704090670822,
+      "yaw_rate_rmse_radps": 0.9624567258940788
+    },
+    {
+      "command": [
+        1.0,
+        1.0,
+        -1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.461692886262364,
+      "yaw_rate_rmse_radps": 0.7996721740422759
+    },
+    {
+      "command": [
+        1.0,
+        1.0,
+        0.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.4130105548526521,
+      "yaw_rate_rmse_radps": 0.013144879499472944
+    },
+    {
+      "command": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "num_envs": 40,
+      "fall_count": 0,
+      "alive_steps_sum": 40000,
+      "fall_rate": 0.0,
+      "lin_vel_rmse_mps": 1.4111276519153042,
+      "yaw_rate_rmse_radps": 0.9732126044382594
+    }
+  ],
+  "source_artifact_sha256": "5c90865e4e8a71f1ff4b01bc5c349df94988004efe90ff6c523af0851b02d077"
+}
