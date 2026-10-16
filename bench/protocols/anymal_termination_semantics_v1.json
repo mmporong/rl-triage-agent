@@ -1,0 +1,167 @@
+{
+  "schema": "anymal_termination_semantics_protocol_v1",
+  "status": "preregistered",
+  "question": "ANYmal-C flat이 등록된 F6 조기 종료의 표적을 실제로 사용하며 등록 교정이 설정된 종료 시점을 복원하는가",
+  "scope": "CPU source-and-tensor semantics check; no Isaac Kit, PhysX, environment construction, policy, training, GPU, or API",
+  "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+  "fault": {
+    "id": "F6",
+    "ratio": 0.05
+  },
+  "correction": {
+    "id": "restore_configured_timeout",
+    "target": "isaaclab.envs.mdp.terminations:time_out"
+  },
+  "configuration": {
+    "episode_length_s": 20.0,
+    "physics_dt_s": 0.005,
+    "decimation": 4,
+    "control_dt_s": 0.02,
+    "configured_max_episode_length": 1000,
+    "fault_timeout_step": 50,
+    "fault_timeout_s": 1.0
+  },
+  "structural": {
+    "task_registration_entry": "f'{__name__}.flat_env_cfg:AnymalCFlatEnvCfg'",
+    "flat_base": "AnymalCRoughEnvCfg",
+    "rough_base": "LocomotionVelocityRoughEnvCfg",
+    "flat_calls_super_post_init": true,
+    "rough_calls_super_post_init": true,
+    "termination_uses_mdp_time_out": true,
+    "step_dt_formula_matches": true,
+    "max_episode_length_formula_matches": true,
+    "upstream_timeout_formula_matches": true,
+    "fault_timeout_formula_matches": true
+  },
+  "probe_steps": [
+    49,
+    50,
+    999,
+    1000
+  ],
+  "prediction": {
+    "semantic_gate": "applicable",
+    "baseline": [
+      false,
+      false,
+      false,
+      true
+    ],
+    "fault": [
+      false,
+      true,
+      true,
+      true
+    ],
+    "restored": [
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "gate": {
+    "applicable": "task registration·inheritance·termination binding이 맞고 실제 upstream 함수에서 F6가 조기 종료를 만들며 restore_configured_timeout 뒤 최초 출력과 코드 지문이 복원될 때",
+    "not_applicable": "결합은 유효하지만 ANYmal-C 종료 경로가 표적을 사용하지 않거나 F6가 출력 차이를 만들지 않을 때",
+    "invalid": "파일 SHA·구조·등록 교정·CPU 실행·복원 계약 중 하나를 검증할 수 없을 때"
+  },
+  "sources": {
+    "validator": {
+      "path": "bench/anymal_termination_semantics_v1.py",
+      "sha256_lf": "c81b1b63ab4a0b9bfed044aff9240a0c05ff19989603bd6198b4e94ef3c8762c"
+    },
+    "test": {
+      "path": "tests/test_anymal_termination_semantics_v1.py",
+      "sha256_lf": "7e097f1662ba7be09b5da12e3a28120e159d7cbca8eaa9765c69e95884752c9e"
+    },
+    "fault": {
+      "path": "bench/hidden_faults.py",
+      "sha256_lf": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346"
+    },
+    "correction_adapter": {
+      "path": "bench/correction_adapter.py",
+      "sha256_lf": "71224801d07a136c999770a6296e017165579377ee96ab98fa36fc70aa11aaa8"
+    },
+    "registration": {
+      "path": "<isaaclab>/source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/__init__.py",
+      "sha256_lf": "aa2976b6a44d6d86642da8ffe0b85f4b78cb9ca0885788f2475ee32f03300f52"
+    },
+    "flat_config": {
+      "path": "<isaaclab>/source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/flat_env_cfg.py",
+      "sha256_lf": "582aa91a13cdafd0e5a3abf7c39dd473278bf8db3bbfa89b21c4f03512420603"
+    },
+    "rough_config": {
+      "path": "<isaaclab>/source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/rough_env_cfg.py",
+      "sha256_lf": "bed7c457e1271f37e38ebf7c2a26bacd0bade2ffb41939e779dfac37f442aded"
+    },
+    "velocity_config": {
+      "path": "<isaaclab>/source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py",
+      "sha256_lf": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+    },
+    "manager_env": {
+      "path": "<isaaclab>/source/isaaclab/isaaclab/envs/manager_based_env.py",
+      "sha256_lf": "6ac4ec08175d2df87b489867b99239b02d106863384f73a7610fb4015ceda0d6"
+    },
+    "manager_rl_env": {
+      "path": "<isaaclab>/source/isaaclab/isaaclab/envs/manager_based_rl_env.py",
+      "sha256_lf": "b13e9106b98666b33637841f100589731aa4e24ce3ca133ff99dddb43f11b1f2"
+    },
+    "termination": {
+      "path": "<isaaclab>/source/isaaclab/isaaclab/envs/mdp/terminations.py",
+      "sha256_lf": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762"
+    }
+  },
+  "correction_source_contract": {
+    "schema": "correction_source_contract_v1",
+    "runtime": {
+      "implementation": "CPython",
+      "version": [
+        3,
+        10,
+        15
+      ],
+      "cache_tag": "cpython-310"
+    },
+    "targets": {
+      "restore_body_frame_reward": {
+        "module": "isaaclab.envs.mdp.rewards",
+        "qualname": "track_lin_vel_xy_exp",
+        "source": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+        "mode": "code",
+        "source_sha256": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+        "clean_fingerprint": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae"
+      },
+      "restore_motor_torque_speed": {
+        "module": "isaaclab.actuators.actuator_pd",
+        "qualname": "DCMotor._clip_effort",
+        "source": "source/isaaclab/isaaclab/actuators/actuator_pd.py",
+        "mode": "attribute",
+        "source_sha256": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+        "clean_fingerprint": "bf37f452239be21ec97ee61654f416abcafeb995c2e60fa509156f6d0e26aad3"
+      },
+      "restore_configured_timeout": {
+        "module": "isaaclab.envs.mdp.terminations",
+        "qualname": "time_out",
+        "source": "source/isaaclab/isaaclab/envs/mdp/terminations.py",
+        "mode": "code",
+        "source_sha256": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+        "clean_fingerprint": "c59f0aa40f3a4c460d9f146d17db4a56fcf9a4783ee39dd237d3ce7ea8cb6b7d"
+      }
+    }
+  },
+  "limitations": {
+    "behavior": "학습 실패와 고정 평가 영향은 이 CPU 의미 검사에서 측정하지 않는다",
+    "runtime": "환경을 생성하지 않고 upstream 종료 함수에 CPU tensor 상태를 넣는다",
+    "time_interpretation": "fault_timeout_s는 설정에서 계산한 control step 경계이며 물리 실행 시간 측정값이 아니다"
+  },
+  "claims_not_supported": [
+    "ANYmal-C 학습 실패",
+    "정책 회복",
+    "물리 시뮬레이션 결과",
+    "일반화",
+    "절감",
+    "모델 우월성"
+  ],
+  "api_calls": 0,
+  "gpu_calls": 0
+}

@@ -1,0 +1,325 @@
+{
+  "schema": "anymal_termination_smoke_protocol_v1",
+  "question": "ANYmal-C의 등록 F6가 새 seed 학습 정책의 고정 평가 실패로 이어지는가",
+  "design_disclosure": "Go2 F6와 ANYmal-C F1 결과, F2 적용 불가 CPU 결과를 본 뒤 선택한 개발 smoke다",
+  "seed": 2100,
+  "tag": "anymal_f6_smoke_s2100_20261017",
+  "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+  "arms": [
+    "NONE",
+    "F6"
+  ],
+  "num_envs": 4096,
+  "learning_iterations": 300,
+  "num_steps_per_env": 24,
+  "action_scale": 0.5,
+  "checkpoint": "model_299.pt",
+  "fault": "동결 F6: time_out 본문을 max_episode_length의 5%로 바꾼다. 설정값은 유지한다",
+  "runtime_injection_gate": {
+    "tail_iterations": 60,
+    "f6_episode_steps_max": 50.0,
+    "rounding_tolerance": 1e-06,
+    "f6_time_out_observed": true,
+    "none_episode_median_gt": 50.0,
+    "on_mismatch": "invalid",
+    "scope": "학습 로그에서 조기 종료와 맞는 관측을 확인한다. 보행 실패 판정은 고정 평가가 맡는다"
+  },
+  "band_commit": "b25db74337bf7df3ea0fd13b252c708f078f9aad",
+  "band_result": "evals/results/anymal_c_band_20261014/result.json",
+  "evaluation": "기존 ANYmal-C 고정 평가 26조건·조건당40env·1000step·eval seed2026. 결함을 평가 환경에 주입하지 않는다",
+  "prediction": "failure_present",
+  "decision": "e2e_demo_v4.source_gate 그대로: NONE가 걷고 F6가 같은 seed NONE 대비 unhealthy일 때 failure_present",
+  "wording": {
+    "failure_present": "ANYmal-C 새 seed에서 등록 F6 학습 정책의 행동 실패를 확인했다. 별도 종단 시연 사전등록을 준비한다.",
+    "source_failure_absent": "새 seed에서 F6의 등록 고정 평가 실패를 확인하지 못했다. 종단 시연으로 진행하지 않는다.",
+    "baseline_invalid": "정상 대조의 걷기 조건을 충족하지 못해 F6 시연으로 진행하지 않는다.",
+    "invalid": "실행·출처·평가 계약이 완결되지 않아 smoke를 판정하지 않는다."
+  },
+  "followup": {
+    "gate": "유효한 failure_present 결과를 재검증한 뒤에만 별도 시연 protocol을 작성·커밋한다",
+    "fresh_seed": 2101,
+    "mechanism": "termination",
+    "correction": "restore_configured_timeout",
+    "recovery_mode": "resume",
+    "decision_path": "single_feedback",
+    "decision_model": "nvidia/nemotron-3-super-120b-a12b",
+    "budget": "새 seed 정상·F6 학습 300회, 등록 교정 후 이어 학습 300회와 정상 이어 학습 대조",
+    "prior_evidence": "Go2 timeout_resume_dev_20261013은 no_recovery였다. termination 등록 규칙은 resume이며 ANYmal 회복 성공을 보장하는 근거가 아니다",
+    "prior_result": "evals/results/timeout_resume_dev_20261013/result.json",
+    "automatic_execution": false
+  },
+  "semantic_retries": 0,
+  "model_calls": 0,
+  "infrastructure_retry": "같은 tag 재실행 금지. invalid 기록과 seed 소비를 보존하고 원인 확인 후 별도 판을 사전등록한다",
+  "no_tuning": "실패가 없으면 결함 크기·평가 밴드·probe를 바꾸거나 다른 seed로 찾지 않는다",
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "watchdogs_s": {
+    "cpu": 180,
+    "train": 3600,
+    "extract": 300,
+    "evaluate": 600
+  },
+  "time_scope": "부모 실행부터 자연 종료 및 소유 프로세스 정리까지의 벽시계. GPU 커널 시간 아님",
+  "source_files": {
+    "bench/anymal_termination_semantics_v1.py": "c81b1b63ab4a0b9bfed044aff9240a0c05ff19989603bd6198b4e94ef3c8762c",
+    "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+    "bench/correction_adapter.py": "71224801d07a136c999770a6296e017165579377ee96ab98fa36fc70aa11aaa8",
+    "bench/demo_correction_anymal_c.py": "f92b12f6bd669e42bef5468b5c878a9e2f4cf81cb08ff08afaf2ff8a3860580f",
+    "bench/demo_correction_v4.py": "b3bf1d03aaea60854e61975b631fb802ae8467995b4ad8641379eef7bc7536b7",
+    "bench/demo_restart_correction_v2.py": "317d256a056d432a3c6d83537fcba505531d6f18c766ae8194dadb5fe834090e",
+    "bench/external_faults.py": "33e0bcb7b4b5db8669bf1aaccd96f4eefe5b542fb5b564f69c1822081f18955d",
+    "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/protocols/anymal_c_gate_v1.json": "35c2b743e84895634f5cfd94f4300417e5bec2aede11bfc5a49f9fd25efa28fd",
+    "bench/protocols/fixed_eval_v1_anymal_c.json": "d5dbc5c92bb6e14c47c73bd70a6df52ece3de4bc3557558c35534f878cffcbd7",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+    "bench/run_anymal_termination_smoke_v1.ps1": "7b433f64230fbadefbc3e111bb4a949723d856a3843f0f68b3dcf465f8b19529",
+    "bench/run_case.ps1": "778447f10250678ec3338b1352bc7769783bf261f9c2fe41536a36fa962bbff6",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/train_with_correction.py": "f93cc2a81bc8903b4b9ba3df61d7865d6bef9917a6f8dab207f38d147aa9d13b",
+    "bench/train_with_fault.py": "e4b3b698cc2b8823e50feec9aa22f8c07afe3b49cfe7750ae23cf5313554543c",
+    "bench/train_with_recovery_mode.py": "a9629ffbd34f4e344ecec84d4d42f3a08c575ad82250af8bf74d7282e667f29d",
+    "evals/active_model_call.py": "10349545f07071226213e10bcbaf617609bdb32e8f29b734e064fe760356ae3e",
+    "evals/anymal_termination_smoke_v1.py": "cb5fa3436fb30e474cd642542ef80e75cd16e8337066b4097dc9c8cb6072a239",
+    "evals/correct.py": "df91badc6d52865081d8d9ad2314982da21b98ab3f19727ede63c7468ecf9a43",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/e2e_demo_anymal_c.py": "7e5f451cffeabfa9b8b375f2dd9270e318fb73e5651f98d46a84c1d02c46f24c",
+    "evals/e2e_demo_v4.py": "8274caa9870c7663dcb683044b9b0ee040b9c2f60a8c2a5690e7a386c3b48fc5",
+    "evals/e2e_reward_demo_v2.py": "a83a28cc952159d511e88c12caae2e3b8b2a39a32720b93b488bf03e47265a34",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/fixed_eval_task.py": "d6b903b98c25d51a03cfd9f134482554211144ca268c2457512c3d94478c65b7",
+    "evals/loop.py": "270b9986a66ac1c7570693ed8d5dfe2ca0f5d1067cbfdedfb7b86be019dbb26d",
+    "evals/metered_probes.py": "8f938e7b0d4d3317136d45348f43326b74dd3b4ab315143e542cac26c1f13252",
+    "evals/metered_probes_task.py": "675b3c197f7adc444b444912cd5bcc3b040687f522cd5b3ffb7d5245fa017525",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+    "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+    "evals/probes_task.py": "36271fbe40a50392e97ffb9f4fdd93439738e7334f4418fb2fddfa55e04aa14d",
+    "evals/run_active_diagnosis.py": "53662a81d57f7b70c0893166ec01bcf1128ba072456b52b7cc19c181a8742fc3",
+    "evals/run_anymal_c_band.py": "6854041e2c48a0013625f9112d19ea4f875faf9d3f28c66b94cc235cf09415fc",
+    "evals/run_anymal_c_gate.py": "040a3fa1c6a39b61bd836202f659729a4afb17beb3347d7c47a2ce387a41a7a4",
+    "evals/run_fixed_eval.py": "6a822fbdbc7cc93c8b77dce9391195d4859edab7573f7c7644f39427e01c0675",
+    "evals/run_probes.py": "574139012a872eb5f42fef9282ae15bf7c626823b86e1553730e8717fc4db116",
+    "evals/run_recovery_reset_v2.py": "f8b1b288e0800f482df9b84f2347414231a160db392137ad30765ee0d6249eb8",
+    "evals/run_training_correction.py": "5473f030f357c7cec06861c1e33c8147d3960021f959956666531c9241da0bd1",
+    "evals/run_training_correction_v4.py": "2cfbe60120e904062f73697e62e6128216a92110192a2ed4667adf1d7ab8f98b",
+    "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "src/rl_triage/tracking_alarm.py": "31d457c6f77ec77a274c3e7a627899ebe1711ddc4c03832c6a2cd5c2ed88e24c",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af",
+    "tests/test_anymal_termination_semantics_v1.py": "7e097f1662ba7be09b5da12e3a28120e159d7cbca8eaa9765c69e95884752c9e",
+    "tests/test_anymal_termination_smoke_v1.py": "9727a9f26e1bd5fad710282b39853480b29a07dd8f8effbdb1e9506868b6a654"
+  },
+  "sdk_sources": {
+    "scripts/reinforcement_learning/rsl_rl/cli_args.py": "9b21e1106599d91a9881a79b0564518afc6e45ac6f7fb8b957b16bba12310cb1",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_cfg.py": "a83599520494f7066c3729d279585654ca72d9eaac12d6cac2536f07147d8b1f",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/app/app_launcher.py": "5424f2b4a7b1d967fe51017dfc5d47c2ec8ff09ddd190e184fead6d51fdd0502",
+    "source/isaaclab/isaaclab/assets/articulation/articulation_data.py": "662394fea5fb5a93b333937cad71d59ad74563d6d4fee823057cb5ebb7a6bf52",
+    "source/isaaclab/isaaclab/envs/manager_based_env.py": "6ac4ec08175d2df87b489867b99239b02d106863384f73a7610fb4015ceda0d6",
+    "source/isaaclab/isaaclab/envs/manager_based_rl_env.py": "b13e9106b98666b33637841f100589731aa4e24ce3ca133ff99dddb43f11b1f2",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab/isaaclab/managers/reward_manager.py": "5d41d6a376cfb456849d861c3232694ea5662cc38970e2e2c7e5152f156d88d7",
+    "source/isaaclab/isaaclab/managers/termination_manager.py": "ea239d8fd57e87010b74b358a91b1ae8b2487e5edc621da01468456ea92fa71f",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor.py": "926158c959e5aa65651ead836965637be45517d8538cadc3a93067d76ebb6990",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor_data.py": "c02606ab91acd0eeb29cd76bdb58e7cba217c62e18d55e4cfdecefd83aba15bc",
+    "source/isaaclab/isaaclab/utils/dict.py": "68a424ae35f84fcf5157e2d0402ad95ec1475e13095ff8cbf39432673f9eda1c",
+    "source/isaaclab/isaaclab/utils/io/yaml.py": "cdd6a95aa348b6ab3af7cf07d071c5829c2ae1de8147d49ec5bc23fcd155de71",
+    "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+    "source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py": "fcc844cf95bd3145713476b41fcd0a33b87967c2f409016196b7bcb2ecc4475b",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "8b37eb407af8629f350bba43d17746f4536b6d67449935556af26314619b1162",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "59d95358724d0a4a58f9aa49d887b84d12d37d7ba5f781d615d6468ac37f243e",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+  },
+  "rsl_sources": {
+    "__init__.py": "eca880a726873a075dc37aba1c4da3bfa8f7a19df45ed963964e864b48c6bfcc",
+    "algorithms/__init__.py": "82800dabead2a8e8fbc22162d34358cbafefefa81e620bbe1fbfea4b034e1205",
+    "algorithms/distillation.py": "9aedcf086771d1bd1e7eebcc53637e7f1cb2e97b2b2f497aa087090a8fa984aa",
+    "algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "env/__init__.py": "8b187dca6d7ca5f9f4ab6a8c30218ca7bd6d3f952706526cad4ae156d1541870",
+    "env/vec_env.py": "4cea1f22d498d76d00ef34facbf0abec256ce4266f679fb9dd185641bdca778b",
+    "modules/__init__.py": "9cdaae9b6823ca0019dcb317f3ab136d588d79259db00ebf437598625dfc20df",
+    "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "modules/actor_critic_recurrent.py": "965a3f1db386fb58fe277761a4db8cda967c4a51ad5735e2bc5dccf10a49d710",
+    "modules/normalizer.py": "f52677617f729c21c7440fd52d69b7e570313836a9deb21519425b806043a311",
+    "modules/rnd.py": "957fd599dd19c579e1c83f37d253d0ff45d789f5965ed4d3b3b4c235ec00386c",
+    "modules/student_teacher.py": "f44d6cbd5ddc18f109b6a914e0c6dd80107f6b71bffef60d26cf695c7ee60d04",
+    "modules/student_teacher_recurrent.py": "6342ebeb80768d97a6bc8bd4792fd96f947b5d58c0cbab59b71cb8b735520e34",
+    "networks/__init__.py": "57d38865f66dcff63a419f962de32ef07919fdfc40ccad96ee4713e7bdaa87b8",
+    "networks/memory.py": "dada928b14ebd32a1f47c9185f2b94e2ff799faa698ca519f0d78ec92531cebe",
+    "runners/__init__.py": "661b14b7160ee0d7f30c234e9885875ac5d5686897c5bc22bdec875189d27075",
+    "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "storage/__init__.py": "599a712105321c64423e65777d709ace050ef46d5f98b8791d697b9c4e55106e",
+    "storage/rollout_storage.py": "456450bbba03f9f5818f9ec43d2f3bd5d14d2d27f4bf2308838dd580f32ffcf0",
+    "utils/__init__.py": "2e407f50cb40043ab4b9690c10465a59ed4bbba714ff18670ac0aca8552a39b6",
+    "utils/neptune_utils.py": "1a30b7fe45ce1ba9be52c07d050678a23fe57e61ae25465af4159c93af195d40",
+    "utils/utils.py": "db99cd0877488809d73332f05670e9c72da9bd0292aa554121c503e61544588e",
+    "utils/wandb_utils.py": "875443f672af864930aee511c4dfd8b362b0b066c9cd54bd57b0513dd10336b2"
+  },
+  "anymal_sdk": {
+    "flat_env_cfg": {
+      "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/flat_env_cfg.py",
+      "sha256_lf": "582aa91a13cdafd0e5a3abf7c39dd473278bf8db3bbfa89b21c4f03512420603"
+    },
+    "rough_env_cfg": {
+      "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/rough_env_cfg.py",
+      "sha256_lf": "bed7c457e1271f37e38ebf7c2a26bacd0bade2ffb41939e779dfac37f442aded"
+    },
+    "agent_cfg": {
+      "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/agents/rsl_rl_ppo_cfg.py",
+      "sha256_lf": "956ba2706e0fff48a2dfab9c71f83efe1f2171d33ad64308523e4bef2fc60bf2"
+    },
+    "registration": {
+      "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/__init__.py",
+      "sha256_lf": "aa2976b6a44d6d86642da8ffe0b85f4b78cb9ca0885788f2475ee32f03300f52"
+    },
+    "velocity_env_cfg": {
+      "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py",
+      "sha256_lf": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+    },
+    "robot_cfg": {
+      "path": "source/isaaclab_assets/isaaclab_assets/robots/anymal.py",
+      "sha256_lf": "4d77e1f8ff0a228b2eb037f55d25fe3957225af767f97c4bbb7033ee3741cc35"
+    },
+    "actuator_net": {
+      "path": "source/isaaclab/isaaclab/actuators/actuator_net.py",
+      "sha256_lf": "e9cc9a8799f9e53ac9303dd3e1343dfd5b74b5927f7e92421a59eb610cda9b3f"
+    },
+    "train": {
+      "path": "scripts/reinforcement_learning/rsl_rl/train.py",
+      "sha256_lf": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545"
+    }
+  },
+  "binding": {
+    "tag": "anymal_c_band_20261014",
+    "outcome": "pass",
+    "result": {
+      "path": "evals/results/anymal_c_band_20261014/result.json",
+      "sha256_lf": "9db68f194fadf89faa1fdb29ad0a1e5d590522f7f8f9fc986c2d609ec0e67798"
+    },
+    "protocol_sha256_lf": "054f288b4248ba89d1e98d28dec9d664f9db83a2fe28d4e5b43fed1376f6885f",
+    "seed_records": {
+      "2044": {
+        "path": "evals/results/anymal_c_band_20261014/seeds/s2044_a1.json",
+        "sha256_lf": "40b5bd2154d014bbc17b046a4baf8192333718c837c513bbcf01ad3c08b8c387"
+      },
+      "2045": {
+        "path": "evals/results/anymal_c_band_20261014/seeds/s2045_a1.json",
+        "sha256_lf": "6d04234955e43eebe4121dfcf59ed029cf2ac35dd9858f5abd0f8af4c860cd1e"
+      }
+    },
+    "stage0_result": {
+      "path": "evals/results/anymal_c_gate_20261014/result.json",
+      "sha256_lf": "989c81ed2b8d6c5eded5c153795ed536879ee6b9471926c33779651c01500128"
+    },
+    "reference_runs": [
+      "anymal_c_gate_none_s2043",
+      "anymal_c_band_none_s2044",
+      "anymal_c_band_none_s2045"
+    ],
+    "reference_telemetry": {
+      "anymal_c_gate_none_s2043": {
+        "path": "bench/runs_anymal/anymal_c_gate_none_s2043.telemetry.json",
+        "sha256_lf": "928087a354943eeef7a3c833d75e32db437996cd58a8ccd989423e2bb7fe27e4"
+      },
+      "anymal_c_band_none_s2044": {
+        "path": "bench/runs_anymal/anymal_c_band_none_s2044.telemetry.json",
+        "sha256_lf": "f96725cb7585f1c40b52de7d93cd807e55a063ebded73f2215e6903cd7c69437"
+      },
+      "anymal_c_band_none_s2045": {
+        "path": "bench/runs_anymal/anymal_c_band_none_s2045.telemetry.json",
+        "sha256_lf": "c7bd5716898182064dc78811dabfdc3b6b3587f5bffef10a1dd6154f3eef90de"
+      }
+    }
+  },
+  "bands": {
+    "survival_ratio_min": 0.8809606037764762,
+    "err_xy_ratio_max": 1.1767207428933193,
+    "err_yaw_ratio_max": 1.248528339710145,
+    "fall_frac_max": 0.0826923094689846
+  },
+  "cpu_protocol_sha256_lf": "284992749e8bd936ba60208dcad259b49e94a11d5a01c249b4d213736576084d",
+  "fixed_eval_sha256_lf": "d5dbc5c92bb6e14c47c73bd70a6df52ece3de4bc3557558c35534f878cffcbd7",
+  "cpu_semantics": {
+    "schema": "anymal_termination_semantics_smoke_binding_v1",
+    "applicable": true,
+    "all_checks_passed": true,
+    "cpu_protocol_sha256_lf": "284992749e8bd936ba60208dcad259b49e94a11d5a01c249b4d213736576084d",
+    "configuration": {
+      "episode_length_s": 20.0,
+      "physics_dt_s": 0.005,
+      "decimation": 4,
+      "control_dt_s": 0.02,
+      "configured_max_episode_length": 1000,
+      "fault_timeout_step": 50,
+      "fault_timeout_s": 1.0
+    },
+    "structural": {
+      "task_registration_entry": "f'{__name__}.flat_env_cfg:AnymalCFlatEnvCfg'",
+      "flat_base": "AnymalCRoughEnvCfg",
+      "rough_base": "LocomotionVelocityRoughEnvCfg",
+      "flat_calls_super_post_init": true,
+      "rough_calls_super_post_init": true,
+      "termination_uses_mdp_time_out": true,
+      "step_dt_formula_matches": true,
+      "max_episode_length_formula_matches": true,
+      "upstream_timeout_formula_matches": true,
+      "fault_timeout_formula_matches": true
+    },
+    "probe": {
+      "steps": [
+        49,
+        50,
+        999,
+        1000
+      ],
+      "baseline": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "fault": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "restored": [
+        false,
+        false,
+        false,
+        true
+      ]
+    },
+    "correction": {
+      "id": "restore_configured_timeout",
+      "restored": true
+    },
+    "source_sha256_lf": {
+      "validator": "c81b1b63ab4a0b9bfed044aff9240a0c05ff19989603bd6198b4e94ef3c8762c",
+      "test": "7e097f1662ba7be09b5da12e3a28120e159d7cbca8eaa9765c69e95884752c9e",
+      "fault": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+      "correction_adapter": "71224801d07a136c999770a6296e017165579377ee96ab98fa36fc70aa11aaa8",
+      "registration": "aa2976b6a44d6d86642da8ffe0b85f4b78cb9ca0885788f2475ee32f03300f52",
+      "flat_config": "582aa91a13cdafd0e5a3abf7c39dd473278bf8db3bbfa89b21c4f03512420603",
+      "rough_config": "bed7c457e1271f37e38ebf7c2a26bacd0bade2ffb41939e779dfac37f442aded",
+      "velocity_config": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58",
+      "manager_env": "6ac4ec08175d2df87b489867b99239b02d106863384f73a7610fb4015ceda0d6",
+      "manager_rl_env": "b13e9106b98666b33637841f100589731aa4e24ce3ca133ff99dddb43f11b1f2",
+      "termination": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762"
+    }
+  }
+}
