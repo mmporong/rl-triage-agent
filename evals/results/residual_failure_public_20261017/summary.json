@@ -1,0 +1,118 @@
+{
+  "schema": "residual_failure_public_summary_v1",
+  "status": "complete",
+  "demo_success": false,
+  "successful_cases": 0,
+  "cases": [
+    {
+      "seed": 2110,
+      "outcome": "HOLD",
+      "reason": "diagnosis_invalid",
+      "stop_epoch": 2,
+      "demo_success": false,
+      "first_diagnosis_valid_after_feedback": true,
+      "first_probe": "P_reward",
+      "first_probe_outcome": "abnormal",
+      "first_probe_measurement": {
+        "track_ang_vel_z_exp_rel_error": 1.6820362831460045e-08,
+        "track_lin_vel_xy_exp_rel_error": 0.2550550737604499
+      },
+      "applied_corrections": [
+        "restore_body_frame_reward"
+      ],
+      "recovery_mode": "restart",
+      "training_updates": 300,
+      "first_receipt_verified": true,
+      "epoch2_opened": true,
+      "epoch2_probes_executed": 0,
+      "second_correction_executed": false,
+      "metrics": {
+        "NONE": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.1480834465350665,
+          "yaw_rate_rmse_radps": 0.2968014826847454
+        },
+        "COMPOUND": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.179331340456742,
+          "yaw_rate_rmse_radps": 0.6169487213638427
+        },
+        "FIRST": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.1897520995581454,
+          "yaw_rate_rmse_radps": 0.5971664965183329
+        }
+      },
+      "evaluation_outcomes": {
+        "NONE": "recovered",
+        "COMPOUND": "not_recovered",
+        "FIRST": "not_recovered"
+      }
+    },
+    {
+      "seed": 2111,
+      "outcome": "HOLD",
+      "reason": "diagnosis_invalid",
+      "stop_epoch": 2,
+      "demo_success": false,
+      "first_diagnosis_valid_after_feedback": true,
+      "first_probe": "P_reward",
+      "first_probe_outcome": "abnormal",
+      "first_probe_measurement": {
+        "track_ang_vel_z_exp_rel_error": 1.678669619753492e-08,
+        "track_lin_vel_xy_exp_rel_error": 0.3160723757557571
+      },
+      "applied_corrections": [
+        "restore_body_frame_reward"
+      ],
+      "recovery_mode": "restart",
+      "training_updates": 300,
+      "first_receipt_verified": true,
+      "epoch2_opened": true,
+      "epoch2_probes_executed": 0,
+      "second_correction_executed": false,
+      "metrics": {
+        "NONE": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.15178636530227654,
+          "yaw_rate_rmse_radps": 0.2963383240758668
+        },
+        "COMPOUND": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.172034697777412,
+          "yaw_rate_rmse_radps": 0.8108638281607579
+        },
+        "FIRST": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.1732087238658533,
+          "yaw_rate_rmse_radps": 0.8196337843938074
+        }
+      },
+      "evaluation_outcomes": {
+        "NONE": "recovered",
+        "COMPOUND": "not_recovered",
+        "FIRST": "not_recovered"
+      }
+    }
+  ],
+  "seeds": [
+    2110,
+    2111
+  ],
+  "classification": "model_contract_violation",
+  "infrastructure_failure_observed": false,
+  "retry_as_infrastructure_failure": false,
+  "existing_result_reclassified": false,
+  "design_coupling": "설계자가 F1·R1 단일 결함과 앞선 수리 결과를 본 뒤 만든 복합 개발 측정이다. 새 seed는 이 결합을 없애지 않는다.",
+  "audit_scope": "저장 응답·원장·교정 receipt·고정 평가를 CPU로 재검증한 사후 감사. 새 모델 성능 측정은 아니다.",
+  "prediction_met": false,
+  "api_requests": 10,
+  "api_cap": 20,
+  "wording": "두 seed 모두 첫 보상 교정 뒤 비회복 평가로 두 번째 고리를 열었지만, 모델이 재요청에서도 출력 계약을 충족하지 못해 HOLD했다."
+}

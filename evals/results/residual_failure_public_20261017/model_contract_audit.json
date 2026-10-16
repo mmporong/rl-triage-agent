@@ -1,0 +1,501 @@
+{
+  "schema": "residual_failure_model_audit_v1",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "raw_calls": [
+    {
+      "seed": 2110,
+      "epoch": 1,
+      "kind": "diagnosis",
+      "request_index": 1,
+      "reservation_sha256": "a94da0f2ce026b0cc6bdd4fc0c5e1b6da9d0eabba86c1645efabd369a47512a1",
+      "response_sha256": "3ae0a02e6f46b2b5af9055133201b5aebb496ff19be4059cc1f7dadd4502a0f2",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"ranking\": [\"reward\", \"optimizer_value\", \"optimizer_update_count\", \"actuator\", \"exploration\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"The largest deviation from reference is in track_lin_vel_xy_exp (reference: 1.4056, case: 0.3096), indicating a potential reward computation issue. P_reward probe directly measures this discrepancy.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.3095942164460818},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.4056081036726633}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"optimizer_value\": \"normal\",\n    \"optimizer_update_count\": \"normal\"\n  }\n}",
+      "status": "invalid",
+      "codes": [
+        "D_RANKING"
+      ],
+      "reasons": [
+        "ranking은 여섯 mechanism의 중복 없는 순열이어야 한다"
+      ],
+      "input_tokens": 4019,
+      "output_tokens": 247,
+      "total_tokens": 4266,
+      "wall_s": 4.685294702183455,
+      "independent_format_checks": {
+        "ranking_is_public_permutation": false,
+        "expected_outcomes_matches_top_three": false,
+        "actual_expected_keys": [
+          "optimizer_update_count",
+          "optimizer_value",
+          "reward"
+        ],
+        "required_expected_keys": [
+          "optimizer_update_count",
+          "optimizer_value",
+          "reward"
+        ],
+        "claims_match_packet": true
+      }
+    },
+    {
+      "seed": 2110,
+      "epoch": 1,
+      "kind": "diagnosis",
+      "request_index": 2,
+      "reservation_sha256": "af3b257b6ca7ad10eb7c7b94da396025c109453ddd1bfd5106dd75dcdf969c8f",
+      "response_sha256": "c799bf31723ded910c669428159517da6d4e795f42b6f54ff237dd301fb633a8",
+      "step": "retry",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"The largest deviation from reference is in track_lin_vel_xy_exp (reference: 1.4056, case: 0.3096), indicating a potential reward computation issue. P_reward probe directly measures this discrepancy.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.3095942164460818},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.4056081036726633}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 4321,
+      "output_tokens": 241,
+      "total_tokens": 4562,
+      "wall_s": 6.017833969090134,
+      "independent_format_checks": {
+        "ranking_is_public_permutation": true,
+        "expected_outcomes_matches_top_three": true,
+        "actual_expected_keys": [
+          "actuator",
+          "exploration",
+          "reward"
+        ],
+        "required_expected_keys": [
+          "actuator",
+          "exploration",
+          "reward"
+        ],
+        "claims_match_packet": true
+      }
+    },
+    {
+      "seed": 2110,
+      "epoch": 1,
+      "kind": "correction",
+      "request_index": 3,
+      "reservation_sha256": "277cc511fc94ba10b0cba5a1f4c9b75a08472f7b93b256b9c9ebb3bfa5b6d3c3",
+      "response_sha256": "afb645921b355c800882fe9ba14a09e9cde847ac540bed81f2bed04c11e0ccaf",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"correction_id\": \"restore_body_frame_reward\",\n  \"recovery_mode\": \"restart\",\n  \"cited_facts\": [\n    \"confirmed_mechanism\",\n    \"confirmed_subtype\",\n    \"confirming_probe\",\n    \"confirming_probe_outcome\",\n    \"confirming_probe_measurement\",\n    \"registered_correction\",\n    \"registered_recovery_modes\",\n    \"rule\",\n    \"rule_mode\"\n  ],\n  \"checklist\": {\n    \"1\": \"confirmed_mechanism\",\n    \"2\": \"confirmed_mechanism\",\n    \"3\": \"confirming_probe_measurement\",\n    \"4\": \"confirming_probe_measurement\",\n    \"5\": \"confirming_probe_outcome\",\n    \"6\": \"rule\"\n  },\n  \"hold_reason\": null\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 1238,
+      "output_tokens": 185,
+      "total_tokens": 1423,
+      "wall_s": 3.1977285691536963
+    },
+    {
+      "seed": 2110,
+      "epoch": 2,
+      "kind": "diagnosis",
+      "request_index": 4,
+      "reservation_sha256": "8e3a86ed0162fb6fb617060b0d78293084e440167bb504b31c353b4c56137f98",
+      "response_sha256": "3a9b61c4ca0311fe399806daf8ee646d0aae2ca8f14a3d4217b30434fc6b7003",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer_value\", \"physics\", \"termination\", \"optimizer_update_count\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"The applied correction 'restore_body_frame_reward' did not recover performance (verdict: not_recovered), indicating the reward system may still be misconfigured. Evidence shows significant degradation in reward tracking: track_lin_vel_xy_exp dropped from 1.4056 (reference) to 0.3161 (case), a 77.5% decrease, while track_ang_vel_z_exp decreased slightly from 0.6217 to 0.6130. This suggests the reward calculation is not matching the reference, pointing to a reward category abnormality.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.31606706057985623},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.4056081036726633},\n    {\"id\": \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6130445371071498},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6217054645220439}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\",\n    \"optimizer_value\": \"normal\",\n    \"optimizer_update_count\": \"normal\",\n    \"physics\": \"normal\",\n    \"termination\": \"normal\"\n  }\n}",
+      "status": "invalid",
+      "codes": [
+        "D_RANKING"
+      ],
+      "reasons": [
+        "ranking은 여섯 mechanism의 중복 없는 순열이어야 한다"
+      ],
+      "input_tokens": 4180,
+      "output_tokens": 447,
+      "total_tokens": 4627,
+      "wall_s": 7.45968509814702,
+      "independent_format_checks": {
+        "ranking_is_public_permutation": false,
+        "expected_outcomes_matches_top_three": false,
+        "actual_expected_keys": [
+          "actuator",
+          "exploration",
+          "optimizer_update_count",
+          "optimizer_value",
+          "physics",
+          "reward",
+          "termination"
+        ],
+        "required_expected_keys": [
+          "actuator",
+          "exploration",
+          "reward"
+        ],
+        "claims_match_packet": true
+      }
+    },
+    {
+      "seed": 2110,
+      "epoch": 2,
+      "kind": "diagnosis",
+      "request_index": 5,
+      "reservation_sha256": "9df78fb05adbe696c2000c391fffd81e2d333af2bded4f7e08e93312cd15bffb",
+      "response_sha256": "8fcd257b50ef1dbc0a038df56faa4b5d8b233b96b85d563ff9a65497a68b358f",
+      "step": "retry",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"The applied correction 'restore_body_frame_reward' did not recover performance (verdict: not_recovered), indicating the reward system may still be misconfigured. Evidence shows significant degradation in reward tracking: track_lin_vel_xy_exp dropped from 1.4056 (reference) to 0.3161 (case), a 77.5% decrease, while track_ang_vel_z_exp decreased slightly from 0.6217 to 0.6130. This suggests the reward calculation is not matching the reference, pointing to a reward category abnormality.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.31606706057985623},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.4056081036726633},\n    {\"id\": \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6130445371071498},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6217054645220439}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\",\n    \"optimizer\": \"normal\",\n    \"physics\": \"normal\",\n    \"termination\": \"normal\"\n  }\n}",
+      "status": "invalid",
+      "codes": [
+        "D_EXPECTED"
+      ],
+      "reasons": [
+        "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+      ],
+      "input_tokens": 4682,
+      "output_tokens": 431,
+      "total_tokens": 5113,
+      "wall_s": 7.658367098076269,
+      "independent_format_checks": {
+        "ranking_is_public_permutation": true,
+        "expected_outcomes_matches_top_three": false,
+        "actual_expected_keys": [
+          "actuator",
+          "exploration",
+          "optimizer",
+          "physics",
+          "reward",
+          "termination"
+        ],
+        "required_expected_keys": [
+          "actuator",
+          "exploration",
+          "reward"
+        ],
+        "claims_match_packet": true
+      }
+    },
+    {
+      "seed": 2111,
+      "epoch": 1,
+      "kind": "diagnosis",
+      "request_index": 6,
+      "reservation_sha256": "117cccc8b9c95a4dcf3d6a9bcd59eef979716aac16f6b1fe5db6f890b24df8e2",
+      "response_sha256": "043693437d6463c2efd4f84ba4575e0e73478bcf39e07070546481d871dd99d7",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer_value\", \"physics\", \"termination\", \"optimizer_update_count\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"The largest deviation from reference is in track_lin_vel_xy_exp (reference: 1.4098, case: 0.3128), indicating a significant under-rewarding of forward velocity tracking. This strongly suggests a reward misconfiguration or computation error, making reward the most likely faulty category.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.3128463308016459},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.4098219255606332}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+      "status": "invalid",
+      "codes": [
+        "D_RANKING"
+      ],
+      "reasons": [
+        "ranking은 여섯 mechanism의 중복 없는 순열이어야 한다"
+      ],
+      "input_tokens": 3982,
+      "output_tokens": 262,
+      "total_tokens": 4244,
+      "wall_s": 4.050045971060172,
+      "independent_format_checks": {
+        "ranking_is_public_permutation": false,
+        "expected_outcomes_matches_top_three": true,
+        "actual_expected_keys": [
+          "actuator",
+          "exploration",
+          "reward"
+        ],
+        "required_expected_keys": [
+          "actuator",
+          "exploration",
+          "reward"
+        ],
+        "claims_match_packet": true
+      }
+    },
+    {
+      "seed": 2111,
+      "epoch": 1,
+      "kind": "diagnosis",
+      "request_index": 7,
+      "reservation_sha256": "0e17eaf8e5845d247f2a2a9d1b5fb6f4dc7a37f7e6f14b75c1ce837c469c2e59",
+      "response_sha256": "483c52e23d61f275b9161fab2ef2aa1e896e5138144afb5da36ce618e35ce4f4",
+      "step": "retry",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"The largest deviation from reference is in track_lin_vel_xy_exp (reference: 1.4098, case: 0.3128), indicating a significant under-rewarding of forward velocity tracking. This strongly suggests a reward misconfiguration or computation error, making reward the most likely faulty category.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.3128463308016459},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.4098219255606332}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\"\n  }\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 4299,
+      "output_tokens": 256,
+      "total_tokens": 4555,
+      "wall_s": 3.8464115019887686,
+      "independent_format_checks": {
+        "ranking_is_public_permutation": true,
+        "expected_outcomes_matches_top_three": true,
+        "actual_expected_keys": [
+          "actuator",
+          "exploration",
+          "reward"
+        ],
+        "required_expected_keys": [
+          "actuator",
+          "exploration",
+          "reward"
+        ],
+        "claims_match_packet": true
+      }
+    },
+    {
+      "seed": 2111,
+      "epoch": 1,
+      "kind": "correction",
+      "request_index": 8,
+      "reservation_sha256": "9e55a3e57aa290a9ab18ec66f7c177d0aadd2cc9dfa420177b4e14adf4ab2966",
+      "response_sha256": "ef63fcebf758fb0661e3dccdc36874c8609f22562a408474b28951cacdb227cf",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"correction_id\": \"restore_body_frame_reward\",\n  \"recovery_mode\": \"restart\",\n  \"cited_facts\": [\n    \"confirmed_mechanism\",\n    \"confirmed_subtype\",\n    \"confirming_probe\",\n    \"confirming_probe_outcome\",\n    \"registered_correction\",\n    \"registered_recovery_modes\",\n    \"rule\",\n    \"rule_mode\"\n  ],\n  \"checklist\": {\n    \"1\": \"confirmed_mechanism\",\n    \"2\": \"confirmed_subtype\",\n    \"3\": \"confirming_probe\",\n    \"4\": \"confirming_probe_measurement\",\n    \"5\": \"confirming_probe_outcome\",\n    \"6\": \"rule\"\n  },\n  \"hold_reason\": null\n}",
+      "status": "valid",
+      "codes": [],
+      "reasons": [],
+      "input_tokens": 1237,
+      "output_tokens": 171,
+      "total_tokens": 1408,
+      "wall_s": 5.737550590885803
+    },
+    {
+      "seed": 2111,
+      "epoch": 2,
+      "kind": "diagnosis",
+      "request_index": 9,
+      "reservation_sha256": "40b14fe6ee2e20d99b2a11dbc5104a54aed8ce8acb0ac2b59f32554886ef8c6a",
+      "response_sha256": "d96cf26e2ae834df521ec395d2e5dc98ca70a59717eb6ac7ce6afdd5129ebebc",
+      "step": "first",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer_value\", \"physics\", \"termination\", \"optimizer_update_count\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"The applied correction 'restore_body_frame_reward' did not recover performance (verdict: not_recovered), indicating the reward system may still be misconfigured. Evidence shows significant degradation in reward tracking: track_lin_vel_xy_exp and track_ang_vel_z_exp are substantially below reference values (0.33 vs 1.41 and 0.55 vs 0.63), while other reward penalties increased in magnitude. This suggests the reward function is not computing tracking rewards correctly, making P_reward the most informative next probe.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.3336929976940155},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.4098219255606332},\n    {\"id\": \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.5483256022135417},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6302446573972702},\n    {\"id\": \"telemetry:case:Episode_Reward/action_rate_l2\", \"value\": -0.08236304819583892},\n    {\"id\": \"telemetry:reference:Episode_Reward/action_rate_l2\", \"value\": -0.07143069331844648},\n    {\"id\": \"telemetry:case:Episode_Reward/dof_torques_l2\", \"value\": -0.06630830590923627},\n    {\"id\": \"telemetry:reference:Episode_Reward/dof_torques_l2\", \"value\": -0.09923798715074857}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\",\n    \"optimizer_value\": \"normal\",\n    \"optimizer_update_count\": \"normal\",\n    \"physics\": \"normal\",\n    \"termination\": \"normal\"\n  }\n}",
+      "status": "invalid",
+      "codes": [
+        "D_RANKING"
+      ],
+      "reasons": [
+        "ranking은 여섯 mechanism의 중복 없는 순열이어야 한다"
+      ],
+      "input_tokens": 4167,
+      "output_tokens": 614,
+      "total_tokens": 4781,
+      "wall_s": 10.185579671990126,
+      "independent_format_checks": {
+        "ranking_is_public_permutation": false,
+        "expected_outcomes_matches_top_three": false,
+        "actual_expected_keys": [
+          "actuator",
+          "exploration",
+          "optimizer_update_count",
+          "optimizer_value",
+          "physics",
+          "reward",
+          "termination"
+        ],
+        "required_expected_keys": [
+          "actuator",
+          "exploration",
+          "reward"
+        ],
+        "claims_match_packet": true
+      }
+    },
+    {
+      "seed": 2111,
+      "epoch": 2,
+      "kind": "diagnosis",
+      "request_index": 10,
+      "reservation_sha256": "dbcb25b5f26605c86fba332dec45ed3d38261daf8a33854a86877d58a1b09451",
+      "response_sha256": "c91c8b30a45886f247168dead5989aa5c98dc9df6519e4e700243e296e7e7727",
+      "step": "retry",
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "finish_reason": "stop",
+      "content": "{\n  \"ranking\": [\"reward\", \"actuator\", \"exploration\", \"optimizer\", \"physics\", \"termination\"],\n  \"probe\": \"P_reward\",\n  \"action\": \"continue\",\n  \"reason\": \"The applied correction 'restore_body_frame_reward' did not recover performance (verdict: not_recovered), indicating the reward system may still be misconfigured. Evidence shows significant degradation in reward tracking: track_lin_vel_xy_exp and track_ang_vel_z_exp are substantially below reference values (0.33 vs 1.41 and 0.55 vs 0.63), while other reward penalties increased in magnitude. This suggests the reward function is not computing tracking rewards correctly, making P_reward the most informative next probe.\",\n  \"claims\": [\n    {\"id\": \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 0.3336929976940155},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"value\": 1.4098219255606332},\n    {\"id\": \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.5483256022135417},\n    {\"id\": \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\", \"value\": 0.6302446573972702},\n    {\"id\": \"telemetry:case:Episode_Reward/action_rate_l2\", \"value\": -0.08236304819583892},\n    {\"id\": \"telemetry:reference:Episode_Reward/action_rate_l2\", \"value\": -0.07143069331844648},\n    {\"id\": \"telemetry:case:Episode_Reward/dof_torques_l2\", \"value\": -0.06630830590923627},\n    {\"id\": \"telemetry:reference:Episode_Reward/dof_torques_l2\", \"value\": -0.09923798715074857}\n  ],\n  \"expected_outcomes\": {\n    \"reward\": \"abnormal\",\n    \"actuator\": \"normal\",\n    \"exploration\": \"normal\",\n    \"optimizer\": \"normal\",\n    \"physics\": \"normal\",\n    \"termination\": \"normal\"\n  }\n}",
+      "status": "invalid",
+      "codes": [
+        "D_EXPECTED"
+      ],
+      "reasons": [
+        "expected_outcomes는 선택 probe의 공개 카탈로그와 정확히 일치해야 한다"
+      ],
+      "input_tokens": 4836,
+      "output_tokens": 598,
+      "total_tokens": 5434,
+      "wall_s": 13.205571437021717,
+      "independent_format_checks": {
+        "ranking_is_public_permutation": true,
+        "expected_outcomes_matches_top_three": false,
+        "actual_expected_keys": [
+          "actuator",
+          "exploration",
+          "optimizer",
+          "physics",
+          "reward",
+          "termination"
+        ],
+        "required_expected_keys": [
+          "actuator",
+          "exploration",
+          "reward"
+        ],
+        "claims_match_packet": true
+      }
+    }
+  ],
+  "dialogues": [
+    {
+      "seed": 2110,
+      "epoch": 1,
+      "kind": "diagnosis",
+      "status": "valid",
+      "codes": [],
+      "requests": 2,
+      "packet_sha256": "4251aba0a664fbfccb322b46b56034903d45b0d460308eb7651cf05631fbc7a0",
+      "record_sha256": "4e062995d180d7d78e05239e8a321dc51c0571bf0f498eaee52b87b6c8a60051",
+      "api_receipts_verified": true
+    },
+    {
+      "seed": 2110,
+      "epoch": 1,
+      "kind": "correction",
+      "status": "valid",
+      "codes": [],
+      "requests": 1,
+      "packet_sha256": "e21d46f1eac3c16b24d5c602162b585a7db7d67a62eca065abb110dc1aba8818",
+      "record_sha256": "77a5fc585b3d8e9d146fe2c4a2d1b29bcd9cb9f533ce2c9a1b802643320d39ac",
+      "api_receipts_verified": true
+    },
+    {
+      "seed": 2110,
+      "epoch": 2,
+      "kind": "diagnosis",
+      "status": "invalid",
+      "codes": [
+        "D_EXPECTED"
+      ],
+      "requests": 2,
+      "packet_sha256": "b22b9f64c70658d1cdeac27a303afc7cac076b63fd11f073e5e9fc5a9169af2e",
+      "record_sha256": "d279ae504b95f65c1f79f390bb310164d1d6eea2c4652a933e9ee302991632d6",
+      "api_receipts_verified": true
+    },
+    {
+      "seed": 2111,
+      "epoch": 1,
+      "kind": "diagnosis",
+      "status": "valid",
+      "codes": [],
+      "requests": 2,
+      "packet_sha256": "7f89e38e0c6df68de808d47f1f16682a8842f3d4ae803b0f0d5a92e8401d3191",
+      "record_sha256": "0571737de9663b27700577fc2930cdf2c81c094ebc9ece44ee44e903fd283fd1",
+      "api_receipts_verified": true
+    },
+    {
+      "seed": 2111,
+      "epoch": 1,
+      "kind": "correction",
+      "status": "valid",
+      "codes": [],
+      "requests": 1,
+      "packet_sha256": "7495ff83cb525e52672ace16b554839e4cc8537c54cf13ee7089f0a9697a83db",
+      "record_sha256": "f300c13e17c62998b676892b3c07785f1c1891987afba742404188d0ab6a5990",
+      "api_receipts_verified": true
+    },
+    {
+      "seed": 2111,
+      "epoch": 2,
+      "kind": "diagnosis",
+      "status": "invalid",
+      "codes": [
+        "D_EXPECTED"
+      ],
+      "requests": 2,
+      "packet_sha256": "96d358b833ca46de1af3ef2007d30afe97769646db1399eea921c0d35719b060",
+      "record_sha256": "0ab021f2014048b840b5c0c06375de48c2df41ad774699646f5b82be879a0207",
+      "api_receipts_verified": true
+    }
+  ],
+  "boundary_analysis": [
+    {
+      "seed": 2110,
+      "analysis_only": true,
+      "original_experimental_verdict_changed": false,
+      "only_expected_outcomes_subset_changed": true,
+      "format_corrected_decision_accepted_by_v1": true,
+      "probe": "P_reward",
+      "remaining_hypotheses": [
+        "actuator",
+        "exploration",
+        "optimizer_value",
+        "optimizer_update_count",
+        "physics",
+        "termination"
+      ],
+      "probe_expectations": {
+        "actuator": "normal",
+        "exploration": "normal",
+        "optimizer_value": "normal",
+        "optimizer_update_count": "normal",
+        "physics": "normal",
+        "termination": "normal"
+      },
+      "partitions_remaining_hypotheses": false,
+      "registered_rule_next_probe": "P_value",
+      "rule_probe_executed": false
+    },
+    {
+      "seed": 2111,
+      "analysis_only": true,
+      "original_experimental_verdict_changed": false,
+      "only_expected_outcomes_subset_changed": true,
+      "format_corrected_decision_accepted_by_v1": true,
+      "probe": "P_reward",
+      "remaining_hypotheses": [
+        "actuator",
+        "exploration",
+        "optimizer_value",
+        "optimizer_update_count",
+        "physics",
+        "termination"
+      ],
+      "probe_expectations": {
+        "actuator": "normal",
+        "exploration": "normal",
+        "optimizer_value": "normal",
+        "optimizer_update_count": "normal",
+        "physics": "normal",
+        "termination": "normal"
+      },
+      "partitions_remaining_hypotheses": false,
+      "registered_rule_next_probe": "P_value",
+      "rule_probe_executed": false
+    }
+  ],
+  "raw_valid": 4,
+  "raw_invalid": 6,
+  "dialogues_valid": 4,
+  "dialogues_invalid": 2,
+  "contract": {
+    "public_ranking_categories": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer",
+      "physics",
+      "termination"
+    ],
+    "expected_outcomes_count": 3,
+    "expected_outcomes_scope": "ranking의 상위 세 공개 범주",
+    "feedback_requests_per_dialogue": 1,
+    "validator_reports_first_error_only": true
+  },
+  "causal_classification": "두 번째 재요청의 D_EXPECTED는 모델 계약 위반이다. 이미 교정한 성분의 검사 재선택 허용은 별도의 잠재 경계 결함이며 이번 종료 원인은 아니다."
+}
