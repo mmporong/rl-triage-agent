@@ -1,0 +1,193 @@
+{
+  "schema": "actor_reset_budget_protocol_v1",
+  "measurement_kind": "post_result_novel_seed_budget_confirmation",
+  "design_disclosure": "기존 seed 2026 회복·2028 미회복과 새 seed 2063·2064의 actor 마지막 층 재설정 300회 2/2 회복 결과를 본 뒤 더 적은 갱신 횟수를 확인하도록 설계했다",
+  "seeds": [
+    2090,
+    2091
+  ],
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "fault": "F1",
+  "correction": "restore_body_frame_reward",
+  "num_envs": 4096,
+  "source_iterations": 300,
+  "num_steps_per_env": 24,
+  "source_final_iteration": 299,
+  "reset_budgets": [
+    100,
+    150
+  ],
+  "conditional_budget": 200,
+  "restart_budget": 300,
+  "action_scale": 0.25,
+  "prediction": {
+    "reset_100": [
+      "not_recovered",
+      "not_recovered"
+    ],
+    "reset_150": [
+      "recovered",
+      "recovered"
+    ],
+    "reset_200_if_needed": [
+      "recovered",
+      "recovered"
+    ],
+    "restart_300": [
+      "recovered",
+      "recovered"
+    ]
+  },
+  "branch_rule": "100회와 150회 중 어느 예산도 두 seed 모두 recovered가 아니면 200회를 두 seed에서 실행한다",
+  "candidate_rule": "가장 작은 공통 reset 예산이 두 seed 모두 recovered이고 restart300도 두 seed 모두 recovered이며 provenance가 유효할 때, 그 reset 예산이 300보다 작으면 조건부 후보로 등록한다",
+  "candidate_wording": "새 seed 두 개에서 재학습 300회와 단축 개입 N회가 모두 고정 평가를 통과했다. 재학습보다 적은 학습 갱신으로 회복한 등록 조건부 후보다.",
+  "keep_wording": "등록된 단축 예산이 두 seed 공통 회복 조건을 충족하지 않아 기존 회복 규칙을 유지한다.",
+  "restart_control_not_recovered_wording": "재학습 대조가 두 seed 회복 조건을 충족하지 않아 단축 회복 후보 등록을 판정하지 않는다.",
+  "automatic_global_change": false,
+  "semantic_retries": 0,
+  "model_calls": 0,
+  "independent_arms": "각 reset 예산은 같은 F1 model_299에서 따로 시작하며 더 긴 예산이 짧은 예산 결과에서 이어지지 않는다",
+  "restart_control": "동일 seed에서 checkpoint를 불러오지 않는 300회 재학습을 항상 실행한다",
+  "initial_equivalence": "같은 seed의 reset100·reset150·조건부 reset200은 reset seed, 초기 policy, optimizer, RNG hash가 같아야 한다",
+  "time_scope": "학습 시간은 parent launch부터 자연 종료와 owned job 정리 확인까지의 GPU 작업 벽시계이며 GPU kernel time이 아니다",
+  "claim_boundary": "후보 판정은 갱신 횟수 N<300에만 근거하며 시간 단축 여부는 별도 결과로 기록한다",
+  "budget_unit": "N은 learning iteration 또는 rollout update 반복 수이며 optimizer.step 횟수 측정이 아니다. actual control steps=N×24로 검증한다",
+  "restart_identity_disclosure": "restart300은 같은 seed와 clean 함수의 source NONE 300회와 checkpoint byte가 같을 수 있으며 독립 표본으로 해석하지 않는다",
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "train_watchdog_s": 2700,
+  "eval_watchdog_s": 600,
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "rsl_rl_version": "2.3.3",
+  "limits": [
+    "새 seed 두 개의 개발 확인이다",
+    "인과 메커니즘·일반화·GPU 절감·LLM 우월을 주장하지 않는다"
+  ],
+  "source_files": {
+    "bench/correction_adapter.py": "71224801d07a136c999770a6296e017165579377ee96ab98fa36fc70aa11aaa8",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/recovery_reset_interventions.py": "97d4b62a804ae29b62b339575e0a99fbd37f225fcc61c79c8842fad5a1559705",
+    "bench/run_actor_reset_budget_v1.ps1": "3689530638bd03ed834a320da242796acf4327bec5c3ddc815b885b48e27d4fd",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/train_actor_reset_budget_v1.py": "77c95f919ffdab498e14cfeeaf31bb25fb31be8d0cb88e85a4bf4487cfb497a8",
+    "bench/train_novel_actor_reset.py": "510a99c11de960f5d002a628d0b76211962f718ce7ade01c7a96c8fcc11680cf",
+    "bench/train_with_correction.py": "f93cc2a81bc8903b4b9ba3df61d7865d6bef9917a6f8dab207f38d147aa9d13b",
+    "bench/train_with_fault.py": "e4b3b698cc2b8823e50feec9aa22f8c07afe3b49cfe7750ae23cf5313554543c",
+    "bench/train_with_recovery_mode.py": "a9629ffbd34f4e344ecec84d4d42f3a08c575ad82250af8bf74d7282e667f29d",
+    "evals/actor_reset_budget_v1.py": "aa2562356859e666756ee65d507375e8594a949a57d89080a4b19ffccaf38f58",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/novel_actor_reset_confirmation.py": "9ac94dfe2ddc5ada99581fe1cb62f3c67dab33fbf52e8ea94ca8e5310e2f8dc9",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+    "evals/run_recovery_reset_v2.py": "f8b1b288e0800f482df9b84f2347414231a160db392137ad30765ee0d6249eb8",
+    "evals/run_training_correction.py": "5473f030f357c7cec06861c1e33c8147d3960021f959956666531c9241da0bd1",
+    "evals/run_training_correction_v4.py": "2cfbe60120e904062f73697e62e6128216a92110192a2ed4667adf1d7ab8f98b",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "tests/test_actor_reset_budget_v1.py": "43cd255360bf67a3083eea71500fa211b9edb2bf0369b2fd33655b202845a1a5"
+  },
+  "sdk_sources": {
+    "scripts/reinforcement_learning/rsl_rl/cli_args.py": "9b21e1106599d91a9881a79b0564518afc6e45ac6f7fb8b957b16bba12310cb1",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_cfg.py": "a83599520494f7066c3729d279585654ca72d9eaac12d6cac2536f07147d8b1f",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/app/app_launcher.py": "5424f2b4a7b1d967fe51017dfc5d47c2ec8ff09ddd190e184fead6d51fdd0502",
+    "source/isaaclab/isaaclab/assets/articulation/articulation_data.py": "662394fea5fb5a93b333937cad71d59ad74563d6d4fee823057cb5ebb7a6bf52",
+    "source/isaaclab/isaaclab/envs/manager_based_env.py": "6ac4ec08175d2df87b489867b99239b02d106863384f73a7610fb4015ceda0d6",
+    "source/isaaclab/isaaclab/envs/manager_based_rl_env.py": "b13e9106b98666b33637841f100589731aa4e24ce3ca133ff99dddb43f11b1f2",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab/isaaclab/managers/reward_manager.py": "5d41d6a376cfb456849d861c3232694ea5662cc38970e2e2c7e5152f156d88d7",
+    "source/isaaclab/isaaclab/managers/termination_manager.py": "ea239d8fd57e87010b74b358a91b1ae8b2487e5edc621da01468456ea92fa71f",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor.py": "926158c959e5aa65651ead836965637be45517d8538cadc3a93067d76ebb6990",
+    "source/isaaclab/isaaclab/sensors/contact_sensor/contact_sensor_data.py": "c02606ab91acd0eeb29cd76bdb58e7cba217c62e18d55e4cfdecefd83aba15bc",
+    "source/isaaclab/isaaclab/utils/dict.py": "68a424ae35f84fcf5157e2d0402ad95ec1475e13095ff8cbf39432673f9eda1c",
+    "source/isaaclab/isaaclab/utils/io/yaml.py": "cdd6a95aa348b6ab3af7cf07d071c5829c2ae1de8147d49ec5bc23fcd155de71",
+    "source/isaaclab_assets/isaaclab_assets/robots/unitree.py": "d755f6806e5f559bc151d9160d482a97734596af74b0d3455f352cf275d214c2",
+    "source/isaaclab_rl/isaaclab_rl/rsl_rl/vecenv_wrapper.py": "fcc844cf95bd3145713476b41fcd0a33b87967c2f409016196b7bcb2ecc4475b",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py": "8b37eb407af8629f350bba43d17746f4536b6d67449935556af26314619b1162",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py": "59d95358724d0a4a58f9aa49d887b84d12d37d7ba5f781d615d6468ac37f243e",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+  },
+  "rsl_sources": {
+    "__init__.py": "eca880a726873a075dc37aba1c4da3bfa8f7a19df45ed963964e864b48c6bfcc",
+    "algorithms/__init__.py": "82800dabead2a8e8fbc22162d34358cbafefefa81e620bbe1fbfea4b034e1205",
+    "algorithms/distillation.py": "9aedcf086771d1bd1e7eebcc53637e7f1cb2e97b2b2f497aa087090a8fa984aa",
+    "algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "env/__init__.py": "8b187dca6d7ca5f9f4ab6a8c30218ca7bd6d3f952706526cad4ae156d1541870",
+    "env/vec_env.py": "4cea1f22d498d76d00ef34facbf0abec256ce4266f679fb9dd185641bdca778b",
+    "modules/__init__.py": "9cdaae9b6823ca0019dcb317f3ab136d588d79259db00ebf437598625dfc20df",
+    "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "modules/actor_critic_recurrent.py": "965a3f1db386fb58fe277761a4db8cda967c4a51ad5735e2bc5dccf10a49d710",
+    "modules/normalizer.py": "f52677617f729c21c7440fd52d69b7e570313836a9deb21519425b806043a311",
+    "modules/rnd.py": "957fd599dd19c579e1c83f37d253d0ff45d789f5965ed4d3b3b4c235ec00386c",
+    "modules/student_teacher.py": "f44d6cbd5ddc18f109b6a914e0c6dd80107f6b71bffef60d26cf695c7ee60d04",
+    "modules/student_teacher_recurrent.py": "6342ebeb80768d97a6bc8bd4792fd96f947b5d58c0cbab59b71cb8b735520e34",
+    "networks/__init__.py": "57d38865f66dcff63a419f962de32ef07919fdfc40ccad96ee4713e7bdaa87b8",
+    "networks/memory.py": "dada928b14ebd32a1f47c9185f2b94e2ff799faa698ca519f0d78ec92531cebe",
+    "runners/__init__.py": "661b14b7160ee0d7f30c234e9885875ac5d5686897c5bc22bdec875189d27075",
+    "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "storage/__init__.py": "599a712105321c64423e65777d709ace050ef46d5f98b8791d697b9c4e55106e",
+    "storage/rollout_storage.py": "456450bbba03f9f5818f9ec43d2f3bd5d14d2d27f4bf2308838dd580f32ffcf0",
+    "utils/__init__.py": "2e407f50cb40043ab4b9690c10465a59ed4bbba714ff18670ac0aca8552a39b6",
+    "utils/neptune_utils.py": "1a30b7fe45ce1ba9be52c07d050678a23fe57e61ae25465af4159c93af195d40",
+    "utils/utils.py": "db99cd0877488809d73332f05670e9c72da9bd0292aa554121c503e61544588e",
+    "utils/wandb_utils.py": "875443f672af864930aee511c4dfd8b362b0b066c9cd54bd57b0513dd10336b2"
+  },
+  "correction_source_contract": {
+    "runtime": {
+      "cache_tag": "cpython-310",
+      "implementation": "CPython",
+      "version": [
+        3,
+        10,
+        15
+      ]
+    },
+    "schema": "correction_source_contract_v1",
+    "targets": {
+      "restore_body_frame_reward": {
+        "clean_fingerprint": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.rewards",
+        "qualname": "track_lin_vel_xy_exp",
+        "source": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+        "source_sha256": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76"
+      },
+      "restore_configured_timeout": {
+        "clean_fingerprint": "c59f0aa40f3a4c460d9f146d17db4a56fcf9a4783ee39dd237d3ce7ea8cb6b7d",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.terminations",
+        "qualname": "time_out",
+        "source": "source/isaaclab/isaaclab/envs/mdp/terminations.py",
+        "source_sha256": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762"
+      },
+      "restore_motor_torque_speed": {
+        "clean_fingerprint": "bf37f452239be21ec97ee61654f416abcafeb995c2e60fa509156f6d0e26aad3",
+        "mode": "attribute",
+        "module": "isaaclab.actuators.actuator_pd",
+        "qualname": "DCMotor._clip_effort",
+        "source": "source/isaaclab/isaaclab/actuators/actuator_pd.py",
+        "source_sha256": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012"
+      }
+    }
+  },
+  "fixed_eval_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1513,
+    "err_yaw_ratio_max": 1.1719,
+    "fall_frac_max": 0.05
+  },
+  "runtime_versions": {
+    "torch": "2.7.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 3060",
+    "isaaclab": "0.41.3",
+    "isaaclab_tasks": "0.10.36",
+    "isaaclab_rl": "0.1.8",
+    "rsl-rl-lib": "2.3.3",
+    "isaacsim": null
+  }
+}
