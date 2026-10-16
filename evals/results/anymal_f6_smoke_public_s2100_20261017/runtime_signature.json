@@ -1,0 +1,20 @@
+{
+  "schema": "public_anymal_termination_smoke_runtime_v1",
+  "fault": "F6",
+  "configured_episode_length_s": 20.0,
+  "fault_timeout_s": 1.0,
+  "checks": {
+    "f6_episodes_at_most_50_steps": true,
+    "f6_time_out_observed": true,
+    "none_episode_median_above_50": true
+  },
+  "tail_iterations": 60,
+  "episode_steps_median": {
+    "NONE": 978.9799805,
+    "F6": 50.0
+  },
+  "f6_episode_steps_max": 50.0,
+  "f6_time_out_max": 138.5,
+  "interpretation": "F6 학습의 에피소드 길이는 등록한 50 step 경계에 도달했고 timeout 항도 관측됐다.",
+  "behavior_decision_source": "clean fixed evaluation"
+}

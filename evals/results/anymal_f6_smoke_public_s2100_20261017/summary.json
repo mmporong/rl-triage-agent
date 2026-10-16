@@ -1,0 +1,35 @@
+{
+  "schema": "public_anymal_termination_smoke_summary_v1",
+  "status": "complete",
+  "measurement_kind": "post_f2_applicability_development_smoke",
+  "seed": 2100,
+  "robot": "ANYmal-C",
+  "fault": "F6 termination timeout",
+  "prediction": "failure_present",
+  "prediction_match": false,
+  "outcome": "source_failure_absent",
+  "may_preregister_demo": false,
+  "demo_executed": false,
+  "model_calls": 0,
+  "fixed_evaluation": {
+    "conditions": 26,
+    "bands": {
+      "survival_ratio_min": 0.8809606037764762,
+      "err_xy_ratio_max": 1.1767207428933193,
+      "err_yaw_ratio_max": 1.248528339710145,
+      "fall_frac_max": 0.0826923094689846
+    },
+    "none_walks": true,
+    "fault_verdict": "healthy"
+  },
+  "wording": "새 seed에서 F6의 등록 고정 평가 실패를 확인하지 못했다. 종단 시연으로 진행하지 않는다.",
+  "interpretation": "F6 조기 종료는 학습 로그에서 확인됐지만 새 seed 정책은 깨끗한 고정 평가에서 정상 범위를 벗어나지 않았다. 등록 규칙에 따라 종단 시연을 중단했다.",
+  "evidence_boundary": "새 seed 하나의 개발 smoke다. F6가 다른 조건에서도 실패를 만들지 않는다는 결론은 내리지 않는다.",
+  "claims": {
+    "generalization": false,
+    "gpu_savings": false,
+    "model_superiority": false
+  },
+  "source_commit_sha": "c914acc0361a0b71fce0860980fcd940cee5c929",
+  "protocol_sha256_lf": "66cf669f708e30fee2c3515b6aad975c452572c5177fd9c993bf493f5118e412"
+}

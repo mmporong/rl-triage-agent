@@ -1,0 +1,344 @@
+{
+  "schema": "e2e_demo_result_v4",
+  "tag": "vl_aux_f1_s2080_20261016",
+  "variant": "f1",
+  "fault": "F1",
+  "mechanism": "reward",
+  "seed": 2080,
+  "case": "h02_s2080",
+  "decision_path": "single_feedback",
+  "outcome": "recovered",
+  "demo_success": true,
+  "success_conditions": {
+    "protocol_committed": true,
+    "seed_unused": true,
+    "source_failure_present": true,
+    "fresh_diagnosis_call": true,
+    "first_probe_from_model": true,
+    "probes_approved_consumed_once": true,
+    "loop_confirmed_mechanism": true,
+    "confirmation_specific": true,
+    "correction_call_accepted": true,
+    "correction_approved_consumed_once": true,
+    "correction_recovered": true,
+    "costs_recorded": true
+  },
+  "unmet_conditions": [],
+  "wording": "새 판단으로 시작한 승인된 검사가 등록 결함 메커니즘을 확정했고, 승인된 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과했다.",
+  "common_wording": "새 seed 2080의 합성 결함(F1) 1건을 끝까지 연결한 통합 시연이다. 결함과 probe는 같은 설계자가 만들었고, 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다. 검증 피드백 재요청은 결정 단계마다 최대 1회이며, 그 발생 여부와 횟수는 단일 시연 기록이다.",
+  "steps_sha256": {
+    "begin": "732d1350727fda0e0e5ea57a07c1e61d4a1ca53c706b6520ac9c3d8be3f1d421",
+    "train_NONE": "e6577d8b33816353d8cf08d0102f12ad0981c979656f283b65e1fce7ecc8acd1",
+    "train_FAULT": "e475bae579696ee927adab8a1aad32004a1ecd3fe6c4febed4c8277b3ba2e0c2",
+    "alarm": "668e102385c86794881bedcd502e8668eea5c3bb8cc2ff57c0be3aa8efff05cc",
+    "evaluate": "26c574d16a87733b568994d7c95193acca53785668a5b200f5fb5e4d7e3ff070",
+    "reference": "35a66e6ca0d0d96950260889b577d1ecfe35e17d939975edc5f32477dc527f4a",
+    "packet": "6673750f26a6125d69db0071f65d4ae008fb93f8f244cf202ce686008ffd1c0c",
+    "loop_start": "2d80a127bd0733aa6de4ce7dafea6f551289ea179ca0555391313e8e2c50f85d",
+    "loop_close": "6201c7c60f5812661ac8ab7dcefdcc6e888cd43eb7c73429fefbc138b91fb5d7",
+    "specificity": "9daf80a6894c804026dd0b025532ba5ac645620dab4f703207b2c5af272a280d",
+    "correction": "688b2059fed598afd04ae56a5fdc84de279caa0871fc021da4f687127e267d7d"
+  },
+  "terminal": null,
+  "protocol_sha256_lf": "278a8c8310079c9227de724b3504f07e588d97b9014222c0521cb5a42bb05c7d",
+  "source_commit_sha": [
+    "110720c2b0188d48e39bbc8cdbc90a3d88fcc6bb"
+  ],
+  "predictions": {
+    "source_failure": "F1이 같은 seed NONE 대비 unhealthy이고 정지 비율 ≥ 0.9",
+    "alarm": "R1 경고가 F1에 울리고 NONE에는 울리지 않는다",
+    "diagnosis": "첫 판단 continue, 상위 세 가설에 reward 포함",
+    "loop": "P_reward abnormal 뒤 reward 확정",
+    "specificity": "게이트 없음",
+    "correction_rule": "기존 reward 규칙: 정지 비율 ≥ 0.9면 restart, 그렇지 않으면 resume",
+    "correction": "교정 정책 recovered"
+  },
+  "prediction_results": {
+    "source_failure": true,
+    "alarm": true,
+    "diagnosis": true,
+    "loop": true,
+    "specificity": true,
+    "correction_rule": true,
+    "correction": true
+  },
+  "model_feedback": {
+    "diagnosis": {
+      "first_valid": true,
+      "retries": 0,
+      "final_valid": true,
+      "first_codes": [],
+      "final_codes": [],
+      "requests": 1,
+      "retry_input_tokens": null,
+      "retry_output_tokens": null,
+      "retry_wall_s": null
+    },
+    "correction": {
+      "first_valid": true,
+      "retries": 0,
+      "final_valid": true,
+      "first_codes": [],
+      "final_codes": [],
+      "requests": 1,
+      "retry_input_tokens": null,
+      "retry_output_tokens": null,
+      "retry_wall_s": null
+    }
+  },
+  "approver_identity_attested": false,
+  "training_parent_wall_s": {
+    "NONE": 481.3,
+    "FAULT": 478.0
+  },
+  "alarm": {
+    "NONE": {
+      "warned": false,
+      "alert_iterations": [],
+      "first_alert_iteration": null,
+      "qualifying_iteration_count": 0,
+      "iterations": 300
+    },
+    "FAULT": {
+      "warned": true,
+      "alert_iterations": [
+        135
+      ],
+      "first_alert_iteration": 135,
+      "qualifying_iteration_count": 174,
+      "iterations": 300
+    }
+  },
+  "evaluation": {
+    "gate": {
+      "none_walks": true,
+      "fault_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "standstill_ratio": {
+        "NONE": 0.15008188596548613,
+        "FAULT": 1.0018435148285418
+      },
+      "outcome": "failure_present"
+    },
+    "reports": {
+      "NONE": {
+        "path": "evals/results/vl_aux_f1_s2080_20261016/runs/baseline_p0c_s2080.json",
+        "sha256_lf": "6e0140d39ea2257dad1d8e302c8ba8a3313676231cd8eeaebc9779b416cb46cd"
+      },
+      "FAULT": {
+        "path": "evals/results/vl_aux_f1_s2080_20261016/runs/h02_s2080.json",
+        "sha256_lf": "1d255901423849474e3844f043ec40c9f199ca5eb5dbd57ffe65566222f9ee84"
+      }
+    }
+  },
+  "reference_parent_wall_s": 82.6,
+  "diagnosis": {
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "No observations yet; start with lowest-cost probe that isolates reward mechanism.",
+      "claims": [
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 11.675396696726482
+        },
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.556446393330894
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    },
+    "started": {
+      "hypotheses": [
+        "reward",
+        "actuator",
+        "exploration"
+      ],
+      "model_probe": "P_reward",
+      "rule_probe": "P_noise",
+      "proposed_probe": "P_reward",
+      "model_probe_used": true,
+      "request_id": "1ab85b2eeb79",
+      "prereg_digest": "0ec78e2297d6aec3b59cc4998ec060aa49d48933dc503281f2edbc0a4af5216b"
+    },
+    "call": {
+      "path": "single_feedback",
+      "requests": 1,
+      "input_tokens": 2848,
+      "output_tokens": 187,
+      "execution_wall_s": 11.009162188041955,
+      "calls": [
+        {
+          "step": "first",
+          "status": "valid",
+          "codes": [],
+          "response_id": "chatcmpl-04231a62-dc1a-4e1b-b162-a246e748d670",
+          "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+          "finish_reason": "stop",
+          "input_tokens": 2848,
+          "output_tokens": 187,
+          "wall_s": 10.479209470096976
+        }
+      ]
+    }
+  },
+  "loop": {
+    "status": "confirmed",
+    "hypotheses": [
+      "reward"
+    ],
+    "observed": {
+      "P_reward": "abnormal"
+    },
+    "requests": [
+      {
+        "request_id": "1ab85b2eeb79",
+        "probe": "P_reward",
+        "state": "done",
+        "approver": "claude-main-user-delegated",
+        "outcome": "abnormal",
+        "measurement": {
+          "track_lin_vel_xy_exp_rel_error": 0.3426677805930376,
+          "track_ang_vel_z_exp_rel_error": 1.6477951949589454e-08
+        },
+        "gpu_s": 19.0,
+        "artifact": {
+          "probe": "evals/results/vl_aux_f1_s2080_20261016_loop/probes/h02_s2080__P_reward.json",
+          "execution": "evals/results/vl_aux_f1_s2080_20261016_loop/execution/h02_s2080__P_reward.json"
+        }
+      }
+    ],
+    "probe_costs": [
+      {
+        "gpu_wall_s": 19.0,
+        "cpu_s": 25.28125,
+        "simulator_steps": 51200,
+        "probe": "P_reward"
+      }
+    ]
+  },
+  "specificity": {
+    "required": [],
+    "outcomes": null,
+    "passed": true,
+    "measurements": null,
+    "parent_wall_s": null
+  },
+  "correction": {
+    "request_id": "f2b0acbff310",
+    "request": {
+      "correction_id": "restore_body_frame_reward",
+      "recovery_mode": "restart",
+      "budget_gpu_s": 2400
+    },
+    "model_proposal": {
+      "accepted": true,
+      "decision": "propose",
+      "agrees_with_rule": true,
+      "reasons": [],
+      "unmet_checklist": [],
+      "rule_visible_to_model": true,
+      "feedback": {
+        "first_status": "valid",
+        "first_codes": [],
+        "retried": false,
+        "final_status": "valid",
+        "final_codes": [],
+        "requests": 1,
+        "calls": [
+          {
+            "step": "first",
+            "input_tokens": 1321,
+            "output_tokens": 173,
+            "wall_s": 7.413975759875029
+          }
+        ]
+      }
+    },
+    "call": {
+      "path": "single_feedback",
+      "requests": 1,
+      "input_tokens": 1321,
+      "output_tokens": 173,
+      "execution_wall_s": 8.007372414926067,
+      "calls": [
+        {
+          "step": "first",
+          "status": "valid",
+          "codes": [],
+          "response_id": "chatcmpl-25b33c13-b141-4cd4-b2b2-11d561fd371c",
+          "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+          "finish_reason": "stop",
+          "input_tokens": 1321,
+          "output_tokens": 173,
+          "wall_s": 7.413975759875029
+        }
+      ]
+    },
+    "receipt": {
+      "at": "2026-10-16T10:03:01+00:00",
+      "event": "receipt",
+      "request_id": "f2b0acbff310",
+      "tag": "vl_aux_f1_s2080_20261016_fix",
+      "verdict": "recovered",
+      "result_sha": "f4a4fe5409d220bd6f76799542c8b1ecb2374ebb756b71e9da6e1ec597574a5c",
+      "gpu_s": 598.9,
+      "exit_code": 0,
+      "over_budget": false
+    },
+    "result": {
+      "label": "recovered",
+      "verdict": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "standstill_ratio": 0.12810855757713377,
+      "costs": {
+        "train_parent_wall_s": 542.3590000001714,
+        "eval_parent_wall_s": 56.51600000006147,
+        "per_arm": {
+          "restart_corrected": {
+            "train_parent_wall_s": 542.3590000001714
+          }
+        }
+      },
+      "recovery_mode": "restart",
+      "reference": {
+        "name": "original_same_seed_none",
+        "valid": true
+      }
+    }
+  }
+}

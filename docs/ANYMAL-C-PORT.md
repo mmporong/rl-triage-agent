@@ -1,6 +1,6 @@
 # 두 번째 로봇 task 이식: ANYmal-C flat
 
-이 문서의 수치는 `evals/build_anymal_doc.py`가 단계별 사전등록 프로토콜과 결과 파일에서 만든다. 손으로 고치지 않는다.
+이 문서의 수치는 `evals/build_anymal_doc_v2.py`가 단계별 사전등록 프로토콜과 결과 파일에서 만든다. 손으로 고치지 않는다.
 
 Go2 flat에서 만든 고리를 다른 제조사 로봇 task `Isaac-Velocity-Flat-Anymal-C-v0`에서 같은 코드로 돌렸다. 고리는 동결 probe 6종, 고정 평가 계약, 등록 교정, 추종 경고 R1, 모델 결정 경로를 말한다. 단계마다 실행 전에 프로토콜을 커밋했고, 앞 단계가 pass일 때만 다음 단계를 사전등록했다.
 
@@ -128,6 +128,34 @@ Go2 flat에서 만든 고리를 다른 제조사 로봇 task `Isaac-Velocity-Fla
 - 두 번째 로봇 task(ANYmal-C flat)의 새 seed 2047 합성 결함(F1) 1건을 시연 v4와 같은 흐름으로 끝까지 연결한 통합 시연이다. 결함과 probe는 같은 설계자가 만들었고, 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니며 Go2 결과와 수치를 비교하지 않는다.
 - 판정 밴드는 정상 실행 3개로 정했다. 밴드 폭은 이 세 실행의 변동에 기댄다.
 
+## F6 종료 조건 smoke
+
+새 seed 2100에서 정상·F6 정책을 각각 300회 학습했다. F6는 학습의 시간 제한을 20s에서 1s로 줄이는 등록 결함이다. 판정에는 기존 ANYmal-C 단계 1 밴드와 26조건 고정 평가를 사용했다.
+
+[사실] 결과는 `source_failure_absent`다. 정상 정책은 걷기 기준을 통과했고, F6 정책도 같은 seed 정상 정책 대비 생존·낙상·선속도·yaw 기준 네 항목을 통과했다. 사전 예측 `failure_present`은 빗나갔다. 등록된 중단 규칙에 따라 후속 종단 시연을 사전등록하거나 실행하지 않았다.
+
+| 학습 정책 | 선속도 RMSE (m/s) | yaw rate RMSE (rad/s) | 낙상 비율 | 생존 (s) | 정지 대비 비 |
+|---|---:|---:|---:|---:|---:|
+| NONE | 0.184361 | 0.115967 | 0.027885 | 19.472 | 0.156676 |
+| F6 | 0.190213 | 0.123406 | 0.005769 | 19.894 | 0.161650 |
+
+[사실] 학습 끝 60회의 에피소드 길이 중앙값은 NONE 978.98 step, F6 50 step이었다. F6의 timeout 항도 기록됐다. 종료 조건 변경은 적용됐으며, 고정 평가는 결함을 주입하지 않은 환경에서 학습된 정책을 평가했다.
+
+[추론] 이 seed에서는 학습 중 조기 종료가 최종 정책의 등록 행동 실패로 이어지지 않았다. 결함 미적용이나 교정 후 회복을 뜻하지 않으며, 다른 seed·조건의 결과는 이 기록으로 결정할 수 없다.
+
+| 측정 구간 | 부모 프로세스 벽시계 (s) |
+|---|---:|
+| NONE 학습 | 471.141 |
+| F6 학습 | 472.547 |
+| 두 정책 고정 평가 | 83.406 |
+| 학습 + 고정 평가 | 1027.094 |
+
+시간은 부모 실행 시작부터 자연 종료와 소유 프로세스 정리 확인까지다. 위 합계는 CPU 의미 점검·텔레메트리 추출·대기 구간을 포함하지 않는다. 모델 호출은 0회다.
+
+근거: [요약](../evals/results/anymal_f6_smoke_public_s2100_20261017/summary.json), [정상 평가](../evals/results/anymal_f6_smoke_public_s2100_20261017/evaluations/none.json), [F6 평가](../evals/results/anymal_f6_smoke_public_s2100_20261017/evaluations/f6.json), [주입 확인](../evals/results/anymal_f6_smoke_public_s2100_20261017/runtime_signature.json), [비용](../evals/results/anymal_f6_smoke_public_s2100_20261017/costs.json), [SHA 결합](../evals/results/anymal_f6_smoke_public_s2100_20261017/provenance.json), [사전등록](../bench/protocols/anymal_termination_smoke_v1.json).
+
+실험 커밋 `c914acc0361a0b71fce0860980fcd940cee5c929`, 프로토콜 LF SHA256 `66cf669f708e30fee2c3515b6aad975c452572c5177fd9c993bf493f5118e412`.
+
 ## 주장하지 않는 것
 
 - 진단 정확도·우월성
@@ -156,5 +184,5 @@ Go2 flat에서 만든 고리를 다른 제조사 로봇 task `Isaac-Velocity-Fla
 ## 재현
 
 ```powershell
-.\.venv\Scripts\python.exe evals/build_anymal_doc.py --demo evals/results/anymal_c_e2e_f1_s2047_20261014/demo_result.json --check
+.\.venv\Scripts\python.exe evals/build_anymal_doc_v2.py --check
 ```
