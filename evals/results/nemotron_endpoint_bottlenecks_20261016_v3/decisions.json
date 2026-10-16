@@ -1,0 +1,3187 @@
+{
+  "B1": [
+    {
+      "entry": {
+        "id": "h02_s2027_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "h02_s2027_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "C_CITED_UNKNOWN"
+        ],
+        "decision_key": null,
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "C_JSON"
+        ],
+        "decision_key": null,
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "D_EXPECTED"
+        ],
+        "decision_key": null,
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_motor_torque_speed",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_motor_torque_speed",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "C_JSON"
+        ],
+        "decision_key": null,
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "h02_s2027_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "h02_s2027_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "D_CLAIMS_EMPTY"
+        ],
+        "decision_key": null,
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_correction",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_motor_torque_speed",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_correction",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_motor_torque_speed",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_correction",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_correction",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_correction",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_motor_torque_speed",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_correction",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_motor_torque_speed",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_correction",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_correction",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_diagnosis",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_correction",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_correction",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "h02_s2027_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "h02_s2027_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "D_OTHER"
+        ],
+        "decision_key": null,
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_correction",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "C_CITED_UNKNOWN"
+        ],
+        "decision_key": null,
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2031_correction",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_motor_torque_speed",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_correction",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "r_s2030_correction",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "D_CLAIMS_EMPTY"
+        ],
+        "decision_key": null,
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "D_EXPECTED"
+        ],
+        "decision_key": null,
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_correction",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_motor_torque_speed",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f2_s2033_correction",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_motor_torque_speed",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_correction",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "f1_s2034_correction",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_diagnosis",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "continue",
+          "reward"
+        ],
+        "agrees_with_rule": null
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_correction",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    },
+    {
+      "entry": {
+        "id": "u1_s2040_correction",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "propose",
+          "restore_body_frame_reward",
+          "restart"
+        ],
+        "agrees_with_rule": true
+      }
+    }
+  ],
+  "B2": [
+    {
+      "entry": {
+        "id": "C1_B4",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_7",
+          "change_5",
+          "change_4",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C1_B4",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "reason0_diff_lines"
+        ],
+        "decision_key": [
+          "change_2",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_3",
+          "change_4",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": null,
+        "evidence_citation_error": true
+      }
+    },
+    {
+      "entry": {
+        "id": "C1_B5",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_3",
+          "change_4",
+          "change_6",
+          "change_8"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C1_B5",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "keys"
+        ],
+        "decision_key": null,
+        "top1": null,
+        "ranking_parsed": false,
+        "true_cause_top1": null,
+        "valid_true_cause_top1": null,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B4",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_4",
+          "change_2",
+          "change_6",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B4",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_4",
+          "change_2",
+          "change_6",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B5",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_4",
+          "change_6",
+          "change_2",
+          "change_1",
+          "change_8",
+          "change_3",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B5",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_4",
+          "change_6",
+          "change_2",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B4",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_4",
+          "change_7",
+          "change_5",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B4",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_3",
+          "change_4",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B5",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_3",
+          "change_2",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_4",
+          "change_6"
+        ],
+        "top1": "change_3",
+        "ranking_parsed": true,
+        "true_cause_top1": false,
+        "valid_true_cause_top1": false,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B5",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_4",
+          "change_5",
+          "change_7",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B4",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "reason0_facts"
+        ],
+        "decision_key": [
+          "change_1",
+          "change_5",
+          "change_7",
+          "change_3",
+          "change_4",
+          "change_2",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_1",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": null,
+        "evidence_citation_error": true
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B4",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_1",
+          "change_5",
+          "change_7",
+          "change_3",
+          "change_2",
+          "change_4",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_1",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B5",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "reason0_diff_lines"
+        ],
+        "decision_key": [
+          "change_1",
+          "change_5",
+          "change_7",
+          "change_3",
+          "change_2",
+          "change_8",
+          "change_4",
+          "change_6"
+        ],
+        "top1": "change_1",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": null,
+        "evidence_citation_error": true
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B5",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_1",
+          "change_7",
+          "change_5",
+          "change_3",
+          "change_4",
+          "change_2",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_1",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C1_B4",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_3",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_4",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C1_B4",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_7",
+          "change_5",
+          "change_4",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C1_B5",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_7",
+          "change_5",
+          "change_3",
+          "change_4",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C1_B5",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_3",
+          "change_4",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B4",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_4",
+          "change_2",
+          "change_6",
+          "change_1",
+          "change_8",
+          "change_3",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B4",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_2",
+          "change_6",
+          "change_4",
+          "change_1",
+          "change_8",
+          "change_3",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B5",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_4",
+          "change_2",
+          "change_6",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B5",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_4",
+          "change_6",
+          "change_2",
+          "change_1",
+          "change_8",
+          "change_3",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B4",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_3",
+          "change_4",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B4",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_4",
+          "change_7",
+          "change_5",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B5",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_5",
+          "change_2",
+          "change_4",
+          "change_7",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_5",
+        "ranking_parsed": true,
+        "true_cause_top1": false,
+        "valid_true_cause_top1": false,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B5",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_3",
+          "change_2",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_4",
+          "change_6"
+        ],
+        "top1": "change_3",
+        "ranking_parsed": true,
+        "true_cause_top1": false,
+        "valid_true_cause_top1": false,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B4",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "reason0_diff_lines",
+          "reason2_diff_lines"
+        ],
+        "decision_key": [
+          "change_1",
+          "change_3",
+          "change_5",
+          "change_7",
+          "change_2",
+          "change_4",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_1",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": null,
+        "evidence_citation_error": true
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B4",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_1",
+          "change_3",
+          "change_7",
+          "change_5",
+          "change_2",
+          "change_4",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_1",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B5",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "keys"
+        ],
+        "decision_key": null,
+        "top1": null,
+        "ranking_parsed": false,
+        "true_cause_top1": null,
+        "valid_true_cause_top1": null,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B5",
+        "repeat": 2,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "reason0_diff_lines"
+        ],
+        "decision_key": [
+          "change_1",
+          "change_3",
+          "change_5",
+          "change_7",
+          "change_2",
+          "change_4",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_1",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": null,
+        "evidence_citation_error": true
+      }
+    },
+    {
+      "entry": {
+        "id": "C1_B4",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_7",
+          "change_5",
+          "change_4",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C1_B4",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "reason0_diff_lines"
+        ],
+        "decision_key": [
+          "change_2",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_3",
+          "change_4",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": null,
+        "evidence_citation_error": true
+      }
+    },
+    {
+      "entry": {
+        "id": "C1_B5",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_3",
+          "change_4",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C1_B5",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_7",
+          "change_5",
+          "change_3",
+          "change_4",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B4",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_6",
+          "change_2",
+          "change_4",
+          "change_1",
+          "change_8",
+          "change_3",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B4",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_4",
+          "change_2",
+          "change_6",
+          "change_1",
+          "change_8",
+          "change_3",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B5",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_4",
+          "change_6",
+          "change_2",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C2_B5",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_7",
+          "change_4",
+          "change_6",
+          "change_2",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_5"
+        ],
+        "top1": "change_7",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B4",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_4",
+          "change_7",
+          "change_5",
+          "change_3",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B4",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_3",
+          "change_4",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B5",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_3",
+          "change_2",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_4",
+          "change_6"
+        ],
+        "top1": "change_3",
+        "ranking_parsed": true,
+        "true_cause_top1": false,
+        "valid_true_cause_top1": false,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "C3_B5",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_2",
+          "change_4",
+          "change_3",
+          "change_5",
+          "change_7",
+          "change_1",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_2",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B4",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "reason0_facts"
+        ],
+        "decision_key": [
+          "change_1",
+          "change_5",
+          "change_7",
+          "change_3",
+          "change_4",
+          "change_2",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_1",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": null,
+        "evidence_citation_error": true
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B4",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": [
+          "change_1",
+          "change_3",
+          "change_5",
+          "change_7",
+          "change_2",
+          "change_4",
+          "change_8",
+          "change_6"
+        ],
+        "top1": "change_1",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": true,
+        "evidence_citation_error": false
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B5",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "reason1_diff_lines"
+        ],
+        "decision_key": [
+          "change_1",
+          "change_5",
+          "change_7",
+          "change_3",
+          "change_2",
+          "change_4",
+          "change_6",
+          "change_8"
+        ],
+        "top1": "change_1",
+        "ranking_parsed": true,
+        "true_cause_top1": true,
+        "valid_true_cause_top1": null,
+        "evidence_citation_error": true
+      }
+    },
+    {
+      "entry": {
+        "id": "D0_B5",
+        "repeat": 3,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "d3"
+      },
+      "status": "invalid",
+      "verdict": {
+        "valid": false,
+        "error_categories": [
+          "keys"
+        ],
+        "decision_key": null,
+        "top1": null,
+        "ranking_parsed": false,
+        "true_cause_top1": null,
+        "valid_true_cause_top1": null,
+        "evidence_citation_error": false
+      }
+    }
+  ],
+  "B3": [
+    {
+      "entry": {
+        "id": "e4b_v2_s2030_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "correction"
+      },
+      "valid": false,
+      "error_category": "invalid",
+      "trace_complete": true,
+      "transport_complete": true,
+      "metered_complete": true,
+      "workflow": {
+        "metered_http_count": 8,
+        "llm_calls": 8,
+        "llm_call_coverage": "complete",
+        "tool_calls_completed": 8
+      },
+      "error_counts": {
+        "tool_argument": 3,
+        "uncertain_tool": 0,
+        "precheck_invalid": 2,
+        "precheck_limit_exhausted": 1,
+        "precheck_malformed": 0
+      },
+      "first_request_sha256": "d5b6e151cfaddd5dd872ef2bae0b04202b251f083db4175dbccdcd69aff0b34f"
+    },
+    {
+      "entry": {
+        "id": "e4b_v2_s2030_correction",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "correction"
+      },
+      "valid": false,
+      "error_category": "invalid",
+      "trace_complete": true,
+      "transport_complete": true,
+      "metered_complete": true,
+      "workflow": {
+        "metered_http_count": 5,
+        "llm_calls": 5,
+        "llm_call_coverage": "complete",
+        "tool_calls_completed": 7
+      },
+      "error_counts": {
+        "tool_argument": 2,
+        "uncertain_tool": 0,
+        "precheck_invalid": 1,
+        "precheck_limit_exhausted": 0,
+        "precheck_malformed": 0
+      },
+      "first_request_sha256": "d5b6e151cfaddd5dd872ef2bae0b04202b251f083db4175dbccdcd69aff0b34f"
+    },
+    {
+      "entry": {
+        "id": "e4b_v3_h02_s2027_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "valid": true,
+      "error_category": null,
+      "trace_complete": true,
+      "transport_complete": true,
+      "metered_complete": true,
+      "workflow": {
+        "metered_http_count": 6,
+        "llm_calls": 6,
+        "llm_call_coverage": "complete",
+        "tool_calls_completed": 6
+      },
+      "error_counts": {
+        "tool_argument": 0,
+        "uncertain_tool": 0,
+        "precheck_invalid": 0,
+        "precheck_limit_exhausted": 0,
+        "precheck_malformed": 0
+      },
+      "first_request_sha256": "1b7a855a47d2806fa4b749d534963d03da93fd0c8a1487468a0e10994b1af962"
+    },
+    {
+      "entry": {
+        "id": "e4b_v3_h02_s2027_diagnosis",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "kind": "diagnosis"
+      },
+      "valid": true,
+      "error_category": null,
+      "trace_complete": true,
+      "transport_complete": true,
+      "metered_complete": true,
+      "workflow": {
+        "metered_http_count": 8,
+        "llm_calls": 8,
+        "llm_call_coverage": "complete",
+        "tool_calls_completed": 7
+      },
+      "error_counts": {
+        "tool_argument": 0,
+        "uncertain_tool": 0,
+        "precheck_invalid": 0,
+        "precheck_limit_exhausted": 0,
+        "precheck_malformed": 0
+      },
+      "first_request_sha256": "1b7a855a47d2806fa4b749d534963d03da93fd0c8a1487468a0e10994b1af962"
+    }
+  ],
+  "B4": {
+    "feasibility": {
+      "entry": {
+        "id": "preflight_non_eval",
+        "repeat": 1,
+        "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "kind": "vision"
+      },
+      "status": "valid",
+      "verdict": {
+        "valid": true,
+        "error_categories": [],
+        "decision_key": {
+          "walking": "yes",
+          "in_place": "no",
+          "falling": "no"
+        },
+        "metrics": {
+          "capability_valid": true,
+          "label_alignment": null
+        },
+        "policy_label": null,
+        "label_alignment": null
+      }
+    },
+    "observations": [
+      {
+        "entry": {
+          "id": "motor_before",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "yes",
+            "in_place": "no",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": false,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "failed",
+          "label_alignment": false
+        }
+      },
+      {
+        "entry": {
+          "id": "motor_corrected",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "yes",
+            "in_place": "no",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "normal",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_dev_before",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "no",
+            "in_place": "yes",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "failed",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_dev_corrected",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "no",
+            "in_place": "no",
+            "falling": "yes"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "failed",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_dev_sham",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "no",
+            "in_place": "no",
+            "falling": "yes"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "failed",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_2026_before",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "no",
+            "in_place": "no",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "failed",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_2026_resume",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "no",
+            "in_place": "no",
+            "falling": "yes"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "failed",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_2026_std",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "no",
+            "in_place": "no",
+            "falling": "yes"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "failed",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_2026_none",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "yes",
+            "in_place": "no",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "normal",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_2026_clean_resume",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "yes",
+            "in_place": "no",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "normal",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_2028_before",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "no",
+            "in_place": "yes",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "failed",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_2028_resume",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "no",
+            "in_place": "yes",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "failed",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_2028_std",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "no",
+            "in_place": "no",
+            "falling": "yes"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "failed",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_2028_none",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "yes",
+            "in_place": "no",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "normal",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "reward_2028_clean_resume",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "yes",
+            "in_place": "no",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "normal",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "demo_2030_fault",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "no",
+            "in_place": "yes",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "failed",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "demo_2030_none",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "yes",
+            "in_place": "no",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "normal",
+          "label_alignment": true
+        }
+      },
+      {
+        "entry": {
+          "id": "demo_2030_restart",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "vision"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "walking": "yes",
+            "in_place": "no",
+            "falling": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": true,
+            "alignment_basis": "walking_vs_fixed_eval_group"
+          },
+          "policy_label": "normal",
+          "label_alignment": true
+        }
+      }
+    ],
+    "graphs": [
+      {
+        "entry": {
+          "id": "graph_endpoint_order",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "graph"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "top_higher": "blue",
+            "bottom_lower": "blue"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": null
+          },
+          "policy_label": null,
+          "label_alignment": null
+        }
+      },
+      {
+        "entry": {
+          "id": "graph_fault_trend",
+          "repeat": 1,
+          "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+          "kind": "graph"
+        },
+        "status": "valid",
+        "verdict": {
+          "valid": true,
+          "error_categories": [],
+          "decision_key": {
+            "orange_tracking_improves": "no",
+            "orange_error_decreases": "no"
+          },
+          "metrics": {
+            "capability_valid": true,
+            "label_alignment": null
+          },
+          "policy_label": null,
+          "label_alignment": null
+        }
+      }
+    ]
+  }
+}

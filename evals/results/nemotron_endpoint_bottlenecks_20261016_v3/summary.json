@@ -1,0 +1,366 @@
+{
+  "schema": "nemotron_endpoint_bottlenecks_public_v3",
+  "experiment_commit": "56d2c23b194456ebf7ef7dfd59f12acea77000ec",
+  "protocol_sha256_lf": "2ff2a7424dbfc8c3f217046165917446102dcdee783c5e089023e8ab1cee9653",
+  "comparison_unit": "NVIDIA 공식 API의 요청 모델 경로. 반환 모델 ID 원문을 함께 기록하며 제공자 내부 가중치의 동일성을 확정하지 않는다.",
+  "official_alias_mapping_confirmed": false,
+  "requested_models": {
+    "old": "nvidia/nemotron-3-super-120b-a12b",
+    "new": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+  },
+  "provider_model_raw_counts": {
+    "private/nvidia/nemotron-3.5-super-120b-a12b": 89,
+    "nvidia/nemotron-3-super-120b-a12b": 73
+  },
+  "requests": {
+    "global_requests_including_get": 165,
+    "phase_generation_requests": 162,
+    "prior_generation_requests": 2
+  },
+  "ledger_sha256": {
+    "raw_global_ledger_sha256": "f95c6cf26edaecbd081ead94c06cbc0bfdad7b8d21de07ca1c795109433edcd5",
+    "raw_phase_ledger_sha256": "75116b4b54c0b250ec8e03dc62f1b5b3a0a34c5916630a7d0d0c511eb1fa1e2a",
+    "parent_prefix_sha256": "ed542c60f95678eb3688a9ec3b6aa876b278afb387f6a8feff5bdb1f0eb4cfbd",
+    "terminal_reservation_sha256": "322b8be6f40a70c13493160882bae94cf0fbbdd10aa23f01941e4c25a86a71da"
+  },
+  "cost_by_stage_model": {
+    "B1": {
+      "nvidia/nemotron-3-super-120b-a12b": {
+        "input_tokens": {
+          "known": 33,
+          "missing": 0,
+          "sum_known": 70902
+        },
+        "output_tokens": {
+          "known": 33,
+          "missing": 0,
+          "sum_known": 5828
+        },
+        "total_tokens": {
+          "known": 33,
+          "missing": 0,
+          "sum_known": 76730
+        },
+        "wall_s": {
+          "n": 33,
+          "total": 148.10223647532985,
+          "mean": 4.4879465598584805
+        }
+      },
+      "nvidia/nemotron-3.5-super-vl-120b-a12b": {
+        "input_tokens": {
+          "known": 33,
+          "missing": 0,
+          "sum_known": 70902
+        },
+        "output_tokens": {
+          "known": 33,
+          "missing": 0,
+          "sum_known": 8147
+        },
+        "total_tokens": {
+          "known": 33,
+          "missing": 0,
+          "sum_known": 79049
+        },
+        "wall_s": {
+          "n": 33,
+          "total": 89.3664467043709,
+          "mean": 2.708074142556694
+        }
+      }
+    },
+    "B2": {
+      "nvidia/nemotron-3-super-120b-a12b": {
+        "input_tokens": {
+          "known": 24,
+          "missing": 0,
+          "sum_known": 98736
+        },
+        "output_tokens": {
+          "known": 24,
+          "missing": 0,
+          "sum_known": 17925
+        },
+        "total_tokens": {
+          "known": 24,
+          "missing": 0,
+          "sum_known": 116661
+        },
+        "wall_s": {
+          "n": 24,
+          "total": 361.5705505297519,
+          "mean": 15.06543960540633
+        }
+      },
+      "nvidia/nemotron-3.5-super-vl-120b-a12b": {
+        "input_tokens": {
+          "known": 24,
+          "missing": 0,
+          "sum_known": 98736
+        },
+        "output_tokens": {
+          "known": 24,
+          "missing": 0,
+          "sum_known": 18274
+        },
+        "total_tokens": {
+          "known": 24,
+          "missing": 0,
+          "sum_known": 117010
+        },
+        "wall_s": {
+          "n": 24,
+          "total": 157.491184707731,
+          "mean": 6.562132696155459
+        }
+      }
+    },
+    "B3": {
+      "nvidia/nemotron-3-super-120b-a12b": {
+        "input_tokens": {
+          "known": 16,
+          "missing": 0,
+          "sum_known": 61376
+        },
+        "output_tokens": {
+          "known": 16,
+          "missing": 0,
+          "sum_known": 3053
+        },
+        "total_tokens": {
+          "known": 16,
+          "missing": 0,
+          "sum_known": 64429
+        },
+        "wall_s": {
+          "n": 16,
+          "total": 57.68951965915039,
+          "mean": 3.6055949786968995
+        }
+      },
+      "nvidia/nemotron-3.5-super-vl-120b-a12b": {
+        "input_tokens": {
+          "known": 11,
+          "missing": 0,
+          "sum_known": 44582
+        },
+        "output_tokens": {
+          "known": 11,
+          "missing": 0,
+          "sum_known": 2066
+        },
+        "total_tokens": {
+          "known": 11,
+          "missing": 0,
+          "sum_known": 46648
+        },
+        "wall_s": {
+          "n": 11,
+          "total": 17.037717811297625,
+          "mean": 1.5488834373906932
+        }
+      }
+    },
+    "B4": {
+      "nvidia/nemotron-3-super-120b-a12b": {
+        "input_tokens": {
+          "known": 0,
+          "missing": 0,
+          "sum_known": 0
+        },
+        "output_tokens": {
+          "known": 0,
+          "missing": 0,
+          "sum_known": 0
+        },
+        "total_tokens": {
+          "known": 0,
+          "missing": 0,
+          "sum_known": 0
+        },
+        "wall_s": {
+          "n": 0,
+          "total": 0,
+          "mean": null
+        }
+      },
+      "nvidia/nemotron-3.5-super-vl-120b-a12b": {
+        "input_tokens": {
+          "known": 21,
+          "missing": 0,
+          "sum_known": 36519
+        },
+        "output_tokens": {
+          "known": 21,
+          "missing": 0,
+          "sum_known": 475
+        },
+        "total_tokens": {
+          "known": 21,
+          "missing": 0,
+          "sum_known": 36994
+        },
+        "wall_s": {
+          "n": 21,
+          "total": 15.523356293793768,
+          "mean": 0.739207442561608
+        }
+      }
+    }
+  },
+  "prior_cost_excluded_from_comparison": {
+    "input_tokens": {
+      "known": 2,
+      "missing": 0,
+      "sum_known": 3196
+    },
+    "output_tokens": {
+      "known": 2,
+      "missing": 0,
+      "sum_known": 463
+    },
+    "total_tokens": {
+      "known": 2,
+      "missing": 0,
+      "sum_known": 3659
+    },
+    "wall_s": {
+      "n": 2,
+      "total": 13.012313626008108,
+      "mean": 6.506156813004054
+    }
+  },
+  "bottlenecks": {
+    "B1": {
+      "status": "unresolved",
+      "conditions": {
+        "complete": true,
+        "new_invalid_at_most_one": false,
+        "invalid_lower": false,
+        "kind_valid_not_lower": false,
+        "continue_not_lower": false,
+        "correction_disagreements_not_higher": true,
+        "pass3_guard": false
+      },
+      "models": {
+        "nvidia/nemotron-3-super-120b-a12b": {
+          "counts": {
+            "valid": 29,
+            "invalid": 4
+          },
+          "by_kind": {
+            "diagnosis": {
+              "valid": 16,
+              "continue": 16,
+              "rule_disagreements": 0,
+              "mean_pass3": 0.6666666666666666
+            },
+            "correction": {
+              "valid": 13,
+              "continue": 0,
+              "rule_disagreements": 0,
+              "mean_pass3": 0.6
+            }
+          }
+        },
+        "nvidia/nemotron-3.5-super-vl-120b-a12b": {
+          "counts": {
+            "valid": 28,
+            "invalid": 5
+          },
+          "by_kind": {
+            "diagnosis": {
+              "valid": 15,
+              "continue": 15,
+              "rule_disagreements": 0,
+              "mean_pass3": 0.6666666666666666
+            },
+            "correction": {
+              "valid": 13,
+              "continue": 0,
+              "rule_disagreements": 0,
+              "mean_pass3": 0.8
+            }
+          }
+        }
+      }
+    },
+    "B2": {
+      "status": "unresolved",
+      "conditions": {
+        "complete": true,
+        "new_invalid_at_most_one": false,
+        "invalid_lower": true,
+        "zero_citation_error": false,
+        "citation_errors_lower": true,
+        "all_parsed_top1_not_lower": false,
+        "valid_top1_not_lower": true
+      },
+      "models": {
+        "nvidia/nemotron-3-super-120b-a12b": {
+          "counts": {
+            "invalid": 6,
+            "valid": 18
+          },
+          "evidence_citation_error": 6,
+          "true_cause_top1": 21,
+          "valid_true_cause_top1": 15
+        },
+        "nvidia/nemotron-3.5-super-vl-120b-a12b": {
+          "counts": {
+            "valid": 19,
+            "invalid": 5
+          },
+          "evidence_citation_error": 2,
+          "true_cause_top1": 20,
+          "valid_true_cause_top1": 18
+        }
+      }
+    },
+    "B3": {
+      "status": "unresolved",
+      "conditions": {
+        "complete": true,
+        "same_initial_request": true,
+        "old_error_reproduced": true,
+        "new_no_tool_error": false,
+        "new_valid_two": false
+      },
+      "models": {
+        "nvidia/nemotron-3-super-120b-a12b": {
+          "workflows": 2,
+          "valid": 1,
+          "tool_errors": 3,
+          "tool_support": true,
+          "transport_complete": true
+        },
+        "nvidia/nemotron-3.5-super-vl-120b-a12b": {
+          "workflows": 2,
+          "valid": 1,
+          "tool_errors": 2,
+          "tool_support": true,
+          "transport_complete": true
+        }
+      }
+    },
+    "B4": {
+      "status": "solved",
+      "conditions": {
+        "image_input_accepted": true,
+        "complete": true,
+        "all_18_valid": true,
+        "normal_at_least_6": true,
+        "failed_at_least_10": true,
+        "total_at_least_16": true
+      },
+      "valid": 18,
+      "alignment": {
+        "normal": 7,
+        "failed": 10
+      },
+      "auxiliary_only": true
+    }
+  },
+  "scope": "이미 본 입력을 사용한 개발 비교이며 provider 반환 ID의 공식 alias 대응은 확인되지 않았다."
+}

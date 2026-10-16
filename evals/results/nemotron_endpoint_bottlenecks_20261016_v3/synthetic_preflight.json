@@ -1,0 +1,53 @@
+{
+  "schema": "nemotron_endpoint_synthetic_preflight_public_v1",
+  "expected": [
+    {
+      "shape": "square",
+      "color": "orange",
+      "region": "upper_left"
+    },
+    {
+      "shape": "triangle",
+      "color": "purple",
+      "region": "upper_right"
+    },
+    {
+      "shape": "circle",
+      "color": "green",
+      "region": "lower_left"
+    }
+  ],
+  "parsed": {
+    "objects": [
+      {
+        "shape": "square",
+        "color": "orange",
+        "region": "upper_left"
+      },
+      {
+        "shape": "triangle",
+        "color": "purple",
+        "region": "upper_right"
+      },
+      {
+        "shape": "circle",
+        "color": "green",
+        "region": "lower_left"
+      }
+    ]
+  },
+  "matches_three_objects": true,
+  "identity_alias_officially_confirmed": false,
+  "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+  "usage": {
+    "input_tokens": 353,
+    "output_tokens": 48,
+    "total_tokens": 401
+  },
+  "measured_wall_s": 2.376418486936018,
+  "image": {
+    "file": "synthetic_identity_preflight.png",
+    "sha256": "3f928a2609004cc3981bdabbe88845ad3470c42f788451c54e68546ac51a825a",
+    "bytes": 553
+  }
+}
