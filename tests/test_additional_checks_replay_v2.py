@@ -151,7 +151,17 @@ def test_git_status_failure_is_fail_closed(tmp_path, monkeypatch):
         M.require_committed_clean(tmp_path, "protocol.json")
 
 
-def test_precommit_build_does_not_call_untracked_media_ready():
+def test_precommit_build_does_not_call_untracked_media_ready(monkeypatch):
+    media_prefixes = tuple(
+        f"{spec['folder']}/" for spec in protocol()["media"].values()
+    )
+
+    def simulated_commit_state(self, relative):
+        if relative.startswith(media_prefixes):
+            return "waiting", "not_committed"
+        return "ready", None
+
+    monkeypatch.setattr(R.B.Sources, "_committed_state", simulated_commit_state)
     data = R.build()
     for folder in ("scope-transfer-u1-s2051-v1", "scope-transfer-anymal-s2047-v1"):
         row = data["sources"][f"docs/media/{folder}/comparison.mp4"]
