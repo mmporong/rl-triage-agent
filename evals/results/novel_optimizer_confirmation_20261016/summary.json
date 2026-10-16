@@ -1,0 +1,44 @@
+{
+  "schema": "public_novel_optimizer_confirmation_summary_v1",
+  "status": "complete",
+  "outcome": "confirmed",
+  "measurement_kind": "post_result_design_novel_seed_development_confirmation",
+  "cases": {
+    "none_s2060": {
+      "status": "normal",
+      "seed": 2060,
+      "optimizer_steps_by_update": [
+        20,
+        20,
+        20
+      ]
+    },
+    "r1_s2060": {
+      "status": "abnormal",
+      "seed": 2060,
+      "optimizer_steps_by_update": [
+        4,
+        4,
+        4
+      ]
+    },
+    "none_specificity_s2061": {
+      "status": "normal",
+      "seed": 2061,
+      "optimizer_steps_by_update": [
+        20,
+        20,
+        20
+      ]
+    }
+  },
+  "confirmation": {
+    "r1_abnormal": 1,
+    "paired_none_normal": 1,
+    "separate_none_specificity_normal": 1
+  },
+  "claim_limit": "처음 쓴 seed의 개발 확인이다. optimizer epoch/update 횟수 검사 범위만 확인하며 다른 PPO 결함, 일반화, 비용 절감 또는 모델 우월의 근거가 아니다.",
+  "source_commit_sha": "d392fae74f2ccf2e7d3f06c01c62771c50722e23",
+  "protocol_sha256_lf": "17cb3cd9e554353641c47c4fee9af7e95ce3bb94935a4024e02c04084b47bce9",
+  "source_result_sha256_lf": "64d09f8133e9a5edf607ef1962c0636075dbf986106ac4bb330fe40eb85e9df4"
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "additional_checks_replay_contract_v2",
+  "base_protocol": {
+    "path": "bench/protocols/replay_additional_checks_v1.json",
+    "sha256": "a0ca3887d1e924c6255989a135c61e5081768c2a81f5e92a1e6c5b8f4293c5f4"
+  },
+  "scenes": [
+    "u1-expanded-scope",
+    "optimizer-update-observation",
+    "anymal-c-transfer-playback"
+  ],
+  "media": {
+    "u1": {
+      "folder": "docs/media/scope-transfer-u1-s2051-v1",
+      "case_id": "u1",
+      "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+      "protocol_path": "bench/protocols/scope_transfer_media_u1_s2051_v1.json",
+      "protocol_sha256": "693f97a9b81f5c54d85e07c10ffea973669a60cfd7d039ccd8971f3491226aed",
+      "files": {
+        "after_corrected.mp4": {"bytes": 477950, "sha256": "78f7a3bc6d7b13fc40e69abba990eb3a33dd79b34ef099d08e0b7df6db3e8c7d"},
+        "after_sham.mp4": {"bytes": 472193, "sha256": "a47b558c5c45f5eb5cdce2b0315a5e5bcbe1c64cadd4d767f5f6de20edb32781"},
+        "before_original.mp4": {"bytes": 410325, "sha256": "760ba35e958105607e09777bfec6be545abae439772df3c93aba0ea846c5b69a"},
+        "comparison.gif": {"bytes": 1260362, "sha256": "29c2d9a43796518c022400c536c9c67fc2f0f30b22ff8b6c3310b466d1547876"},
+        "comparison.mp4": {"bytes": 465978, "sha256": "5165c21fdba5bbbe3e7247d6bc78dad4aca6b468b2d987948a1343a3698038fd"},
+        "source_manifest.json": {"bytes": 6243, "sha256": "6401650facbf2087ea6ebbeece31b56b03c25be9a12624e26258667d17c6a0f7"}
+      }
+    },
+    "anymal": {
+      "folder": "docs/media/scope-transfer-anymal-s2047-v1",
+      "case_id": "anymal",
+      "task": "Isaac-Velocity-Flat-Anymal-C-Play-v0",
+      "protocol_path": "bench/protocols/scope_transfer_media_anymal_s2047_v1.json",
+      "protocol_sha256": "cd082eb4d3cec6e1bde729eaf3324ddb64f9064e231b7f0247ff57c8af586c9d",
+      "files": {
+        "after_corrected.mp4": {"bytes": 548218, "sha256": "ca57d29eb77d0ee595570e32795748a7aee6ba51defb43c3c3902688aaec51c7"},
+        "after_sham.mp4": {"bytes": 558885, "sha256": "81e518865da7a5b70e71e4dbf2d71ac7e139663556b4b6d51983cd97794e899f"},
+        "before_original.mp4": {"bytes": 447241, "sha256": "ff1c513811a5c530a581af8c93eb4de1e5ea627296900ab8b39e3a38b7d6a481"},
+        "comparison.gif": {"bytes": 1421642, "sha256": "35935290b5262647d48cfd3fab46d06823a792636127ccbd1adaacd8059b8f9e"},
+        "comparison.mp4": {"bytes": 522525, "sha256": "b7c6bc6312489d3d5ef45589f747c1e84bd292234a90ffcfcd62726ed29ed760"},
+        "source_manifest.json": {"bytes": 6498, "sha256": "99f788486a819c832fa36c808c96d97bcde5fb2b6deb77a166ab5de4a1a2c6f2"}
+      }
+    }
+  },
+  "validation": {
+    "require_committed_unmodified_inputs_for_ready": true,
+    "allow_uncommitted_precommit_verification": true,
+    "hide_media_when_not_ready": true,
+    "ffprobe_actual_files": true,
+    "viewport": [1920, 1080],
+    "overflow_px_max": 0
+  },
+  "scope": "public_result_replay_with_visual_playback_no_new_measurement",
+  "model_calls": 0,
+  "gpu_calls": 0
+}

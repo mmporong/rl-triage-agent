@@ -1,0 +1,48 @@
+{
+  "schema": "public_novel_actor_reset_confirmation_summary_v1",
+  "status": "complete",
+  "measurement_kind": "post_mixed_result_novel_seed_development_confirmation",
+  "decision": "conditional_candidate",
+  "seeds": [
+    2063,
+    2064
+  ],
+  "arm_results": {
+    "continuation": {
+      "recovered": 0,
+      "evaluated": 2,
+      "labels_by_seed": {
+        "2063": "not_recovered",
+        "2064": "not_recovered"
+      }
+    },
+    "actor_last_layer_reset": {
+      "recovered": 2,
+      "evaluated": 2,
+      "labels_by_seed": {
+        "2063": "recovered",
+        "2064": "recovered"
+      }
+    }
+  },
+  "prior_observation": {
+    "seeds": [
+      2026,
+      2028
+    ],
+    "actor_last_layer_reset": {
+      "recovered": 1,
+      "evaluated": 2,
+      "labels_by_seed": {
+        "2026": "recovered",
+        "2028": "not_recovered"
+      }
+    }
+  },
+  "automatic_global_change": false,
+  "mechanism_status": "unresolved",
+  "claim_limit": "기존 혼합 결과를 본 뒤 처음 쓴 두 seed로 확인한 개발 측정이다. 등록 조건부 후보이며 회복 규칙의 자동 변경, 원인 확정, 일반화, 비용 절감 또는 모델 우월의 근거가 아니다.",
+  "source_commit_sha": "c2e012dd461f3fe207155f195809817feff08f74",
+  "protocol_sha256_lf": "50ef9c577629354dbed598ce9fc577b3a80ca7b25e258e51d7de4688b77597a4",
+  "source_result_sha256_lf": "535fd5eed2d795f0f9d93161c8374b2b30a285475670ab0a070dee22bd2f2424"
+}

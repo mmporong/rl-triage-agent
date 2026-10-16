@@ -216,6 +216,21 @@ v4에서 보상 결함을 고친 뒤 이어 학습한 두 seed가 모두 회복�
 
 [추론] actor 마지막 층 상태가 seed 2026의 회복을 막았을 가능성은 후속 가설이다. seed 2028에서 같은 개입이 회복하지 않았으므로 가소성 상실이나 특정 층을 실패 원인으로 확정할 수 없다. 사전등록한 `mixed` 규칙에 따라 회복 방식은 바꾸지 않고 메커니즘을 미확정으로 둔다. 이 비교는 이미 본 합성 결함 두 seed의 개발 측정이며, 회복 규칙 변경이나 비용 효과의 근거가 아니다.
 
+## 새 seed 출력층 재설정 확인
+
+v2에서 seed 2026은 회복하고 seed 2028은 회복하지 않은 혼합 결과를 본 뒤, actor 마지막 Linear와 해당 Adam 상태만 재설정하는 조건을 고정했다. 처음 쓰는 F1 seed 2063·2064에서 같은 결함 체크포인트로 `continuation`과 `actor_last_layer_reset`을 짝지었다. 두 arm은 결함을 고친 뒤 각각 300회 이어 학습했으며, actor 재설정 arm은 critic과 policy std를 유지했다.
+
+| seed | arm | 판정 | 선속도 RMSE (m/s) | 회전속도 RMSE (rad/s) | 낙상률 |
+|---|---|---|---:|---:|---:|
+| 2063 | 그대로 이어 학습 | `not_recovered` | 1.119 | 0.404 | 0.031 |
+| 2063 | actor 마지막 층 재설정 | `recovered` | 0.155 | 0.140 | 0.038 |
+| 2064 | 그대로 이어 학습 | `not_recovered` | 1.175 | 0.457 | 0.000 |
+| 2064 | actor 마지막 층 재설정 | `recovered` | 0.169 | 0.276 | 0.000 |
+
+새 seed 두 개에서는 actor 마지막 층 재설정이 2/2 `recovered`, 그대로 이어 학습은 0/2 `recovered`였다. 등록 조건을 충족했으므로 이 개입을 조건부 후보로 남긴다. 기존 seed 2026·2028의 결과는 1/2였으며, 이 기록도 바꾸지 않는다. 공개 결과에는 [요약](../evals/results/novel_actor_reset_confirmation_20261016/summary.json), seed별 행동 지표, 개입 readback과 원본 SHA가 들어 있다.
+
+이 결과만으로 전체 회복 규칙을 자동 변경하지 않는다. 기존 혼합 결과를 본 뒤 설계한 두 seed의 개발 확인이므로 실패 원인, 일반화, 비용 절감이나 모델 우월을 확정하지 않는다. 메커니즘은 계속 미확정으로 둔다.
+
 ## 액추에이터 곡선 검사
 
 `src/rl_triage/actuator_envelope.py`의 `inspect_actuator_envelope`는 정책 rollout 없이 등록 속도 격자에서 DC motor `_clip_effort`의 양·음 포화 출력을 읽고 설정에서 계산한 토크–속도 곡선과 비교한다. 측정 중 교체한 `_joint_vel`은 `finally`에서 원 객체로 복원한다. 설정·shape·유한성 검증이 실패하면 곡선 이상으로 확정하지 않고 `invalid`를 반환한다.

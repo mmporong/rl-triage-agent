@@ -1,0 +1,56 @@
+{
+  "schema": "public_novel_u1_source_failure_evidence_v1",
+  "fixed_evaluation": {
+    "condition_count": 26,
+    "environments_per_condition": 40,
+    "horizon_steps": 1000,
+    "action_scale": 0.25
+  },
+  "arms": {
+    "NONE": {
+      "case": "baseline_p0c_s2062",
+      "training_seed": 2062,
+      "metrics": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 0.13649091128467256,
+        "yaw_rate_rmse_radps": 0.294454962870671
+      },
+      "checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "227387eff17c0c0e70c5d281e37fff81e69ff78d59033125e55e0675e42593e9"
+      },
+      "report_sha256": "9da98c2aabcd15904d310ba0286a52e0f05c2d26b519ab012d322f073f97d221"
+    },
+    "U1": {
+      "case": "u1_s2062",
+      "training_seed": 2062,
+      "metrics": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 1.2410838184345923,
+        "yaw_rate_rmse_radps": 5.236947500726565
+      },
+      "checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "37ca42fe97a7e335bc0f2346f64ac803febc4c777dbfe1e3db499c917b4d728b"
+      },
+      "report_sha256": "7cb8d404d21054d805de7d8194232d75534001b3777e4fd793486a3d2b999f5a"
+    }
+  },
+  "gate": {
+    "none_walks": true,
+    "u1_label": "unhealthy",
+    "u1_checks": {
+      "survival_ratio": true,
+      "fall_frac": true,
+      "err_xy_ratio": false,
+      "err_yaw_ratio": false
+    },
+    "u1_failed_checks": [
+      "err_xy_ratio",
+      "err_yaw_ratio"
+    ],
+    "outcome": "failure_present"
+  }
+}

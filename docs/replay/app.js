@@ -160,7 +160,8 @@
   }
 
   function renderVideos(data, block, link) {
-    return '<div class="videos">' + block.items.map(function (item) {
+    var className = block.items.length === 1 ? "videos single-video" : "videos";
+    return '<div class="' + className + '">' + block.items.map(function (item) {
       var row = data.sources[item.source] || { status: "waiting" };
       var src = row.status === "ready" && row.path ? link(row.path, "video") : null;
       var media = src

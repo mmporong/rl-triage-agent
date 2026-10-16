@@ -1,0 +1,189 @@
+{
+  "schema": "scope_transfer_media_artifact_v1",
+  "case_id": "anymal",
+  "source_result_disclosure": "ANYmal-C seed 2047 결과를 본 뒤 발표용 비교 장면으로 설계했다. 영상은 새 평가가 아니며 결합된 고정 평가 라벨을 바꾸지 않는다.",
+  "interpretation": "왼쪽은 F1 실패 정책, 가운데는 보상 결함을 복원해 처음부터 재학습한 정책, 오른쪽은 같은 seed의 NONE 정책이다. 같은 stock Play 설정의 시각 자료이며 회복 판정은 결합된 고정 평가 결과를 따른다.",
+  "media_claim": "visual_playback_only_fixed_eval_labels_preserved",
+  "recording_commit_sha": "c2e012dd461f3fe207155f195809817feff08f74",
+  "protocol": {
+    "path": "bench/protocols/scope_transfer_media_anymal_s2047_v1.json",
+    "sha256_lf": "cd082eb4d3cec6e1bde729eaf3324ddb64f9064e231b7f0247ff57c8af586c9d"
+  },
+  "public_sources": [
+    {
+      "path": "evals/results/anymal_c_band_20261014/result.json",
+      "sha256_lf": "9db68f194fadf89faa1fdb29ad0a1e5d590522f7f8f9fc986c2d609ec0e67798"
+    },
+    {
+      "path": "evals/results/anymal_c_e2e_f1_s2047_20261014/demo_result.json",
+      "sha256_lf": "e1a8f60450628f1790f0a5061faf1680327e73221c5cdfaa3e0d8afeee99f33f"
+    },
+    {
+      "path": "evals/results/anymal_c_e2e_f1_s2047_20261014/runs/anymal_c_h02_s2047.json",
+      "sha256_lf": "852472699e762bb31f61af9c0d88498f81e3291ce67ac389123fc3085f17eb80"
+    },
+    {
+      "path": "evals/results/anymal_c_e2e_f1_s2047_20261014/runs/anymal_c_none_s2047.json",
+      "sha256_lf": "60b14311fe7f56f47ce3bf3b4a4f6c484c2fdbb6999166e001f4ca3384d765d8"
+    }
+  ],
+  "private_sources": [
+    {
+      "logical_id": "anymal_none_step",
+      "sha256": "f53d618b46fe2e0551d092fb9bd5c904bd82ed833c71b6a027e2c88f32f2b25f"
+    },
+    {
+      "logical_id": "anymal_fault_step",
+      "sha256": "87d92174e7af9eae48cb8f78f8482ef6f243bf33d07a7e9ce1c5ae7cb116e690"
+    },
+    {
+      "logical_id": "anymal_corrected_receipt",
+      "sha256": "ac6a054187f4683abf1069989a5c7cdd9b9e9672aefbc3da67ff68ce29772c63"
+    },
+    {
+      "logical_id": "anymal_corrected_eval",
+      "sha256": "cbdab6d219c8508202df7995db7737d342004d209309d22d0dc73aa267a0d416"
+    }
+  ],
+  "playback": {
+    "task": "Isaac-Velocity-Flat-Anymal-C-Play-v0",
+    "seed": 42,
+    "num_envs": 1,
+    "video_length": 300,
+    "kit_args": "--/app/vulkan=false --/app/window/hideUi=true",
+    "overrides": [
+      "env.viewer.eye=[3.0,3.0,2.0]",
+      "env.viewer.lookat=[0.0,0.0,0.35]"
+    ]
+  },
+  "gpu_checks": [
+    {
+      "clip_id": "before_original",
+      "before": {
+        "logical_id": "gpu_before_before_original",
+        "sha256": "00482a5360b46c7726881e0765642ebd6422d5c30415e778d0d45a5e0e8795d7",
+        "busy": false,
+        "utilization_percent": 6,
+        "memory_used_mib": 1410
+      },
+      "after": {
+        "logical_id": "gpu_after_before_original",
+        "sha256": "f238d715e3445405517c9ce732545594bbe2a02bbed6cd8bfc5f70182afca9e9",
+        "busy": false,
+        "utilization_percent": 5,
+        "memory_used_mib": 1413
+      }
+    },
+    {
+      "clip_id": "after_corrected",
+      "before": {
+        "logical_id": "gpu_before_after_corrected",
+        "sha256": "f9642598cfa2ae87bce315c5cf121385ffb8cee8e5e0fc84b5c04eb43087975c",
+        "busy": false,
+        "utilization_percent": 4,
+        "memory_used_mib": 1413
+      },
+      "after": {
+        "logical_id": "gpu_after_after_corrected",
+        "sha256": "cf7dcfc2e1581aa294deb87e09877fe0208f35f70ec078665037149a07fe96d1",
+        "busy": false,
+        "utilization_percent": 5,
+        "memory_used_mib": 1436
+      }
+    },
+    {
+      "clip_id": "after_sham",
+      "before": {
+        "logical_id": "gpu_before_after_sham",
+        "sha256": "f5e816fd8504decb2ff4ba2d3b25ca4cca476df94945c977c8409d3271f30050",
+        "busy": false,
+        "utilization_percent": 4,
+        "memory_used_mib": 1436
+      },
+      "after": {
+        "logical_id": "gpu_after_after_sham",
+        "sha256": "32b195ffba0806d271cc72f1d875b4c4f7ba9514803f6396d4cc9e071abec3f9",
+        "busy": false,
+        "utilization_percent": 4,
+        "memory_used_mib": 1416
+      }
+    }
+  ],
+  "clips": [
+    {
+      "id": "before_original",
+      "role": "failed",
+      "logical_run_id": "anymal_failed_s2047",
+      "file": "before_original.mp4",
+      "sha256": "ff1c513811a5c530a581af8c93eb4de1e5ea627296900ab8b39e3a38b7d6a481",
+      "checkpoint_sha256": "0283b07c3202c66190fa8377c206771752b4e4d57ce5256c80db8b76bbdde3fe",
+      "fixed_eval_label": "unhealthy",
+      "ffprobe": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      },
+      "cleanup_verified": true
+    },
+    {
+      "id": "after_corrected",
+      "role": "corrected_restart",
+      "logical_run_id": "anymal_corrected_restart_s3047",
+      "file": "after_corrected.mp4",
+      "sha256": "ca57d29eb77d0ee595570e32795748a7aee6ba51defb43c3c3902688aaec51c7",
+      "checkpoint_sha256": "e900e80f9e81bdb449e4d9d0e8fd6ad65f0a1643de078ce6a4f691af83d2abd6",
+      "fixed_eval_label": "healthy",
+      "ffprobe": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      },
+      "cleanup_verified": true
+    },
+    {
+      "id": "after_sham",
+      "role": "none_control",
+      "logical_run_id": "anymal_none_s2047",
+      "file": "after_sham.mp4",
+      "sha256": "81e518865da7a5b70e71e4dbf2d71ac7e139663556b4b6d51983cd97794e899f",
+      "checkpoint_sha256": "a18375e51a2387da10d272429b2273d3ac6864df44bc24d326dd83f2f59dc52f",
+      "fixed_eval_label": "healthy",
+      "ffprobe": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      },
+      "cleanup_verified": true
+    }
+  ],
+  "comparison": {
+    "mp4": {
+      "file": "comparison.mp4",
+      "sha256": "b7c6bc6312489d3d5ef45589f747c1e84bd292234a90ffcfcd62726ed29ed760",
+      "ffprobe": {
+        "width": 1920,
+        "height": 360,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      }
+    },
+    "gif": {
+      "file": "comparison.gif",
+      "sha256": "35935290b5262647d48cfd3fab46d06823a792636127ccbd1adaacd8059b8f9e",
+      "ffprobe": {
+        "width": 960,
+        "height": 180,
+        "frame_rate": "50/3",
+        "frame_count": 90,
+        "duration_s": 6.0
+      }
+    }
+  }
+}

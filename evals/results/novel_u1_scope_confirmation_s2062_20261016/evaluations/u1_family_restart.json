@@ -1,0 +1,337 @@
+{
+  "schema": "public_novel_u1_scope_evaluation_v1",
+  "arm": "u1_family_restart",
+  "training": {
+    "seed": 3062,
+    "mode": "restart",
+    "max_iterations": 300,
+    "num_envs": 4096,
+    "num_steps_per_env": 24,
+    "aggregate_env_steps": 29491200
+  },
+  "label": "healthy",
+  "verdict": {
+    "label": "healthy",
+    "checks": {
+      "survival_ratio": true,
+      "fall_frac": true,
+      "err_xy_ratio": true,
+      "err_yaw_ratio": true
+    },
+    "failed_checks": []
+  },
+  "fixed_evaluation": {
+    "condition_count": 26,
+    "environments_per_condition": 40,
+    "horizon_steps": 1000,
+    "action_scale": 0.25,
+    "metrics": {
+      "fall_rate": 0.0,
+      "mean_survival_s": 20.0,
+      "lin_vel_rmse_mps": 0.1372356520698349,
+      "yaw_rate_rmse_radps": 0.2964537417502349
+    },
+    "standstill": {
+      "lin_vel_rmse_mps": 1.1766968108291043,
+      "yaw_rate_rmse_radps": 0.8320502943378437
+    },
+    "conditions": [
+      {
+        "target_velocity": [
+          -1.0,
+          -1.0,
+          -1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.15403121909235842,
+        "yaw_rate_rmse_radps": 0.1186397707458874,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          -1.0,
+          -1.0,
+          0.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.14242425344283888,
+        "yaw_rate_rmse_radps": 0.06345296436356175,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          -1.0,
+          -1.0,
+          1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.17282241544508467,
+        "yaw_rate_rmse_radps": 0.13997134324107538,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          -1.0,
+          0.0,
+          -1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.10424026656051597,
+        "yaw_rate_rmse_radps": 0.19809408337742102,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.09076901272942765,
+        "yaw_rate_rmse_radps": 0.07131428813113394,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          -1.0,
+          0.0,
+          1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.09500924316413163,
+        "yaw_rate_rmse_radps": 0.09435013803574048,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          -1.0,
+          1.0,
+          -1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.15440942295553384,
+        "yaw_rate_rmse_radps": 0.10789487837266759,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          -1.0,
+          1.0,
+          0.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.14619395168333424,
+        "yaw_rate_rmse_radps": 0.06877556342917156,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          -1.0,
+          1.0,
+          1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.1640991960448866,
+        "yaw_rate_rmse_radps": 0.13705906306252835,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          0.0,
+          -1.0,
+          -1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.10305087297968417,
+        "yaw_rate_rmse_radps": 0.10112596237422554,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.09600231453966439,
+        "yaw_rate_rmse_radps": 0.07127029130007166,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          0.0,
+          -1.0,
+          1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.12119904696149636,
+        "yaw_rate_rmse_radps": 0.13035922962168267,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.0244817187554848,
+        "yaw_rate_rmse_radps": 0.9830045023103913,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.04292184273823073,
+        "yaw_rate_rmse_radps": 0.9679244466253552,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          0.0,
+          1.0,
+          -1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.11231398059376405,
+        "yaw_rate_rmse_radps": 0.12657806376140354,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.10455211847349112,
+        "yaw_rate_rmse_radps": 0.07227528704411744,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          0.0,
+          1.0,
+          1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.1119292978831252,
+        "yaw_rate_rmse_radps": 0.12411522808966674,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          1.0,
+          -1.0,
+          -1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.16151474149052153,
+        "yaw_rate_rmse_radps": 0.23726884052809563,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          1.0,
+          -1.0,
+          0.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.15565663701706053,
+        "yaw_rate_rmse_radps": 0.09429591218698603,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          1.0,
+          -1.0,
+          1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.19530017148589982,
+        "yaw_rate_rmse_radps": 0.17048434206305246,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          1.0,
+          0.0,
+          -1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.16474179496651437,
+        "yaw_rate_rmse_radps": 0.10957898807008962,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.14088876088721888,
+        "yaw_rate_rmse_radps": 0.0851028538154806,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          1.0,
+          0.0,
+          1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.13101575893515813,
+        "yaw_rate_rmse_radps": 0.12865605454503007,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          1.0,
+          1.0,
+          -1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.17961115905486288,
+        "yaw_rate_rmse_radps": 0.1530806995069053,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          1.0,
+          1.0,
+          0.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.16346211760405394,
+        "yaw_rate_rmse_radps": 0.09684563173162766,
+        "num_envs": 40
+      },
+      {
+        "target_velocity": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.17574890327382736,
+        "yaw_rate_rmse_radps": 0.1547014079921887,
+        "num_envs": 40
+      }
+    ]
+  },
+  "checkpoint": {
+    "file": "model_299.pt",
+    "sha256": "1ae22d3eb6ac11aa8aad86487f05295f392ff268d5fac05e86169c3ddceb2838"
+  },
+  "artifact_sha256": {
+    "manifest": "6104f5be8519ed6b0abcd3432189a4d584b7e6d98dfaa6193dbc162f1f9baba2",
+    "receipt": "576c02bd74b83ec924a52dd64d59582b382b0292650a522ab3fe34f7ddd1cb15",
+    "training_attestation": "5e2c4a052c6675f3c5075ed48439185b0671f6239b70522730ff294711212dae",
+    "fixed_evaluation": "2c448af82043335f6ee3d11bcd778aee7b6dcd8d958b424dea2da71dd47b888c"
+  }
+}

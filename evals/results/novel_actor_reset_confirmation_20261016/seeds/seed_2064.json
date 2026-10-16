@@ -1,0 +1,118 @@
+{
+  "schema": "public_novel_actor_reset_seed_v1",
+  "seed": 2064,
+  "source_precondition": {
+    "NONE": {
+      "metrics": {
+        "fall_rate": 0.03846153989434242,
+        "mean_survival_s": 19.273807373046875,
+        "lin_vel_rmse_mps": 0.15110020010316083,
+        "yaw_rate_rmse_radps": 0.30973201583812887
+      },
+      "checkpoint_sha256": "e2dbb76ce22d4ee8a4fc874056b26de3441e2fdafbcbcb3fd0be962a297c593b",
+      "source_evaluation_sha256_lf": "fffd40b3f982521be62286d78ff9e15c67b52e6b2a8031a551178e4b93b545c3"
+    },
+    "F1": {
+      "metrics": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 1.1830148319755993,
+        "yaw_rate_rmse_radps": 0.7013267834763064
+      },
+      "checkpoint_sha256": "b1acb0919ce474f19731a4e899f8bee1cd444fa724711f52fb39f6a96f12c05d",
+      "source_evaluation_sha256_lf": "6c1b0c2704ce6b2ee7d9eeb5b7913affa211fdd6730313e960d9e0e127d076bc"
+    },
+    "none_walks": true,
+    "f1_label": "unhealthy"
+  },
+  "paired_source_checkpoint_sha256": "b1acb0919ce474f19731a4e899f8bee1cd444fa724711f52fb39f6a96f12c05d",
+  "arms": {
+    "continuation": {
+      "label": "not_recovered",
+      "verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "metrics": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 1.1754443931261858,
+        "yaw_rate_rmse_radps": 0.4567371954832615
+      },
+      "checkpoint_sha256": "f29ed878dfb21002b42a8b622ea6f3fcf0b1b0fece2ffd050788a4d61ce5a6c1",
+      "budget": {
+        "training_updates": 300,
+        "num_envs": 4096,
+        "control_steps": 7200,
+        "aggregate_env_steps": 29491200
+      },
+      "intervention": {
+        "name": "none",
+        "target_modules": [],
+        "target_parameter_count": 0,
+        "optimizer_moments_present_after": null,
+        "critic_preserved": true,
+        "policy_std_preserved": true
+      },
+      "source_artifact_sha256_lf": {
+        "manifest": "98ee55202992bf1499791a6bc43745db376c9db22708e514db76522329382bcc",
+        "intervention": "d626350af54cd9c9219eab6b651d6af1472300d121b5bbb5884ef8ccee5610c0",
+        "training_receipt": "00c7fb6d487bbee6ba9b88183484ebc4c52ddb3a15928b9c86de2f91f60d39c0",
+        "fixed_evaluation": "45c7aeaec30d1aab99c1d9ca83fcfc6b1320f3731913e556b15e21896d0cfd81"
+      }
+    },
+    "actor_last_layer_reset": {
+      "label": "recovered",
+      "verdict": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "metrics": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 0.16906761968162276,
+        "yaw_rate_rmse_radps": 0.2755907832854471
+      },
+      "checkpoint_sha256": "7437ca08924f1aa04d3e1eff6da87ad6bd74786f63f87d608c3b71ebc1d37f2e",
+      "budget": {
+        "training_updates": 300,
+        "num_envs": 4096,
+        "control_steps": 7200,
+        "aggregate_env_steps": 29491200
+      },
+      "intervention": {
+        "name": "actor_last_layer_reset",
+        "target_modules": [
+          "actor.6"
+        ],
+        "target_parameter_count": 2,
+        "optimizer_moments_present_after": false,
+        "critic_preserved": true,
+        "policy_std_preserved": true
+      },
+      "source_artifact_sha256_lf": {
+        "manifest": "5dd52d2987dab07d55b999f4a94c25c22b08c04290dc0be0859a959934edfa47",
+        "intervention": "f0c8ada948c5763365d246dad8f5104aa1682fb23c8a7d01bcf7d5d440f2f67f",
+        "training_receipt": "9bed0e3f388ed34cbfd787b4fcccdd2d636fc45e8fa1a2483e7c3ff6fa4b52fd",
+        "fixed_evaluation": "ecae5ffe094420075b7c4fec4bd56b0136167805b1a59f04ee8c452eb652e618"
+      }
+    }
+  }
+}

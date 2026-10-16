@@ -1,0 +1,181 @@
+{
+  "schema": "scope_transfer_media_artifact_v1",
+  "case_id": "u1",
+  "source_result_disclosure": "U1 확장 교정 결과를 본 뒤 발표용 비교 장면으로 설계했다. 영상은 새 평가가 아니며 결합된 고정 평가 라벨을 바꾸지 않는다.",
+  "interpretation": "왼쪽은 U1 실패 정책, 가운데는 네 보상 항을 복원해 처음부터 재학습한 정책, 오른쪽은 같은 source seed의 NONE 정책이다. 같은 stock Play 설정의 시각 자료이며 회복 판정은 결합된 고정 평가 결과를 따른다.",
+  "media_claim": "visual_playback_only_fixed_eval_labels_preserved",
+  "recording_commit_sha": "c2e012dd461f3fe207155f195809817feff08f74",
+  "protocol": {
+    "path": "bench/protocols/scope_transfer_media_u1_s2051_v1.json",
+    "sha256_lf": "693f97a9b81f5c54d85e07c10ffea973669a60cfd7d039ccd8971f3491226aed"
+  },
+  "public_sources": [
+    {
+      "path": "evals/results/u1_scope_extension_s2051_20261015/summary.json",
+      "sha256_lf": "a99c5a88e6a4b459a3c0f7b9df49217f0e48f73ca77b97026078664819db0b23"
+    },
+    {
+      "path": "evals/results/u1_scope_extension_s2051_20261015/source_failure_evidence.json",
+      "sha256_lf": "b21a05343b2a4b7e1ff62d7bc025fadd43a9148f368799605ac898729c6b1760"
+    },
+    {
+      "path": "evals/results/u1_scope_extension_s2051_20261015/evaluations/u1_family_restart.json",
+      "sha256_lf": "64451115f68cda70facc0cb6310faa37d89fd352db5660c3f9df5f1a863cef52"
+    },
+    {
+      "path": "evals/results/u1_scope_extension_s2051_20261015/evaluations/none_family_control.json",
+      "sha256_lf": "263924eea40473edae22b7d2c4a4a64208c7e209a616ebc358f981bc5b74fa63"
+    }
+  ],
+  "private_sources": [
+    {
+      "logical_id": "u1_scope",
+      "sha256": "d5fe411c5a3db0fc4d9425338d796d63340ef0491875dab5d91e57ce30373984"
+    },
+    {
+      "logical_id": "u1_corrected_receipt",
+      "sha256": "b3068e57991669d121b9493ce6c06b58a928e8145a6a252a67b079becdb42a57"
+    }
+  ],
+  "playback": {
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+    "seed": 42,
+    "num_envs": 1,
+    "video_length": 300,
+    "kit_args": "--/app/vulkan=false --/app/window/hideUi=true",
+    "overrides": [
+      "env.viewer.eye=[3.0,3.0,2.0]",
+      "env.viewer.lookat=[0.0,0.0,0.35]"
+    ]
+  },
+  "gpu_checks": [
+    {
+      "clip_id": "before_original",
+      "before": {
+        "logical_id": "gpu_before_before_original",
+        "sha256": "311f729ff7f1f044f9d8a016b3509186261837eb98294aec0bc9d47a2a948b43",
+        "busy": false,
+        "utilization_percent": 3,
+        "memory_used_mib": 1417
+      },
+      "after": {
+        "logical_id": "gpu_after_before_original",
+        "sha256": "e7fc80874f31e5e7f062d6bdf6fa9eb31db3e4e675ef43ad984b8036767348e4",
+        "busy": false,
+        "utilization_percent": 6,
+        "memory_used_mib": 1410
+      }
+    },
+    {
+      "clip_id": "after_corrected",
+      "before": {
+        "logical_id": "gpu_before_after_corrected",
+        "sha256": "c1e64fa1dc8827de87752c9d3ca9e445d53d3e8123f3329e78ee707d68acff97",
+        "busy": false,
+        "utilization_percent": 5,
+        "memory_used_mib": 1410
+      },
+      "after": {
+        "logical_id": "gpu_after_after_corrected",
+        "sha256": "f3a344aacc1c337efc82342170c2ca6fba5a0c471f0f9c21dc55ad1b1a498a10",
+        "busy": false,
+        "utilization_percent": 4,
+        "memory_used_mib": 1410
+      }
+    },
+    {
+      "clip_id": "after_sham",
+      "before": {
+        "logical_id": "gpu_before_after_sham",
+        "sha256": "6c7c8cac08629df00696bfde118015814f36d1a71f7a5f94d346ad4767de085a",
+        "busy": false,
+        "utilization_percent": 4,
+        "memory_used_mib": 1410
+      },
+      "after": {
+        "logical_id": "gpu_after_after_sham",
+        "sha256": "e44a4dbc832abad4eb184b3d19b09d62a78294d2c312c293230ccaa651ddd97c",
+        "busy": false,
+        "utilization_percent": 6,
+        "memory_used_mib": 1410
+      }
+    }
+  ],
+  "clips": [
+    {
+      "id": "before_original",
+      "role": "failed",
+      "logical_run_id": "u1_failed_s2051",
+      "file": "before_original.mp4",
+      "sha256": "760ba35e958105607e09777bfec6be545abae439772df3c93aba0ea846c5b69a",
+      "checkpoint_sha256": "f36a78916a9a70a669bb7d5d4fa60250b04f0b9afa8911e6db68b440d25ff525",
+      "fixed_eval_label": "unhealthy",
+      "ffprobe": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      },
+      "cleanup_verified": true
+    },
+    {
+      "id": "after_corrected",
+      "role": "corrected_restart",
+      "logical_run_id": "u1_corrected_restart_s3051",
+      "file": "after_corrected.mp4",
+      "sha256": "78f7a3bc6d7b13fc40e69abba990eb3a33dd79b34ef099d08e0b7df6db3e8c7d",
+      "checkpoint_sha256": "6240951e0d7288550237e78cff06eafd361519311c47d425232da9edfaff83c1",
+      "fixed_eval_label": "healthy",
+      "ffprobe": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      },
+      "cleanup_verified": true
+    },
+    {
+      "id": "after_sham",
+      "role": "none_control",
+      "logical_run_id": "u1_none_s2051",
+      "file": "after_sham.mp4",
+      "sha256": "a47b558c5c45f5eb5cdce2b0315a5e5bcbe1c64cadd4d767f5f6de20edb32781",
+      "checkpoint_sha256": "97a588e7c87b7c3b8ceb516e32ff11ada2b14387d263ee0d4700dc0cb634aa7e",
+      "fixed_eval_label": "healthy",
+      "ffprobe": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      },
+      "cleanup_verified": true
+    }
+  ],
+  "comparison": {
+    "mp4": {
+      "file": "comparison.mp4",
+      "sha256": "5165c21fdba5bbbe3e7247d6bc78dad4aca6b468b2d987948a1343a3698038fd",
+      "ffprobe": {
+        "width": 1920,
+        "height": 360,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98
+      }
+    },
+    "gif": {
+      "file": "comparison.gif",
+      "sha256": "29c2d9a43796518c022400c536c9c67fc2f0f30b22ff8b6c3310b466d1547876",
+      "ffprobe": {
+        "width": 960,
+        "height": 180,
+        "frame_rate": "50/3",
+        "frame_count": 90,
+        "duration_s": 6.0
+      }
+    }
+  }
+}
