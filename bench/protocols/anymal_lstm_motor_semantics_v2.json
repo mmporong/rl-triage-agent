@@ -1,0 +1,62 @@
+{
+  "schema": "anymal_lstm_motor_semantics_protocol_v2",
+  "status": "preregistered_revalidation_after_validator_defect",
+  "question": "ANYmal-C의 ActuatorNetLSTM 경로에서 F2가 관절 속도에 따른 토크 포화를 실제로 바꾸는가",
+  "scope": "CPU source-and-tensor semantics revalidation; no Isaac Kit, environment, LSTM forward, physics, GPU, or API",
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "validator_revision": {
+    "discovery": "v1 실행 뒤 self._joint_vel[:] 저장을 Attribute Store만으로는 탐지하지 못한다는 검사기 결함을 발견했다",
+    "effect_on_v1": "ActuatorNetLSTM의 음성 판정은 소스와 일치하지만 DCMotor 양성 대조를 탐지할 수 없어 검사기 완전성이 부족했다",
+    "v2_change": "속성 대입, slice/subscript 대입, AugAssign, copy_/fill_/zero_ 변이를 탐지하고 DCMotor 양성·LSTM 음성 대조를 함께 요구한다",
+    "evidence_class": "v1 결과를 본 뒤 만든 보강 재검증이며 독립 확인이나 새 seed 확인이 아니다",
+    "second_review": "첫 v2 결과 뒤 구조·수치 전제 불일치를 not_applicable로 내리지 않고 invalid로 중단하도록 판정 게이트를 닫았다",
+    "preserved_v1_protocol_sha256_lf": "64291eeb51dce790d7faf5b3fe51e3eb34876a671eeda04c147af55667579354",
+    "preserved_v1_result_sha256_lf": "eafbdf0ff07d059a5f96719ab064cb594cb4735a6ab374bfd16983907e82cea0",
+    "preserved_preliminary_v2_result_sha256_lf": "0afe711a6d94c112ac19e804721b5447fa3b7e69f155ac02b0a332e582e4b2b5"
+  },
+  "sources": {
+    "validator": {"path": "bench/anymal_lstm_motor_semantics_v2.py", "sha256_lf": "2249ef493124376f8a571798f0e82bbf8b8bf8353441b661a05f24acef06ee92"},
+    "actuator_net": {"path": "<isaaclab>/source/isaaclab/isaaclab/actuators/actuator_net.py", "sha256_lf": "e9cc9a8799f9e53ac9303dd3e1343dfd5b74b5927f7e92421a59eb610cda9b3f"},
+    "actuator_pd": {"path": "<isaaclab>/source/isaaclab/isaaclab/actuators/actuator_pd.py", "sha256_lf": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012"},
+    "anymal_asset": {"path": "<isaaclab>/source/isaaclab_assets/isaaclab_assets/robots/anymal.py", "sha256_lf": "4d77e1f8ff0a228b2eb037f55d25fe3957225af767f97c4bbb7033ee3741cc35"},
+    "fault": {"path": "bench/hidden_faults.py", "sha256_lf": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346"}
+  },
+  "sdk_scope": {
+    "root": "<isaaclab>/source/isaaclab/isaaclab/**/*.py",
+    "python_file_count": 257,
+    "python_manifest_sha256": "0b9bf29e8e3a7a55dd08985902138a7b8742c6e8ee28ba871d15ec537af6ff0c",
+    "reason": "ActuatorNetLSTM.compute 바깥에서 actuator 인스턴스의 _joint_vel을 쓰는 경로가 있는지 전체 SDK Python 범위에서 확인한다"
+  },
+  "configuration": {"class": "ActuatorNetLSTM", "saturation_effort": 120.0, "effort_limit": 80.0, "velocity_limit": 7.5},
+  "fault": {"id": "F2", "target": "DCMotor._clip_effort", "velocity_multiplier": 5.0},
+  "grid": {"joint_velocity": [-7.5, -3.75, -1.5, 0.0, 1.5, 3.75, 7.5], "requested_effort": [-160.0, -80.0, -40.0, 0.0, 40.0, 80.0, 160.0]},
+  "predictions": {
+    "dc_positive_control": "DCMotor.__init__은 self._joint_vel을 0으로 초기화하고 DCMotor.compute는 slice 대입으로 joint_vel을 쓴다",
+    "lstm_negative_control": "ActuatorNetLSTM.compute는 joint_vel을 network input에 쓰지만 inherited clip 상태 self._joint_vel에는 쓰지 않는다",
+    "asset_binding": "ANYMAL_C_CFG의 actuators는 legs 키로 ANYDRIVE_3_LSTM_ACTUATOR_CFG를 사용한다",
+    "sdk_external_write": "SDK 전체 Python 소스에서 self가 아닌 다른 actuator 인스턴스의 _joint_vel을 쓰는 접근은 없다",
+    "zero_velocity": "정상과 F2 포화 출력이 같다",
+    "nonzero_velocity_counterfactual": "self._joint_vel을 비영 속도로 주면 정상과 F2 출력이 적어도 한 격자점에서 다르다",
+    "restore": "원본 DCMotor._clip_effort를 다시 적용한 출력은 최초 정상 출력과 같다",
+    "semantic_gate": "not_applicable"
+  },
+  "gate": {
+    "applicable": "양성·음성 대조와 asset 결합이 검증되고 LSTM compute 또는 외부 actuator 인스턴스 경로가 매 step self._joint_vel을 갱신하며 반사실 수치 차이가 있을 때",
+    "not_applicable": "DCMotor 양성 대조는 잡지만 LSTM compute와 외부 경로가 clip 상태를 갱신하지 않아 F2 속도 배수가 live LSTM clip 경로에 들어오지 않을 때",
+    "invalid": "결합 SHA·SDK manifest·AST·설정·수치 계약 중 하나를 검증할 수 없을 때"
+  },
+  "hidden_constraints": {
+    "lstm_state": "hidden/cell state와 network output은 측정하지 않는다",
+    "api_shape": "ArticulationActions 반환 모양과 실제 네트워크 tensor shape은 실행하지 않는다",
+    "counterfactual_only": "torch 격자는 clip 함수만 실행하며 LSTM forward나 물리를 대신하지 않는다",
+    "static_scope": "동적 monkey patch나 런타임 reflection은 이 정적 SDK 소스 범위에 포함되지 않는다"
+  },
+  "followup_if_not_applicable": {
+    "candidate": "F6",
+    "reason": "등록된 time_out 함수 결함은 LSTM 액추에이터의 clip 상태 전달에 의존하지 않으며 기존 termination 교정과 resume 규칙이 있다",
+    "required_before_demo": "ANYmal-C 환경이 같은 time_out 함수를 사용하고 F6가 새 seed에서 실패를 만드는지 별도 source·smoke 사전등록으로 확인한다"
+  },
+  "claims_not_supported": ["독립 재현", "실제 LSTM forward를 실행했다", "물리 시뮬레이션으로 F2 효과를 확인했다", "F2가 ANYmal-C에서 실패를 만든다", "일반화", "절감", "우월성"],
+  "api_calls": 0,
+  "gpu_calls": 0
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "scope_transfer_media_protocol_v1",
+  "status": "preregistered_unrecorded",
+  "case_id": "u1",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+  "seed": 42,
+  "num_envs": 1,
+  "video_length": 300,
+  "kit_args": "--/app/vulkan=false --/app/window/hideUi=true",
+  "overrides": ["env.viewer.eye=[3.0,3.0,2.0]", "env.viewer.lookat=[0.0,0.0,0.35]"],
+  "video_contract": {"width": 1280, "height": 720, "frame_rate": "50/1", "frame_count": 299, "duration_s": 5.98, "duration_tolerance_s": 0.02},
+  "gpu_admission": {"policy": "desktop_shared_recording_v1", "gpu_exclusive": false, "performance_measurement": false, "memory_used_limit_mib": 4096, "gpu_index": 0, "active_engine_min_percent": 1, "protected_cim_name_only_process_names": ["dwm.exe", "remoting_desktop.exe", "system", "tabtip.exe"], "guard_phases": ["before_clip", "after_clip"], "allowed_process_types": ["C+G", "G"], "allowed_display_process_names": ["asus_framework.exe", "chatgpt.exe", "chrome.exe", "codex-computer-use-swift.exe", "crossdeviceresume.exe", "discord.exe", "dwm.exe", "explorer.exe", "lghub_system_tray.exe", "microsoft.cmdpal.ui.exe", "msedgewebview2.exe", "nvidia overlay.exe", "phoneexperiencehost.exe", "powertoys.colorpickerui.exe", "powertoys.exe", "powertoys.fancyzones.exe", "powertoys.peek.ui.exe", "powertoys.quickaccess.exe", "remoting_desktop.exe", "searchhost.exe", "shellexperiencehost.exe", "shellhost.exe", "slack.exe", "startmenuexperiencehost.exe", "system", "tabtip.exe", "textinputhost.exe", "video.ui.exe", "windowsterminal.exe"], "allowed_active_engine_types": ["3D", "Copy", "VideoDecode", "VideoEncode"], "unclassified_activity": "block"},
+  "gif_fps": 15,
+  "gif_frame_count": 90,
+  "gif_duration_s": 6.0,
+  "gif_duration_tolerance_s": 0.1,
+  "model_calls": 0,
+  "media_claim": "visual_playback_only_fixed_eval_labels_preserved",
+  "source_result_disclosure": "U1 확장 교정 결과를 본 뒤 발표용 비교 장면으로 설계했다. 영상은 새 평가가 아니며 결합된 고정 평가 라벨을 바꾸지 않는다.",
+  "interpretation": "왼쪽은 U1 실패 정책, 가운데는 네 보상 항을 복원해 처음부터 재학습한 정책, 오른쪽은 같은 source seed의 NONE 정책이다. 같은 stock Play 설정의 시각 자료이며 회복 판정은 결합된 고정 평가 결과를 따른다.",
+  "source_anchor_commit": "0c9e06969d48dc71b3159c88f57c329b76257730",
+  "play_py_sha256": "0966feac5a96812fca880e3731e96b001918b57fa372f69e4cf5fdca538bd7bd",
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "play_task_sources": [
+    {"role": "registration", "relative_path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/__init__.py", "sha256": "7fb099196b457ffc5e056163529ba8a195c8b2cc2b348feac6bf694b717cea5f", "required_symbols": ["Isaac-Velocity-Flat-Unitree-Go2-Play-v0", "UnitreeGo2FlatEnvCfg_PLAY", "UnitreeGo2FlatPPORunnerCfg"]},
+    {"role": "environment", "relative_path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/flat_env_cfg.py", "sha256": "a0985003cf4d0e15e9427ffc69f519f9446fee6bee3803d416d32d55fea9a39e", "required_symbols": ["UnitreeGo2FlatEnvCfg_PLAY"]},
+    {"role": "agent", "relative_path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py", "sha256": "de69d2baa50bb35e8ade96e7d1ef4cc7c7a2f2e2ac1bbebbe05bbf29a19acc43", "required_symbols": ["UnitreeGo2FlatPPORunnerCfg"]}
+  ],
+  "code_sha256_lf": {
+    "bench/record_correction_media.py": "3c82aefd7933b802aec57da0c1c82f2841216aca8688f71227a2180194faddcd",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/record_scope_transfer_media.py": "7485db82618c8a53891ed410b04096956b5b3ab19d6ccef000d8972628b8965d",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e"
+  },
+  "public_sources": [
+    {"path": "evals/results/u1_scope_extension_s2051_20261015/summary.json", "sha256_lf": "a99c5a88e6a4b459a3c0f7b9df49217f0e48f73ca77b97026078664819db0b23"},
+    {"path": "evals/results/u1_scope_extension_s2051_20261015/source_failure_evidence.json", "sha256_lf": "b21a05343b2a4b7e1ff62d7bc025fadd43a9148f368799605ac898729c6b1760"},
+    {"path": "evals/results/u1_scope_extension_s2051_20261015/evaluations/u1_family_restart.json", "sha256_lf": "64451115f68cda70facc0cb6310faa37d89fd352db5660c3f9df5f1a863cef52"},
+    {"path": "evals/results/u1_scope_extension_s2051_20261015/evaluations/none_family_control.json", "sha256_lf": "263924eea40473edae22b7d2c4a4a64208c7e209a616ebc358f981bc5b74fa63"}
+  ],
+  "private_sources": [
+    {"logical_id": "u1_scope", "sha256": "d5fe411c5a3db0fc4d9425338d796d63340ef0491875dab5d91e57ce30373984"},
+    {"logical_id": "u1_corrected_receipt", "sha256": "b3068e57991669d121b9493ce6c06b58a928e8145a6a252a67b079becdb42a57"}
+  ],
+  "clips": [
+    {"id": "before_original", "role": "failed", "logical_run_id": "u1_failed_s2051", "run_basename": "2026-10-15_18-16-17_u1_s2051", "checkpoint": "model_299.pt", "checkpoint_sha256": "f36a78916a9a70a669bb7d5d4fa60250b04f0b9afa8911e6db68b440d25ff525", "params_env_sha256": "d32330a651d87e046f15e988c297c5a3f5a45e43431785cc21b22b19c367ffb3", "params_agent_sha256": "5a0320c7e07590c156c2fde2a95c16de4c80ae3652c739037c1defc5b1b76b4b", "fixed_eval_label": "unhealthy", "overrides": ["env.viewer.eye=[3.0,3.0,2.0]", "env.viewer.lookat=[0.0,0.0,0.35]"]},
+    {"id": "after_corrected", "role": "corrected_restart", "logical_run_id": "u1_corrected_restart_s3051", "run_basename": "2026-10-15_18-36-09_u1_scope_s2051_20261015_u1_family_restart", "checkpoint": "model_299.pt", "checkpoint_sha256": "6240951e0d7288550237e78cff06eafd361519311c47d425232da9edfaff83c1", "params_env_sha256": "7f0060219bd3459e4847e215e7423f519843f4723db7a085b8bb25a02767538a", "params_agent_sha256": "1299adababf1fb175758c5e268161c12aa3d6461568212d9075c117feaee3725", "fixed_eval_label": "healthy", "overrides": ["env.viewer.eye=[3.0,3.0,2.0]", "env.viewer.lookat=[0.0,0.0,0.35]"]},
+    {"id": "after_sham", "role": "none_control", "logical_run_id": "u1_none_s2051", "run_basename": "2026-10-15_18-08-16_baseline_p0c_s2051", "checkpoint": "model_299.pt", "checkpoint_sha256": "97a588e7c87b7c3b8ceb516e32ff11ada2b14387d263ee0d4700dc0cb634aa7e", "params_env_sha256": "d32330a651d87e046f15e988c297c5a3f5a45e43431785cc21b22b19c367ffb3", "params_agent_sha256": "c661b54c391cc36927b495767d28517fb3f8cc2ea2762c3fbcf6a7be4f123f6d", "fixed_eval_label": "healthy", "overrides": ["env.viewer.eye=[3.0,3.0,2.0]", "env.viewer.lookat=[0.0,0.0,0.35]"]}
+  ],
+  "claims_not_supported": ["영상만으로 회복을 판정했다", "새 고정 평가", "일반화", "절감", "우월성"]
+}
