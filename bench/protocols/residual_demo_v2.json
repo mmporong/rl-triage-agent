@@ -1,0 +1,392 @@
+{
+  "schema": "residual_demo_protocol_v2",
+  "seeds": [
+    2120,
+    2121
+  ],
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "design_coupling": "설계자가 F1·R1 수리와 작업29 두 seed의 epoch2 모델 계약 위반을 본 뒤 만든 개발 측정이다. 새 seed는 이 결합을 없애지 않는다.",
+  "hypothesis": "출력 계약과 현재 가설을 구분하는 검사 선택을 검증하고, 모델 무효일 때 등록 규칙의 다음 검사를 선택하면 두 번째 고리의 진행 여부를 확인할 수 있다.",
+  "prediction": {
+    "NONE": "walks",
+    "COMPOUND": "unhealthy",
+    "FIRST": "unhealthy",
+    "BOTH": "healthy",
+    "stop_on_counterexample": "복합 실패 부재·첫 교정 회복·미확정이면 중단한다. 결함 강도나 seed를 결과에 맞춰 교체하지 않는다"
+  },
+  "arms": [
+    "NONE",
+    "COMPOUND",
+    "FIRST",
+    "BOTH"
+  ],
+  "original_faults": [
+    "F1",
+    "R1"
+  ],
+  "training": {
+    "iterations": 300,
+    "num_envs": 4096,
+    "same_case_seed_all_arms": true,
+    "mode": "restart",
+    "checkpoint_loaded": false,
+    "source_checkpoint_sha256": "앞선 정책 provenance만 결합; 가중치·optimizer 상태는 읽어 학습하지 않음",
+    "arm_order": "NONE → COMPOUND → 모델과 검사로 선택한 FIRST → 다른 등록 교정을 더한 BOTH",
+    "equal_checkpoint": "같은 seed·복원 설정이면 NONE/BOTH가 같을 수 있으나 SHA 동일성은 성공 조건이 아님"
+  },
+  "loop_registry": {
+    "fixed_order": [
+      "P_episode",
+      "P_noise",
+      "P_reward",
+      "P_torque",
+      "P_physics",
+      "P_value",
+      "P_optimizer_updates"
+    ],
+    "mechanisms": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer_value",
+      "physics",
+      "termination",
+      "optimizer_update_count"
+    ],
+    "outcomes": [
+      "abnormal",
+      "normal",
+      "unknown"
+    ],
+    "probes": {
+      "P_episode": {
+        "args": {
+          "num_envs": 64,
+          "rollout_steps": 1200
+        },
+        "cost_gpu_s": 60,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "normal",
+          "optimizer_update_count": "normal",
+          "optimizer_value": "normal",
+          "physics": "normal",
+          "reward": "normal",
+          "termination": "abnormal"
+        },
+        "measures": "시간 제한 종료 스텝 / (episode_length_s / step_dt)"
+      },
+      "P_noise": {
+        "args": {
+          "num_envs": 256,
+          "rollout_steps": 200
+        },
+        "cost_gpu_s": 60,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "abnormal",
+          "optimizer_update_count": "normal",
+          "optimizer_value": "normal",
+          "physics": "normal",
+          "reward": "normal",
+          "termination": "normal"
+        },
+        "measures": "학습 경로 act() 샘플의 실제 표준편차 / 기록된 action_std"
+      },
+      "P_optimizer_updates": {
+        "args": {
+          "configured_learning_epochs": 5,
+          "configured_mini_batches": 4,
+          "expected_steps_per_update": 20,
+          "num_envs": 4096,
+          "updates": 3
+        },
+        "cost_gpu_s": 60,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "normal",
+          "optimizer_update_count": "abnormal",
+          "optimizer_value": "normal",
+          "physics": "normal",
+          "reward": "normal",
+          "termination": "normal"
+        },
+        "measures": "같은 실행 설정으로 새로 시작한 PPO 3 update의 optimizer.step 및 미니배치 횟수. 정책 체크포인트 관측이 아님"
+      },
+      "P_physics": {
+        "args": {
+          "num_envs": 64
+        },
+        "cost_gpu_s": 30,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "normal",
+          "optimizer_update_count": "normal",
+          "optimizer_value": "normal",
+          "physics": "abnormal",
+          "reward": "normal",
+          "termination": "normal"
+        },
+        "measures": "시뮬레이터에서 읽은 재질 마찰·질량·물리 dt와 설정·무작위화 범위의 불일치 수"
+      },
+      "P_reward": {
+        "args": {
+          "num_envs": 256,
+          "rollout_steps": 200
+        },
+        "cost_gpu_s": 60,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "normal",
+          "optimizer_update_count": "normal",
+          "optimizer_value": "normal",
+          "physics": "normal",
+          "reward": "abnormal",
+          "termination": "normal"
+        },
+        "measures": "상태에서 문서 정의대로 다시 계산한 추종 보상 항(track_lin_vel_xy_exp, track_ang_vel_z_exp)과 보상 관리자 기록값의 상대 오차"
+      },
+      "P_torque": {
+        "args": {
+          "num_envs": 256,
+          "rollout_steps": 500
+        },
+        "cost_gpu_s": 60,
+        "expect": {
+          "actuator": "abnormal",
+          "exploration": null,
+          "optimizer_update_count": "normal",
+          "optimizer_value": "normal",
+          "physics": "normal",
+          "reward": "normal",
+          "termination": "normal"
+        },
+        "measures": "낮은 관절 속도에서 토크 포화 비율"
+      },
+      "P_value": {
+        "args": {
+          "from": "model_0.pt",
+          "to": "last"
+        },
+        "cost_gpu_s": 5,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "normal",
+          "optimizer_update_count": "normal",
+          "optimizer_value": "abnormal",
+          "physics": "normal",
+          "reward": "normal",
+          "termination": "normal"
+        },
+        "measures": "첫 체크포인트 대비 마지막 체크포인트의 critic 파라미터 상대 변화(critic이 학습되는가)"
+      }
+    }
+  },
+  "correction_registry": {
+    "reward": {
+      "correction_id": "restore_body_frame_reward",
+      "adapter_target": "isaaclab.envs.mdp.rewards:track_lin_vel_xy_exp",
+      "protocol_case": "case_01",
+      "recovery_modes": [
+        "restart"
+      ]
+    },
+    "optimizer_update_count": {
+      "correction_id": "restore_configured_ppo_epochs",
+      "adapter_target": "rsl_rl.algorithms.ppo:PPO.num_learning_epochs",
+      "protocol_case": "optimizer_epoch_count",
+      "recovery_modes": [
+        "restart"
+      ]
+    }
+  },
+  "confirmation_scope": "epoch 지역에서 이번에 수리할 한 성분의 확정. 다른 성분의 전역 부재를 뜻하지 않음",
+  "epoch2_gate": [
+    "첫 승인 원장 proposed/approved/consumed/receipt 각 1회",
+    "교정 전후 checkpoint·manifest·readback·평가 SHA 결합",
+    "정상 기준과 동결 고정 평가를 다시 계산한 not_recovered",
+    "성공한 등록 교정 한 개",
+    "새 checkpoint로 빈 관측과 새 지역 가설; 앞선 지역 기각은 전역 후보에서 빼지 않음"
+  ],
+  "limits": {
+    "epochs": 2,
+    "distinct_corrections": 2,
+    "probes_per_epoch": 7,
+    "api_requests_total": 20,
+    "probe_budget_s": 1200,
+    "correction_budget_s": 3600
+  },
+  "model": {
+    "id": "nvidia/nemotron-3-super-120b-a12b",
+    "feedback_retries": 1,
+    "infrastructure_dialogues": 2,
+    "budget": "두 seed가 공유하는 요청 전 배타 예약 원장. 피드백·인프라 재시도·미응답 예약 포함, 21번째 HTTP 금지",
+    "pending": "미완료 예약이 있으면 후속 요청과 완료 판정을 막음"
+  },
+  "inspection": {
+    "runtime_updates": 3,
+    "configured_epochs": 5,
+    "mini_batches": 4,
+    "normal": "3개 update 모두 실제 optimizer.step와 minibatch가 각각 20",
+    "abnormal": "완결된 update 중 하나라도 등록 횟수와 다름",
+    "incomplete": "unknown → HOLD",
+    "checkpoint_loaded": false,
+    "scope": "현재 누적 교정 설정으로 새로 시작한 학습 루프 계측"
+  },
+  "evaluation": {
+    "protocol": "bench/protocols/fixed_eval_v1.json",
+    "conditions": 26,
+    "bands": "evals/results/p0c_fixed_eval_20261009/summary.json",
+    "reference": "같은 seed의 최초 NONE; epoch 사이에 바꾸지 않음",
+    "healthy": "recovered",
+    "unhealthy": "not_recovered",
+    "undetermined": "HOLD"
+  },
+  "recovery_selection_basis": "보상 v4와 R1의 재학습 결과를 사용하여 모든 arm을 같은 초기화·300회로 비교한다. 복합 결함에서 이어 학습의 효과는 측정하지 않는다.",
+  "success_conditions": [
+    "two_fresh_seeds",
+    "both_source_failures",
+    "both_first_not_recovered",
+    "both_second_receipts_recovered",
+    "two_distinct_registered_repairs",
+    "no_unnecessary_epoch2_on_cpu_replay",
+    "api_reserved_at_most_20_no_pending",
+    "selection_origin_recomputed_from_model_receipts",
+    "no_unapproved_or_unknown_correction",
+    "model_validity_rule_transition_recovery_reported_separately"
+  ],
+  "cpu_replay": "NONE·단일 F1·단일 R1 epoch2 0, 양 교정 순서, 모델 형식/의미 무효 규칙 전환, 단일 후보 확인, HOLD·unknown·변조·예산 경계",
+  "outcome_wording": {
+    "recovered": "서로 다른 두 등록 교정과 두 고리를 거친 정책이 고정 평가를 통과했다.",
+    "recovered_after_one": "첫 교정 정책이 고정 평가를 통과해 두 번째 요청을 만들지 않았다.",
+    "not_recovered": "두 교정 뒤에도 고정 평가를 통과하지 못해 멈췄다.",
+    "source_failure_absent": "복합 정책이 고정 평가를 통과해 진단할 실패가 없었다.",
+    "baseline_invalid": "정상 대조가 걷기 조건을 통과하지 못해 멈췄다.",
+    "HOLD": "모델·검사·승인·평가 중 필요한 근거가 확정되지 않아 다음 요청을 만들지 않았다.",
+    "invalid": "출처 또는 산출물 결합을 검증하지 못해 결과 판정을 멈췄다."
+  },
+  "aggregate_wording": {
+    "both": "두 개발 seed에서 두 고리와 두 교정 뒤 회복했다.",
+    "mixed": "개발 seed 간 결과가 달라 후속 사용 규칙을 바꾸지 않는다.",
+    "none": "두 번째 고리의 등록 성공 조건을 충족하지 못했다."
+  },
+  "failure_policy": "미확정은 HOLD, 예외는 invalid로 기록하고 배치를 멈춤. 기존 tag·결과 재사용 금지",
+  "approval": "운영자가 등록 검사·교정을 실행 전에 위임하고 각 요청의 승인을 한 번 소비한다. 사용자 신원 인증을 주장하지 않음",
+  "gpu": "공용 Use-GpuLease 취득·해제 + 각 stage GPU 입장 검사; GPU와 커밋은 메인",
+  "selection": {
+    "schema": "residual_selection_packet_v2",
+    "model_fields": [
+      "action",
+      "probe",
+      "fact_ids"
+    ],
+    "host_fields": [
+      "candidate_groups",
+      "fact_values",
+      "expected_outcomes",
+      "probe_args",
+      "compatibility_state_input"
+    ],
+    "format": "정확한 세 필드·등록 enum·고유 fact ID. 모델 수치·기대값·args·ranking 출력은 무효",
+    "semantic": "남은 후보를 normal/abnormal로 나누는 미관측 검사, 또는 단일 후보의 등록 abnormal 확인 검사만 허용",
+    "fallback": "최종 형식/의미 무효만 현재 후보·관측의 M._next로 전환; 규칙 선택도 같은 의미 검증 적용",
+    "hold": "valid hold·완결된 인프라 오류 기록·예산·pending·unknown은 HOLD. 규칙으로 우회하지 않음",
+    "invalid": "출처·packet·원장·receipt 결합 불일치는 invalid로 배치를 중단. 규칙으로 우회하지 않음",
+    "correction": "규칙은 검사만 선택. 새 abnormal receipt·확정 상태·유효 모델 교정 제안·승인·일회 소비가 모두 필요",
+    "provenance": "model/selection.json을 교정 inventory에 결합. 두 번째 epoch 전에 raw 응답·API receipt로 selection 재계산",
+    "input_bindings": "case/reference checkpoint·telemetry SHA를 packet과 API 예약에 결합. 교정 receipt에 source/reference artifact를 봉인하고 epoch2 입력이 epoch1 출력인지 검증",
+    "no_hidden_answer": "결함명·실제 remaining_faults·계측 readback을 모델 선택이나 규칙 순서 입력에 넣지 않음"
+  },
+  "metrics": {
+    "final_model_validity": "최종 valid diagnosis / valid 또는 invalid로 완료한 diagnosis; infra 제외 수 별도",
+    "format_and_semantics": "형식 valid / 완료 diagnosis, 의미 valid / 형식 valid",
+    "first_pass_validity": "대화 첫 응답 valid / 완료 diagnosis",
+    "rule_transition": "registered_rule 선택 / 완료 diagnosis 및 invalid diagnosis 중 조건부 비율",
+    "end_to_end_recovery": "두 고리·서로 다른 두 교정·최종 고정 평가 회복 / 계획한 새 seed 2개",
+    "interpretation": "규칙으로 회복해도 모델 응답 유효로 재분류하지 않음. CPU 재생과 GPU 회복을 별도로 보고"
+  },
+  "source_sha256_lf": {
+    "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "bench/r1_repair_training.py": "0b1b9aca9d17a4c8fce0a2f1aa451393bea701df66f4769156c2ff9d1f958ae6",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+    "bench/residual_faults_v1.py": "fae165b431588cb01e5140bd75481e907a0b3b71571df2beb6ba11278527ec25",
+    "bench/residual_probe_v1.py": "4d57ed44e9ecaf063d66746a200d28195cce4c322e5ca4f7de449a9106f40d1d",
+    "bench/residual_training_v1.py": "13e9d5733a9b49908e136e54dd0ac8b7dae387b40fa4115f254536c9d6692517",
+    "bench/run_r1_repair_demo.ps1": "7ff128c930bab34470cc48c15bc6bc080fee6b6e38fa8d81f1d4886bebec3b9b",
+    "bench/run_r1_repair_demo_v2.ps1": "e5e34ec05306f881f4b1bbef0c6893487a1c535c91119c09242d9956917238fe",
+    "bench/run_residual_demo_v1.ps1": "7f22ea389803f88f9ef8bd972b8f2acf7dcc753a80955be0f7f7c9f363d38649",
+    "bench/run_residual_demo_v2.ps1": "b60294d4e6fbb2506d214c7286f1f77c5e39ef3d70228f2dd2e1b4c4dbf9ac08",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/train_with_optimizer_fault.py": "4cf14df64cf72f6101e5ac762522167b402ad182981c4482a947497016977520",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+    "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+    "evals/probes_task.py": "36271fbe40a50392e97ffb9f4fdd93439738e7334f4418fb2fddfa55e04aa14d",
+    "evals/r1_repair_contract.py": "eeefe5819928cc0c5f81b0c3f38ae9900b31277698b4936eb2a850e7ec72f159",
+    "evals/r1_repair_demo.py": "e98a7c8fee2f832ae0846d79bd9dee1cb3a626782e7a243730cc01d5ab2f52bf",
+    "evals/r1_repair_demo_v2.py": "da34390e1c3d996427cd3830166191b74524c4cee1e574345fef6ab669c8c63c",
+    "evals/r1_repair_execution.py": "c76f508fb921c642a33a76de3c3ae65bf0ae2624283d4b206a744c715788c1eb",
+    "evals/r1_repair_execution_v2.py": "a16f0c3dd2b9655b2173440879cd8c9cad0f6415752f04944e3a8ce8dc82cd99",
+    "evals/r1_repair_model_call.py": "d8d51011f42a42cb417b1144ad3a6727ff2c6d53470cbc0f7934e3a83194d6b2",
+    "evals/residual_contract_v1.py": "0ad37bcc9399885a1d0c1e6e59b64053706fe1a1bd25b5253ac59b30068c5a90",
+    "evals/residual_demo_v1.py": "09a6bd9179219aff98774b57a836e6798e398ecde494278c17abedfe6a572e45",
+    "evals/residual_demo_v2.py": "1bc4f5065755db0f76849741eb1434046874f1cc1a365745988cdd212a41e2c2",
+    "evals/residual_execution_v1.py": "a62522debd84a0d37986b418ddf75600b1825da28151eafb216d758d45a5277a",
+    "evals/residual_model_call_v1.py": "b3afed7cbbe347acb1aaae9214e986bb18c5fac0fd81299cd95b6fb96e424797",
+    "evals/residual_model_call_v2.py": "2da3db59234dbbf8fdcefcd3968eb0057cc2482a992954e74b29a1bed7125827",
+    "evals/residual_selection_v2.py": "d1a0028afbe00d2697246e4fe30640ec780e3c4b15486dd4f1ed7e722aec6bc8",
+    "evals/run_upstream_r1_smoke.py": "a06e582d440b916c75b7e7b5a8cdb521701870f774207f14f01f13439853127c",
+    "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/mechanism_registry.py": "0bc3c47e52bdb6eb511cad5f6b76d047edfdfd1ca3c09d52fd637c47909d75d0",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "src/rl_triage/tracking_alarm.py": "31d457c6f77ec77a274c3e7a627899ebe1711ddc4c03832c6a2cd5c2ed88e24c",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af",
+    "tests/test_r1_repair_contract.py": "ddf304193a53a178dfd8c5a7b17a159a6dc2ef71cf22cf0096e250c1763cbacb",
+    "tests/test_r1_repair_demo.py": "c72e16bb671d2fadcbbfddb79e3290071ac87f1bfaa2df9c7ba94b2eac51372f",
+    "tests/test_r1_repair_demo_v2.py": "1921bfe16c84dfdf3f69ab64f00a4d3d23de9f850185cf5e8606259e2ee7be66",
+    "tests/test_r1_repair_execution.py": "a389423c046fe937b62e7271d7c8fa16f8e97ac458cefe55cf4350426376d5ef",
+    "tests/test_r1_repair_execution_v2.py": "72cb5252707b988e90f012c366c6688bedcd9922de2c57c38c3066ba5e6291ba",
+    "tests/test_residual_contract_v1.py": "ac27037e30fb08741abb41c0bad0f80649c2f44fcc5e0c1fc43df1440d467f79",
+    "tests/test_residual_demo_v1.py": "89e29e97b03ae06cf2735b91f125ada490e85721e4bc7ffc9bf1f3351fed64d1",
+    "tests/test_residual_demo_v2.py": "01fe764bee6850d52406ed66e78cf063a7f17a833f532890d7878b20a3f82171",
+    "tests/test_residual_execution_v1.py": "5d09a5fdb81b9f62043ab91d1b5c0bcb899e7d2d606c0732212e20c6e943f3ac",
+    "tests/test_residual_model_call_v1.py": "1cd9a8a8f1e381f1cfc5c94ecf68c81b7e7ca1333a422651b2dec6cad9f85680",
+    "tests/test_residual_model_call_v2.py": "24477fb6362cfcbfc8638f9cb09f11e05c3066343f916cbcf116b21984780d07",
+    "tests/test_residual_selection_v2.py": "95d0d34bacbf82116f0803cbc68fc1ea04259add5d29546cab2151bfb2f646e6",
+    "tests/test_residual_training_v1.py": "8f0ad6d1beb3d34e5034c472c0faacd7e1345c025b76bbeede8de2527f355c4d"
+  },
+  "evidence_sha256_lf": {
+    "bench/demo_correction_v4.py": "b3bf1d03aaea60854e61975b631fb802ae8467995b4ad8641379eef7bc7536b7",
+    "bench/protocols/r1_repair_demo_v1.json": "bc727461894d3e271f68374b90147b43d12c82562f4b8412676faee7f0553ddf",
+    "evals/results/n2_feedback_v1/summary.json": "d5d62faeaf60dabfd4339e3843a64490edb69e6ff9bdb0ee5f64c3a24b7947f7",
+    "evals/results/novel_optimizer_confirmation_20261016/summary.json": "699c3526c7c80e19a9407aa9c2764f715a08272804d391340c5fa2a32f3e36e3",
+    "evals/results/optimizer_observability_gpu_20261015/summary.json": "d30d4098ddc65051d23f0e26b780a1fd0b7df440ec3d9fde9cd6177998d348b3",
+    "evals/results/p0c_fixed_eval_20261009/summary.json": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+    "evals/results/residual_failure_public_20261017/model_contract_audit.json": "7ba9042e142c52d44f50950cf408eb1bb7937f505517073a84e203748d553c00",
+    "evals/results/residual_failure_public_20261017/summary.json": "c7a51e3e4f7eae357c8a66c7b47d1839b94409f55d5bf8abbf8ee50792eec883",
+    "evals/results/upstream_r1_loop_20261014/result.json": "50612fd6f0f6339effaffc103a35dcdd8867227b0be3e8963744cc4a3d8c3980",
+    "evals/results/upstream_r1_smoke_20261014/result.json": "b1ecdcdbfeaf2c3594bc9f0c495315a197600074d4c716b1528ae2b911f895c6"
+  },
+  "runtime_source_sha256_lf": {
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/storage/rollout_storage.py": "456450bbba03f9f5818f9ec43d2f3bd5d14d2d27f4bf2308838dd580f32ffcf0",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl_lib-2.3.3.dist-info/METADATA": "90fb9745b9f3c70a32758af9f06dd68dae9b7a13f33e3998e99e081b5c09fda9",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76"
+  }
+}
