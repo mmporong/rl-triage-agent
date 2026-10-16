@@ -1,0 +1,153 @@
+{
+  "schema": "nemotron_upgrade_compare_protocol_v1",
+  "question": "새 Nemotron 후보가 기존 모델과 같은 N2 단일 호출 계약에서 사용할 조건을 충족하는가",
+  "scope": "already_seen_n2_packets_development_measurement_not_accuracy_or_generalization",
+  "official_model_evidence": {
+    "candidate": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "ga_date": "2026-10-15",
+    "model_card": "https://build.nvidia.com/nvidia/nemotron-3.5-super-vl-120b-a12b/modelcard",
+    "hosted_api": "https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3_5-super-vl-120b-a12b-infer",
+    "documented_parameters": {
+      "reasoning_effort": [
+        "none",
+        "low",
+        "high"
+      ],
+      "reasoning_effort_none": "reasoning token disabled",
+      "default_max_tokens": 16384,
+      "maximum_max_tokens": 131072
+    }
+  },
+  "models": {
+    "baseline": "nvidia/nemotron-3-super-120b-a12b",
+    "candidate": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+  },
+  "request_common": {
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "runs_per_packet": 3,
+  "registered_tag": "nemotron_upgrade_svl_20261016_v1",
+  "base_calls": 66,
+  "api_cap": 80,
+  "concurrency": 1,
+  "order": "run 1..3 outer, fixed packet order inner, model order alternates by (run + packet_index) % 2",
+  "retry_rule": "empty, length, 429, 5xx, connection, timeout only; same run at most once; contract invalid is not retried",
+  "unsupported_rule": "unsupported 4xx stops remaining calls and produces incomplete_inconclusive; parameters are not changed",
+  "reservation_rule": "write-once before API; any reservation without a completed response is an orphan and is never called again",
+  "status_definitions": {
+    "valid": "feedback_model_call.validate passes",
+    "invalid": "contract validation rejects the response",
+    "infra_error": "retryable transport/status/empty/length failure",
+    "call_error": "non-retryable API call error"
+  },
+  "metrics": [
+    "packet/model status counts",
+    "decision distribution and pass^1, pass^2, pass^3",
+    "diagnosis/correction valid counts and type mean pass^3",
+    "cross-model decision agreement",
+    "input/output/total tokens and wall seconds over all attempts"
+  ],
+  "adoption_rule": {
+    "complete": "all 66 base calls resolved, unresolved infra_error and call_error are zero",
+    "candidate_valid": "candidate overall valid >= 32/33",
+    "by_kind_valid": "candidate diagnosis and correction valid counts are each >= baseline",
+    "diagnosis_continue": "candidate valid continue count >= baseline valid continue count on the same packets",
+    "by_kind_pass3": "candidate diagnosis and correction mean pass^3 are each >= baseline and >= 0.8",
+    "correction_rule_disagreement": "candidate correction disagreements <= baseline",
+    "pass": "conditional_future_demo_candidate; existing defaults and prior protocols/results remain unchanged",
+    "fail": "retain_current",
+    "incomplete": "incomplete_inconclusive"
+  },
+  "wording": {
+    "candidate": "새 모델은 사전등록 조건을 충족해 향후 시연 결정 단계의 조건부 후보로 기록한다. 기존 기본 모델은 이 측정으로 바꾸지 않는다.",
+    "retain": "새 모델은 사전등록 조건을 모두 충족하지 않아 현재 모델을 유지한다.",
+    "incomplete": "호출 오류·인프라 오류·미완료 예약이 남아 모델 선택을 판정하지 않는다.",
+    "common": "이미 본 N2 packet의 개발 측정이며 정확도·일반화 근거가 아니다. 비용은 기록만 보고하며 우월성·절감 주장을 하지 않는다."
+  },
+  "design_timing": "N2 packet과 기존 모델 결과를 본 뒤 만든 비교이며, 같은 입력과 공개 계약으로 새 모델의 조건부 사용 여부만 판정한다.",
+  "source_files": {
+    "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/n2_pass_k.py": "b33c93dffe603ba6c233d3171ad6fa0660bcb23df59a77d6cb73a5e7d06dfd8e",
+    "evals/nemotron_upgrade_compare_v1.py": "11da6e535a6e6089d85eb8682b8924e6a2716d741a3bd83baf6c6ca4c08f97d5",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "tests/test_nemotron_upgrade_compare_v1.py": "04efdd4a42fb72b3dc8ff0349839be590ea113adf7268f71d844db5263561986"
+  },
+  "inputs": [
+    {
+      "packet_id": "h02_s2027_diagnosis",
+      "kind": "diagnosis",
+      "raw_sha256": "ac4ee4365cd1e304eebfb43b7c56fa91ace1fbec54f38d5ee731f95e58408f4b",
+      "messages_sha256": "6405616f63b046b18c77ae3e44bccbe10c5c5b24a6da7f0aba67925ccfe10296"
+    },
+    {
+      "packet_id": "f2_s2031_diagnosis",
+      "kind": "diagnosis",
+      "raw_sha256": "b6c7d41dca3cc58334e694fdc22460dc6bf6dfa70acd70e568ccb164d9a0b19a",
+      "messages_sha256": "4f36b7060a73f4baa225b0a24dca0634a238afb2de5451fc75498c71b1503b41"
+    },
+    {
+      "packet_id": "f2_s2031_correction",
+      "kind": "correction",
+      "raw_sha256": "e0a6a2973a11b9a1043e4d57145750590b4f7d046bbd528d20596a67598a5d91",
+      "messages_sha256": "5895a56905733e70a530b565021cf52faddbd932c1012283ecf20d99678a64e8"
+    },
+    {
+      "packet_id": "r_s2030_diagnosis",
+      "kind": "diagnosis",
+      "raw_sha256": "3eb285b648c865eb5057ca80c082a6aaba11c688c60935f46b76a01d27785763",
+      "messages_sha256": "42bfdebb6b409ea21b182332e2d223f5cdd905b042e347dde699bb4fa7ba6a37"
+    },
+    {
+      "packet_id": "r_s2030_correction",
+      "kind": "correction",
+      "raw_sha256": "d0807fe22fecb881fc0553345cfa1141eb68a4f47c05e4a00a7155c9bab3a0a1",
+      "messages_sha256": "c5bad0ad961098f439451fa42388907c74eb217f40465bbf67ba740503689f85"
+    },
+    {
+      "packet_id": "f2_s2033_diagnosis",
+      "kind": "diagnosis",
+      "raw_sha256": "28ac8ea2e9ef46a2014338031def62324902579dae82a469f97cfd4bf96e2b32",
+      "messages_sha256": "11a4044fbd55408f0261d842992a52ba9a7164eb2ed426ab0b951a08af44fc0b"
+    },
+    {
+      "packet_id": "f2_s2033_correction",
+      "kind": "correction",
+      "raw_sha256": "076709531d3343220c07dd15643905753f7f6a72e4349c29ce084ae841acc462",
+      "messages_sha256": "6c204d510d2c087498dbbae1f1c320c4d918e52713d8b219103a9ec495a7cdc4"
+    },
+    {
+      "packet_id": "f1_s2034_diagnosis",
+      "kind": "diagnosis",
+      "raw_sha256": "a9707a031f80601152ee60f16e137d09ba790edf6cb7a0be25417957d307d997",
+      "messages_sha256": "3810647c45e6686ea5b7214db51e6ca0b6fe01feedd4352c3ba34b43a7e9bfac"
+    },
+    {
+      "packet_id": "f1_s2034_correction",
+      "kind": "correction",
+      "raw_sha256": "b333115ffa8cf1711d0faa2e28597682aead6b38a6fbc3531d1ed992827422db",
+      "messages_sha256": "79aa745436ab35340e59594496826d4a8f306a8bca7a9b5fce3ab5912b587d67"
+    },
+    {
+      "packet_id": "u1_s2040_diagnosis",
+      "kind": "diagnosis",
+      "raw_sha256": "49672a5bd3efd0c469057927fc96e1a91dfdcf9b6f25eee90731f913e48a8d2b",
+      "messages_sha256": "318268c53663d78827f30df1bc4ee0fd46424d2f35ac1395f126ff682fefe59c"
+    },
+    {
+      "packet_id": "u1_s2040_correction",
+      "kind": "correction",
+      "raw_sha256": "389fc4dd1e9e061855ad4f8075fb2e7f5f0cbfa978cf8c58829ef3b264755789",
+      "messages_sha256": "1c6f059ee1a94d3b966923715b864ecf634243684fd6b6c540c74da8582db6e3"
+    }
+  ],
+  "call_order_sha256": "5c3bc1eb9c0f518ab93bbe4cb3a78a5b4a131f1b969bf6e75d5c5d2e7d2b5d2d"
+}
