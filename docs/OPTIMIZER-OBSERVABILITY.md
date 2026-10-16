@@ -49,3 +49,32 @@ R1 결과를 본 뒤 검사 규칙을 고정하고, 처음 쓰는 seed로 개발
 R1은 첫 update부터 설정된 `learning_epochs=5`, `mini_batches=4`의 기대치 20회와 달랐다. NONE 두 실행은 세 update 모두 기대 횟수와 같았다. 세 사례의 사전 예측도 관측 판정과 일치했다. 공개 결과와 원본 SHA는 [새 seed 확인 결과](../evals/results/novel_optimizer_confirmation_20261016/summary.json)에 묶었다.
 
 이 확인은 optimizer epoch/update 횟수 검사에 한정된다. 모델이 검사나 회복 방식을 고르는 고리는 실행하지 않았다. 처음 쓴 R1 seed 한 개와 NONE 두 실행의 개발 결과이므로 다른 PPO 결함, 일반화, 비용 절감이나 모델 우월의 근거로 쓰지 않는다.
+
+## 검사에서 교정·회복까지 연결한 실행
+
+새 seed 2071에서는 갱신 횟수 검사를 진단 고리에 넣고 epoch 복원을 등록해, 원인 확인부터 교정 재학습과 고정 평가까지 마쳤다. [종단 결과](../evals/results/r1_repair_s2071_20261016/summary.json)는 `outcome=recovered`, `demo_success=true`이며 사전등록 성공 조건 13개를 모두 통과했다. [사전등록 v2](../bench/protocols/r1_repair_demo_v2.json)는 앞선 R1 결과를 본 뒤 만들었고, 알려진 결함 유형을 새 seed 하나로 확인한 개발 시연이다.
+
+기존 결정 모델 `nvidia/nemotron-3-super-120b-a12b`는 처음에 reward를 1위, optimizer를 4위로 두고 `P_reward`를 제안했다. 검사 결과가 normal이어서 reward 가설을 제거했고, 이후 등록된 선택 규칙에 따라 검사를 이어 갔다. 마지막 갱신 횟수 검사에서 optimizer의 update-count 하위 가설이 확정됐다. 첫 검사 선택은 모델이, 관측에 따른 가설 제거와 후속 검사 순서는 등록 규칙이 담당했다.
+
+| 순서 | 승인 검사 | 관측 | 제거된 가설 |
+|---|---|---|---|
+| 1 | `P_reward` | `normal` | reward |
+| 2 | `P_value` | `normal` | optimizer-value |
+| 3 | `P_physics` | `normal` | physics |
+| 4 | `P_episode` | `normal` | termination |
+| 5 | `P_noise` | `normal` | exploration |
+| 6 | `P_optimizer_updates` | `abnormal` | actuator |
+
+새 검사는 승인 후 같은 구성과 seed로 별도 초기화한 PPO update 세 번을 관측했다. R1의 optimizer step과 미니배치는 매번 4회, NONE 대조는 매번 20회였다. 원 결함 checkpoint를 불러오는 검사가 아니며, checkpoint SHA는 계보를 연결한다. 교정은 `learning_epochs=1`을 등록값 5로 복원하고 seed 3071에서 300 update를 새로 학습했다. 교정 학습 첫 세 update에서는 각각 20회가 기록됐다.
+
+| 고정 평가 정책 | 학습 seed | 수평 속도 RMSE (m/s) | 회전 속도 RMSE (rad/s) | 평균 생존 (s) | 낙상률 |
+|---|---:|---:|---:|---:|---:|
+| 정상 기준 NONE | 2071 | 0.1464 | 0.2779 | 20.0 | 0 |
+| R1 결함 | 2071 | 1.1692 | 0.7926 | 20.0 | 0 |
+| epoch 복원 후 새 학습 | 3071 | 0.1482 | 0.2695 | 20.0 | 0 |
+
+교정 정책은 26조건 고정 평가에서 정상 기준 대비 네 행동 조건을 통과했다. 생존 시간과 낙상률이 같아도 결함 정책의 명령 추종은 실패했고, 교정 후에는 추종 오차도 허용 범위 안에 들어왔다. 진단과 교정 모델 응답은 각각 첫 응답에서 유효해 총 2회 호출했으며 피드백 재요청은 사용하지 않았다.
+
+이 판은 기존 top-3 가설·검사 예산 4 대신 모든 범주를 내부 7가설로 펼치고 최대 7검사를 허용한다. 기존 여섯 검사의 임계값과 가설 갱신·확정 함수는 유지했다. 교정 정책의 비교 기준은 시연 v4와 같은 원 seed 2071의 NONE 정책이며, R1에서 이어 학습과 재학습을 비교한 실행은 아니다.
+
+V1(seed 2070)은 학습 전 실행 폴더 생성 누락으로 invalid였으며, 해당 기록을 보존하고 새 판·새 seed로 실행했다.

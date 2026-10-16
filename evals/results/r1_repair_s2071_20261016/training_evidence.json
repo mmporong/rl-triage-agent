@@ -1,0 +1,302 @@
+{
+  "schema": "public_r1_repair_training_evidence_v1",
+  "arms": {
+    "NONE": {
+      "arm": "NONE",
+      "seed": 2071,
+      "fresh_restart": false,
+      "configuration": {
+        "seed": 2071,
+        "max_iterations": 300,
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4
+      },
+      "readback": {
+        "arm": "NONE",
+        "before": {
+          "learning_epochs": 5,
+          "mini_batches": 4
+        },
+        "fault_application": {
+          "event": "construct",
+          "fault": "NONE",
+          "class": "rsl_rl.algorithms.ppo.PPO",
+          "configured_epochs": 5,
+          "effective_epochs": 5,
+          "num_mini_batches": 4,
+          "schedule": "adaptive",
+          "desired_kl": 0.01
+        },
+        "after_fault": {
+          "learning_epochs": 5,
+          "mini_batches": 4
+        },
+        "restoration": null,
+        "after": {
+          "learning_epochs": 5,
+          "mini_batches": 4
+        }
+      },
+      "first_three_updates": {
+        "status": "normal",
+        "optimizer_steps": [
+          20,
+          20,
+          20
+        ],
+        "minibatches": [
+          20,
+          20,
+          20
+        ]
+      },
+      "checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "f92025da6415fb91fb70520e31a6b2137a83cef685b417a48204835449fe151b",
+        "first_iteration": 0,
+        "final_iteration": 299,
+        "model_state_keys": 17,
+        "optimizer_state_keys": 2,
+        "verification_device": "cpu"
+      },
+      "execution": {
+        "execution": {
+          "job_assigned_before_release": true,
+          "natural_exit": true,
+          "timed_out": false,
+          "error_type": null,
+          "exit_code": 0,
+          "cleanup_verified": true,
+          "wall_s": 532.4060000001919
+        },
+        "checkpoint_execution": {
+          "job_assigned_before_release": true,
+          "natural_exit": true,
+          "timed_out": false,
+          "error_type": null,
+          "exit_code": 0,
+          "cleanup_verified": true,
+          "wall_s": 2.8129999998491257
+        },
+        "extract_execution": {
+          "job_assigned_before_release": true,
+          "natural_exit": true,
+          "timed_out": false,
+          "error_type": null,
+          "exit_code": 0,
+          "cleanup_verified": true,
+          "wall_s": 1.077999999979511
+        }
+      },
+      "telemetry_final_20pct": {
+        "Train/mean_reward": 33.71773433685303,
+        "Train/mean_episode_length": 999.2409993489583,
+        "Metrics/base_velocity/error_vel_xy": 0.20238055561979612,
+        "Metrics/base_velocity/error_vel_yaw": 0.36128390530745186
+      },
+      "source_artifact_sha256": {
+        "readback": "71a4f841475e0dfd21dde563109a2ab9d542d9e783c1b3d57a113601c82a2cb9",
+        "first_three_records": "e9506dc8af2e79b27f2868eb64ed3a9317b2804fc58002f7c50ca9652e1477f3"
+      }
+    },
+    "R1": {
+      "arm": "R1",
+      "seed": 2071,
+      "fresh_restart": false,
+      "configuration": {
+        "seed": 2071,
+        "max_iterations": 300,
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4
+      },
+      "readback": {
+        "arm": "R1",
+        "before": {
+          "learning_epochs": 5,
+          "mini_batches": 4
+        },
+        "fault_application": {
+          "event": "construct",
+          "fault": "R1",
+          "class": "rsl_rl.algorithms.ppo.PPO",
+          "configured_epochs": 5,
+          "effective_epochs": 1,
+          "num_mini_batches": 4,
+          "schedule": "adaptive",
+          "desired_kl": 0.01
+        },
+        "after_fault": {
+          "learning_epochs": 1,
+          "mini_batches": 4
+        },
+        "restoration": null,
+        "after": {
+          "learning_epochs": 1,
+          "mini_batches": 4
+        }
+      },
+      "first_three_updates": {
+        "status": "abnormal",
+        "optimizer_steps": [
+          4,
+          4,
+          4
+        ],
+        "minibatches": [
+          4,
+          4,
+          4
+        ]
+      },
+      "checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "7a1fe7dc00b0f48a6c19d54dc7bdd3553a116896ff7622ca699a7569f8240eb1",
+        "first_iteration": 0,
+        "final_iteration": 299,
+        "model_state_keys": 17,
+        "optimizer_state_keys": 2,
+        "verification_device": "cpu"
+      },
+      "execution": {
+        "execution": {
+          "job_assigned_before_release": true,
+          "natural_exit": true,
+          "timed_out": false,
+          "error_type": null,
+          "exit_code": 0,
+          "cleanup_verified": true,
+          "wall_s": 484.23400000017136
+        },
+        "checkpoint_execution": {
+          "job_assigned_before_release": true,
+          "natural_exit": true,
+          "timed_out": false,
+          "error_type": null,
+          "exit_code": 0,
+          "cleanup_verified": true,
+          "wall_s": 2.844000000040978
+        },
+        "extract_execution": {
+          "job_assigned_before_release": true,
+          "natural_exit": true,
+          "timed_out": false,
+          "error_type": null,
+          "exit_code": 0,
+          "cleanup_verified": true,
+          "wall_s": 1.0629999998491257
+        }
+      },
+      "telemetry_final_20pct": {
+        "Train/mean_reward": 10.864805952707927,
+        "Train/mean_episode_length": 998.4134999593099,
+        "Metrics/base_velocity/error_vel_xy": 1.488366820414861,
+        "Metrics/base_velocity/error_vel_yaw": 0.41423009634017943
+      },
+      "source_artifact_sha256": {
+        "readback": "92bb7c7d337af7e95ab1fbd8f032fc6a38f0002a5ef67b820649a29fc9fd269f",
+        "first_three_records": "00ea14f150dc5498de7abdf511a41677a9047a65b94d72ba189b3eae44c40a6d"
+      }
+    },
+    "CORRECTED": {
+      "arm": "CORRECTED",
+      "seed": 3071,
+      "fresh_restart": true,
+      "configuration": {
+        "seed": 3071,
+        "max_iterations": 300,
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4
+      },
+      "readback": {
+        "arm": "CORRECTED",
+        "before": {
+          "learning_epochs": 5,
+          "mini_batches": 4
+        },
+        "fault_application": {
+          "event": "construct",
+          "fault": "R1",
+          "class": "rsl_rl.algorithms.ppo.PPO",
+          "configured_epochs": 5,
+          "effective_epochs": 1,
+          "num_mini_batches": 4,
+          "schedule": "adaptive",
+          "desired_kl": 0.01
+        },
+        "after_fault": {
+          "learning_epochs": 1,
+          "mini_batches": 4
+        },
+        "restoration": {
+          "registry_value": 5,
+          "runtime_value": 5
+        },
+        "after": {
+          "learning_epochs": 5,
+          "mini_batches": 4
+        }
+      },
+      "first_three_updates": {
+        "status": "normal",
+        "optimizer_steps": [
+          20,
+          20,
+          20
+        ],
+        "minibatches": [
+          20,
+          20,
+          20
+        ]
+      },
+      "checkpoint": {
+        "file": "model_299.pt",
+        "sha256": "9c4a1e12a8443ab6e825faaab946001729b92878a822a51bef1a9160f7b09991",
+        "first_iteration": 0,
+        "final_iteration": 299,
+        "model_state_keys": 17,
+        "optimizer_state_keys": 2,
+        "verification_device": "cpu"
+      },
+      "execution": {
+        "execution": {
+          "job_assigned_before_release": true,
+          "natural_exit": true,
+          "timed_out": false,
+          "error_type": null,
+          "exit_code": 0,
+          "cleanup_verified": true,
+          "wall_s": 518.9840000001714
+        },
+        "checkpoint_execution": {
+          "job_assigned_before_release": true,
+          "natural_exit": true,
+          "timed_out": false,
+          "error_type": null,
+          "exit_code": 0,
+          "cleanup_verified": true,
+          "wall_s": 2.7189999998081475
+        },
+        "extract_execution": {
+          "job_assigned_before_release": true,
+          "natural_exit": true,
+          "timed_out": false,
+          "error_type": null,
+          "exit_code": 0,
+          "cleanup_verified": true,
+          "wall_s": 1.125
+        }
+      },
+      "telemetry_final_20pct": {
+        "Train/mean_reward": 33.29093443552653,
+        "Train/mean_episode_length": 998.1221659342448,
+        "Metrics/base_velocity/error_vel_xy": 0.20890685617923738,
+        "Metrics/base_velocity/error_vel_yaw": 0.3710495471954346
+      },
+      "source_artifact_sha256": {
+        "readback": "084efe27b6ca428362031c4645cb385d8468addf058783821af2f6f6f8cd920d",
+        "first_three_records": "fb7bad4f6ad1bb428aa2d1d99812fb2e31d5e8902e33135600c2b539fd3a22d6"
+      }
+    }
+  }
+}

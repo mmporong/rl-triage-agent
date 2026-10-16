@@ -1,0 +1,93 @@
+{
+  "schema": "public_r1_repair_model_evidence_v1",
+  "diagnosis": {
+    "kind": "diagnosis",
+    "accepted": true,
+    "review_status": "valid",
+    "first_status": "valid",
+    "retried": false,
+    "feedback": null,
+    "decision": {
+      "ranking": [
+        "reward",
+        "actuator",
+        "exploration",
+        "optimizer",
+        "physics",
+        "termination"
+      ],
+      "probe": "P_reward",
+      "action": "continue",
+      "reason": "The reference mean reward (33.72) is significantly higher than the case mean reward (10.86), indicating a potential issue in reward computation or scaling, which aligns with the reward category. The P_reward probe is the most direct and cost-effective way to validate reward tracking terms.",
+      "claims": [
+        {
+          "id": "telemetry:reference:Train/mean_reward",
+          "value": 33.71773433685303
+        },
+        {
+          "id": "telemetry:case:Train/mean_reward",
+          "value": 10.864805952707927
+        }
+      ],
+      "expected_outcomes": {
+        "reward": "abnormal",
+        "actuator": "normal",
+        "exploration": "normal"
+      }
+    },
+    "call": {
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "input_tokens": 3904,
+      "output_tokens": 235,
+      "total_tokens": 4139,
+      "wall_s": 4.925988043192774
+    },
+    "execution_wall_s": 5.722834054846317,
+    "source_record_sha256": "e307a3303d07c61e61f5c50efeade94cd4ef2fa7a642c5a1e8b9be8328ec5b4d"
+  },
+  "correction": {
+    "kind": "correction",
+    "accepted": true,
+    "review_status": "valid",
+    "first_status": "valid",
+    "retried": false,
+    "feedback": null,
+    "decision": {
+      "decision": "propose",
+      "proposal": {
+        "correction_id": "restore_configured_ppo_epochs",
+        "recovery_mode": "restart",
+        "cited_facts": [
+          "confirmed_mechanism",
+          "confirmed_subtype",
+          "confirming_probe",
+          "confirming_probe_outcome",
+          "registered_correction",
+          "registered_recovery_modes",
+          "rule",
+          "rule_mode"
+        ],
+        "checklist": {
+          "1": "confirmed_mechanism",
+          "2": "confirmed_mechanism",
+          "3": "confirming_probe_measurement",
+          "4": "eval_metrics",
+          "5": "confirming_probe_measurement",
+          "6": "rule"
+        },
+        "hold_reason": null
+      },
+      "agrees_with_rule": true,
+      "unmet_checklist": []
+    },
+    "call": {
+      "provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "input_tokens": 1477,
+      "output_tokens": 175,
+      "total_tokens": 1652,
+      "wall_s": 7.957792401080951
+    },
+    "execution_wall_s": 8.567600700072944,
+    "source_record_sha256": "b624906fb06f835e9a153c8d409482566deb5b41b3dd854dc009b70af28d7175"
+  }
+}
