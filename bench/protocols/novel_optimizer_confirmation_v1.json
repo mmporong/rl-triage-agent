@@ -1,0 +1,128 @@
+{
+  "schema": "novel_optimizer_confirmation_protocol_v1",
+  "measurement_kind": "post_result_design_novel_seed_development_confirmation",
+  "design_coupling": "R1 seed 2042 결과를 본 뒤 optimizer 갱신 관측 검사를 설계했다.",
+  "question": "처음 사용하는 seed에서 R1의 실제 PPO 갱신 수 감소와 정상 조건의 불발을 다시 확인할 수 있는가",
+  "training": {
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+    "num_envs": 4096,
+    "max_iterations": 300,
+    "seed": 2060,
+    "arms": [
+      "NONE",
+      "R1"
+    ],
+    "final_checkpoint": "model_299.pt"
+  },
+  "inspection": {
+    "max_iterations": 3,
+    "configured_learning_epochs": 5,
+    "configured_mini_batches": 4,
+    "expected_steps_per_update": 20,
+    "runs": [
+      {
+        "run_id": "none_s2060",
+        "arm": "NONE",
+        "seed": 2060,
+        "runtime_set": null,
+        "hidden_fault": "NONE"
+      },
+      {
+        "run_id": "r1_s2060",
+        "arm": "R1",
+        "seed": 2060,
+        "runtime_set": "num_learning_epochs=1",
+        "hidden_fault": null
+      },
+      {
+        "run_id": "none_specificity_s2061",
+        "arm": "NONE",
+        "seed": 2061,
+        "runtime_set": null,
+        "hidden_fault": "NONE"
+      }
+    ],
+    "checkpoint_relation": "300-update 체크포인트를 재개하거나 읽지 않는다. 같은 결함·seed 조건에서 새로 초기화한 3-update 학습의 PPO 갱신을 계측한다."
+  },
+  "prediction": {
+    "none_s2060": {
+      "status": "normal",
+      "steps": [
+        20,
+        20,
+        20
+      ],
+      "minibatches": [
+        20,
+        20,
+        20
+      ]
+    },
+    "r1_s2060": {
+      "status": "abnormal",
+      "steps": [
+        4,
+        4,
+        4
+      ],
+      "minibatches": [
+        4,
+        4,
+        4
+      ]
+    },
+    "none_specificity_s2061": {
+      "status": "normal",
+      "steps": [
+        20,
+        20,
+        20
+      ],
+      "minibatches": [
+        20,
+        20,
+        20
+      ]
+    }
+  },
+  "decision": {
+    "confirmed": "세 계측이 모두 예측과 일치하고 300-update 학습 두 개가 정상 종료했다.",
+    "mismatch": "완결된 normal/abnormal 결과가 예측과 다르므로 이번 새 seed 개발 확인은 불일치다.",
+    "invalid": "실행 실패, 누락 또는 unknown이 있어 판정하지 않는다."
+  },
+  "limits": [
+    "새 seed 두 개의 개발 확인이며 보류 성능·일반화·LLM 우월·비용 절감 근거가 아니다.",
+    "정상 특이성 한 건은 optimizer epoch/update 검사 범위의 음성 대조다."
+  ],
+  "fresh_seed_rule": {
+    "seeds": [
+      2060,
+      2061
+    ],
+    "check_once": "태그·소비·GPU 조회·실행 파일 생성 전"
+  },
+  "gpu": {
+    "profile": "desktop_shared_recording_v1",
+    "sequential": true,
+    "fail_stop": true
+  },
+  "write_once": true,
+  "source_sha256_lf": {
+    "evals/novel_optimizer_confirmation.py": "5e3fae737bb36296db98b988f3b069fc18a8cbd5331b1abced582ac6cb1aa771",
+    "bench/inspect_optimizer_confirmation.py": "77acdd5a6b4b59b38105e3fe90f60e1496f3d3061de883f51eef08e505eae5ec",
+    "bench/inspect_optimizer_observability.py": "6923f0aec67377e8e03633d898871b9a4f0771e4ad941cb532beb0403ead3883",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "bench/train_with_optimizer_fault.py": "4cf14df64cf72f6101e5ac762522167b402ad182981c4482a947497016977520",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2"
+  },
+  "runtime_source_sha256_lf": {
+    "<isaaclab>/scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "<isaaclab>/source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "<isaaclab>/_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "<isaaclab>/_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d"
+  }
+}
