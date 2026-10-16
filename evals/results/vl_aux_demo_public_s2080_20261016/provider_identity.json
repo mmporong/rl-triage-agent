@@ -1,0 +1,45 @@
+{
+  "schema": "public_vl_aux_provider_identity_v1",
+  "identity_policy": "registered endpoint alias; model weights were not attested",
+  "timing_scope": {
+    "decision_model": "sum of client SDK-call wall_s measured inside openai_complete for two text decision calls",
+    "observer_measured": "sum of client-measured wall_s for three visual observation calls",
+    "combined": "arithmetic display across the two scopes; not a comparable latency or full experiment runtime",
+    "timing_comparison_allowed": false
+  },
+  "calls": [
+    {
+      "call": "diagnosis",
+      "requested_model": "nvidia/nemotron-3-super-120b-a12b",
+      "returned_provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "registered_alias": false
+    },
+    {
+      "call": "correction",
+      "requested_model": "nvidia/nemotron-3-super-120b-a12b",
+      "returned_provider_model": "nvidia/nemotron-3-super-120b-a12b",
+      "registered_alias": false
+    },
+    {
+      "call": "clip1",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "returned_provider_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "returned_provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "registered_alias": true
+    },
+    {
+      "call": "clip2",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "returned_provider_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "returned_provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "registered_alias": true
+    },
+    {
+      "call": "clip3",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "returned_provider_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "returned_provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "registered_alias": true
+    }
+  ]
+}

@@ -81,8 +81,26 @@ v1은 미실행으로 보존했다. v2의 첫 응답은 모델 ID 불일치로 `
 
 원시 원장은 v2의 결합을 유지하고 v3 요청에 접두사를 붙였다. 감사 시 v3 계획·프로토콜·부모 원장 해시와 전체·v3 원장 해시를 함께 확인한다. 공개 결과에는 사용자 경로, 비공개 입력 경로, 키, 원시 프롬프트를 넣지 않았다.
 
+## 회복 시연에 연결한 영상 보조 관찰
+
+새 Go2 보상 결함 seed 2080에서 진단·검사·교정·재학습 고리와 영상 관찰을 연결했다. 기본 시연은 `recovered`, `demo_success=true`였고 완료 조건 12개를 모두 충족했다. 정상·결함 정책의 고정 평가 직후와 교정 재학습(seed 3080)의 고정 평가 직후에 같은 checkpoint를 Play로 실행하고, 정책마다 프레임 여섯 장을 새 VL 요청 경로에 보냈다. [공개 결과](../evals/results/vl_aux_demo_public_s2080_20261016/summary.json).
+
+| 정책 | 고정 평가 | walking | in_place | falling | 실제 입력 프레임 예시 |
+|---|---|---|---|---|---|
+| 정상 seed 2080 | healthy | yes | no | no | [정상](../evals/results/vl_aux_demo_public_s2080_20261016/frames/clip1/frame_03.jpg) |
+| 보상 결함 seed 2080 | unhealthy | no | yes | no | [결함](../evals/results/vl_aux_demo_public_s2080_20261016/frames/clip2/frame_03.jpg) |
+| 교정 후 재학습 seed 3080 | healthy | yes | no | no | [교정](../evals/results/vl_aux_demo_public_s2080_20261016/frames/clip3/frame_03.jpg) |
+
+세 관찰 모두 형식상 유효했고, B4의 대응 정의(healthy면 walking=yes, unhealthy면 walking=no)로 3/3 대응했다. 이 수치는 위의 18개 영상 개발 측정과 합산하지 않는다. 고정 평가의 추종 성능 라벨과 별도 Play의 행동 묘사를 나란히 기록한 것이며, 세 프레임 묶음으로 영상 판독 정확도를 추정하지 않는다.
+
+기존 텍스트 모델이 진단과 교정 결정에 각각 한 번 호출됐고 VL 관찰은 세 번 호출됐다. 총 5/16요청이며 재시도는 없었다. 영상 결과는 별도 기록에 `used_for_decision=false`로 저장했다. 진단·검사 선택·교정 승인·회복 판정의 입력으로 사용하지 않았다. **이 실행에서 회복은 고정 평가가 판정했고, VL은 정상·결함·교정 정책의 화면 관찰을 덧붙였다.**
+
+[반환 모델 ID 기록](../evals/results/vl_aux_demo_public_s2080_20261016/provider_identity.json)은 요청명과 실제 반환명을 함께 보존한다. 공개 요약의 시간은 결정 호출의 기록값과 관찰 wrapper의 측정값으로 범위가 다르므로, `combined`를 동일 경계의 지연 시간이나 전체 실험 시간으로 해석하지 않는다.
+
+설계자는 기존 F1 시연과 B4 관찰 결과를 본 뒤 연결 기능을 만들었다. [새 사전등록](../bench/protocols/vl_aux_demo_v1/e2e_demo_v4_f1.json)을 커밋 `110720c2b0188d48e39bbc8cdbc90a3d88fcc6bb`에서 고정하고 새 seed로 실행했다. Play는 고정 평가 실행 자체의 녹화가 아니라 동일 checkpoint의 별도 실행이다. 공개 결과에는 관찰에 사용한 프레임 18개와 원본 결합 해시를 포함한다.
+
 ## 적용 범위
 
-기존 진단·교정 결정의 기본 모델은 유지한다. 새 요청 경로는 보조 영상 관찰 후보로 분리할 근거가 생겼다. 시연에 연결할 때도 관찰 결과와 고정 평가 판정을 나란히 기록하고, 관찰만으로 회복 상태를 바꾸지 않는다.
+기존 진단·교정 결정의 기본 모델은 유지한다. 새 요청 경로는 시연의 보조 영상 관찰로 연결했으며, 관찰 결과와 고정 평가 판정을 나란히 기록한다. 관찰만으로 회복 상태를 바꾸지 않는다.
 
 모델 외 구성은 변경하지 않았다. 설치된 NAT는 확인한 안정 릴리스 [1.9.0](https://github.com/NVIDIA/NeMo-Agent-Toolkit/releases/tag/v1.9.0)과 같았다. [Isaac Sim 6.2 다운로드 문서](https://docs.isaacsim.omniverse.nvidia.com/latest/installation/download.html)와 [Isaac Lab 릴리스](https://github.com/isaac-sim/IsaacLab/releases)는 별도 호환성 검토 대상으로 남긴다. 기존 Sim 4.5·Lab 2.1.1 환경의 체크포인트와 평가를 유지하려면 새 버전의 기준선·물리 동작·기록기 회귀를 별도 실험으로 확인해야 한다. hosted API 응답의 모델명으로 설치형 NIM 버전을 추정하지 않는다.

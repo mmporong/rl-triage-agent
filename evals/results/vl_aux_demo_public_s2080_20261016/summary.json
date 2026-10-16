@@ -1,0 +1,42 @@
+{
+  "schema": "public_vl_aux_demo_summary_v1",
+  "status": "complete",
+  "seed": 2080,
+  "restart_seed": 3080,
+  "fault": "F1",
+  "outcome": "recovered",
+  "demo_success": true,
+  "base_success_conditions": {
+    "passed": 12,
+    "total": 12
+  },
+  "auxiliary": {
+    "complete": true,
+    "valid_observations": 3,
+    "expected_observations": 3,
+    "fixed_label_correspondence": {
+      "matched": 3,
+      "total": 3
+    },
+    "used_for_decision": false
+  },
+  "api": {
+    "requests": {
+      "decision": 2,
+      "observer": 3,
+      "total": 5,
+      "cap": 16
+    },
+    "tokens": {
+      "input": 9749,
+      "output": 429,
+      "total": 10178
+    },
+    "wall_s": {
+      "decision_model": 17.893185229972005,
+      "observer_measured": 4.82403386104852,
+      "combined": 22.717219091020525
+    }
+  },
+  "statement_scope": "새 seed 한 건의 통합 확인이며 영상 관찰은 회복 판정에 사용하지 않았다."
+}
