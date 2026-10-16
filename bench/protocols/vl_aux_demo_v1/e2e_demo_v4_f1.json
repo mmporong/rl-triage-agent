@@ -1,0 +1,632 @@
+{
+  "schema": "e2e_demo_protocol_v4_vl_aux_v1",
+  "variant": "f1",
+  "decision_path": "single_feedback",
+  "question": "새 seed 보상 결함 시연의 고정 평가 뒤 Play 영상 관찰을 판정 외 보조 근거로 연결할 수 있는가",
+  "scope": "single_new_seed_synthetic_fault_integration_demo_not_accuracy_generalization_or_savings",
+  "fault": "F1",
+  "fault_mechanism": "reward",
+  "case_id": "h02",
+  "cases": {
+    "NONE": "baseline_p0c_s2080",
+    "FAULT": "h02_s2080"
+  },
+  "fault_definition": "bench/hidden_faults.py F1(동결, 크기·정의 변경 없음)",
+  "seed": 2080,
+  "restart_seed": 3080,
+  "seed_selection": "2080·3080을 실행 전 로컬 기록에서 다시 검사하며 충돌하면 실행하지 않는다",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "num_envs": 4096,
+  "max_iterations": 300,
+  "num_steps_per_env": 24,
+  "action_scale": 0.25,
+  "telemetry_dir": "bench/runs_p0c",
+  "approval": "사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)",
+  "source_binding": "begin이 기록한 HEAD가 실험 커밋이다. 이후 단계와 restart 교정(부모의 실행 전·후 검사, 학습 자식의 manifest 검사)은 실험 커밋이 HEAD의 조상이고 결합 파일 blob의 LF 정규화 SHA256이 실험 커밋과 HEAD에서 같을 때만 진행하며, 단계 기록에는 실험 커밋을 남긴다. 결합 파일은 작업 트리에서도 커밋 상태와 같아야 한다",
+  "recovery_rule": {
+    "mechanism": "reward",
+    "kind": "standstill_threshold",
+    "threshold": 0.9,
+    "at_or_above": "restart",
+    "below": "resume",
+    "source": "v4 사전등록 규칙(seed 2027 단일 관찰에서 만듦), v4 seed 2026·2028 적중, 시연 v2 seed 2030 recovered"
+  },
+  "registry": {
+    "reward": {
+      "correction_id": "restore_body_frame_reward",
+      "adapter_target": "isaaclab.envs.mdp.rewards:track_lin_vel_xy_exp",
+      "protocol_case": "case_01",
+      "recovery_modes": [
+        "restart",
+        "resume"
+      ]
+    },
+    "actuator": {
+      "correction_id": "restore_motor_torque_speed",
+      "adapter_target": "isaaclab.actuators.actuator_pd:DCMotor._clip_effort",
+      "protocol_case": "case_02",
+      "recovery_modes": [
+        "restart",
+        "resume"
+      ]
+    },
+    "termination": {
+      "correction_id": "restore_configured_timeout",
+      "adapter_target": "isaaclab.envs.mdp.terminations:time_out",
+      "protocol_case": "case_03",
+      "recovery_modes": [
+        "resume"
+      ]
+    }
+  },
+  "correction": {
+    "correction_id": "restore_body_frame_reward",
+    "budget_gpu_s_min": 2400,
+    "modes": {
+      "restart": {
+        "arms": [
+          "restart_corrected"
+        ],
+        "training_seed": 3080,
+        "reference": "같은 seed NONE 원 정책(시연 고정 평가)",
+        "reason": "같은 seed 처음부터 학습은 정상 학습을 바이트 단위로 재현하므로 실패 seed + 1000"
+      },
+      "resume": {
+        "arms": [
+          "clean_resume_reference",
+          "resume_corrected"
+        ],
+        "training_seed": 2080,
+        "resume_iteration": 299,
+        "final_iteration": 598,
+        "reference": "같은 seed NONE 체크포인트를 같은 갱신량으로 이어 학습한 정책(v4 기준과 같다)",
+        "reference_validity": "기준이 걷고 같은 seed NONE 원 정책 대비 healthy여야 한다. 아니면 correction_unknown"
+      }
+    },
+    "verdict": "recovery.verdict(p0c 밴드)",
+    "budget_floor_checked_at": "correction-propose(원장에 쓰기 전). 하한 미만·정수 아님이면 요청을 만들지 않는다",
+    "terminal_guard": "종료 기록이 있으면 교정 근거·제안·승인·거절을 거부한다",
+    "recover": "실행 중 끊겨 결과 없이 남은(고아) 요청만 recover-correction으로 재실행 없이 닫는다. 교정 결과 파일(fix/result.json)이 있고 그 스키마·fix 태그·요청 id·회복 방식·실험 커밋이 요청과 같으면 그 판정·SHA·비용 합으로, 없으면 unknown(orphan_without_artifact)으로 receipt를 쓰고 correction 단계를 같은 모양으로 기록한다(recovered_orphan=true, receipt.recovered_from 공개). 결과 파일이 요청과 다르면 거부한다",
+    "model_call": "evals/feedback_model_call.py --kind correction(WSL, temperature 0, 검증 피드백 재요청 최대 1회)",
+    "auto_approval": "execute의 --approve-registered-actions 명시가 필요하다",
+    "approval": "등록 범위의 운영자 위임 승인·소비, 승인 문자열 신원 인증 아님",
+    "ledger": "CorrectionLedger(evals/loops/<사례>/correction_ledger.jsonl, registry=registry_v3())로 제안·승인·소비·실행·조회",
+    "executor": "bench/demo_correction_vl_v1.py (동결 v4 실행기 재사용)"
+  },
+  "diagnosis": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "packet_schema": "active_decision_packet_v2",
+    "decision_contract": "rl_triage.active_diagnosis.validate_decision",
+    "call": "evals/feedback_model_call.py --kind diagnosis(WSL, temperature 0, 검증 피드백 재요청 최대 1회)",
+    "max_infra_attempts": 2,
+    "blind_inputs": "사례 이름·정답·결함 정의를 넣지 않는다"
+  },
+  "feedback_policy": {
+    "caller": "evals/feedback_model_call.py --kind diagnosis|correction(WSL, temperature 0)",
+    "first_call": "v3.1 단일 호출과 같은 메시지 함수(active_diagnosis.decision_messages, correction_model_call.build_messages)·모델·temperature 0·reasoning_effort none·max_tokens 16384, 출력 형식 없음",
+    "when": "1차 출력을 기존 계약 검증기(validate_decision, validate_model_proposal)가 거절했을 때만, 결정 단계마다 한 번",
+    "messages": "1차 메시지 + 1차 응답(assistant) + 피드백(user). 요청 설정은 1차와 같다",
+    "feedback_rule": "검증기 거절 메시지를 등록 문제 코드로 바꾸고 코드마다 고정 설명(프롬프트 계약 규칙을 다시 적은 문장)을 붙인다. 정답·카탈로그 값·사실 id·값·등록 교정 같은 packet별 내용과 프롬프트 밖 힌트는 넣지 않는다",
+    "codes": {
+      "diagnosis": [
+        "D_JSON",
+        "D_FIELDS",
+        "D_RANKING",
+        "D_ACTION",
+        "D_REASON",
+        "D_EXPECTED_TYPE",
+        "D_PROBE",
+        "D_BUDGET",
+        "D_EXPECTED",
+        "D_HOLD_PROBE",
+        "D_HOLD_EXPECTED",
+        "D_HOLD_ONLY",
+        "D_CONFIRM_INITIAL",
+        "D_CONFIRM_RULE",
+        "D_CLAIMS_EMPTY",
+        "D_CLAIM_SHAPE",
+        "D_CLAIM_ID",
+        "D_CLAIM_VALUE",
+        "D_LATEST_RECEIPT",
+        "D_OTHER"
+      ],
+      "correction": [
+        "C_CHECKLIST_KEYS",
+        "C_CHECKLIST_VALUE",
+        "C_CITED_EMPTY",
+        "C_CITED_UNKNOWN",
+        "C_CORRECTION",
+        "C_HOLD_IDS",
+        "C_HOLD_REASON",
+        "C_JSON",
+        "C_KEYS",
+        "C_MECHANISM",
+        "C_MODE",
+        "C_TYPES",
+        "C_OTHER"
+      ]
+    },
+    "texts": {
+      "diagnosis": {
+        "D_JSON": "The output must be exactly one JSON object.",
+        "D_FIELDS": "The object must have exactly these fields: ranking, probe, action, reason, claims, expected_outcomes.",
+        "D_RANKING": "ranking must be a permutation of all six public mechanisms.",
+        "D_ACTION": "action must be continue, hold, or confirm.",
+        "D_REASON": "reason must be a non-empty concise explanation.",
+        "D_EXPECTED_TYPE": "expected_outcomes must be a JSON object.",
+        "D_PROBE": "For action=continue, probe must be one unobserved public probe.",
+        "D_BUDGET": "With budget_left=0, continue is not allowed.",
+        "D_EXPECTED": "For continue, expected_outcomes must exactly copy the selected probe's public catalog expectations for the top three ranked mechanisms.",
+        "D_HOLD_PROBE": "For hold or confirm, probe must be null.",
+        "D_HOLD_EXPECTED": "For hold or confirm, expected_outcomes must be an empty object.",
+        "D_HOLD_ONLY": "After an unknown or unusable latest observation, return hold.",
+        "D_CONFIRM_INITIAL": "Without a usable observation, never confirm.",
+        "D_CONFIRM_RULE": "Confirm only when the deterministic evidence state is confirmed and its sole hypothesis is ranked first.",
+        "D_CLAIMS_EMPTY": "claims must contain one or more {\"id\": evidence_fact_id, \"value\": exact_fact_value} objects.",
+        "D_CLAIM_SHAPE": "Each claim must be an object with only id and value.",
+        "D_CLAIM_ID": "Each claim id must be a distinct available evidence fact id.",
+        "D_CLAIM_VALUE": "Every claim must copy an available evidence fact value exactly.",
+        "D_LATEST_RECEIPT": "After an observation, cite at least one fact from the latest receipt.",
+        "D_OTHER": "The decision does not satisfy the contract in the instructions."
+      },
+      "correction": {
+        "C_JSON": "출력은 JSON 객체 하나뿐이어야 한다.",
+        "C_KEYS": "correction_id·recovery_mode·cited_facts·checklist·hold_reason 다섯 키만 쓴다.",
+        "C_HOLD_REASON": "hold_reason은 null이거나 비지 않은 문자열이다.",
+        "C_HOLD_IDS": "보류하면 correction_id·recovery_mode는 null이다.",
+        "C_TYPES": "제안하면 correction_id와 recovery_mode는 문자열이다.",
+        "C_MECHANISM": "registry에 확정 메커니즘 항목이 없으면 보류한다.",
+        "C_CORRECTION": "correction_id는 registry의 확정 메커니즘 항목 값만 쓴다.",
+        "C_MODE": "recovery_mode는 registry의 확정 메커니즘 항목 값만 쓴다.",
+        "C_CITED_EMPTY": "cited_facts는 facts의 키를 하나 이상 인용한 문자열 목록이다.",
+        "C_CITED_UNKNOWN": "cited_facts와 checklist 값은 facts의 키만 인용한다.",
+        "C_CHECKLIST_KEYS": "checklist는 skill_checklist의 모든 번호를 키로 가진다.",
+        "C_CHECKLIST_VALUE": "checklist 값은 그 항목을 충족하는 facts 키 하나, 근거가 없으면 \"unmet\"이다.",
+        "C_OTHER": "제안이 지시문의 계약을 만족하지 않는다."
+      }
+    },
+    "frame": {
+      "diagnosis": [
+        "The previous JSON was rejected by the public contract validator.\nProblems:",
+        "Return one corrected JSON object only, under the same contract."
+      ],
+      "correction": [
+        "직전 JSON이 공개 계약 검증에서 거절됐다.\n문제:",
+        "같은 계약을 따르는 고친 JSON 객체 하나만 출력한다."
+      ]
+    },
+    "final": "재요청 결과를 같은 검증기로 다시 판정한다. 재요청 뒤에도 무효면 무효",
+    "review": "단계 기록 전에 호출 기록을 packet·메시지·요청 설정에 묶어 다시 검증한다. 1차·최종 판정을 검증기로 다시 계산하고, 피드백 문장이 문제 코드에서 만든 고정 문장과 같은지 확인한다"
+  },
+  "invalid_after_retry": {
+    "diagnosis": "재요청 결과도 무효면 model_invalid로 끝낸다. 규칙 probe로 대체하지 않는다(v3.1과 같다). 재요청 결과가 유효하면 그 결정으로 고리를 시작한다",
+    "correction": "재요청 결과도 무효면 거절된 모델 제안(검증 사유·피드백 기록)을 근거로 붙인 채 교정 요청은 규칙의 교정·회복 방식으로 올린다(v3.1과 같다). 이때 성공 조건 correction_call_accepted가 거짓이라 demo_success가 되지 않는다",
+    "infra": "1차·재요청 어느 쪽이든 인프라 오류(연결·시간 초과·429·5xx·빈 응답·잘림)면 그 기록은 인프라 오류다. 같은 packet으로 대화 전체를 새 기록 파일에 다시 부른다. 첫 판단은 최대 2회(v3.1과 같다). 재시도하지 않는 API 오류는 첫 판단에서 model_infra_failed, 교정에서는 그 기록으로 제안하지 않는다"
+  },
+  "model_feedback_record": {
+    "fields": [
+      "first_valid",
+      "retries(0|1)",
+      "final_valid",
+      "first_codes",
+      "final_codes",
+      "requests",
+      "retry_input_tokens",
+      "retry_output_tokens",
+      "retry_wall_s"
+    ],
+    "steps": [
+      "diagnosis(첫 판단)",
+      "correction(교정 제안)"
+    ],
+    "prediction": "재요청 발생 여부는 예측하지 않는다. 기록만 한다"
+  },
+  "feedback_adoption_rule": "N2 검증 피드백 재요청 arm 공개 요약(evals/results/n2_feedback_v1/summary.json)이 complete이고 improvement.decision이 improved일 때만 prepare하며 그 파일을 SHA로 묶는다. 그 요약은 이미 본 packet의 개발 측정이고, 이 시연이 그 문구가 요구한 새 사전등록이다",
+  "specificity_gate": {
+    "probes": [],
+    "rule": "고리 확정 뒤 결함 정책에서 보조 probe를 따로 재 같은 seed NONE 기준으로 동결 classify한다. 모두 normal이면 교정으로 가고, 하나라도 abnormal·unknown이면 confirmation_not_specific로 끝낸다",
+    "basis": "게이트 없음",
+    "approval": "고리 밖 사전등록 측정 단계(정상 기준 probe 단계처럼 승인 원장을 거치지 않는다)"
+  },
+  "loop": {
+    "case": "h02_s2080",
+    "top_k": 3,
+    "budget_probes": 4,
+    "first_probe": "모델이 고른 probe가 상위 3가설을 가르면 그 probe, 아니면 동결 규칙 probe(대체로 기록)",
+    "update": "동결 probe_loop.update 규칙. 관측 뒤 모델 재호출 없음",
+    "metered": true,
+    "approval": "evals/loop.py approve/reject. 사용자가 위임한 운영자 승인 또는 사람 승인(승인자 문자열 기록, 신원 인증 아님)",
+    "proceed_rule": "상태 confirmed이고 유일 가설이 reward일 때만 교정 단계로 간다"
+  },
+  "alarm": {
+    "metric": "Metrics/base_velocity/error_vel_xy",
+    "smoothing": "trailing_mean",
+    "window_iterations": 20,
+    "eligible_iteration_min": 60,
+    "persistence_iterations": 10,
+    "error_ratio": 2.0,
+    "reference": "같은 iteration의 정상 참조 실행별 과거 평균 중 최대값",
+    "reference_runs": [
+      "baseline_p0c_s2026",
+      "baseline_p0c_s2027",
+      "baseline_p0c_s2028"
+    ],
+    "status": "이미 본 seed 2026~2028에서 사후에 고른 후보 상수. 판정·게이트에 쓰지 않는다"
+  },
+  "evaluation": {
+    "protocol": "bench/protocols/fixed_eval_v1.json",
+    "bands_source": "evals/results/p0c_fixed_eval_20261009/summary.json",
+    "failure_rule": "같은 seed NONE이 걷고(err_xy < 0.5×제자리, 낙상 ≤ 0.05) 결함 정책이 NONE 대비 unhealthy면 실패 존재"
+  },
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "rsl_rl_version": "2.3.3",
+  "torch_version": "2.7.0+cu128",
+  "watchdogs_s": {
+    "train": 1800,
+    "fixed_eval": 600,
+    "reference_probes": 900,
+    "specificity_probes": 600,
+    "correction_train": 1800,
+    "correction_eval": 600
+  },
+  "predictions": {
+    "source_failure": "F1이 같은 seed NONE 대비 unhealthy이고 정지 비율 ≥ 0.9",
+    "alarm": "R1 경고가 F1에 울리고 NONE에는 울리지 않는다",
+    "diagnosis": "첫 판단 continue, 상위 세 가설에 reward 포함",
+    "loop": "P_reward abnormal 뒤 reward 확정",
+    "specificity": "게이트 없음",
+    "correction_rule": "기존 reward 규칙: 정지 비율 ≥ 0.9면 restart, 그렇지 않으면 resume",
+    "correction": "교정 정책 recovered"
+  },
+  "success_conditions": {
+    "protocol_committed": "모든 단계가 실행 전에 커밋된 같은 프로토콜과 하나의 실험 커밋에서 돌았다",
+    "seed_unused": "시작 시 실패 seed·재학습 seed의 학습·평가·고리 산출물이 없었다",
+    "source_failure_present": "같은 seed 정상 정책은 걷고 결함 정책은 unhealthy였다",
+    "fresh_diagnosis_call": "새 첫 판단 호출(1차와 검증 피드백 재요청 최대 1회)이 기록됐고 최종 결정이 계약상 유효한 continue였다",
+    "first_probe_from_model": "첫 검사 제안이 모델이 고른 probe였다(규칙 대체가 아님)",
+    "probes_approved_consumed_once": "모든 실행 probe가 승인 기록 뒤 한 번만 소비됐고 산출물 체크포인트 SHA가 사례와 같았다",
+    "loop_confirmed_mechanism": "동결 규칙 갱신으로 등록 결함의 메커니즘이 유일 가설로 확정됐다",
+    "confirmation_specific": "확정 메커니즘의 특이성 게이트 보조 probe가 모두 normal이었거나 게이트가 없는 메커니즘이었다",
+    "correction_call_accepted": "새 교정 제안 호출(1차와 검증 피드백 재요청 최대 1회)이 기록됐고 최종 제안이 검증을 통과해 교정 요청의 근거로 결합됐다",
+    "correction_approved_consumed_once": "승인 기록 뒤 교정 요청이 한 번 소비되고 receipt가 남았다",
+    "correction_recovered": "교정 정책이 사전등록 기준 정책 대비 healthy였다",
+    "costs_recorded": "학습·평가·probe 프로세스 시간과 두 모델 결정 단계(재요청 포함)의 지연·토큰이 모두 기록됐다"
+  },
+  "success_rule": "결과가 recovered이고 성공 조건이 모두 참일 때만 demo_success",
+  "outcomes": {
+    "invalid": "출처·커밋·seed·산출물 결합 검증이 맞지 않아 시연 판정을 보류한다.",
+    "baseline_invalid": "같은 seed 정상 정책이 고정 평가에서 걷지 못해 비교 기준이 없다. 원인 진단을 시작하지 않았다.",
+    "source_failure_absent": "결함 학습 정책이 같은 seed 정상 정책 대비 고정 행동 허용 범위를 통과해 진단할 실패가 없었다.",
+    "model_infra_failed": "첫 판단 호출(1차·피드백 재요청)이 인프라 오류로 등록 횟수 안에 응답을 주지 못해 진단을 보류했다.",
+    "model_invalid": "첫 판단 응답이 검증 피드백 재요청 1회 뒤에도 공개 판단 계약을 어겨 검사를 제안하지 않고 보류했다.",
+    "diagnosis_hold": "첫 판단이 근거 부족으로 보류해 검사를 실행하지 않았다.",
+    "loop_not_confirmed": "승인된 검사들로 원인을 하나로 확정하지 못해(식별 불가 또는 지원 가설 없음) 교정을 제안하지 않았다.",
+    "wrong_confirmation": "검사 고리가 등록 결함과 다른 메커니즘을 확정했다. 등록 결함과 다른 확정으로 기록하고 교정하지 않았다.",
+    "confirmation_not_specific": "확정 메커니즘의 특이성 게이트 보조 측정에서 다른 메커니즘의 검사가 abnormal이었거나 판정할 수 없어(unknown) 교정하지 않았다.",
+    "correction_not_proposed": "확정 뒤 교정 단계가 보류(HOLD)했거나 사전등록 회복 방식과 다른 요청이라 교정을 실행하지 않았다.",
+    "correction_rejected": "승인자가 교정 요청을 거절해 교정을 실행하지 않았다.",
+    "correction_unknown": "승인된 교정 실행이 실패·예산 초과·검증 불일치·기준 무효로 끝나 회복 여부를 판정하지 않았다.",
+    "not_recovered": "등록 결함을 확정하고 승인된 교정까지 실행했지만, 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과하지 못했다.",
+    "recovered": "새 판단으로 시작한 승인된 검사가 등록 결함 메커니즘을 확정했고, 승인된 교정 정책이 사전등록 기준 정책 대비 고정 행동 허용 범위를 통과했다.",
+    "harness_failure": "시연 실행기 결함으로 등록된 다음 단계를 진행할 수 없어 시연을 멈췄다. 사건(단계·오류·원인·승인 소비 없음)을 기록했고 교정·회복 결과를 판정하지 않는다.",
+    "in_progress": "아직 끝나지 않은 시연이다."
+  },
+  "common_wording": "새 seed 2080의 합성 결함(F1) 1건을 끝까지 연결한 통합 시연이다. 결함과 probe는 같은 설계자가 만들었고, 진단 정확도·일반화·교정 성공률·GPU 절감의 근거가 아니다. 검증 피드백 재요청은 결정 단계마다 최대 1회이며, 그 발생 여부와 횟수는 단일 시연 기록이다.",
+  "gap_wording": "다음 성공 조건을 충족하지 못했다: ",
+  "semantic_retries": {
+    "diagnosis": 1,
+    "correction": 1,
+    "rule": "검증 피드백 재요청만(인프라 재시도와 별개)"
+  },
+  "changes_from_v3_1": [
+    "시연 v4 피드백 경로 유지",
+    "F1 새 seed 2080·restart 3080",
+    "판정 외 영상 보조 관찰 추가"
+  ],
+  "harness_failure_rule": {
+    "when": "시연 실행기(이 파일·교정 실행기) 결함으로 등록된 다음 단계 명령이 같은 입력에서 거부되어 그 판의 등록 절차로 진행할 수 없을 때",
+    "not_for": "재시도 규칙이 있는 인프라 오류, 승인자 거절, 사전등록 결과 범주로 끝나는 경우",
+    "preconditions": [
+      "종료 기록이 없다",
+      "교정 단계 기록이 없다",
+      "멈춘 단계가 마지막 기록 단계 바로 다음 등록 단계이거나, 마지막 기록이 specificity일 때 교정 명령(correction-evidence·correction-propose·approve-correction·reject-correction·correct-run) 중 하나다",
+      "교정 원장에 approved·rejected·consumed·receipt·held 사건이 없다(승인 소비·등록 결과 범주 없음)",
+      "원인 '저장소 상대 경로:줄'이 시연 실험 커밋에 같은 내용으로 있는 파일의 범위 안이다(bench/private·.git 제외)",
+      "오류 문자열에 절대 경로가 없다",
+      "기록 도구(이 파일)가 커밋돼 있다"
+    ],
+    "fields": [
+      "demo(v4)",
+      "tag",
+      "case",
+      "step",
+      "error",
+      "cause(file·line·text·sha256_lf·commit)",
+      "approval_consumed",
+      "correction_ledger(exists·events)",
+      "probe_loop_status",
+      "recorded_steps",
+      "at",
+      "recorded_by",
+      "tool_commit",
+      "tool_sha256_lf",
+      "category_preregistered_for_demo"
+    ],
+    "summary": "summarize가 이 범주를 그대로 요약한다"
+  },
+  "forbidden_claims": [
+    "진단 정확도·우월성",
+    "일반화",
+    "교정 성공률",
+    "GPU 절감",
+    "이미 본 seed 결과와 합친 분모",
+    "승인자 문자열을 신원 인증으로 표기",
+    "운영자 승인을 사람 승인으로 표기",
+    "재요청이 진단 내용(순위·probe)을 좋게 했다",
+    "N2 피드백 arm 개선 판정을 이 시연의 결과로 표기"
+  ],
+  "auxiliary": {
+    "role": "auxiliary_only",
+    "decision_input": false,
+    "timing": "source 고정 평가 뒤 NONE·FAULT, 교정 고정 평가 뒤 실행한 각 교정 arm",
+    "semantic_boundary": "관찰 응답은 진단·교정 packet, probe 분류, 회복 판정 함수에 넣지 않는다",
+    "operational_boundary": "추가 녹화·호출 시간은 발생하며 GPU busy·정리 실패 시 후속 GPU 실행은 중단한다",
+    "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "accepted_provider_models": [
+      "private/nvidia/nemotron-3.5-super-120b-a12b"
+    ],
+    "model_identity": "실측 반환 별칭 계약이며 동일 가중치를 확인한 것은 아니다",
+    "frame_count": 6,
+    "frame_sampling": "동결 B4의 시간구간 midpoint 6개",
+    "response_contract": {
+      "walking": [
+        "yes",
+        "no",
+        "unclear"
+      ],
+      "in_place": [
+        "yes",
+        "no",
+        "unclear"
+      ],
+      "falling": [
+        "yes",
+        "no",
+        "unclear"
+      ]
+    },
+    "fixed_eval_label_in_prompt": false,
+    "maximum_policies": 4,
+    "api_cap": 8,
+    "infra_retries_per_clip": 1,
+    "semantic_retries": 0,
+    "decision_api_cap": 8,
+    "total_api_cap": 16,
+    "expected_observations": {
+      "NONE": "walking=yes",
+      "FAULT": "in_place=yes",
+      "corrected": "walking=yes"
+    },
+    "agreement_meaning": "Play 행동 관찰과 정책 고정 평가 라벨의 대응이며 영상 행동의 정답률이 아니다",
+    "completion": "실행한 고정 평가 정책 모두에 영상·6프레임·유효 관찰이 있으면 auxiliary_complete",
+    "success": "기존 demo_success와 auxiliary_complete를 별도 표시하며 회복은 고정 평가만으로 판정한다",
+    "wording": {
+      "complete": "고정 평가 결과와 같은 checkpoint의 Play 프레임 관찰을 보조 기록으로 연결했다.",
+      "incomplete": "회복 판정은 고정 평가 결과이며 영상 보조 관찰은 일부 또는 전부 미완료다.",
+      "not_recovered": "고정 평가에서 회복 조건을 통과하지 못했다. 영상 관찰은 별도 보조 기록이다."
+    },
+    "design_coupling": "기존 F1 시연과 B4 18영상 결과를 본 뒤 연결 기능을 설계한 새 seed 한 번의 통합 확인이다",
+    "recording": {
+      "schema": "vl_aux_play_recording_contract_v1",
+      "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+      "seed": 42,
+      "num_envs": 16,
+      "video_length": 300,
+      "kit_args": "--/app/vulkan=false --/app/window/hideUi=true",
+      "action_scale": 0.25,
+      "overrides": [
+        "env.actions.joint_pos.scale=0.25",
+        "env.viewer.eye=[3.0,3.0,2.0]",
+        "env.viewer.lookat=[0.0,0.0,0.35]"
+      ],
+      "video_contract": {
+        "width": 1280,
+        "height": 720,
+        "frame_rate": "50/1",
+        "frame_count": 299,
+        "duration_s": 5.98,
+        "duration_tolerance_s": 0.02
+      },
+      "gpu_admission": {
+        "policy": "desktop_shared_recording_v1",
+        "gpu_exclusive": false,
+        "performance_measurement": false,
+        "memory_used_limit_mib": 4096,
+        "gpu_index": 0,
+        "active_engine_min_percent": 1,
+        "protected_cim_name_only_process_names": [
+          "dwm.exe",
+          "remoting_desktop.exe",
+          "system",
+          "tabtip.exe"
+        ],
+        "guard_phases": [
+          "before_clip",
+          "after_clip"
+        ],
+        "allowed_process_types": [
+          "C+G",
+          "G"
+        ],
+        "allowed_display_process_names": [
+          "asus_framework.exe",
+          "chatgpt.exe",
+          "chrome.exe",
+          "codex-computer-use-swift.exe",
+          "crossdeviceresume.exe",
+          "discord.exe",
+          "dwm.exe",
+          "explorer.exe",
+          "lghub_system_tray.exe",
+          "microsoft.cmdpal.ui.exe",
+          "msedgewebview2.exe",
+          "nvidia overlay.exe",
+          "phoneexperiencehost.exe",
+          "powertoys.colorpickerui.exe",
+          "powertoys.exe",
+          "powertoys.fancyzones.exe",
+          "powertoys.peek.ui.exe",
+          "powertoys.quickaccess.exe",
+          "remoting_desktop.exe",
+          "searchhost.exe",
+          "shellexperiencehost.exe",
+          "shellhost.exe",
+          "slack.exe",
+          "startmenuexperiencehost.exe",
+          "system",
+          "tabtip.exe",
+          "textinputhost.exe",
+          "video.ui.exe",
+          "windowsterminal.exe"
+        ],
+        "allowed_active_engine_types": [
+          "3D",
+          "Copy",
+          "VideoDecode",
+          "VideoEncode"
+        ],
+        "unclassified_activity": "block"
+      },
+      "timeout_s": 900,
+      "scope": "auxiliary_visual_observation_only",
+      "changes_fixed_evaluation": false,
+      "used_for_recovery_decision": false,
+      "play_source": {
+        "relative_path": "scripts/reinforcement_learning/rsl_rl/play.py",
+        "sha256": "0966feac5a96812fca880e3731e96b001918b57fa372f69e4cf5fdca538bd7bd"
+      }
+    }
+  },
+  "source_files": {
+    "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+    "bench/correction_adapter.py": "71224801d07a136c999770a6296e017165579377ee96ab98fa36fc70aa11aaa8",
+    "bench/demo_correction_v4.py": "b3bf1d03aaea60854e61975b631fb802ae8467995b4ad8641379eef7bc7536b7",
+    "bench/demo_correction_vl_v1.py": "fb22fe568823f77612d2f983cea3d60ed3eada00327f14d8950f77100395636c",
+    "bench/demo_restart_correction_v2.py": "317d256a056d432a3c6d83537fcba505531d6f18c766ae8194dadb5fe834090e",
+    "bench/external_faults.py": "33e0bcb7b4b5db8669bf1aaccd96f4eefe5b542fb5b564f69c1822081f18955d",
+    "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/protocols/nemotron_endpoint_compare_v3.json": "2ff2a7424dbfc8c3f217046165917446102dcdee783c5e089023e8ab1cee9653",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/record_vl_aux_play_v1.py": "29bb622dedd431e071ab6b0adee9a9ea970645e9bca1211eb47fd3ea0e2b87bc",
+    "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+    "bench/run_case.ps1": "778447f10250678ec3338b1352bc7769783bf261f9c2fe41536a36fa962bbff6",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/run_vl_aux_demo_v1.ps1": "7f9d34bc53b824baff667c8dd873adf98835ef69f40ba69be9ba2e9d332651e7",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/train_with_correction.py": "f93cc2a81bc8903b4b9ba3df61d7865d6bef9917a6f8dab207f38d147aa9d13b",
+    "bench/train_with_fault.py": "e4b3b698cc2b8823e50feec9aa22f8c07afe3b49cfe7750ae23cf5313554543c",
+    "bench/train_with_recovery_mode.py": "a9629ffbd34f4e344ecec84d4d42f3a08c575ad82250af8bf74d7282e667f29d",
+    "evals/active_model_call.py": "10349545f07071226213e10bcbaf617609bdb32e8f29b734e064fe760356ae3e",
+    "evals/correct.py": "df91badc6d52865081d8d9ad2314982da21b98ab3f19727ede63c7468ecf9a43",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/e2e_demo_v4.py": "8274caa9870c7663dcb683044b9b0ee040b9c2f60a8c2a5690e7a386c3b48fc5",
+    "evals/e2e_reward_demo_v2.py": "a83a28cc952159d511e88c12caae2e3b8b2a39a32720b93b488bf03e47265a34",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/loop.py": "270b9986a66ac1c7570693ed8d5dfe2ca0f5d1067cbfdedfb7b86be019dbb26d",
+    "evals/metered_probes.py": "8f938e7b0d4d3317136d45348f43326b74dd3b4ab315143e542cac26c1f13252",
+    "evals/nemotron_bottleneck_compare_v2.py": "ebba4342ef4ace571b6d1da8b0012e4d8412eff53a0a247479cdfb831b79fa76",
+    "evals/nemotron_bottleneck_ledger_v2.py": "94ce9e8b008a9d2ffc405f6dd9adfef4cb86d70d6dd10cd8bfa2f7b541bd20c2",
+    "evals/nemotron_bottleneck_n2_v2.py": "2150e8a60d5ef5e486b61d5c97d5dbafd5e3992d325964531ecdfabc4c93edbb",
+    "evals/nemotron_bottleneck_vision_v2.py": "a312cf004a9f2060511d7630a942e30db051c1bc76a983ba9a891a317746f742",
+    "evals/nemotron_endpoint_ledger_v3.py": "1392f20918c013ee108eeef80bfc91fbfacf0547e95b7db59f0e7a7371e65124",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+    "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+    "evals/results/nemotron_endpoint_bottlenecks_20261016_v3/summary.json": "776a045697f0f2b74717672eab2dddec72b4d6bbeafe1511b30c065179bb0881",
+    "evals/run_active_diagnosis.py": "53662a81d57f7b70c0893166ec01bcf1128ba072456b52b7cc19c181a8742fc3",
+    "evals/run_fixed_eval.py": "6a822fbdbc7cc93c8b77dce9391195d4859edab7573f7c7644f39427e01c0675",
+    "evals/run_probes.py": "574139012a872eb5f42fef9282ae15bf7c626823b86e1553730e8717fc4db116",
+    "evals/run_training_correction.py": "5473f030f357c7cec06861c1e33c8147d3960021f959956666531c9241da0bd1",
+    "evals/vl_aux_demo_v1.py": "b7faee74b6c8a2fbb839b6a201bcc91e8bb158e0fe89f8ac06222cc1044af8d0",
+    "evals/vl_aux_observer_v1.py": "75f6ae7ac15ffa19507e45a70eac464480978f71a833106b3faf1ce413ea8b21",
+    "evals/vl_aux_worker_v1.py": "297bcdbcf37bb9b57cf8596207d78323f251f971c9f78f00c0835b52a51f9aab",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "src/rl_triage/tracking_alarm.py": "31d457c6f77ec77a274c3e7a627899ebe1711ddc4c03832c6a2cd5c2ed88e24c",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af",
+    "tests/test_record_vl_aux_play_v1.py": "47efac711bb6544c23dbd1dff8847370072b121980ddcf90274baef694df507c",
+    "tests/test_vl_aux_demo_v1.py": "7475696912a9872b74c99183c793665bfbaaacbf9dcfc1f53c9debfaa60a42f7",
+    "tests/test_vl_aux_observer_v1.py": "8fc6e4e957f8c2b0f49d579fb15171dc76710d6e6a0a2c189d27cf5ea44da8cb",
+    "tests/test_vl_aux_worker_v1.py": "a6f38793468d205dfa95c6b63bebda78efc5536520eb78f02a47e42e5a46fed0"
+  },
+  "reference_telemetry": {
+    "baseline_p0c_s2026": "bdcc275f72ac4a8e14848e31313f14878d9063cbb301ecdf1618cf337c684681",
+    "baseline_p0c_s2027": "a2c4d9b9971e2d3b335a542dcb14637f084aedef5ce10e3adfc6e91f4cc8217f",
+    "baseline_p0c_s2028": "2c14352906f2decb6341c84153799b0654026f34e612719a5bd05c3c3c5738ad"
+  },
+  "bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1513,
+    "err_yaw_ratio_max": 1.1719,
+    "fall_frac_max": 0.05
+  },
+  "bands_summary_sha256_lf": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+  "fixed_eval_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+  "v4_protocol_sha256_lf": "9216f4c649688434244dee8e6d947f52b0bff892482db686435b1d750a5553bf",
+  "correction_source_contract": {
+    "runtime": {
+      "cache_tag": "cpython-310",
+      "implementation": "CPython",
+      "version": [
+        3,
+        10,
+        15
+      ]
+    },
+    "schema": "correction_source_contract_v1",
+    "targets": {
+      "restore_body_frame_reward": {
+        "clean_fingerprint": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.rewards",
+        "qualname": "track_lin_vel_xy_exp",
+        "source": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+        "source_sha256": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76"
+      },
+      "restore_configured_timeout": {
+        "clean_fingerprint": "c59f0aa40f3a4c460d9f146d17db4a56fcf9a4783ee39dd237d3ce7ea8cb6b7d",
+        "mode": "code",
+        "module": "isaaclab.envs.mdp.terminations",
+        "qualname": "time_out",
+        "source": "source/isaaclab/isaaclab/envs/mdp/terminations.py",
+        "source_sha256": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762"
+      },
+      "restore_motor_torque_speed": {
+        "clean_fingerprint": "bf37f452239be21ec97ee61654f416abcafeb995c2e60fa509156f6d0e26aad3",
+        "mode": "attribute",
+        "module": "isaaclab.actuators.actuator_pd",
+        "qualname": "DCMotor._clip_effort",
+        "source": "source/isaaclab/isaaclab/actuators/actuator_pd.py",
+        "source_sha256": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012"
+      }
+    }
+  },
+  "feedback_adoption": {
+    "summary": "evals/results/n2_feedback_v1/summary.json",
+    "sha256_lf": "d5d62faeaf60dabfd4339e3843a64490edb69e6ff9bdb0ee5f64c3a24b7947f7",
+    "decision": "improved",
+    "final_invalid": 1,
+    "mean_pass4": {
+      "diagnosis": 0.8666666666666667,
+      "correction": 1.0
+    },
+    "scope": "이미 본 packet 11개 × 5회 개발 측정"
+  }
+}
