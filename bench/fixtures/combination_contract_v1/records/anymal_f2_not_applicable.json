@@ -1,0 +1,33 @@
+{
+  "case": "anymal_f2_not_applicable",
+  "combination": {
+    "correction_id": "restore_motor_torque_speed",
+    "fault": "F2",
+    "robot": "ANYmal-C",
+    "task": "Isaac-Velocity-Flat-Anymal-C-v0"
+  },
+  "measurement_kind": "post_result_contract_development_replay",
+  "payload": {
+    "applicability": {
+      "calls_inherited_clip": true,
+      "effect_reachable": false,
+      "lstm_compute_writes_clip_joint_velocity": false
+    }
+  },
+  "schema": "combination_observation_v1",
+  "source_fingerprints": {
+    "f2_semantics": "341222cb09a49c87bf42253549cb5d01fd2223fbd945d05915f9f8d57f59c5da"
+  },
+  "stages": {
+    "applicability": {
+      "targets": {
+        "DCMotor._clip_effort": {
+          "active": true,
+          "effect_reachable": false,
+          "exists": true,
+          "path": "isaaclab.actuators.actuator_pd:DCMotor._clip_effort"
+        }
+      }
+    }
+  }
+}

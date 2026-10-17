@@ -1,0 +1,32 @@
+{
+  "case": "anymal_f2_not_applicable",
+  "development_replay": true,
+  "expected_status": "not_applicable",
+  "historical_ready_is_contract_development_state": false,
+  "manifest": {
+    "correction_id": "restore_motor_torque_speed",
+    "evidence": [
+      {
+        "path": "bench/fixtures/combination_contract_v1/records/anymal_f2_not_applicable.json",
+        "sha256_lf": "395910282715baa5d3191951dd17e71288536d62aaa6dd6524e191b6934b91ab"
+      }
+    ],
+    "fault": "F2",
+    "robot": "ANYmal-C",
+    "schema": "combination_applicability_manifest_v1",
+    "stages": {
+      "applicability": {
+        "targets": {
+          "DCMotor._clip_effort": {
+            "active": true,
+            "effect_reachable": false,
+            "exists": true,
+            "path": "isaaclab.actuators.actuator_pd:DCMotor._clip_effort"
+          }
+        }
+      }
+    },
+    "task": "Isaac-Velocity-Flat-Anymal-C-v0"
+  },
+  "schema": "combination_contract_history_fixture_v1"
+}

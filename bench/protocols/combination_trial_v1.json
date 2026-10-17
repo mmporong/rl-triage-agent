@@ -1,0 +1,382 @@
+{
+  "schema": "combination_trial_protocol_v1",
+  "status": "preregistered_unmeasured",
+  "question": "ANYmal-C flat에서 U1 네 보상 항이 행동 실패를 만들면 등록 함수군 복원 재학습이 고정 평가를 통과하는가",
+  "selection": {
+    "robot": "ANYmal-C",
+    "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+    "fault": "U1",
+    "correction_id": "restore_reward_family_scope",
+    "reason": "네 활성 target의 범위 완결과 Go2에 등록된 같은 교정을 두 번째 로봇 task에 연결하는 계약을 확인한다. 결과 예상으로 고른 조합이 아니다.",
+    "development_coupling": "Go2 U1 결과와 ANYmal-C 기존 결과를 본 뒤 설계한 개발 측정이다."
+  },
+  "seeds": {
+    "source": 2150,
+    "restart": 3150,
+    "freshness": "실행 직전 저장소 산출물과 Isaac Lab 로그에서 한 번 재검사한다"
+  },
+  "budget": {
+    "num_envs": 4096,
+    "max_iterations": 300,
+    "num_steps_per_env": 24,
+    "source_arms": [
+      "source_none",
+      "source_u1"
+    ],
+    "conditional_restart_arms": [
+      "family_restart"
+    ],
+    "fixed_eval_conditions": 26,
+    "action_scale": 0.5,
+    "maximum_gpu_runs": 5,
+    "api_calls": 0,
+    "maximum_parent_wall_s": 2700,
+    "maximum_owned_gpu_process_wall_s": 2400
+  },
+  "sequence": [
+    "cpu_semantics",
+    "freshness",
+    "source_none_train",
+    "source_u1_train",
+    "source_fixed_eval",
+    "source_gate",
+    "contract",
+    "family_restart_train",
+    "restart_fixed_eval",
+    "summary"
+  ],
+  "stop_rule": "source_failure_absent 또는 baseline_invalid면 family_restart를 만들거나 실행하지 않고 종료한다",
+  "contract_rule": "ready 상태와 등록 규칙 요청의 유효 receipt가 있을 때만 family_restart manifest를 만들고 승인·소비한다",
+  "predictions": {
+    "semantics": "applicable",
+    "source_gate": "failure_present",
+    "family_restart": "recovered"
+  },
+  "prediction_basis": "Go2 U1에서 같은 네 보상 항 복원과 restart 300회가 회복한 기존 개발 측정에 근거한다. 미회복도 유효 결과이며 효과를 보장하지 않는다.",
+  "retry_policy": {
+    "semantic_retries": 0,
+    "no_tuning": "source_failure_absent이면 다른 seed·학습 크기·평가 밴드를 탐색하지 않는다",
+    "invalid": "새 판과 새 tag를 사전등록하기 전에는 자동 재시도하지 않는다"
+  },
+  "success_conditions": {
+    "source_fresh": true,
+    "targets_active": 4,
+    "injected_targets_changed": 4,
+    "source_failure_gate": "failure_present",
+    "combination_contract": "ready",
+    "correction_consumptions": 1,
+    "restored_targets": 4,
+    "restart_fixed_eval": "recovered",
+    "within_registered_budget": true
+  },
+  "wording": {
+    "source_failure_absent": "새 조합에서 등록 행동 실패를 확인하지 못해 교정 실행으로 진행하지 않았다.",
+    "baseline_invalid": "정상 대조가 기존 ANYmal-C 걷기 조건을 충족하지 못해 조합을 판정하지 않았다.",
+    "recovered": "ANYmal-C 새 조합에서 전체 보상 함수군 복원 재학습 정책이 고정 평가 기준을 통과했다.",
+    "not_recovered": "전체 보상 함수군은 복원됐지만 ANYmal-C 새 조합의 재학습 정책이 고정 평가 기준을 통과하지 못했다.",
+    "invalid": "적용성·출처·실행·평가 결합 중 하나가 사전등록 계약과 달라 조합을 판정하지 않았다."
+  },
+  "evidence_scope": {
+    "diagnosis_model": "inactive",
+    "selection_actor": "registered_rule",
+    "scope_kind": "registered_target_readback",
+    "api_calls": 0,
+    "behavioral_recovery": "family_restart 고정 평가에서만 판정"
+  },
+  "fixed_eval": {
+    "protocol": "bench/protocols/fixed_eval_v1_anymal_c.json",
+    "bands": "evals/results/anymal_c_band_20261014/result.json",
+    "reuse_without_recalibration": true
+  },
+  "source_anchor": {
+    "mode": "experiment_commit_is_ancestor_and_bound_blobs_match_head"
+  },
+  "write_once": true,
+  "gpu_admission_profile": "base_com_reset_readback_v2",
+  "watchdogs_s": {
+    "train": 900,
+    "fixed_eval": 300
+  },
+  "expected_parent_wall_s": {
+    "basis": "ANYmal-C F6 smoke의 300회 학습 약 471~473초와 고정 평가 약 83초",
+    "source_failure_absent": 1100,
+    "ready_with_restart": 1700
+  },
+  "source_sha256_lf": {
+    "bench/check_correction_cpu.py": "46105d62bcc0d2d8b59c5c98dd785e83aad9c2e4bd2db033bba07dda3b040586",
+    "bench/combination_semantics_v1.py": "6141cfb3386836a2036a80edfa4cbb54c1ae43ea431b86a56715d451da870465",
+    "bench/combination_training_v1.py": "f0a5a6eff70d08a90658a3f9e09bfd3096afc0498e6d07e5cfdcb2ff9876aa24",
+    "bench/correction_adapter.py": "71224801d07a136c999770a6296e017165579377ee96ab98fa36fc70aa11aaa8",
+    "bench/demo_correction_anymal_c.py": "f92b12f6bd669e42bef5468b5c878a9e2f4cf81cb08ff08afaf2ff8a3860580f",
+    "bench/demo_correction_v4.py": "b3bf1d03aaea60854e61975b631fb802ae8467995b4ad8641379eef7bc7536b7",
+    "bench/demo_restart_correction_v2.py": "317d256a056d432a3c6d83537fcba505531d6f18c766ae8194dadb5fe834090e",
+    "bench/external_faults.py": "33e0bcb7b4b5db8669bf1aaccd96f4eefe5b542fb5b564f69c1822081f18955d",
+    "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+    "bench/protocols/anymal_c_gate_v1.json": "35c2b743e84895634f5cfd94f4300417e5bec2aede11bfc5a49f9fd25efa28fd",
+    "bench/protocols/fixed_eval_v1_anymal_c.json": "d5dbc5c92bb6e14c47c73bd70a6df52ece3de4bc3557558c35534f878cffcbd7",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+    "bench/reward_family_correction.py": "ef8af782f45c5be843e2e3a3d15533887e61eeb920364a1d011e6b8639b1941f",
+    "bench/run_case.ps1": "778447f10250678ec3338b1352bc7769783bf261f9c2fe41536a36fa962bbff6",
+    "bench/run_combination_trial_v1.ps1": "7ed0f59fd8132b8cd0ded6d995bb7fb03dd32550f47d491803dc72b96a189947",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/train_with_correction.py": "f93cc2a81bc8903b4b9ba3df61d7865d6bef9917a6f8dab207f38d147aa9d13b",
+    "bench/train_with_fault.py": "e4b3b698cc2b8823e50feec9aa22f8c07afe3b49cfe7750ae23cf5313554543c",
+    "bench/train_with_recovery_mode.py": "a9629ffbd34f4e344ecec84d4d42f3a08c575ad82250af8bf74d7282e667f29d",
+    "bench/upstream_faults.py": "58d7c07f481328c606a191ea55ba8f9f8e54388db9db121e925c69c8878ae249",
+    "bench/upstream_isaac.py": "1976e1aa4e2da9debf7a03c2bf2cb61e935826014900fdfb7aaaad74e91860d5",
+    "evals/active_model_call.py": "10349545f07071226213e10bcbaf617609bdb32e8f29b734e064fe760356ae3e",
+    "evals/combination_contract_v1.py": "f46a961f784238cb33521b6c02904005254463228327ff345bfe2231673460d0",
+    "evals/combination_trial_v1.py": "0eb038b5f2ba392ebef2e19d2589d13e3c3a7e741ef5834a89b25c088eceafee",
+    "evals/correct.py": "df91badc6d52865081d8d9ad2314982da21b98ab3f19727ede63c7468ecf9a43",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/e2e_demo_anymal_c.py": "7e5f451cffeabfa9b8b375f2dd9270e318fb73e5651f98d46a84c1d02c46f24c",
+    "evals/e2e_demo_v4.py": "8274caa9870c7663dcb683044b9b0ee040b9c2f60a8c2a5690e7a386c3b48fc5",
+    "evals/e2e_reward_demo_v2.py": "a83a28cc952159d511e88c12caae2e3b8b2a39a32720b93b488bf03e47265a34",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/fixed_eval_task.py": "d6b903b98c25d51a03cfd9f134482554211144ca268c2457512c3d94478c65b7",
+    "evals/loop.py": "270b9986a66ac1c7570693ed8d5dfe2ca0f5d1067cbfdedfb7b86be019dbb26d",
+    "evals/metered_probes.py": "8f938e7b0d4d3317136d45348f43326b74dd3b4ab315143e542cac26c1f13252",
+    "evals/metered_probes_task.py": "675b3c197f7adc444b444912cd5bcc3b040687f522cd5b3ffb7d5245fa017525",
+    "evals/ppo_gradient_check_v5.py": "f65694f3a6ff969e0a81e3fbf2d8ead96b103b3182537d5d3e1ec7a6f17ccf17",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+    "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+    "evals/probes_task.py": "36271fbe40a50392e97ffb9f4fdd93439738e7334f4418fb2fddfa55e04aa14d",
+    "evals/run_active_diagnosis.py": "53662a81d57f7b70c0893166ec01bcf1128ba072456b52b7cc19c181a8742fc3",
+    "evals/run_anymal_c_band.py": "6854041e2c48a0013625f9112d19ea4f875faf9d3f28c66b94cc235cf09415fc",
+    "evals/run_anymal_c_gate.py": "040a3fa1c6a39b61bd836202f659729a4afb17beb3347d7c47a2ce387a41a7a4",
+    "evals/run_fixed_eval.py": "6a822fbdbc7cc93c8b77dce9391195d4859edab7573f7c7644f39427e01c0675",
+    "evals/run_probes.py": "574139012a872eb5f42fef9282ae15bf7c626823b86e1553730e8717fc4db116",
+    "evals/run_training_correction.py": "5473f030f357c7cec06861c1e33c8147d3960021f959956666531c9241da0bd1",
+    "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/correction_scope.py": "565e929bbf57ccbc41d11b9c3e160c70708622577a46eefa37039ed4a5499707",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "src/rl_triage/tracking_alarm.py": "31d457c6f77ec77a274c3e7a627899ebe1711ddc4c03832c6a2cd5c2ed88e24c",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af",
+    "tests/test_combination_contract_v1.py": "85560fb8299d240540e875d3bfc1261f793f82528b50920b2ac919e11b2a0236",
+    "tests/test_combination_semantics_v1.py": "a5ed4055f30dea912928b2a6915a7173663fe25ba15d014e00cb7d935deba6ab",
+    "tests/test_combination_trial_v1.py": "db79c02d25d99a77cea035c2965e5e8b4614c5e243c32955d3f7d98d952a7fab"
+  },
+  "runtime_source_sha256_lf": {
+    "flat_env_cfg": {
+      "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/flat_env_cfg.py",
+      "sha256_lf": "582aa91a13cdafd0e5a3abf7c39dd473278bf8db3bbfa89b21c4f03512420603"
+    },
+    "rough_env_cfg": {
+      "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/rough_env_cfg.py",
+      "sha256_lf": "bed7c457e1271f37e38ebf7c2a26bacd0bade2ffb41939e779dfac37f442aded"
+    },
+    "agent_cfg": {
+      "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/agents/rsl_rl_ppo_cfg.py",
+      "sha256_lf": "956ba2706e0fff48a2dfab9c71f83efe1f2171d33ad64308523e4bef2fc60bf2"
+    },
+    "registration": {
+      "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/__init__.py",
+      "sha256_lf": "aa2976b6a44d6d86642da8ffe0b85f4b78cb9ca0885788f2475ee32f03300f52"
+    },
+    "velocity_env_cfg": {
+      "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py",
+      "sha256_lf": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+    },
+    "robot_cfg": {
+      "path": "source/isaaclab_assets/isaaclab_assets/robots/anymal.py",
+      "sha256_lf": "4d77e1f8ff0a228b2eb037f55d25fe3957225af767f97c4bbb7033ee3741cc35"
+    },
+    "actuator_net": {
+      "path": "source/isaaclab/isaaclab/actuators/actuator_net.py",
+      "sha256_lf": "e9cc9a8799f9e53ac9303dd3e1343dfd5b74b5927f7e92421a59eb610cda9b3f"
+    },
+    "train": {
+      "path": "scripts/reinforcement_learning/rsl_rl/train.py",
+      "sha256_lf": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545"
+    }
+  },
+  "fixed_eval_sha256_lf": "d5dbc5c92bb6e14c47c73bd70a6df52ece3de4bc3557558c35534f878cffcbd7",
+  "band_result": {
+    "path": "evals/results/anymal_c_band_20261014/result.json",
+    "sha256_lf": "9db68f194fadf89faa1fdb29ad0a1e5d590522f7f8f9fc986c2d609ec0e67798"
+  },
+  "lease_helper_sha256_lf": "e410d638f8f31074d8f0800b096ff08050eeaa5ca055ff9cb13e21c28491ccba",
+  "cpu_semantics": {
+    "schema": "combination_semantics_result_v2",
+    "status": "applicable",
+    "active_targets": [
+      "track_lin_vel_xy_exp",
+      "track_ang_vel_z_exp",
+      "lin_vel_z_l2",
+      "ang_vel_xy_l2"
+    ],
+    "task_terms": {
+      "track_lin_vel_xy_exp": {
+        "exists": true,
+        "weight": 1.0,
+        "function_module": "isaaclab.envs.mdp.rewards",
+        "function_name": "track_lin_vel_xy_exp"
+      },
+      "track_ang_vel_z_exp": {
+        "exists": true,
+        "weight": 0.5,
+        "function_module": "isaaclab.envs.mdp.rewards",
+        "function_name": "track_ang_vel_z_exp"
+      },
+      "lin_vel_z_l2": {
+        "exists": true,
+        "weight": -2.0,
+        "function_module": "isaaclab.envs.mdp.rewards",
+        "function_name": "lin_vel_z_l2"
+      },
+      "ang_vel_xy_l2": {
+        "exists": true,
+        "weight": -0.05,
+        "function_module": "isaaclab.envs.mdp.rewards",
+        "function_name": "ang_vel_xy_l2"
+      }
+    },
+    "checks": {
+      "all_targets_exist_and_active": true,
+      "weights_match_registered_task": true,
+      "anymal_inherits_common_rewards_without_registered_overrides": true,
+      "none_correction_is_noop": true,
+      "u1_changes_all_registered_targets": true,
+      "restore_returns_exact_source_fingerprints": true,
+      "restore_changes_only_registered_family": true,
+      "cuda_not_initialized": true
+    },
+    "source_contract": {
+      "schema": "reward_family_source_contract_v1",
+      "correction_id": "restore_reward_family_scope",
+      "runtime": {
+        "implementation": "CPython",
+        "version": [
+          3,
+          10,
+          15
+        ],
+        "cache_tag": "cpython-310"
+      },
+      "module": "isaaclab.envs.mdp.rewards",
+      "source": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+      "source_sha256": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+      "functions": {
+        "track_lin_vel_xy_exp": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "track_ang_vel_z_exp": "cc8ee501a0f338027894e03a2d1747cfa76ff8ce62efc4c01786ebaa88ba45bb",
+        "lin_vel_z_l2": "7d5b462f9dfb1ad7656d13a52140509a5978d3ae48add1a4a58474c07f9663a6",
+        "ang_vel_xy_l2": "d0c758e23b267e72b550a3ef109022771d2cfe17df06a0dbe8709ac723fbf096"
+      }
+    },
+    "fault_fingerprints": {
+      "before": {
+        "track_lin_vel_xy_exp": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "track_ang_vel_z_exp": "cc8ee501a0f338027894e03a2d1747cfa76ff8ce62efc4c01786ebaa88ba45bb",
+        "lin_vel_z_l2": "7d5b462f9dfb1ad7656d13a52140509a5978d3ae48add1a4a58474c07f9663a6",
+        "ang_vel_xy_l2": "d0c758e23b267e72b550a3ef109022771d2cfe17df06a0dbe8709ac723fbf096"
+      },
+      "after": {
+        "track_lin_vel_xy_exp": "c61564dee7aef0dc35709562e776bc7fff51306de8804accd01004ad53a7ed86",
+        "track_ang_vel_z_exp": "3ffce6220f17e68d2effbd7d2323e838b73ddec9ce6d2696b4253fcd62034f27",
+        "lin_vel_z_l2": "c46bb9bb80ea98445ef56bb3d263b82834b73752a21e1aae0abdd7de19a06724",
+        "ang_vel_xy_l2": "7695df77d0606c0a5d0de0d696213d09577f42cc8959a4351093531fbe82d139"
+      },
+      "restored": {
+        "track_lin_vel_xy_exp": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "track_ang_vel_z_exp": "cc8ee501a0f338027894e03a2d1747cfa76ff8ce62efc4c01786ebaa88ba45bb",
+        "lin_vel_z_l2": "7d5b462f9dfb1ad7656d13a52140509a5978d3ae48add1a4a58474c07f9663a6",
+        "ang_vel_xy_l2": "d0c758e23b267e72b550a3ef109022771d2cfe17df06a0dbe8709ac723fbf096"
+      }
+    },
+    "none_noop": {
+      "schema": "reward_family_correction_readback_v1",
+      "selected_correction": "restore_reward_family_scope",
+      "registered_functions": [
+        "track_lin_vel_xy_exp",
+        "track_ang_vel_z_exp",
+        "lin_vel_z_l2",
+        "ang_vel_xy_l2"
+      ],
+      "before_fault": {
+        "track_lin_vel_xy_exp": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "track_ang_vel_z_exp": "cc8ee501a0f338027894e03a2d1747cfa76ff8ce62efc4c01786ebaa88ba45bb",
+        "lin_vel_z_l2": "7d5b462f9dfb1ad7656d13a52140509a5978d3ae48add1a4a58474c07f9663a6",
+        "ang_vel_xy_l2": "d0c758e23b267e72b550a3ef109022771d2cfe17df06a0dbe8709ac723fbf096"
+      },
+      "after_fault": {
+        "track_lin_vel_xy_exp": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "track_ang_vel_z_exp": "cc8ee501a0f338027894e03a2d1747cfa76ff8ce62efc4c01786ebaa88ba45bb",
+        "lin_vel_z_l2": "7d5b462f9dfb1ad7656d13a52140509a5978d3ae48add1a4a58474c07f9663a6",
+        "ang_vel_xy_l2": "d0c758e23b267e72b550a3ef109022771d2cfe17df06a0dbe8709ac723fbf096"
+      },
+      "after_correction": {
+        "track_lin_vel_xy_exp": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+        "track_ang_vel_z_exp": "cc8ee501a0f338027894e03a2d1747cfa76ff8ce62efc4c01786ebaa88ba45bb",
+        "lin_vel_z_l2": "7d5b462f9dfb1ad7656d13a52140509a5978d3ae48add1a4a58474c07f9663a6",
+        "ang_vel_xy_l2": "d0c758e23b267e72b550a3ef109022771d2cfe17df06a0dbe8709ac723fbf096"
+      },
+      "changed_targets": [],
+      "restored_targets": [],
+      "unrelated_changed_after_fault": [],
+      "unrelated_changed_after_correction": []
+    },
+    "task_binding": {
+      "sources": {
+        "velocity": {
+          "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py",
+          "sha256_lf": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+        },
+        "rough": {
+          "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/rough_env_cfg.py",
+          "sha256_lf": "bed7c457e1271f37e38ebf7c2a26bacd0bade2ffb41939e779dfac37f442aded"
+        },
+        "flat": {
+          "path": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/anymal_c/flat_env_cfg.py",
+          "sha256_lf": "582aa91a13cdafd0e5a3abf7c39dd473278bf8db3bbfa89b21c4f03512420603"
+        }
+      },
+      "registered_targets_overridden_in_anymal": {
+        "track_lin_vel_xy_exp": false,
+        "track_ang_vel_z_exp": false,
+        "lin_vel_z_l2": false,
+        "ang_vel_xy_l2": false
+      },
+      "inheritance": {
+        "AnymalCRoughEnvCfg": [
+          "LocomotionVelocityRoughEnvCfg"
+        ],
+        "AnymalCFlatEnvCfg": [
+          "AnymalCRoughEnvCfg"
+        ]
+      }
+    }
+  },
+  "correction_source_contract": {
+    "schema": "reward_family_source_contract_v1",
+    "correction_id": "restore_reward_family_scope",
+    "runtime": {
+      "implementation": "CPython",
+      "version": [
+        3,
+        10,
+        15
+      ],
+      "cache_tag": "cpython-310"
+    },
+    "module": "isaaclab.envs.mdp.rewards",
+    "source": "source/isaaclab/isaaclab/envs/mdp/rewards.py",
+    "source_sha256": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "functions": {
+      "track_lin_vel_xy_exp": "66e3430d460e2178d16168fa1a6075f74b5fa1b54d23462d75beec0de04425ae",
+      "track_ang_vel_z_exp": "cc8ee501a0f338027894e03a2d1747cfa76ff8ce62efc4c01786ebaa88ba45bb",
+      "lin_vel_z_l2": "7d5b462f9dfb1ad7656d13a52140509a5978d3ae48add1a4a58474c07f9663a6",
+      "ang_vel_xy_l2": "d0c758e23b267e72b550a3ef109022771d2cfe17df06a0dbe8709ac723fbf096"
+    }
+  }
+}
