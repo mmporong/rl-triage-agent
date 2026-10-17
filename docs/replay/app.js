@@ -59,9 +59,20 @@
     return '<a class="ref" href="' + esc(href) + '" title="' + esc(title) + '">[' + index + "]</a>";
   }
 
+  // 판정 문자열은 색과 글자로 함께 구분한다. 정확히 일치하는 값만 바꾸고 나머지 문구는 그대로 둔다.
+  var VERDICT_TONES = {
+    normal: "good", "예": "good", pass: "good", healthy: "good", recovered: "good", confirmed: "good", ready: "good",
+    abnormal: "bad", "아니요": "bad", fail: "bad", unhealthy: "bad", not_recovered: "bad", invalid: "bad"
+  };
+
+  function textValue(value) {
+    var tone = VERDICT_TONES[String(value).trim()];
+    return tone ? '<span class="verdict ' + tone + '">' + esc(value) + "</span>" : esc(value);
+  }
+
   function renderCell(data, ids, cell, link) {
     if (cell === null || cell === undefined) return "<td></td>";
-    if (typeof cell !== "object") return "<td>" + esc(cell) + "</td>";
+    if (typeof cell !== "object") return "<td>" + textValue(cell) + "</td>";
     var row = data.sources[cell.source] || { status: "waiting" };
     var body;
     if (cell.value === null || cell.value === undefined) {
@@ -70,7 +81,7 @@
     } else if (typeof cell.value === "number") {
       body = esc(formatNumber(cell.value, cell.digits, cell.format));
     } else {
-      body = esc(cell.value);
+      body = textValue(cell.value);
     }
     var numeric = typeof cell.value === "number" ? ' class="num"' : "";
     return "<td" + numeric + ">" + body + refLink(data, ids, cell.source, link) + "</td>";
@@ -102,7 +113,13 @@
     var rows = block.rows.length ? block.rows.map(function (row) {
       return "<tr>" + row.map(function (cell) { return renderCell(data, ids, cell, link); }).join("") + "</tr>";
     }).join("") : '<tr><td colspan="' + block.columns.length + '">' + pendingFor(data, ids) + "</td></tr>";
-    return "<table><thead>" + head + "</thead><tbody>" + rows + "</tbody></table>";
+    return '<div class="table-wrap"><table><thead>' + head + "</thead><tbody>" + rows + "</tbody></table></div>";
+  }
+
+  // 표만 있고 행이 적은 장면은 글자를 키워 빈 화면을 줄인다. 밀집 장면에는 적용하지 않는다.
+  function roomy(scene) {
+    if (scene.dense || scene.blocks.length > 2) return false;
+    return scene.blocks.every(function (block) { return block.type === "table" && block.rows.length <= 8; });
   }
 
   function pendingFor(data, ids) {
@@ -196,17 +213,20 @@
     var scene = data.scenes[index];
     var total = data.scenes.length;
     var dots = data.scenes.map(function (item, i) {
-      return '<a href="#' + (i + 1) + '" class="' + (i === index ? "on" : "") + '" aria-label="장면 ' + (i + 1) + '"></a>';
+      return '<a href="#' + (i + 1) + '" class="' + (i === index ? "on" : "") + '" aria-label="장면 ' + (i + 1) + '"' +
+        (i === index ? ' aria-current="step"' : "") + "></a>";
     }).join("");
     return '<div class="topline"><span>RL Triage · 발표 재생</span><span class="counter">' + scene.number + " / " + total + "</span></div>" +
       "<header><h1>" + esc(scene.title) + '</h1><p class="lead">' + esc(scene.lead) + "</p></header>" +
-      '<div class="blocks' + (scene.blocks.length === 1 ? " single" : "") + (scene.dense ? " dense" : "") + '">' + scene.blocks.map(function (block) {
+      '<div class="blocks' + (scene.blocks.length === 1 ? " single" : "") + (scene.dense ? " dense" : "") + (roomy(scene) ? " roomy" : "") + '">' +
+      scene.blocks.map(function (block) {
         return renderBlock(data, block, link);
       }).join("") + "</div>" +
       '<div><ul class="notes">' + (scene.notes || []).map(function (note) { return "<li>" + esc(note) + "</li>"; }).join("") + "</ul>" +
       "<footer><span>" + esc(scene.scope || data.scope) + "</span>" +
-      '<nav><button type="button" data-step="-1">이전</button><div class="dots">' + dots +
-      '</div><button type="button" data-step="1">다음</button></nav></footer></div>';
+      '<nav aria-label="장면 이동"><button type="button" data-step="-1"' + (index === 0 ? " disabled" : "") + ">이전 장면</button>" +
+      '<div class="dots">' + dots + "</div>" +
+      '<button type="button" data-step="1"' + (index === total - 1 ? " disabled" : "") + ">다음 장면</button></nav></footer></div>";
   }
 
   function sceneIndex(data, hash) {
@@ -222,7 +242,14 @@
       stage.innerHTML = '<p class="boot">data.js가 없다. <code>evals/build_replay_page.py</code>를 실행한다.</p>';
       return;
     }
+    // 좁은 화면에서 1920×1080 무대를 줄이면 글자가 읽히지 않으므로, 무대 대신 세로로 흐르는 읽기 모드를 쓴다.
     function fit() {
+      var reflow = window.innerWidth < 900;
+      document.documentElement.classList.toggle("reflow", reflow);
+      if (reflow) {
+        stage.style.transform = stage.style.left = stage.style.top = "";
+        return;
+      }
       var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
       stage.style.transform = "scale(" + scale + ")";
       stage.style.left = ((window.innerWidth - 1920 * scale) / 2) + "px";
@@ -230,6 +257,9 @@
     }
     function show() {
       stage.innerHTML = renderScene(data, sceneIndex(data, window.location.hash), window.location);
+      // 큰 글자로 그린 장면이 무대를 넘치면 기본 크기로 되돌린다.
+      var blocks = stage.querySelector(".blocks.roomy");
+      if (blocks && blocks.scrollHeight > blocks.clientHeight + 1) blocks.classList.remove("roomy");
     }
     function go(step) {
       var next = Math.max(0, Math.min(data.scenes.length - 1, sceneIndex(data, window.location.hash) + step));

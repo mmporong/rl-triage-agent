@@ -90,3 +90,56 @@ footer button { font: inherit; font-size: 15px; border: 1px solid var(--line); b
 .evidence summary { cursor: pointer; display: flex; gap: 8px; align-items: center; }
 .evidence .sources { grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); column-gap: 18px; }
 a.ref { color: var(--muted); }
+
+/* 판정 값: 색만으로 구분하지 않도록 글자와 테두리를 함께 쓴다. */
+.verdict { display: inline-block; border-radius: 6px; padding: 1px 9px; font-weight: 700; border: 1px solid currentColor; }
+.verdict.good { color: var(--ready-ink); background: var(--ready-bg); }
+.verdict.bad { color: var(--mismatch-ink); background: var(--mismatch-bg); }
+
+/* 표만 있고 행이 적은 장면은 글자와 줄 간격을 키운다. */
+.blocks.roomy .block { padding: 26px 30px; }
+.blocks.roomy .block h2 { font-size: 26px; margin-bottom: 18px; }
+.blocks.roomy table { font-size: 26px; }
+.blocks.roomy th { font-size: 19px; }
+.blocks.roomy th, .blocks.roomy td { padding: 13px 12px; }
+.blocks.roomy .ref { font-size: 14px; }
+
+footer button:disabled { opacity: 0.4; cursor: default; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; border-radius: 4px; }
+
+/* 좁은 화면 읽기 모드: 무대를 축소하지 않고 위에서 아래로 흐르게 둔다. */
+html.reflow, html.reflow body { height: auto; }
+html.reflow #viewport { position: static; overflow: visible; }
+html.reflow #stage { position: static; width: auto; height: auto; display: block; padding: 20px 16px 24px; }
+html.reflow .topline { font-size: 14px; }
+html.reflow h1 { font-size: 26px; margin: 10px 0 8px; letter-spacing: 0; }
+html.reflow .lead { font-size: 16px; margin-bottom: 16px; }
+html.reflow .blocks { grid-template-columns: 1fr; gap: 14px; overflow: visible; }
+html.reflow .block { padding: 14px; }
+html.reflow .block h2, html.reflow .blocks.roomy .block h2 { font-size: 17px; margin-bottom: 10px; }
+/* 가로로 넘치는 표는 좌우 그림자로 스크롤할 수 있음을 알린다. */
+html.reflow .table-wrap {
+  overflow-x: auto;
+  background:
+    linear-gradient(to right, var(--panel) 30%, rgba(246, 247, 249, 0)) left center / 32px 100% no-repeat local,
+    linear-gradient(to left, var(--panel) 30%, rgba(246, 247, 249, 0)) right center / 32px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, rgba(23, 32, 51, 0.18), rgba(23, 32, 51, 0)) left center / 12px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, rgba(23, 32, 51, 0.18), rgba(23, 32, 51, 0)) right center / 12px 100% no-repeat scroll;
+}
+html.reflow td:has(.verdict) { white-space: nowrap; }
+html.reflow table, html.reflow .blocks.roomy table { font-size: 15px; min-width: 520px; }
+html.reflow th, html.reflow .blocks.roomy th { font-size: 13px; }
+html.reflow th, html.reflow td, html.reflow .blocks.roomy th, html.reflow .blocks.roomy td { padding: 7px 8px; min-width: 76px; }
+html.reflow .charts, html.reflow .videos { grid-template-columns: 1fr; }
+html.reflow .evidence .sources { grid-template-columns: 1fr; word-break: break-all; }
+html.reflow pre { font-size: 13px; }
+html.reflow .notes { font-size: 14px; }
+html.reflow footer { flex-direction: column; align-items: stretch; gap: 12px; font-size: 13px; margin-top: 16px; }
+html.reflow footer nav { flex-wrap: wrap; justify-content: space-between; row-gap: 6px; }
+html.reflow footer button { min-height: 44px; padding: 8px 16px; font-size: 15px; white-space: nowrap; }
+html.reflow .dots { order: 3; width: 100%; flex-wrap: wrap; justify-content: center; gap: 2px; }
+html.reflow .dots a { width: 32px; height: 32px; background: none; display: grid; place-items: center; }
+html.reflow .dots a::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--line); }
+html.reflow .dots a.on::before { background: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
