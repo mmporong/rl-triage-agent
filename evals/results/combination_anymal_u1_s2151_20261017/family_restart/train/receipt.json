@@ -1,0 +1,92 @@
+{
+  "actual_action_scale": 0.5,
+  "actual_control_steps": 7200,
+  "aggregate_env_steps": 29491200,
+  "arm": "family_restart",
+  "budget": {
+    "expected_control_steps": 7200,
+    "max_iterations": 300,
+    "num_envs": 4096,
+    "num_steps_per_env": 24,
+    "seed": 3151
+  },
+  "checkpoint": {
+    "path": "<isaaclab>/logs/rsl_rl/anymal_c_flat/2026-10-17_10-48-30_combination_anymal_family_restart_s3151/model_299.pt",
+    "sha256": "b77f359a50cf0a6001e62830ab7a2056301ea9053a4e2426313bb6514b017eb7"
+  },
+  "checkpoint_load_calls": 0,
+  "completed": true,
+  "configs": {
+    "agent": {
+      "path": "<isaaclab>/logs/rsl_rl/anymal_c_flat/2026-10-17_10-48-30_combination_anymal_family_restart_s3151/params/agent.yaml",
+      "sha256": "00c8c19511647920c28d02a1297d42b1eefd823af3be3ceb143c2ed735b39ba1"
+    },
+    "environment": {
+      "path": "<isaaclab>/logs/rsl_rl/anymal_c_flat/2026-10-17_10-48-30_combination_anymal_family_restart_s3151/params/env.yaml",
+      "sha256": "3fb31d9ed92cf79b1329bd1e403b83911fa1289b4275e11cd341c44e3d0a6c97"
+    }
+  },
+  "correction_id": "restore_reward_family_scope",
+  "correction_sha256": "44d5c1292e99ccc0408ad8b0eba831fc18b46c6acd8db71e955af89728509787",
+  "environment_make_calls": 1,
+  "fault": "U1",
+  "final_checkpoint_state": {
+    "iteration": 299,
+    "optimizer_state_sha256": "f20c6beac18601a7ab17171dc0bd4245844987e2be8911634682e2233fedf748",
+    "policy_state_sha256": "8bb3337bc1909f3a1e83acaa71df9f3c3088916f8b45e6ab75bcba5578f501e0"
+  },
+  "final_iteration": 299,
+  "initial_sha256": "29270e6d690776b86e5a94c814cdc562010a36f2e6c9ee5061d04b01ed36b922",
+  "manifest_sha256": "81d0ed8d8374d9ab6606fd3e4eef31f1f3a088b0ff13712f03e8d12fa79bb353",
+  "observed": {
+    "action_scale": 0.5,
+    "agent_max_iterations": 300,
+    "agent_seed": 3151,
+    "environment_num_envs": 4096,
+    "environment_seed": 3151,
+    "runner_num_steps_per_env": 24
+  },
+  "process_identity": {
+    "process_creation_time_filetime": 134366752690855647,
+    "process_id": 67864
+  },
+  "protocol": {
+    "path": "<repo>/bench/protocols/combination_trial_v2.json",
+    "sha256_lf": "9ffd9365b63d99c99705eca69b5ffef1ad829bc3b035ee248268ba8dbed5603f"
+  },
+  "protocol_sha256_lf": "9ffd9365b63d99c99705eca69b5ffef1ad829bc3b035ee248268ba8dbed5603f",
+  "recovery_mode": "restart",
+  "resume_checkpoint": null,
+  "resume_iteration": null,
+  "resume_scope": {
+    "action_std_reset": false,
+    "fresh_initialization": true,
+    "full_environment_state_restored": false,
+    "policy_optimizer_restored": false,
+    "rng_state_restored_from_checkpoint": false
+  },
+  "rng_state_before_learn": {
+    "cpu_sha256": "f342bd33cd81780911ef9e4398ee82bb0313b7c5a6348fe8ffc57e3900dfd0a4",
+    "cuda_all_sha256": [
+      "f6ecb6e2482a819460ab214c4f35a5eedd78eb8abcd71642ffaabf9d709886e5"
+    ],
+    "cuda_device_count": 1
+  },
+  "run_name": "combination_anymal_family_restart_s3151",
+  "runtime_versions": {
+    "isaaclab_distribution": "0.41.3",
+    "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "python": "3.10.15",
+    "python_cache_tag": "cpython-310",
+    "rsl_rl_distribution": "2.3.3",
+    "torch_distribution": "2.7.0+cu128"
+  },
+  "schema": "training_correction_receipt_v2",
+  "seed": 3151,
+  "source_checkpoint_state": null,
+  "source_commit_sha": "e08a0726ccfc4fe64d1d81f2c98d02c9226aefd4",
+  "start_iteration": 0,
+  "std_reset_applied": false,
+  "tag": "combination_anymal_u1_s2151_20261017",
+  "task": "Isaac-Velocity-Flat-Anymal-C-v0"
+}

@@ -1,0 +1,129 @@
+{
+  "schema": "combination_trial_public_summary_v2",
+  "tag": "combination_anymal_u1_s2151_20261017",
+  "protocol": "bench/protocols/combination_trial_v2.json",
+  "protocol_sha256_lf": "9ffd9365b63d99c99705eca69b5ffef1ad829bc3b035ee248268ba8dbed5603f",
+  "experiment_commit": "e08a0726ccfc4fe64d1d81f2c98d02c9226aefd4",
+  "seeds": [
+    2151,
+    3151
+  ],
+  "combination": {
+    "robot": "ANYmal-C",
+    "task": "Isaac-Velocity-Flat-Anymal-C-v0",
+    "fault": "U1",
+    "correction_id": "restore_reward_family_scope"
+  },
+  "status": "complete",
+  "outcome": "recovered",
+  "wording": "ANYmal-C 새 조합에서 전체 보상 함수군 복원 재학습 정책이 고정 평가 기준을 통과했다.",
+  "source_gate": {
+    "none_walks": true,
+    "fault_verdict": {
+      "label": "unhealthy",
+      "failed": [
+        "err_xy_ratio",
+        "err_yaw_ratio"
+      ],
+      "short_horizon": false,
+      "checks": {
+        "survival_ratio": true,
+        "fall_frac": true,
+        "err_xy_ratio": false,
+        "err_yaw_ratio": false
+      }
+    },
+    "standstill_ratio": {
+      "NONE": 0.15912110538507854,
+      "FAULT": 1.0203748893259512
+    },
+    "outcome": "failure_present"
+  },
+  "contract_status": "ready",
+  "contract_stages": [
+    {
+      "stage": "applicability",
+      "status": "passed"
+    },
+    {
+      "stage": "injection",
+      "status": "passed"
+    },
+    {
+      "stage": "source",
+      "status": "passed"
+    },
+    {
+      "stage": "scope",
+      "status": "passed"
+    },
+    {
+      "stage": "noop",
+      "status": "passed"
+    },
+    {
+      "stage": "recovery",
+      "status": "passed"
+    }
+  ],
+  "restoration_targets": [
+    "ang_vel_xy_l2",
+    "lin_vel_z_l2",
+    "track_ang_vel_z_exp",
+    "track_lin_vel_xy_exp"
+  ],
+  "restart_verdict": {
+    "label": "healthy",
+    "failed": [],
+    "short_horizon": false,
+    "checks": {
+      "survival_ratio": true,
+      "fall_frac": true,
+      "err_xy_ratio": true,
+      "err_yaw_ratio": true
+    }
+  },
+  "correction_receipt": {
+    "verdict": "recovered",
+    "over_budget": false,
+    "gpu_s": 635.4830000002403,
+    "exit_code": 0
+  },
+  "fixed_eval_metrics": {
+    "source_none": {
+      "fall_rate": 0.018269231542944908,
+      "mean_survival_s": 19.64919189453125,
+      "lin_vel_rmse_mps": 0.18723729724222374,
+      "yaw_rate_rmse_radps": 0.11819977654090646
+    },
+    "source_u1": {
+      "fall_rate": 0.045192308723926544,
+      "mean_survival_s": 19.5128466796875,
+      "lin_vel_rmse_mps": 1.200671878119947,
+      "yaw_rate_rmse_radps": 2.0397042035715933
+    },
+    "family_restart": {
+      "fall_rate": 0.036538463085889816,
+      "mean_survival_s": 19.30263427734375,
+      "lin_vel_rmse_mps": 0.1935474559922728,
+      "yaw_rate_rmse_radps": 0.1119547408839845
+    }
+  },
+  "standstill_reference": {
+    "lin_vel_rmse_mps": 1.1766968108291043,
+    "yaw_rate_rmse_radps": 0.8320502943378437
+  },
+  "model_calls": 0,
+  "selection_actor": "registered_rule",
+  "owned_gpu_process_wall_s_by_stage": {
+    "source_none": 602.9219999997877,
+    "source_u1": 597.1100000001024,
+    "source_eval": 95.8430000001099,
+    "family_restart": 578.5460000000894,
+    "restart_eval": 56.937000000150874
+  },
+  "time_totals": {
+    "parent_wall_s": 2111.8279999999795,
+    "owned_gpu_process_wall_s": 1931.3580000002403
+  }
+}

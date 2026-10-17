@@ -1,0 +1,92 @@
+{
+  "actual_action_scale": 0.5,
+  "actual_control_steps": 7200,
+  "aggregate_env_steps": 29491200,
+  "arm": "source_none",
+  "budget": {
+    "expected_control_steps": 7200,
+    "max_iterations": 300,
+    "num_envs": 4096,
+    "num_steps_per_env": 24,
+    "seed": 2151
+  },
+  "checkpoint": {
+    "path": "<isaaclab>/logs/rsl_rl/anymal_c_flat/2026-10-17_10-25-01_combination_anymal_source_none_s2151/model_299.pt",
+    "sha256": "33053218ec43de1c517db7156b275d886856da7c47823f1d18ae8703c376631e"
+  },
+  "checkpoint_load_calls": 0,
+  "completed": true,
+  "configs": {
+    "agent": {
+      "path": "<isaaclab>/logs/rsl_rl/anymal_c_flat/2026-10-17_10-25-01_combination_anymal_source_none_s2151/params/agent.yaml",
+      "sha256": "ab4442a3875b5d8609e6a2b0408d88dd6e975fc0f7fcdbea08153dd06809747b"
+    },
+    "environment": {
+      "path": "<isaaclab>/logs/rsl_rl/anymal_c_flat/2026-10-17_10-25-01_combination_anymal_source_none_s2151/params/env.yaml",
+      "sha256": "83ab9cd924b0cf144679bec0d450155f9d086f1de2578a79a7ff3962ddbc5095"
+    }
+  },
+  "correction_id": null,
+  "correction_sha256": "7fc06a98e70427230a327c80685ce46fb916d6a41c68d35d386dcfd5a4f2b7bd",
+  "environment_make_calls": 1,
+  "fault": "NONE",
+  "final_checkpoint_state": {
+    "iteration": 299,
+    "optimizer_state_sha256": "8c2c22f2d19008198e22017c63e81811ba963ba871622c883898f87fd411bd2c",
+    "policy_state_sha256": "51e53df7440bd297fefb5b5540d38399ba4f86f00d70684e0cea1439f29a3ec3"
+  },
+  "final_iteration": 299,
+  "initial_sha256": "f9fb7170b5a33e4356db066c0897dbceae952c5c5b392033f0001870599dd168",
+  "manifest_sha256": "34c2ac613af70470d52e7860981f45c259a5434b59804af8ff16b30946d66ca4",
+  "observed": {
+    "action_scale": 0.5,
+    "agent_max_iterations": 300,
+    "agent_seed": 2151,
+    "environment_num_envs": 4096,
+    "environment_seed": 2151,
+    "runner_num_steps_per_env": 24
+  },
+  "process_identity": {
+    "process_creation_time_filetime": 134366738747928687,
+    "process_id": 66196
+  },
+  "protocol": {
+    "path": "<repo>/bench/protocols/combination_trial_v2.json",
+    "sha256_lf": "9ffd9365b63d99c99705eca69b5ffef1ad829bc3b035ee248268ba8dbed5603f"
+  },
+  "protocol_sha256_lf": "9ffd9365b63d99c99705eca69b5ffef1ad829bc3b035ee248268ba8dbed5603f",
+  "recovery_mode": "restart",
+  "resume_checkpoint": null,
+  "resume_iteration": null,
+  "resume_scope": {
+    "action_std_reset": false,
+    "fresh_initialization": true,
+    "full_environment_state_restored": false,
+    "policy_optimizer_restored": false,
+    "rng_state_restored_from_checkpoint": false
+  },
+  "rng_state_before_learn": {
+    "cpu_sha256": "43560436d0404db3abca2095312c12a3727b567b0b4aa09799ad04c662b882a7",
+    "cuda_all_sha256": [
+      "4ccbf15b35bda19b798763cc9ec798c23828a004a1eba542077472e39e52f378"
+    ],
+    "cuda_device_count": 1
+  },
+  "run_name": "combination_anymal_source_none_s2151",
+  "runtime_versions": {
+    "isaaclab_distribution": "0.41.3",
+    "isaaclab_source_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "python": "3.10.15",
+    "python_cache_tag": "cpython-310",
+    "rsl_rl_distribution": "2.3.3",
+    "torch_distribution": "2.7.0+cu128"
+  },
+  "schema": "training_correction_receipt_v2",
+  "seed": 2151,
+  "source_checkpoint_state": null,
+  "source_commit_sha": "e08a0726ccfc4fe64d1d81f2c98d02c9226aefd4",
+  "start_iteration": 0,
+  "std_reset_applied": false,
+  "tag": "combination_anymal_u1_s2151_20261017",
+  "task": "Isaac-Velocity-Flat-Anymal-C-v0"
+}
