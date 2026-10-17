@@ -1,0 +1,54 @@
+{
+  "id": "none_s2146_off",
+  "arm": "NONE",
+  "seed": 2146,
+  "observed": false,
+  "state": {
+    "policy_sha256": "faea1fe0bc4109be3a38642751d510371833f1859ffb2ee0cf31e01fe218fe1f",
+    "optimizer_sha256": "d2e286a0d9be4cc713f5151cd980adde8b90f1e8a601bf1ca60cf3c35eedec8c",
+    "cpu_rng_sha256": "714a850acd56927f6b7a2f8b5f6d1f0b260cd7e211cbbedfc3c471b41367f918",
+    "cuda_rng_sha256": "eaad5c7636a0f44967ced408749d1a7d502eaf326f0349a0b26da1a3ce6574b3",
+    "learning_rate": 0.0033750000000000004
+  },
+  "losses": [
+    {
+      "value_function": 0.08930388428270816,
+      "surrogate": 0.00034120345953851937,
+      "entropy": 17.02377519607544
+    },
+    {
+      "value_function": 0.023275288473814725,
+      "surrogate": -0.006925372901605442,
+      "entropy": 16.916640186309813
+    },
+    {
+      "value_function": 0.017488438775762914,
+      "surrogate": -0.006485089543275535,
+      "entropy": 16.704169940948486
+    }
+  ],
+  "update_wall_s": [
+    0.3289139000698924,
+    0.19953470001928508,
+    0.17307929997332394
+  ],
+  "readback": {
+    "mutation": "inverse_importance_ratio_v1",
+    "changed_ratio_assignments": 1,
+    "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+    "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c",
+    "arm": "NONE",
+    "active_mutation": false,
+    "restored_original": false,
+    "restoration_before_training": false,
+    "installed_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd"
+  },
+  "inspection": null,
+  "source_sha256_lf": {
+    "manifest.json": "8dec7c825fad037ca01b780095dfbc1b5d867870cd1fe2acd7e80b501e6a88f8",
+    "records.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "training_evidence.json": "44f09e6d2ff4cf2d848179bd6a5edc48d618a46786e6a51571055bf16e605adc",
+    "close_ready.json": "30fbc3b5f14db4b1990c7fc49cf42f75bf031e9ba8fcc41b06302a380d03626b"
+  },
+  "owned_process_wall_s": 47.109999999869615
+}

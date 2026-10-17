@@ -1,0 +1,57 @@
+{
+  "state": {
+    "policy_sha256": "499b62110d110e1232e529e28ae3880cfd5bb9917a72c4f65152fb8c2d912923",
+    "optimizer_sha256": "3b842e2e60fd25cc2fb9aa33f2c814c3be66c9f33b9462ed845e4fe8a2844ed5",
+    "cpu_rng_sha256": "ee39e86d0c40e3b1bb6d5af8b17e6ee4ff74209b1e86b75348df7446b2c92218",
+    "cuda_rng_sha256": "fabcbce27c6e54954689ddbb6d81f5859c7b53db3c7cc52849ae93a806c99562",
+    "learning_rate": 0.0033750000000000004
+  },
+  "losses": [
+    {
+      "value_function": 0.0703286960721016,
+      "surrogate": -0.0014545054465997965,
+      "entropy": 17.001759719848632
+    },
+    {
+      "value_function": 0.02210416840389371,
+      "surrogate": -0.008427227684296667,
+      "entropy": 16.874724674224854
+    },
+    {
+      "value_function": 0.019548879843205212,
+      "surrogate": -0.007511631405213848,
+      "entropy": 16.663650226593017
+    }
+  ],
+  "updates": 3,
+  "update_wall_s": [
+    0.42965529998764396,
+    0.2242441000416875,
+    0.218143800040707
+  ],
+  "readback": {
+    "mutation": "inverse_importance_ratio_v1",
+    "changed_ratio_assignments": 1,
+    "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+    "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c",
+    "arm": "RESTORED",
+    "active_mutation": false,
+    "restored_original": true,
+    "restoration_before_training": true,
+    "installed_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd"
+  },
+  "runtime_configuration": {
+    "epochs": 5,
+    "minibatches": 4,
+    "clip_param": 0.2
+  },
+  "torch_version": "2.7.0+cu128",
+  "device_type": "cuda",
+  "schema": "ppo_gradient_training_evidence_v1",
+  "method_cleanup": true,
+  "manifest_sha256": "1815507e04856d1f022dd2b5b970cd056fac7450b00597e6ea5737c972d2ddbd",
+  "arm": "RESTORED",
+  "observed": true,
+  "learning_completed": true,
+  "recorded_before_app_close": true
+}

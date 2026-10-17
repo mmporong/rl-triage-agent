@@ -1,0 +1,84 @@
+{
+  "schema": "ppo_observer_cost_comparison_v1",
+  "v4": {
+    "status": "complete",
+    "outcome": "observer_cost_exceeded",
+    "pairs": [
+      {
+        "seed": 2140,
+        "state_exact": true,
+        "losses_exact": true,
+        "update_wall_ratio": 1.5643724637519756,
+        "cost_within_bound": false
+      },
+      {
+        "seed": 2141,
+        "state_exact": true,
+        "losses_exact": true,
+        "update_wall_ratio": 1.5218924266757203,
+        "cost_within_bound": false
+      },
+      {
+        "seed": 2142,
+        "state_exact": true,
+        "losses_exact": true,
+        "update_wall_ratio": 1.6318819312298947,
+        "cost_within_bound": false
+      }
+    ],
+    "checks": {
+      "noninterference_3_pairs": true,
+      "cost_3_pairs": false,
+      "normal_3_seeds": true
+    },
+    "completed_runs": 6,
+    "planned_runs": 8,
+    "experiment_commit": "b40d9925e1c0996140134c5f5d621d582877b54c",
+    "protocol_sha256_lf": "7e28e7a44c8cb3479bd60b794ec493af497e7304acf9cea01f8bad2237a4a627"
+  },
+  "v5": {
+    "status": "complete",
+    "outcome": "confirmed",
+    "pairs": [
+      {
+        "seed": 2144,
+        "state_exact": true,
+        "losses_exact": true,
+        "update_wall_ratio": 0.9551199859002757,
+        "cost_within_bound": true
+      },
+      {
+        "seed": 2145,
+        "state_exact": true,
+        "losses_exact": true,
+        "update_wall_ratio": 1.1546251037745405,
+        "cost_within_bound": true
+      },
+      {
+        "seed": 2146,
+        "state_exact": true,
+        "losses_exact": true,
+        "update_wall_ratio": 1.1819551288255512,
+        "cost_within_bound": true
+      }
+    ],
+    "checks": {
+      "noninterference_3_pairs": true,
+      "cost_3_pairs": true,
+      "normal_3_seeds": true,
+      "count_unchanged_in_fault": true,
+      "fault_gradient_abnormal": true,
+      "restored_normal": true,
+      "restored_state_exact": true
+    },
+    "completed_runs": 8,
+    "planned_runs": 8,
+    "experiment_commit": "4fc28e605f0769b1a88a1fbbcfe5589afa5f035c",
+    "protocol_sha256_lf": "ae7b1c7387f27c852b281d92ecd9f08f1f4aa6e6e94d08791a2341605cfa5907"
+  },
+  "metric": "paired_sum_update_wall_on_divided_by_off",
+  "max_ratio": 1.5,
+  "development_coupling": "v4 결과를 본 뒤 계측 구현을 바꿨고 지표·상한은 유지했다. invalid 재시도가 아닌 새 seed 측정이다.",
+  "same_seed_comparison": false,
+  "gpu_time_saving_claimed": false
+}

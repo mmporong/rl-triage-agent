@@ -1,0 +1,960 @@
+{
+  "schema": "ppo_gradient_check_summary_v5",
+  "status": "complete",
+  "outcome": "confirmed",
+  "checks": {
+    "noninterference_3_pairs": true,
+    "cost_3_pairs": true,
+    "normal_3_seeds": true,
+    "count_unchanged_in_fault": true,
+    "fault_gradient_abnormal": true,
+    "restored_normal": true,
+    "restored_state_exact": true
+  },
+  "pairs": [
+    {
+      "seed": 2144,
+      "state_exact": true,
+      "losses_exact": true,
+      "update_wall_ratio": 0.9551199859002757,
+      "cost_within_bound": true
+    },
+    {
+      "seed": 2145,
+      "state_exact": true,
+      "losses_exact": true,
+      "update_wall_ratio": 1.1546251037745405,
+      "cost_within_bound": true
+    },
+    {
+      "seed": 2146,
+      "state_exact": true,
+      "losses_exact": true,
+      "update_wall_ratio": 1.1819551288255512,
+      "cost_within_bound": true
+    }
+  ],
+  "runs": [
+    {
+      "id": "none_s2144_off",
+      "arm": "NONE",
+      "seed": 2144,
+      "observed": false,
+      "state": {
+        "policy_sha256": "499b62110d110e1232e529e28ae3880cfd5bb9917a72c4f65152fb8c2d912923",
+        "optimizer_sha256": "3b842e2e60fd25cc2fb9aa33f2c814c3be66c9f33b9462ed845e4fe8a2844ed5",
+        "cpu_rng_sha256": "ee39e86d0c40e3b1bb6d5af8b17e6ee4ff74209b1e86b75348df7446b2c92218",
+        "cuda_rng_sha256": "fabcbce27c6e54954689ddbb6d81f5859c7b53db3c7cc52849ae93a806c99562",
+        "learning_rate": 0.0033750000000000004
+      },
+      "losses": [
+        {
+          "value_function": 0.0703286960721016,
+          "surrogate": -0.0014545054465997965,
+          "entropy": 17.001759719848632
+        },
+        {
+          "value_function": 0.02210416840389371,
+          "surrogate": -0.008427227684296667,
+          "entropy": 16.874724674224854
+        },
+        {
+          "value_function": 0.019548879843205212,
+          "surrogate": -0.007511631405213848,
+          "entropy": 16.663650226593017
+        }
+      ],
+      "update_wall_s": [
+        0.38399520004168153,
+        0.17639229982160032,
+        0.17838900000788271
+      ],
+      "readback": {
+        "mutation": "inverse_importance_ratio_v1",
+        "changed_ratio_assignments": 1,
+        "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+        "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c",
+        "arm": "NONE",
+        "active_mutation": false,
+        "restored_original": false,
+        "restoration_before_training": false,
+        "installed_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd"
+      },
+      "inspection": null,
+      "source_sha256_lf": {
+        "manifest.json": "c8d628b5bbec27c9be9a9afc2ed16c7f2da9599710327c942c2912d065a959d3",
+        "records.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "training_evidence.json": "a11974e0003699079cbbbf1e5c0d5ea03f2bd6d54945eef96fde491e6b2509bd",
+        "close_ready.json": "cbec8133afb80ea74600d1121e6a9ae55951e677af5e003c1ee84590f50f8eec"
+      },
+      "owned_process_wall_s": 38.92200000002049
+    },
+    {
+      "id": "none_s2144_on",
+      "arm": "NONE",
+      "seed": 2144,
+      "observed": true,
+      "state": {
+        "policy_sha256": "499b62110d110e1232e529e28ae3880cfd5bb9917a72c4f65152fb8c2d912923",
+        "optimizer_sha256": "3b842e2e60fd25cc2fb9aa33f2c814c3be66c9f33b9462ed845e4fe8a2844ed5",
+        "cpu_rng_sha256": "ee39e86d0c40e3b1bb6d5af8b17e6ee4ff74209b1e86b75348df7446b2c92218",
+        "cuda_rng_sha256": "fabcbce27c6e54954689ddbb6d81f5859c7b53db3c7cc52849ae93a806c99562",
+        "learning_rate": 0.0033750000000000004
+      },
+      "losses": [
+        {
+          "value_function": 0.0703286960721016,
+          "surrogate": -0.0014545054465997965,
+          "entropy": 17.001759719848632
+        },
+        {
+          "value_function": 0.02210416840389371,
+          "surrogate": -0.008427227684296667,
+          "entropy": 16.874724674224854
+        },
+        {
+          "value_function": 0.019548879843205212,
+          "surrogate": -0.007511631405213848,
+          "entropy": 16.663650226593017
+        }
+      ],
+      "update_wall_s": [
+        0.32184870005585253,
+        0.19281599996611476,
+        0.19095550011843443
+      ],
+      "readback": {
+        "mutation": "inverse_importance_ratio_v1",
+        "changed_ratio_assignments": 1,
+        "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+        "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c",
+        "arm": "NONE",
+        "active_mutation": false,
+        "restored_original": false,
+        "restoration_before_training": false,
+        "installed_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd"
+      },
+      "inspection": {
+        "schema": "optimizer_observability_inspection_v1",
+        "manifest": {
+          "schema": "optimizer_observability_manifest_v1",
+          "arm": "NONE",
+          "seed": 2144,
+          "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+          "num_envs": 4096,
+          "max_iterations": 3,
+          "configured_learning_epochs": 5,
+          "configured_mini_batches": 4,
+          "expected_optimizer_steps_per_update": 20,
+          "expected_minibatches_per_update": 20,
+          "runtime_updates_to_observe": 3,
+          "source_commit_sha": "4fc28e605f0769b1a88a1fbbcfe5589afa5f035c",
+          "protocol_path": "bench/protocols/ppo_gradient_check_v5.json",
+          "protocol_sha256_lf": "ae7b1c7387f27c852b281d92ecd9f08f1f4aa6e6e94d08791a2341605cfa5907",
+          "source_sha256_lf": {
+            "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+            "bench/inspect_optimizer_observability.py": "6923f0aec67377e8e03633d898871b9a4f0771e4ad941cb532beb0403ead3883",
+            "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+            "bench/ppo_gradient_cpu_fixture_v1.py": "74cfcd7ae42312f6eadb5efc9ef05cd7f45367bc1377e813f9f9e38323093fda",
+            "bench/ppo_gradient_cpu_fixture_v2.py": "40513adbceecde8aaa45cfec13add74b221690c48ca0cc18ffc95ffaf6154e6b",
+            "bench/ppo_gradient_training_v1.py": "d6a3e493c270bb3e994585945aa095f6c9de5da7f78cf2f2392c0560358ab227",
+            "bench/ppo_gradient_training_v2.py": "a8bbb8899bd855421d08385fc2fd7b6a3881cf1632ca11c6c231f461fd395d7f",
+            "bench/ppo_gradient_training_v3.py": "9c4eb49212f9cf0130154d714e1d1e26bb8bfd849c5dc85c8dcb54a1ec336916",
+            "bench/ppo_gradient_training_v4.py": "5d7c92806f394b3ed5dc65ea63930eece735e17fda8f578d35c85933bbb0d033",
+            "bench/ppo_gradient_training_v5.py": "a4af53752bef162df55d0ac411e47163f99996cb2942c3412d6d64434064d2bc",
+            "bench/ppo_ratio_mutation_v1.py": "19c15646515e7481c34bd909d5e0d6ef52b708ce1a5daec1810c774c602702a3",
+            "bench/profile_ppo_observer_v1.py": "84791a11e6300d313308e25c094ba437d2d06ac75b3341fbbb4fd7f891909bb3",
+            "bench/protocols/optimizer_observability_v1.json": "c1fd244e388a0ab6153ff779ae485d30829f490506c4affae8b300c6794ecfab",
+            "bench/protocols/ppo_gradient_check_v1.json": "f3d20a21e77d0a31dad8d0a549d8538589fc1b9613138994fcb6b12a60961eb5",
+            "bench/protocols/ppo_gradient_check_v2.json": "87c9f2da1125b2046642961d072be261785269246149bc84f29af397d6ef034f",
+            "bench/protocols/ppo_gradient_check_v3.json": "60f42468f7de7d5eac491a0b28558afe965ae9d4307dcb693ae336896f3e2353",
+            "bench/protocols/ppo_gradient_check_v4.json": "7e28e7a44c8cb3479bd60b794ec493af497e7304acf9cea01f8bad2237a4a627",
+            "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+            "bench/run_optimizer_observability_batch.py": "c5cc9736cdfe006fe987c1de7fa44ea339bb1cde7be359d655212adcb362e509",
+            "bench/run_ppo_gradient_check_v1.ps1": "cad4e463345481c90975abbf6bcd4db496067bcb67aa17ac63bd44672355b517",
+            "bench/run_ppo_gradient_check_v2.ps1": "aa615fcc85f12af4f2ed33cfd890589dec0431ed0c240172309223b039c5cbbd",
+            "bench/run_ppo_gradient_check_v3.ps1": "6676315bf1871a2b3902b66cba107edbc59f23219f7268ac9955a5fdeef96cd7",
+            "bench/run_ppo_gradient_check_v4.ps1": "f4a4e5404b4d794c2c9ae3bb5e37bf2248ab23f7e0cf987db52c90f5740fe3d3",
+            "bench/run_ppo_gradient_check_v5.ps1": "82aaf36764d7b98c333942fe5b7b6d8b94eea8b7ba91cc4f9656ae903409f45b",
+            "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+            "evals/lease_timestamps.py": "dd88cc4af421ee8bba3f75715093c9a71766522d13ab060cbcf35696453971a2",
+            "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+            "evals/ppo_gradient_check_v1.py": "5f9a69ada6174435ec3d6178221737f920eb7dfd7988f36180a4741efa9d5e25",
+            "evals/ppo_gradient_check_v2.py": "7e48220c847785774fbfb7b7c33d71cf2139cc7073391ba492f22d1512bfb22c",
+            "evals/ppo_gradient_check_v3.py": "9a85f89040576e0a00f4c09e39427d070952d056e8c3aef22d90a61918ef4955",
+            "evals/ppo_gradient_check_v4.py": "53317bcd6dfbe8961e2316d66beca638bb09e1cc755cc8179a0e7090ea4bd163",
+            "evals/ppo_gradient_check_v5.py": "f65694f3a6ff969e0a81e3fbf2d8ead96b103b3182537d5d3e1ec7a6f17ccf17",
+            "evals/ppo_gradient_invariant_v1.py": "bdbe4a9d99f8d4fd55a9181238357b4a0e6b1e677164d8c2ded61cdc47316fd3",
+            "evals/ppo_gradient_invariant_v2.py": "ad0bc58500165da891092ae84c283bf5522c25de4d227a1dd818b0b4b7fc41c8",
+            "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+            "tests/test_isaac_training_guard_v1.py": "dfe76d7aa7722e67ced2d7b419c506f3f97962446b245defa82ac45c3de9b9bf",
+            "tests/test_lease_timestamps.py": "89ed5803d3095803ed186f4877c85d0de386b8b06220c61b1081d4e4b772e7cf",
+            "tests/test_ppo_gradient_check_v1.py": "401fc9e101d57ea8e0d2e7baea0405d0fcc4141156aaf75a3b1b7df908a75840",
+            "tests/test_ppo_gradient_check_v2.py": "1b75f16fdfe1ed11b61fae8e0a0666aada54feed7bc2457483e741ae2c550db8",
+            "tests/test_ppo_gradient_check_v3.py": "6b30ddc17aa7285eec252930708e832cff82c9d87ec6bb6a3fdcf6edb0c612dd",
+            "tests/test_ppo_gradient_check_v4.py": "3c2664e7e9711cefa9698dba6a4fdb12675d64cd3f9ad87a1e16bd4435595774",
+            "tests/test_ppo_gradient_check_v5.py": "da69154489fba4b9be239d2c1b270007f7bdcb773730e1c3be86c005782d099e",
+            "tests/test_ppo_gradient_invariant_v1.py": "91ac5be4dc349c6f24f4bb9ec8596d25d6eb6360cc6d7d455d20ec6d880678b3",
+            "tests/test_ppo_gradient_invariant_v2.py": "7b159d3524db1ecd01d9721de9a1b71950dfc4ad5b6a114fddca0857a2ed4c5e",
+            "tests/test_ppo_observer_profile_v1.py": "e2f39f2080d29a8070a9ffc01543ed1638a3fb3fd6c12e77dec310a51891437c"
+          },
+          "gradient_invariant": {
+            "schema": "ppo_surrogate_gradient_v1",
+            "atol": 1e-06,
+            "rtol": 1e-05,
+            "scale": "batch_size",
+            "clip_param": 0.2
+          },
+          "inspection_primitives": [
+            "optimizer_step_count",
+            "minibatch_count",
+            "ppo_surrogate_gradient"
+          ],
+          "observer_enabled": true,
+          "run_id": "none_s2144_on"
+        },
+        "records": 3,
+        "status": "normal",
+        "primitives": {
+          "optimizer_step_count": {
+            "status": "normal",
+            "first_mismatch_update": null
+          },
+          "minibatch_count": {
+            "status": "normal",
+            "first_mismatch_update": null
+          },
+          "ppo_surrogate_gradient": {
+            "status": "normal",
+            "first_mismatch_update": null,
+            "batches": 60
+          }
+        }
+      },
+      "source_sha256_lf": {
+        "manifest.json": "36bfd0c4dbfc5e903f5fd9a98381b5c34837608d9cfc8b50848b05e88ba03a20",
+        "records.jsonl": "6382eed61b38f64b1c2727cd18db0c12bcdc7512428de9fca0b8e79473dc6822",
+        "training_evidence.json": "c8dfc4ddd81aa4280f374e6926867914eca3b961cf0e4d0edb19d3467229edca",
+        "close_ready.json": "6f94da74ba9281af159c8cbc60b64814bcec3c9a06e2d1225035a2c0a7795277"
+      },
+      "owned_process_wall_s": 40.23399999993853
+    },
+    {
+      "id": "none_s2145_on",
+      "arm": "NONE",
+      "seed": 2145,
+      "observed": true,
+      "state": {
+        "policy_sha256": "7110381175ef552c666424d28d3025a50bee942055228c76bd13b8ea02628366",
+        "optimizer_sha256": "0c130093160f23fb17d6548a3f945c5293f3c96b427832caebf250ef157c3573",
+        "cpu_rng_sha256": "cd6aae91a958b5f7c97bc68f9ed167c8ebf7f8ceb48be1c82d486e76a45fe43b",
+        "cuda_rng_sha256": "0d6b7a7eedf1d0ebbfa7cac6e3e74b7b7475c187f9bdb247a11f1a26a314d8a2",
+        "learning_rate": 0.0033750000000000004
+      },
+      "losses": [
+        {
+          "value_function": 0.09543615765869617,
+          "surrogate": -0.0001467622125346679,
+          "entropy": 17.014956378936766
+        },
+        {
+          "value_function": 0.02642808761447668,
+          "surrogate": -0.007783998937520664,
+          "entropy": 16.867294311523438
+        },
+        {
+          "value_function": 0.01966489162296057,
+          "surrogate": -0.007154831461775757,
+          "entropy": 16.697329998016357
+        }
+      ],
+      "update_wall_s": [
+        0.4570945000741631,
+        0.2673983001150191,
+        0.1907611999195069
+      ],
+      "readback": {
+        "mutation": "inverse_importance_ratio_v1",
+        "changed_ratio_assignments": 1,
+        "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+        "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c",
+        "arm": "NONE",
+        "active_mutation": false,
+        "restored_original": false,
+        "restoration_before_training": false,
+        "installed_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd"
+      },
+      "inspection": {
+        "schema": "optimizer_observability_inspection_v1",
+        "manifest": {
+          "schema": "optimizer_observability_manifest_v1",
+          "arm": "NONE",
+          "seed": 2145,
+          "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+          "num_envs": 4096,
+          "max_iterations": 3,
+          "configured_learning_epochs": 5,
+          "configured_mini_batches": 4,
+          "expected_optimizer_steps_per_update": 20,
+          "expected_minibatches_per_update": 20,
+          "runtime_updates_to_observe": 3,
+          "source_commit_sha": "4fc28e605f0769b1a88a1fbbcfe5589afa5f035c",
+          "protocol_path": "bench/protocols/ppo_gradient_check_v5.json",
+          "protocol_sha256_lf": "ae7b1c7387f27c852b281d92ecd9f08f1f4aa6e6e94d08791a2341605cfa5907",
+          "source_sha256_lf": {
+            "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+            "bench/inspect_optimizer_observability.py": "6923f0aec67377e8e03633d898871b9a4f0771e4ad941cb532beb0403ead3883",
+            "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+            "bench/ppo_gradient_cpu_fixture_v1.py": "74cfcd7ae42312f6eadb5efc9ef05cd7f45367bc1377e813f9f9e38323093fda",
+            "bench/ppo_gradient_cpu_fixture_v2.py": "40513adbceecde8aaa45cfec13add74b221690c48ca0cc18ffc95ffaf6154e6b",
+            "bench/ppo_gradient_training_v1.py": "d6a3e493c270bb3e994585945aa095f6c9de5da7f78cf2f2392c0560358ab227",
+            "bench/ppo_gradient_training_v2.py": "a8bbb8899bd855421d08385fc2fd7b6a3881cf1632ca11c6c231f461fd395d7f",
+            "bench/ppo_gradient_training_v3.py": "9c4eb49212f9cf0130154d714e1d1e26bb8bfd849c5dc85c8dcb54a1ec336916",
+            "bench/ppo_gradient_training_v4.py": "5d7c92806f394b3ed5dc65ea63930eece735e17fda8f578d35c85933bbb0d033",
+            "bench/ppo_gradient_training_v5.py": "a4af53752bef162df55d0ac411e47163f99996cb2942c3412d6d64434064d2bc",
+            "bench/ppo_ratio_mutation_v1.py": "19c15646515e7481c34bd909d5e0d6ef52b708ce1a5daec1810c774c602702a3",
+            "bench/profile_ppo_observer_v1.py": "84791a11e6300d313308e25c094ba437d2d06ac75b3341fbbb4fd7f891909bb3",
+            "bench/protocols/optimizer_observability_v1.json": "c1fd244e388a0ab6153ff779ae485d30829f490506c4affae8b300c6794ecfab",
+            "bench/protocols/ppo_gradient_check_v1.json": "f3d20a21e77d0a31dad8d0a549d8538589fc1b9613138994fcb6b12a60961eb5",
+            "bench/protocols/ppo_gradient_check_v2.json": "87c9f2da1125b2046642961d072be261785269246149bc84f29af397d6ef034f",
+            "bench/protocols/ppo_gradient_check_v3.json": "60f42468f7de7d5eac491a0b28558afe965ae9d4307dcb693ae336896f3e2353",
+            "bench/protocols/ppo_gradient_check_v4.json": "7e28e7a44c8cb3479bd60b794ec493af497e7304acf9cea01f8bad2237a4a627",
+            "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+            "bench/run_optimizer_observability_batch.py": "c5cc9736cdfe006fe987c1de7fa44ea339bb1cde7be359d655212adcb362e509",
+            "bench/run_ppo_gradient_check_v1.ps1": "cad4e463345481c90975abbf6bcd4db496067bcb67aa17ac63bd44672355b517",
+            "bench/run_ppo_gradient_check_v2.ps1": "aa615fcc85f12af4f2ed33cfd890589dec0431ed0c240172309223b039c5cbbd",
+            "bench/run_ppo_gradient_check_v3.ps1": "6676315bf1871a2b3902b66cba107edbc59f23219f7268ac9955a5fdeef96cd7",
+            "bench/run_ppo_gradient_check_v4.ps1": "f4a4e5404b4d794c2c9ae3bb5e37bf2248ab23f7e0cf987db52c90f5740fe3d3",
+            "bench/run_ppo_gradient_check_v5.ps1": "82aaf36764d7b98c333942fe5b7b6d8b94eea8b7ba91cc4f9656ae903409f45b",
+            "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+            "evals/lease_timestamps.py": "dd88cc4af421ee8bba3f75715093c9a71766522d13ab060cbcf35696453971a2",
+            "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+            "evals/ppo_gradient_check_v1.py": "5f9a69ada6174435ec3d6178221737f920eb7dfd7988f36180a4741efa9d5e25",
+            "evals/ppo_gradient_check_v2.py": "7e48220c847785774fbfb7b7c33d71cf2139cc7073391ba492f22d1512bfb22c",
+            "evals/ppo_gradient_check_v3.py": "9a85f89040576e0a00f4c09e39427d070952d056e8c3aef22d90a61918ef4955",
+            "evals/ppo_gradient_check_v4.py": "53317bcd6dfbe8961e2316d66beca638bb09e1cc755cc8179a0e7090ea4bd163",
+            "evals/ppo_gradient_check_v5.py": "f65694f3a6ff969e0a81e3fbf2d8ead96b103b3182537d5d3e1ec7a6f17ccf17",
+            "evals/ppo_gradient_invariant_v1.py": "bdbe4a9d99f8d4fd55a9181238357b4a0e6b1e677164d8c2ded61cdc47316fd3",
+            "evals/ppo_gradient_invariant_v2.py": "ad0bc58500165da891092ae84c283bf5522c25de4d227a1dd818b0b4b7fc41c8",
+            "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+            "tests/test_isaac_training_guard_v1.py": "dfe76d7aa7722e67ced2d7b419c506f3f97962446b245defa82ac45c3de9b9bf",
+            "tests/test_lease_timestamps.py": "89ed5803d3095803ed186f4877c85d0de386b8b06220c61b1081d4e4b772e7cf",
+            "tests/test_ppo_gradient_check_v1.py": "401fc9e101d57ea8e0d2e7baea0405d0fcc4141156aaf75a3b1b7df908a75840",
+            "tests/test_ppo_gradient_check_v2.py": "1b75f16fdfe1ed11b61fae8e0a0666aada54feed7bc2457483e741ae2c550db8",
+            "tests/test_ppo_gradient_check_v3.py": "6b30ddc17aa7285eec252930708e832cff82c9d87ec6bb6a3fdcf6edb0c612dd",
+            "tests/test_ppo_gradient_check_v4.py": "3c2664e7e9711cefa9698dba6a4fdb12675d64cd3f9ad87a1e16bd4435595774",
+            "tests/test_ppo_gradient_check_v5.py": "da69154489fba4b9be239d2c1b270007f7bdcb773730e1c3be86c005782d099e",
+            "tests/test_ppo_gradient_invariant_v1.py": "91ac5be4dc349c6f24f4bb9ec8596d25d6eb6360cc6d7d455d20ec6d880678b3",
+            "tests/test_ppo_gradient_invariant_v2.py": "7b159d3524db1ecd01d9721de9a1b71950dfc4ad5b6a114fddca0857a2ed4c5e",
+            "tests/test_ppo_observer_profile_v1.py": "e2f39f2080d29a8070a9ffc01543ed1638a3fb3fd6c12e77dec310a51891437c"
+          },
+          "gradient_invariant": {
+            "schema": "ppo_surrogate_gradient_v1",
+            "atol": 1e-06,
+            "rtol": 1e-05,
+            "scale": "batch_size",
+            "clip_param": 0.2
+          },
+          "inspection_primitives": [
+            "optimizer_step_count",
+            "minibatch_count",
+            "ppo_surrogate_gradient"
+          ],
+          "observer_enabled": true,
+          "run_id": "none_s2145_on"
+        },
+        "records": 3,
+        "status": "normal",
+        "primitives": {
+          "optimizer_step_count": {
+            "status": "normal",
+            "first_mismatch_update": null
+          },
+          "minibatch_count": {
+            "status": "normal",
+            "first_mismatch_update": null
+          },
+          "ppo_surrogate_gradient": {
+            "status": "normal",
+            "first_mismatch_update": null,
+            "batches": 60
+          }
+        }
+      },
+      "source_sha256_lf": {
+        "manifest.json": "f355b71cdfb3243bf8a639917025b291f2ff8fea41d05ecf8eb381088eadb27d",
+        "records.jsonl": "b51de3a6f71ed43eaf27b255fe67330195ee35e8828d55d624bba7cb951321c5",
+        "training_evidence.json": "2ebe032713e3a7e6962b7546edd179376c4324e8057167cf003a90199a4ca997",
+        "close_ready.json": "75eb03a1b6d97ae5ebd08419a3941efa93109e25c048e990f4f5e2f39a109cb9"
+      },
+      "owned_process_wall_s": 47.59400000004098
+    },
+    {
+      "id": "none_s2145_off",
+      "arm": "NONE",
+      "seed": 2145,
+      "observed": false,
+      "state": {
+        "policy_sha256": "7110381175ef552c666424d28d3025a50bee942055228c76bd13b8ea02628366",
+        "optimizer_sha256": "0c130093160f23fb17d6548a3f945c5293f3c96b427832caebf250ef157c3573",
+        "cpu_rng_sha256": "cd6aae91a958b5f7c97bc68f9ed167c8ebf7f8ceb48be1c82d486e76a45fe43b",
+        "cuda_rng_sha256": "0d6b7a7eedf1d0ebbfa7cac6e3e74b7b7475c187f9bdb247a11f1a26a314d8a2",
+        "learning_rate": 0.0033750000000000004
+      },
+      "losses": [
+        {
+          "value_function": 0.09543615765869617,
+          "surrogate": -0.0001467622125346679,
+          "entropy": 17.014956378936766
+        },
+        {
+          "value_function": 0.02642808761447668,
+          "surrogate": -0.007783998937520664,
+          "entropy": 16.867294311523438
+        },
+        {
+          "value_function": 0.01966489162296057,
+          "surrogate": -0.007154831461775757,
+          "entropy": 16.697329998016357
+        }
+      ],
+      "update_wall_s": [
+        0.3258304998744279,
+        0.2477515998762101,
+        0.2191029000096023
+      ],
+      "readback": {
+        "mutation": "inverse_importance_ratio_v1",
+        "changed_ratio_assignments": 1,
+        "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+        "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c",
+        "arm": "NONE",
+        "active_mutation": false,
+        "restored_original": false,
+        "restoration_before_training": false,
+        "installed_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd"
+      },
+      "inspection": null,
+      "source_sha256_lf": {
+        "manifest.json": "7aff5a20ea04634ce7b12570a5b6b8922f62519461acf222e7a557a4afc48c0a",
+        "records.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "training_evidence.json": "4bfc2ad97f22a738b891ad09add3d86a49722c9105550a49c7dfbafd39bffcba",
+        "close_ready.json": "d043376637cc0631601f5b1f2da217ebe9ba5e998e418305360cbab0f7ec10bc"
+      },
+      "owned_process_wall_s": 46.07800000021234
+    },
+    {
+      "id": "none_s2146_off",
+      "arm": "NONE",
+      "seed": 2146,
+      "observed": false,
+      "state": {
+        "policy_sha256": "faea1fe0bc4109be3a38642751d510371833f1859ffb2ee0cf31e01fe218fe1f",
+        "optimizer_sha256": "d2e286a0d9be4cc713f5151cd980adde8b90f1e8a601bf1ca60cf3c35eedec8c",
+        "cpu_rng_sha256": "714a850acd56927f6b7a2f8b5f6d1f0b260cd7e211cbbedfc3c471b41367f918",
+        "cuda_rng_sha256": "eaad5c7636a0f44967ced408749d1a7d502eaf326f0349a0b26da1a3ce6574b3",
+        "learning_rate": 0.0033750000000000004
+      },
+      "losses": [
+        {
+          "value_function": 0.08930388428270816,
+          "surrogate": 0.00034120345953851937,
+          "entropy": 17.02377519607544
+        },
+        {
+          "value_function": 0.023275288473814725,
+          "surrogate": -0.006925372901605442,
+          "entropy": 16.916640186309813
+        },
+        {
+          "value_function": 0.017488438775762914,
+          "surrogate": -0.006485089543275535,
+          "entropy": 16.704169940948486
+        }
+      ],
+      "update_wall_s": [
+        0.3289139000698924,
+        0.19953470001928508,
+        0.17307929997332394
+      ],
+      "readback": {
+        "mutation": "inverse_importance_ratio_v1",
+        "changed_ratio_assignments": 1,
+        "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+        "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c",
+        "arm": "NONE",
+        "active_mutation": false,
+        "restored_original": false,
+        "restoration_before_training": false,
+        "installed_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd"
+      },
+      "inspection": null,
+      "source_sha256_lf": {
+        "manifest.json": "8dec7c825fad037ca01b780095dfbc1b5d867870cd1fe2acd7e80b501e6a88f8",
+        "records.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "training_evidence.json": "44f09e6d2ff4cf2d848179bd6a5edc48d618a46786e6a51571055bf16e605adc",
+        "close_ready.json": "30fbc3b5f14db4b1990c7fc49cf42f75bf031e9ba8fcc41b06302a380d03626b"
+      },
+      "owned_process_wall_s": 47.109999999869615
+    },
+    {
+      "id": "none_s2146_on",
+      "arm": "NONE",
+      "seed": 2146,
+      "observed": true,
+      "state": {
+        "policy_sha256": "faea1fe0bc4109be3a38642751d510371833f1859ffb2ee0cf31e01fe218fe1f",
+        "optimizer_sha256": "d2e286a0d9be4cc713f5151cd980adde8b90f1e8a601bf1ca60cf3c35eedec8c",
+        "cpu_rng_sha256": "714a850acd56927f6b7a2f8b5f6d1f0b260cd7e211cbbedfc3c471b41367f918",
+        "cuda_rng_sha256": "eaad5c7636a0f44967ced408749d1a7d502eaf326f0349a0b26da1a3ce6574b3",
+        "learning_rate": 0.0033750000000000004
+      },
+      "losses": [
+        {
+          "value_function": 0.08930388428270816,
+          "surrogate": 0.00034120345953851937,
+          "entropy": 17.02377519607544
+        },
+        {
+          "value_function": 0.023275288473814725,
+          "surrogate": -0.006925372901605442,
+          "entropy": 16.916640186309813
+        },
+        {
+          "value_function": 0.017488438775762914,
+          "surrogate": -0.006485089543275535,
+          "entropy": 16.704169940948486
+        }
+      ],
+      "update_wall_s": [
+        0.3791631998028606,
+        0.2542738998308778,
+        0.1957373998593539
+      ],
+      "readback": {
+        "mutation": "inverse_importance_ratio_v1",
+        "changed_ratio_assignments": 1,
+        "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+        "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c",
+        "arm": "NONE",
+        "active_mutation": false,
+        "restored_original": false,
+        "restoration_before_training": false,
+        "installed_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd"
+      },
+      "inspection": {
+        "schema": "optimizer_observability_inspection_v1",
+        "manifest": {
+          "schema": "optimizer_observability_manifest_v1",
+          "arm": "NONE",
+          "seed": 2146,
+          "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+          "num_envs": 4096,
+          "max_iterations": 3,
+          "configured_learning_epochs": 5,
+          "configured_mini_batches": 4,
+          "expected_optimizer_steps_per_update": 20,
+          "expected_minibatches_per_update": 20,
+          "runtime_updates_to_observe": 3,
+          "source_commit_sha": "4fc28e605f0769b1a88a1fbbcfe5589afa5f035c",
+          "protocol_path": "bench/protocols/ppo_gradient_check_v5.json",
+          "protocol_sha256_lf": "ae7b1c7387f27c852b281d92ecd9f08f1f4aa6e6e94d08791a2341605cfa5907",
+          "source_sha256_lf": {
+            "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+            "bench/inspect_optimizer_observability.py": "6923f0aec67377e8e03633d898871b9a4f0771e4ad941cb532beb0403ead3883",
+            "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+            "bench/ppo_gradient_cpu_fixture_v1.py": "74cfcd7ae42312f6eadb5efc9ef05cd7f45367bc1377e813f9f9e38323093fda",
+            "bench/ppo_gradient_cpu_fixture_v2.py": "40513adbceecde8aaa45cfec13add74b221690c48ca0cc18ffc95ffaf6154e6b",
+            "bench/ppo_gradient_training_v1.py": "d6a3e493c270bb3e994585945aa095f6c9de5da7f78cf2f2392c0560358ab227",
+            "bench/ppo_gradient_training_v2.py": "a8bbb8899bd855421d08385fc2fd7b6a3881cf1632ca11c6c231f461fd395d7f",
+            "bench/ppo_gradient_training_v3.py": "9c4eb49212f9cf0130154d714e1d1e26bb8bfd849c5dc85c8dcb54a1ec336916",
+            "bench/ppo_gradient_training_v4.py": "5d7c92806f394b3ed5dc65ea63930eece735e17fda8f578d35c85933bbb0d033",
+            "bench/ppo_gradient_training_v5.py": "a4af53752bef162df55d0ac411e47163f99996cb2942c3412d6d64434064d2bc",
+            "bench/ppo_ratio_mutation_v1.py": "19c15646515e7481c34bd909d5e0d6ef52b708ce1a5daec1810c774c602702a3",
+            "bench/profile_ppo_observer_v1.py": "84791a11e6300d313308e25c094ba437d2d06ac75b3341fbbb4fd7f891909bb3",
+            "bench/protocols/optimizer_observability_v1.json": "c1fd244e388a0ab6153ff779ae485d30829f490506c4affae8b300c6794ecfab",
+            "bench/protocols/ppo_gradient_check_v1.json": "f3d20a21e77d0a31dad8d0a549d8538589fc1b9613138994fcb6b12a60961eb5",
+            "bench/protocols/ppo_gradient_check_v2.json": "87c9f2da1125b2046642961d072be261785269246149bc84f29af397d6ef034f",
+            "bench/protocols/ppo_gradient_check_v3.json": "60f42468f7de7d5eac491a0b28558afe965ae9d4307dcb693ae336896f3e2353",
+            "bench/protocols/ppo_gradient_check_v4.json": "7e28e7a44c8cb3479bd60b794ec493af497e7304acf9cea01f8bad2237a4a627",
+            "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+            "bench/run_optimizer_observability_batch.py": "c5cc9736cdfe006fe987c1de7fa44ea339bb1cde7be359d655212adcb362e509",
+            "bench/run_ppo_gradient_check_v1.ps1": "cad4e463345481c90975abbf6bcd4db496067bcb67aa17ac63bd44672355b517",
+            "bench/run_ppo_gradient_check_v2.ps1": "aa615fcc85f12af4f2ed33cfd890589dec0431ed0c240172309223b039c5cbbd",
+            "bench/run_ppo_gradient_check_v3.ps1": "6676315bf1871a2b3902b66cba107edbc59f23219f7268ac9955a5fdeef96cd7",
+            "bench/run_ppo_gradient_check_v4.ps1": "f4a4e5404b4d794c2c9ae3bb5e37bf2248ab23f7e0cf987db52c90f5740fe3d3",
+            "bench/run_ppo_gradient_check_v5.ps1": "82aaf36764d7b98c333942fe5b7b6d8b94eea8b7ba91cc4f9656ae903409f45b",
+            "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+            "evals/lease_timestamps.py": "dd88cc4af421ee8bba3f75715093c9a71766522d13ab060cbcf35696453971a2",
+            "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+            "evals/ppo_gradient_check_v1.py": "5f9a69ada6174435ec3d6178221737f920eb7dfd7988f36180a4741efa9d5e25",
+            "evals/ppo_gradient_check_v2.py": "7e48220c847785774fbfb7b7c33d71cf2139cc7073391ba492f22d1512bfb22c",
+            "evals/ppo_gradient_check_v3.py": "9a85f89040576e0a00f4c09e39427d070952d056e8c3aef22d90a61918ef4955",
+            "evals/ppo_gradient_check_v4.py": "53317bcd6dfbe8961e2316d66beca638bb09e1cc755cc8179a0e7090ea4bd163",
+            "evals/ppo_gradient_check_v5.py": "f65694f3a6ff969e0a81e3fbf2d8ead96b103b3182537d5d3e1ec7a6f17ccf17",
+            "evals/ppo_gradient_invariant_v1.py": "bdbe4a9d99f8d4fd55a9181238357b4a0e6b1e677164d8c2ded61cdc47316fd3",
+            "evals/ppo_gradient_invariant_v2.py": "ad0bc58500165da891092ae84c283bf5522c25de4d227a1dd818b0b4b7fc41c8",
+            "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+            "tests/test_isaac_training_guard_v1.py": "dfe76d7aa7722e67ced2d7b419c506f3f97962446b245defa82ac45c3de9b9bf",
+            "tests/test_lease_timestamps.py": "89ed5803d3095803ed186f4877c85d0de386b8b06220c61b1081d4e4b772e7cf",
+            "tests/test_ppo_gradient_check_v1.py": "401fc9e101d57ea8e0d2e7baea0405d0fcc4141156aaf75a3b1b7df908a75840",
+            "tests/test_ppo_gradient_check_v2.py": "1b75f16fdfe1ed11b61fae8e0a0666aada54feed7bc2457483e741ae2c550db8",
+            "tests/test_ppo_gradient_check_v3.py": "6b30ddc17aa7285eec252930708e832cff82c9d87ec6bb6a3fdcf6edb0c612dd",
+            "tests/test_ppo_gradient_check_v4.py": "3c2664e7e9711cefa9698dba6a4fdb12675d64cd3f9ad87a1e16bd4435595774",
+            "tests/test_ppo_gradient_check_v5.py": "da69154489fba4b9be239d2c1b270007f7bdcb773730e1c3be86c005782d099e",
+            "tests/test_ppo_gradient_invariant_v1.py": "91ac5be4dc349c6f24f4bb9ec8596d25d6eb6360cc6d7d455d20ec6d880678b3",
+            "tests/test_ppo_gradient_invariant_v2.py": "7b159d3524db1ecd01d9721de9a1b71950dfc4ad5b6a114fddca0857a2ed4c5e",
+            "tests/test_ppo_observer_profile_v1.py": "e2f39f2080d29a8070a9ffc01543ed1638a3fb3fd6c12e77dec310a51891437c"
+          },
+          "gradient_invariant": {
+            "schema": "ppo_surrogate_gradient_v1",
+            "atol": 1e-06,
+            "rtol": 1e-05,
+            "scale": "batch_size",
+            "clip_param": 0.2
+          },
+          "inspection_primitives": [
+            "optimizer_step_count",
+            "minibatch_count",
+            "ppo_surrogate_gradient"
+          ],
+          "observer_enabled": true,
+          "run_id": "none_s2146_on"
+        },
+        "records": 3,
+        "status": "normal",
+        "primitives": {
+          "optimizer_step_count": {
+            "status": "normal",
+            "first_mismatch_update": null
+          },
+          "minibatch_count": {
+            "status": "normal",
+            "first_mismatch_update": null
+          },
+          "ppo_surrogate_gradient": {
+            "status": "normal",
+            "first_mismatch_update": null,
+            "batches": 60
+          }
+        }
+      },
+      "source_sha256_lf": {
+        "manifest.json": "2af2670108849ae5ce2103feb6189c41ac83b26bce13cb335d3fe501d461d6c4",
+        "records.jsonl": "2440e6c4e6476c3cafcde70ff4fe1673401a5d47a7c5a08ef42a273edd7a3f57",
+        "training_evidence.json": "f7049eea6064872a55f5256969672504c716ca305f0576027d213b9ad622ef30",
+        "close_ready.json": "221c261881b4087bcce1d2a358ae128433b102635b027115969fdf88c3323644"
+      },
+      "owned_process_wall_s": 43.85899999993853
+    },
+    {
+      "id": "inverse_ratio_s2144_on",
+      "arm": "INVERSE_RATIO",
+      "seed": 2144,
+      "observed": true,
+      "state": {
+        "policy_sha256": "8d06a6cbf9becf3537dc229b6bf44eee34bd3985672edc94bb1d94db109da575",
+        "optimizer_sha256": "d618d2399b0bef2bf94afab88287472158c7b9201c59148a9d20674135566092",
+        "cpu_rng_sha256": "ee39e86d0c40e3b1bb6d5af8b17e6ee4ff74209b1e86b75348df7446b2c92218",
+        "cuda_rng_sha256": "fabcbce27c6e54954689ddbb6d81f5859c7b53db3c7cc52849ae93a806c99562",
+        "learning_rate": 0.0033750000000000004
+      },
+      "losses": [
+        {
+          "value_function": 0.0711956026032567,
+          "surrogate": 0.0008353517288924195,
+          "entropy": 17.10923824310303
+        },
+        {
+          "value_function": 0.024801178928464652,
+          "surrogate": -0.009113820048514753,
+          "entropy": 17.321335792541504
+        },
+        {
+          "value_function": 0.028561923652887344,
+          "surrogate": -0.007258431316586211,
+          "entropy": 17.667751789093018
+        }
+      ],
+      "update_wall_s": [
+        0.3723143998067826,
+        0.19302090001292527,
+        0.21949610020965338
+      ],
+      "readback": {
+        "mutation": "inverse_importance_ratio_v1",
+        "changed_ratio_assignments": 1,
+        "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+        "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c",
+        "arm": "INVERSE_RATIO",
+        "active_mutation": true,
+        "restored_original": false,
+        "restoration_before_training": false,
+        "installed_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c"
+      },
+      "inspection": {
+        "schema": "optimizer_observability_inspection_v1",
+        "manifest": {
+          "schema": "optimizer_observability_manifest_v1",
+          "arm": "INVERSE_RATIO",
+          "seed": 2144,
+          "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+          "num_envs": 4096,
+          "max_iterations": 3,
+          "configured_learning_epochs": 5,
+          "configured_mini_batches": 4,
+          "expected_optimizer_steps_per_update": 20,
+          "expected_minibatches_per_update": 20,
+          "runtime_updates_to_observe": 3,
+          "source_commit_sha": "4fc28e605f0769b1a88a1fbbcfe5589afa5f035c",
+          "protocol_path": "bench/protocols/ppo_gradient_check_v5.json",
+          "protocol_sha256_lf": "ae7b1c7387f27c852b281d92ecd9f08f1f4aa6e6e94d08791a2341605cfa5907",
+          "source_sha256_lf": {
+            "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+            "bench/inspect_optimizer_observability.py": "6923f0aec67377e8e03633d898871b9a4f0771e4ad941cb532beb0403ead3883",
+            "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+            "bench/ppo_gradient_cpu_fixture_v1.py": "74cfcd7ae42312f6eadb5efc9ef05cd7f45367bc1377e813f9f9e38323093fda",
+            "bench/ppo_gradient_cpu_fixture_v2.py": "40513adbceecde8aaa45cfec13add74b221690c48ca0cc18ffc95ffaf6154e6b",
+            "bench/ppo_gradient_training_v1.py": "d6a3e493c270bb3e994585945aa095f6c9de5da7f78cf2f2392c0560358ab227",
+            "bench/ppo_gradient_training_v2.py": "a8bbb8899bd855421d08385fc2fd7b6a3881cf1632ca11c6c231f461fd395d7f",
+            "bench/ppo_gradient_training_v3.py": "9c4eb49212f9cf0130154d714e1d1e26bb8bfd849c5dc85c8dcb54a1ec336916",
+            "bench/ppo_gradient_training_v4.py": "5d7c92806f394b3ed5dc65ea63930eece735e17fda8f578d35c85933bbb0d033",
+            "bench/ppo_gradient_training_v5.py": "a4af53752bef162df55d0ac411e47163f99996cb2942c3412d6d64434064d2bc",
+            "bench/ppo_ratio_mutation_v1.py": "19c15646515e7481c34bd909d5e0d6ef52b708ce1a5daec1810c774c602702a3",
+            "bench/profile_ppo_observer_v1.py": "84791a11e6300d313308e25c094ba437d2d06ac75b3341fbbb4fd7f891909bb3",
+            "bench/protocols/optimizer_observability_v1.json": "c1fd244e388a0ab6153ff779ae485d30829f490506c4affae8b300c6794ecfab",
+            "bench/protocols/ppo_gradient_check_v1.json": "f3d20a21e77d0a31dad8d0a549d8538589fc1b9613138994fcb6b12a60961eb5",
+            "bench/protocols/ppo_gradient_check_v2.json": "87c9f2da1125b2046642961d072be261785269246149bc84f29af397d6ef034f",
+            "bench/protocols/ppo_gradient_check_v3.json": "60f42468f7de7d5eac491a0b28558afe965ae9d4307dcb693ae336896f3e2353",
+            "bench/protocols/ppo_gradient_check_v4.json": "7e28e7a44c8cb3479bd60b794ec493af497e7304acf9cea01f8bad2237a4a627",
+            "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+            "bench/run_optimizer_observability_batch.py": "c5cc9736cdfe006fe987c1de7fa44ea339bb1cde7be359d655212adcb362e509",
+            "bench/run_ppo_gradient_check_v1.ps1": "cad4e463345481c90975abbf6bcd4db496067bcb67aa17ac63bd44672355b517",
+            "bench/run_ppo_gradient_check_v2.ps1": "aa615fcc85f12af4f2ed33cfd890589dec0431ed0c240172309223b039c5cbbd",
+            "bench/run_ppo_gradient_check_v3.ps1": "6676315bf1871a2b3902b66cba107edbc59f23219f7268ac9955a5fdeef96cd7",
+            "bench/run_ppo_gradient_check_v4.ps1": "f4a4e5404b4d794c2c9ae3bb5e37bf2248ab23f7e0cf987db52c90f5740fe3d3",
+            "bench/run_ppo_gradient_check_v5.ps1": "82aaf36764d7b98c333942fe5b7b6d8b94eea8b7ba91cc4f9656ae903409f45b",
+            "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+            "evals/lease_timestamps.py": "dd88cc4af421ee8bba3f75715093c9a71766522d13ab060cbcf35696453971a2",
+            "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+            "evals/ppo_gradient_check_v1.py": "5f9a69ada6174435ec3d6178221737f920eb7dfd7988f36180a4741efa9d5e25",
+            "evals/ppo_gradient_check_v2.py": "7e48220c847785774fbfb7b7c33d71cf2139cc7073391ba492f22d1512bfb22c",
+            "evals/ppo_gradient_check_v3.py": "9a85f89040576e0a00f4c09e39427d070952d056e8c3aef22d90a61918ef4955",
+            "evals/ppo_gradient_check_v4.py": "53317bcd6dfbe8961e2316d66beca638bb09e1cc755cc8179a0e7090ea4bd163",
+            "evals/ppo_gradient_check_v5.py": "f65694f3a6ff969e0a81e3fbf2d8ead96b103b3182537d5d3e1ec7a6f17ccf17",
+            "evals/ppo_gradient_invariant_v1.py": "bdbe4a9d99f8d4fd55a9181238357b4a0e6b1e677164d8c2ded61cdc47316fd3",
+            "evals/ppo_gradient_invariant_v2.py": "ad0bc58500165da891092ae84c283bf5522c25de4d227a1dd818b0b4b7fc41c8",
+            "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+            "tests/test_isaac_training_guard_v1.py": "dfe76d7aa7722e67ced2d7b419c506f3f97962446b245defa82ac45c3de9b9bf",
+            "tests/test_lease_timestamps.py": "89ed5803d3095803ed186f4877c85d0de386b8b06220c61b1081d4e4b772e7cf",
+            "tests/test_ppo_gradient_check_v1.py": "401fc9e101d57ea8e0d2e7baea0405d0fcc4141156aaf75a3b1b7df908a75840",
+            "tests/test_ppo_gradient_check_v2.py": "1b75f16fdfe1ed11b61fae8e0a0666aada54feed7bc2457483e741ae2c550db8",
+            "tests/test_ppo_gradient_check_v3.py": "6b30ddc17aa7285eec252930708e832cff82c9d87ec6bb6a3fdcf6edb0c612dd",
+            "tests/test_ppo_gradient_check_v4.py": "3c2664e7e9711cefa9698dba6a4fdb12675d64cd3f9ad87a1e16bd4435595774",
+            "tests/test_ppo_gradient_check_v5.py": "da69154489fba4b9be239d2c1b270007f7bdcb773730e1c3be86c005782d099e",
+            "tests/test_ppo_gradient_invariant_v1.py": "91ac5be4dc349c6f24f4bb9ec8596d25d6eb6360cc6d7d455d20ec6d880678b3",
+            "tests/test_ppo_gradient_invariant_v2.py": "7b159d3524db1ecd01d9721de9a1b71950dfc4ad5b6a114fddca0857a2ed4c5e",
+            "tests/test_ppo_observer_profile_v1.py": "e2f39f2080d29a8070a9ffc01543ed1638a3fb3fd6c12e77dec310a51891437c"
+          },
+          "gradient_invariant": {
+            "schema": "ppo_surrogate_gradient_v1",
+            "atol": 1e-06,
+            "rtol": 1e-05,
+            "scale": "batch_size",
+            "clip_param": 0.2
+          },
+          "inspection_primitives": [
+            "optimizer_step_count",
+            "minibatch_count",
+            "ppo_surrogate_gradient"
+          ],
+          "observer_enabled": true,
+          "run_id": "inverse_ratio_s2144_on"
+        },
+        "records": 3,
+        "status": "abnormal",
+        "primitives": {
+          "optimizer_step_count": {
+            "status": "normal",
+            "first_mismatch_update": null
+          },
+          "minibatch_count": {
+            "status": "normal",
+            "first_mismatch_update": null
+          },
+          "ppo_surrogate_gradient": {
+            "status": "abnormal",
+            "first_mismatch_update": 0,
+            "batches": 60
+          }
+        }
+      },
+      "source_sha256_lf": {
+        "manifest.json": "49dea3668a51d3fb95bad5794b19792299325ecb404a5b1def39d1921879b76d",
+        "records.jsonl": "4bbc4b3255928a67412f3a86d96555c126a19554efe686daf513f01fdb890226",
+        "training_evidence.json": "e7c9b4e7b03e3519d6a60eeaaae1c67be0f9ca7b49d7d05253916a1c9d790e79",
+        "close_ready.json": "76453bcec39aa869b3115c896e014fc6da520f0c45312904b8113305e2a14f47"
+      },
+      "owned_process_wall_s": 40.09400000004098
+    },
+    {
+      "id": "restored_s2144_on",
+      "arm": "RESTORED",
+      "seed": 2144,
+      "observed": true,
+      "state": {
+        "policy_sha256": "499b62110d110e1232e529e28ae3880cfd5bb9917a72c4f65152fb8c2d912923",
+        "optimizer_sha256": "3b842e2e60fd25cc2fb9aa33f2c814c3be66c9f33b9462ed845e4fe8a2844ed5",
+        "cpu_rng_sha256": "ee39e86d0c40e3b1bb6d5af8b17e6ee4ff74209b1e86b75348df7446b2c92218",
+        "cuda_rng_sha256": "fabcbce27c6e54954689ddbb6d81f5859c7b53db3c7cc52849ae93a806c99562",
+        "learning_rate": 0.0033750000000000004
+      },
+      "losses": [
+        {
+          "value_function": 0.0703286960721016,
+          "surrogate": -0.0014545054465997965,
+          "entropy": 17.001759719848632
+        },
+        {
+          "value_function": 0.02210416840389371,
+          "surrogate": -0.008427227684296667,
+          "entropy": 16.874724674224854
+        },
+        {
+          "value_function": 0.019548879843205212,
+          "surrogate": -0.007511631405213848,
+          "entropy": 16.663650226593017
+        }
+      ],
+      "update_wall_s": [
+        0.42965529998764396,
+        0.2242441000416875,
+        0.218143800040707
+      ],
+      "readback": {
+        "mutation": "inverse_importance_ratio_v1",
+        "changed_ratio_assignments": 1,
+        "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+        "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c",
+        "arm": "RESTORED",
+        "active_mutation": false,
+        "restored_original": true,
+        "restoration_before_training": true,
+        "installed_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd"
+      },
+      "inspection": {
+        "schema": "optimizer_observability_inspection_v1",
+        "manifest": {
+          "schema": "optimizer_observability_manifest_v1",
+          "arm": "RESTORED",
+          "seed": 2144,
+          "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+          "num_envs": 4096,
+          "max_iterations": 3,
+          "configured_learning_epochs": 5,
+          "configured_mini_batches": 4,
+          "expected_optimizer_steps_per_update": 20,
+          "expected_minibatches_per_update": 20,
+          "runtime_updates_to_observe": 3,
+          "source_commit_sha": "4fc28e605f0769b1a88a1fbbcfe5589afa5f035c",
+          "protocol_path": "bench/protocols/ppo_gradient_check_v5.json",
+          "protocol_sha256_lf": "ae7b1c7387f27c852b281d92ecd9f08f1f4aa6e6e94d08791a2341605cfa5907",
+          "source_sha256_lf": {
+            "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+            "bench/inspect_optimizer_observability.py": "6923f0aec67377e8e03633d898871b9a4f0771e4ad941cb532beb0403ead3883",
+            "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+            "bench/ppo_gradient_cpu_fixture_v1.py": "74cfcd7ae42312f6eadb5efc9ef05cd7f45367bc1377e813f9f9e38323093fda",
+            "bench/ppo_gradient_cpu_fixture_v2.py": "40513adbceecde8aaa45cfec13add74b221690c48ca0cc18ffc95ffaf6154e6b",
+            "bench/ppo_gradient_training_v1.py": "d6a3e493c270bb3e994585945aa095f6c9de5da7f78cf2f2392c0560358ab227",
+            "bench/ppo_gradient_training_v2.py": "a8bbb8899bd855421d08385fc2fd7b6a3881cf1632ca11c6c231f461fd395d7f",
+            "bench/ppo_gradient_training_v3.py": "9c4eb49212f9cf0130154d714e1d1e26bb8bfd849c5dc85c8dcb54a1ec336916",
+            "bench/ppo_gradient_training_v4.py": "5d7c92806f394b3ed5dc65ea63930eece735e17fda8f578d35c85933bbb0d033",
+            "bench/ppo_gradient_training_v5.py": "a4af53752bef162df55d0ac411e47163f99996cb2942c3412d6d64434064d2bc",
+            "bench/ppo_ratio_mutation_v1.py": "19c15646515e7481c34bd909d5e0d6ef52b708ce1a5daec1810c774c602702a3",
+            "bench/profile_ppo_observer_v1.py": "84791a11e6300d313308e25c094ba437d2d06ac75b3341fbbb4fd7f891909bb3",
+            "bench/protocols/optimizer_observability_v1.json": "c1fd244e388a0ab6153ff779ae485d30829f490506c4affae8b300c6794ecfab",
+            "bench/protocols/ppo_gradient_check_v1.json": "f3d20a21e77d0a31dad8d0a549d8538589fc1b9613138994fcb6b12a60961eb5",
+            "bench/protocols/ppo_gradient_check_v2.json": "87c9f2da1125b2046642961d072be261785269246149bc84f29af397d6ef034f",
+            "bench/protocols/ppo_gradient_check_v3.json": "60f42468f7de7d5eac491a0b28558afe965ae9d4307dcb693ae336896f3e2353",
+            "bench/protocols/ppo_gradient_check_v4.json": "7e28e7a44c8cb3479bd60b794ec493af497e7304acf9cea01f8bad2237a4a627",
+            "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+            "bench/run_optimizer_observability_batch.py": "c5cc9736cdfe006fe987c1de7fa44ea339bb1cde7be359d655212adcb362e509",
+            "bench/run_ppo_gradient_check_v1.ps1": "cad4e463345481c90975abbf6bcd4db496067bcb67aa17ac63bd44672355b517",
+            "bench/run_ppo_gradient_check_v2.ps1": "aa615fcc85f12af4f2ed33cfd890589dec0431ed0c240172309223b039c5cbbd",
+            "bench/run_ppo_gradient_check_v3.ps1": "6676315bf1871a2b3902b66cba107edbc59f23219f7268ac9955a5fdeef96cd7",
+            "bench/run_ppo_gradient_check_v4.ps1": "f4a4e5404b4d794c2c9ae3bb5e37bf2248ab23f7e0cf987db52c90f5740fe3d3",
+            "bench/run_ppo_gradient_check_v5.ps1": "82aaf36764d7b98c333942fe5b7b6d8b94eea8b7ba91cc4f9656ae903409f45b",
+            "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+            "evals/lease_timestamps.py": "dd88cc4af421ee8bba3f75715093c9a71766522d13ab060cbcf35696453971a2",
+            "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+            "evals/ppo_gradient_check_v1.py": "5f9a69ada6174435ec3d6178221737f920eb7dfd7988f36180a4741efa9d5e25",
+            "evals/ppo_gradient_check_v2.py": "7e48220c847785774fbfb7b7c33d71cf2139cc7073391ba492f22d1512bfb22c",
+            "evals/ppo_gradient_check_v3.py": "9a85f89040576e0a00f4c09e39427d070952d056e8c3aef22d90a61918ef4955",
+            "evals/ppo_gradient_check_v4.py": "53317bcd6dfbe8961e2316d66beca638bb09e1cc755cc8179a0e7090ea4bd163",
+            "evals/ppo_gradient_check_v5.py": "f65694f3a6ff969e0a81e3fbf2d8ead96b103b3182537d5d3e1ec7a6f17ccf17",
+            "evals/ppo_gradient_invariant_v1.py": "bdbe4a9d99f8d4fd55a9181238357b4a0e6b1e677164d8c2ded61cdc47316fd3",
+            "evals/ppo_gradient_invariant_v2.py": "ad0bc58500165da891092ae84c283bf5522c25de4d227a1dd818b0b4b7fc41c8",
+            "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+            "tests/test_isaac_training_guard_v1.py": "dfe76d7aa7722e67ced2d7b419c506f3f97962446b245defa82ac45c3de9b9bf",
+            "tests/test_lease_timestamps.py": "89ed5803d3095803ed186f4877c85d0de386b8b06220c61b1081d4e4b772e7cf",
+            "tests/test_ppo_gradient_check_v1.py": "401fc9e101d57ea8e0d2e7baea0405d0fcc4141156aaf75a3b1b7df908a75840",
+            "tests/test_ppo_gradient_check_v2.py": "1b75f16fdfe1ed11b61fae8e0a0666aada54feed7bc2457483e741ae2c550db8",
+            "tests/test_ppo_gradient_check_v3.py": "6b30ddc17aa7285eec252930708e832cff82c9d87ec6bb6a3fdcf6edb0c612dd",
+            "tests/test_ppo_gradient_check_v4.py": "3c2664e7e9711cefa9698dba6a4fdb12675d64cd3f9ad87a1e16bd4435595774",
+            "tests/test_ppo_gradient_check_v5.py": "da69154489fba4b9be239d2c1b270007f7bdcb773730e1c3be86c005782d099e",
+            "tests/test_ppo_gradient_invariant_v1.py": "91ac5be4dc349c6f24f4bb9ec8596d25d6eb6360cc6d7d455d20ec6d880678b3",
+            "tests/test_ppo_gradient_invariant_v2.py": "7b159d3524db1ecd01d9721de9a1b71950dfc4ad5b6a114fddca0857a2ed4c5e",
+            "tests/test_ppo_observer_profile_v1.py": "e2f39f2080d29a8070a9ffc01543ed1638a3fb3fd6c12e77dec310a51891437c"
+          },
+          "gradient_invariant": {
+            "schema": "ppo_surrogate_gradient_v1",
+            "atol": 1e-06,
+            "rtol": 1e-05,
+            "scale": "batch_size",
+            "clip_param": 0.2
+          },
+          "inspection_primitives": [
+            "optimizer_step_count",
+            "minibatch_count",
+            "ppo_surrogate_gradient"
+          ],
+          "observer_enabled": true,
+          "run_id": "restored_s2144_on"
+        },
+        "records": 3,
+        "status": "normal",
+        "primitives": {
+          "optimizer_step_count": {
+            "status": "normal",
+            "first_mismatch_update": null
+          },
+          "minibatch_count": {
+            "status": "normal",
+            "first_mismatch_update": null
+          },
+          "ppo_surrogate_gradient": {
+            "status": "normal",
+            "first_mismatch_update": null,
+            "batches": 60
+          }
+        }
+      },
+      "source_sha256_lf": {
+        "manifest.json": "34e0efb4c9ebcb407edc6f3fe911c48e3909262450a6565b1de7450ba0e029a2",
+        "records.jsonl": "07ea75b837df601d95c271cfbe94b493895d355edd651fd8b766c3eb5ac00dab",
+        "training_evidence.json": "eb624137d576e03c1d6df6d412c70a7aadef3f925207bc0774301a7ef5bdd778",
+        "close_ready.json": "3e0e805228d359e34cea9f635db694c41df8e05ae6b84b6f55c9bf337708bebc"
+      },
+      "owned_process_wall_s": 40.01600000006147
+    }
+  ],
+  "completed_runs": 8,
+  "planned_runs": 8,
+  "wording": "개발 측정에서 갱신 횟수가 같은 inverse-ratio 오류를 계산 불변식으로 구분했고 등록한 비간섭·비용 기준을 통과했다.",
+  "behavior_recovery_measured": false,
+  "api_requests": 0,
+  "experiment_commit": "4fc28e605f0769b1a88a1fbbcfe5589afa5f035c",
+  "protocol_sha256_lf": "ae7b1c7387f27c852b281d92ecd9f08f1f4aa6e6e94d08791a2341605cfa5907",
+  "tag": "ppo_gradient_v5_20261017",
+  "dry_run": false
+}

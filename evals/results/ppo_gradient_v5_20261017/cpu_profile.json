@@ -1,0 +1,1902 @@
+{
+  "schema": "ppo_cpu_call_counts_public_v1",
+  "device": "cpu",
+  "updates": 3,
+  "python_version": [
+    3,
+    10,
+    15
+  ],
+  "fixture_seed": 17,
+  "gpu_executions": 0,
+  "api_requests": 0,
+  "state_and_losses_exact": true,
+  "source_sha256_lf": {
+    "bench/profile_ppo_observer_v1.py": "84791a11e6300d313308e25c094ba437d2d06ac75b3341fbbb4fd7f891909bb3",
+    "bench/ppo_gradient_cpu_fixture_v2.py": "40513adbceecde8aaa45cfec13add74b221690c48ca0cc18ffc95ffaf6154e6b",
+    "bench/ppo_gradient_cpu_fixture_v1.py": "74cfcd7ae42312f6eadb5efc9ef05cd7f45367bc1377e813f9f9e38323093fda",
+    "bench/ppo_gradient_training_v4.py": "5d7c92806f394b3ed5dc65ea63930eece735e17fda8f578d35c85933bbb0d033",
+    "bench/ppo_gradient_training_v5.py": "a4af53752bef162df55d0ac411e47163f99996cb2942c3412d6d64434064d2bc",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "evals/ppo_gradient_invariant_v1.py": "bdbe4a9d99f8d4fd55a9181238357b4a0e6b1e677164d8c2ded61cdc47316fd3",
+    "evals/ppo_gradient_invariant_v2.py": "ad0bc58500165da891092ae84c283bf5522c25de4d227a1dd818b0b4b7fc41c8"
+  },
+  "runs": [
+    {
+      "label": "OFF",
+      "counts": {
+        "item": 726,
+        "cpu": 85,
+        "tolist": 58,
+        "grad_snapshot": 0,
+        "summarize": 0,
+        "sink": 0,
+        "manifest_fingerprint": 4,
+        "json_serialization": 43,
+        "fsync": 3,
+        "sha256": 58,
+        "autograd_grad": 0,
+        "backward": 120
+      },
+      "profile": {
+        "total_calls": 3387089,
+        "primitive_calls": 3329500,
+        "total_cpu_s": 5.058614299999977,
+        "target_call_counts": {
+          "item": 726,
+          "cpu": 85,
+          "tolist": 58,
+          "grad_snapshot": 0,
+          "summarize": 0,
+          "sink": 0,
+          "manifest_fingerprint": 4,
+          "json_serialization": 43,
+          "fsync": 3,
+          "sha256": 58,
+          "autograd_grad": 0,
+          "backward": 120
+        },
+        "functions": [
+          {
+            "function": {
+              "file": "<external>/__init__.py",
+              "line": 120,
+              "name": "dump"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 2,
+            "total_calls": 2,
+            "self_s": 6.13e-05,
+            "cumulative_s": 0.000293,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/isaac_training_guard_v1.py",
+                  "line": 21,
+                  "name": "durable_new"
+                },
+                "calls": 2,
+                "self_s": 6.13e-05,
+                "cumulative_s": 0.000293
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/__init__.py",
+              "line": 183,
+              "name": "dumps"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 13,
+            "total_calls": 13,
+            "self_s": 4.5900000000000004e-05,
+            "cumulative_s": 0.0029631,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 96,
+                  "name": "state_digest"
+                },
+                "calls": 3,
+                "self_s": 9.800000000000001e-06,
+                "cumulative_s": 0.00014780000000000001
+              },
+              {
+                "function": {
+                  "file": "evals/optimizer_observability.py",
+                  "line": 82,
+                  "name": "manifest_fingerprint"
+                },
+                "calls": 4,
+                "self_s": 1.5e-05,
+                "cumulative_s": 0.0001373
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 16,
+                  "name": "ast_sha"
+                },
+                "calls": 6,
+                "self_s": 2.11e-05,
+                "cumulative_s": 0.0026780000000000003
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/__init__.py",
+              "line": 243,
+              "name": "backward"
+            },
+            "targets": [
+              "backward"
+            ],
+            "primitive_calls": 60,
+            "total_calls": 60,
+            "self_s": 0.0004015,
+            "cumulative_s": 0.0461483,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/_tensor.py",
+                  "line": 592,
+                  "name": "backward"
+                },
+                "calls": 60,
+                "self_s": 0.0004015,
+                "cumulative_s": 0.0461483
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/_tensor.py",
+              "line": 592,
+              "name": "backward"
+            },
+            "targets": [
+              "backward"
+            ],
+            "primitive_calls": 60,
+            "total_calls": 60,
+            "self_s": 0.0001494,
+            "cumulative_s": 0.0463058,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/ppo.py",
+                  "line": 188,
+                  "name": "update"
+                },
+                "calls": 60,
+                "self_s": 0.0001494,
+                "cumulative_s": 0.0463058
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/encoder.py",
+              "line": 182,
+              "name": "encode"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 13,
+            "total_calls": 13,
+            "self_s": 3.54e-05,
+            "cumulative_s": 0.0028977,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/__init__.py",
+                  "line": 183,
+                  "name": "dumps"
+                },
+                "calls": 13,
+                "self_s": 3.54e-05,
+                "cumulative_s": 0.0028977
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/encoder.py",
+              "line": 204,
+              "name": "iterencode"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 15,
+            "total_calls": 15,
+            "self_s": 0.002869,
+            "cumulative_s": 0.0028749,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/encoder.py",
+                  "line": 182,
+                  "name": "encode"
+                },
+                "calls": 13,
+                "self_s": 0.002857,
+                "cumulative_s": 0.002857
+              },
+              {
+                "function": {
+                  "file": "<external>/__init__.py",
+                  "line": 120,
+                  "name": "dump"
+                },
+                "calls": 2,
+                "self_s": 1.2e-05,
+                "cumulative_s": 1.79e-05
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/httpchecksum.py",
+              "line": 122,
+              "name": "Sha256Checksum"
+            },
+            "targets": [
+              "sha256"
+            ],
+            "primitive_calls": 1,
+            "total_calls": 1,
+            "self_s": 4.0000000000000003e-07,
+            "cumulative_s": 4.0000000000000003e-07,
+            "callers": [
+              {
+                "function": {
+                  "file": "~",
+                  "line": 0,
+                  "name": "<built-in method builtins.__build_class__>"
+                },
+                "calls": 1,
+                "self_s": 4.0000000000000003e-07,
+                "cumulative_s": 4.0000000000000003e-07
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "evals/optimizer_observability.py",
+              "line": 82,
+              "name": "manifest_fingerprint"
+            },
+            "targets": [
+              "manifest_fingerprint"
+            ],
+            "primitive_calls": 4,
+            "total_calls": 4,
+            "self_s": 1.86e-05,
+            "cumulative_s": 0.0003099,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_training_v5.py",
+                  "line": 134,
+                  "name": "learn"
+                },
+                "calls": 1,
+                "self_s": 5.2e-06,
+                "cumulative_s": 7.04e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_cpu_fixture_v2.py",
+                  "line": 19,
+                  "name": "exercise"
+                },
+                "calls": 1,
+                "self_s": 4.3e-06,
+                "cumulative_s": 7.86e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_training_v5.py",
+                  "line": 171,
+                  "name": "before_close"
+                },
+                "calls": 2,
+                "self_s": 9.100000000000001e-06,
+                "cumulative_s": 0.0001609
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<built-in method _hashlib.openssl_sha256>"
+            },
+            "targets": [
+              "sha256"
+            ],
+            "primitive_calls": 57,
+            "total_calls": 57,
+            "self_s": 0.0001776,
+            "cumulative_s": 0.0001776,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_cpu_fixture_v1.py",
+                  "line": 19,
+                  "name": "manifest"
+                },
+                "calls": 1,
+                "self_s": 3.04e-05,
+                "cumulative_s": 3.04e-05
+              },
+              {
+                "function": {
+                  "file": "evals/ppo_gradient_check_v5.py",
+                  "line": 59,
+                  "name": "sha"
+                },
+                "calls": 2,
+                "self_s": 8.3e-06,
+                "cumulative_s": 8.3e-06
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 96,
+                  "name": "state_digest"
+                },
+                "calls": 3,
+                "self_s": 4.5e-06,
+                "cumulative_s": 4.5e-06
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 98,
+                  "name": "material"
+                },
+                "calls": 37,
+                "self_s": 2.92e-05,
+                "cumulative_s": 2.92e-05
+              },
+              {
+                "function": {
+                  "file": "bench/isaac_training_guard_v1.py",
+                  "line": 46,
+                  "name": "_sha_lf"
+                },
+                "calls": 4,
+                "self_s": 1.08e-05,
+                "cumulative_s": 1.08e-05
+              },
+              {
+                "function": {
+                  "file": "evals/optimizer_observability.py",
+                  "line": 82,
+                  "name": "manifest_fingerprint"
+                },
+                "calls": 4,
+                "self_s": 1.27e-05,
+                "cumulative_s": 1.27e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 16,
+                  "name": "ast_sha"
+                },
+                "calls": 6,
+                "self_s": 8.170000000000001e-05,
+                "cumulative_s": 8.170000000000001e-05
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<built-in method nt.fsync>"
+            },
+            "targets": [
+              "fsync"
+            ],
+            "primitive_calls": 3,
+            "total_calls": 3,
+            "self_s": 0.0028497,
+            "cumulative_s": 0.0028497,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_training_v5.py",
+                  "line": 171,
+                  "name": "before_close"
+                },
+                "calls": 1,
+                "self_s": 0.0005891000000000001,
+                "cumulative_s": 0.0005891000000000001
+              },
+              {
+                "function": {
+                  "file": "bench/isaac_training_guard_v1.py",
+                  "line": 21,
+                  "name": "durable_new"
+                },
+                "calls": 2,
+                "self_s": 0.0022606,
+                "cumulative_s": 0.0022606
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<method 'cpu' of 'torch._C.TensorBase' objects>"
+            },
+            "targets": [
+              "cpu"
+            ],
+            "primitive_calls": 85,
+            "total_calls": 85,
+            "self_s": 8.300000000000001e-05,
+            "cumulative_s": 8.300000000000001e-05,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 98,
+                  "name": "material"
+                },
+                "calls": 37,
+                "self_s": 1.58e-05,
+                "cumulative_s": 1.58e-05
+              },
+              {
+                "function": {
+                  "file": "<external>/on_policy_runner.py",
+                  "line": 134,
+                  "name": "learn"
+                },
+                "calls": 48,
+                "self_s": 6.720000000000001e-05,
+                "cumulative_s": 6.720000000000001e-05
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<method 'item' of 'torch._C.TensorBase' objects>"
+            },
+            "targets": [
+              "item"
+            ],
+            "primitive_calls": 726,
+            "total_calls": 726,
+            "self_s": 0.0007189000000000001,
+            "cumulative_s": 0.0007189000000000001,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/ppo.py",
+                  "line": 188,
+                  "name": "update"
+                },
+                "calls": 180,
+                "self_s": 0.0001408,
+                "cumulative_s": 0.0001408
+              },
+              {
+                "function": {
+                  "file": "<external>/optimizer.py",
+                  "line": 89,
+                  "name": "_get_value"
+                },
+                "calls": 540,
+                "self_s": 0.0005473,
+                "cumulative_s": 0.0005473
+              },
+              {
+                "function": {
+                  "file": "<external>/on_policy_runner.py",
+                  "line": 290,
+                  "name": "log"
+                },
+                "calls": 6,
+                "self_s": 3.08e-05,
+                "cumulative_s": 3.08e-05
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<method 'tolist' of 'memoryview' objects>"
+            },
+            "targets": [
+              "tolist"
+            ],
+            "primitive_calls": 10,
+            "total_calls": 10,
+            "self_s": 1.4200000000000001e-05,
+            "cumulative_s": 1.4200000000000001e-05,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/sre_compile.py",
+                  "line": 440,
+                  "name": "_bytes_to_codes"
+                },
+                "calls": 10,
+                "self_s": 1.4200000000000001e-05,
+                "cumulative_s": 1.4200000000000001e-05
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<method 'tolist' of 'numpy.ndarray' objects>"
+            },
+            "targets": [
+              "tolist"
+            ],
+            "primitive_calls": 48,
+            "total_calls": 48,
+            "self_s": 1.79e-05,
+            "cumulative_s": 1.79e-05,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/on_policy_runner.py",
+                  "line": 134,
+                  "name": "learn"
+                },
+                "calls": 48,
+                "self_s": 1.79e-05,
+                "cumulative_s": 1.79e-05
+              }
+            ]
+          }
+        ]
+      },
+      "state": {
+        "policy_sha256": "741b4c1a3184e9bf82243d818209f16e397ed9739c7bab2f311b3b97d6bbb4fb",
+        "optimizer_sha256": "a35302597802abec29619e8a021cc18bb474faa0f19e8b5cbc1745c12bb43084",
+        "cpu_rng_sha256": "f97188c185ab06850ddb0bfc95617dd9644ca7dc0abffb25ff2388a453ca6fbb",
+        "cuda_rng_sha256": null,
+        "learning_rate": 0.00017341529915832616
+      },
+      "losses": [
+        {
+          "value_function": 5.869012451171875,
+          "surrogate": -0.04402498751878738,
+          "entropy": 2.1217593431472777
+        },
+        {
+          "value_function": 3.9381207823753357,
+          "surrogate": -0.009050594735890627,
+          "entropy": 2.123169708251953
+        },
+        {
+          "value_function": 6.408060336112976,
+          "surrogate": -0.013239310495555401,
+          "entropy": 2.14232257604599
+        }
+      ],
+      "inspection_status": null
+    },
+    {
+      "label": "V4_ON",
+      "counts": {
+        "item": 2211,
+        "cpu": 85,
+        "tolist": 48,
+        "grad_snapshot": 60,
+        "summarize": 60,
+        "sink": 3,
+        "manifest_fingerprint": 8,
+        "json_serialization": 64,
+        "fsync": 3,
+        "sha256": 61,
+        "autograd_grad": 0,
+        "backward": 120
+      },
+      "profile": {
+        "total_calls": 164118,
+        "primitive_calls": 151170,
+        "total_cpu_s": 0.24728360000000013,
+        "target_call_counts": {
+          "item": 2211,
+          "cpu": 85,
+          "tolist": 48,
+          "grad_snapshot": 60,
+          "summarize": 60,
+          "sink": 3,
+          "manifest_fingerprint": 8,
+          "json_serialization": 64,
+          "fsync": 3,
+          "sha256": 61,
+          "autograd_grad": 0,
+          "backward": 120
+        },
+        "functions": [
+          {
+            "function": {
+              "file": "<external>/__init__.py",
+              "line": 120,
+              "name": "dump"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 2,
+            "total_calls": 2,
+            "self_s": 6.31e-05,
+            "cumulative_s": 0.0002996,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/isaac_training_guard_v1.py",
+                  "line": 21,
+                  "name": "durable_new"
+                },
+                "calls": 2,
+                "self_s": 6.31e-05,
+                "cumulative_s": 0.0002996
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/__init__.py",
+              "line": 183,
+              "name": "dumps"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 20,
+            "total_calls": 20,
+            "self_s": 6.400000000000001e-05,
+            "cumulative_s": 0.0054486000000000005,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 96,
+                  "name": "state_digest"
+                },
+                "calls": 3,
+                "self_s": 6.300000000000001e-06,
+                "cumulative_s": 0.000131
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_cpu_fixture_v2.py",
+                  "line": 55,
+                  "name": "sink"
+                },
+                "calls": 3,
+                "self_s": 6.900000000000001e-06,
+                "cumulative_s": 0.0004843
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 16,
+                  "name": "ast_sha"
+                },
+                "calls": 6,
+                "self_s": 1.69e-05,
+                "cumulative_s": 0.004512
+              },
+              {
+                "function": {
+                  "file": "evals/optimizer_observability.py",
+                  "line": 82,
+                  "name": "manifest_fingerprint"
+                },
+                "calls": 8,
+                "self_s": 3.3900000000000004e-05,
+                "cumulative_s": 0.0003213
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/__init__.py",
+              "line": 243,
+              "name": "backward"
+            },
+            "targets": [
+              "backward"
+            ],
+            "primitive_calls": 60,
+            "total_calls": 60,
+            "self_s": 0.0004014,
+            "cumulative_s": 0.054044100000000005,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/_tensor.py",
+                  "line": 592,
+                  "name": "backward"
+                },
+                "calls": 60,
+                "self_s": 0.0004014,
+                "cumulative_s": 0.054044100000000005
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/_tensor.py",
+              "line": 592,
+              "name": "backward"
+            },
+            "targets": [
+              "backward"
+            ],
+            "primitive_calls": 60,
+            "total_calls": 60,
+            "self_s": 0.0001486,
+            "cumulative_s": 0.0542009,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/ppo.py",
+                  "line": 188,
+                  "name": "update"
+                },
+                "calls": 60,
+                "self_s": 0.0001486,
+                "cumulative_s": 0.0542009
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/encoder.py",
+              "line": 182,
+              "name": "encode"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 20,
+            "total_calls": 20,
+            "self_s": 5.97e-05,
+            "cumulative_s": 0.0053604,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/__init__.py",
+                  "line": 183,
+                  "name": "dumps"
+                },
+                "calls": 20,
+                "self_s": 5.97e-05,
+                "cumulative_s": 0.0053604
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/encoder.py",
+              "line": 204,
+              "name": "iterencode"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 22,
+            "total_calls": 22,
+            "self_s": 0.0053044,
+            "cumulative_s": 0.0053112,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/__init__.py",
+                  "line": 120,
+                  "name": "dump"
+                },
+                "calls": 2,
+                "self_s": 1.2600000000000001e-05,
+                "cumulative_s": 1.94e-05
+              },
+              {
+                "function": {
+                  "file": "<external>/encoder.py",
+                  "line": 182,
+                  "name": "encode"
+                },
+                "calls": 20,
+                "self_s": 0.0052918,
+                "cumulative_s": 0.0052918
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "bench/ppo_gradient_cpu_fixture_v2.py",
+              "line": 55,
+              "name": "sink"
+            },
+            "targets": [
+              "sink"
+            ],
+            "primitive_calls": 3,
+            "total_calls": 3,
+            "self_s": 2.19e-05,
+            "cumulative_s": 0.0008433000000000001,
+            "callers": [
+              {
+                "function": {
+                  "file": "evals/ppo_gradient_invariant_v1.py",
+                  "line": 213,
+                  "name": "_emit_record"
+                },
+                "calls": 3,
+                "self_s": 2.19e-05,
+                "cumulative_s": 0.0008433000000000001
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "evals/optimizer_observability.py",
+              "line": 117,
+              "name": "_gradient_snapshot"
+            },
+            "targets": [
+              "grad_snapshot"
+            ],
+            "primitive_calls": 60,
+            "total_calls": 60,
+            "self_s": 0.0012690000000000002,
+            "cumulative_s": 0.0072356,
+            "callers": [
+              {
+                "function": {
+                  "file": "evals/optimizer_observability.py",
+                  "line": 207,
+                  "name": "observed_step"
+                },
+                "calls": 60,
+                "self_s": 0.0012690000000000002,
+                "cumulative_s": 0.0072356
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "evals/optimizer_observability.py",
+              "line": 82,
+              "name": "manifest_fingerprint"
+            },
+            "targets": [
+              "manifest_fingerprint"
+            ],
+            "primitive_calls": 8,
+            "total_calls": 8,
+            "self_s": 4.9600000000000006e-05,
+            "cumulative_s": 0.0006873000000000001,
+            "callers": [
+              {
+                "function": {
+                  "file": "evals/optimizer_observability.py",
+                  "line": 353,
+                  "name": "_validate_record_commitments"
+                },
+                "calls": 1,
+                "self_s": 3e-06,
+                "cumulative_s": 5.08e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_training_v4.py",
+                  "line": 134,
+                  "name": "learn"
+                },
+                "calls": 1,
+                "self_s": 4.800000000000001e-06,
+                "cumulative_s": 6.86e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_cpu_fixture_v2.py",
+                  "line": 19,
+                  "name": "exercise"
+                },
+                "calls": 1,
+                "self_s": 5.500000000000001e-06,
+                "cumulative_s": 7.75e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_training_v4.py",
+                  "line": 171,
+                  "name": "before_close"
+                },
+                "calls": 2,
+                "self_s": 1.13e-05,
+                "cumulative_s": 0.0001619
+              },
+              {
+                "function": {
+                  "file": "evals/optimizer_observability.py",
+                  "line": 183,
+                  "name": "_observe_update"
+                },
+                "calls": 3,
+                "self_s": 2.5e-05,
+                "cumulative_s": 0.0003285
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "evals/ppo_gradient_invariant_v1.py",
+              "line": 161,
+              "name": "_summarize_batch"
+            },
+            "targets": [
+              "summarize"
+            ],
+            "primitive_calls": 60,
+            "total_calls": 60,
+            "self_s": 0.0065842,
+            "cumulative_s": 0.021821,
+            "callers": [
+              {
+                "function": {
+                  "file": "evals/ppo_gradient_invariant_v1.py",
+                  "line": 153,
+                  "name": "inspect_gradient"
+                },
+                "calls": 60,
+                "self_s": 0.0065842,
+                "cumulative_s": 0.021821
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<built-in method _hashlib.openssl_sha256>"
+            },
+            "targets": [
+              "sha256"
+            ],
+            "primitive_calls": 61,
+            "total_calls": 61,
+            "self_s": 0.00023170000000000002,
+            "cumulative_s": 0.00023170000000000002,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_cpu_fixture_v1.py",
+                  "line": 19,
+                  "name": "manifest"
+                },
+                "calls": 1,
+                "self_s": 1.43e-05,
+                "cumulative_s": 1.43e-05
+              },
+              {
+                "function": {
+                  "file": "evals/ppo_gradient_check_v4.py",
+                  "line": 59,
+                  "name": "sha"
+                },
+                "calls": 2,
+                "self_s": 2.44e-05,
+                "cumulative_s": 2.44e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 96,
+                  "name": "state_digest"
+                },
+                "calls": 3,
+                "self_s": 4.6e-06,
+                "cumulative_s": 4.6e-06
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 98,
+                  "name": "material"
+                },
+                "calls": 37,
+                "self_s": 2.4e-05,
+                "cumulative_s": 2.4e-05
+              },
+              {
+                "function": {
+                  "file": "bench/isaac_training_guard_v1.py",
+                  "line": 46,
+                  "name": "_sha_lf"
+                },
+                "calls": 4,
+                "self_s": 2.9e-05,
+                "cumulative_s": 2.9e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 16,
+                  "name": "ast_sha"
+                },
+                "calls": 6,
+                "self_s": 7.93e-05,
+                "cumulative_s": 7.93e-05
+              },
+              {
+                "function": {
+                  "file": "evals/optimizer_observability.py",
+                  "line": 82,
+                  "name": "manifest_fingerprint"
+                },
+                "calls": 8,
+                "self_s": 5.61e-05,
+                "cumulative_s": 5.61e-05
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<built-in method nt.fsync>"
+            },
+            "targets": [
+              "fsync"
+            ],
+            "primitive_calls": 3,
+            "total_calls": 3,
+            "self_s": 0.002621,
+            "cumulative_s": 0.002621,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_training_v4.py",
+                  "line": 171,
+                  "name": "before_close"
+                },
+                "calls": 1,
+                "self_s": 0.0005495000000000001,
+                "cumulative_s": 0.0005495000000000001
+              },
+              {
+                "function": {
+                  "file": "bench/isaac_training_guard_v1.py",
+                  "line": 21,
+                  "name": "durable_new"
+                },
+                "calls": 2,
+                "self_s": 0.0020715,
+                "cumulative_s": 0.0020715
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<method 'cpu' of 'torch._C.TensorBase' objects>"
+            },
+            "targets": [
+              "cpu"
+            ],
+            "primitive_calls": 85,
+            "total_calls": 85,
+            "self_s": 8.94e-05,
+            "cumulative_s": 8.94e-05,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 98,
+                  "name": "material"
+                },
+                "calls": 37,
+                "self_s": 1.66e-05,
+                "cumulative_s": 1.66e-05
+              },
+              {
+                "function": {
+                  "file": "<external>/on_policy_runner.py",
+                  "line": 134,
+                  "name": "learn"
+                },
+                "calls": 48,
+                "self_s": 7.280000000000001e-05,
+                "cumulative_s": 7.280000000000001e-05
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<method 'item' of 'torch._C.TensorBase' objects>"
+            },
+            "targets": [
+              "item"
+            ],
+            "primitive_calls": 2211,
+            "total_calls": 2211,
+            "self_s": 0.0017157000000000001,
+            "cumulative_s": 0.0017157000000000001,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/ppo.py",
+                  "line": 188,
+                  "name": "update"
+                },
+                "calls": 180,
+                "self_s": 0.0001382,
+                "cumulative_s": 0.0001382
+              },
+              {
+                "function": {
+                  "file": "<external>/optimizer.py",
+                  "line": 89,
+                  "name": "_get_value"
+                },
+                "calls": 540,
+                "self_s": 0.0005118000000000001,
+                "cumulative_s": 0.0005118000000000001
+              },
+              {
+                "function": {
+                  "file": "evals/optimizer_observability.py",
+                  "line": 93,
+                  "name": "_number"
+                },
+                "calls": 585,
+                "self_s": 0.00040500000000000003,
+                "cumulative_s": 0.00040500000000000003
+              },
+              {
+                "function": {
+                  "file": "<external>/on_policy_runner.py",
+                  "line": 290,
+                  "name": "log"
+                },
+                "calls": 6,
+                "self_s": 3.21e-05,
+                "cumulative_s": 3.21e-05
+              },
+              {
+                "function": {
+                  "file": "evals/ppo_gradient_invariant_v1.py",
+                  "line": 161,
+                  "name": "_summarize_batch"
+                },
+                "calls": 900,
+                "self_s": 0.0006286,
+                "cumulative_s": 0.0006286
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<method 'tolist' of 'numpy.ndarray' objects>"
+            },
+            "targets": [
+              "tolist"
+            ],
+            "primitive_calls": 48,
+            "total_calls": 48,
+            "self_s": 1.55e-05,
+            "cumulative_s": 1.55e-05,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/on_policy_runner.py",
+                  "line": 134,
+                  "name": "learn"
+                },
+                "calls": 48,
+                "self_s": 1.55e-05,
+                "cumulative_s": 1.55e-05
+              }
+            ]
+          }
+        ]
+      },
+      "state": {
+        "policy_sha256": "741b4c1a3184e9bf82243d818209f16e397ed9739c7bab2f311b3b97d6bbb4fb",
+        "optimizer_sha256": "a35302597802abec29619e8a021cc18bb474faa0f19e8b5cbc1745c12bb43084",
+        "cpu_rng_sha256": "f97188c185ab06850ddb0bfc95617dd9644ca7dc0abffb25ff2388a453ca6fbb",
+        "cuda_rng_sha256": null,
+        "learning_rate": 0.00017341529915832616
+      },
+      "losses": [
+        {
+          "value_function": 5.869012451171875,
+          "surrogate": -0.04402498751878738,
+          "entropy": 2.1217593431472777
+        },
+        {
+          "value_function": 3.9381207823753357,
+          "surrogate": -0.009050594735890627,
+          "entropy": 2.123169708251953
+        },
+        {
+          "value_function": 6.408060336112976,
+          "surrogate": -0.013239310495555401,
+          "entropy": 2.14232257604599
+        }
+      ],
+      "inspection_status": "normal"
+    },
+    {
+      "label": "V5_ON",
+      "counts": {
+        "item": 726,
+        "cpu": 88,
+        "tolist": 51,
+        "grad_snapshot": 0,
+        "summarize": 3,
+        "sink": 3,
+        "manifest_fingerprint": 8,
+        "json_serialization": 64,
+        "fsync": 3,
+        "sha256": 61,
+        "autograd_grad": 0,
+        "backward": 120
+      },
+      "profile": {
+        "total_calls": 167661,
+        "primitive_calls": 154713,
+        "total_cpu_s": 0.23355400000000007,
+        "target_call_counts": {
+          "item": 726,
+          "cpu": 88,
+          "tolist": 51,
+          "grad_snapshot": 0,
+          "summarize": 3,
+          "sink": 3,
+          "manifest_fingerprint": 8,
+          "json_serialization": 64,
+          "fsync": 3,
+          "sha256": 61,
+          "autograd_grad": 0,
+          "backward": 120
+        },
+        "functions": [
+          {
+            "function": {
+              "file": "<external>/__init__.py",
+              "line": 120,
+              "name": "dump"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 2,
+            "total_calls": 2,
+            "self_s": 6.24e-05,
+            "cumulative_s": 0.00030900000000000003,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/isaac_training_guard_v1.py",
+                  "line": 21,
+                  "name": "durable_new"
+                },
+                "calls": 2,
+                "self_s": 6.24e-05,
+                "cumulative_s": 0.00030900000000000003
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/__init__.py",
+              "line": 183,
+              "name": "dumps"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 20,
+            "total_calls": 20,
+            "self_s": 6.49e-05,
+            "cumulative_s": 0.0050206,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 96,
+                  "name": "state_digest"
+                },
+                "calls": 3,
+                "self_s": 6.300000000000001e-06,
+                "cumulative_s": 0.00011870000000000001
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_cpu_fixture_v2.py",
+                  "line": 55,
+                  "name": "sink"
+                },
+                "calls": 3,
+                "self_s": 5.9e-06,
+                "cumulative_s": 0.0004239
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 16,
+                  "name": "ast_sha"
+                },
+                "calls": 6,
+                "self_s": 1.7800000000000002e-05,
+                "cumulative_s": 0.004161300000000001
+              },
+              {
+                "function": {
+                  "file": "evals/optimizer_observability.py",
+                  "line": 82,
+                  "name": "manifest_fingerprint"
+                },
+                "calls": 8,
+                "self_s": 3.49e-05,
+                "cumulative_s": 0.0003167
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/__init__.py",
+              "line": 243,
+              "name": "backward"
+            },
+            "targets": [
+              "backward"
+            ],
+            "primitive_calls": 60,
+            "total_calls": 60,
+            "self_s": 0.0004129,
+            "cumulative_s": 0.0316654,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/_tensor.py",
+                  "line": 592,
+                  "name": "backward"
+                },
+                "calls": 60,
+                "self_s": 0.0004129,
+                "cumulative_s": 0.0316654
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/_tensor.py",
+              "line": 592,
+              "name": "backward"
+            },
+            "targets": [
+              "backward"
+            ],
+            "primitive_calls": 60,
+            "total_calls": 60,
+            "self_s": 0.00014250000000000002,
+            "cumulative_s": 0.0318162,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/ppo.py",
+                  "line": 188,
+                  "name": "update"
+                },
+                "calls": 60,
+                "self_s": 0.00014250000000000002,
+                "cumulative_s": 0.0318162
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/encoder.py",
+              "line": 182,
+              "name": "encode"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 20,
+            "total_calls": 20,
+            "self_s": 5.2900000000000005e-05,
+            "cumulative_s": 0.0049291000000000005,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/__init__.py",
+                  "line": 183,
+                  "name": "dumps"
+                },
+                "calls": 20,
+                "self_s": 5.2900000000000005e-05,
+                "cumulative_s": 0.0049291000000000005
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "<external>/encoder.py",
+              "line": 204,
+              "name": "iterencode"
+            },
+            "targets": [
+              "json_serialization"
+            ],
+            "primitive_calls": 22,
+            "total_calls": 22,
+            "self_s": 0.0048805,
+            "cumulative_s": 0.0048884,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/__init__.py",
+                  "line": 120,
+                  "name": "dump"
+                },
+                "calls": 2,
+                "self_s": 1.2800000000000001e-05,
+                "cumulative_s": 2.0700000000000002e-05
+              },
+              {
+                "function": {
+                  "file": "<external>/encoder.py",
+                  "line": 182,
+                  "name": "encode"
+                },
+                "calls": 20,
+                "self_s": 0.0048677,
+                "cumulative_s": 0.0048677
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "bench/ppo_gradient_cpu_fixture_v2.py",
+              "line": 55,
+              "name": "sink"
+            },
+            "targets": [
+              "sink"
+            ],
+            "primitive_calls": 3,
+            "total_calls": 3,
+            "self_s": 1.69e-05,
+            "cumulative_s": 0.0007976000000000001,
+            "callers": [
+              {
+                "function": {
+                  "file": "evals/ppo_gradient_invariant_v1.py",
+                  "line": 213,
+                  "name": "_emit_record"
+                },
+                "calls": 3,
+                "self_s": 1.69e-05,
+                "cumulative_s": 0.0007976000000000001
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "evals/optimizer_observability.py",
+              "line": 82,
+              "name": "manifest_fingerprint"
+            },
+            "targets": [
+              "manifest_fingerprint"
+            ],
+            "primitive_calls": 8,
+            "total_calls": 8,
+            "self_s": 4.6500000000000005e-05,
+            "cumulative_s": 0.0006797000000000001,
+            "callers": [
+              {
+                "function": {
+                  "file": "evals/optimizer_observability.py",
+                  "line": 353,
+                  "name": "_validate_record_commitments"
+                },
+                "calls": 1,
+                "self_s": 3.6000000000000003e-06,
+                "cumulative_s": 5.81e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_training_v5.py",
+                  "line": 134,
+                  "name": "learn"
+                },
+                "calls": 1,
+                "self_s": 4.2000000000000004e-06,
+                "cumulative_s": 6.77e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_cpu_fixture_v2.py",
+                  "line": 19,
+                  "name": "exercise"
+                },
+                "calls": 1,
+                "self_s": 6e-06,
+                "cumulative_s": 8.450000000000001e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_training_v5.py",
+                  "line": 171,
+                  "name": "before_close"
+                },
+                "calls": 2,
+                "self_s": 1.16e-05,
+                "cumulative_s": 0.00017790000000000001
+              },
+              {
+                "function": {
+                  "file": "evals/ppo_gradient_invariant_v2.py",
+                  "line": 147,
+                  "name": "_observe_update"
+                },
+                "calls": 3,
+                "self_s": 2.11e-05,
+                "cumulative_s": 0.00029150000000000004
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "evals/ppo_gradient_invariant_v2.py",
+              "line": 61,
+              "name": "_batch_summaries"
+            },
+            "targets": [
+              "summarize"
+            ],
+            "primitive_calls": 3,
+            "total_calls": 3,
+            "self_s": 0.0006655000000000001,
+            "cumulative_s": 0.0033065000000000004,
+            "callers": [
+              {
+                "function": {
+                  "file": "evals/ppo_gradient_invariant_v2.py",
+                  "line": 147,
+                  "name": "_observe_update"
+                },
+                "calls": 3,
+                "self_s": 0.0006655000000000001,
+                "cumulative_s": 0.0033065000000000004
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<built-in method _hashlib.openssl_sha256>"
+            },
+            "targets": [
+              "sha256"
+            ],
+            "primitive_calls": 61,
+            "total_calls": 61,
+            "self_s": 0.00021030000000000002,
+            "cumulative_s": 0.00021030000000000002,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_cpu_fixture_v1.py",
+                  "line": 19,
+                  "name": "manifest"
+                },
+                "calls": 1,
+                "self_s": 1.13e-05,
+                "cumulative_s": 1.13e-05
+              },
+              {
+                "function": {
+                  "file": "evals/ppo_gradient_check_v5.py",
+                  "line": 59,
+                  "name": "sha"
+                },
+                "calls": 2,
+                "self_s": 2.1000000000000002e-05,
+                "cumulative_s": 2.1000000000000002e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 96,
+                  "name": "state_digest"
+                },
+                "calls": 3,
+                "self_s": 4.4e-06,
+                "cumulative_s": 4.4e-06
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 98,
+                  "name": "material"
+                },
+                "calls": 37,
+                "self_s": 2.3100000000000002e-05,
+                "cumulative_s": 2.3100000000000002e-05
+              },
+              {
+                "function": {
+                  "file": "bench/isaac_training_guard_v1.py",
+                  "line": 46,
+                  "name": "_sha_lf"
+                },
+                "calls": 4,
+                "self_s": 3.32e-05,
+                "cumulative_s": 3.32e-05
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 16,
+                  "name": "ast_sha"
+                },
+                "calls": 6,
+                "self_s": 7.59e-05,
+                "cumulative_s": 7.59e-05
+              },
+              {
+                "function": {
+                  "file": "evals/optimizer_observability.py",
+                  "line": 82,
+                  "name": "manifest_fingerprint"
+                },
+                "calls": 8,
+                "self_s": 4.1400000000000003e-05,
+                "cumulative_s": 4.1400000000000003e-05
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<built-in method nt.fsync>"
+            },
+            "targets": [
+              "fsync"
+            ],
+            "primitive_calls": 3,
+            "total_calls": 3,
+            "self_s": 0.0027968000000000003,
+            "cumulative_s": 0.0027968000000000003,
+            "callers": [
+              {
+                "function": {
+                  "file": "bench/ppo_gradient_training_v5.py",
+                  "line": 171,
+                  "name": "before_close"
+                },
+                "calls": 1,
+                "self_s": 0.0007227000000000001,
+                "cumulative_s": 0.0007227000000000001
+              },
+              {
+                "function": {
+                  "file": "bench/isaac_training_guard_v1.py",
+                  "line": 21,
+                  "name": "durable_new"
+                },
+                "calls": 2,
+                "self_s": 0.0020741,
+                "cumulative_s": 0.0020741
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<method 'cpu' of 'torch._C.TensorBase' objects>"
+            },
+            "targets": [
+              "cpu"
+            ],
+            "primitive_calls": 88,
+            "total_calls": 88,
+            "self_s": 6.85e-05,
+            "cumulative_s": 6.85e-05,
+            "callers": [
+              {
+                "function": {
+                  "file": "evals/ppo_gradient_invariant_v2.py",
+                  "line": 40,
+                  "name": "materialize"
+                },
+                "calls": 3,
+                "self_s": 3.8e-06,
+                "cumulative_s": 3.8e-06
+              },
+              {
+                "function": {
+                  "file": "bench/ppo_ratio_mutation_v1.py",
+                  "line": 98,
+                  "name": "material"
+                },
+                "calls": 37,
+                "self_s": 1.58e-05,
+                "cumulative_s": 1.58e-05
+              },
+              {
+                "function": {
+                  "file": "<external>/on_policy_runner.py",
+                  "line": 134,
+                  "name": "learn"
+                },
+                "calls": 48,
+                "self_s": 4.89e-05,
+                "cumulative_s": 4.89e-05
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<method 'item' of 'torch._C.TensorBase' objects>"
+            },
+            "targets": [
+              "item"
+            ],
+            "primitive_calls": 726,
+            "total_calls": 726,
+            "self_s": 0.0007256000000000001,
+            "cumulative_s": 0.0007256000000000001,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/ppo.py",
+                  "line": 188,
+                  "name": "update"
+                },
+                "calls": 180,
+                "self_s": 0.00014700000000000002,
+                "cumulative_s": 0.00014700000000000002
+              },
+              {
+                "function": {
+                  "file": "<external>/optimizer.py",
+                  "line": 89,
+                  "name": "_get_value"
+                },
+                "calls": 540,
+                "self_s": 0.0005465,
+                "cumulative_s": 0.0005465
+              },
+              {
+                "function": {
+                  "file": "<external>/on_policy_runner.py",
+                  "line": 290,
+                  "name": "log"
+                },
+                "calls": 6,
+                "self_s": 3.21e-05,
+                "cumulative_s": 3.21e-05
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<method 'tolist' of 'numpy.ndarray' objects>"
+            },
+            "targets": [
+              "tolist"
+            ],
+            "primitive_calls": 48,
+            "total_calls": 48,
+            "self_s": 1.5100000000000001e-05,
+            "cumulative_s": 1.5100000000000001e-05,
+            "callers": [
+              {
+                "function": {
+                  "file": "<external>/on_policy_runner.py",
+                  "line": 134,
+                  "name": "learn"
+                },
+                "calls": 48,
+                "self_s": 1.5100000000000001e-05,
+                "cumulative_s": 1.5100000000000001e-05
+              }
+            ]
+          },
+          {
+            "function": {
+              "file": "~",
+              "line": 0,
+              "name": "<method 'tolist' of 'torch._C.TensorBase' objects>"
+            },
+            "targets": [
+              "tolist"
+            ],
+            "primitive_calls": 3,
+            "total_calls": 3,
+            "self_s": 4.43e-05,
+            "cumulative_s": 4.43e-05,
+            "callers": [
+              {
+                "function": {
+                  "file": "evals/ppo_gradient_invariant_v2.py",
+                  "line": 40,
+                  "name": "materialize"
+                },
+                "calls": 3,
+                "self_s": 4.43e-05,
+                "cumulative_s": 4.43e-05
+              }
+            ]
+          }
+        ]
+      },
+      "state": {
+        "policy_sha256": "741b4c1a3184e9bf82243d818209f16e397ed9739c7bab2f311b3b97d6bbb4fb",
+        "optimizer_sha256": "a35302597802abec29619e8a021cc18bb474faa0f19e8b5cbc1745c12bb43084",
+        "cpu_rng_sha256": "f97188c185ab06850ddb0bfc95617dd9644ca7dc0abffb25ff2388a453ca6fbb",
+        "cuda_rng_sha256": null,
+        "learning_rate": 0.00017341529915832616
+      },
+      "losses": [
+        {
+          "value_function": 5.869012451171875,
+          "surrogate": -0.04402498751878738,
+          "entropy": 2.1217593431472777
+        },
+        {
+          "value_function": 3.9381207823753357,
+          "surrogate": -0.009050594735890627,
+          "entropy": 2.123169708251953
+        },
+        {
+          "value_function": 6.408060336112976,
+          "surrogate": -0.013239310495555401,
+          "entropy": 2.14232257604599
+        }
+      ],
+      "inspection_status": "normal"
+    }
+  ],
+  "scope": "이미 본 합성 CPU seed 17의 실제 RSL learn 전체 fixture 호출 수다. GPU 시간 판정에 쓰지 않는다.",
+  "method": "bench/profile_ppo_observer_v1.py의 _exercise와 _profile_summary, cProfile 사용",
+  "source_cpu_counts_sha256_lf": "482bba5eb7530eb38b1b1dbf397f114aa72d9110165b3939ea0f5b8c15ac0444"
+}

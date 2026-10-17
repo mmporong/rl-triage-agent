@@ -1,0 +1,45 @@
+{
+  "state": {
+    "policy_sha256": "2d5d4ed7db830129fec78cc689a74db09b0788cdea87e78df8c3e0f099ce1eb4",
+    "optimizer_sha256": "4c7e74c623139c67f2cb4f2fbcb59e9e2b4c619b39835f42d986c61aa54b704b",
+    "cpu_rng_sha256": "67455a271260ec694fc255d1523417f9cface9b32525edbaa31c0a9d9a004a94",
+    "cuda_rng_sha256": "02c0d1868c361d773c8e6a42e663f568233cb136a1d7a46e26e66c29d01224b0",
+    "learning_rate": 0.0006666666666666666
+  },
+  "losses": [
+    {
+      "value_function": 0.08511454313993454,
+      "surrogate": 0.0005034020752646029,
+      "entropy": 17.00449094772339
+    }
+  ],
+  "updates": 1,
+  "update_wall_s": [
+    0.32589940004982054
+  ],
+  "readback": {
+    "mutation": "inverse_importance_ratio_v1",
+    "changed_ratio_assignments": 1,
+    "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+    "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c",
+    "arm": "NONE",
+    "active_mutation": false,
+    "restored_original": false,
+    "restoration_before_training": false,
+    "installed_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd"
+  },
+  "runtime_configuration": {
+    "epochs": 5,
+    "minibatches": 4,
+    "clip_param": 0.2
+  },
+  "torch_version": "2.7.0+cu128",
+  "device_type": "cuda",
+  "schema": "ppo_gradient_training_evidence_v1",
+  "method_cleanup": true,
+  "manifest_sha256": "f487eb594a79907cbb5e2e922f8ae6a0c83b9c04bbd29eae7326bb1a010d6435",
+  "arm": "NONE",
+  "observed": true,
+  "learning_completed": true,
+  "recorded_before_app_close": true
+}
