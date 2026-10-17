@@ -1,0 +1,311 @@
+{
+  "schema": "ppo_gradient_check_protocol_v5",
+  "status": "preregistered_before_gpu_measurement",
+  "measurement_kind": "development",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "seeds": [
+    2144,
+    2145,
+    2146
+  ],
+  "runs": [
+    {
+      "id": "none_s2144_off",
+      "arm": "NONE",
+      "seed": 2144,
+      "observed": false
+    },
+    {
+      "id": "none_s2144_on",
+      "arm": "NONE",
+      "seed": 2144,
+      "observed": true
+    },
+    {
+      "id": "none_s2145_on",
+      "arm": "NONE",
+      "seed": 2145,
+      "observed": true
+    },
+    {
+      "id": "none_s2145_off",
+      "arm": "NONE",
+      "seed": 2145,
+      "observed": false
+    },
+    {
+      "id": "none_s2146_off",
+      "arm": "NONE",
+      "seed": 2146,
+      "observed": false
+    },
+    {
+      "id": "none_s2146_on",
+      "arm": "NONE",
+      "seed": 2146,
+      "observed": true
+    },
+    {
+      "id": "inverse_ratio_s2144_on",
+      "arm": "INVERSE_RATIO",
+      "seed": 2144,
+      "observed": true
+    },
+    {
+      "id": "restored_s2144_on",
+      "arm": "RESTORED",
+      "seed": 2144,
+      "observed": true
+    }
+  ],
+  "runtime_versions": {
+    "torch": "2.7.0+cu128",
+    "rsl_rl": "2.3.3"
+  },
+  "supersedes": {
+    "protocol": "bench/protocols/ppo_gradient_check_v4.json",
+    "experiment_commit": "b40d9925e1c0996140134c5f5d621d582877b54c",
+    "tag": "ppo_gradient_v4_20261017",
+    "outcome": "observer_cost_exceeded",
+    "status": "complete",
+    "result_sha256_lf": "0989938d5583afd5d2bef3b3b3863cc9cca6b59652b102528265980a591828a0",
+    "completed_runs": 6,
+    "planned_runs": 8,
+    "api_requests": 0,
+    "update_wall_ratios": {
+      "2140": 1.5643724637519756,
+      "2141": 1.5218924266757203,
+      "2142": 1.6318819312298947
+    },
+    "reason": "v4는 실측 결과다. 정상 3쌍 state·loss 일치와 normal을 확인했지만 비용비가 모두 1.5를 넘어 오류·복원 arm을 실행하지 않았다.",
+    "seed_disposition": {
+      "2139": "선행 점검 소비, 재사용하지 않음",
+      "2140": "본배치 소비, 재사용하지 않음",
+      "2141": "본배치 소비, 재사용하지 않음",
+      "2142": "본배치 소비, 재사용하지 않음",
+      "2137": "미사용 확인. 과거 판 코호트와 구분하기 위해 재사용하지 않음",
+      "2138": "미사용 확인. 과거 판 코호트와 구분하기 위해 재사용하지 않음"
+    },
+    "development_coupling": "v4 결과를 본 뒤 계측 구현을 바꿨고 지표·상한은 유지했다. invalid 재시도가 아닌 새 seed 측정이다.",
+    "previous_history": {
+      "protocol": "bench/protocols/ppo_gradient_check_v3.json",
+      "experiment_commit": "2d246f034566d4a04da7e0f88cb60754725c6e12",
+      "tag": "ppo_gradient_v3_20261017",
+      "outcome": "invalid",
+      "result_sha256_lf": "6e0caeb57ccb1e231265826b2d27906e923590da713c5741d8ecc6af4e1108ce",
+      "stage": "normal_app_shutdown_before_wrapper_receipt",
+      "completed_updates_from_log": 3,
+      "api_requests": 0,
+      "reason": "정상 OFF 학습 3 update와 checkpoint 저장 뒤 앱이 종료되어 runpy 뒤의 결과 저장 코드에 도달하지 않았다. 원본 기록에서 학습 예외는 확인되지 않았다.",
+      "seed_disposition": {
+        "2136": "학습 3 update·checkpoint·소비 기록 존재, 재사용하지 않음",
+        "2137": "학습·소비 기록 없음",
+        "2138": "학습·소비 기록 없음"
+      },
+      "retry_basis": "결과 저장 위치의 실행 계층 수정이다. 기존 측정 수식·허용치·비용비·결과 문구를 유지한다.",
+      "previous_invalid": {
+        "protocol": "bench/protocols/ppo_gradient_check_v2.json",
+        "experiment_commit": "a976108e9470f1c9216cfd6c1ea816dbb6179039",
+        "tag": "ppo_gradient_v2_20261017",
+        "outcome": "invalid",
+        "result_sha256_lf": "b4b924a58b65eaa8b17294fb1b9945538f3395b4ae9ea297c1a2c384bdfd4a77",
+        "stage": "child_lease_validation_before_training",
+        "training_executions": 0,
+        "completed_updates": 0,
+        "api_requests": 0,
+        "reason": "Isaac Python 3.10이 .NET 7자리 소수 초 heartbeat를 읽지 못해 학습 진입 전 종료했다. 기존 invalid·소비 기록은 보존한다.",
+        "seed_disposition": {
+          "2133": "행정 소비 기록과 child 실행 기록 존재; 학습 미시작, 재사용하지 않음",
+          "2134": "소비 기록과 학습 실행 없음",
+          "2135": "소비 기록과 학습 실행 없음"
+        },
+        "retry_basis": "학습·계산 검사 결과 이전 실행 계층 오류다. 판정 기준은 유지하고 새 cohort 2136·2137·2138을 사용한다.",
+        "previous_invalid": {
+          "protocol": "bench/protocols/ppo_gradient_check_v1.json",
+          "experiment_commit": "c8e9fb51f7db04dfd6c3c7a59f20a29686331f78",
+          "tag": "ppo_gradient_v1_20261017",
+          "outcome": "invalid",
+          "result_sha256_lf": "bec3ea4b5af979d1e38f131c0839536101ccb03a0ae47c3e158a0e0e9e9055b9",
+          "stage": "before_owned_worker_creation",
+          "training_executions": 0,
+          "api_requests": 0,
+          "reason": "controller가 먼저 만든 launch.json을 run_owned가 배타 생성하면서 충돌했다. 기존 invalid·소비 기록은 보존한다.",
+          "seed_disposition": {
+            "2130": "행정 소비 기록이 있어 재사용하지 않음; 학습 미시작",
+            "2131": "소비 기록과 학습 실행 없음",
+            "2132": "소비 기록과 학습 실행 없음"
+          },
+          "retry_basis": "학습·계산 검사 결과가 나오기 전 실행 계층 오류다. 결과에 따른 판정 변경 없이 새 cohort 2133·2134·2135를 사용한다."
+        }
+      }
+    }
+  },
+  "launch_contract": {
+    "folder_owner": "controller creates each arm folder once",
+    "intent_owner": "controller: launch_intent.json",
+    "reserved_owner": "run_owned: launch.json, stdout.log, stderr.log",
+    "execution_owner": "controller: execution.json after run_owned returns",
+    "validation": "reserved 파일이 없을 때만 run_owned 호출; intent와 생성된 launch의 args/cwd 일치 검증; training 진입에서도 같은 계약 확인",
+    "regression": "실제 Windows Job run_owned로 CPU child를 실행한다. launcher·WindowsJob·Popen은 대체하지 않는다."
+  },
+  "design_coupling": "R1 횟수 검사와 이전 수리 결과를 본 설계자가 만든 검사다. inverse ratio 오류는 CPU fixture로 확인한 인공 계산 오류이며 외부 버그 재현이 아니다.",
+  "question": "갱신 횟수가 정상인 PPO 계산 오류를 clipped surrogate gradient 불변식으로 가르는가",
+  "budget": {
+    "num_envs": 4096,
+    "updates": 3,
+    "epochs": 5,
+    "minibatches": 4,
+    "max_gpu_processes": 8,
+    "watchdog_s": 300,
+    "api_cap": 0
+  },
+  "invariant": {
+    "schema": "ppo_surrogate_gradient_v1",
+    "atol": 1e-06,
+    "rtol": 1e-05,
+    "scale": "batch_size",
+    "clip_param": 0.2
+  },
+  "formula": "r=exp(new-old); N*dL/dnew=-A*r if (A>=0 and r<=1+eps) or (A<0 and r>=1-eps), else 0",
+  "scope": "float32 feedforward single-GPU PPO, no RND/symmetry/per-minibatch advantage normalization; missing/nonfinite evidence is unknown. 반환 log-prob 이후의 정책 손실 미분만 검사하며 advantage 입력·정책 Jacobian 전체의 정확성을 증명하지 않는다.",
+  "mutation": "PPO.update ratio 식 하나의 new-old를 old-new로 교환. 설치 파일은 보존하고 인스턴스 메서드만 바꾼다. 판정기는 arm/readback이 아닌 관측 gradient로 검사한다.",
+  "prediction": {
+    "normal": "세 seed 모두 count와 gradient normal",
+    "inverse_ratio": "count normal, 첫 3 update 안 gradient abnormal",
+    "restored": "변이 메서드 설치 후 원래 PPO.update로 복원하고 학습 전 identity를 확인한 새 초기화 대조에서 count와 gradient normal"
+  },
+  "noninterference": "같은 seed OFF/ON의 policy/optimizer tensor·CPU/CUDA torch RNG·learning rate·loss 완전 일치. 복원 arm도 같은 seed NONE와 일치.",
+  "cost": {
+    "metric": "paired_sum_update_wall_on_divided_by_off",
+    "upper_bound_each_seed": 1.5,
+    "timing": "모든 arm의 update 전후 같은 CUDA synchronization; 시작·rollout·최종 상태 저장은 제외. owned process wall은 별도 기록",
+    "design_threshold": "실행 전 정한 허용 오버헤드이며 측정값에 맞춰 보정하지 않는다"
+  },
+  "sequence": "정상 OFF/ON 3쌍을 먼저 완료하고 ON 검사 모두 normal·비간섭·비용 관문 통과 때만 오류·복원 측정을 실행한다",
+  "lease": "공용 Use-GpuLease 소유자·관리 child PID(venv launcher 포함)·wrapper 부모 PID·현재 호출 프로세스의 조상 계층·활성 heartbeat·배타 lock을 확인한다. 각 arm 전과 학습 진입에서 같은 lease를 다시 확인한다",
+  "stop": "출처/실행/완료 오류는 invalid와 배치 중단. 정상 쌍 비간섭 또는 비용 관문 실패는 기록하고 오류 측정을 열지 않는다. unknown을 normal로 바꾸지 않는다",
+  "freshness": "실행 시작과 각 정상 seed 쌍 시작 전에 현재 저장소와 Isaac 로그 재검사. seed는 쌍 단위 한 번 소비하며 같은 태그 재사용 금지",
+  "success": "정상3/3 normal, 오류 count normal+gradient abnormal, 복원 normal, 세 비간섭·비용 쌍 통과, 복원상태=정상. 모든 조건을 만족할 때만 confirmed",
+  "wording": {
+    "confirmed": "개발 측정에서 갱신 횟수가 같은 inverse-ratio 오류를 계산 불변식으로 구분했고 등록한 비간섭·비용 기준을 통과했다.",
+    "observer_interference": "계측 OFF/ON의 학습 상태가 달라 오류 측정을 진행하지 않았다.",
+    "observer_cost_exceeded": "계측 비용이 사전등록 상한을 넘어 오류 측정을 진행하지 않았다.",
+    "normal_baseline_unconfirmed": "정상 세 seed의 검사 결과가 모두 normal이 아니어서 오류 측정을 진행하지 않았다.",
+    "not_confirmed": "개발 측정이 새 계산 검사 등록 조건을 충족하지 못했다.",
+    "invalid": "실행 또는 출처 결합이 완결되지 않아 계산 검사 성능을 판정하지 않았다."
+  },
+  "claim_scope": "계산 일치 검사다. 행동 실패·회복·종단 교정은 측정하지 않는다. 모델 호출과 자동 교정 등록은 없다.",
+  "references": [
+    "https://arxiv.org/abs/1707.06347",
+    "https://github.com/leggedrobotics/rsl_rl/blob/v2.3.3/rsl_rl/algorithms/ppo.py",
+    "https://github.com/leggedrobotics/rsl_rl/blob/v2.3.3/rsl_rl/storage/rollout_storage.py"
+  ],
+  "references_checked": "2026-10-17",
+  "lease_timestamp_contract": {
+    "parser": "evals/lease_timestamps.py:parse_lease_timestamp",
+    "format": "YYYY-MM-DDTHH:MM:SS[.1~7자리](Z 또는 +/-HH:MM); 시간대 필수",
+    "normalization": "소수 초를 오른쪽 0으로 여섯 자리까지 채우며 일곱 번째 자리는 버린다. UTC aware datetime 반환, metadata 원문은 보존한다.",
+    "checks": "acquiredUtc <= heartbeatUtc, aware now, 기존 0 <= heartbeat age <= 60초; 소유자·PID·조상·배타 lock 조건 유지",
+    "inactive": "completedUtc가 null이 아니면 활성 lease로 인정하지 않아 파싱하지 않는다",
+    "frozen_readers": [
+      "evals/ppo_gradient_check_v1.py",
+      "evals/ppo_gradient_check_v2.py"
+    ],
+    "regression": "실제 Isaac Python 3.10과 run_owned CPU child에서 7자리 입력·학습 진입 검증·stale/future 거부 확인"
+  },
+  "completion_contract": {
+    "evidence": "OnPolicyRunner.learn 정상 반환 뒤 finish·임시 메서드 복원·training_evidence.json을 기록하고 fsync한다. 앱 close 전 완료 marker를 추가한다.",
+    "failure": "BaseException과 조기 SystemExit를 training_failure.json에 traceback과 함께 기록·flush한 뒤 재전파한다. CLI는 명시적 exit 1로 끝낸다. Python 밖 조기 종료로 marker가 없으면 부모가 parent_completion_check 실패를 남긴다. 실제 자식 종료 코드는 보존한다.",
+    "upstream": "설치 파일은 보존한다. AST에서 유일한 terminal simulation_app.close 호출을 등록 callback으로 연결해 완료 증거를 검증한 뒤 원래 close를 호출한다."
+  },
+  "dry_run": {
+    "spec": {
+      "id": "dry_s2143_on",
+      "arm": "NONE",
+      "seed": 2143,
+      "observed": true,
+      "updates": 1
+    },
+    "num_envs": 4096,
+    "updates": 1,
+    "required_before_batch": true,
+    "max_gpu_processes": 1,
+    "watchdog_s": 300,
+    "success": "실제 Isaac NONE ON 한 update 완료·optimizer/gradient normal·완료 증거·정상 종료·소유 Job 정리·출처 결합 통과",
+    "not_a_measurement": "실행 경로 점검이며 본 측정·비간섭/비용 비교에 합산하지 않는다",
+    "gate": "새 dry tag write-once. 저장한 결과와 원본 산출물을 재검증한 뒤에만 본배치 시작. 실패하면 전체 중단하고 동일 tag 재사용 금지"
+  },
+  "observer_implementation": {
+    "module": "evals/ppo_gradient_invariant_v2.py",
+    "capture": "backward hook에서 log-prob·gradient·advantage·old-log-prob를 detach·clone한다. 파라미터별 norm은 원래 optimizer.step 직전에 계산한다.",
+    "aggregate": "update 끝에서 동일 shape·dtype·device batch를 묶어 기존 수식·허용치로 계산한다. scalar 증거를 device별로 묶어 한 번 CPU로 읽는다.",
+    "timing_boundary": "snapshot·계산·CPU 읽기·증거 직렬화 모두 기존 timed update 내부다. 비용을 측정 구간 밖으로 옮기지 않는다.",
+    "noninterference": "추가 backward·autograd.grad·RNG 소비·학습 텐서 변경 없음. state·loss 완전 일치를 요구한다.",
+    "evidence": "기존 기록 schema·필드·unknown 조건·검사 evaluator·mutation·판정 문구를 유지한다. 메모리는 한 update의 관측 batch로 제한한다.",
+    "cpu_development": "이미 본 합성 seed 17의 실제 RSL CPU learn으로 검증한다. 각 판 warmup 1회 뒤 v4/v5 순서를 번갈아 6쌍, 3 update 합·중앙값·비율을 보고한다. cProfile은 별도 실행한다. CPU 수치는 GPU 판정 근거가 아니다."
+  },
+  "source_sha256_lf": {
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/inspect_optimizer_observability.py": "6923f0aec67377e8e03633d898871b9a4f0771e4ad941cb532beb0403ead3883",
+    "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+    "bench/ppo_gradient_cpu_fixture_v1.py": "74cfcd7ae42312f6eadb5efc9ef05cd7f45367bc1377e813f9f9e38323093fda",
+    "bench/ppo_gradient_cpu_fixture_v2.py": "40513adbceecde8aaa45cfec13add74b221690c48ca0cc18ffc95ffaf6154e6b",
+    "bench/ppo_gradient_training_v1.py": "d6a3e493c270bb3e994585945aa095f6c9de5da7f78cf2f2392c0560358ab227",
+    "bench/ppo_gradient_training_v2.py": "a8bbb8899bd855421d08385fc2fd7b6a3881cf1632ca11c6c231f461fd395d7f",
+    "bench/ppo_gradient_training_v3.py": "9c4eb49212f9cf0130154d714e1d1e26bb8bfd849c5dc85c8dcb54a1ec336916",
+    "bench/ppo_gradient_training_v4.py": "5d7c92806f394b3ed5dc65ea63930eece735e17fda8f578d35c85933bbb0d033",
+    "bench/ppo_gradient_training_v5.py": "a4af53752bef162df55d0ac411e47163f99996cb2942c3412d6d64434064d2bc",
+    "bench/ppo_ratio_mutation_v1.py": "19c15646515e7481c34bd909d5e0d6ef52b708ce1a5daec1810c774c602702a3",
+    "bench/profile_ppo_observer_v1.py": "84791a11e6300d313308e25c094ba437d2d06ac75b3341fbbb4fd7f891909bb3",
+    "bench/protocols/optimizer_observability_v1.json": "c1fd244e388a0ab6153ff779ae485d30829f490506c4affae8b300c6794ecfab",
+    "bench/protocols/ppo_gradient_check_v1.json": "f3d20a21e77d0a31dad8d0a549d8538589fc1b9613138994fcb6b12a60961eb5",
+    "bench/protocols/ppo_gradient_check_v2.json": "87c9f2da1125b2046642961d072be261785269246149bc84f29af397d6ef034f",
+    "bench/protocols/ppo_gradient_check_v3.json": "60f42468f7de7d5eac491a0b28558afe965ae9d4307dcb693ae336896f3e2353",
+    "bench/protocols/ppo_gradient_check_v4.json": "7e28e7a44c8cb3479bd60b794ec493af497e7304acf9cea01f8bad2237a4a627",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/run_optimizer_observability_batch.py": "c5cc9736cdfe006fe987c1de7fa44ea339bb1cde7be359d655212adcb362e509",
+    "bench/run_ppo_gradient_check_v1.ps1": "cad4e463345481c90975abbf6bcd4db496067bcb67aa17ac63bd44672355b517",
+    "bench/run_ppo_gradient_check_v2.ps1": "aa615fcc85f12af4f2ed33cfd890589dec0431ed0c240172309223b039c5cbbd",
+    "bench/run_ppo_gradient_check_v3.ps1": "6676315bf1871a2b3902b66cba107edbc59f23219f7268ac9955a5fdeef96cd7",
+    "bench/run_ppo_gradient_check_v4.ps1": "f4a4e5404b4d794c2c9ae3bb5e37bf2248ab23f7e0cf987db52c90f5740fe3d3",
+    "bench/run_ppo_gradient_check_v5.ps1": "82aaf36764d7b98c333942fe5b7b6d8b94eea8b7ba91cc4f9656ae903409f45b",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "evals/lease_timestamps.py": "dd88cc4af421ee8bba3f75715093c9a71766522d13ab060cbcf35696453971a2",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "evals/ppo_gradient_check_v1.py": "5f9a69ada6174435ec3d6178221737f920eb7dfd7988f36180a4741efa9d5e25",
+    "evals/ppo_gradient_check_v2.py": "7e48220c847785774fbfb7b7c33d71cf2139cc7073391ba492f22d1512bfb22c",
+    "evals/ppo_gradient_check_v3.py": "9a85f89040576e0a00f4c09e39427d070952d056e8c3aef22d90a61918ef4955",
+    "evals/ppo_gradient_check_v4.py": "53317bcd6dfbe8961e2316d66beca638bb09e1cc755cc8179a0e7090ea4bd163",
+    "evals/ppo_gradient_check_v5.py": "f65694f3a6ff969e0a81e3fbf2d8ead96b103b3182537d5d3e1ec7a6f17ccf17",
+    "evals/ppo_gradient_invariant_v1.py": "bdbe4a9d99f8d4fd55a9181238357b4a0e6b1e677164d8c2ded61cdc47316fd3",
+    "evals/ppo_gradient_invariant_v2.py": "ad0bc58500165da891092ae84c283bf5522c25de4d227a1dd818b0b4b7fc41c8",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+    "tests/test_isaac_training_guard_v1.py": "dfe76d7aa7722e67ced2d7b419c506f3f97962446b245defa82ac45c3de9b9bf",
+    "tests/test_lease_timestamps.py": "89ed5803d3095803ed186f4877c85d0de386b8b06220c61b1081d4e4b772e7cf",
+    "tests/test_ppo_gradient_check_v1.py": "401fc9e101d57ea8e0d2e7baea0405d0fcc4141156aaf75a3b1b7df908a75840",
+    "tests/test_ppo_gradient_check_v2.py": "1b75f16fdfe1ed11b61fae8e0a0666aada54feed7bc2457483e741ae2c550db8",
+    "tests/test_ppo_gradient_check_v3.py": "6b30ddc17aa7285eec252930708e832cff82c9d87ec6bb6a3fdcf6edb0c612dd",
+    "tests/test_ppo_gradient_check_v4.py": "3c2664e7e9711cefa9698dba6a4fdb12675d64cd3f9ad87a1e16bd4435595774",
+    "tests/test_ppo_gradient_check_v5.py": "da69154489fba4b9be239d2c1b270007f7bdcb773730e1c3be86c005782d099e",
+    "tests/test_ppo_gradient_invariant_v1.py": "91ac5be4dc349c6f24f4bb9ec8596d25d6eb6360cc6d7d455d20ec6d880678b3",
+    "tests/test_ppo_gradient_invariant_v2.py": "7b159d3524db1ecd01d9721de9a1b71950dfc4ad5b6a114fddca0857a2ed4c5e",
+    "tests/test_ppo_observer_profile_v1.py": "e2f39f2080d29a8070a9ffc01543ed1638a3fb3fd6c12e77dec310a51891437c"
+  },
+  "runtime_source_sha256_lf": {
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/storage/rollout_storage.py": "456450bbba03f9f5818f9ec43d2f3bd5d14d2d27f4bf2308838dd580f32ffcf0",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl_lib-2.3.3.dist-info/METADATA": "90fb9745b9f3c70a32758af9f06dd68dae9b7a13f33e3998e99e081b5c09fda9",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "_isaac_sim/exts/isaacsim.simulation_app/isaacsim/simulation_app/simulation_app.py": "840ad13fcb3b4d8e10457809d42180b0fd807951a3e3cc153c832363fbef0bb2",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290"
+  },
+  "lease_helper_sha256_lf": "e410d638f8f31074d8f0800b096ff08050eeaa5ca055ff9cb13e21c28491ccba",
+  "mutation_readback": {
+    "mutation": "inverse_importance_ratio_v1",
+    "changed_ratio_assignments": 1,
+    "original_ast_sha256": "09c34d1817740dd75382feea87e074205caf55a1f6a11e02bca4902e50be8bdd",
+    "mutated_ast_sha256": "d54ca1585f4f5b288dc6791b8e52b40e87625893d0ab836e513fd040a9051d3c"
+  }
+}
