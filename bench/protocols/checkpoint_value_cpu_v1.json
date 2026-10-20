@@ -1,0 +1,79 @@
+{
+  "schema": "checkpoint_value_cpu_protocol_v1",
+  "probe": "P_value",
+  "aggregation_unit": "conditional_epoch_contexts_on_recorded_history",
+  "epoch2_conditioned_on_actual_epoch1": true,
+  "trajectory_comparison_valid": false,
+  "selector_performance_comparison_valid": false,
+  "existing_receipt_replay": false,
+  "new_followup_measurement": true,
+  "first_checkpoint_anchor": "sealed_repair_receipt_checkpoint_evidence",
+  "first_checkpoint_historical_integrity_verified": true,
+  "measurement": "동일 실행의 첫·마지막 actor/critic 파라미터 상대 L2 변화",
+  "definition_source": "evals/probes.py",
+  "classification_source": "src/rl_triage/probe_loop.py",
+  "archived_public_provenance_digest": "9178bed801456745e4dbeec7e05e300dfafc4c3550190c12d20c56a4e26de9a5",
+  "archived_result_sha256": "f856801a76f71e990955adf7c5856d10cc9d68395a63b699f59e7340d865e043",
+  "development_disclosure": "등록 F1·R1과 residual v2 결과를 본 뒤 만든 CPU 측정 경로다. 새 결함·새 seed 평가가 아니다.",
+  "population": {
+    "seeds": [
+      2120,
+      2121
+    ],
+    "epochs": [
+      1,
+      2
+    ],
+    "contexts": 4,
+    "checkpoint_pairs": 6
+  },
+  "prediction": {
+    "case_classification": "네 조건 모두 normal",
+    "equivalence": "수용한 실수·strided actor/critic tensor 입력에서 동결 P_value 정의와 같은 값"
+  },
+  "failure_policy": "출처·SHA·승인·소비·비유한 값 오류는 invalid로 종료하며 임계값·입력을 바꾸지 않는다",
+  "input_validity": {
+    "reference_critic_change": "> 0",
+    "first_iteration": 0,
+    "last_iteration": 299,
+    "checkpoint_loader": "torch.load(weights_only=True)",
+    "historical_first_sha_required": true
+  },
+  "failure_codes": {
+    "torch_unavailable": "torch_import",
+    "cuda_initialized": "device_check",
+    "checkpoint_unreadable": "checkpoint_hash",
+    "checkpoint_sha_mismatch": "checkpoint_hash",
+    "weights_only_load_failed": "checkpoint_load",
+    "model_state_dict_missing": "checkpoint_load",
+    "parameter_prefix_missing": "parameter_check",
+    "parameter_structure_invalid": "parameter_check",
+    "parameter_nonfinite": "parameter_check",
+    "parameter_change_nonfinite": "parameter_change",
+    "reference_critic_change_not_positive": "reference_check",
+    "unclassified_execution_error": "current_phase"
+  },
+  "execution": {
+    "device": "cpu",
+    "app_launcher": false,
+    "gpu_calls": 0,
+    "model_calls": 0,
+    "cuda_visible_devices": "-1",
+    "request_budget_gpu_s": 0
+  },
+  "interpretation": "critic 갱신 측정이며 critic 보정·최종 행동·회복·모델 기여를 판정하지 않는다",
+  "source_sha256_lf": {
+    "evals/checkpoint_value_cpu_v1.py": "f8590fb936414aa2b7fe7a8a63f56e05b27f554aec32a06c6b3682d008cd6479",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+    "evals/r1_repair_contract.py": "eeefe5819928cc0c5f81b0c3f38ae9900b31277698b4936eb2a850e7ec72f159",
+    "evals/residual_contract_v1.py": "0ad37bcc9399885a1d0c1e6e59b64053706fe1a1bd25b5253ac59b30068c5a90",
+    "evals/residual_selection_v2.py": "d1a0028afbe00d2697246e4fe30640ec780e3c4b15486dd4f1ed7e722aec6bc8",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/mechanism_registry.py": "0bc3c47e52bdb6eb511cad5f6b76d047edfdfd1ca3c09d52fd637c47909d75d0",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "tests/test_checkpoint_value_cpu_v1.py": "33a56a9bff746eccebe6704396fbe7e06778cb03c72629c69b6985b982545133"
+  }
+}
