@@ -155,6 +155,12 @@ uv run nat run --config_file configs/triage_workflow.yml \
   --input "Triage failed training case_id=c01. Find the root-cause change and register the next experiment."
 ```
 
+For Nebius Token Factory, use `configs/triage_workflow_nebius.yml` with
+`NEBIUS_API_KEY`, or `configs/triage_single_run_nebius.yml` for a single-run
+assessment. [Setup and hackathon preparation](docs/NEBIUS-HACKATHON.md) describes
+account checks and the remaining submission requirements. These configurations
+have offline checks; a live Nebius run has not been verified.
+
 Inside OpenShell (WSL2/Linux with Docker):
 
 ```bash

@@ -32,10 +32,11 @@ def ws(tmp_path, monkeypatch):
     return w, outside / "answer_key.json"
 
 
-def test_child_process_does_not_inherit_api_keys(ws, monkeypatch):
-    monkeypatch.setenv("NVIDIA_API_KEY", "nvapi-test-canary")
+@pytest.mark.parametrize("key_name", ["NVIDIA_API_KEY", "NEBIUS_API_KEY"])
+def test_child_process_does_not_inherit_api_keys(ws, monkeypatch, key_name):
+    monkeypatch.setenv(key_name, "api-test-canary")
     monkeypatch.setenv("TRIAGE_ANALYSIS_SANDBOX", "off")
-    out = T.run_analysis("import os\nprint(os.environ.get('NVIDIA_API_KEY'), sum(run['Train/mean_reward']))", "c01")
+    out = T.run_analysis(f"import os\nprint(os.environ.get({key_name!r}), sum(run['Train/mean_reward']))", "c01")
     assert out["exit_code"] == 0 and out["stdout"].split() == ["None", "3.0"], out
     assert list(out)[0] == "sandbox" and out["sandbox"] == "off"  # trace의 앞 600자에 남도록 첫 키
     forged = T.run_analysis("import sys\nsys.stderr.write(%r + '\\n')" % T._SANDBOX_MARK, "c01")
