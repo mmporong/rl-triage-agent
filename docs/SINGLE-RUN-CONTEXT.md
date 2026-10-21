@@ -14,6 +14,65 @@ workspace/single_run/
 
 The reference is exactly `{"reference_status":"absent","summary":{},"series":{}}`. Without `context.json`, the context tool returns `status: not_provided`. Missing context leaves configuration unknown; it does not establish that a reward or sensor is missing.
 
+## Prepare and inspect a run
+
+`rl-triage prepare-run` creates this layout and computes the context hashes. It
+accepts a telemetry JSON export with `summary` and `series` objects. TensorBoard
+event files must first be exported with the existing `bench/extract_tb.py` tool
+in the Isaac environment; the importer does not parse binary event files.
+
+```bash
+cd "$HOME/rl-triage-agent"
+uv sync
+uv run rl-triage prepare-run --telemetry bench/runs/c01_s42.telemetry.json \
+  --workspace workspace/imported-c01 --case c01
+uv run rl-triage inspect-run c01 --workspace workspace/imported-c01 \
+  --report workspace/c01-input-report.json
+```
+
+This example reads a recorded public run. Both commands run locally without model
+calls or a GPU. The report contains the measured summaries, the available evidence
+states, and selected configuration facts. `model_evaluation: not_run` makes the
+remaining model step explicit. Missing values remain unavailable; preparation
+does not replace them with zeros or infer a cause from a configured reward.
+
+When adding configuration evidence, pass both `--configuration` and `--facts`.
+The facts file contains only the selection array, for example:
+
+```json
+[
+  {"id": "success_weight", "path": ["rewards", "task_success", "weight"]},
+  {"id": "contact_bodies", "path": ["observations", "policy", "foot_contacts", "body_names"]}
+]
+```
+
+The selection refers to the synthetic configuration example below; choose paths
+that exist in the snapshot from your own run.
+
+```bash
+uv run rl-triage prepare-run \
+  --telemetry "$HOME/rl-triage-input/telemetry.json" \
+  --configuration "$HOME/rl-triage-input/configuration.json" \
+  --facts "$HOME/rl-triage-input/facts.json" \
+  --workspace workspace/my-run --case my-run
+```
+
+Original telemetry bytes and prepared telemetry bytes have separate hashes in
+`import.json`. Preparation exports only `summary` and `series`, with supported
+summary fields, so unrelated run paths and metadata stay out of the agent input.
+The configuration snapshot is copied byte for byte. Its hash and the selected
+paths are checked through the existing context contract. These hashes establish
+file consistency, not simulator provenance or a correct diagnosis.
+
+Inspection verifies every prepared file against `import.json` before returning
+evidence. Changed or missing inputs stop inspection. Existing workspaces and
+report files are rejected instead of replaced. For a new export or assessment
+attempt, choose a new workspace path.
+
+After inspection, set `TRIAGE_WORKSPACE` to the prepared directory and choose the
+existing single-run model workflow. Model calls require a configured API account;
+input preparation and inspection do not create one.
+
 ## Select facts from a snapshot
 
 Keep the JSON configuration snapshot in the same case directory. Include configuration known to belong to this run, with diagnostic labels and later attribution records excluded from agent inputs. The context tool returns only the selected values; it does not return the whole configuration file.

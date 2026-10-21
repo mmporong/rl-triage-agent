@@ -9,6 +9,9 @@ dependencies = [
   "pyyaml>=6",
 ]
 
+[project.scripts]
+rl-triage = "rl_triage.cli:main"
+
 [dependency-groups]
 dev = [
     "pytest>=8",

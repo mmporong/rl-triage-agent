@@ -31,9 +31,25 @@ NVIDIA가 이전 행사에 참여했다는 이유만으로 이 제한을 확대�
 위 실행 결과는 저장소에 보존된 기존 NVIDIA 경로의 측정 기록이다. 이번 준비 과정에서 GPU 실험을 다시 돌리거나
 같은 수치가 Nebius에서도 재현됐다고 주장하지 않는다. 소수 개발 사례를 일반화 성능이나 비용 우위로 쓰지 않는다.
 
+## 계정 없이 진행하는 프로젝트 작업
+
+현재 계정·카드 등록은 보류하고 입력 준비와 검사 기능부터 개발한다. 공개 telemetry JSON으로
+동작을 확인한 뒤 사용자 실행의 JSON을 같은 경로에 넣을 수 있다.
+
+```bash
+cd "$HOME/rl-triage-nebius-2026"
+uv run rl-triage prepare-run --telemetry bench/runs/c01_s42.telemetry.json \
+  --workspace workspace/imported-c01 --case c01
+uv run rl-triage inspect-run c01 --workspace workspace/imported-c01 \
+  --report workspace/c01-input-report.json
+```
+
+지표·선택 설정·입력 해시를 검사하며, AI 진단과 실제 Nebius 호출은 아직 수행하지 않는다.
+입력 형식과 설정 선택은 [단일 실행 입력 안내](SINGLE-RUN-CONTEXT.md)를 따른다.
+
 ## 계정 준비와 모델 확인
 
-1. [Token Factory 가입](https://tokenfactory.nebius.com/) 후 API 키를 발급한다.
+1. [Token Factory 가입](https://tokenfactory.nebius.com/) 후 API 키를 발급한다. 공식 [결제 안내](https://docs.tokenfactory.nebius.com/other-capabilities/billing-new)는 가입 완료에 카드 등록을 요구하므로 이 단계는 사용자 요청에 따라 나중에 진행한다.
 2. [행사 리소스](https://nebiusglobalaihackathon.devpost.com/resources)의 폼과 Builders Program에서
    각각 안내하는 Token Factory 25달러 크레딧을 신청한다. 실제 발급과 한국 거주 계정 개설은 아직 확인하지 않았다.
 3. 키는 저장소·채팅·명령 기록에 넣지 않고 현재 터미널 환경에 넣는다.

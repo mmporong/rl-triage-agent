@@ -180,7 +180,31 @@ uv run python -m rl_triage.eval_bridge approve <id>      # human: retrain with o
 
 ### Assess one run without a healthy reference
 
-Prepare a separate workspace containing:
+Import a telemetry JSON export into a new single-run workspace, then inspect its
+inputs without an API key, network, or GPU:
+
+```bash
+uv run rl-triage prepare-run --telemetry bench/runs/c01_s42.telemetry.json \
+  --workspace workspace/imported-c01 --case c01
+uv run rl-triage inspect-run c01 --workspace workspace/imported-c01 \
+  --report workspace/c01-input-report.json
+```
+
+The first command copies the measured `summary` and `series`, removes unrelated
+metadata, creates an explicit absent reference, and binds the prepared files to
+their hashes. It preserves missing and null statistics. The second command checks
+those bindings and displays the available metrics and selected configuration
+facts; `ready_for_assessment` means the inputs passed inspection. It does not
+generate a model diagnosis. Existing workspaces and reports are never overwritten.
+The bundled example uses a recorded benchmark run, not a new experiment.
+
+Supply `--configuration` and `--facts` together to attach selected configuration
+evidence. [The input guide](docs/SINGLE-RUN-CONTEXT.md) explains the selection file
+and how to use your own run. The prepared workspace is accepted by the existing
+single-run workflows, including `configs/triage_single_run_nebius.yml` once an API
+account is available.
+
+For a manually prepared workspace, use this layout:
 
 ```text
 workspace/single_run/
