@@ -13,6 +13,10 @@ sys.path.insert(0, str(ROOT / "evals"))
 import correct_v2 as V  # noqa: E402
 
 F1_LOOP, U1_LOOP = "h02_s2080", "u1_s2040"
+F1_FIXTURE = "combination_contract_v1/cases/go2_f1_ready"
+U1_FIXTURE = "combination_contract_v1/cases/go2_u1_legacy_scope_insufficient"
+F2_LOOPS = {"h06_s2046": "combination_contract_v2/cases/go2_f2_ready_s2046",
+            "h06_s2033": "combination_contract_v2/cases/go2_f2_ready_s2033"}
 
 
 def loop_copy(tmp_path, case, *, with_correction_ledger=False):
@@ -44,11 +48,18 @@ def test_public_loop_replay_reaches_each_exit_without_touching_tracked_records()
     tracked = sorted(p for case in V.REPLAYS for p in (V.LOOPS / case).iterdir())
     before = {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in tracked}
     out = V.replay()
-    assert out["status"] == "pass"
+    assert out["status"] == "pass" and set(out["cases"]) == set(V.REPLAYS) and len(V.REPLAYS) == 6
     ready = out["cases"][F1_LOOP]
     assert ready["contract_status"] == "ready" and ready["trace"] == list(V.K.ORDER)
     assert (ready["correction_id"], ready["recovery_mode"], ready["selection_actor"]) == (
         "restore_body_frame_reward", "restart", "model")
+    for case in F2_LOOPS:
+        motor = out["cases"][case]
+        assert motor["decision"] == "proposed" and motor["trace"] == list(V.K.ORDER)
+        # 시연은 첫 probe만 모델이 고르고 확정 P_torque는 동결 update 규칙이 골랐다.
+        assert (motor["correction_id"], motor["recovery_mode"], motor["selection_actor"],
+                motor["restoration_targets"]) == (
+            "restore_motor_torque_speed", "restart", "registered_rule", ["DCMotor._clip_effort"])
     assert out["cases"][U1_LOOP]["trace"] == list(V.K.ORDER[:4])
     assert out["cases"]["e01_s2027"]["contract_status"] is None
     assert out["cases"]["h05_s2027"]["reason"] == "unregistered_mechanism"
@@ -58,7 +69,7 @@ def test_public_loop_replay_reaches_each_exit_without_touching_tracked_records()
 
 def test_ready_request_needs_approval_and_runs_once_with_rechecked_contract(tmp_path):
     loops = loop_copy(tmp_path, F1_LOOP)
-    manifest = V._fixture_manifest("go2_f1_ready")
+    manifest = V._fixture_manifest(F1_FIXTURE)
     out = V.propose(F1_LOOP, manifest, "model", loops=loops)
     assert out["decision"] == "proposed" and out["evidence"]["restoration_targets"] == ["track_lin_vel_xy_exp"]
     rid, calls = out["request_id"], []
@@ -80,12 +91,12 @@ def test_ready_request_needs_approval_and_runs_once_with_rechecked_contract(tmp_
     lambda m: m["stages"]["source"]["fault"]["checkpoint"].update(sha256="0" * 64),
     lambda m: m["stages"]["scope"]["measurement"].update(track_lin_vel_xy_exp_rel_error=0.0),
     lambda m: m["stages"]["scope"].update(probe="P_torque"),
-    lambda m: m.update(V._fixture_manifest("go2_u1_legacy_scope_insufficient")),
+    lambda m: m.update(V._fixture_manifest(U1_FIXTURE)),
     lambda m: m.pop("stages"),
 ])
 def test_manifest_from_another_policy_or_observation_is_refused_before_ledger_write(tmp_path, mutation):
     loops = loop_copy(tmp_path, F1_LOOP)
-    manifest = V._fixture_manifest("go2_f1_ready")
+    manifest = V._fixture_manifest(F1_FIXTURE)
     mutation(manifest)
     with pytest.raises(ValueError):
         V.propose(F1_LOOP, manifest, "model", loops=loops)
@@ -94,15 +105,15 @@ def test_manifest_from_another_policy_or_observation_is_refused_before_ledger_wr
 
 def test_removing_the_loop_binding_breaks_that_acceptance(tmp_path, monkeypatch):
     loops = loop_copy(tmp_path, F1_LOOP)
-    other = V._fixture_manifest("go2_u1_legacy_scope_insufficient")
+    other = V._fixture_manifest(U1_FIXTURE)
     monkeypatch.setattr(V, "_bind", lambda *_: None)
     out = V.propose(F1_LOOP, other, "model", loops=loops)
     # 결합 검사가 없으면 다른 정책의 근거가 이 loop의 원장에 HOLD로 기록된다.
     assert out["decision"] == V.HOLD and (loops / F1_LOOP / "correction_ledger.jsonl").exists()
 
 
-@pytest.mark.parametrize("manifest_name, actor", [(None, "model"), ("go2_f1_ready", None),
-                                                  ("go2_f1_ready", "operator")])
+@pytest.mark.parametrize("manifest_name, actor", [(None, "model"), (F1_FIXTURE, None),
+                                                  (F1_FIXTURE, "operator")])
 def test_confirmed_loop_needs_manifest_and_declared_actor(tmp_path, manifest_name, actor):
     loops = loop_copy(tmp_path, F1_LOOP)
     manifest = None if manifest_name is None else V._fixture_manifest(manifest_name)
@@ -115,7 +126,7 @@ def test_existing_ledger_with_another_registry_is_not_reused(tmp_path):
     loops = loop_copy(tmp_path, F1_LOOP, with_correction_ledger=True)
     before = (loops / F1_LOOP / "correction_ledger.jsonl").read_bytes()
     with pytest.raises(V.LedgerError):
-        V.propose(F1_LOOP, V._fixture_manifest("go2_f1_ready"), "model", loops=loops)
+        V.propose(F1_LOOP, V._fixture_manifest(F1_FIXTURE), "model", loops=loops)
     with pytest.raises(V.LedgerError):
         V.status(F1_LOOP, loops)
     assert (loops / F1_LOOP / "correction_ledger.jsonl").read_bytes() == before
@@ -123,7 +134,7 @@ def test_existing_ledger_with_another_registry_is_not_reused(tmp_path):
 
 def test_loop_state_or_actor_change_after_approval_blocks_run(tmp_path):
     loops = loop_copy(tmp_path, F1_LOOP)
-    manifest = V._fixture_manifest("go2_f1_ready")
+    manifest = V._fixture_manifest(F1_FIXTURE)
     rid = V.propose(F1_LOOP, manifest, "model", loops=loops)["request_id"]
     V._ledger(F1_LOOP, loops).approve(rid, "operator")
     calls = []
@@ -154,7 +165,7 @@ def assert_held_at(out, gate, status):
 def test_each_gate_stops_the_base_runner_and_disabling_it_breaks_acceptance(tmp_path, monkeypatch, gate):
     mutate, status = GATE_MUTATIONS[gate]
     loops = loop_copy(tmp_path, F1_LOOP)
-    manifest = V._fixture_manifest("go2_f1_ready")
+    manifest = V._fixture_manifest(F1_FIXTURE)
     mutate(manifest["stages"])
     rebind(manifest, tmp_path)
     assert_held_at(V.propose(F1_LOOP, manifest, "model", loops=loops, root=tmp_path), gate, status)
@@ -168,7 +179,7 @@ def test_each_gate_stops_the_base_runner_and_disabling_it_breaks_acceptance(tmp_
 
 def test_unregistered_fault_label_holds_as_invalid_contract(tmp_path):
     loops = loop_copy(tmp_path, F1_LOOP)
-    manifest = V._fixture_manifest("go2_f1_ready")
+    manifest = V._fixture_manifest(F1_FIXTURE)
     manifest["fault"] = "F9"
     rebind(manifest, tmp_path)
     out = V.propose(F1_LOOP, manifest, "model", loops=loops, root=tmp_path)
@@ -176,8 +187,60 @@ def test_unregistered_fault_label_holds_as_invalid_contract(tmp_path):
     assert V._ledger(F1_LOOP, loops).requests() == {}
 
 
+@pytest.mark.parametrize("case", sorted(F2_LOOPS))
+def test_motor_loop_request_carries_the_registered_target_and_runs_after_approval(tmp_path, case):
+    loops = loop_copy(tmp_path, case)
+    manifest = V._fixture_manifest(F2_LOOPS[case])
+    out = V.propose(case, manifest, "registered_rule", loops=loops)
+    assert out["decision"] == "proposed" and out["correction_id"] == "restore_motor_torque_speed"
+    V._ledger(case, loops).approve(out["request_id"], "operator")
+    calls = []
+    receipt = V.run(case, out["request_id"], recovered(calls), manifest, "registered_rule", loops=loops)
+    assert receipt["verdict"] == "recovered" and calls[0]["restoration_targets"] == ["DCMotor._clip_effort"]
+
+
+@pytest.mark.parametrize("mutation", [
+    lambda m: m["stages"]["scope"]["reference"].update(low_speed_saturation=0.0),
+    lambda m: m["stages"]["scope"]["measurement"].update(low_speed_saturation=0.5),
+    lambda m: m.update(V._fixture_manifest(F2_LOOPS["h06_s2033"])),
+])
+def test_motor_manifest_from_another_reference_or_seed_is_refused_before_ledger_write(tmp_path, mutation):
+    case = "h06_s2046"
+    loops = loop_copy(tmp_path, case)
+    manifest = V._fixture_manifest(F2_LOOPS[case])
+    mutation(manifest)
+    with pytest.raises(ValueError):
+        V.propose(case, manifest, "registered_rule", loops=loops)
+    assert not (loops / case / "correction_ledger.jsonl").exists()
+
+
+def test_motor_scope_without_reference_holds_with_zero_requests(tmp_path):
+    case = "h06_s2046"
+    loops = loop_copy(tmp_path, case)
+    manifest = V._fixture_manifest(F2_LOOPS[case])
+    manifest["stages"]["scope"].pop("reference")
+    rebind(manifest, tmp_path)
+    out = V.propose(case, manifest, "registered_rule", loops=loops, root=tmp_path)
+    assert out["decision"] == V.HOLD and out["reason"] == "invalid"
+    assert V._ledger(case, loops).requests() == {}
+
+
+def test_removing_the_reference_binding_breaks_that_acceptance(tmp_path, monkeypatch):
+    case = "h06_s2046"
+    loops = loop_copy(tmp_path, case)
+    manifest = V._fixture_manifest(F2_LOOPS[case])
+    reference = json.loads((loops / case / "reference.json").read_text(encoding="utf-8"))
+    (loops / case / "reference.json").write_text(json.dumps(
+        {**reference, "P_torque": {**reference["P_torque"], "low_speed_saturation": 0.02}}), encoding="utf-8")
+    with pytest.raises(ValueError, match="기준값"):
+        V.propose(case, manifest, "registered_rule", loops=loops)
+    monkeypatch.setattr(V, "_bind", lambda manifest, prereg, confirming, reference=None: None)
+    # 기준값 결합이 없으면 loop 기준 측정과 다른 manifest가 그대로 요청까지 간다.
+    assert V.propose(case, manifest, "registered_rule", loops=loops)["decision"] == "proposed"
+
+
 def test_cli_replay_exit_code_and_fixture_wrapper(tmp_path, capsys):
     assert V.main(["replay"]) == 0
     assert json.loads(capsys.readouterr().out)["status"] == "pass"
-    wrapped = V._read_manifest(V.FIXTURES / "go2_f1_ready.json")
-    assert wrapped == V._fixture_manifest("go2_f1_ready")
+    wrapped = V._read_manifest(V.FIXTURES / f"{F1_FIXTURE}.json")
+    assert wrapped == V._fixture_manifest(F1_FIXTURE)

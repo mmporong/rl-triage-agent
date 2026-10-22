@@ -5,13 +5,14 @@
   python evals/correct_v2.py approve <케이스> <request_id> --approver <이름>
   python evals/correct_v2.py reject  <케이스> <request_id> --approver <이름> --reason <이유>
   python evals/correct_v2.py status  <케이스>
-  python evals/correct_v2.py replay   # 공개 loop 기록 네 건을 임시 폴더에서 재생(API·GPU·네트워크 없음)
+  python evals/correct_v2.py replay   # 공개 loop 기록 여섯 건을 임시 폴더에서 재생(API·GPU·네트워크 없음)
 
 - evals/correct.py는 공개 시연 프로토콜이 파일 SHA로 묶고 있어 그대로 둔다. 이 진입점은 그 loop 읽기
-  (_loop_state·_confirming_request)를 재사용하고, 원장에 쓰기 전에 combination_contract_v1의 여섯 관문을 둔다.
+  (_loop_state·_confirming_request)를 재사용하고, 원장에 쓰기 전에 combination_contract_v2의 여섯 관문을 둔다
+  (v2는 v1 관문에 모터 P_torque·종료 P_episode 범위 관문을 더했다).
 - loop가 none_supported·unidentifiable이거나 확정 메커니즘이 등록 밖이면 manifest 없이 HOLD를 남긴다.
-- 확정된 등록 메커니즘은 manifest가 있어야 한다. manifest의 결함 정책 체크포인트와 범위 관측은 loop 사전등록의
-  체크포인트·확정 probe receipt와 같아야 하며, 다르면 원장에 쓰기 전에 ValueError로 멈춘다.
+- 확정된 등록 메커니즘은 manifest가 있어야 한다. manifest의 결함 정책 체크포인트와 범위 관측(기준값 포함)은
+  loop 사전등록의 체크포인트·확정 probe receipt·정상 기준 측정과 같아야 하며, 다르면 원장에 쓰기 전에 ValueError로 멈춘다.
 - manifest의 결함 계열이 loop 확정 메커니즘과 다르면 계약이 diagnosis_unconfirmed HOLD로 끝낸다(U1 함수군은 reward 계열).
 - 선택 주체(model|registered_rule)는 loop 파일에 없으므로 호출자가 밝히고, 요청 근거와 digest에 묶인다.
 - run은 실행 함수를 가진 실행기가 부른다(실행 함수 계약은 evals/correct.py와 같다). 소비 직전에 같은 근거로 관문을 다시 확인한다.
@@ -31,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 for directory in (ROOT / "src", ROOT / "bench", ROOT / "evals"):
     if str(directory) not in sys.path:
         sys.path.insert(0, str(directory))
-import combination_contract_v1 as K  # noqa: E402
+import combination_contract_v2 as K  # noqa: E402
 import correct as CR  # noqa: E402
 from rl_triage.correction_ledger import CorrectionLedger, LedgerError  # noqa: E402
 from rl_triage.correction_registry import HOLD  # noqa: E402
@@ -42,16 +43,23 @@ ACTORS = ("model", "registered_rule")
 # 계약 메커니즘 → loop 확정 범주. U1 함수군 교정은 P_reward로 확정한 reward loop에 연결한다.
 LOOP_CATEGORY = {"reward": "reward", "reward_family": "reward", "actuator": "actuator", "termination": "termination"}
 
-LOOP_FILES = ("prereg.json", "state.json", "ledger.jsonl")
-FIXTURES = ROOT / "bench" / "fixtures" / "combination_contract_v1" / "cases"
+LOOP_FILES = ("prereg.json", "state.json", "ledger.jsonl", "reference.json")
+FIXTURES = ROOT / "bench" / "fixtures"
 # 공개 loop 기록 → (공개 manifest fixture, 선택 주체를 읽는 시연 결과). manifest가 없는 기록은 loop 종료만 재생한다.
 REPLAYS = {
-    "h02_s2080": ("go2_f1_ready", "evals/results/vl_aux_f1_s2080_20261016/demo_result.json"),
-    "u1_s2040": ("go2_u1_legacy_scope_insufficient", "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json"),
+    "h02_s2080": ("combination_contract_v1/cases/go2_f1_ready",
+                  "evals/results/vl_aux_f1_s2080_20261016/demo_result.json"),
+    "u1_s2040": ("combination_contract_v1/cases/go2_u1_legacy_scope_insufficient",
+                 "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json"),
+    "h06_s2046": ("combination_contract_v2/cases/go2_f2_ready_s2046",
+                  "evals/results/e2e_demo_v4_f2_s2046_20261014/demo_result.json"),
+    "h06_s2033": ("combination_contract_v2/cases/go2_f2_ready_s2033",
+                  "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json"),
     "e01_s2027": (None, None),
     "h05_s2027": (None, None),
 }
 EXPECTED = {"h02_s2080": ("proposed", None), "u1_s2040": (HOLD, "scope_insufficient"),
+            "h06_s2046": ("proposed", None), "h06_s2033": ("proposed", None),
             "e01_s2027": (HOLD, "loop status unidentifiable"), "h05_s2027": (HOLD, "unregistered_mechanism")}
 
 
@@ -64,8 +72,8 @@ def _ledger(case: str, loops: Path) -> CorrectionLedger:
     return led
 
 
-def _bind(manifest: dict, prereg: dict, confirming: dict) -> None:
-    """manifest가 이 loop의 결함 정책과 확정 관측을 가리키는지 원장에 쓰기 전에 확인한다."""
+def _bind(manifest: dict, prereg: dict, confirming: dict, reference: dict | None = None) -> None:
+    """manifest가 이 loop의 결함 정책과 확정 관측(정상 기준값 포함)을 가리키는지 원장에 쓰기 전에 확인한다."""
     stages = manifest.get("stages") if isinstance(manifest, dict) else None
     if not isinstance(stages, dict):
         raise ValueError("manifest에 stages가 없다")
@@ -77,10 +85,12 @@ def _bind(manifest: dict, prereg: dict, confirming: dict) -> None:
         if checkpoint != prereg.get("checkpoint_sha256"):
             raise ValueError("manifest 결함 정책이 loop 사전등록 체크포인트와 다르다")
     scope = stages.get("scope")
-    if isinstance(scope, dict) and scope.get("probe") is not None and (
-            scope["probe"] != confirming["probe"]
-            or scope.get("measurement") != confirming["receipt"].get("measurement")):
-        raise ValueError("manifest 범위 관측이 loop 확정 probe receipt와 다르다")
+    if isinstance(scope, dict) and scope.get("probe") is not None:
+        if (scope["probe"] != confirming["probe"]
+                or scope.get("measurement") != confirming["receipt"].get("measurement")):
+            raise ValueError("manifest 범위 관측이 loop 확정 probe receipt와 다르다")
+        if "reference" in scope and scope["reference"] != (reference or {}).get(scope["probe"]):
+            raise ValueError("manifest 범위 기준값이 loop 정상 기준 측정과 다르다")
 
 
 def contract_state(case: str, manifest: dict, selection_actor: str | None, loops: Path = LOOPS) -> dict:
@@ -89,7 +99,9 @@ def contract_state(case: str, manifest: dict, selection_actor: str | None, loops
         raise ValueError(f"선택 주체는 {ACTORS} 중 하나다({selection_actor!r})")
     prereg, state, loop_led = CR._loop_state(case, loops)
     mech, req = CR._confirming_request(case, state, loop_led)
-    _bind(manifest, prereg, req)
+    reference_path = CR._dir(case, loops) / "reference.json"
+    reference = json.loads(reference_path.read_text(encoding="utf-8")) if reference_path.exists() else None
+    _bind(manifest, prereg, req, reference)
     fault = manifest.get("fault")
     family = K.FAULTS[fault][0] if isinstance(fault, str) and fault in K.FAULTS else None
     return {"status": state["status"], "hypotheses": [family] if LOOP_CATEGORY.get(family) == mech else [mech],
@@ -159,10 +171,17 @@ def _fixture_manifest(name: str) -> dict:
 
 
 def _selection_actor(demo: dict, request_id: str) -> str:
-    """시연 기록에서 확정 probe를 고른 주체를 읽는다."""
+    """시연 기록에서 확정 probe를 고른 주체를 읽는다.
+
+    시연 프로토콜은 첫 probe만 모델이 고르고, 관측 뒤에는 모델을 다시 부르지 않고 동결 update 규칙으로 다음
+    probe를 정한다. 그래서 첫 요청이 아닌 확정 요청의 선택 주체는 registered_rule이다.
+    """
     started = demo["diagnosis"]["started"]
-    if started.get("request_id") != request_id:
+    order = [row["request_id"] for row in demo["loop"]["requests"]]
+    if not order or order[0] != started.get("request_id") or request_id not in order:
         raise ValueError("시연 기록의 probe 요청이 loop 확정 요청과 다르다")
+    if request_id != order[0]:
+        return "registered_rule"
     return "model" if started.get("model_probe_used") is True else "registered_rule"
 
 
@@ -195,7 +214,7 @@ def replay(loops: Path = LOOPS, root: Path = ROOT) -> dict:
                 _, req = CR._confirming_request(case, state, loop_led)
                 actor = _selection_actor(json.loads((Path(root) / demo_path).read_text(encoding="utf-8")),
                                          req["request_id"])
-                used[f"bench/fixtures/combination_contract_v1/cases/{fixture}.json"] = _sha(FIXTURES / f"{fixture}.json")
+                used[f"bench/fixtures/{fixture}.json"] = _sha(FIXTURES / f"{fixture}.json")
                 used[demo_path] = _sha(Path(root) / demo_path)
             cases[case] = _summary(propose(case, manifest, actor, loops=work, root=root))
             inputs.update(used)
@@ -232,7 +251,7 @@ def main(argv=None) -> int:
             q.add_argument("--reason", required=True)
     s = sub.add_parser("status")
     s.add_argument("case")
-    sub.add_parser("replay", help="공개 loop 기록 네 건을 임시 폴더에서 재생")
+    sub.add_parser("replay", help="공개 loop 기록 여섯 건을 임시 폴더에서 재생")
     args = ap.parse_args(argv)
     try:
         if args.cmd == "propose":

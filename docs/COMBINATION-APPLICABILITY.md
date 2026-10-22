@@ -19,7 +19,7 @@
 
 보상 관측의 항별 범위는 기존 [`correction_scope.check`](../src/rl_triage/correction_scope.py)를 사용한다. 이 검사가 보는 두 추종 항과, 등록 주입이 바꾼 전체 표적은 별도로 확인한다. U1에서는 추종 항 두 개만 검사했더라도 네 보상 함수가 바뀌었다면 네 항 모두 교정 범위에 들어가야 한다.
 
-이번 판에서 교정 요청까지 연결한 범주는 F1의 보상 항과 U1의 보상 함수군이다. F2·F6는 아래 기록의 선행 관문 상태를 재생한다. 이 두 범주의 입력이 교정 범위 관문까지 도달하면 범위 검사 미등록으로 `invalid`가 된다. 보상 검사 결과를 다른 범주의 확정 근거로 받아들이지 않는다.
+첫 판(v1)에서 교정 요청까지 연결한 범주는 F1의 보상 항과 U1의 보상 함수군이다. 조합 실행기는 프로토콜이 v1 파일을 SHA로 묶고 있어 v1을 그대로 쓴다. v1에서는 F2·F6 입력이 교정 범위 관문까지 도달하면 범위 검사 미등록으로 `invalid`가 된다. 진단 고리의 기본 교정 경로는 모터·종료 범주의 범위 관문을 더한 [v2](#계약-v2-모터종료-범위-관문)를 쓴다. 어느 판도 보상 검사 결과를 다른 범주의 확정 근거로 받아들이지 않는다.
 
 ## 기존 기록으로 만든 계약 회귀
 
@@ -41,6 +41,29 @@ U1 구 교정 재생은 seed 2040의 행동·관측과 seed 2062의 함수군 �
 - [원본 정규화·공개 검증 도구](../evals/combination_record_fixtures_v1.py)
 - [계약과 원장 연결](../evals/combination_contract_v1.py)
 
+## 계약 v2: 모터·종료 범위 관문
+
+[`evals/combination_contract_v2.py`](../evals/combination_contract_v2.py)는 v1의 관문 함수를 재사용하고 두 곳만 바꾼다. 등록 표는 v1과 같아서 같은 교정 원장을 쓸 수 있다.
+
+- **교정 범위.** 보상 계열은 v1 규칙 그대로다. 모터(F2)는 `P_torque`, 종료(F6)는 `P_episode`가 확정 검사다. 두 검사는 항별 측정을 남기지 않으므로 범위 관측에 확정 측정과 같은 seed의 정상 기준 측정을 함께 담는다. 동결 판정 규칙으로 확정 측정이 다시 `abnormal`인지 계산하고, 아니면 `invalid`다. 그다음 결함이 바꾼 활성 표적이 등록 교정의 복원 표적에 모두 들어 있는지 구조로 대조하고, 빠진 표적이 있으면 `scope_insufficient`다.
+- **확정 상태.** 고리 상태의 관측에서 범주별 확정 검사가 `abnormal`이어야 요청을 만든다. 모터 확정에 `P_reward` 관측을 내밀면 `diagnosis_unconfirmed` HOLD다.
+
+v1 공개 fixture 다섯 건은 v2에서도 상태와 멈춘 위치가 같다. 모터 결함 공개 시연 두 건을 새 fixture로 정규화했다.
+
+| 사례 | 계약 상태 | 확인한 범위 |
+| --- | --- | --- |
+| Go2 F2, seed 2046 | `ready` | 저속 토크 포화 0.081(정상 0.00046, 문턱 0.03), 단일 활성 표적 `DCMotor._clip_effort` 복원, `restart` |
+| Go2 F2, seed 2033 | `ready` | 저속 토크 포화 0.063(정상 0.00078, 문턱 0.03), 같은 표적 복원, `restart` |
+
+두 사례의 행동 실패와 확정 측정은 공개 시연 결과에서 읽었다. NONE 무변경 근거는 시연과 같은 Isaac Python 3.10에서 정상 `DCMotor._clip_effort`에 `restore_motor_torque_speed`를 적용한 별도 CPU 검사다. 정상 함수 지문이 시연 교정 readback의 정상 지문과 같고, 적용 전후 지문도 같았다. 함수 지문은 바이트코드로 계산하므로 Python 버전이 다르면 값이 달라진다. 정책 학습이나 행동 평가를 추가하지 않았다.
+
+종료(F6) 범위 관문은 합성 입력으로만 검사했다. 종료 원인으로 확정된 공개 고리 기록은 아직 없다.
+
+- [v2 공개 fixture 목록](../bench/fixtures/combination_contract_v2/index.json)
+- [v2 원본 정규화·공개 검증 도구](../evals/combination_record_fixtures_v2.py)
+- [NONE 무변경 CPU 검사](../bench/combination_noop_v2.py)
+- [v2 수용 검사](../tests/test_combination_contract_v2.py)
+
 ## 고리와 교정 원장
 
 호스트가 관측 원본으로 manifest를 구성하고 상태를 계산한다. 모델이나 호출자가 `ready`라는 문자열을 제공해 관문을 건너뛸 수 없다. 진단이 확정돼 있고 계약이 `ready`일 때만 등록 교정·회복 방식·전체 복원 표적을 기존 [`CorrectionLedger`](../src/rl_triage/correction_ledger.py)에 제안한다.
@@ -51,27 +74,29 @@ U1 구 교정 재생은 seed 2040의 행동·관측과 seed 2062의 함수군 �
 
 ## 진단 고리의 기본 교정 경로
 
-진단 고리가 원인을 확정한 뒤의 교정 요청은 [`evals/correct_v2.py`](../evals/correct_v2.py)가 만든다. 이전 진입점 `evals/correct.py`는 공개 시연 프로토콜이 파일 SHA로 묶고 있어 수정하지 않았다. 새 진입점은 이전 진입점의 고리 기록 읽기를 재사용하고, 원장에 쓰기 전에 이 계약을 호출한다. 진단 고리의 교정 요청도 이제 `ready`일 때만 만들어진다.
+진단 고리가 원인을 확정한 뒤의 교정 요청은 [`evals/correct_v2.py`](../evals/correct_v2.py)가 만든다. 이전 진입점 `evals/correct.py`는 공개 시연 프로토콜이 파일 SHA로 묶고 있어 수정하지 않았다. 새 진입점은 이전 진입점의 고리 기록 읽기를 재사용하고, 원장에 쓰기 전에 계약 v2를 호출한다. 진단 고리의 교정 요청도 이제 `ready`일 때만 만들어진다.
 
 | 순서 | 확인 | 멈출 때 |
 | --- | --- | --- |
 | 1 | 고리 상태 | `none_supported`·`unidentifiable`이면 manifest 없이 HOLD |
 | 2 | 확정 메커니즘 | 교정이 등록되지 않은 메커니즘이면 HOLD(`unregistered_mechanism`) |
-| 3 | manifest와 고리의 결합 | manifest 결함 정책의 체크포인트가 고리 사전등록과 다르거나, 범위 관측이 확정 probe receipt의 측정값과 다르면 원장에 쓰지 않고 거부 |
+| 3 | manifest와 고리의 결합 | manifest 결함 정책의 체크포인트가 고리 사전등록과 다르거나, 범위 관측이 확정 probe receipt의 측정값과 다르거나, 범위 기준값이 고리의 정상 기준 측정(`reference.json`)과 다르면 원장에 쓰지 않고 거부 |
 | 4 | 여섯 관문 | `ready`가 아니면 계약 상태를 사유로 HOLD |
 | 5 | 진단 상태 | manifest의 결함 계열이 고리 확정 메커니즘과 다르면 `diagnosis_unconfirmed` HOLD. U1 함수군은 보상 계열로 본다 |
 
 고리 기록에는 확정 probe를 누가 골랐는지가 없다. 호출자가 선택 주체를 `model` 또는 `registered_rule`로 밝히고, 이 값은 고리 상태 digest·확정 probe 요청 ID·체크포인트와 함께 요청에 묶인다. 승인 뒤 고리 상태나 선택 주체가 바뀌면 소비를 거부한다. 실행 함수를 가진 실행기가 `run()`을 부르면 승인을 소비하기 직전에 같은 manifest로 관문을 다시 계산하고, 실행 함수에 전체 복원 표적을 넘긴다.
 
-원장은 고리 폴더의 `correction_ledger.jsonl`이고 이 계약의 등록 표를 쓴다. 다른 등록 표로 만든 요청이 이미 있는 원장에는 쓰지 않는다. 범위 관문은 보상 계열에만 등록돼 있으므로 모터·종료 범주의 확정은 이 경로에서 요청을 만들지 않는다. 이전 진입점으로 만든 모터 교정 기록은 그대로 둔다.
+원장은 고리 폴더의 `correction_ledger.jsonl`이고 이 계약의 등록 표를 쓴다. 다른 등록 표로 만든 요청이 이미 있는 원장에는 쓰지 않는다. 범위 관문은 v2에서 보상·모터·종료 범주에 등록돼 있다. 이전 진입점으로 만든 모터 교정 기록은 그대로 둔다.
 
 ### 공개 고리 기록 재생
 
-`python evals/correct_v2.py replay`는 공개 고리 기록 네 건을 임시 폴더로 복사해 제안 단계까지 재생한다. 저장소의 고리 기록과 원장에는 쓰지 않으며 API·GPU·네트워크를 쓰지 않는다. manifest는 위 공개 fixture를 쓰고, 선택 주체는 각 시연 결과의 probe 요청을 고리 확정 요청과 대조한 뒤 읽는다.
+`python evals/correct_v2.py replay`는 공개 고리 기록 여섯 건을 임시 폴더로 복사해 제안 단계까지 재생한다. 저장소의 고리 기록과 원장에는 쓰지 않으며 API·GPU·네트워크를 쓰지 않는다. manifest는 위 공개 fixture를 쓰고, 선택 주체는 각 시연 결과의 probe 요청을 고리 확정 요청과 대조한 뒤 읽는다. 시연 프로토콜은 첫 검사만 모델이 고르고, 관측 뒤에는 모델을 다시 부르지 않고 동결 갱신 규칙이 다음 검사를 정한다. 그래서 첫 요청이 아닌 확정 검사의 선택 주체는 `registered_rule`이다.
 
 | 고리 기록 | 고리 상태 | 계약 | 결과 |
 | --- | --- | --- | --- |
 | Go2 F1, seed 2080 (`h02_s2080`) | 보상 확정 | `ready`, 여섯 관문 통과 | 요청 1건: `restore_body_frame_reward`, `restart`, 선택 주체 `model` |
+| Go2 F2, seed 2046 (`h06_s2046`) | 모터 확정(세 번째 검사 `P_torque`) | `ready`, 여섯 관문 통과 | 요청 1건: `restore_motor_torque_speed`, `restart`, 선택 주체 `registered_rule` |
+| Go2 F2, seed 2033 (`h06_s2033`) | 모터 확정(세 번째 검사 `P_torque`) | `ready`, 여섯 관문 통과 | 요청 1건: `restore_motor_torque_speed`, `restart`, 선택 주체 `registered_rule` |
 | Go2 U1 구 교정, seed 2040 (`u1_s2040`) | 보상 확정 | `scope_insufficient`, 범위 관문에서 멈춤 | HOLD, 요청 0건 |
 | T1 외부 원인 결함, seed 2027 (`e01_s2027`) | `unidentifiable` | 호출하지 않음 | HOLD, 요청 0건 |
 | P0-C 숨은 결함 H05, seed 2027 (`h05_s2027`) | 탐색 범주 확정 | 호출하지 않음 | HOLD(`unregistered_mechanism`), 요청 0건 |
@@ -81,7 +106,8 @@ U1 구 교정 재생은 seed 2040의 행동·관측과 seed 2062의 함수군 �
 - 승인 1회 소비와 중복 제안 거부
 - 다른 정책이나 관측을 가리키는 manifest의 거부
 - 승인 뒤 고리 상태·선택 주체가 바뀌었을 때의 소비 거부
-- 관문 네 개와 결합 검사를 각각 무력화하면 해당 수용 검사가 실패하는지
+- 다른 seed의 모터 manifest나 고리 정상 기준과 다른 범위 기준값의 거부
+- 관문 네 개, 결합 검사, 기준값 결합을 각각 무력화하면 해당 수용 검사가 실패하는지
 
 ## 사전등록한 새 조합
 
