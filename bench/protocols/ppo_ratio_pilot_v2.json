@@ -211,15 +211,24 @@
   "api_requests": 0,
   "gpu": {
     "lease": "Use-GpuLease.ps1",
-    "profile": "desktop_shared_recording_claude_v1",
+    "profile": "desktop_shared_recording_apps_v1",
     "sequential": true,
     "measurement_unit": "소유 프로세스 parent wall seconds; GPU kernel time이 아니다",
     "base_profile": "desktop_shared_recording_v1",
     "added_display_process_names": [
+      "antigravity.exe",
       "claude.exe",
+      "cursor.exe",
       "msedge.exe"
     ],
-    "unchanged": "계산 작업 차단, 메모리 4096 MiB 상한, 프로세스·엔진 종류 기준은 기존 프로필과 같다"
+    "unchanged": "계산 작업 차단, 메모리 4096 MiB 상한, 프로세스·엔진 종류 기준은 기존 프로필과 같다",
+    "pre_attempt_amendment": {
+      "previous_commit": "5d04228aea4cada4c3750d265d609c2996a1a168",
+      "previous_profile": "desktop_shared_recording_claude_v1",
+      "cause": "첫 시도 전 같은 프로필로 읽기 전용 GPU 점검을 했을 때 cursor.exe(C+G, 계산 작업 패턴 아님, 활성 엔진 없음)를 허용 목록 밖으로 거부했다",
+      "change": "cursor.exe와 기존 base_com_reset_readback_v2 프로필이 허용한 antigravity.exe를 더하고 프로필 이름을 바꿨다",
+      "seed_2162_used_before": false
+    }
   },
   "failure_policy": {
     "gpu_attempts": 1,
@@ -262,10 +271,10 @@
     "evals/ppo_gradient_invariant_v1.py": "bdbe4a9d99f8d4fd55a9181238357b4a0e6b1e677164d8c2ded61cdc47316fd3",
     "evals/ppo_gradient_invariant_v2.py": "ad0bc58500165da891092ae84c283bf5522c25de4d227a1dd818b0b4b7fc41c8",
     "evals/ppo_ratio_pilot_v1.py": "7f2de406650956ef73de8ca5f0507219c9724852c44b8900750444de4bed8098",
-    "evals/ppo_ratio_pilot_v2.py": "c71ceaae218ad67a170b3039bc11c0dcfe74391887bf3ea6403ba8bd566f7da7",
+    "evals/ppo_ratio_pilot_v2.py": "768bc440a844ab23dd2884dfa8b0905358d4d969834bd166c1f7dc752def615b",
     "evals/ppo_ratio_repair_contract.py": "9382beccad713e6b35bb8e7bde4b4ce11bebed9d08fbadaa1621df07f9066c18",
     "evals/ppo_ratio_repair_execution.py": "5139e7dfb2e402b45ac1844abc8f6105fa96bda5cebf3fe40b36a4ff01f30026",
-    "evals/ppo_ratio_repair_execution_v2.py": "76ccf967a5044ecfc977aa08d57ab04a9d189f9e3acbea90b8e1dbe4b612b73b",
+    "evals/ppo_ratio_repair_execution_v2.py": "26aa7283df00c83655bb98f71b653d320daa82af5981ea6637fae987020be357",
     "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
     "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
     "evals/probes_task.py": "36271fbe40a50392e97ffb9f4fdd93439738e7334f4418fb2fddfa55e04aa14d",
@@ -285,7 +294,7 @@
     "tests/test_ppo_ratio_pilot_v2.py": "3e0dadf2f71fd8b908bae7b61529a6658c7c9c69d1734068c9924a9d281484c5",
     "tests/test_ppo_ratio_repair_contract.py": "28d503be9eea33e52c28d20a0b5c10955d732772a9b1b76c1af1de43e2205be2",
     "tests/test_ppo_ratio_repair_execution.py": "174bdf45e576ae10cfdc9ad6ada6801727a6a969a679e6a4f7a3e7a9c50940f0",
-    "tests/test_ppo_ratio_repair_execution_v2.py": "34df15156847ce09c416b119b49c833dab40427034b6ecc24f1e8d3ee8547592"
+    "tests/test_ppo_ratio_repair_execution_v2.py": "3ed55292c59908d473d2534a36b50dc0733158d51fbf6e8b46bfd46767057039"
   },
   "evidence_sha256_lf": {
     "evals/results/ppo_gradient_v5_20261017/result.json": "dd3083320caccd355a31efa87b800388be4abcc15992f5b50268fe839b8de86e",

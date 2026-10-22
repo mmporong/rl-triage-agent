@@ -1,8 +1,9 @@
 """PPO ratio 설계 파일럿 v2: v1의 학습 시작 전 인프라 중단 뒤 새 seed로 같은 측정을 한 번 실행한다.
 
 v1(seed 2160)은 첫 학습 단계의 GPU 사전 점검에서 화면 앱 두 개(claude.exe·msedge.exe)를 허용 목록 밖으로 거부해
-학습 프로세스를 시작하기 전에 끝났다. v2는 그 두 이름만 허용 목록에 더한 backend v2를 쓰고, 측정·판정·고리 재생은
-v1과 같다. v1 기록이 seed 2160을 남겨 seed guard가 막으므로 새 seed 2162를 쓴다. 모델 호출은 없다.
+학습 프로세스를 시작하기 전에 끝났다. v2는 그 두 이름과 편집기 이름 두 개(cursor.exe·antigravity.exe)를 허용 목록에
+더한 backend v2를 쓰고, 측정·판정·고리 재생은 v1과 같다. 편집기 이름은 첫 시도 전 읽기 전용 GPU 점검에서 cursor.exe가
+거부돼 더했다. v1 기록이 seed 2160을 남겨 seed guard가 막으므로 새 seed 2162를 쓴다. 모델 호출은 없다.
 
   python evals/ppo_ratio_pilot_v2.py prepare
   python evals/ppo_ratio_pilot_v2.py verify
@@ -46,7 +47,15 @@ def fixed_protocol() -> dict:
     value.update(schema="ppo_ratio_pilot_protocol_v2", seed=SEED)
     value["gpu"] = {**value["gpu"], "profile": E.GPU_PROFILE, "base_profile": E.BASE_PROFILE,
                     "added_display_process_names": list(E.EXTRA_DISPLAY_PROCESS_NAMES),
-                    "unchanged": "계산 작업 차단, 메모리 4096 MiB 상한, 프로세스·엔진 종류 기준은 기존 프로필과 같다"}
+                    "unchanged": "계산 작업 차단, 메모리 4096 MiB 상한, 프로세스·엔진 종류 기준은 기존 프로필과 같다",
+                    "pre_attempt_amendment": {
+                        "previous_commit": "5d04228aea4cada4c3750d265d609c2996a1a168",
+                        "previous_profile": "desktop_shared_recording_claude_v1",
+                        "cause": ("첫 시도 전 같은 프로필로 읽기 전용 GPU 점검을 했을 때 cursor.exe(C+G, 계산 작업 패턴 "
+                                  "아님, 활성 엔진 없음)를 허용 목록 밖으로 거부했다"),
+                        "change": ("cursor.exe와 기존 base_com_reset_readback_v2 프로필이 허용한 antigravity.exe를 더하고 "
+                                   "프로필 이름을 바꿨다"),
+                        "seed_2162_used_before": False}}
     value["infrastructure_retry"] = {
         "previous_commit": "bb27b73708bdeba9ad9a7437f9d42ec9f25ff90a",
         "previous_tag": "ppo_ratio_pilot_s2160_20261022",

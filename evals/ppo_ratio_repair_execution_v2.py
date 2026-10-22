@@ -2,7 +2,9 @@
 
 v1 backend의 첫 학습 단계 GPU 사전 점검이 기존 화면 앱 허용 목록에 없는 Claude 데스크톱 앱(claude.exe)과
 Edge(msedge.exe)를 거부했다. 두 앱은 이미 허용된 chrome.exe·msedgewebview2.exe와 같은 화면 맥락(C+G)이다.
-이 판은 허용 화면 앱 이름 두 개만 더하고 계산 작업 차단·메모리 상한·엔진 종류 등 나머지 기준은 그대로 쓴다.
+첫 시도 전 같은 점검을 읽기 전용으로 돌렸을 때 Cursor 편집기(cursor.exe, C+G)도 거부돼 편집기 이름 두 개를 더했다.
+antigravity.exe는 기존 base_com_reset_readback_v2 프로필이 이미 허용한 편집기다.
+이 판은 허용 화면 앱 이름 네 개만 더하고 계산 작업 차단·메모리 상한·엔진 종류 등 나머지 기준은 그대로 쓴다.
 record_evidence_media.py와 v1 backend는 다른 프로토콜이 SHA로 묶고 있어 바꾸지 않는다. 프로필은 GPU 조회
 호출 동안에만 등록하고, 동결 backend의 GPU 조회 함수도 이 판의 호출 동안에만 바꾼 뒤 되돌린다.
 """
@@ -25,8 +27,8 @@ import record_evidence_media as GPU  # noqa: E402
 TASK, FIXED_EVAL_PROTOCOL = V1.TASK, V1.FIXED_EVAL_PROTOCOL
 sha, write_new, preflight = V1.sha, V1.write_new, V1.preflight
 BASE_PROFILE = GPU.EXPECTED_GPU_ADMISSION["policy"]
-GPU_PROFILE = "desktop_shared_recording_claude_v1"
-EXTRA_DISPLAY_PROCESS_NAMES = ("claude.exe", "msedge.exe")
+GPU_PROFILE = "desktop_shared_recording_apps_v1"
+EXTRA_DISPLAY_PROCESS_NAMES = ("antigravity.exe", "claude.exe", "cursor.exe", "msedge.exe")
 GPU_ADMISSION = {**GPU.EXPECTED_GPU_ADMISSION, "policy": GPU_PROFILE,
                  "allowed_display_process_names": sorted(GPU.DISPLAY_PROCESS_NAMES | set(EXTRA_DISPLAY_PROCESS_NAMES))}
 

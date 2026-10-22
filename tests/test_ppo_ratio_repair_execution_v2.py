@@ -1,4 +1,4 @@
-"""backend v2의 GPU 공유 프로필이 허용 화면 앱 두 개만 더하고 호출 뒤 원상태로 돌아가는지 검증한다."""
+"""backend v2의 GPU 공유 프로필이 허용 화면 앱 네 개만 더하고 호출 뒤 원상태로 돌아가는지 검증한다."""
 import json
 from pathlib import Path
 import sys
@@ -30,16 +30,16 @@ def run_query(monkeypatch, names):
     return E.query_gpu()
 
 
-def test_profile_adds_only_two_display_names_and_keeps_every_other_rule():
+def test_profile_adds_only_four_display_names_and_keeps_every_other_rule():
     base = GPU.EXPECTED_GPU_ADMISSION
     assert set(E.GPU_ADMISSION["allowed_display_process_names"]) - set(base["allowed_display_process_names"]) == {
-        "claude.exe", "msedge.exe"}
+        "antigravity.exe", "claude.exe", "cursor.exe", "msedge.exe"}
     assert {k: v for k, v in E.GPU_ADMISSION.items() if k not in ("policy", "allowed_display_process_names")} == {
         k: v for k, v in base.items() if k not in ("policy", "allowed_display_process_names")}
 
 
 def test_display_apps_pass_while_compute_and_unknown_processes_still_block(monkeypatch):
-    clear = run_query(monkeypatch, ["claude.exe", "msedge.exe", "chrome.exe"])
+    clear = run_query(monkeypatch, ["claude.exe", "msedge.exe", "cursor.exe", "antigravity.exe", "chrome.exe"])
     assert clear["busy"] is False and clear["admission_policy"] == E.GPU_PROFILE
     blocked = run_query(monkeypatch, ["claude.exe", "python.exe"])
     assert blocked["busy"] is True and any("unapproved_gpu_process" in r for r in blocked["busy_reasons"])
@@ -49,7 +49,7 @@ def test_display_apps_pass_while_compute_and_unknown_processes_still_block(monke
 
 
 def test_base_profile_still_rejects_the_same_display_apps(monkeypatch):
-    xml, windows = inventory(["claude.exe", "msedge.exe"])
+    xml, windows = inventory(["claude.exe", "msedge.exe", "cursor.exe"])
     assert GPU.classify_gpu(xml, windows, E.BASE_PROFILE)["busy"] is True
 
 
