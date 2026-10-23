@@ -1,0 +1,155 @@
+{
+  "policies": {
+    "fixed_eligible": {
+      "corrections": [
+        "restore_body_frame_reward",
+        "restore_configured_ppo_epochs"
+      ],
+      "epochs": [
+        {
+          "correction_id": "restore_body_frame_reward",
+          "epoch": 1,
+          "outcome": "not_recovered"
+        },
+        {
+          "correction_id": "restore_configured_ppo_epochs",
+          "epoch": 2,
+          "outcome": "recovered"
+        }
+      ],
+      "probe_count": 9,
+      "probe_order": [
+        "P_episode",
+        "P_noise",
+        "P_reward",
+        "P_episode",
+        "P_noise",
+        "P_torque",
+        "P_physics",
+        "P_value",
+        "P_optimizer_updates"
+      ],
+      "probe_outcomes": [
+        "normal",
+        "normal",
+        "abnormal",
+        "normal",
+        "normal",
+        "normal",
+        "normal",
+        "normal",
+        "abnormal"
+      ],
+      "reason": null,
+      "status": "recovered"
+    },
+    "model_adaptive": {
+      "corrections": [
+        "restore_body_frame_reward",
+        "restore_configured_ppo_epochs"
+      ],
+      "epochs": [
+        {
+          "correction_id": "restore_body_frame_reward",
+          "epoch": 1,
+          "outcome": "not_recovered"
+        },
+        {
+          "correction_id": "restore_configured_ppo_epochs",
+          "epoch": 2,
+          "outcome": "recovered"
+        }
+      ],
+      "probe_count": 8,
+      "probe_order": [
+        "P_episode",
+        "P_reward",
+        "P_episode",
+        "P_physics",
+        "P_value",
+        "P_noise",
+        "P_torque",
+        "P_optimizer_updates"
+      ],
+      "probe_outcomes": [
+        "normal",
+        "abnormal",
+        "normal",
+        "normal",
+        "normal",
+        "normal",
+        "normal",
+        "abnormal"
+      ],
+      "reason": null,
+      "status": "recovered"
+    },
+    "model_first_then_rule": {
+      "corrections": [
+        "restore_body_frame_reward"
+      ],
+      "epochs": [
+        {
+          "correction_id": "restore_body_frame_reward",
+          "epoch": 1,
+          "outcome": "not_recovered"
+        }
+      ],
+      "probe_count": 1,
+      "probe_order": [
+        "P_reward"
+      ],
+      "probe_outcomes": [
+        "abnormal"
+      ],
+      "reason": "model_unavailable",
+      "status": "HOLD"
+    },
+    "registry_next": {
+      "corrections": [
+        "restore_configured_ppo_epochs",
+        "restore_body_frame_reward"
+      ],
+      "epochs": [
+        {
+          "correction_id": "restore_configured_ppo_epochs",
+          "epoch": 1,
+          "outcome": "not_recovered"
+        },
+        {
+          "correction_id": "restore_body_frame_reward",
+          "epoch": 2,
+          "outcome": "recovered"
+        }
+      ],
+      "probe_count": 10,
+      "probe_order": [
+        "P_value",
+        "P_physics",
+        "P_episode",
+        "P_noise",
+        "P_optimizer_updates",
+        "P_value",
+        "P_physics",
+        "P_episode",
+        "P_noise",
+        "P_reward"
+      ],
+      "probe_outcomes": [
+        "normal",
+        "normal",
+        "normal",
+        "normal",
+        "abnormal",
+        "normal",
+        "normal",
+        "normal",
+        "normal",
+        "abnormal"
+      ],
+      "reason": null,
+      "status": "recovered"
+    }
+  },
+  "schema": "public_selection_comparison_policies_v2"
+}

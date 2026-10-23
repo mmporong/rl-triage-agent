@@ -1,0 +1,210 @@
+{
+  "api": {
+    "completed": 18,
+    "error": 4,
+    "ok": 12,
+    "pending": 0,
+    "reserved": 18,
+    "timeout": 2
+  },
+  "costs": {
+    "input_tokens": null,
+    "output_tokens": null,
+    "total_tokens": null,
+    "wall_s": 867.5461159759434
+  },
+  "decisions": [
+    {
+      "action": "continue",
+      "condition": "production",
+      "epoch": 1,
+      "model_status": "valid",
+      "policy": "model_first_then_rule",
+      "probe": "P_reward",
+      "requests": 2,
+      "selected_by": "model",
+      "slot_id": "model_first_then_rule:e1:first",
+      "used_for_decision": true
+    },
+    {
+      "action": "hold",
+      "condition": "production",
+      "epoch": 2,
+      "model_status": "infra_error",
+      "policy": "model_first_then_rule",
+      "probe": null,
+      "requests": 2,
+      "selected_by": "hold",
+      "slot_id": "model_first_then_rule:e2:first",
+      "used_for_decision": true
+    },
+    {
+      "action": "continue",
+      "condition": "production",
+      "epoch": 1,
+      "model_status": "valid",
+      "policy": "model_adaptive",
+      "probe": "P_episode",
+      "requests": 1,
+      "selected_by": "model",
+      "slot_id": "model_adaptive:e1:open0",
+      "used_for_decision": true
+    },
+    {
+      "action": "continue",
+      "condition": "production",
+      "epoch": 1,
+      "model_status": "valid",
+      "policy": "model_adaptive",
+      "probe": "P_reward",
+      "requests": 1,
+      "selected_by": "model",
+      "slot_id": "model_adaptive:e1:open1",
+      "used_for_decision": true
+    },
+    {
+      "action": "continue",
+      "condition": "production",
+      "epoch": 2,
+      "model_status": "valid",
+      "policy": "model_adaptive",
+      "probe": "P_episode",
+      "requests": 1,
+      "selected_by": "model",
+      "slot_id": "model_adaptive:e2:open0",
+      "used_for_decision": true
+    },
+    {
+      "action": "continue",
+      "condition": "production",
+      "epoch": 2,
+      "model_status": "valid",
+      "policy": "model_adaptive",
+      "probe": "P_physics",
+      "requests": 1,
+      "selected_by": "model",
+      "slot_id": "model_adaptive:e2:open1",
+      "used_for_decision": true
+    },
+    {
+      "action": "continue",
+      "condition": "production",
+      "epoch": 2,
+      "model_status": "valid",
+      "policy": "model_adaptive",
+      "probe": "P_value",
+      "requests": 1,
+      "selected_by": "model",
+      "slot_id": "model_adaptive:e2:open2",
+      "used_for_decision": true
+    },
+    {
+      "action": "continue",
+      "condition": "production",
+      "epoch": 2,
+      "model_status": "valid",
+      "policy": "model_adaptive",
+      "probe": "P_noise",
+      "requests": 1,
+      "selected_by": "model",
+      "slot_id": "model_adaptive:e2:open3",
+      "used_for_decision": true
+    },
+    {
+      "action": "continue",
+      "condition": "production",
+      "epoch": 2,
+      "model_status": "valid",
+      "policy": "model_adaptive",
+      "probe": "P_torque",
+      "requests": 1,
+      "selected_by": "model",
+      "slot_id": "model_adaptive:e2:open4",
+      "used_for_decision": true
+    },
+    {
+      "action": "continue",
+      "condition": "production",
+      "epoch": 2,
+      "model_status": "valid",
+      "policy": "model_adaptive",
+      "probe": "P_optimizer_updates",
+      "requests": 1,
+      "selected_by": "model",
+      "slot_id": "model_adaptive:e2:open5",
+      "used_for_decision": true
+    },
+    {
+      "action": "continue",
+      "condition": "exposure_full",
+      "epoch": 1,
+      "model_status": "valid",
+      "policy": "model_adaptive",
+      "probe": "P_reward",
+      "requests": 1,
+      "selected_by": null,
+      "slot_id": "model_adaptive:e1:exposure_full",
+      "used_for_decision": false
+    },
+    {
+      "action": "hold",
+      "condition": "exposure_masked",
+      "epoch": 1,
+      "model_status": "unknown",
+      "policy": "model_adaptive",
+      "probe": null,
+      "requests": 2,
+      "selected_by": null,
+      "slot_id": "model_adaptive:e1:exposure_masked",
+      "used_for_decision": false
+    },
+    {
+      "action": "continue",
+      "condition": "exposure_full",
+      "epoch": 2,
+      "model_status": "valid",
+      "policy": "model_adaptive",
+      "probe": "P_torque",
+      "requests": 1,
+      "selected_by": null,
+      "slot_id": "model_adaptive:e2:exposure_full",
+      "used_for_decision": false
+    },
+    {
+      "action": "continue",
+      "condition": "exposure_masked",
+      "epoch": 2,
+      "model_status": "valid",
+      "policy": "model_adaptive",
+      "probe": "P_torque",
+      "requests": 2,
+      "selected_by": null,
+      "slot_id": "model_adaptive:e2:exposure_masked",
+      "used_for_decision": false
+    }
+  ],
+  "dispositions": {
+    "executed": 14,
+    "no_model_required": 0,
+    "skipped_epoch_absent": 0,
+    "skipped_terminal": 6
+  },
+  "invalid_decision_policy": "HOLD_without_rule_fallback",
+  "production_decision_count": 10,
+  "production_valid_count": 9,
+  "production_valid_rate": 0.9,
+  "schema": "public_selection_comparison_model_evidence_v2",
+  "slots_closed": 20,
+  "status": "complete",
+  "usage_known_subtotal": {
+    "input_tokens": 34013,
+    "output_tokens": 882,
+    "total_tokens": 34895
+  },
+  "usage_unknown_request_count": {
+    "input_tokens": 6,
+    "output_tokens": 6,
+    "total_tokens": 6
+  },
+  "verified_request_count": 18
+}

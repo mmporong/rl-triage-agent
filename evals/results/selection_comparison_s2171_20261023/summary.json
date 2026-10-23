@@ -1,0 +1,40 @@
+{
+  "interpretation": "한 paired seed의 등록 복합 결함 개발 비교이며 네 독립 사례가 아니다.",
+  "paired_case": {
+    "faults": [
+      "F1",
+      "R1"
+    ],
+    "independent_case_count": 1,
+    "policy_count": 4,
+    "registered_development_comparison": true
+  },
+  "policy_status": {
+    "fixed_eligible": "recovered",
+    "model_adaptive": "recovered",
+    "model_first_then_rule": "HOLD",
+    "registry_next": "recovered"
+  },
+  "schema": "public_selection_comparison_summary_v2",
+  "seed": 2171,
+  "source_gate": {
+    "none_walks": true,
+    "outcome": "not_recovered",
+    "verdict": {
+      "checks": {
+        "err_xy_ratio": false,
+        "err_yaw_ratio": false,
+        "fall_frac": true,
+        "survival_ratio": true
+      },
+      "failed": [
+        "err_xy_ratio",
+        "err_yaw_ratio"
+      ],
+      "label": "unhealthy",
+      "short_horizon": false
+    }
+  },
+  "status": "complete",
+  "tag": "selection_comparison_s2171_20261023"
+}

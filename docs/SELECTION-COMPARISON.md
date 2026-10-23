@@ -71,3 +71,24 @@ cd (Join-Path $HOME 'rl-triage-agent')
 cd (Join-Path $HOME 'rl-triage-agent')
 .\bench\run_selection_comparison_demo_v2.ps1 -Execute
 ```
+
+## seed 2171의 비교 결과
+
+seed 2171 실행은 `complete`로 끝났다. `model_adaptive`, `registry_next`, `fixed_eligible`은 두 등록 교정을 누적한 두 번째 재학습에서 회복했다. `model_first_then_rule`은 첫 교정 뒤에도 회복되지 않았고, 두 번째 진단의 모델 요청이 인프라 오류로 끝나 `HOLD`로 멈췄다.
+
+| 정책 | 상태 | 검사 수와 순서 | 교정 순서와 후속 평가 | 분류 벽시계 비용 |
+|---|---|---|---|---:|
+| `model_first_then_rule` | `HOLD` | 1개. e1: `P_reward` abnormal | 보상 좌표계 복원: `not_recovered`. 두 번째 진단은 `model_unavailable`로 종료 | 553.610초 |
+| `model_adaptive` | `recovered` | 8개. e1: `P_episode` normal, `P_reward` abnormal. e2: `P_episode`, `P_physics`, `P_value`, `P_noise`, `P_torque` normal, `P_optimizer_updates` abnormal | 보상 좌표계 복원: `not_recovered`. PPO epoch 복원을 누적한 두 번째 재학습: `recovered` | 1,321.439초 |
+| `registry_next` | `recovered` | 10개. e1: `P_value`, `P_physics`, `P_episode`, `P_noise` normal, `P_optimizer_updates` abnormal. e2: `P_value`, `P_physics`, `P_episode`, `P_noise` normal, `P_reward` abnormal | PPO epoch 복원: `not_recovered`. 보상 좌표계 복원을 누적한 두 번째 재학습: `recovered` | 1,345.283초 |
+| `fixed_eligible` | `recovered` | 9개. e1: `P_episode`, `P_noise` normal, `P_reward` abnormal. e2: `P_episode`, `P_noise`, `P_torque`, `P_physics`, `P_value` normal, `P_optimizer_updates` abnormal | 보상 좌표계 복원: `not_recovered`. PPO epoch 복원을 누적한 두 번째 재학습: `recovered` | 1,298.718초 |
+
+정상·복합 결함 학습, 초기 평가와 정상 참조 검사는 네 정책이 공유했고 분류 비용은 1,208.674초였다. 표의 정책별 비용은 각 arm의 검사·교정 단계 부모 벽시계다. 여기에 한 번만 공유한 학습·초기 평가·참조 검사 비용을 더한 분류 합계는 5,727.724초다. 표와 분류 합계 모두 API 응답 대기와 호스트 검증은 포함하지 않으므로 정책별 총소요시간으로 해석하지 않는다. 모델 요청의 벽시계 합은 별도로 867.546초다. 소유 자식 프로세스 기준 벽시계 시간은 5,727.740초이며, 분류 단계와 범위가 달라 두 값을 더하지 않는다. 어느 값도 GPU 커널 시간은 아니다.
+
+모델 HTTP 요청은 18회였다. 12회는 성공했고 HTTP 오류 4회와 시간 초과 2회가 있었으며 대기 중인 요청은 없었다. production 최종 판단 10건 가운데 9건이 계약에 맞았고, `model_adaptive`는 8/8건이 유효했다. `model_first_then_rule`의 두 번째 판단은 인프라 오류로 유효 응답을 얻지 못했다. 출력 계약 오류나 오진으로 집계하지 않는다. 규칙 선택으로 바꾸지 않고 사전등록한 `HOLD` 경계를 지켰다.
+
+사용량이 기록된 응답의 토큰 소계는 입력 34,013개, 출력 882개, 합계 34,895개다. 나머지 6회는 세 토큰 필드의 사용량을 알 수 없어 전체 요청 합계는 `null`로 남겼다.
+
+[공개 요약](../evals/results/selection_comparison_s2171_20261023/summary.json), [정책별 기록](../evals/results/selection_comparison_s2171_20261023/policies.json), [모델 근거](../evals/results/selection_comparison_s2171_20261023/model_evidence.json), [비용](../evals/results/selection_comparison_s2171_20261023/costs.json), [원본 결합](../evals/results/selection_comparison_s2171_20261023/provenance.json)은 같은 실행을 서로 다른 공개 범위로 기록한다.
+
+이 결과는 등록한 F1·R1 복합 결함 한 건과 paired seed 하나에서 얻은 개발 측정이다. 네 정책은 같은 원본을 공유한 네 arm이며 독립 사례 네 건이 아니다. 이 한 건으로 모델 선택의 우위, 비용 절감이나 다른 결함에서의 결과를 판단하지 않는다.
