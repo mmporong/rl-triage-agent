@@ -108,3 +108,11 @@ v5 본배치에서 세 비용비가 모두 등록 상한 안에 들었고, 오�
 모델 요청은 상한 8회 중 2회였다. 실행 receipt에서 확인한 부모 프로세스 벽시계 시간은 완료 단계 1,912.890초와 미수용 검사 단계 110.688초로, 합계 2,023.578초다. 화면 앱과 GPU를 공유하는 조건이며 GPU 커널 시간이나 독점 사용 시간으로 해석하지 않는다.
 
 근거: [실행 요약](../evals/results/ppo_ratio_repair_s2163_20261023/summary.json), [26조건 평가](../evals/results/ppo_ratio_repair_s2163_20261023/evaluations.json), [모델 기록](../evals/results/ppo_ratio_repair_s2163_20261023/model_evidence.json), [검사·교정 원장](../evals/results/ppo_ratio_repair_s2163_20261023/probe_correction.json), [출처 결합](../evals/results/ppo_ratio_repair_s2163_20261023/provenance.json), [사전등록](../bench/protocols/ppo_ratio_repair_demo_v2.json).
+
+## 종단 실행 v3의 중단 기록
+
+새 source seed 2164를 등록한 v3는 정상 정책의 300회 학습을 마쳤지만, 사후 GPU 점검에서 외부 Kit 프로세스를 감지해 `source_training` 단계에서 `invalid`로 끝났다. 결함 정책 학습·고정 평가·모델 호출·교정은 수행하지 않았다. 학습 종료 기록은 보존했으며 정상 정책의 행동이나 회복 여부를 판정하지 않았다.
+
+확인 가능한 부모 프로세스 벽시계 시간은 학습 603.125초, 체크포인트 확인 3.937초, 텔레메트리 추출 2.032초로 합계 609.094초다. 이 값은 미수용 단계의 실행 receipt에서 계산했으며 GPU 커널 시간은 아니다. 공개 결과는 최초 GPU 점검 통과 1건과 사후 거부 1건의 결합값도 보존한다.
+
+근거: [실행 요약](../evals/results/ppo_ratio_repair_s2164_20261023/summary.json), [미실행 평가 기록](../evals/results/ppo_ratio_repair_s2164_20261023/evaluations.json), [모델 요청 집계](../evals/results/ppo_ratio_repair_s2164_20261023/model_evidence.json), [출처 결합](../evals/results/ppo_ratio_repair_s2164_20261023/provenance.json), [사전등록](../bench/protocols/ppo_ratio_repair_demo_v3.json).
