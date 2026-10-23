@@ -179,6 +179,7 @@ class RuntimeTests(unittest.TestCase):
         with patch.object(R, "CLAIMS", self.folder / "claims"):
             path = R.claim_execution(self.plan, self.folder / "first_root")
             original = path.read_bytes()
+            self.assertEqual(R.C.MC.read(path)["root_digest"], R.C.root_digest(self.folder / "first_root"))
             with self.assertRaises(FileExistsError):
                 R.claim_execution(self.plan, self.folder / "second_root")
             self.assertEqual(path.read_bytes(), original)

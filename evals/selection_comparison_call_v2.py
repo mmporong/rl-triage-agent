@@ -49,6 +49,25 @@ def raw_sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def canonical_resolved_root(value: str) -> str:
+    """같은 Windows/WSL 루트를 worker 인자와 같은 POSIX 문자열로 묶는다."""
+    require(isinstance(value, str) and bool(value), "실행 root 문자열")
+    windows = re.fullmatch(r"([A-Za-z]):[\\/](.*)", value)
+    if windows:
+        tail = windows.group(2).replace("\\", "/")
+        require(all(part not in ("", ".", "..") for part in tail.split("/")), "실행 root 정규형")
+        return f"/mnt/{windows.group(1).lower()}/{tail}"
+    require(value.startswith("/") and "\\" not in value, "실행 root는 절대 POSIX 또는 Windows 경로여야 함")
+    require(value == "/" or (not value.endswith("/")
+                              and all(part not in ("", ".", "..") for part in value[1:].split("/"))),
+            "실행 root 정규형")
+    return value
+
+
+def root_digest(root: Path) -> str:
+    return raw_sha(canonical_resolved_root(str(Path(root).resolve())).encode("utf-8"))
+
+
 def capsule_bytes(value: dict) -> bytes:
     return V.canonical(value) + b"\n"
 
@@ -853,7 +872,7 @@ def controller_authorization_value(root: Path, plan: dict, experiment: Path, anc
     return {
         "schema": "selection_controller_authorization_v2",
         "plan_digest": V.L.digest(plan),
-        "root_digest": raw_sha(str(Path(root).resolve()).encode("utf-8")),
+        "root_digest": root_digest(root),
         "experiment_sha256": MC.file_sha(experiment),
         "anchor": anchor,
         "explicit_approval": True,

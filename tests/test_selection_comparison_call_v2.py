@@ -464,6 +464,18 @@ class CallerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             C.verify_controller_authorization(self.root, plan, experiment, "b" * 40)
 
+    def test_root_digest_uses_the_same_windows_to_wsl_mapping_as_worker_arguments(self):
+        windows = r"C:\Users\owner\repo\batch\not_created"
+        wsl = "/mnt/c/Users/owner/repo/batch/not_created"
+        self.assertEqual(C.canonical_resolved_root(windows), wsl)
+        self.assertEqual(C.raw_sha(C.canonical_resolved_root(windows).encode("utf-8")),
+                         C.raw_sha(C.canonical_resolved_root(wsl).encode("utf-8")))
+        self.assertNotEqual(C.canonical_resolved_root(r"D:\Users\owner\repo\batch\not_created"), wsl)
+        self.assertNotEqual(C.canonical_resolved_root(r"C:\Users\owner\other\not_created"), wsl)
+        for invalid in (r"relative\batch", r"C:\Users\owner\..\other", "/mnt/c/repo/../other", "/mnt/c/repo/"):
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                C.canonical_resolved_root(invalid)
+
     def test_replay_rejects_forged_early_budget_exhaustion(self):
         path, record, _ = self.run_call([self.response(content="bad"), self.response()])
         response = self.root / "api/responses/0002.json"

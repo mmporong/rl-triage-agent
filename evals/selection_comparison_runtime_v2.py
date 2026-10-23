@@ -153,7 +153,7 @@ def claim_execution(plan: dict, root: Path) -> Path:
     path = CLAIMS / f"{identity}.json"
     C.MC.write_new(path, {"schema": "selection_runtime_execution_claim_v2", "execution_digest": identity,
                           "run_id": plan["run_id"], "bundle_sha256": plan["predictions"]["bundle_sha256"],
-                          "root_digest": C.raw_sha(str(Path(root).resolve()).encode("utf-8"))})
+                          "root_digest": C.root_digest(root)})
     return path
 
 
