@@ -1,0 +1,129 @@
+{
+  "schema": "public_ppo_ratio_repair_summary_v2",
+  "status": "complete",
+  "tag": "ppo_ratio_repair_s2163_20261023",
+  "outcome": "invalid",
+  "wording": "출처·실행·산출물 결합을 검증하지 못해 종단 결과를 판정하지 않는다.",
+  "demo_success": false,
+  "source_training_seed": 2163,
+  "corrected_restart_seed": 3163,
+  "completion_conditions": {
+    "committed_source_and_protocol": true,
+    "fresh_seeds": true,
+    "launch_paths_checked": true,
+    "source_failure_present": true,
+    "accepted_fresh_diagnosis": true,
+    "costs_recorded": true
+  },
+  "source_gate": {
+    "outcome": "failure_present",
+    "none_walks": true,
+    "fault_verdict": {
+      "label": "unhealthy",
+      "failed": [
+        "err_xy_ratio",
+        "err_yaw_ratio"
+      ],
+      "short_horizon": false,
+      "checks": {
+        "survival_ratio": true,
+        "fall_frac": true,
+        "err_xy_ratio": false,
+        "err_yaw_ratio": false
+      }
+    }
+  },
+  "recovery": null,
+  "failure": {
+    "stage": "probe_4_P_episode",
+    "type": "RuntimeError",
+    "site": {
+      "file": "evals/r1_repair_execution.py",
+      "line": 89
+    }
+  },
+  "stage_observations": {
+    "terminal_outcome": "invalid",
+    "source_gate": "failure_present",
+    "diagnosis_status": "valid",
+    "accepted_probe_outcomes": {
+      "normal": 3,
+      "abnormal": 0,
+      "unknown": 1
+    }
+  },
+  "execution_costs": {
+    "completed_stage_parent_wall_s": {
+      "train_NONE": 742.7660000000033,
+      "train_INVERSE_RATIO": 761.545999999973,
+      "source_evaluation": 143.125,
+      "reference": 154.079000000027,
+      "probe_1_P_reward": 35.43699999997625,
+      "probe_2_P_value": 31.60899999999674,
+      "probe_3_P_physics": 44.32799999997951
+    },
+    "completed_stage_total_parent_wall_s": 1912.8899999999558,
+    "failed_stage_execution": {
+      "stage": "probe_4_P_episode",
+      "parent_wall_s": 110.68800000002375,
+      "execution_receipt_sha256": "30f203ff35caa1513a6da5f3c1a08d4fae49bf0a307d582b25d46cda7168ace8",
+      "unaccepted_report_sha256": "265e8e19f3874afd12f29e8946170863f92ed548da74c1e1e619ed95a19263b7",
+      "accepted_as_probe_result": false
+    },
+    "known_total_parent_wall_s": 2023.5779999999795,
+    "scope": "부모 프로세스 벽시계 시간. 완료 단계와 실패 단계 실행 receipt를 분리한다."
+  },
+  "model_request_accounting": {
+    "completed": 2,
+    "saved": 2
+  },
+  "interpretation": "새 seed 단일 ratio 계산 오류의 등록 종단 경로 확인. gradient 검사 정상은 계산 계약만 뜻하며 회복은 별도 고정 평가로만 판정한다",
+  "design_coupling": {
+    "seen_before_design": [
+      "PPO 계산 검사 v5(seed 2143~2146, 3 update)",
+      "R1 종단 판 v2(seed 2071·3071)",
+      "설계 파일럿 v2(seed 2162, 모델 호출 없음)",
+      "본 실행 v1(seed 2161) source 평가: failure_present, 첫 진단 요청 404"
+    ],
+    "pilot": {
+      "tag": "ppo_ratio_pilot_s2162_20261022",
+      "result_sha256": "1ab5cab9d7b99c6ab4ecaa274ed73028a4b2af19fb83e0bc4c99dd2d81df5401",
+      "experiment_commit": "e9445abd77138306a5d1c3fc6b2a5ecee9e06dc5"
+    },
+    "pilot_observations": {
+      "source_gate": "failure_present: NONE 걷기, INVERSE_RATIO 낙상 0·생존 20초이나 선속도·yaw 추종 실패",
+      "lin_vel_rmse_mps": {
+        "NONE": 0.1455,
+        "INVERSE_RATIO": 2.5907
+      },
+      "yaw_rate_rmse_radps": {
+        "NONE": 0.2401,
+        "INVERSE_RATIO": 1.6282
+      },
+      "outcomes": {
+        "P_episode": "normal",
+        "P_noise": "normal",
+        "P_physics": "normal",
+        "P_reward": "normal",
+        "P_torque": "abnormal",
+        "P_value": "normal",
+        "P_optimizer_updates": "normal",
+        "P_ppo_gradient": "abnormal"
+      },
+      "P_torque_low_speed_saturation": {
+        "case": 0.7455,
+        "reference": 0.00067
+      },
+      "P_noise_logged_std_mean": {
+        "case": 1.5936,
+        "reference": 0.366
+      },
+      "contract_v1_replay": "첫 검사 8개 중 7개 optimizer_surrogate 확정, P_torque 첫 검사는 actuator 오확정(2검사)",
+      "contract_v2_replay": "첫 검사 8개 모두 optimizer_surrogate 확정, P_torque 첫 검사는 3검사"
+    },
+    "registry_change": "파일럿에서 ratio 오류 정책의 큰 행동 분산이 저속 토크 포화를 만들어 P_torque가 abnormal이었다. 계약 v2는 P_torque의 optimizer_surrogate 예상만 null로 바꿨고 나머지 예상·임계값·고리 규칙은 v1과 같다. 실제 actuator 관측표는 v2에서도 actuator로 확정된다",
+    "statement": "결함 유형과 검사를 이미 알고 설계한 새 seed의 개발 시연이다"
+  },
+  "source_commit_sha": "85a01a999b6b85c3e3e1645f32ea733c6201ce2e",
+  "protocol_sha256_lf": "09d94ce18361f10859609bdac41399d69e522e0a19434893da9b5981fac8b07e"
+}

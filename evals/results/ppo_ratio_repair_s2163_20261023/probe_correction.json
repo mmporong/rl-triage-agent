@@ -1,0 +1,85 @@
+{
+  "schema": "public_ppo_ratio_repair_probe_correction_v2",
+  "probes": [
+    {
+      "order": 1,
+      "probe": "P_reward",
+      "request_id": "9d10b6097303",
+      "approval_events": [
+        "proposed",
+        "approved",
+        "consumed",
+        "receipt"
+      ],
+      "outcome": "normal",
+      "measurement": {
+        "track_ang_vel_z_exp_rel_error": 1.7489568273632016e-08,
+        "track_lin_vel_xy_exp_rel_error": 1.842058510614919e-08
+      },
+      "gpu_s": 35.43699999997625,
+      "exit_code": 0,
+      "over_budget": false
+    },
+    {
+      "order": 2,
+      "probe": "P_value",
+      "request_id": "143180b50780",
+      "approval_events": [
+        "proposed",
+        "approved",
+        "consumed",
+        "receipt"
+      ],
+      "outcome": "normal",
+      "measurement": {
+        "actor_change": 1.0176945649870952,
+        "critic_change": 1.455890134348421,
+        "from": "model_0.pt"
+      },
+      "gpu_s": 31.60899999999674,
+      "exit_code": 0,
+      "over_budget": false
+    },
+    {
+      "order": 3,
+      "probe": "P_physics",
+      "request_id": "270d6a62eb4d",
+      "approval_events": [
+        "proposed",
+        "approved",
+        "consumed",
+        "receipt"
+      ],
+      "outcome": "normal",
+      "measurement": {
+        "dynamic_friction_mean": 0.6000000238418579,
+        "mass_delta_max": 2.9771032333374023,
+        "mass_delta_min": -0.9754581451416016,
+        "mismatch_count": 0,
+        "mismatches": [],
+        "physics_dt": 0.005,
+        "static_friction_mean": 0.8000000715255737
+      },
+      "gpu_s": 44.32799999997951,
+      "exit_code": 0,
+      "over_budget": false
+    },
+    {
+      "order": 4,
+      "probe": "P_episode",
+      "request_id": "03530788746c",
+      "approval_events": [
+        "proposed",
+        "approved",
+        "consumed",
+        "receipt"
+      ],
+      "outcome": "unknown",
+      "measurement": {},
+      "gpu_s": 0.0,
+      "exit_code": 1,
+      "over_budget": false
+    }
+  ],
+  "corrections": []
+}

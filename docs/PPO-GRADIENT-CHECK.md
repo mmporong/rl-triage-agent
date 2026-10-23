@@ -88,4 +88,23 @@ v5 본배치에서 세 비용비가 모두 등록 상한 안에 들었고, 오�
 
 ## 측정 범위
 
-이 결과는 설계자가 만든 `inverse_ratio` 오류를 Go2 PPO 학습에 넣어 확인한 개발 측정이다. 외부 PPO 버그를 재현한 결과가 아니다. 이 검사는 학습 계산의 이상 여부를 기록하며, 정책 행동의 회복은 측정하지 않았다.
+이 3 update 결과는 설계자가 만든 `inverse_ratio` 오류를 Go2 PPO 학습에 넣어 확인한 개발 측정이다. 외부 PPO 버그를 재현한 결과가 아니다. 이 검사는 학습 계산의 이상 여부를 기록하며, 정책 행동의 회복은 측정하지 않았다.
+
+## Nemotron 3.5 Super VL과 연결한 종단 실행 v2
+
+별도 사전등록에서는 새 source seed 2163의 정상 정책과 `inverse_ratio` 정책을 각각 300회 학습한 뒤 진단·승인 검사·등록 교정·재학습·고정 평가로 이어지는 흐름을 고정했다. 요청 모델은 `nvidia/nemotron-3.5-super-vl-120b-a12b`이며 반환 별칭 `private/nvidia/nemotron-3.5-super-120b-a12b`도 등록했다. 이 판은 앞서 본 파일럿 seed 2162의 관측과 기존 실행의 기록을 바탕으로 설계한 개발 확인이다.
+
+26개 명령의 source 고정 평가에서는 정상 정책이 건강 기준을 통과했고, 오류 정책은 선속도와 yaw 추종 기준을 통과하지 못했다.
+
+| 지표 | 정상 | `inverse_ratio` |
+| --- | ---: | ---: |
+| 선속도 RMSE (m/s) | 0.139 | 2.313 |
+| yaw rate RMSE (rad/s) | 0.294 | 1.326 |
+| 낙상 비율 | 0 | 0 |
+| 평균 생존 시간 (s) | 20 | 20 |
+
+모델은 보상을 1위로 두고 `P_reward`를 선택했다. 첫 응답은 등록표와 다른 예상 검사값으로 `D_EXPECTED`가 발생했고, 고정 피드백 한 번 뒤 유효해졌다. `P_reward`는 정상으로 나와 보상 가설이 제외됐고, 이후 등록 규칙이 선택한 `P_value`와 `P_physics`도 정상이었다. 네 번째 `P_episode`는 실행 후 환경 검증을 통과하지 못해 `unknown`으로 기록됐다. 종단 결과는 `invalid`이며 교정·재학습과 회복 판정은 수행하지 않았다.
+
+모델 요청은 상한 8회 중 2회였다. 실행 receipt에서 확인한 부모 프로세스 벽시계 시간은 완료 단계 1,912.890초와 미수용 검사 단계 110.688초로, 합계 2,023.578초다. 화면 앱과 GPU를 공유하는 조건이며 GPU 커널 시간이나 독점 사용 시간으로 해석하지 않는다.
+
+근거: [실행 요약](../evals/results/ppo_ratio_repair_s2163_20261023/summary.json), [26조건 평가](../evals/results/ppo_ratio_repair_s2163_20261023/evaluations.json), [모델 기록](../evals/results/ppo_ratio_repair_s2163_20261023/model_evidence.json), [검사·교정 원장](../evals/results/ppo_ratio_repair_s2163_20261023/probe_correction.json), [출처 결합](../evals/results/ppo_ratio_repair_s2163_20261023/provenance.json), [사전등록](../bench/protocols/ppo_ratio_repair_demo_v2.json).

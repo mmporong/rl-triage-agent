@@ -1,0 +1,95 @@
+{
+  "schema": "public_ppo_ratio_repair_model_evidence_v2",
+  "request_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "accepted_provider_models": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "api_requests": 2,
+  "api_requests_in_saved_records": 2,
+  "pending_record_count": 0,
+  "transport_error_count": 0,
+  "dialogues": [
+    {
+      "kind": "diagnosis",
+      "dialogue": 1,
+      "review": {
+        "status": "valid",
+        "codes": [],
+        "reasons": [],
+        "decision": {
+          "ranking": [
+            "reward",
+            "optimizer",
+            "exploration",
+            "actuator",
+            "physics",
+            "termination"
+          ],
+          "probe": "P_reward",
+          "action": "continue",
+          "reason": "Case reward terms are severely degraded versus reference: track_lin_vel_xy_exp 0.065 vs 1.421 and track_ang_vel_z_exp 0.151 vs 0.642, while mean_reward is -615.6 vs 34.5. This points first to reward miscalculation. P_reward directly recomputes the tracking reward terms and expects reward abnormal with all other categories normal, matching the observed reward-specific degradation.",
+          "claims": [
+            {
+              "id": "telemetry:case:Train/mean_reward",
+              "value": -615.5859441121419
+            },
+            {
+              "id": "telemetry:reference:Train/mean_reward",
+              "value": 34.51663672129313
+            },
+            {
+              "id": "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+              "value": 0.06532822257528702
+            },
+            {
+              "id": "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+              "value": 1.4210113247235616
+            },
+            {
+              "id": "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+              "value": 0.1508482693384091
+            },
+            {
+              "id": "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+              "value": 0.6415834128856659
+            }
+          ],
+          "expected_outcomes": {
+            "reward": "abnormal",
+            "optimizer": "normal",
+            "exploration": "normal"
+          }
+        },
+        "requests": 2,
+        "first_status": "invalid",
+        "retried": true
+      },
+      "feedback": {
+        "codes": [
+          "D_EXPECTED"
+        ],
+        "text": "The previous JSON was rejected by the public contract validator.\nProblems:\n- D_EXPECTED: For continue, expected_outcomes must exactly copy the selected probe's public catalog expectations for the top three ranked mechanisms.\nReturn one corrected JSON object only, under the same contract.",
+        "messages_sha256": "a2c4a380fbc6b1b20172200ca9da0dc9be4d9d0884fcc1e20240f7bfaf87dbcc"
+      },
+      "calls": [
+        {
+          "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+          "input_tokens": 4474,
+          "output_tokens": 478,
+          "total_tokens": 4952,
+          "wall_s": 4.332190525019541
+        },
+        {
+          "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+          "input_tokens": 5019,
+          "output_tokens": 442,
+          "total_tokens": 5461,
+          "wall_s": 17.819669679971412
+        }
+      ],
+      "execution_wall_s": 23.757095295994077,
+      "source_record_sha256": "7b88bca9f0e3f441100637a8824e9da0a9d719f26c24c5e8f0785915c5f89625"
+    }
+  ]
+}
