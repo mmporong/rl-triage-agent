@@ -1,0 +1,130 @@
+{
+  "acceptance": [
+    "same_public_view_four_policies",
+    "invalid_model_never_rule_replaced",
+    "raw_probe_and_fixed_eval_recomputed",
+    "arm_and_checkpoint_lineage_isolated",
+    "probe_authorized_before_backend_and_consumed_once",
+    "shared_none_exact_six_probes",
+    "approval_once",
+    "none_and_single_fault_epoch2_zero",
+    "compound_fixture_two_repairs"
+  ],
+  "claims": {
+    "generalization": false,
+    "new_api_calls": 0,
+    "new_gpu_runs": 0,
+    "new_training_runs": 0,
+    "recovery_effect": false,
+    "selector_effect": false
+  },
+  "correction_selection": "registered_host_rule_without_correction_model",
+  "design_coupling": "설계자가 residual seed 2120·2121의 두 교정 회복 기록을 본 뒤 만든 CPU fixture 계약이다.",
+  "dialogue": {
+    "closed_pending_unknown": "API_0",
+    "conditions": [
+      "production",
+      "exposure_full",
+      "exposure_masked"
+    ],
+    "engine": "selection_comparison_call_v2.engine",
+    "invalid_or_infra": "HOLD_without_V.select_or_rule_probe",
+    "shadow_executable": false
+  },
+  "distinct_corrections_max": 2,
+  "epochs_max": 2,
+  "evidence_boundary": {
+    "actual": "residual_execution_v1 artifact validator plus raw probe provenance adapter",
+    "actual_authorization_reference": "path plus immutable SHA required at seal",
+    "execution_plan_fields": [
+      "stage",
+      "run_name",
+      "checkpoint_sha256",
+      "seed",
+      "args",
+      "gpu_contract",
+      "reference"
+    ],
+    "failed_probe": "unknown receipt with positive measured GPU seconds or null; zero is rejected",
+    "fixed_eval_protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "fixture": "synthetic_cpu_fixture_v1; actual_ready false",
+    "gpu_contracts": {
+      "apps_bounded_v1": "selection_comparison_gpu_v1 processed receipt verifier; only initial_clear or resampled_clear",
+      "residual_v1": "residual backend strict profile and busy=false receipt"
+    },
+    "gpu_performance_claim": false,
+    "gpu_receipts_relabelled": false,
+    "hash_contract": "artifact/evidence use raw bytes; source/protocol use LF-normalized bytes",
+    "mixed_fixture_actual": "reject",
+    "probe_lifecycle": "authorize and consume exact execution plan before backend; seal raw evidence after backend",
+    "probe_raw_required": [
+      "jobs_or_manifest",
+      "report_or_records",
+      "readback",
+      "execution",
+      "gpu_before",
+      "gpu_after"
+    ],
+    "reference_binding": "snapshot reference checkpoint plus immutable shared evidence identity",
+    "reference_plan_fields": [
+      "evidence_path",
+      "evidence_sha256",
+      "checkpoint_sha256",
+      "stage",
+      "run_name",
+      "seed",
+      "gpu_contract"
+    ],
+    "shared_none_reference": "registered legacy six probes in exact order; upper controller counts its cost once"
+  },
+  "lineage": {
+    "epoch2": "verified epoch1 not_recovered receipt and exact output checkpoint identity",
+    "isolated": "arm ledgers, probe/correction/evaluation/checkpoint",
+    "shared": "same source NONE and compound F1/R1 reference only",
+    "source_checkpoint": "epoch1 output binds compound source SHA; epoch2 output binds same-arm epoch1 output SHA",
+    "training": "cumulative corrections on new initialization; prior output is diagnosis input only"
+  },
+  "measurement_kind": "synthetic_cpu_controller_contract_only",
+  "observed_d2": {
+    "api_requests": 7,
+    "errors": 1,
+    "final_valid": "6/6",
+    "gpu_recovery_compared": false,
+    "runtime_verified": false,
+    "selector_effect_measured": false,
+    "status": "complete",
+    "token_cost": null
+  },
+  "policies": [
+    "model_first_then_rule",
+    "model_adaptive",
+    "registry_next",
+    "fixed_eligible"
+  ],
+  "schema": "selection_comparison_controller_protocol_v1",
+  "source_sha256_lf": {
+    "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/residual_training_v1.py": "13e9d5733a9b49908e136e54dd0ac8b7dae387b40fa4115f254536c9d6692517",
+    "evals/export_ppo_ratio_repair_v3.py": "ff339fd870f375dac729deaa8bc7a6ec163598531fc92c3783bdf741e351ee79",
+    "evals/ppo_ratio_repair_execution.py": "5139e7dfb2e402b45ac1844abc8f6105fa96bda5cebf3fe40b36a4ff01f30026",
+    "evals/ppo_ratio_repair_execution_v2.py": "26aa7283df00c83655bb98f71b653d320daa82af5981ea6637fae987020be357",
+    "evals/ppo_ratio_repair_execution_v3.py": "40bce19bb59eff05f761d4ddaaeee82b27fec233bff5db0c0dbc3790d77f207b",
+    "evals/r1_repair_execution.py": "c76f508fb921c642a33a76de3c3ae65bf0ae2624283d4b206a744c715788c1eb",
+    "evals/residual_contract_v1.py": "0ad37bcc9399885a1d0c1e6e59b64053706fe1a1bd25b5253ac59b30068c5a90",
+    "evals/residual_demo_v1.py": "09a6bd9179219aff98774b57a836e6798e398ecde494278c17abedfe6a572e45",
+    "evals/residual_execution_v1.py": "a62522debd84a0d37986b418ddf75600b1825da28151eafb216d758d45a5277a",
+    "evals/residual_selection_v2.py": "d1a0028afbe00d2697246e4fe30640ec780e3c4b15486dd4f1ed7e722aec6bc8",
+    "evals/selection_comparison_call_v2.py": "46c5b97c993e6a66598d9ddd5eb15e62fe7bbf9282225fcb0c68c6b6c6291992",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "evals/selection_comparison_gpu_v1.py": "30fef05e8e68e02d825d271dea19ee7e3969dcc25e8a0f59ee91985932c40c60",
+    "evals/selection_comparison_view_v1.py": "5180b96296251b3ae117edd612baba24676197dab93bab28f2e1cc0ef1d9e33d",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/mechanism_registry.py": "0bc3c47e52bdb6eb511cad5f6b76d047edfdfd1ca3c09d52fd637c47909d75d0",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "tests/test_selection_comparison_controller_v1.py": "4dd6a31fd31385c765586f11989beba7e95035af1f58c214fc22c8d3bee13e7b",
+    "tests/test_selection_comparison_gpu_v1.py": "04e54ff12b35bfdd5a94ed5a5257dadc7e182e682d680c0e0f9f160e130e5cef"
+  }
+}
