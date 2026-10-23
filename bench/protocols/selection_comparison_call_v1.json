@@ -1,0 +1,74 @@
+{
+  "schema": "selection_comparison_call_protocol_v1",
+  "measurement_kind": "synthetic_cpu_contract_only",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "params": {
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "api_cap": 20,
+  "request_limit_per_logical_call": 3,
+  "semantic_feedback_limit": 1,
+  "infra_retry_limit": 1,
+  "conditions": [
+    "production",
+    "exposure_full",
+    "exposure_masked"
+  ],
+  "development_disclosure": "F1·R1 결과와 공통뷰 입력 감사를 보고 만든 호출기다. 새 seed·실제 모델 효과를 측정하지 않았다.",
+  "execution": {
+    "synthetic_fixtures_only": true,
+    "new_model_calls": 0,
+    "new_gpu_calls": 0,
+    "new_training_runs": 0,
+    "real_worker_requires_separate_committed_execution_manifest": true
+  },
+  "predictions": {
+    "transport": "batch 상대 경로와 불변 원장 사본으로 다른 root에서도 같은 context/view 재구성",
+    "meter": "모든 조건·피드백·인프라 재시도는 기존 공용20회 원장을 소비",
+    "feedback": "검증된 무효만 고정3필드 계약으로 한번 피드백; 최종무효 production만 등록규칙 전환",
+    "provider": "기본model·params가 다르거나 source·원장·비용이 손상되면 사용하지 않음",
+    "replay": "응답·피드백·선택·usage·시간을 예약/응답 원장으로 재계산",
+    "host_confound": "partitioning 등록 검사 결과는 후보를 줄이거나 종료해 기존pair를 AI관측효과로 채점하지 않음",
+    "auxiliary_query": "최신 결과 직전 메뉴를 같게 유지한 별도 query; 실행/회복/우위 지표와 분리",
+    "transport_authority": "CPU는 자료형 fixture만, 실제 provider는 커밋된 입력·순서 계획과 active API 예약을 검증한 WSL capability만 허용",
+    "plan": "결과 전 context·원장·view·반복·pair·순서·logical call별 최대3회와 합계20회 이하 고정",
+    "response_projection": "저장 전에 transport 허용 필드만 보존하고 잘못된 자료형과 미등록 header는 제거",
+    "auxiliary_invalid": "무효 full 응답은 latest fact 사용·view sensitivity를 null로 남김"
+  },
+  "acceptance": "CPU합성 회귀·실제Python3.10·관련호출기 회귀·독립코드 및 구조 검수·커밋뒤source preflight",
+  "real_api_experiment_preregistered": false,
+  "prospective_gpu_comparison_ready": false,
+  "claims": {
+    "same_information_selector_effect": false,
+    "observation_causal_contribution": false,
+    "model_superiority": false,
+    "recovery_comparison": false,
+    "generalization": false
+  },
+  "source_sha256_lf": {
+    "bench/protocols/selection_comparison_view_v1.json": "81be94f3b359ea397179bd365d10d3694e5f7854675e909c495920c8d1129781",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/r1_repair_contract.py": "eeefe5819928cc0c5f81b0c3f38ae9900b31277698b4936eb2a850e7ec72f159",
+    "evals/r1_repair_model_call.py": "d8d51011f42a42cb417b1144ad3a6727ff2c6d53470cbc0f7934e3a83194d6b2",
+    "evals/residual_contract_v1.py": "0ad37bcc9399885a1d0c1e6e59b64053706fe1a1bd25b5253ac59b30068c5a90",
+    "evals/residual_model_call_v1.py": "b3afed7cbbe347acb1aaae9214e986bb18c5fac0fd81299cd95b6fb96e424797",
+    "evals/residual_selection_v2.py": "d1a0028afbe00d2697246e4fe30640ec780e3c4b15486dd4f1ed7e722aec6bc8",
+    "evals/selection_comparison_call_v1.py": "c4fcebbb09d1aa2dfd443e05d5c7e18bd5ad8e31252bdcc8cfb9c7b4be4f243c",
+    "evals/selection_comparison_view_v1.py": "5180b96296251b3ae117edd612baba24676197dab93bab28f2e1cc0ef1d9e33d",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/mechanism_registry.py": "0bc3c47e52bdb6eb511cad5f6b76d047edfdfd1ca3c09d52fd637c47909d75d0",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "tests/test_selection_comparison_call_v1.py": "0595dfd176ac60964e32c8b4302952bbc472ad77eb5d07915f0a2417433c9e6f",
+    "tests/test_selection_comparison_view_v1.py": "9a6526ba9b774be2079be17ff387ce3d128314adaf9f90800d2ce63bf6047b89"
+  },
+  "security_boundary": "등록된 호출 API의 로컬 검증 경계이며 임의 Python 실행에 대한 sandbox가 아니다. 실시간 GPU 비교 controller는 별도 판이 필요하다."
+}
