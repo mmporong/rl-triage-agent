@@ -1,0 +1,559 @@
+{
+  "schema": "ppo_ratio_repair_demo_protocol_v3",
+  "seed": 2164,
+  "restart_seed": 3164,
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "num_envs": 4096,
+  "training_updates": 300,
+  "fault": "inverse_ratio",
+  "design_coupling": {
+    "seen_before_design": [
+      "PPO 계산 검사 v5(seed 2143~2146, 3 update)",
+      "R1 종단 판 v2(seed 2071·3071)",
+      "설계 파일럿 v2(seed 2162, 모델 호출 없음)",
+      "본 실행 v1(seed 2161) source 평가: failure_present, 첫 진단 요청 404",
+      "본 실행 v2(seed 2163) P_episode 뒤 GPU 사후 점검 invalid"
+    ],
+    "pilot": {
+      "tag": "ppo_ratio_pilot_s2162_20261022",
+      "result_sha256": "1ab5cab9d7b99c6ab4ecaa274ed73028a4b2af19fb83e0bc4c99dd2d81df5401",
+      "experiment_commit": "e9445abd77138306a5d1c3fc6b2a5ecee9e06dc5"
+    },
+    "pilot_observations": {
+      "source_gate": "failure_present: NONE 걷기, INVERSE_RATIO 낙상 0·생존 20초이나 선속도·yaw 추종 실패",
+      "lin_vel_rmse_mps": {
+        "NONE": 0.1455,
+        "INVERSE_RATIO": 2.5907
+      },
+      "yaw_rate_rmse_radps": {
+        "NONE": 0.2401,
+        "INVERSE_RATIO": 1.6282
+      },
+      "outcomes": {
+        "P_episode": "normal",
+        "P_noise": "normal",
+        "P_physics": "normal",
+        "P_reward": "normal",
+        "P_torque": "abnormal",
+        "P_value": "normal",
+        "P_optimizer_updates": "normal",
+        "P_ppo_gradient": "abnormal"
+      },
+      "P_torque_low_speed_saturation": {
+        "case": 0.7455,
+        "reference": 0.00067
+      },
+      "P_noise_logged_std_mean": {
+        "case": 1.5936,
+        "reference": 0.366
+      },
+      "contract_v1_replay": "첫 검사 8개 중 7개 optimizer_surrogate 확정, P_torque 첫 검사는 actuator 오확정(2검사)",
+      "contract_v2_replay": "첫 검사 8개 모두 optimizer_surrogate 확정, P_torque 첫 검사는 3검사"
+    },
+    "registry_change": "파일럿에서 ratio 오류 정책의 큰 행동 분산이 저속 토크 포화를 만들어 P_torque가 abnormal이었다. 계약 v2는 P_torque의 optimizer_surrogate 예상만 null로 바꿨고 나머지 예상·임계값·고리 규칙은 v1과 같다. 실제 actuator 관측표는 v2에서도 actuator로 확정된다",
+    "statement": "결함 유형과 검사를 이미 알고 설계한 새 seed의 개발 시연이다",
+    "c2_observation": {
+      "tag": "ppo_ratio_repair_s2163_20261023",
+      "result_sha256": "71ff59a1f232b0007e9e4b13264b4455ba93a6e56c88cc6374baed664554c290",
+      "experiment_commit": "85a01a999b6b85c3e3e1645f32ea733c6201ce2e",
+      "outcome": "invalid_at_P_episode_post_gpu_snapshot",
+      "completed_before_invalid": [
+        "P_reward:normal",
+        "P_value:normal",
+        "P_physics:normal"
+      ],
+      "model": "diagnosis feedback 뒤 valid, API 2회 소비",
+      "gpu_observation": "csrss PID의 3D 1% 엔진만 busy였고 NVIDIA 계산 프로세스는 없었다",
+      "preservation": "seed 2163 사용·3163 예약과 기존 결과·API 비용을 보존한다"
+    }
+  },
+  "question": "갱신 횟수가 정상인 PPO ratio 계산 오류를 진단 고리가 surrogate gradient 검사로 확정하고, ratio 식 복원과 새 학습으로 행동 회복까지 연결할 수 있는가",
+  "flow": [
+    "launch_paths_preflight",
+    "fresh_seed",
+    "NONE_training",
+    "INVERSE_RATIO_training",
+    "source_fixed_eval",
+    "NONE_legacy_reference",
+    "diagnosis_feedback",
+    "approved_probe_loop",
+    "correction_feedback",
+    "approved_ratio_restore_restart",
+    "corrected_fixed_eval",
+    "summary"
+  ],
+  "loop_registry": {
+    "fixed_order": [
+      "P_episode",
+      "P_noise",
+      "P_reward",
+      "P_torque",
+      "P_physics",
+      "P_value",
+      "P_optimizer_updates",
+      "P_ppo_gradient"
+    ],
+    "mechanisms": [
+      "reward",
+      "actuator",
+      "exploration",
+      "optimizer_value",
+      "physics",
+      "termination",
+      "optimizer_update_count",
+      "optimizer_surrogate"
+    ],
+    "outcomes": [
+      "abnormal",
+      "normal",
+      "unknown"
+    ],
+    "probes": {
+      "P_episode": {
+        "args": {
+          "num_envs": 64,
+          "rollout_steps": 1200
+        },
+        "cost_gpu_s": 60,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "normal",
+          "optimizer_surrogate": "normal",
+          "optimizer_update_count": "normal",
+          "optimizer_value": "normal",
+          "physics": "normal",
+          "reward": "normal",
+          "termination": "abnormal"
+        },
+        "measures": "시간 제한 종료 스텝 / (episode_length_s / step_dt)"
+      },
+      "P_noise": {
+        "args": {
+          "num_envs": 256,
+          "rollout_steps": 200
+        },
+        "cost_gpu_s": 60,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "abnormal",
+          "optimizer_surrogate": "normal",
+          "optimizer_update_count": "normal",
+          "optimizer_value": "normal",
+          "physics": "normal",
+          "reward": "normal",
+          "termination": "normal"
+        },
+        "measures": "학습 경로 act() 샘플의 실제 표준편차 / 기록된 action_std"
+      },
+      "P_optimizer_updates": {
+        "args": {
+          "configured_learning_epochs": 5,
+          "configured_mini_batches": 4,
+          "expected_steps_per_update": 20,
+          "num_envs": 4096,
+          "updates": 3
+        },
+        "cost_gpu_s": 60,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "normal",
+          "optimizer_surrogate": "normal",
+          "optimizer_update_count": "abnormal",
+          "optimizer_value": "normal",
+          "physics": "normal",
+          "reward": "normal",
+          "termination": "normal"
+        },
+        "measures": "같은 실행 설정으로 새로 시작한 PPO 3 update의 optimizer.step 및 미니배치 횟수. 정책 체크포인트 관측이 아님"
+      },
+      "P_physics": {
+        "args": {
+          "num_envs": 64
+        },
+        "cost_gpu_s": 30,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "normal",
+          "optimizer_surrogate": "normal",
+          "optimizer_update_count": "normal",
+          "optimizer_value": "normal",
+          "physics": "abnormal",
+          "reward": "normal",
+          "termination": "normal"
+        },
+        "measures": "시뮬레이터에서 읽은 재질 마찰·질량·물리 dt와 설정·무작위화 범위의 불일치 수"
+      },
+      "P_ppo_gradient": {
+        "args": {
+          "atol": 1e-06,
+          "clip_param": 0.2,
+          "configured_learning_epochs": 5,
+          "configured_mini_batches": 4,
+          "num_envs": 4096,
+          "rtol": 1e-05,
+          "updates": 3
+        },
+        "cost_gpu_s": 60,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "normal",
+          "optimizer_surrogate": "abnormal",
+          "optimizer_update_count": "normal",
+          "optimizer_value": "normal",
+          "physics": "normal",
+          "reward": "normal",
+          "termination": "normal"
+        },
+        "measures": "같은 실행 설정으로 새로 시작한 PPO 3 update에서 clipped surrogate의 새 log-prob gradient와 저장 advantage·ratio로 계산한 기대 gradient의 불일치. 정책 체크포인트 관측이 아님"
+      },
+      "P_reward": {
+        "args": {
+          "num_envs": 256,
+          "rollout_steps": 200
+        },
+        "cost_gpu_s": 60,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "normal",
+          "optimizer_surrogate": "normal",
+          "optimizer_update_count": "normal",
+          "optimizer_value": "normal",
+          "physics": "normal",
+          "reward": "abnormal",
+          "termination": "normal"
+        },
+        "measures": "상태에서 문서 정의대로 다시 계산한 추종 보상 항(track_lin_vel_xy_exp, track_ang_vel_z_exp)과 보상 관리자 기록값의 상대 오차"
+      },
+      "P_torque": {
+        "args": {
+          "num_envs": 256,
+          "rollout_steps": 500
+        },
+        "cost_gpu_s": 60,
+        "expect": {
+          "actuator": "abnormal",
+          "exploration": null,
+          "optimizer_surrogate": null,
+          "optimizer_update_count": "normal",
+          "optimizer_value": "normal",
+          "physics": "normal",
+          "reward": "normal",
+          "termination": "normal"
+        },
+        "measures": "낮은 관절 속도에서 토크 포화 비율"
+      },
+      "P_value": {
+        "args": {
+          "from": "model_0.pt",
+          "to": "last"
+        },
+        "cost_gpu_s": 5,
+        "expect": {
+          "actuator": "normal",
+          "exploration": "normal",
+          "optimizer_surrogate": "normal",
+          "optimizer_update_count": "normal",
+          "optimizer_value": "abnormal",
+          "physics": "normal",
+          "reward": "normal",
+          "termination": "normal"
+        },
+        "measures": "첫 체크포인트 대비 마지막 체크포인트의 critic 파라미터 상대 변화(critic이 학습되는가)"
+      }
+    }
+  },
+  "correction_registry": {
+    "reward": {
+      "correction_id": "restore_body_frame_reward",
+      "adapter_target": "isaaclab.envs.mdp.rewards:track_lin_vel_xy_exp",
+      "protocol_case": "case_01",
+      "recovery_modes": [
+        "restart",
+        "resume"
+      ]
+    },
+    "actuator": {
+      "correction_id": "restore_motor_torque_speed",
+      "adapter_target": "isaaclab.actuators.actuator_pd:DCMotor._clip_effort",
+      "protocol_case": "case_02",
+      "recovery_modes": [
+        "resume"
+      ]
+    },
+    "termination": {
+      "correction_id": "restore_configured_timeout",
+      "adapter_target": "isaaclab.envs.mdp.terminations:time_out",
+      "protocol_case": "case_03",
+      "recovery_modes": [
+        "resume"
+      ]
+    },
+    "optimizer": {
+      "correction_id": "restore_ppo_ratio_formula",
+      "adapter_target": "rsl_rl.algorithms.ppo:PPO.update",
+      "protocol_case": "optimizer_surrogate_ratio",
+      "recovery_modes": [
+        "restart"
+      ]
+    }
+  },
+  "loop_rule": {
+    "hypotheses": "six_categories_all_expanded_to_eight_subtypes",
+    "max_probes": 8,
+    "first_probe": "model_choice_without_rule_replacement",
+    "later_probe": "mechanism_registry._next",
+    "update": "mechanism_registry.update",
+    "confirmation": "mechanism_registry._status",
+    "unknown": "stop_without_correction",
+    "legacy_classification": "probe_loop.classify_unchanged",
+    "scope_gate": "only_optimizer_surrogate_confirmed_by_P_ppo_gradient_abnormal"
+  },
+  "inspection": {
+    "updates": 3,
+    "epochs": 5,
+    "mini_batches": 4,
+    "expected_steps": 20,
+    "implementation": "ppo_gradient_invariant_v2.inspect_records",
+    "count_probe": "P_optimizer_updates는 optimizer_step_count·minibatch_count 판정을 읽는다",
+    "gradient_probe": "P_ppo_gradient는 ppo_surrogate_gradient 판정을 읽는다",
+    "relation": "승인 뒤 같은 source/config/fault/seed로 별도 초기화한 3 update. 원 정책 체크포인트에서 읽은 관측이 아니며 checkpoint SHA는 계보 결합값이다",
+    "control": "같은 seed NONE 검사도 실행하고 해당 판정이 normal이어야 한다",
+    "training_observer": "300회 학습의 첫 3회 기록은 완결 확인에만 쓴다"
+  },
+  "recovery_rule": {
+    "required_subtype": "optimizer_surrogate",
+    "mode": "restart",
+    "correction": "restore_ppo_ratio_formula",
+    "updates": 300,
+    "source_policy_loaded": false,
+    "reference": "원 실패 seed의 NONE 정책을 기준으로 쓴다. source NONE/INVERSE_RATIO는 2164, 교정 새 학습은 3164이다",
+    "basis": "같은 설정의 NONE 학습 근거로 새 초기화 경로를 시험한다. 오류 정책 이어 학습과 비교한 근거는 없다"
+  },
+  "model": {
+    "id": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "accepted_provider_models": [
+      "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "private/nvidia/nemotron-3.5-super-120b-a12b"
+    ],
+    "path": "single_feedback",
+    "feedback_retries": 1,
+    "infra_dialogue_attempts": 1,
+    "total_http_request_cap": 4,
+    "nominal_requests": 2,
+    "dialogue_wall_timeout_s": 900,
+    "invalid_diagnosis": "stop_no_rule_replacement",
+    "invalid_correction": "stop_no_rule_replacement"
+  },
+  "infrastructure_retry": {
+    "previous_commit": "2c7d441d197a12030a3334e0c74e4eebe37ffe7e",
+    "previous_tag": "ppo_ratio_repair_s2161_20261022",
+    "previous_protocol": "bench/protocols/ppo_ratio_repair_demo_v1.json",
+    "previous_protocol_sha256_lf": "6c6074dfecbfd46655f6ab57c968170495e97347aad90e658c35213dee711abd",
+    "previous_result_sha256": "4da4b78b2af825c569421862c641abcc6710fdf5325bf5ef40345a5692ebbe1c",
+    "classification": "model_endpoint_not_found_before_diagnosis",
+    "cause": "기존 3 Super 요청이 NotFoundError 404로 끝나 진단 결정을 확보하지 못했다",
+    "previous_training_started": true,
+    "previous_api_requests": 1,
+    "previous_source_gate": "failure_present",
+    "previous_probe_count": 0,
+    "diagnostic_requests": 3,
+    "diagnostic_evidence": "인계 기록에서 기존 3 Super 404, 3 Ultra와 3.5 Super VL 응답을 확인했다",
+    "seed_policy": "2160~2163·3161·3163을 피하고 2164·3164를 새로 등록한다. 실행 직전 기록을 재검사한다",
+    "preservation": "v1 소스·프로토콜·결과·학습과 API 소비는 보존하며 새 tag로 한 번만 실행한다",
+    "interpretation": "v1 source 고정 평가를 이미 본 개발 시연이다. 모델 결정·검사·교정 결과를 본 뒤의 의미 재시도는 아니다",
+    "model_change": "2026-10-23 사용자 선택으로 새 실행을 3.5 Super VL로 통일하며 이전 모델 결과와 합산하지 않는다",
+    "unchanged": "고정 피드백·검사 registry·확정 규칙·교정·학습 예산·회복 판정은 이전 판과 같다"
+  },
+  "c2_retry": {
+    "previous_protocol": "bench/protocols/ppo_ratio_repair_demo_v2.json",
+    "previous_result_sha256": "71ff59a1f232b0007e9e4b13264b4455ba93a6e56c88cc6374baed664554c290",
+    "classification": "post_probe_gpu_counter_transient_or_busy_unresolved",
+    "new_tag_and_seeds": "seed 2164, restart 3164; 이전 실행 폴더를 덮어쓰지 않는다",
+    "api_ledger": {
+      "v1": 1,
+      "c2": 2,
+      "c3_cap": 4,
+      "c2_plus_c3_cap": 6,
+      "all_attempts_cap": 7
+    },
+    "dialogues": "진단 1개와 교정 1개. 각 대화의 고정 semantic feedback 1회까지이며 별도 인프라 대화 재시도는 없다",
+    "interpretation": "C2 결과를 본 뒤 GPU 상태 판만 좁혀 만든 개발 재시도이며 모델 계약과 의미 검사는 조정하지 않았다"
+  },
+  "approval": {
+    "mode": "operator_delegation_explicit_cli_flag",
+    "identity_attested": false,
+    "probe": "registry digest + source checkpoint + protocol + canonical args",
+    "correction": "confirmed state + receipt + accepted model proposal + registry + restart"
+  },
+  "gpu": {
+    "lease": "Use-GpuLease.ps1",
+    "profile": "desktop_shared_recording_apps_v1",
+    "base_profile": "desktop_shared_recording_v1",
+    "added_display_process_names": [
+      "antigravity.exe",
+      "claude.exe",
+      "cursor.exe",
+      "msedge.exe"
+    ],
+    "sequential": true,
+    "probe_execution_budget_s": 1200,
+    "correction_execution_budget_s": 3600,
+    "measurement_unit": "소유 프로세스 parent wall seconds; GPU kernel time이 아니다",
+    "exclusive": false,
+    "performance_measurement": false,
+    "bounded_counter_resample": {
+      "scope": "첫 strict 표본의 동일 CSRSS PID 3D 엔진이 정확히 1%이고 등록 busy 사유 두 개만 있는 경우",
+      "identity": [
+        "ProcessId",
+        "CreationDate",
+        "SessionId"
+      ],
+      "requirements": [
+        "NVIDIA XML에 해당 PID 없음",
+        "전체 utilization 0",
+        "compute process 0",
+        "메모리 첫 표본 이하",
+        "후속 strict clear 연속 2개"
+      ],
+      "interval_s": 2,
+      "max_total_samples": 3,
+      "immediate_block": [
+        "신원 변경 또는 신원 증거 없음",
+        "다른 busy",
+        "Compute/CUDA",
+        "엔진 2% 이상",
+        "메모리 증가",
+        "unknown"
+      ],
+      "first_busy_policy": "첫 busy 하나를 clear로 바꾸지 않으며 후속 clear 두 개가 모두 필요하다",
+      "standalone_query": "strict single sample",
+      "evidence": "gpu_before/gpu_after receipt에 모든 raw samples와 identity를 보존",
+      "references": [
+        "https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/enable-debugging-of-win32-subsystem",
+        "https://learn.microsoft.com/en-us/windows/win32/perfctrs/about-performance-counters"
+      ],
+      "rationale": "보호된 CSRSS 신원을 고정하고 성능 계수기 최소 1초 수집 간격보다 긴 2초를 쓴 제한 판이다"
+    }
+  },
+  "failure_policy": {
+    "gpu_attempts": 1,
+    "overwrite": false,
+    "semantic_retry": false,
+    "process_error": "보존 후 중단, 승인 소비 뒤 자동 재실행 없음",
+    "seed": "실행 직전 로그·저장소 재검사; 사용 흔적이면 중단하고 seed 자동 교체 없음"
+  },
+  "prediction": {
+    "NONE": "walks",
+    "INVERSE_RATIO": "unhealthy",
+    "loop": "optimizer_surrogate confirmed",
+    "P_torque": "abnormal 가능. 계약 v2에서 surrogate를 탈락시키지 않으며 고리를 혼자 닫지 않는다",
+    "corrected": "recovered",
+    "model_decisions": "순위·첫 검사·계약 통과 여부는 예측하지 않고 기록한다",
+    "competing": "모델 보류·무효, 다른 검사 abnormal·unknown, 정상 기준 실패, 교정 후 미회복은 등록 결과 그대로 남긴다"
+  },
+  "success_conditions": [
+    "committed_source_and_protocol",
+    "fresh_seeds",
+    "launch_paths_checked",
+    "source_failure_present",
+    "accepted_fresh_diagnosis",
+    "first_probe_from_model",
+    "approved_probe_receipts",
+    "optimizer_surrogate_confirmed",
+    "accepted_fresh_correction",
+    "approved_correction_consumed_once",
+    "restored_surrogate_gradient",
+    "corrected_fixed_eval_healthy",
+    "costs_recorded"
+  ],
+  "outcome_wording": {
+    "invalid": "출처·실행·산출물 결합을 검증하지 못해 종단 결과를 판정하지 않는다.",
+    "baseline_invalid": "같은 seed 정상 정책이 걷기 조건을 통과하지 못해 진단을 시작하지 않았다.",
+    "source_failure_absent": "ratio 오류 정책이 정상 기준 대비 고정 평가를 통과해 진단할 실패가 없었다.",
+    "model_infra_failed": "등록 호출 수 안에서 모델 응답을 확보하지 못해 멈췄다.",
+    "model_invalid": "피드백 한 번 뒤에도 모델 출력 계약이 맞지 않아 멈췄다.",
+    "diagnosis_hold": "모델이 첫 검사를 제안하지 않고 보류했다.",
+    "loop_not_confirmed": "등록된 검사 관측으로 원인을 확정하지 못해 교정하지 않았다.",
+    "correction_scope_hold": "확정된 가설이 ratio 식 복원 교정의 범위와 달라 교정하지 않았다.",
+    "correction_not_proposed": "교정 제안이 보류되거나 등록 회복 방식과 달라 교정하지 않았다.",
+    "correction_unknown": "승인된 교정 실행의 완결 또는 고정 평가를 검증하지 못했다.",
+    "not_recovered": "ratio 식을 복원해 새로 학습했지만 등록한 정상 기준 대비 행동 허용 범위를 통과하지 못했다.",
+    "recovered": "새 seed의 ratio 계산 오류에서 승인 검사로 surrogate gradient 불일치를 확인하고, ratio 식을 복원해 새로 학습한 정책이 고정 평가를 통과했다."
+  },
+  "interpretation": "새 seed 단일 ratio 계산 오류의 등록 종단 경로 확인. gradient 검사 정상은 계산 계약만 뜻하며 회복은 별도 고정 평가로만 판정한다",
+  "source_sha256_lf": {
+    "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/ppo_ratio_mutation_v1.py": "19c15646515e7481c34bd909d5e0d6ef52b708ce1a5daec1810c774c602702a3",
+    "bench/ppo_ratio_repair_training.py": "ba47de10661fab2d3349a9c43148a5de9cf8b66daae110d8755adf3845b4cf27",
+    "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "bench/protocols/ppo_ratio_pilot_v1.json": "000b89266ca86868fdde23f34ff24b2a653a4bc9af40aa23e15440dbe46a0ff3",
+    "bench/protocols/ppo_ratio_pilot_v2.json": "d600de6790bd78e374b78c65320c1723cf1a12006d185b11e825d975a77b2553",
+    "bench/protocols/ppo_ratio_repair_demo_v1.json": "6c6074dfecbfd46655f6ab57c968170495e97347aad90e658c35213dee711abd",
+    "bench/r1_repair_training.py": "0b1b9aca9d17a4c8fce0a2f1aa451393bea701df66f4769156c2ff9d1f958ae6",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/reference/nvidia_skills/isaaclab-debugging-rl-training/SKILL.md": "9c6edf7d7dab455eb3d8e20fa0f101815c48e8853bb82a7ebd1beec2b4420cb0",
+    "bench/run_ppo_ratio_pilot_v1.ps1": "b386fa8c1ee451cafd489207955f72c5f0b07c0af46f8f4ca96979351c9e3d30",
+    "bench/run_ppo_ratio_pilot_v2.ps1": "8e9a0ffc22ba43ee98cd782dbb05c600ab8e88ee115e869c9694db16bf4388f1",
+    "bench/run_ppo_ratio_repair_demo_v3.ps1": "9a4627b57e454a8113d447d25a70728dc16f590e92dfd0ec8e5f2dc07caf39c2",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/train_with_optimizer_fault.py": "4cf14df64cf72f6101e5ac762522167b402ad182981c4482a947497016977520",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "evals/ppo_gradient_invariant_v1.py": "bdbe4a9d99f8d4fd55a9181238357b4a0e6b1e677164d8c2ded61cdc47316fd3",
+    "evals/ppo_gradient_invariant_v2.py": "ad0bc58500165da891092ae84c283bf5522c25de4d227a1dd818b0b4b7fc41c8",
+    "evals/ppo_ratio_pilot_v1.py": "7f2de406650956ef73de8ca5f0507219c9724852c44b8900750444de4bed8098",
+    "evals/ppo_ratio_pilot_v2.py": "768bc440a844ab23dd2884dfa8b0905358d4d969834bd166c1f7dc752def615b",
+    "evals/ppo_ratio_repair_contract.py": "9382beccad713e6b35bb8e7bde4b4ce11bebed9d08fbadaa1621df07f9066c18",
+    "evals/ppo_ratio_repair_contract_v2.py": "2551ea48a6a6f52d9de609890aad05e1f7d9af2b43975481da1fed52a3e5e0df",
+    "evals/ppo_ratio_repair_demo_v1.py": "e16a52e6ed605f38102de6c2903977d3c9de45d6b748e7e5721206f440c0c938",
+    "evals/ppo_ratio_repair_demo_v3.py": "cd85cd6a4d232e70918de6914ba8ea20c0e2cf1deff94106d36d8c0d30d31bd0",
+    "evals/ppo_ratio_repair_execution.py": "5139e7dfb2e402b45ac1844abc8f6105fa96bda5cebf3fe40b36a4ff01f30026",
+    "evals/ppo_ratio_repair_execution_v2.py": "26aa7283df00c83655bb98f71b653d320daa82af5981ea6637fae987020be357",
+    "evals/ppo_ratio_repair_execution_v3.py": "40bce19bb59eff05f761d4ddaaeee82b27fec233bff5db0c0dbc3790d77f207b",
+    "evals/ppo_ratio_repair_model_call.py": "ffb7402cc65db00aad20bcba5e9802b1c2e0812842b3c5a7cb8552fd84fc31c8",
+    "evals/ppo_ratio_repair_model_call_v2.py": "c6d0d630c88b5395dbe70e93406c3a5bac17bce5360b70e096d08a0e30f2ac82",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+    "evals/probes.py": "8bbe5bc5daaa94a2fbe88ea34dfb23fa298a1f43c4734cf4584fd6b790c16601",
+    "evals/probes_task.py": "36271fbe40a50392e97ffb9f4fdd93439738e7334f4418fb2fddfa55e04aa14d",
+    "evals/r1_repair_contract.py": "eeefe5819928cc0c5f81b0c3f38ae9900b31277698b4936eb2a850e7ec72f159",
+    "evals/r1_repair_execution.py": "c76f508fb921c642a33a76de3c3ae65bf0ae2624283d4b206a744c715788c1eb",
+    "evals/r1_repair_execution_v2.py": "a16f0c3dd2b9655b2173440879cd8c9cad0f6415752f04944e3a8ce8dc82cd99",
+    "evals/run_upstream_r1_smoke.py": "a06e582d440b916c75b7e7b5a8cdb521701870f774207f14f01f13439853127c",
+    "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/mechanism_registry.py": "0bc3c47e52bdb6eb511cad5f6b76d047edfdfd1ca3c09d52fd637c47909d75d0",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af",
+    "tests/test_ppo_ratio_pilot_v1.py": "d61eda035f57e018643024631d98205cd4431ab80e9a03438d8640b66816609a",
+    "tests/test_ppo_ratio_pilot_v2.py": "3e0dadf2f71fd8b908bae7b61529a6658c7c9c69d1734068c9924a9d281484c5",
+    "tests/test_ppo_ratio_repair_contract.py": "28d503be9eea33e52c28d20a0b5c10955d732772a9b1b76c1af1de43e2205be2",
+    "tests/test_ppo_ratio_repair_contract_v2.py": "d113f8f6b877b47900a76267b99ee1af9e90aa8e68411a8b201173d86f2b275b",
+    "tests/test_ppo_ratio_repair_demo_v3.py": "bbe41cebfa9903fd15048e586b6dd15286999d4d23b93ee203f003ce02e9c32e",
+    "tests/test_ppo_ratio_repair_execution.py": "174bdf45e576ae10cfdc9ad6ada6801727a6a969a679e6a4f7a3e7a9c50940f0",
+    "tests/test_ppo_ratio_repair_execution_v2.py": "3ed55292c59908d473d2534a36b50dc0733158d51fbf6e8b46bfd46767057039",
+    "tests/test_ppo_ratio_repair_execution_v3.py": "6007b0953102e9a94f97b8fd7e9037f2cf101dddd4b401fed74eccb3e8b31a3e",
+    "tests/test_ppo_ratio_repair_model_call_v2.py": "16fc335c7dd2571b9a1506c7e08a64b12d47112c82beb8bfb0ab9827308164f9"
+  },
+  "evidence_sha256_lf": {
+    "evals/results/ppo_gradient_v5_20261017/result.json": "dd3083320caccd355a31efa87b800388be4abcc15992f5b50268fe839b8de86e",
+    "bench/protocols/ppo_gradient_check_v5.json": "ae7b1c7387f27c852b281d92ecd9f08f1f4aa6e6e94d08791a2341605cfa5907",
+    "evals/results/p0c_fixed_eval_20261009/summary.json": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24"
+  },
+  "runtime_source_sha256_lf": {
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/storage/rollout_storage.py": "456450bbba03f9f5818f9ec43d2f3bd5d14d2d27f4bf2308838dd580f32ffcf0",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl_lib-2.3.3.dist-info/METADATA": "90fb9745b9f3c70a32758af9f06dd68dae9b7a13f33e3998e99e081b5c09fda9",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290"
+  }
+}
