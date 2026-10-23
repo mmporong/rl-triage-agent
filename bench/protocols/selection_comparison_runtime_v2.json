@@ -1,0 +1,147 @@
+{
+  "schema": "selection_call_execution_v2",
+  "run_id": "selection_runtime_20261020_v1",
+  "caller_protocol_sha": "282ed345404732ee2bedf516fef120fcb0f8680d9065f369c5bf8bc602767123",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "accepted_provider_models": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "params": {
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "api_cap": 20,
+  "conditions": [
+    "production",
+    "exposure_full",
+    "exposure_masked"
+  ],
+  "trusted_host_input_required": true,
+  "planned_calls": [
+    {
+      "row_id": "row1",
+      "pair_id": null,
+      "order": 1,
+      "state": {
+        "context_digest": "79d4b74b643d2d9d2c53d5590aae507b6300b1d439e3f219ec9a3436c8f8c877",
+        "ledger_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "pre_receipt_anchor": "0d639faec4d48c690d1d1b21406c6fac20278120f63b4eb741662440fa5e8335",
+        "operational_view_digest": "1871e424314e25364c3d6e5cfd89f8d54c00650c4dcc53fb0d6c251d73aa6a52",
+        "view_digest": "1871e424314e25364c3d6e5cfd89f8d54c00650c4dcc53fb0d6c251d73aa6a52",
+        "history_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "condition": "production",
+        "replicate": 1
+      },
+      "max_requests": 3
+    },
+    {
+      "row_id": "row2",
+      "pair_id": "c1",
+      "order": 2,
+      "state": {
+        "context_digest": "79d4b74b643d2d9d2c53d5590aae507b6300b1d439e3f219ec9a3436c8f8c877",
+        "ledger_digest": "cf59bfb8e2f09bdc9117fb2c783c0561ba6e592c681b602ebf4ccabbaca13483",
+        "pre_receipt_anchor": "1df64c790ec83415c09ab908ef43a88f7414d189135c7bef9110fd2b9a4ebd86",
+        "operational_view_digest": "285332df823442f2497a6e6503c62a5b4988f85ff575098906d9fe9e177e5507",
+        "view_digest": "586b4ff70ea75c1c04a5dc4766d72bed95562bb618ca7657aa3be8a3f0be0ed4",
+        "history_sha256": "8b1f379971e37c56a3f95d33eadf4d90647931771c81d4c20608e8ee495477e9",
+        "condition": "exposure_full",
+        "replicate": 1
+      },
+      "max_requests": 3
+    },
+    {
+      "row_id": "row3",
+      "pair_id": "c1",
+      "order": 3,
+      "state": {
+        "context_digest": "79d4b74b643d2d9d2c53d5590aae507b6300b1d439e3f219ec9a3436c8f8c877",
+        "ledger_digest": "cf59bfb8e2f09bdc9117fb2c783c0561ba6e592c681b602ebf4ccabbaca13483",
+        "pre_receipt_anchor": "1df64c790ec83415c09ab908ef43a88f7414d189135c7bef9110fd2b9a4ebd86",
+        "operational_view_digest": "285332df823442f2497a6e6503c62a5b4988f85ff575098906d9fe9e177e5507",
+        "view_digest": "08d705921510b30751139ba300fb855f69ad1e673c858597b268b1429d50d56f",
+        "history_sha256": "8b1f379971e37c56a3f95d33eadf4d90647931771c81d4c20608e8ee495477e9",
+        "condition": "exposure_masked",
+        "replicate": 1
+      },
+      "max_requests": 3
+    },
+    {
+      "row_id": "row4",
+      "pair_id": null,
+      "order": 4,
+      "state": {
+        "context_digest": "e6538f9fe481c0250572ebc60443836173490c8042696aec91b9cbe1dec30214",
+        "ledger_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "pre_receipt_anchor": "fe278ccda42d220f8e6853e82a5d90c0917178d59c0f6ca636f14440316a642f",
+        "operational_view_digest": "053526942d757fb2b9daa6384b1991b6ae03498db22d21976cd9b4a08b54e988",
+        "view_digest": "053526942d757fb2b9daa6384b1991b6ae03498db22d21976cd9b4a08b54e988",
+        "history_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "condition": "production",
+        "replicate": 1
+      },
+      "max_requests": 3
+    },
+    {
+      "row_id": "row5",
+      "pair_id": "c2",
+      "order": 5,
+      "state": {
+        "context_digest": "e6538f9fe481c0250572ebc60443836173490c8042696aec91b9cbe1dec30214",
+        "ledger_digest": "6ba88c335cab3d42774d1feeb7f22c2fceaae79d69964442126023e0f4a10def",
+        "pre_receipt_anchor": "fb22480e68202cd7f26d78d2eee2c40074ec620b93ffb03a01a25ae60919c94d",
+        "operational_view_digest": "97a26ca913d5728a9e5d92505b0d6cd4eb03e44e1989684a0f0aee581a5397fb",
+        "view_digest": "43456d815feafff2eade6c94edfbdf49889478dade1644d0a0dd81acd163b0c4",
+        "history_sha256": "3916c07522a69652c33e55ccef9add6379bb48a9d9440e38d54b14e6a5b6322e",
+        "condition": "exposure_masked",
+        "replicate": 1
+      },
+      "max_requests": 3
+    },
+    {
+      "row_id": "row6",
+      "pair_id": "c2",
+      "order": 6,
+      "state": {
+        "context_digest": "e6538f9fe481c0250572ebc60443836173490c8042696aec91b9cbe1dec30214",
+        "ledger_digest": "6ba88c335cab3d42774d1feeb7f22c2fceaae79d69964442126023e0f4a10def",
+        "pre_receipt_anchor": "fb22480e68202cd7f26d78d2eee2c40074ec620b93ffb03a01a25ae60919c94d",
+        "operational_view_digest": "97a26ca913d5728a9e5d92505b0d6cd4eb03e44e1989684a0f0aee581a5397fb",
+        "view_digest": "9196f09e1e948c6510587fd7e41ab45402f1e24f820ee17bd2ca266ef2793fb2",
+        "history_sha256": "3916c07522a69652c33e55ccef9add6379bb48a9d9440e38d54b14e6a5b6322e",
+        "condition": "exposure_full",
+        "replicate": 1
+      },
+      "max_requests": 3
+    }
+  ],
+  "predictions": {
+    "development_disclosure": "이미 본 두 seed의 첫 epoch와 첫 검사 기록을 사용한 caller 개발 확인이다.",
+    "bundle_sha256": "ab4535e7e43d625c772361ffa89f10ba6301d6675736f4d17b1efee3bf966888",
+    "archive_integrity_sha256": "6778c58f688eae46afc68b12991e52e905910d2b0d05e8e53187b9aa2164e284",
+    "runner_sha256_lf": "cf59bcb0dd9bba7c4d1885baef3df00aed5a8442b3731de084ebe42a9d81b3ad",
+    "tests_sha256_lf": "d3795799d7d641d319a65e5a30227d4521502dcf2f3d6926ca27f1451bf60bdf",
+    "final_model_contract_valid": {
+      "production": "2/2",
+      "exposure": "4/4"
+    },
+    "global_execution_claim": "semantic_plan_digest_single_start_across_roots",
+    "request_bound": 18,
+    "new_GPU_runs": 0,
+    "new_training_runs": 0,
+    "historical_costs_combined_with_API": false,
+    "used_for_recovery_decision": false
+  },
+  "result_wording": {
+    "runtime_verified": "고정 개발 입력에서 실제 요청·원장·반환·종료 경로를 확인했다. 검사·회복 효과는 측정하지 않았다.",
+    "contract_failed": "이 개발 입력에서 계약 예측을 충족하지 못했다. 기본 모델·고리 규칙은 유지한다.",
+    "runtime_incomplete": "실제 caller 경로 확인이 완료되지 않았다. 소비·실패 유형·정리 상태를 보존했다.",
+    "exposure": "보조 view_sensitivity이며 실행·인과·우위·회복 판정에 쓰지 않는다."
+  }
+}
