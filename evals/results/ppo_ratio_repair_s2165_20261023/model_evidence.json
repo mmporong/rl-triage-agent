@@ -1,0 +1,55 @@
+{
+  "schema": "public_ppo_ratio_repair_model_evidence_v4",
+  "request_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "accepted_provider_models": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "api_requests": 2,
+  "api_requests_in_saved_records": 2,
+  "pending_record_count": 0,
+  "transport_error_count": 0,
+  "dialogues": [
+    {
+      "kind": "diagnosis",
+      "dialogue": 1,
+      "review": {
+        "status": "invalid",
+        "codes": [
+          "D_RANKING"
+        ],
+        "reasons": [
+          "ranking은 여섯 mechanism의 중복 없는 순열이어야 한다"
+        ],
+        "requests": 2,
+        "first_status": "invalid",
+        "retried": true
+      },
+      "feedback": {
+        "codes": [
+          "D_EXPECTED"
+        ],
+        "text": "The previous JSON was rejected by the public contract validator.\nProblems:\n- D_EXPECTED: For continue, expected_outcomes must exactly copy the selected probe's public catalog expectations for the top three ranked mechanisms.\nReturn one corrected JSON object only, under the same contract.",
+        "messages_sha256": "286a903707c1cc38690a5085c2d1559ba5eddf33e76bbee4a99c87850d47fcb1"
+      },
+      "calls": [
+        {
+          "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+          "input_tokens": 4488,
+          "output_tokens": 217,
+          "total_tokens": 4705,
+          "wall_s": 3.1333759339759126
+        },
+        {
+          "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+          "input_tokens": 4772,
+          "output_tokens": 200,
+          "total_tokens": 4972,
+          "wall_s": 2.605928695993498
+        }
+      ],
+      "execution_wall_s": 6.991622196976095,
+      "source_record_sha256": "d64fbfd16eb42911bc9bcce8325dcb637af72275f5d8d6a7301d346074cea781"
+    }
+  ]
+}

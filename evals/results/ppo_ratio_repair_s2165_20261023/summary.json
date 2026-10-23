@@ -1,0 +1,170 @@
+{
+  "schema": "public_ppo_ratio_repair_summary_v4",
+  "status": "complete",
+  "tag": "ppo_ratio_repair_s2165_20261023",
+  "outcome": "model_invalid",
+  "wording": "피드백 한 번 뒤에도 모델 출력 계약이 맞지 않아 멈췄다.",
+  "demo_success": false,
+  "source_training_seed": 2165,
+  "corrected_restart_seed": 3165,
+  "completion_conditions": {
+    "committed_source_and_protocol": true,
+    "fresh_seeds": true,
+    "launch_paths_checked": true,
+    "source_failure_present": true,
+    "costs_recorded": true
+  },
+  "source_gate": {
+    "outcome": "failure_present",
+    "none_walks": true,
+    "fault_verdict": {
+      "label": "unhealthy",
+      "failed": [
+        "err_xy_ratio",
+        "err_yaw_ratio"
+      ],
+      "short_horizon": false,
+      "checks": {
+        "survival_ratio": true,
+        "fall_frac": true,
+        "err_xy_ratio": false,
+        "err_yaw_ratio": false
+      }
+    }
+  },
+  "recovery": null,
+  "failure": null,
+  "stage_observations": {
+    "terminal_outcome": "model_invalid",
+    "source_gate": "failure_present",
+    "diagnosis_status": "invalid",
+    "accepted_probe_outcomes": {
+      "normal": 0,
+      "abnormal": 0,
+      "unknown": 0
+    }
+  },
+  "execution_costs": {
+    "completed_stage_parent_wall_s": {
+      "train_NONE": 583.6720000000205,
+      "train_INVERSE_RATIO": 727.4220000000205,
+      "source_evaluation": 102.81200000003446,
+      "reference": 98.25
+    },
+    "completed_stage_total_parent_wall_s": 1512.1560000000754,
+    "failed_stage_execution": null,
+    "known_total_parent_wall_s": 1512.1560000000754,
+    "scope": "부모 프로세스 벽시계 시간. 완료 단계와 실패 단계 실행 receipt를 분리한다."
+  },
+  "model_request_accounting": {
+    "completed": 2,
+    "saved": 2
+  },
+  "interpretation": "새 seed 단일 ratio 계산 오류의 등록 종단 경로 확인. gradient 검사 정상은 계산 계약만 뜻하며 회복은 별도 고정 평가로만 판정한다",
+  "design_coupling": {
+    "seen_before_design": [
+      "PPO 계산 검사 v5(seed 2143~2146, 3 update)",
+      "R1 종단 판 v2(seed 2071·3071)",
+      "설계 파일럿 v2(seed 2162, 모델 호출 없음)",
+      "본 실행 v1(seed 2161) source 평가: failure_present, 첫 진단 요청 404",
+      "본 실행 v2(seed 2163) P_episode 뒤 GPU 사후 점검 invalid",
+      "본 실행 v3(seed 2164) NONE 300회 종료 뒤 GPU 사후 점검 invalid"
+    ],
+    "pilot": {
+      "tag": "ppo_ratio_pilot_s2162_20261022",
+      "result_sha256": "1ab5cab9d7b99c6ab4ecaa274ed73028a4b2af19fb83e0bc4c99dd2d81df5401",
+      "experiment_commit": "e9445abd77138306a5d1c3fc6b2a5ecee9e06dc5"
+    },
+    "pilot_observations": {
+      "source_gate": "failure_present: NONE 걷기, INVERSE_RATIO 낙상 0·생존 20초이나 선속도·yaw 추종 실패",
+      "lin_vel_rmse_mps": {
+        "NONE": 0.1455,
+        "INVERSE_RATIO": 2.5907
+      },
+      "yaw_rate_rmse_radps": {
+        "NONE": 0.2401,
+        "INVERSE_RATIO": 1.6282
+      },
+      "outcomes": {
+        "P_episode": "normal",
+        "P_noise": "normal",
+        "P_physics": "normal",
+        "P_reward": "normal",
+        "P_torque": "abnormal",
+        "P_value": "normal",
+        "P_optimizer_updates": "normal",
+        "P_ppo_gradient": "abnormal"
+      },
+      "P_torque_low_speed_saturation": {
+        "case": 0.7455,
+        "reference": 0.00067
+      },
+      "P_noise_logged_std_mean": {
+        "case": 1.5936,
+        "reference": 0.366
+      },
+      "contract_v1_replay": "첫 검사 8개 중 7개 optimizer_surrogate 확정, P_torque 첫 검사는 actuator 오확정(2검사)",
+      "contract_v2_replay": "첫 검사 8개 모두 optimizer_surrogate 확정, P_torque 첫 검사는 3검사"
+    },
+    "registry_change": "파일럿에서 ratio 오류 정책의 큰 행동 분산이 저속 토크 포화를 만들어 P_torque가 abnormal이었다. 계약 v2는 P_torque의 optimizer_surrogate 예상만 null로 바꿨고 나머지 예상·임계값·고리 규칙은 v1과 같다. 실제 actuator 관측표는 v2에서도 actuator로 확정된다",
+    "statement": "결함 유형과 검사를 이미 알고 설계한 새 seed의 개발 시연이다",
+    "c2_observation": {
+      "tag": "ppo_ratio_repair_s2163_20261023",
+      "result_sha256": "71ff59a1f232b0007e9e4b13264b4455ba93a6e56c88cc6374baed664554c290",
+      "experiment_commit": "85a01a999b6b85c3e3e1645f32ea733c6201ce2e",
+      "outcome": "invalid_at_P_episode_post_gpu_snapshot",
+      "completed_before_invalid": [
+        "P_reward:normal",
+        "P_value:normal",
+        "P_physics:normal"
+      ],
+      "model": "diagnosis feedback 뒤 valid, API 2회 소비",
+      "gpu_observation": "csrss PID의 3D 1% 엔진만 busy였고 NVIDIA 계산 프로세스는 없었다",
+      "preservation": "seed 2163 사용·3163 예약과 기존 결과·API 비용을 보존한다"
+    },
+    "c3_observation": {
+      "tag": "ppo_ratio_repair_s2164_20261023",
+      "result_sha256": "58e166e51c3750d8c52f6d1602d3efef97b6a2b9f5ed2458751c497e16c85c61",
+      "experiment_commit": "03c04a5c750dd8a0434a7d9dbfa550158e3da1eb",
+      "protocol_sha256_lf": "194e0f551dd32f51124f938ed4f2df2cb7ad2768d87c04799790db560dee0864",
+      "classification": "post_NONE_training_external_Kit_busy",
+      "outcome": "invalid",
+      "completed": [
+        "NONE_training_300_updates"
+      ],
+      "not_started": [
+        "INVERSE_RATIO_training",
+        "source_fixed_eval",
+        "diagnosis",
+        "probe_loop",
+        "correction"
+      ],
+      "seed_consumption": {
+        "source": 2164,
+        "source_consumed": true,
+        "restart": 3164,
+        "restart_reserved": true
+      },
+      "observed_cost": {
+        "known_owned_child_wall_s_sum": 609.094,
+        "components": {
+          "training_parent_wall_s": 603.125,
+          "checkpoint_parent_wall_s": 3.937,
+          "telemetry_extract_parent_wall_s": 2.032
+        },
+        "measurement": "소유 자식 실행 세 건의 부모 측정 벽시계 시간 합계이며 GPU 커널 시간이 아니다",
+        "api_requests": 0,
+        "fixed_evaluations": 0
+      }
+    }
+  },
+  "source_commit_sha": "ae63bfeec9401635da4b195bd504202a226e7e77",
+  "protocol_sha256_lf": "cb34674efbb817318d2a44ca7fe0209b46542d0bd016649ccf0d548b72aa52ff",
+  "gpu_admission_evidence": {
+    "validated_receipts": 8,
+    "initial_clear": 8,
+    "resampled_clear": 0,
+    "rejected": 0,
+    "used_for_performance_claim": false
+  }
+}

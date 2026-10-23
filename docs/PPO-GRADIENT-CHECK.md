@@ -116,3 +116,18 @@ v5 본배치에서 세 비용비가 모두 등록 상한 안에 들었고, 오�
 확인 가능한 부모 프로세스 벽시계 시간은 학습 603.125초, 체크포인트 확인 3.937초, 텔레메트리 추출 2.032초로 합계 609.094초다. 이 값은 미수용 단계의 실행 receipt에서 계산했으며 GPU 커널 시간은 아니다. 공개 결과는 최초 GPU 점검 통과 1건과 사후 거부 1건의 결합값도 보존한다.
 
 근거: [실행 요약](../evals/results/ppo_ratio_repair_s2164_20261023/summary.json), [미실행 평가 기록](../evals/results/ppo_ratio_repair_s2164_20261023/evaluations.json), [모델 요청 집계](../evals/results/ppo_ratio_repair_s2164_20261023/model_evidence.json), [출처 결합](../evals/results/ppo_ratio_repair_s2164_20261023/provenance.json), [사전등록](../bench/protocols/ppo_ratio_repair_demo_v3.json).
+
+## 종단 실행 v4의 모델 판단 보류
+
+새 source seed 2165로 정상 정책과 `inverse_ratio` 정책을 각각 300회 학습했다. 26개 명령의 고정 평가에서 정상 정책은 건강 기준을 통과했고, 오류 정책은 선속도와 yaw 추종 기준을 통과하지 못했다.
+
+| 지표 | 정상 | `inverse_ratio` |
+| --- | ---: | ---: |
+| 선속도 RMSE (m/s) | 0.148 | 1.232 |
+| yaw rate RMSE (rad/s) | 0.223 | 1.807 |
+
+진단 모델의 첫 응답은 선택한 검사의 예상 결과표와 달라 `D_EXPECTED`로 거부됐다. 등록된 피드백을 한 번 보낸 뒤에는 여섯 mechanism을 모두 나열해야 하는 `ranking`에 세 개만 들어가 `D_RANKING`으로 다시 거부됐다. 저장된 원문과 validator를 재계산한 결과도 두 판정과 일치했다.
+
+모델 요청은 상한 4회 중 2회를 썼다. 최종 결과는 `model_invalid`다. 무효 응답을 등록 규칙으로 바꾸지 않고 판단 보류(HOLD) 경계를 유지했으며, 검사와 교정 요청은 각각 0건으로 남겼다. 같은 tag를 다시 실행하지 않았으며 교정 학습과 회복 판정도 열지 않았다.
+
+근거: [실행 요약](../evals/results/ppo_ratio_repair_s2165_20261023/summary.json), [26조건 평가](../evals/results/ppo_ratio_repair_s2165_20261023/evaluations.json), [모델 기록](../evals/results/ppo_ratio_repair_s2165_20261023/model_evidence.json), [검사·교정 원장](../evals/results/ppo_ratio_repair_s2165_20261023/probe_correction.json), [출처 결합](../evals/results/ppo_ratio_repair_s2165_20261023/provenance.json), [사전등록](../bench/protocols/ppo_ratio_repair_demo_v4.json).
