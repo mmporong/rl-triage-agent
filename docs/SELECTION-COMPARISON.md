@@ -60,3 +60,14 @@ cd (Join-Path $HOME 'rl-triage-agent')
 완료된 모델 요청 두 건은 모두 첫 응답이 유효했고 피드백이나 인프라 재시도를 쓰지 않았다. API는 상한 60회 중 2회, 기록된 토큰은 5,447개였다. 대기 중인 API·검사·교정 요청은 없었다. 소유 자식 프로세스의 부모 벽시계 합은 1,939.439초이며 GPU 커널 시간이나 완료된 네 정책의 비용을 뜻하지 않는다. 두 번째 교정과 나머지 세 정책은 실행하지 않았다.
 
 [공개 요약](../evals/results/selection_comparison_s2170_20261023/summary.json), [정책별 부분 기록](../evals/results/selection_comparison_s2170_20261023/policies.json), [모델 근거](../evals/results/selection_comparison_s2170_20261023/model_evidence.json), [비용](../evals/results/selection_comparison_s2170_20261023/costs.json), [원본 결합](../evals/results/selection_comparison_s2170_20261023/provenance.json)을 함께 보존한다. 이 실행을 모델의 판단 보류나 네 정책의 회복률 비교로 집계하지 않는다.
+
+## 실행 이름을 보완한 새 seed 계약
+
+[v2 계약](../bench/protocols/selection_comparison_demo_v2.json)은 소비된 seed 2170의 결과를 보존하고 새 seed 2171로 비교한다. 실행 이름에서 고정 접두사를 제거하고 검사별 짧은 토큰을 사용한다. 학습·검사·평가의 모든 이름에 같은 80자 검증을 적용한다. 허용 태그의 가장 긴 접미사를 포함한 413개 이름은 고유하며 최장 68자다.
+
+모델, 정책 순서, 공개 정보뷰, 검사·교정 승인, 두 번째 진단의 receipt 조건, 고정 평가와 비용 상한은 유지한다. 이전 실행의 학습 세 번과 모델 호출 두 번은 별도 소비 기록으로 남긴다. 새 실행의 HTTP 상한은 60회이며, 앞선 두 요청과 합산해 새 seed의 호출 수로 표시하지 않는다. 실행 전 seed 중복과 커밋·소스 결합을 다시 검사한다.
+
+```powershell
+cd (Join-Path $HOME 'rl-triage-agent')
+.\bench\run_selection_comparison_demo_v2.ps1 -Execute
+```
