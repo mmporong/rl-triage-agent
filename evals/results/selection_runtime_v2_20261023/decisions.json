@@ -1,0 +1,106 @@
+{
+  "schema": "public_selection_runtime_decisions_v1",
+  "tag": "selection_runtime_v2_20261023",
+  "rows": [
+    {
+      "case": "case_1",
+      "condition": "production",
+      "requests": 1,
+      "first_attempt": "valid",
+      "final_contract": "valid",
+      "action": "continue",
+      "probe": "P_episode",
+      "registered_infrastructure_retry": false,
+      "semantic_feedback_used": false,
+      "used_for_decision": true
+    },
+    {
+      "case": "case_1",
+      "condition": "exposure_full",
+      "requests": 1,
+      "first_attempt": "valid",
+      "final_contract": "valid",
+      "action": "hold",
+      "probe": null,
+      "registered_infrastructure_retry": false,
+      "semantic_feedback_used": false,
+      "used_for_decision": false
+    },
+    {
+      "case": "case_1",
+      "condition": "exposure_masked",
+      "requests": 1,
+      "first_attempt": "valid",
+      "final_contract": "valid",
+      "action": "hold",
+      "probe": null,
+      "registered_infrastructure_retry": false,
+      "semantic_feedback_used": false,
+      "used_for_decision": false
+    },
+    {
+      "case": "case_2",
+      "condition": "production",
+      "requests": 2,
+      "first_attempt": "infra_error",
+      "final_contract": "valid",
+      "action": "continue",
+      "probe": "P_episode",
+      "registered_infrastructure_retry": true,
+      "semantic_feedback_used": false,
+      "used_for_decision": true
+    },
+    {
+      "case": "case_2",
+      "condition": "exposure_masked",
+      "requests": 1,
+      "first_attempt": "valid",
+      "final_contract": "valid",
+      "action": "continue",
+      "probe": "P_reward",
+      "registered_infrastructure_retry": false,
+      "semantic_feedback_used": false,
+      "used_for_decision": false
+    },
+    {
+      "case": "case_2",
+      "condition": "exposure_full",
+      "requests": 1,
+      "first_attempt": "valid",
+      "final_contract": "valid",
+      "action": "continue",
+      "probe": "P_reward",
+      "registered_infrastructure_retry": false,
+      "semantic_feedback_used": false,
+      "used_for_decision": false
+    }
+  ],
+  "exposure_pairs": [
+    {
+      "case": "case_1",
+      "full": {
+        "action": "hold",
+        "probe": null
+      },
+      "masked": {
+        "action": "hold",
+        "probe": null
+      },
+      "selection_changed": false,
+      "latest_observation_cited": true
+    },
+    {
+      "case": "case_2",
+      "full": {
+        "action": "continue",
+        "probe": "P_reward"
+      },
+      "masked": {
+        "action": "continue",
+        "probe": "P_reward"
+      },
+      "selection_changed": false,
+      "latest_observation_cited": true
+    }
+  ]
+}

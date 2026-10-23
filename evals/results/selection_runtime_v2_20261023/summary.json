@@ -1,0 +1,63 @@
+{
+  "schema": "public_selection_runtime_summary_v1",
+  "tag": "selection_runtime_v2_20261023",
+  "status": "complete",
+  "runtime_verified": false,
+  "runtime_verification_reason": "one_registered_http_error",
+  "measurement": {
+    "kind": "development_measurement_on_previously_seen_inputs",
+    "logical_calls": {
+      "planned": 6,
+      "completed": 6,
+      "final_contract_valid": 6
+    },
+    "production_first_attempt_valid": {
+      "valid": 1,
+      "total": 2,
+      "invalid_model_format": 0,
+      "http_error": 1
+    },
+    "http": {
+      "requests": 7,
+      "success": 6,
+      "error_500": 1,
+      "registered_infrastructure_retries": 1,
+      "pending": 0,
+      "timeout": 0
+    },
+    "tokens": {
+      "overall": null,
+      "reason": "error_response_usage_unavailable",
+      "successful_responses_known": {
+        "successful_responses": 6,
+        "input_tokens": 16676,
+        "output_tokens": 319,
+        "total_tokens": 16995
+      }
+    },
+    "request_wall_s_sum": 106.48190629208693
+  },
+  "exposure": {
+    "pairs": 2,
+    "view_sensitivity": {
+      "changed": 0,
+      "total": 2
+    },
+    "latest_observation_cited": {
+      "yes": 2,
+      "total": 2
+    },
+    "used_for_decision": false
+  },
+  "new_runs": {
+    "gpu": 0,
+    "training": 0,
+    "probe": 0
+  },
+  "claims": {
+    "selector_effect": false,
+    "observation_causal_contribution": false,
+    "recovery": false,
+    "generalization": false
+  }
+}
