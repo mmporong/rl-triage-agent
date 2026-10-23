@@ -1,0 +1,55 @@
+{
+  "api": {
+    "completed": 2,
+    "error": 0,
+    "ok": 2,
+    "pending": 0,
+    "reserved": 2,
+    "timeout": 0
+  },
+  "costs": {
+    "input_tokens": 5343,
+    "output_tokens": 104,
+    "total_tokens": 5447,
+    "wall_s": 2.810263903986197
+  },
+  "decisions": [
+    {
+      "action": "continue",
+      "condition": "production",
+      "epoch": 1,
+      "model_status": "valid",
+      "policy": "model_first_then_rule",
+      "probe": "P_reward",
+      "requests": 1,
+      "selected_by": "model",
+      "slot_id": "model_first_then_rule:e1:first",
+      "used_for_decision": true
+    },
+    {
+      "action": "continue",
+      "condition": "production",
+      "epoch": 2,
+      "model_status": "valid",
+      "policy": "model_first_then_rule",
+      "probe": "P_episode",
+      "requests": 1,
+      "selected_by": "model",
+      "slot_id": "model_first_then_rule:e2:first",
+      "used_for_decision": true
+    }
+  ],
+  "dispositions": {
+    "executed": 2,
+    "no_model_required": 0,
+    "skipped_epoch_absent": 18,
+    "skipped_terminal": 0
+  },
+  "invalid_decision_policy": "HOLD_without_rule_fallback",
+  "production_decision_count": 2,
+  "production_valid_count": 2,
+  "production_valid_rate": 1.0,
+  "schema": "public_selection_comparison_model_evidence_v1",
+  "slots_closed": 20,
+  "status": "complete"
+}

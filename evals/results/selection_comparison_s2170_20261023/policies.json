@@ -1,0 +1,55 @@
+{
+  "policies": {
+    "fixed_eligible": {
+      "corrections": [],
+      "epochs": [],
+      "probe_count": 0,
+      "probe_order": [],
+      "status": "not_started"
+    },
+    "model_adaptive": {
+      "corrections": [],
+      "epochs": [],
+      "probe_count": 0,
+      "probe_order": [],
+      "status": "not_started"
+    },
+    "model_first_then_rule": {
+      "corrections": [
+        "restore_body_frame_reward"
+      ],
+      "epochs": [
+        {
+          "correction_id": "restore_body_frame_reward",
+          "epoch": 1,
+          "outcome": "not_recovered"
+        }
+      ],
+      "probe_count": 5,
+      "probe_order": [
+        "P_reward",
+        "P_episode",
+        "P_value",
+        "P_physics",
+        "P_noise"
+      ],
+      "probe_outcomes": [
+        "abnormal",
+        "normal",
+        "normal",
+        "normal",
+        "normal"
+      ],
+      "reason": null,
+      "status": "running"
+    },
+    "registry_next": {
+      "corrections": [],
+      "epochs": [],
+      "probe_count": 0,
+      "probe_order": [],
+      "status": "not_started"
+    }
+  },
+  "schema": "public_selection_comparison_policies_v1"
+}

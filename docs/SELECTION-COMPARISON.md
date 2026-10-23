@@ -42,9 +42,21 @@ Nemotron 3.5 Super VL 요청 경로에서 고정한 과거 입력 여섯 건을 
 
 설계에는 이미 확인한 두 교정 회복 기록과 위 여섯 모델 대화가 반영됐다. 최종 계약을 고정하기 전에 PPO 계산 결함 seed 2165의 모델 계약 위반도 확인했다. 새 비교 결과는 이 개발 과정과 분리해 기록한다.
 
-CPU 검증을 마친 실행기는 다음 명령으로 커밋·소스·새 seed·GPU 입장 조건을 확인한 뒤 공용 임대 안에서 실행한다. 이 절은 사전등록한 절차이며 실제 회복 결과는 실행 뒤 별도 결과 파일로 남긴다.
+실행기는 다음 명령으로 커밋·소스·새 seed·GPU 입장 조건을 확인한 뒤 공용 임대 안에서 실행했다. seed 2170과 해당 실행 태그는 소비됐으며 같은 명령으로 다시 실행하지 않는다.
 
 ```powershell
 cd (Join-Path $HOME 'rl-triage-agent')
 .\bench\run_selection_comparison_demo_v1.ps1 -Execute
 ```
+
+## seed 2170의 부분 실행 결과
+
+선택 정책 비교는 `invalid`로 끝났다. 첫 정책 `model_first_then_rule`의 두 번째 진단 단계에서 실행 이름이 등록된 길이 제한을 넘어 다음 검사를 시작하지 못했다. 네 정책의 비교 결과는 아직 없다.
+
+정상과 복합 결함 정책을 각각 300회 학습한 뒤 고정 평가로 결함의 행동 실패를 확인했다. 첫 모델 응답은 유효했고 `P_reward`를 선택했다. 검사 결과는 `abnormal`이었으며, 보상 좌표계를 복원한 재학습 300회 뒤에도 추종은 회복되지 않았다.
+
+검증된 `not_recovered` 기록에 따라 두 번째 진단 단계가 열렸다. 모델은 유효한 응답으로 `P_episode`를 선택했고, 이후 등록 순서에 따른 `P_value`, `P_physics`, `P_noise`까지 네 검사가 모두 `normal`이었다. 다음 `P_optimizer_updates`의 실행 계획 검증에서 83자 이름이 80자 제한에 걸렸다. 저장된 상태로 이 경계를 CPU에서 재현했으며, 같은 계획에 77자 이름을 쓰면 검증이 통과했다. 모델 출력 계약 위반으로 분류하지 않는다.
+
+완료된 모델 요청 두 건은 모두 첫 응답이 유효했고 피드백이나 인프라 재시도를 쓰지 않았다. API는 상한 60회 중 2회, 기록된 토큰은 5,447개였다. 대기 중인 API·검사·교정 요청은 없었다. 소유 자식 프로세스의 부모 벽시계 합은 1,939.439초이며 GPU 커널 시간이나 완료된 네 정책의 비용을 뜻하지 않는다. 두 번째 교정과 나머지 세 정책은 실행하지 않았다.
+
+[공개 요약](../evals/results/selection_comparison_s2170_20261023/summary.json), [정책별 부분 기록](../evals/results/selection_comparison_s2170_20261023/policies.json), [모델 근거](../evals/results/selection_comparison_s2170_20261023/model_evidence.json), [비용](../evals/results/selection_comparison_s2170_20261023/costs.json), [원본 결합](../evals/results/selection_comparison_s2170_20261023/provenance.json)을 함께 보존한다. 이 실행을 모델의 판단 보류나 네 정책의 회복률 비교로 집계하지 않는다.
