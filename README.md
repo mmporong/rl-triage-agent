@@ -32,6 +32,8 @@ The residual-diagnosis extension can open a second diagnostic epoch after a veri
 
 Unsupported mechanisms and insufficient evidence end as HOLD without a correction request.
 
+A CPU-verified [resumable PPO diagnosis path](docs/RESUMABLE-DIAGNOSIS.md) preserves completed stages across a recorded API failure. Its model selects the first probe and evidence IDs; registered rules choose later probes and the confirmed correction. Unknown pending requests stop without retransmission. The new-seed GPU confirmation is preregistered separately from the existing results.
+
 ## Key results
 
 | Question | Result | Evidence |
@@ -284,6 +286,8 @@ Earlier development steps, each with its own protocol, results and limits:
 - Network rules apply to child processes, so code run by `run_analysis` can still reach the allowed NVIDIA inference path.
 
 ## 한국어 요약
+
+- 새 PPO 진단 고리는 모델 출력을 검사·근거 ID 선택으로 제한하고, 저장된 API 오류 뒤 완료 단계의 SHA를 확인해 재개합니다. 미완료 요청은 자동 재전송하지 않습니다. 첫 검사는 모델, 이후 검사와 교정은 등록 규칙이 선택합니다. CPU 상태 전이 검증과 실제 새 seed의 GPU 회복 확인을 구분합니다. [구현과 실행](docs/RESUMABLE-DIAGNOSIS.md)
 
 Isaac Lab 로봇 강화학습이 실패했을 때 원인을 찾아 고치는 에이전트입니다. 학습 기록을 읽어 원인 후보를 고르고(Nemotron), 20초 정도 걸리는 검사로 원인을 확인한 뒤, 미리 등록한 수정과 재학습을 승인받아 실행합니다. 회복 여부는 26개 속도 명령으로 정책을 돌리는 고정 평가로 판정합니다.
 
