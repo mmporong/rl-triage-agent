@@ -1,0 +1,124 @@
+{
+  "schema": "brev_compute_pilot_protocol_v1",
+  "version": 1,
+  "registered_before_measurement": true,
+  "purpose_ko": "상위 RTX GPU와 L40S의 기존 정상 학습 호환성·처리량 확인. 진단·교정·회복 평가가 아니다.",
+  "development_provenance_ko": "기존 L40S 설치 기록을 본 뒤 만든 호환성 파일럿이며 이전 클라우드 수치를 새 측정으로 재사용하지 않는다.",
+  "source_binding": {
+    "bench/brev_compute_probe_v1.py": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+    "bench/brev_compute_parent_v1.py": "7c8b9cccf5c32929ea3fdd747612d88ddb51463202859b41cd63c6202cfafc54",
+    "tests/test_brev_compute_probe_v1.py": "7819cf0954b477fbfc495ab9ea65e2081c36ef269d068bd7d8379b6b3347e108",
+    "tests/test_brev_compute_parent_v1.py": "a4e7148b6f7ac866e61259577405477b5178f0c1b8cea7c86e689a2f8e293f41"
+  },
+  "environment": {
+    "python": "3.10.12",
+    "isaacsim": "4.5.0.0",
+    "isaaclab_sha": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "isaaclab": "0.41.3",
+    "isaaclab_rl": "0.1.8",
+    "torch": "2.7.0+cu128",
+    "rsl-rl-lib": "2.3.3",
+    "gymnasium": "1.2.0"
+  },
+  "hardware_arms": [
+    {
+      "arm": "rtx_pro_6000",
+      "instance_type": "verda_RTXPro6000",
+      "gpu_memory_gb": 96,
+      "compute_quote_usd_per_h": 2.34,
+      "min_disk_gb": 250
+    },
+    {
+      "arm": "l40s_control",
+      "instance_type": "l40s-48gb.1x",
+      "gpu_memory_gb": 48,
+      "compute_quote_usd_per_h": 1.74,
+      "min_disk_gb": 128
+    }
+  ],
+  "hardware_quote_notice_ko": "공급 가능 여부는 생성 시 결정된다. 가격은 조회 견적이며 실제 청구액이 아니다. 서로 다른 CPU·RAM·제공자를 포함하는 전체 인스턴스 비교다.",
+  "conditions": {
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+    "num_envs": 4096,
+    "fault": "NONE",
+    "recovery_intervention": null,
+    "training_entry": "scripts/reinforcement_learning/rsl_rl/train.py",
+    "initialization": "restart",
+    "device": "cuda:0",
+    "video": false
+  },
+  "stages": [
+    {
+      "name": "metadata",
+      "mode": "metadata",
+      "timeout_s": 120
+    },
+    {
+      "name": "empty_stage",
+      "mode": "empty-stage",
+      "physics_steps": 1,
+      "robot_envs": 0,
+      "timeout_s": 600
+    },
+    {
+      "name": "warmup",
+      "mode": "train",
+      "seed": 2182,
+      "iterations": 20,
+      "timeout_s": 600,
+      "include_in_throughput_comparison": false
+    },
+    {
+      "name": "normal_s2180",
+      "mode": "train",
+      "seed": 2180,
+      "iterations": 300,
+      "timeout_s": 1800,
+      "include_in_throughput_comparison": true
+    },
+    {
+      "name": "normal_s2181",
+      "mode": "train",
+      "seed": 2181,
+      "iterations": 300,
+      "timeout_s": 1800,
+      "include_in_throughput_comparison": true
+    }
+  ],
+  "seed_contract_ko": "2180·2181·2182는 실행 전 기존 저장소·로컬 Isaac Lab 로그에서 재검사한다. 두 하드웨어 arm에서 같은 seed를 쓰는 것은 이 판에 미리 고정된 짝 비교이며 두 번째 arm을 새로운 seed 확인으로 부르지 않는다.",
+  "success": {
+    "metadata": "exact package versions; CUDA available; one visible GPU; device metadata recorded",
+    "empty_stage": "one physics step, completed report, exit 0, GPU and child process group cleanup verified",
+    "training": "exact task, 4096 environments, exact observed iteration count, checkpoint SHA; completed report, exit 0 and cleanup verified",
+    "arm": "all five stages pass; first failed stage stops this arm"
+  },
+  "metrics": {
+    "primary": "OnPolicyRunner.learn wall seconds, each 300-iteration paired seed and median across two seeds",
+    "secondary": [
+      "owned child launch through exit and cleanup wall seconds",
+      "aggregate environment steps per second",
+      "compute quote multiplied by observed VM lifetime",
+      "setup wall time reported separately",
+      "GPU name/VRAM/driver/CUDA architecture; CPU/RAM/disk metadata"
+    ],
+    "cost_notice_ko": "견적 기반 계산과 공급자의 청구액을 구분한다. 청구액을 조회하지 못하면 미확인으로 남긴다."
+  },
+  "decision_ko": "양쪽 arm이 통과하면 seed별 시간·처리량·견적 비용을 그대로 비교한다. 호환성 실패 arm은 제외하고 실패 단계를 공개한다. 이 파일럿만으로 회복 성공·LLM 효과·반복 수 절감 또는 GPU 고유 성능 차이를 주장하지 않는다. 후속 종단 실행은 별도 판으로 고정한다.",
+  "result_wording": {
+    "both_pass": "고정한 정상 학습 조건에서 두 인스턴스가 실행되었고 처리량을 측정했다.",
+    "single_pass": "한 인스턴스만 고정 조건을 통과해 두 인스턴스 처리량 비교는 성립하지 않았다.",
+    "neither_pass": "고정 조건의 클라우드 실행 호환성을 확인하지 못했다."
+  },
+  "resource_controls": {
+    "initial_pilot_budget_usd": 50,
+    "max_simultaneous_owned_instances": 1,
+    "host_operational_limit_s": 14400,
+    "limit_notice_ko": "호스트 감시기가 살아 있을 때의 운영 상한이며 공급자 TTL 보장이 아니다.",
+    "reserve_compute_hours_per_instance": 4.5,
+    "storage_contingency_usd_per_instance": 5,
+    "release": "copy results then delete exact owned instance ID and verify absence",
+    "on_ambiguous_create_or_release": "preserve reservation; stop new instance creation",
+    "other_workspaces": "untouched"
+  },
+  "retry_ko": "기록·태그를 보존한다. 학습 시작 전 인프라 실패만 새 태그로 재시도할 수 있고 학습 후 실패는 이 판의 결과로 남긴다. 코드·버전·조건을 바꾸려면 새 판을 커밋한다."
+}
