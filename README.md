@@ -34,6 +34,8 @@ Unsupported mechanisms and insufficient evidence end as HOLD without a correctio
 
 A CPU-verified [resumable PPO diagnosis path](docs/RESUMABLE-DIAGNOSIS.md) preserves completed stages across a recorded API failure. Its model selects the first probe and evidence IDs; registered rules choose later probes and the confirmed correction. Unknown pending requests stop without retransmission. The new-seed GPU confirmation is preregistered separately from the existing results.
 
+The [video evidence input contract](docs/VISION-EVIDENCE-CONTRACT.md) extracts six frames on the CPU and binds them to the source video, policy checkpoint and synchronized playback measurements. Missing measurements stay null. The model view contains images and permitted numeric facts; run identifiers, filenames and evaluation labels remain in local provenance.
+
 ## Key results
 
 | Question | Result | Evidence |
@@ -286,6 +288,8 @@ Earlier development steps, each with its own protocol, results and limits:
 - Network rules apply to child processes, so code run by `run_analysis` can still reach the allowed NVIDIA inference path.
 
 ## 한국어 요약
+
+- 영상 입력 준비기는 원본에서 프레임 여섯 장을 추출하고 정책·동기화 운동 기록과 묶습니다. 기록이 없는 수치는 null로 남기며, 모델 입력에서는 실행 ID·파일명·평가 정답을 제외합니다. 영상의 행동 묘사와 원인 확정·회복 판정은 구분합니다. [입력 계약](docs/VISION-EVIDENCE-CONTRACT.md)
 
 - 새 PPO 진단 고리는 모델 출력을 검사·근거 ID 선택으로 제한하고, 저장된 API 오류 뒤 완료 단계의 SHA를 확인해 재개합니다. 미완료 요청은 자동 재전송하지 않습니다. 첫 검사는 모델, 이후 검사와 교정은 등록 규칙이 선택합니다. CPU 상태 전이 검증과 실제 새 seed의 GPU 회복 확인을 구분합니다. [구현과 실행](docs/RESUMABLE-DIAGNOSIS.md)
 
