@@ -1,0 +1,47 @@
+{
+  "schema": "brev_recovery_v4_public_model_calls_v1",
+  "cap": 20,
+  "reserved": 3,
+  "completed": 3,
+  "pending": 0,
+  "calls": [
+    {
+      "index": 1,
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "messages_digest": "9ce3cb3b6b53a09c2e899b6ad510253a9afa9dee927bd4910454785aa43e773b",
+      "wall_s": 1.428147786995396,
+      "status": "completed",
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "finish_reason": "stop",
+      "input_tokens": 2693,
+      "output_tokens": 65,
+      "total_tokens": 2758,
+      "selected_fact_ids": [
+        "telemetry:case:Train/mean_episode_length",
+        "telemetry:reference:Train/mean_episode_length",
+        "telemetry:case:Episode_Termination/time_out",
+        "telemetry:reference:Episode_Termination/time_out"
+      ]
+    },
+    {
+      "index": 2,
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "messages_digest": "a8f732cae24c5e54bbd410f5c997887bc081392c933113a907552ebe550ea829",
+      "wall_s": 0.6507990870159119,
+      "status": "infra_error",
+      "status_code": 500,
+      "error_type": "InternalServerError",
+      "selected_fact_ids": []
+    },
+    {
+      "index": 3,
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "messages_digest": "a8f732cae24c5e54bbd410f5c997887bc081392c933113a907552ebe550ea829",
+      "wall_s": 0.15511198196327314,
+      "status": "infra_error",
+      "status_code": 500,
+      "error_type": "InternalServerError",
+      "selected_fact_ids": []
+    }
+  ]
+}

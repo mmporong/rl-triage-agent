@@ -266,7 +266,7 @@ The [presentation replay](docs/replay/index.html) reads only committed public re
 Earlier development steps, each with its own protocol, results and limits:
 
 - [Brev compute pilot](docs/BREV-COMPUTE-PILOT.md): the pinned normal Go2 workload completed 300 updates on two paired seeds on both an RTX PRO 6000 96GB instance and an L40S 48GB instance. The records cover instance compatibility, throughput, source and checkpoint hashes, separately from diagnosis and recovery evaluation.
-- [Brev recovery contract](bench/protocols/brev_recovery_v4.json): a preregistered experimental Linux path for the registered F1 reward fault, retaining WSL model calls, approval ledgers and the existing 26-condition evaluation. Recovery measurement is pending.
+- [Brev registered-F1 run](docs/BREV-RECOVERY.md): the Linux path completed normal and faulted 300-update training and the 26-condition source evaluation. One model-selected `P_episode` probe was normal; the next model decision returned HTTP 500 twice and the loop ended in HOLD after 3/20 API requests. No correction or recovery evaluation was requested.
 - [Grounded single-run workflow](docs/GROUNDED-SINGLE-RUN.md): checks structured hypothesis premises against source-bound evidence and registers one read-only next check.
 - [Active diagnosis driver](docs/ACTIVE-DIAGNOSIS.md) and [its integration results](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md): a fresh Nemotron probe choice connected to an approval ledger and a fixed Isaac measurement; 0 of 8 model cases met the measurement-dependent judgment-change criterion.
 - [Training correction by continued training](docs/TRAINING-CORRECTION.md): three development cases (reward frame, motor curve, timeout) returned `no_recovery` after 300 additional updates; also the policy-free motor-curve inspection.
@@ -302,5 +302,6 @@ Isaac Lab 로봇 강화학습이 실패했을 때 원인을 찾아 고치는 에
 - Nemotron 3.5 Super VL의 영상 보조 관찰을 연결한 보상 결함 seed 2080 시연은 교정 재학습(seed 3080)으로 회복했고, 정상·결함·교정 정책을 각각 걷기·제자리·걷기로 관찰했습니다. 세 응답이 모두 유효했으며 고정 평가 라벨과 3/3 대응했습니다. 이 시연의 결정 모델은 3 Super였고 영상 관찰은 판정에 쓰지 않았습니다. 새 실행 판에서는 진단·교정 제안도 3.5 Super VL로 등록하며, 이전 결과와 합산하지 않습니다. [근거](docs/NEMOTRON-ENDPOINT-COMPARISON-V3.md#회복-시연에-연결한-영상-보조-관찰)
 - 같은 입력으로 모델을 55번 호출하면 유효한 출력의 판단은 늘 같았지만 6번은 출력 형식을 어겼습니다. 틀린 곳을 알려 주고 한 번 더 물으면 1번으로 줄었습니다.
 - Brev의 RTX PRO 6000 96GB와 L40S 48GB에서 기존 Isaac 버전·Go2 정상 학습 조건을 유지한 채 두 seed를 각각 300회 학습했습니다. 네 실행이 모두 완료됐고, 학습 시간 중앙값은 각각 136.7초와 184.9초였습니다. 이 파일럿의 범위는 정상 학습의 호환성과 인스턴스 처리량입니다. [근거](docs/BREV-COMPUTE-PILOT.md)
+- Brev L40S의 등록 F1 실행은 정상·결함 정책을 각각 300회 학습한 뒤 고정 평가를 마쳤습니다. 선속도 추종 오차는 정상 0.140 m/s, 결함 1.179 m/s였습니다. 모델이 선택한 `P_episode` 검사는 normal이었고, 다음 모델 판단에서 HTTP 500이 두 번 반환돼 API 3/20회에서 HOLD로 멈췄습니다. 교정과 회복 평가는 요청하지 않았습니다. [근거](docs/BREV-RECOVERY.md)
 
 결함·검사·수정을 같은 팀이 만들었고 평지 보행 로봇 작업 둘(대부분 Go2, ANYmal-C는 보상 결함 시연 두 건)과 적은 seed로 얻은 결과라, 진단 정확도·일반화·규칙 대비 우위·비용 절감은 주장하지 않습니다. 자세한 수치와 근거 파일은 위 영어 본문과 연결 문서에 있습니다.
