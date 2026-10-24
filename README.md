@@ -36,6 +36,8 @@ A CPU-verified [resumable PPO diagnosis path](docs/RESUMABLE-DIAGNOSIS.md) prese
 
 The [video evidence input contract](docs/VISION-EVIDENCE-CONTRACT.md) extracts six frames on the CPU and binds them to the source video, policy checkpoint and synchronized playback measurements. Missing measurements stay null. The model view contains images and permitted numeric facts; run identifiers, filenames and evaluation labels remain in local provenance. A new [grounded observation worker](evals/grounded_vision_worker_v1.py) validates the frame IDs and timestamps cited by Nemotron 3.5 and journals requests across restarts; its [development protocol](bench/protocols/grounded_vision_development_v1.json) registers two existing Go2 and G1 video inputs with a shared six-request cap.
 
+A [CPU-verified selection bridge](docs/VISION-INSPECTION-SELECTION.md) prepares text, video and combined views with the same eligible probes and budgets. The model selects probe and evidence IDs; the host supplies arguments, and HOLD produces no execution request. Its CPU checks establish the connection to the approval path; the contribution of video requires a separately registered comparison.
+
 ## Key results
 
 | Question | Result | Evidence |
@@ -290,6 +292,7 @@ Earlier development steps, each with its own protocol, results and limits:
 ## 한국어 요약
 
 - 영상 입력 준비기는 원본에서 프레임 여섯 장을 추출하고 정책·동기화 운동 기록과 묶습니다. 기록이 없는 수치는 null로 남기며, 모델 입력에서는 실행 ID·파일명·평가 정답을 제외합니다. 새 관찰 실행기는 Nemotron 3.5가 인용한 프레임 ID·시각을 검증하고 요청 원장을 재개합니다. 기존 Go2·G1 영상 두 입력을 개발 확인용으로 고정했으며, API 상한은 합계 6회입니다. 영상의 행동 묘사와 원인 확정·회복 판정은 구분합니다. [입력 계약](docs/VISION-EVIDENCE-CONTRACT.md) · [개발 사전등록](bench/protocols/grounded_vision_development_v1.json)
+- 텍스트·영상·결합 입력에서 같은 검사 목록과 예산을 쓰는 선택 접속부를 CPU로 검증했습니다. 모델은 검사·근거 ID만 고르고 인자는 호스트가 만듭니다. 유효한 판단 보류와 무효 응답은 모두 실행 요청 없이 멈춥니다. 영상이 더 나은 검사 선택에 도움이 되는지는 별도 사전등록 비교에서 확인합니다. [검사 선택 계약](docs/VISION-INSPECTION-SELECTION.md)
 
 - 새 PPO 진단 고리는 모델 출력을 검사·근거 ID 선택으로 제한하고, 저장된 API 오류 뒤 완료 단계의 SHA를 확인해 재개합니다. 미완료 요청은 자동 재전송하지 않습니다. 첫 검사는 모델, 이후 검사와 교정은 등록 규칙이 선택합니다. CPU 상태 전이 검증과 실제 새 seed의 GPU 회복 확인을 구분합니다. [구현과 실행](docs/RESUMABLE-DIAGNOSIS.md)
 
