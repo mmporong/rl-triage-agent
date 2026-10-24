@@ -1,0 +1,471 @@
+{
+  "schema": "brev_compute_pilot_public_arm_v1",
+  "arm": "l40s",
+  "source_anchor": "47a85b824b70f92f7258d1b4f327e17e8c76f022",
+  "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+  "raw_archive_sha256": "b55e400dec2ba0135d5ef43b6cbae5dfb7fc22b7d0d237a5606f00960672ebf8",
+  "hardware": {
+    "os": "Linux-5.15.0-126-generic-x86_64-with-glibc2.35",
+    "cpu_count": 8,
+    "cpu_model": "AMD EPYC 9254 24-Core Processor",
+    "mem_total_kib": 151413172,
+    "gpu_name_memory_driver": "NVIDIA L40S, 46068 MiB, 565.57.01",
+    "distribution": "Ubuntu 22.04.5 LTS"
+  },
+  "setup": {
+    "first_started_utc": "2026-10-24T02:31:20Z",
+    "final_completed_utc": "2026-10-24T02:41:42Z",
+    "elapsed_s_including_all_attempts": 622.0,
+    "attempts_included": 4
+  },
+  "resource": {
+    "instance_type": "l40s-48gb.1x",
+    "quoted_compute_usd_per_h": 1.74,
+    "observed_lifetime_s": 1747.1720000000205,
+    "lifetime_compute_quote_usd": 0.8444664666666766,
+    "provider_billed_usd": null,
+    "storage_billed_usd": null,
+    "exact_owned_instance_deletion_verified": true
+  },
+  "sanitization": {
+    "worker_checkpoint_path": "replaced with path relative to IsaacLab",
+    "raw_sha_notice": "parent report_sha256_raw binds the original worker receipt, before path removal"
+  },
+  "stages": [
+    {
+      "stage": "metadata",
+      "parent": {
+        "schema": "brev_compute_parent_v1",
+        "completed": true,
+        "mode": "metadata",
+        "stage": "metadata",
+        "timed_out": false,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+        "worker_sha256_lf": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+        "gpu_before_pids": [],
+        "wall_scope": "owned_child_launch_to_exit_and_process_group_cleanup",
+        "timeout_s": 120,
+        "wall_s": 1.1661716849999948,
+        "gpu_after_pids": [],
+        "report_sha256_raw": "1ce53d175af22d54dee496405ed659a6ae501d6ae950cef129ded7d47069576a"
+      },
+      "worker": {
+        "schema": "brev_compute_metadata_v1",
+        "mode": "metadata",
+        "completed": true,
+        "scope": "compatibility_and_throughput_only_not_diagnostic_or_recovery_evidence",
+        "timeout_s": 120.0,
+        "timeout_enforcement": "parent_controller",
+        "python": {
+          "version": "3.10.12",
+          "implementation": "CPython"
+        },
+        "packages": {
+          "isaacsim": "4.5.0.0",
+          "isaaclab": "0.41.3",
+          "isaaclab_rl": "0.1.8",
+          "torch": "2.7.0+cu128",
+          "rsl-rl-lib": "2.3.3",
+          "gymnasium": "1.2.0"
+        },
+        "torch": {
+          "imported": true,
+          "version": "2.7.0+cu128",
+          "built_cuda_version": "12.8",
+          "cuda_available": true,
+          "device_count": 1,
+          "compiled_architectures": [
+            "sm_75",
+            "sm_80",
+            "sm_86",
+            "sm_90",
+            "sm_100",
+            "sm_120",
+            "compute_120"
+          ],
+          "devices": [
+            {
+              "index": 0,
+              "name": "NVIDIA L40S",
+              "compute_capability": [
+                8,
+                9
+              ],
+              "total_memory_bytes": 47693955072
+            }
+          ]
+        },
+        "wall_s": 0.917528596000011,
+        "wall_scope": "worker_start_to_report_write",
+        "shutdown_verification": "parent_exit_required"
+      },
+      "raw_parent_sha256": "c354d79a9e790375c426a387dbf3bfce135e2a223cc1a2eb85751bb1ac1492ca",
+      "raw_worker_sha256": "1ce53d175af22d54dee496405ed659a6ae501d6ae950cef129ded7d47069576a"
+    },
+    {
+      "stage": "empty_stage",
+      "parent": {
+        "schema": "brev_compute_parent_v1",
+        "completed": true,
+        "mode": "empty-stage",
+        "stage": "empty_stage",
+        "timed_out": false,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+        "worker_sha256_lf": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+        "gpu_before_pids": [],
+        "wall_scope": "owned_child_launch_to_exit_and_process_group_cleanup",
+        "timeout_s": 600,
+        "wall_s": 6.776301944000011,
+        "gpu_after_pids": [],
+        "report_sha256_raw": "dc7545d92278b30efc4698687412f3e05eb60e962368cd05b34424817c41f1a1"
+      },
+      "worker": {
+        "schema": "brev_compute_empty_stage_v1",
+        "mode": "empty-stage",
+        "completed": true,
+        "scope": "compatibility_and_throughput_only_not_diagnostic_or_recovery_evidence",
+        "timeout_s": 600.0,
+        "timeout_enforcement": "parent_controller",
+        "python": {
+          "version": "3.10.12",
+          "implementation": "CPython"
+        },
+        "packages": {
+          "isaacsim": "4.5.0.0",
+          "isaaclab": "0.41.3",
+          "isaaclab_rl": "0.1.8",
+          "torch": "2.7.0+cu128",
+          "rsl-rl-lib": "2.3.3",
+          "gymnasium": "1.2.0"
+        },
+        "torch": {
+          "imported": true,
+          "version": "2.7.0+cu128",
+          "built_cuda_version": "12.8",
+          "cuda_available": true,
+          "device_count": 1,
+          "compiled_architectures": [
+            "sm_75",
+            "sm_80",
+            "sm_86",
+            "sm_90",
+            "sm_100",
+            "sm_120",
+            "compute_120"
+          ],
+          "devices": [
+            {
+              "index": 0,
+              "name": "NVIDIA L40S",
+              "compute_capability": [
+                8,
+                9
+              ],
+              "total_memory_bytes": 47693955072
+            }
+          ]
+        },
+        "checkpoint_loaded": false,
+        "robot_environments": 0,
+        "empty_stage_physics_steps": 1,
+        "wall_s": 5.680775254999958,
+        "wall_scope": "worker_start_to_report_before_app_close",
+        "shutdown_verification": "parent_exit_and_cleanup_receipt_required"
+      },
+      "raw_parent_sha256": "09ee63d56224f3efb4fc93551d854d789db565b30411aca1410489cdd299cb42",
+      "raw_worker_sha256": "dc7545d92278b30efc4698687412f3e05eb60e962368cd05b34424817c41f1a1"
+    },
+    {
+      "stage": "warmup",
+      "parent": {
+        "schema": "brev_compute_parent_v1",
+        "completed": true,
+        "mode": "train",
+        "stage": "warmup",
+        "timed_out": false,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+        "worker_sha256_lf": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+        "gpu_before_pids": [],
+        "wall_scope": "owned_child_launch_to_exit_and_process_group_cleanup",
+        "timeout_s": 600,
+        "wall_s": 30.218791322000015,
+        "gpu_after_pids": [],
+        "report_sha256_raw": "0b15afc6e04a67973589be4fc9de51f2db01dec1313c03593a8f54e88e278388"
+      },
+      "worker": {
+        "schema": "brev_compute_train_v1",
+        "mode": "train",
+        "completed": true,
+        "scope": "compatibility_and_throughput_only_not_diagnostic_or_recovery_evidence",
+        "timeout_s": 600.0,
+        "timeout_enforcement": "parent_controller",
+        "python": {
+          "version": "3.10.12",
+          "implementation": "CPython"
+        },
+        "packages": {
+          "isaacsim": "4.5.0.0",
+          "isaaclab": "0.41.3",
+          "isaaclab_rl": "0.1.8",
+          "torch": "2.7.0+cu128",
+          "rsl-rl-lib": "2.3.3",
+          "gymnasium": "1.2.0"
+        },
+        "torch": {
+          "imported": true,
+          "version": "2.7.0+cu128",
+          "built_cuda_version": "12.8",
+          "cuda_available": true,
+          "device_count": 1,
+          "compiled_architectures": [
+            "sm_75",
+            "sm_80",
+            "sm_86",
+            "sm_90",
+            "sm_100",
+            "sm_120",
+            "compute_120"
+          ],
+          "devices": [
+            {
+              "index": 0,
+              "name": "NVIDIA L40S",
+              "compute_capability": [
+                8,
+                9
+              ],
+              "total_memory_bytes": 47693955072
+            }
+          ]
+        },
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "observed_task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "seed": 2182,
+        "run_name": "brev_l40s_warmup_20261024",
+        "num_envs": 4096,
+        "observed_num_envs": 4096,
+        "requested_iterations": 20,
+        "learn_arguments": {
+          "num_learning_iterations": 20,
+          "init_at_random_ep_len": true
+        },
+        "initial_learning_iteration": 0,
+        "final_learning_iteration": 19,
+        "observed_iterations": 20,
+        "num_steps_per_env": 24,
+        "aggregate_environment_steps": 1966080,
+        "aggregate_environment_steps_scope": "num_envs_times_rollout_steps_times_observed_iterations",
+        "aggregate_environment_steps_per_s": 140107.34963729672,
+        "iterations_per_s": 1.4252456628142975,
+        "checkpoint_sha256_raw": "eb3a5c353346222824719449c367cfd48a376fdd006c5d942573f43c021190c7",
+        "script_start_to_learn_start_s": 14.168013084999984,
+        "learn_wall_s": 14.032668557999955,
+        "learn_wall_scope": "OnPolicyRunner.learn_call_only",
+        "wall_s": 28.20068164299994,
+        "wall_scope": "worker_start_to_learn_return_before_upstream_app_close",
+        "shutdown_verification": "parent_exit_and_cleanup_receipt_required",
+        "checkpoint_relative_path": "logs/rsl_rl/unitree_go2_flat/2026-10-24_02-44-06_brev_l40s_warmup_20261024/model_19.pt"
+      },
+      "raw_parent_sha256": "0c5a661e2fe256dedeb55b6a318fdc4661b6b0c1ab46528cd060df6238a04dec",
+      "raw_worker_sha256": "0b15afc6e04a67973589be4fc9de51f2db01dec1313c03593a8f54e88e278388"
+    },
+    {
+      "stage": "normal_s2180",
+      "parent": {
+        "schema": "brev_compute_parent_v1",
+        "completed": true,
+        "mode": "train",
+        "stage": "normal_s2180",
+        "timed_out": false,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+        "worker_sha256_lf": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+        "gpu_before_pids": [],
+        "wall_scope": "owned_child_launch_to_exit_and_process_group_cleanup",
+        "timeout_s": 1800,
+        "wall_s": 203.0419100680001,
+        "gpu_after_pids": [],
+        "report_sha256_raw": "5a31e88255b0264b585eaa1a0df7b11926a9a79bb0046cd89d55bae43250540d"
+      },
+      "worker": {
+        "schema": "brev_compute_train_v1",
+        "mode": "train",
+        "completed": true,
+        "scope": "compatibility_and_throughput_only_not_diagnostic_or_recovery_evidence",
+        "timeout_s": 1800.0,
+        "timeout_enforcement": "parent_controller",
+        "python": {
+          "version": "3.10.12",
+          "implementation": "CPython"
+        },
+        "packages": {
+          "isaacsim": "4.5.0.0",
+          "isaaclab": "0.41.3",
+          "isaaclab_rl": "0.1.8",
+          "torch": "2.7.0+cu128",
+          "rsl-rl-lib": "2.3.3",
+          "gymnasium": "1.2.0"
+        },
+        "torch": {
+          "imported": true,
+          "version": "2.7.0+cu128",
+          "built_cuda_version": "12.8",
+          "cuda_available": true,
+          "device_count": 1,
+          "compiled_architectures": [
+            "sm_75",
+            "sm_80",
+            "sm_86",
+            "sm_90",
+            "sm_100",
+            "sm_120",
+            "compute_120"
+          ],
+          "devices": [
+            {
+              "index": 0,
+              "name": "NVIDIA L40S",
+              "compute_capability": [
+                8,
+                9
+              ],
+              "total_memory_bytes": 47693955072
+            }
+          ]
+        },
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "observed_task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "seed": 2180,
+        "run_name": "brev_l40s_normal_s2180_20261024",
+        "num_envs": 4096,
+        "observed_num_envs": 4096,
+        "requested_iterations": 300,
+        "learn_arguments": {
+          "num_learning_iterations": 300,
+          "init_at_random_ep_len": true
+        },
+        "initial_learning_iteration": 0,
+        "final_learning_iteration": 299,
+        "observed_iterations": 300,
+        "num_steps_per_env": 24,
+        "aggregate_environment_steps": 29491200,
+        "aggregate_environment_steps_scope": "num_envs_times_rollout_steps_times_observed_iterations",
+        "aggregate_environment_steps_per_s": 157170.0206635071,
+        "iterations_per_s": 1.5988161281688142,
+        "checkpoint_sha256_raw": "ed72031e7d20a1233eb44bfbaa8ff207fa3a869562b034790a892f936a277959",
+        "script_start_to_learn_start_s": 13.265706330999933,
+        "learn_wall_s": 187.6388377090001,
+        "learn_wall_scope": "OnPolicyRunner.learn_call_only",
+        "wall_s": 200.90454404000002,
+        "wall_scope": "worker_start_to_learn_return_before_upstream_app_close",
+        "shutdown_verification": "parent_exit_and_cleanup_receipt_required",
+        "checkpoint_relative_path": "logs/rsl_rl/unitree_go2_flat/2026-10-24_02-45-38_brev_l40s_normal_s2180_20261024/model_299.pt"
+      },
+      "raw_parent_sha256": "1354a7be82e5781d70d720d3c90219982f62babaa2e0b9ab6cda11b3c8411bbc",
+      "raw_worker_sha256": "5a31e88255b0264b585eaa1a0df7b11926a9a79bb0046cd89d55bae43250540d"
+    },
+    {
+      "stage": "normal_s2181",
+      "parent": {
+        "schema": "brev_compute_parent_v1",
+        "completed": true,
+        "mode": "train",
+        "stage": "normal_s2181",
+        "timed_out": false,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+        "worker_sha256_lf": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+        "gpu_before_pids": [],
+        "wall_scope": "owned_child_launch_to_exit_and_process_group_cleanup",
+        "timeout_s": 1800,
+        "wall_s": 197.42252229299993,
+        "gpu_after_pids": [],
+        "report_sha256_raw": "71a05a8077cd830f1c5fbb2690b57cfc84e15ce2ea1daf108dcc5d0c819ad0f7"
+      },
+      "worker": {
+        "schema": "brev_compute_train_v1",
+        "mode": "train",
+        "completed": true,
+        "scope": "compatibility_and_throughput_only_not_diagnostic_or_recovery_evidence",
+        "timeout_s": 1800.0,
+        "timeout_enforcement": "parent_controller",
+        "python": {
+          "version": "3.10.12",
+          "implementation": "CPython"
+        },
+        "packages": {
+          "isaacsim": "4.5.0.0",
+          "isaaclab": "0.41.3",
+          "isaaclab_rl": "0.1.8",
+          "torch": "2.7.0+cu128",
+          "rsl-rl-lib": "2.3.3",
+          "gymnasium": "1.2.0"
+        },
+        "torch": {
+          "imported": true,
+          "version": "2.7.0+cu128",
+          "built_cuda_version": "12.8",
+          "cuda_available": true,
+          "device_count": 1,
+          "compiled_architectures": [
+            "sm_75",
+            "sm_80",
+            "sm_86",
+            "sm_90",
+            "sm_100",
+            "sm_120",
+            "compute_120"
+          ],
+          "devices": [
+            {
+              "index": 0,
+              "name": "NVIDIA L40S",
+              "compute_capability": [
+                8,
+                9
+              ],
+              "total_memory_bytes": 47693955072
+            }
+          ]
+        },
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "observed_task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "seed": 2181,
+        "run_name": "brev_l40s_normal_s2181_20261024",
+        "num_envs": 4096,
+        "observed_num_envs": 4096,
+        "requested_iterations": 300,
+        "learn_arguments": {
+          "num_learning_iterations": 300,
+          "init_at_random_ep_len": true
+        },
+        "initial_learning_iteration": 0,
+        "final_learning_iteration": 299,
+        "observed_iterations": 300,
+        "num_steps_per_env": 24,
+        "aggregate_environment_steps": 29491200,
+        "aggregate_environment_steps_scope": "num_envs_times_rollout_steps_times_observed_iterations",
+        "aggregate_environment_steps_per_s": 161935.32021376755,
+        "iterations_per_s": 1.647291261940181,
+        "checkpoint_sha256_raw": "60593f3527362a1857bc3d6b4fd7cfbf3155102bb6534a0d1473db25654ed1b4",
+        "script_start_to_learn_start_s": 13.342232047999914,
+        "learn_wall_s": 182.1171561650001,
+        "learn_wall_scope": "OnPolicyRunner.learn_call_only",
+        "wall_s": 195.459388213,
+        "wall_scope": "worker_start_to_learn_return_before_upstream_app_close",
+        "shutdown_verification": "parent_exit_and_cleanup_receipt_required",
+        "checkpoint_relative_path": "logs/rsl_rl/unitree_go2_flat/2026-10-24_02-50-42_brev_l40s_normal_s2181_20261024/model_299.pt"
+      },
+      "raw_parent_sha256": "fe697aa213a04b4c03e7d7a7bc0a5e5083b6b1cb70802f77b8a6ade014050681",
+      "raw_worker_sha256": "71a05a8077cd830f1c5fbb2690b57cfc84e15ce2ea1daf108dcc5d0c819ad0f7"
+    }
+  ]
+}

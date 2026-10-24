@@ -1,0 +1,471 @@
+{
+  "schema": "brev_compute_pilot_public_arm_v1",
+  "arm": "rtx",
+  "source_anchor": "47a85b824b70f92f7258d1b4f327e17e8c76f022",
+  "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+  "raw_archive_sha256": "5284c6f5c585962597722bec29c3eb791f1bea482d744207c094ed2d6e245965",
+  "hardware": {
+    "os": "Linux-6.8.0-100-generic-x86_64-with-glibc2.39",
+    "cpu_count": 30,
+    "cpu_model": "AMD EPYC 9555 64-Core Processor",
+    "mem_total_kib": 92655640,
+    "gpu_name_memory_driver": "NVIDIA RTX PRO 6000 Blackwell Server Edition, 97887 MiB, 580.126.09",
+    "distribution": "Ubuntu 24.04.4 LTS"
+  },
+  "setup": {
+    "first_started_utc": "2026-10-24T02:07:29Z",
+    "final_completed_utc": "2026-10-24T02:13:22Z",
+    "elapsed_s_including_all_attempts": 353.0,
+    "attempts_included": 2
+  },
+  "resource": {
+    "instance_type": "verda_RTXPro6000",
+    "quoted_compute_usd_per_h": 2.34,
+    "observed_lifetime_s": 1611.6870000000345,
+    "lifetime_compute_quote_usd": 1.0475965500000224,
+    "provider_billed_usd": null,
+    "storage_billed_usd": null,
+    "exact_owned_instance_deletion_verified": true
+  },
+  "sanitization": {
+    "worker_checkpoint_path": "replaced with path relative to IsaacLab",
+    "raw_sha_notice": "parent report_sha256_raw binds the original worker receipt, before path removal"
+  },
+  "stages": [
+    {
+      "stage": "metadata",
+      "parent": {
+        "schema": "brev_compute_parent_v1",
+        "completed": true,
+        "mode": "metadata",
+        "stage": "metadata",
+        "timed_out": false,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+        "worker_sha256_lf": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+        "gpu_before_pids": [],
+        "wall_scope": "owned_child_launch_to_exit_and_process_group_cleanup",
+        "timeout_s": 120,
+        "wall_s": 1.1150663070000064,
+        "gpu_after_pids": [],
+        "report_sha256_raw": "5d1bbade9650d9949463be5700d51b49dbde3016c128a1d5fe255381a65ca739"
+      },
+      "worker": {
+        "schema": "brev_compute_metadata_v1",
+        "mode": "metadata",
+        "completed": true,
+        "scope": "compatibility_and_throughput_only_not_diagnostic_or_recovery_evidence",
+        "timeout_s": 120.0,
+        "timeout_enforcement": "parent_controller",
+        "python": {
+          "version": "3.10.12",
+          "implementation": "CPython"
+        },
+        "packages": {
+          "isaacsim": "4.5.0.0",
+          "isaaclab": "0.41.3",
+          "isaaclab_rl": "0.1.8",
+          "torch": "2.7.0+cu128",
+          "rsl-rl-lib": "2.3.3",
+          "gymnasium": "1.2.0"
+        },
+        "torch": {
+          "imported": true,
+          "version": "2.7.0+cu128",
+          "built_cuda_version": "12.8",
+          "cuda_available": true,
+          "device_count": 1,
+          "compiled_architectures": [
+            "sm_75",
+            "sm_80",
+            "sm_86",
+            "sm_90",
+            "sm_100",
+            "sm_120",
+            "compute_120"
+          ],
+          "devices": [
+            {
+              "index": 0,
+              "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+              "compute_capability": [
+                12,
+                0
+              ],
+              "total_memory_bytes": 101973950464
+            }
+          ]
+        },
+        "wall_s": 0.847268568000004,
+        "wall_scope": "worker_start_to_report_write",
+        "shutdown_verification": "parent_exit_required"
+      },
+      "raw_parent_sha256": "1b34372917eb3dc50e055eb8e48f550d20a616966508a643609517b17a1c4cf0",
+      "raw_worker_sha256": "5d1bbade9650d9949463be5700d51b49dbde3016c128a1d5fe255381a65ca739"
+    },
+    {
+      "stage": "empty_stage",
+      "parent": {
+        "schema": "brev_compute_parent_v1",
+        "completed": true,
+        "mode": "empty-stage",
+        "stage": "empty_stage",
+        "timed_out": false,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+        "worker_sha256_lf": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+        "gpu_before_pids": [],
+        "wall_scope": "owned_child_launch_to_exit_and_process_group_cleanup",
+        "timeout_s": 600,
+        "wall_s": 28.400814327000035,
+        "gpu_after_pids": [],
+        "report_sha256_raw": "4b36964353831bd421698f05fd271f1959fa56869898b822838e5205034e7b41"
+      },
+      "worker": {
+        "schema": "brev_compute_empty_stage_v1",
+        "mode": "empty-stage",
+        "completed": true,
+        "scope": "compatibility_and_throughput_only_not_diagnostic_or_recovery_evidence",
+        "timeout_s": 600.0,
+        "timeout_enforcement": "parent_controller",
+        "python": {
+          "version": "3.10.12",
+          "implementation": "CPython"
+        },
+        "packages": {
+          "isaacsim": "4.5.0.0",
+          "isaaclab": "0.41.3",
+          "isaaclab_rl": "0.1.8",
+          "torch": "2.7.0+cu128",
+          "rsl-rl-lib": "2.3.3",
+          "gymnasium": "1.2.0"
+        },
+        "torch": {
+          "imported": true,
+          "version": "2.7.0+cu128",
+          "built_cuda_version": "12.8",
+          "cuda_available": true,
+          "device_count": 1,
+          "compiled_architectures": [
+            "sm_75",
+            "sm_80",
+            "sm_86",
+            "sm_90",
+            "sm_100",
+            "sm_120",
+            "compute_120"
+          ],
+          "devices": [
+            {
+              "index": 0,
+              "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+              "compute_capability": [
+                12,
+                0
+              ],
+              "total_memory_bytes": 101973950464
+            }
+          ]
+        },
+        "checkpoint_loaded": false,
+        "robot_environments": 0,
+        "empty_stage_physics_steps": 1,
+        "wall_s": 27.552443788000005,
+        "wall_scope": "worker_start_to_report_before_app_close",
+        "shutdown_verification": "parent_exit_and_cleanup_receipt_required"
+      },
+      "raw_parent_sha256": "14e03d73f733a1ba42414aa70e6e7d998d474f5004f60fdec30395112a2ebf58",
+      "raw_worker_sha256": "4b36964353831bd421698f05fd271f1959fa56869898b822838e5205034e7b41"
+    },
+    {
+      "stage": "warmup",
+      "parent": {
+        "schema": "brev_compute_parent_v1",
+        "completed": true,
+        "mode": "train",
+        "stage": "warmup",
+        "timed_out": false,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+        "worker_sha256_lf": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+        "gpu_before_pids": [],
+        "wall_scope": "owned_child_launch_to_exit_and_process_group_cleanup",
+        "timeout_s": 600,
+        "wall_s": 24.653405492000047,
+        "gpu_after_pids": [],
+        "report_sha256_raw": "18a8596445ef5bec02e8ee8da59e6e12b1b542f0017ece4b301fae4f6d3365c1"
+      },
+      "worker": {
+        "schema": "brev_compute_train_v1",
+        "mode": "train",
+        "completed": true,
+        "scope": "compatibility_and_throughput_only_not_diagnostic_or_recovery_evidence",
+        "timeout_s": 600.0,
+        "timeout_enforcement": "parent_controller",
+        "python": {
+          "version": "3.10.12",
+          "implementation": "CPython"
+        },
+        "packages": {
+          "isaacsim": "4.5.0.0",
+          "isaaclab": "0.41.3",
+          "isaaclab_rl": "0.1.8",
+          "torch": "2.7.0+cu128",
+          "rsl-rl-lib": "2.3.3",
+          "gymnasium": "1.2.0"
+        },
+        "torch": {
+          "imported": true,
+          "version": "2.7.0+cu128",
+          "built_cuda_version": "12.8",
+          "cuda_available": true,
+          "device_count": 1,
+          "compiled_architectures": [
+            "sm_75",
+            "sm_80",
+            "sm_86",
+            "sm_90",
+            "sm_100",
+            "sm_120",
+            "compute_120"
+          ],
+          "devices": [
+            {
+              "index": 0,
+              "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+              "compute_capability": [
+                12,
+                0
+              ],
+              "total_memory_bytes": 101973950464
+            }
+          ]
+        },
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "observed_task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "seed": 2182,
+        "run_name": "brev_rtx_warmup_20261024",
+        "num_envs": 4096,
+        "observed_num_envs": 4096,
+        "requested_iterations": 20,
+        "learn_arguments": {
+          "num_learning_iterations": 20,
+          "init_at_random_ep_len": true
+        },
+        "initial_learning_iteration": 0,
+        "final_learning_iteration": 19,
+        "observed_iterations": 20,
+        "num_steps_per_env": 24,
+        "aggregate_environment_steps": 1966080,
+        "aggregate_environment_steps_scope": "num_envs_times_rollout_steps_times_observed_iterations",
+        "aggregate_environment_steps_per_s": 190045.02712813122,
+        "iterations_per_s": 1.9332379875501629,
+        "checkpoint_sha256_raw": "a8abfa26d8411478d39e5551b0414c0efad930547070587ed55a02fcfec9f0ca",
+        "script_start_to_learn_start_s": 12.56972810800005,
+        "learn_wall_s": 10.34533778499997,
+        "learn_wall_scope": "OnPolicyRunner.learn_call_only",
+        "wall_s": 22.91506589300002,
+        "wall_scope": "worker_start_to_learn_return_before_upstream_app_close",
+        "shutdown_verification": "parent_exit_and_cleanup_receipt_required",
+        "checkpoint_relative_path": "logs/rsl_rl/unitree_go2_flat/2026-10-24_02-19-04_brev_rtx_warmup_20261024/model_19.pt"
+      },
+      "raw_parent_sha256": "4ea21dfd2c4ae52be39ae7e25a843c1a109817bc09631a8a0c2de982eb6ee040",
+      "raw_worker_sha256": "18a8596445ef5bec02e8ee8da59e6e12b1b542f0017ece4b301fae4f6d3365c1"
+    },
+    {
+      "stage": "normal_s2180",
+      "parent": {
+        "schema": "brev_compute_parent_v1",
+        "completed": true,
+        "mode": "train",
+        "stage": "normal_s2180",
+        "timed_out": false,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+        "worker_sha256_lf": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+        "gpu_before_pids": [],
+        "wall_scope": "owned_child_launch_to_exit_and_process_group_cleanup",
+        "timeout_s": 1800,
+        "wall_s": 151.13570816499987,
+        "gpu_after_pids": [],
+        "report_sha256_raw": "ce7dcc824e1f148e1cdce125339cce46fae3366615dc4fca147dc90673909d03"
+      },
+      "worker": {
+        "schema": "brev_compute_train_v1",
+        "mode": "train",
+        "completed": true,
+        "scope": "compatibility_and_throughput_only_not_diagnostic_or_recovery_evidence",
+        "timeout_s": 1800.0,
+        "timeout_enforcement": "parent_controller",
+        "python": {
+          "version": "3.10.12",
+          "implementation": "CPython"
+        },
+        "packages": {
+          "isaacsim": "4.5.0.0",
+          "isaaclab": "0.41.3",
+          "isaaclab_rl": "0.1.8",
+          "torch": "2.7.0+cu128",
+          "rsl-rl-lib": "2.3.3",
+          "gymnasium": "1.2.0"
+        },
+        "torch": {
+          "imported": true,
+          "version": "2.7.0+cu128",
+          "built_cuda_version": "12.8",
+          "cuda_available": true,
+          "device_count": 1,
+          "compiled_architectures": [
+            "sm_75",
+            "sm_80",
+            "sm_86",
+            "sm_90",
+            "sm_100",
+            "sm_120",
+            "compute_120"
+          ],
+          "devices": [
+            {
+              "index": 0,
+              "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+              "compute_capability": [
+                12,
+                0
+              ],
+              "total_memory_bytes": 101973950464
+            }
+          ]
+        },
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "observed_task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "seed": 2180,
+        "run_name": "brev_rtx_normal_s2180_20261024",
+        "num_envs": 4096,
+        "observed_num_envs": 4096,
+        "requested_iterations": 300,
+        "learn_arguments": {
+          "num_learning_iterations": 300,
+          "init_at_random_ep_len": true
+        },
+        "initial_learning_iteration": 0,
+        "final_learning_iteration": 299,
+        "observed_iterations": 300,
+        "num_steps_per_env": 24,
+        "aggregate_environment_steps": 29491200,
+        "aggregate_environment_steps_scope": "num_envs_times_rollout_steps_times_observed_iterations",
+        "aggregate_environment_steps_per_s": 212811.74041229635,
+        "iterations_per_s": 2.1648329713164913,
+        "checkpoint_sha256_raw": "d2f28f20a6fcd23b606866cf53f8d11dbf9c2003647e4d110a9a874efabef131",
+        "script_start_to_learn_start_s": 10.556971060000023,
+        "learn_wall_s": 138.578820618,
+        "learn_wall_scope": "OnPolicyRunner.learn_call_only",
+        "wall_s": 149.13579167800003,
+        "wall_scope": "worker_start_to_learn_return_before_upstream_app_close",
+        "shutdown_verification": "parent_exit_and_cleanup_receipt_required",
+        "checkpoint_relative_path": "logs/rsl_rl/unitree_go2_flat/2026-10-24_02-20-18_brev_rtx_normal_s2180_20261024/model_299.pt"
+      },
+      "raw_parent_sha256": "99fe3b513138d9b988b0267cc0b10a9b509053c18c890da9dc5c3f35b5613cc8",
+      "raw_worker_sha256": "ce7dcc824e1f148e1cdce125339cce46fae3366615dc4fca147dc90673909d03"
+    },
+    {
+      "stage": "normal_s2181",
+      "parent": {
+        "schema": "brev_compute_parent_v1",
+        "completed": true,
+        "mode": "train",
+        "stage": "normal_s2181",
+        "timed_out": false,
+        "exit_code": 0,
+        "cleanup_verified": true,
+        "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+        "worker_sha256_lf": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+        "gpu_before_pids": [],
+        "wall_scope": "owned_child_launch_to_exit_and_process_group_cleanup",
+        "timeout_s": 1800,
+        "wall_s": 147.1450369459999,
+        "gpu_after_pids": [],
+        "report_sha256_raw": "8ce52a1e5d3fab6796afc46069b97cb3382657f5dc9b7b88a2f6a399444b503e"
+      },
+      "worker": {
+        "schema": "brev_compute_train_v1",
+        "mode": "train",
+        "completed": true,
+        "scope": "compatibility_and_throughput_only_not_diagnostic_or_recovery_evidence",
+        "timeout_s": 1800.0,
+        "timeout_enforcement": "parent_controller",
+        "python": {
+          "version": "3.10.12",
+          "implementation": "CPython"
+        },
+        "packages": {
+          "isaacsim": "4.5.0.0",
+          "isaaclab": "0.41.3",
+          "isaaclab_rl": "0.1.8",
+          "torch": "2.7.0+cu128",
+          "rsl-rl-lib": "2.3.3",
+          "gymnasium": "1.2.0"
+        },
+        "torch": {
+          "imported": true,
+          "version": "2.7.0+cu128",
+          "built_cuda_version": "12.8",
+          "cuda_available": true,
+          "device_count": 1,
+          "compiled_architectures": [
+            "sm_75",
+            "sm_80",
+            "sm_86",
+            "sm_90",
+            "sm_100",
+            "sm_120",
+            "compute_120"
+          ],
+          "devices": [
+            {
+              "index": 0,
+              "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+              "compute_capability": [
+                12,
+                0
+              ],
+              "total_memory_bytes": 101973950464
+            }
+          ]
+        },
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "observed_task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "seed": 2181,
+        "run_name": "brev_rtx_normal_s2181_20261024",
+        "num_envs": 4096,
+        "observed_num_envs": 4096,
+        "requested_iterations": 300,
+        "learn_arguments": {
+          "num_learning_iterations": 300,
+          "init_at_random_ep_len": true
+        },
+        "initial_learning_iteration": 0,
+        "final_learning_iteration": 299,
+        "observed_iterations": 300,
+        "num_steps_per_env": 24,
+        "aggregate_environment_steps": 29491200,
+        "aggregate_environment_steps_scope": "num_envs_times_rollout_steps_times_observed_iterations",
+        "aggregate_environment_steps_per_s": 218796.64399188725,
+        "iterations_per_s": 2.2257145588367435,
+        "checkpoint_sha256_raw": "839bb8256f15bf2758bb85d83be1ec50ef5505f5fa2536bb8f5d7efe17d0fdbf",
+        "script_start_to_learn_start_s": 10.629096879999906,
+        "learn_wall_s": 134.78817344699996,
+        "learn_wall_scope": "OnPolicyRunner.learn_call_only",
+        "wall_s": 145.41727032699987,
+        "wall_scope": "worker_start_to_learn_return_before_upstream_app_close",
+        "shutdown_verification": "parent_exit_and_cleanup_receipt_required",
+        "checkpoint_relative_path": "logs/rsl_rl/unitree_go2_flat/2026-10-24_02-24-19_brev_rtx_normal_s2181_20261024/model_299.pt"
+      },
+      "raw_parent_sha256": "942f590432341886b4ba794442491e521a7e4fd2123bc34fd8708fed74fd2c1a",
+      "raw_worker_sha256": "8ce52a1e5d3fab6796afc46069b97cb3382657f5dc9b7b88a2f6a399444b503e"
+    }
+  ]
+}

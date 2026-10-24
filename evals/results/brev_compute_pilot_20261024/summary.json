@@ -1,0 +1,49 @@
+{
+  "schema": "brev_compute_pilot_public_summary_v1",
+  "status": "both_arms_completed",
+  "source_anchor": "47a85b824b70f92f7258d1b4f327e17e8c76f022",
+  "protocol": "bench/protocols/brev_compute_pilot_v1.json",
+  "protocol_sha256_lf": "6fcd2299dd765112e7721bcc741e90467c22289a943309cdaee84497258419bb",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "fault": "NONE",
+  "num_envs": 4096,
+  "iterations": 300,
+  "paired_seeds": [
+    2180,
+    2181
+  ],
+  "warmup_seed": 2182,
+  "warmup_iterations": 20,
+  "arms": [
+    {
+      "arm": "rtx",
+      "completed_main_runs": 2,
+      "median_learn_wall_s": 136.6834970325,
+      "median_owned_wall_s": 149.14037255549988,
+      "median_environment_steps_per_s": 215804.1922020918
+    },
+    {
+      "arm": "l40s",
+      "completed_main_runs": 2,
+      "median_learn_wall_s": 184.8779969370001,
+      "median_owned_wall_s": 200.23221618050002,
+      "median_environment_steps_per_s": 159552.67043863732
+    }
+  ],
+  "paired_learn_seconds": [
+    {
+      "seed": 2180,
+      "rtx": 138.578820618,
+      "l40s": 187.6388377090001
+    },
+    {
+      "seed": 2181,
+      "rtx": 134.78817344699996,
+      "l40s": 182.1171561650001
+    }
+  ],
+  "l40s_to_rtx_median_learn_time_ratio": 1.352599259975333,
+  "total_vm_lifetime_compute_quote_usd": 1.892063016666699,
+  "billing_notice_ko": "VM 생존 시간에 조회 견적을 곱한 값이며 설치·대기 시간을 포함한다. 실제 청구액과 저장소 과금은 확인하지 않았다.",
+  "scope_ko": "CPU·RAM·OS·드라이버가 다른 두 인스턴스의 고정 정상 학습 처리량이다. 에이전트 진단·교정·회복 또는 GPU 자체의 효과를 평가하지 않았다."
+}
