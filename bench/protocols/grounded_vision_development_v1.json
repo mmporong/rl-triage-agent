@@ -1,0 +1,143 @@
+{
+  "schema": "grounded_vision_development_protocol_v1",
+  "protocol_id": "grounded_vision_development_v1_20261025",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "provider_aliases": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "api": {
+    "total_cap": 6,
+    "dialogue_cap": 3,
+    "infra_retry": 1,
+    "semantic_feedback": 1,
+    "sdk_retries": 0
+  },
+  "development_inputs": [
+    {
+      "logical_id": "go2_existing_failure",
+      "contract_sha256": "191eb366cba34807bf9a027afb4d47107132c76c62f0b4bf9d576eeee94f1c10",
+      "checkpoint_sha256": "f36a78916a9a70a669bb7d5d4fa60250b04f0b9afa8911e6db68b440d25ff525"
+    },
+    {
+      "logical_id": "g1_existing_forward",
+      "contract_sha256": "2a67f388ae408f6adc0e3e6d3702ac839119a618ea95f6092fca123bb920f8c2",
+      "checkpoint_sha256": "95b07dbcc327bb2620a5f66781d0902e63749097aaeb9d276eb98977a55c4234"
+    }
+  ],
+  "fixed_order": [
+    "go2_existing_failure",
+    "g1_existing_forward"
+  ],
+  "source_sha256_lf": {
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/grounded_vision_observer_v1.py": "112373db86887fc540edf8d74c60177377088c0d7938f4ec7868b7205abb25a1",
+    "evals/grounded_vision_worker_v1.py": "ec61199c12a7c24d519886fff2cc87868bd2b5795d13cf09f9523b4affa1a088",
+    "evals/model_decision_journal_v1.py": "255b8ed9c0de88a26aadc2f1b4a90b0b01f57b2417aab05ac295031061d23ac2",
+    "evals/nemotron_bottleneck_ledger_v2.py": "94ce9e8b008a9d2ffc405f6dd9adfef4cb86d70d6dd10cd8bfa2f7b541bd20c2",
+    "evals/nemotron_endpoint_ledger_v3.py": "1392f20918c013ee108eeef80bfc91fbfacf0547e95b7db59f0e7a7371e65124",
+    "evals/vision_evidence_contract_v1.py": "82f370942492611246832aed4e6fefbc8b71cfa38a8b4d2798f809437d67babf",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95"
+  },
+  "evidence_sha256_lf": {
+    "docs/VISION-EVIDENCE-CONTRACT.md": "2a45cf99662c725a826f4f04f50ce3835b61023cd74a84188d7b2486b4f90473",
+    "docs/media/scope-transfer-u1-s2051-v1/source_manifest.json": "6401650facbf2087ea6ebbeece31b56b03c25be9a12624e26258667d17c6a0f7",
+    "tests/test_grounded_vision_observer_v1.py": "5aacdbaec178ea78116802b2d0fdafdb419742713beddf9762e4da34ccb1b366",
+    "tests/test_grounded_vision_worker_v1.py": "ec53ade936a29bfadaf6fc39b85b2e067b1a74c9a5a01e7681bd9200f6f01924",
+    "tests/test_vision_evidence_contract_v1.py": "203ab7b8c880c6feb1f633d9b0a2b2034ad6926d0b882587440f02ddb1bdd926"
+  },
+  "registration": {
+    "purpose": "이미 본 사족·이족 영상에 실제 이미지 입력과 frame 근거 인용이 연결되는지 확인하는 개발 측정",
+    "provider_identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+    "request_params": {
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "temperature": 0,
+      "max_tokens": 1024,
+      "stream": false,
+      "extra_body": {
+        "reasoning_effort": "none"
+      }
+    },
+    "global_plan_budget": {
+      "core_cap": 120,
+      "this_stage_cap": 6,
+      "counts_infrastructure_retries": true
+    },
+    "input_disclosures": [
+      {
+        "logical_id": "go2_existing_failure",
+        "contract_sha256": "191eb366cba34807bf9a027afb4d47107132c76c62f0b4bf9d576eeee94f1c10",
+        "video_sha256": "760ba35e958105607e09777bfec6be545abae439772df3c93aba0ea846c5b69a",
+        "source_lineage_id": "development-u1-source-2051",
+        "timestamps_s": [
+          0.5,
+          1.5,
+          2.5,
+          3.48,
+          4.48,
+          5.48
+        ],
+        "same_play_measurements": "missing_null",
+        "known_development_material": true,
+        "visual_caption_disclosure": "기존 시뮬레이션 Play 클립을 그대로 사용한다."
+      },
+      {
+        "logical_id": "g1_existing_forward",
+        "contract_sha256": "2a67f388ae408f6adc0e3e6d3702ac839119a618ea95f6092fca123bb920f8c2",
+        "video_sha256": "01cb7a04f7d73621d5c73da3a3203a9de623f2c78825efaecd179fddc34f2f22",
+        "source_lineage_id": "g1-policy-seed44-development",
+        "timestamps_s": [
+          21.0,
+          22.0,
+          23.0,
+          24.0,
+          25.0,
+          26.0
+        ],
+        "same_play_measurements": "missing_null",
+        "known_development_material": true,
+        "visual_caption_disclosure": "G1 원본의 forward·nominal/issued 명령·heading 수치 자막이 포함된다. 순수 영상 기여 비교가 아니다."
+      }
+    ],
+    "predictions": {
+      "go2_existing_failure": {
+        "walking": "no",
+        "in_place": "yes",
+        "falling": "no"
+      },
+      "g1_existing_forward": {
+        "walking": "yes",
+        "in_place": "no",
+        "falling": "no"
+      },
+      "interpretation": "예측은 개발 영상의 사후 지식을 바탕으로 고정하며 행동 정답·회복 라벨로 사용하지 않는다. unclear도 유효한 출력이다."
+    },
+    "success_criteria": [
+      "등록된 두 입력의 여섯 실제 JPEG를 첫 요청에 포함한다.",
+      "모든 관찰은 walking/in_place/falling의 yes/no/unclear와 존재하는 frame ID·실제 PTS 근거를 반환한다.",
+      "요청·반환 모델명, endpoint 별칭 정책, contract·messages·params SHA와 사용량·시간을 기록한다.",
+      "두 관찰이 총6회 이하에서 observation_ready이면 연결 확인 완료로 쓴다. 유효율과 예측 대응은 별도로 기록한다.",
+      "동일 binding 재개 시 완료 응답을 재생하고, 미완료 예약은 자동 재전송하지 않는다."
+    ],
+    "failure_policy": {
+      "semantic_invalid": "고정 문제 코드 feedback 1회 후에도 무효면 HOLD; 다른 모델·규칙으로 대체하지 않는다.",
+      "infrastructure": "SDK retry 0; 공유 원장에 모두 계수, 고정30초 뒤 같은 binding으로 최대1회 재개. 두 번 실패하면 HOLD.",
+      "unknown_pending": "HOLD; 소비 보존, 임의 새 태그로 같은 요청을 보내지 않는다.",
+      "parent_deadline_s": 700,
+      "termination": "시간 초과는 이 worker의 새 process group에만 TERM을 보내고 10초 후 해당 group만 KILL한다. 미완료 예약은 그대로 둔다."
+    },
+    "result_wording": {
+      "both_valid": "기존 사족·이족 영상 개발 입력 2건에서 근거 프레임을 인용하는 영상 관찰 연결을 확인했다. 원인 확정·교정·회복 검증과 구분한다.",
+      "partial_valid": "영상 관찰 연결을 일부 입력에서 확인했으며 나머지는 기록된 무효·HOLD 사유를 따른다.",
+      "none_valid": "이 개발 확인에서는 유효한 근거 프레임 관찰 연결을 확인하지 못했다.",
+      "behavior": "개발 예측과의 대응을 기술하며 행동 정확도·로봇 간 수리 성능으로 보고하지 않는다."
+    },
+    "decision_boundary": {
+      "evidence_type": "model_interpretation",
+      "used_for_decision": false,
+      "independent_confirmation_sources_added": 0
+    }
+  }
+}
