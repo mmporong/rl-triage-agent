@@ -266,7 +266,7 @@ The [presentation replay](docs/replay/index.html) reads only committed public re
 Earlier development steps, each with its own protocol, results and limits:
 
 - [Brev compute pilot](docs/BREV-COMPUTE-PILOT.md): the pinned normal Go2 workload completed 300 updates on two paired seeds on both an RTX PRO 6000 96GB instance and an L40S 48GB instance. The records cover instance compatibility, throughput, source and checkpoint hashes, separately from diagnosis and recovery evaluation.
-- [Brev recovery contract](bench/protocols/brev_recovery_v1.json): a preregistered experimental Linux path for the registered F1 reward fault, retaining WSL model calls, approval ledgers and the existing 26-condition evaluation. Recovery measurement is pending.
+- [Brev recovery contract](bench/protocols/brev_recovery_v2.json): a preregistered experimental Linux path for the registered F1 reward fault, retaining WSL model calls, approval ledgers and the existing 26-condition evaluation. Recovery measurement is pending.
 - [Grounded single-run workflow](docs/GROUNDED-SINGLE-RUN.md): checks structured hypothesis premises against source-bound evidence and registers one read-only next check.
 - [Active diagnosis driver](docs/ACTIVE-DIAGNOSIS.md) and [its integration results](docs/ACTIVE-DIAGNOSIS-V2-RESULT.md): a fresh Nemotron probe choice connected to an approval ledger and a fixed Isaac measurement; 0 of 8 model cases met the measurement-dependent judgment-change criterion.
 - [Training correction by continued training](docs/TRAINING-CORRECTION.md): three development cases (reward frame, motor curve, timeout) returned `no_recovery` after 300 additional updates; also the policy-free motor-curve inspection.
