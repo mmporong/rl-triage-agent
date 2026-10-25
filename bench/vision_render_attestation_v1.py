@@ -26,6 +26,12 @@ EXECUTION_KEYS = frozenset({
     "gpu_before", "gpu_after", "gpu_before_observation", "gpu_after_observation",
     "source_before", "source_after", "result_sha256", "launch", "wall_s",
 })
+SUPERVISED_EXECUTION_SCHEMA = "vision_brev_record_execution_v2"
+SUPERVISED_SOURCE_FILES = frozenset({
+    "bench/vision_play_worker_v3.py", "bench/vision_shutdown_policy_v1.py",
+    "bench/vision_capture_readiness_v1.py", "bench/vision_execution_evidence_v1.py",
+    "evals/vision_brev_render_backend_v4.py", "bench/run_vision_brev_annotated_v2.py",
+})
 
 
 def _utc_now() -> datetime:
@@ -106,17 +112,50 @@ def _verify_record_protocol(
     _wrapper_binding(job, snapshot)
 
 
+def execution_evidence_path(
+    execution_path: Path, execution: Mapping[str, Any], job: Mapping[str, Any],
+    result_path: Path,
+) -> Path | None:
+    """새 종료 경계만 보조 원문 결합을 요구하며 회수한 상대 위치도 검증한다."""
+    source = job.get("source", {}).get("files_lf", {})
+    if not isinstance(source, Mapping):
+        raise TypeError("capture source 결합이 없다")
+    supervised = "bench/vision_play_worker_v3.py" in source
+    schema = execution.get("schema")
+    if schema == "vision_brev_record_execution_v1":
+        if supervised or "auxiliary" in execution:
+            raise ValueError("supervisor source는 v2 보조 실행 증거가 필요하다")
+        return None
+    if schema != SUPERVISED_EXECUTION_SCHEMA or not supervised \
+            or not SUPERVISED_SOURCE_FILES <= set(source):
+        raise ValueError("실행 schema와 supervisor source 결합이 다르다")
+    import vision_execution_evidence_v1 as EVIDENCE
+
+    reference = CONTEXT._exact(execution.get("auxiliary"), {"file", "sha256"}, "execution auxiliary")
+    if reference["file"] != EVIDENCE.MANIFEST_NAME:
+        raise ValueError("execution auxiliary는 등록된 단일 파일명이어야 한다")
+    stage = execution_path.parent
+    manifest = CONTEXT._canonical_regular(stage / EVIDENCE.MANIFEST_NAME, "execution evidence")
+    if CONTEXT._sha256(manifest) != CONTEXT._hash(reference["sha256"], "execution auxiliary"):
+        raise ValueError("execution evidence SHA가 다르다")
+    job_path = CONTEXT._canonical_regular(stage / "job.json", "execution evidence job")
+    if CONTEXT._canonical(CONTEXT._read_object(job_path, "execution evidence job")) != CONTEXT._canonical(dict(job)):
+        raise ValueError("execution evidence의 실제 job과 기대 job이 다르다")
+    EVIDENCE.verify_manifest(manifest, job_path, result_path)
+    return manifest
+
+
 def _execution_body(
     path: Path, expected_sha: str, job_sha: str, source_snapshot: Mapping[str, Any],
-    result_sha: str,
+    result_sha: str, *, job: Mapping[str, Any], result_path: Path,
 ) -> dict[str, Any]:
     if CONTEXT._sha256(path) != expected_sha:
         raise ValueError("record execution bytes SHA가 reference와 다르다")
-    value = CONTEXT._exact(
-        CONTEXT._read_object(path, "record execution"), EXECUTION_KEYS, "record execution",
-    )
+    value = CONTEXT._read_object(path, "record execution")
+    supervised = value.get("schema") == SUPERVISED_EXECUTION_SCHEMA
+    CONTEXT._exact(value, EXECUTION_KEYS | ({"auxiliary"} if supervised else set()), "record execution")
     if (
-        value["schema"] != "vision_brev_record_execution_v1"
+        value["schema"] not in {"vision_brev_record_execution_v1", SUPERVISED_EXECUTION_SCHEMA}
         or value["completed"] is not True
         or value["job_sha256"] != job_sha
         or value["exit_code"] != 0
@@ -131,6 +170,7 @@ def _execution_body(
         or CONTEXT._canonical(value["source_after"]) != CONTEXT._canonical(source_snapshot)
     ):
         raise ValueError("record execution 완료·source·result 결합이 다르다")
+    execution_evidence_path(path, value, job, result_path)
     return value
 
 
@@ -211,6 +251,7 @@ def verify_attestation(
     _execution_body(
         execution_actual, execution_ref["sha256"], expected_job_sha, snapshot,
         result_ref["sha256"],
+        job=checked_job, result_path=result_actual,
     )
     _verify_times(receipt, context_actual)
     return receipt
@@ -296,6 +337,7 @@ def attest_capture(
         _result_body(result_path, result_ref["sha256"], job_sha)
         _execution_body(
             execution_path, execution_ref["sha256"], job_sha, snapshot, result_ref["sha256"],
+            job=checked_job, result_path=result_path,
         )
 
         stage = "seal"

@@ -175,6 +175,7 @@ def test_archive_refs_map_posix_provenance_without_rewriting_originals(tmp_path:
         F.SOURCE.write_new(path, {"fixture": side})
         observations[f"gpu_{side}_observation"] = {"path": original(path), "sha256": F.SOURCE.sha256(path)}
     F.SOURCE.write_new(stage / "execution.json", {
+        "schema": "vision_brev_record_execution_v1",
         "completed": True, "job_sha256": F.SOURCE.sha256(job_path),
         "result_sha256": F.SOURCE.sha256(output / "result.json"), **observations,
     })

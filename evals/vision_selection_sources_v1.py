@@ -258,6 +258,8 @@ def _verify_capture(repo: Path, refs: dict, mode: str, source_protocol: dict,
                     resource_parent_sha: str, live_proof_sha: str, resource: dict) -> dict:
     artifact_keys = _RECORD_ARTIFACTS if mode == RECORD.RECORD_MODE else _SMOKE_ARTIFACTS
     extra = {"video"} if mode == RECORD.RECORD_MODE else set()
+    if "bench/vision_play_worker_v3.py" in source_protocol["recording"]["source_files_lf"]:
+        extra.add("execution_evidence")
     _exact(refs, _COMMON_REFS | artifact_keys | extra, "capture 원본 위치")
     paths = {key: _ref(repo, ref) for key, ref in refs.items()}
     job = _exact(_read(paths["job"]), {"schema", "method", "mode", "job_id", "profile", "source",
@@ -322,7 +324,7 @@ def _verify_capture(repo: Path, refs: dict, mode: str, source_protocol: dict,
                 "zero_update_pixel_lag_confirmed": False, "gpu_smoke_required_before_model_use": mode == RECORD.RECORD_MODE}
     _require(_same({key: result[key] for key in expected}, expected), "capture result가 job/admission과 다르다")
     execution = _read(paths["execution"])
-    _require(execution.get("schema") == "vision_brev_record_execution_v1"
+    _require(execution.get("schema") in {"vision_brev_record_execution_v1", "vision_brev_record_execution_v2"}
              and execution.get("completed") is True and type(execution.get("exit_code")) is int
              and execution["exit_code"] == 0 and execution.get("timed_out") is False
              and execution.get("cleanup_verified") is True
@@ -345,6 +347,8 @@ def _verify_capture(repo: Path, refs: dict, mode: str, source_protocol: dict,
              <= SOURCE._stamp(context_body["finished_at_utc"]) <= expires,
              "renderer context 수집 시각이 admission 범위 밖이다")
     import vision_render_attestation_v1 as ATTEST  # pyright: ignore[reportMissingImports]
+    auxiliary = ATTEST.execution_evidence_path(paths["execution"], execution, job, paths["result"])
+    _require(auxiliary == paths.get("execution_evidence"), "capture auxiliary와 최상위 원본 위치가 다르다")
     attestation = ATTEST.verify_attestation(paths["attestation"], job, _sha(paths["job"]), snapshot,
                                           paths["context"], paths["execution"], paths["result"],
                                           protocol_path=paths["protocol"])

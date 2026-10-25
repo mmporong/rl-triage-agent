@@ -112,6 +112,11 @@ def archive_capture_references(
         "context": stage / "attestation/context/context.receipt.json",
         "attestation": stage / "attestation/attestation.json",
     }
+    import vision_render_attestation_v1 as ATTEST  # pyright: ignore[reportMissingImports]
+
+    auxiliary = ATTEST.execution_evidence_path(execution_path, execution, job, result_path)
+    if auxiliary is not None:
+        files["execution_evidence"] = auxiliary
     for side in ("before", "after"):
         descriptor = execution[f"gpu_{side}_observation"]
         actual = _archived_path(repo, original_root, descriptor["path"])

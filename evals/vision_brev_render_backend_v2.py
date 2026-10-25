@@ -262,6 +262,10 @@ class AttestedVisionBrevBackend(V1.VisionBrevBackend):
             result_path = V1._owned(result_path, self.runtime_root, "render result")
             result = self._verify_mode_result(result_path, validated["job"], receipt["job_sha256"])
             receipt["result_sha256"] = B.sha256(result_path)
+            auxiliary = self._execution_auxiliary(result_path, validated["job"])
+            if auxiliary is not None:
+                receipt["schema"] = "vision_brev_record_execution_v2"
+                receipt["auxiliary"] = auxiliary
             _remaining(deadline)
             receipt["completed"] = bool(
                 receipt["exit_code"] == 0
@@ -306,6 +310,12 @@ class AttestedVisionBrevBackend(V1.VisionBrevBackend):
             "execution": {"path": str((stage / "execution.json").resolve()), "sha256": B.sha256(stage / "execution.json")},
             "result": {"path": str(result_path.resolve()), "sha256": B.sha256(result_path)},
         }
+
+    def _execution_auxiliary(
+        self, result_path: Path, job: Mapping[str, Any],
+    ) -> dict[str, str] | None:
+        """기존 worker는 보조 결합 없이 v1 실행 영수증을 유지한다."""
+        return None
 
     def _verify_mode_result(
         self, result_path: Path, job: Mapping[str, Any], job_sha: str,
@@ -416,6 +426,11 @@ class AttestedVisionBrevBackend(V1.VisionBrevBackend):
             "gpu_observation_before": Path(str(execution["gpu_before_observation"]["path"])),
             "gpu_observation_after": Path(str(execution["gpu_after_observation"]["path"])),
         }
+        auxiliary = ATTEST.execution_evidence_path(
+            stage / "execution.json", execution, job, stage / "output" / "result.json",
+        )
+        if auxiliary is not None:
+            files["execution_evidence"] = auxiliary
         output = stage / "output"
         if job.get("mode") == R.RECORD_MODE:
             files["video"] = output / "same_play.mp4"
