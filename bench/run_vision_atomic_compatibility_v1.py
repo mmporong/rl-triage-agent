@@ -23,9 +23,11 @@ import record_vision_evidence_v1 as RECORD
 import run_vision_brev_batch_v1 as SOURCE
 import run_vision_brev_preflight_v1 as PREFLIGHT
 import vision_brev_render_backend_v5 as BACKEND  # pyright: ignore[reportMissingImports]
+import vision_metadata_lifecycle_v1 as METADATA
 
 SCHEMA = "vision_atomic_compatibility_protocol_v1"
 CUMULATIVE_SCHEMA = "vision_atomic_compatibility_protocol_v2"
+MIXED_LIFECYCLE_SCHEMA = "vision_atomic_compatibility_protocol_v3"
 REGISTRATION_SCHEMA = "vision_atomic_checkpoint_registration_v1"
 APPROVAL_SCHEMA = "vision_atomic_compatibility_approval_v1"
 INTENT_SCHEMA = "vision_atomic_compatibility_intent_v1"
@@ -172,13 +174,135 @@ def _validate_prior_stops(
     return previous_end, seen_leases
 
 
+def _native_stop_fingerprint(receipt: Mapping[str, Any], owner_name: str, *, nested: bool) -> str:
+    """원문 보관 위치가 달라도 같은 native Stop 요청을 구별한다."""
+    if (receipt.get("command") != ["brev", "stop", owner_name]
+            or type(receipt.get("exit_code")) is not int or receipt["exit_code"] != 0):
+        raise ValueError("누적 비용 native Stop command 또는 exit code가 다르다")
+    body = {key: receipt.get(key) for key in ("command", "request_before_utc", "response_after_utc", "exit_code")}
+    if _stamp(body["response_after_utc"]) < _stamp(body["request_before_utc"]):
+        raise ValueError("누적 비용 native Stop 시각이 역전됐다")
+    for stream in ("stdout", "stderr"):
+        value = receipt.get(stream) if nested else None
+        digest = value.get("sha256") if isinstance(value, Mapping) else receipt.get(f"{stream}_sha256")
+        if not isinstance(digest, str) or HEX64.fullmatch(digest) is None:
+            raise ValueError("누적 비용 native Stop stream SHA가 다르다")
+        body[f"{stream}_sha256"] = digest
+    return _digest(body)
+
+
+def _validate_mixed_prior_stops(
+    resources: Mapping[str, Any], source: Mapping[str, Any], repo: Path,
+) -> tuple[datetime, set[str]]:
+    """기존 STOPPED 기록과 proof 발급 전 종료 기록을 별도 계약으로 누적한다."""
+    references = resources.get("prior_stop_receipts")
+    contract = resources.get("metadata_lifecycle_contract")
+    if (not isinstance(references, list) or not references or not isinstance(contract, Mapping)
+            or set(contract) != {"owner", "allowed_inspection_script_sha256", "runs"}):
+        raise ValueError("누적 비용 metadata 계약 필드가 다르다")
+    owner, allowed, registrations = contract["owner"], contract["allowed_inspection_script_sha256"], contract["runs"]
+    if (not isinstance(owner, Mapping) or set(owner) != {"id", "name", "instance_type"}
+            or owner["id"] != source["resources"].get("owned_instance_id")
+            or not all(isinstance(value, str) and value for value in owner.values())
+            or not isinstance(allowed, list) or not allowed or len(allowed) != len(set(allowed))
+            or any(not isinstance(value, str) or HEX64.fullmatch(value) is None for value in allowed)
+            or not isinstance(registrations, Mapping) or not registrations):
+        raise ValueError("누적 비용 metadata owner 또는 등록 집합이 다르다")
+    for run, binding in registrations.items():
+        if (not isinstance(run, str) or SLUG.fullmatch(run) is None or run == source["protocol_id"]
+                or not isinstance(binding, Mapping)
+                or set(binding) != {"envelope_sha256", "start_receipt_sha256", "stop_receipt_sha256"}
+                or any(not isinstance(value, str) or HEX64.fullmatch(value) is None for value in binding.values())):
+            raise ValueError("누적 비용 metadata run 결합이 다르다")
+    previous_end: datetime | None = None
+    total, normal_total = Decimal(0), Decimal(0)
+    normal_refs: list[Mapping[str, Any]] = []
+    seen_runs: set[str] = set()
+    seen_raw: set[str] = set()
+    seen_starts: set[str] = set()
+    seen_stops: set[str] = set()
+    seen_native_stops: set[str] = set()
+    seen_metadata: set[str] = set()
+    for reference in references:
+        if not isinstance(reference, Mapping) or not isinstance(reference.get("path"), str):
+            raise TypeError("누적 비용 lifecycle ref가 다르다")
+        lexical = repo / reference["path"]
+        METADATA._under_repo(repo, lexical, "prior lifecycle")
+        path = _regular(repo, reference, "prior lifecycle")
+        raw = _read(path)
+        if raw.get("schema") == "vision_metadata_lifecycle_v1":
+            validated = METADATA.validate_metadata_lifecycle(
+                path, repo=repo, expected_owner=owner,
+                expected_hourly_rate_usd=_finite_decimal(resources["compute_quote_usd_per_h"]),
+                allowed_inspection_script_sha256=set(allowed),
+            )
+            run = validated.run_id
+            start, end = _stamp(validated.started_at_utc), _stamp(validated.stopped_at_utc)
+            amount = validated.cost_usd
+            evidence = raw["evidence"]
+            start_sha, stop_sha = evidence["start_receipt"]["sha256"], evidence["stop_receipt"]["sha256"]
+            if (registrations.get(run) != {"envelope_sha256": reference["sha256"],
+                    "start_receipt_sha256": start_sha, "stop_receipt_sha256": stop_sha}
+                    or start_sha in seen_starts or stop_sha in seen_stops):
+                raise ValueError("누적 비용 metadata 원문이 미등록이거나 중복됐다")
+            seen_starts.add(start_sha)
+            seen_stops.add(stop_sha)
+            seen_metadata.add(run)
+            native_stop = _read(METADATA._reference(repo, evidence["stop_receipt"], "metadata stop"))
+            stop_fingerprint = _native_stop_fingerprint(native_stop, owner["name"], nested=False)
+        elif raw.get("schema") == "v04_owned_vm_stop_receipt_v1":
+            identity, cost = raw.get("execution_identity"), raw.get("cost_estimate")
+            if (not isinstance(identity, Mapping) or not isinstance(cost, Mapping)
+                    or not isinstance(raw.get("owned_instance"), Mapping)
+                    or raw["owned_instance"].get("name") != owner["name"]
+                    or not isinstance(raw.get("stop_call"), Mapping)):
+                raise ValueError("누적 비용 normal lifecycle owner 또는 native Stop이 다르다")
+            run = identity.get("run_id")
+            start, end = _stamp(cost.get("compute_started_at_utc")), _stamp(cost.get("stopped_observed_at_utc"))
+            if _finite_decimal(cost.get("hourly_compute_rate_usd")) != _finite_decimal(resources["compute_quote_usd_per_h"]):
+                raise ValueError("누적 비용 normal lifecycle 요율이 등록값과 다르다")
+            amount = _finite_decimal(cost.get("estimated_compute_cost_usd"))
+            normal_total += amount
+            normal_refs.append(reference)
+            stop_fingerprint = _native_stop_fingerprint(raw["stop_call"], owner["name"], nested=True)
+            if _stamp(raw["stop_call"]["response_after_utc"]) > end:
+                raise ValueError("누적 비용 normal STOPPED 관측이 Stop 응답보다 빠르다")
+        else:
+            raise ValueError("누적 비용 lifecycle schema가 다르다")
+        if (not isinstance(run, str) or SLUG.fullmatch(run) is None or run == source["protocol_id"]
+                or run in seen_runs or reference["sha256"] in seen_raw or stop_fingerprint in seen_native_stops
+                or end < start or (previous_end is not None and start < previous_end)):
+            raise ValueError("누적 비용 lifecycle이 중복되거나 시각이 겹친다")
+        seen_runs.add(run)
+        seen_raw.add(reference["sha256"])
+        seen_native_stops.add(stop_fingerprint)
+        total += amount
+        previous_end = end
+    if seen_metadata != set(registrations) or total != _finite_decimal(resources["prior_lifecycle_compute_usd"]):
+        raise ValueError("누적 비용 metadata 등록 또는 합계가 다르다")
+    prior_leases: set[str] = set()
+    if normal_refs:
+        normal_resources = {**resources, "prior_stop_receipts": normal_refs, "prior_lifecycle_compute_usd": str(normal_total)}
+        _, prior_leases = _validate_prior_stops(normal_resources, source, repo)
+    assert previous_end is not None
+    return previous_end, prior_leases
+
+
+def _validate_lifecycle_history(
+    protocol: Mapping[str, Any], source: Mapping[str, Any], repo: Path,
+) -> tuple[datetime, set[str]]:
+    if protocol["schema"] == MIXED_LIFECYCLE_SCHEMA:
+        return _validate_mixed_prior_stops(protocol["resources"], source, repo)
+    return _validate_prior_stops(protocol["resources"], source, repo)
+
+
 def validate_protocol(value: Mapping[str, Any], repo: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     required = {
         "schema", "protocol_id", "registered_before_measurement", "source_anchor",
         "source_protocol", "historical_checkpoint", "stages", "resources", "expected",
         "controller_sources_lf",
     }
-    if set(value) != required or value.get("schema") not in (SCHEMA, CUMULATIVE_SCHEMA) or value.get("registered_before_measurement") is not True:
+    if set(value) != required or value.get("schema") not in (SCHEMA, CUMULATIVE_SCHEMA, MIXED_LIFECYCLE_SCHEMA) or value.get("registered_before_measurement") is not True:
         raise ValueError("compatibility protocol 필드 또는 등록 상태가 다르다")
     protocol = dict(value)
     if not isinstance(protocol.get("protocol_id"), str) or SLUG.fullmatch(protocol["protocol_id"]) is None:
@@ -247,17 +371,20 @@ def validate_protocol(value: Mapping[str, Any], repo: Path) -> tuple[dict[str, A
         seen.add(row["job_id"])
 
     resources = protocol.get("resources")
-    cumulative = protocol["schema"] == CUMULATIVE_SCHEMA
+    cumulative = protocol["schema"] in (CUMULATIVE_SCHEMA, MIXED_LIFECYCLE_SCHEMA)
     prior_field = "prior_stop_receipts" if cumulative else "prior_stop_receipt"
-    if not isinstance(resources, Mapping) or set(resources) != {
+    resource_fields = {
         "prior_lifecycle_compute_usd", "fresh_lifecycle_budget_usd", "compute_quote_usd_per_h",
         "total_program_budget_usd", prior_field, "deadline_utc", "fresh_admission_max_age_s",
-    }:
+    }
+    if protocol["schema"] == MIXED_LIFECYCLE_SCHEMA:
+        resource_fields.add("metadata_lifecycle_contract")
+    if not isinstance(resources, Mapping) or set(resources) != resource_fields:
         raise ValueError("compatibility resource 계약 필드가 다르다")
     numbers = (resources["prior_lifecycle_compute_usd"], resources["fresh_lifecycle_budget_usd"],
                resources["total_program_budget_usd"])
     if cumulative:
-        _validate_prior_stops(resources, source, repo)
+        _validate_lifecycle_history(protocol, source, repo)
     else:
         stop_path = _regular(repo, resources["prior_stop_receipt"], "prior stop receipt")
         stop = _read(stop_path)
@@ -295,6 +422,9 @@ def validate_protocol(value: Mapping[str, Any], repo: Path) -> tuple[dict[str, A
         "tests/test_run_vision_atomic_compatibility_v1.py",
         *BACKEND.SOURCE_FILES,
     }
+    if protocol["schema"] == MIXED_LIFECYCLE_SCHEMA:
+        required_sources.update({"bench/vision_metadata_lifecycle_v1.py", "tests/test_vision_metadata_lifecycle_v1.py",
+                                 "tests/test_vision_mixed_lifecycle_v1.py"})
     if not isinstance(closure, Mapping) or not required_sources <= set(closure):
         raise ValueError("compatibility controller/backend source 결합이 빠졌다")
     source_map = source.get("source_sha256_lf")
@@ -508,8 +638,8 @@ class AtomicCompatibilityController:
 
     def _fresh_resource(self, batch: Any, current: datetime) -> None:
         resource = batch._verify_resource(_read(batch.resource_path))
-        if self.protocol["schema"] == CUMULATIVE_SCHEMA:
-            previous_end, prior_leases = _validate_prior_stops(self.protocol["resources"], self.source, self.repo)
+        if self.protocol["schema"] in (CUMULATIVE_SCHEMA, MIXED_LIFECYCLE_SCHEMA):
+            previous_end, prior_leases = _validate_lifecycle_history(self.protocol, self.source, self.repo)
             if _stamp(resource["compute_started_at_utc"]) < previous_end:
                 raise ValueError("새 lifecycle 시작이 이전 STOPPED 시각보다 빠르다")
             if resource["lease_id"] in prior_leases:
