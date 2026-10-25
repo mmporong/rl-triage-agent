@@ -37,6 +37,7 @@ def _fixture(
     )
     job = tmp_path / "job.json"
     job.write_text("{}\n", encoding="utf-8")
+    validated["job_path"] = job
     return job, validated
 
 
@@ -50,11 +51,12 @@ class App:
 
     def close(self) -> None:
         self.events.append("close")
+        assert (self.output / V2.RECEIPT_FILE).is_file()
         assert (self.output / "result.json").is_file() or (self.output / "failure.json").is_file()
 
 
 def test_enable_update_registration_capture_and_close_order(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
 ) -> None:
     events: list[str] = []
     job, validated = _fixture(tmp_path, monkeypatch, events, mode=V1.R.RENDER_SYNC_SMOKE_MODE)
@@ -71,9 +73,20 @@ def test_enable_update_registration_capture_and_close_order(
         events.append("probe")
         return {name: True for name in V2.ANNOTATORS}
 
+    def startup() -> dict[str, dict[str, bool]]:
+        events.append("startup")
+        assert not validated["output_directory"].exists()
+        return {
+            "before": {"orchestrator_enabled": False, "capture_on_play": True},
+            "after": {"orchestrator_enabled": True, "capture_on_play": False},
+        }
+
     def capture(current: dict[str, Any], app: App) -> tuple[dict[str, Path], Path]:
         del app
         events.append("capture")
+        pre_capture = json.loads(job.with_suffix(".renderer_registration.json").read_text(encoding="utf-8"))
+        assert pre_capture["status"] == "ready"
+        assert pre_capture["replicator_startup"]["after"]["orchestrator_enabled"] is True
         current["output_directory"].mkdir()
         artifacts: dict[str, Path] = {}
         for name in SOURCES._SMOKE_ARTIFACTS:
@@ -84,11 +97,16 @@ def test_enable_update_registration_capture_and_close_order(
 
     assert V2.execute(
         job, app_factory=app_factory, runner=capture,
-        enable_extension=enable, registration_probe=probe,
+        enable_extension=enable, registration_probe=probe, startup_configure=startup,
     ) == 0
-    assert events == ["app", f"enable:{V2.EXTENSION}", "update", "probe", "capture", "close"]
+    assert events == [
+        "app", f"enable:{V2.EXTENSION}", "update", "startup", "probe", "capture", "close",
+    ]
     evidence = json.loads((validated["output_directory"] / V2.RECEIPT_FILE).read_text(encoding="utf-8"))
     assert evidence["status"] == "ready" and all(evidence["annotators"].values())
+    assert evidence["replicator_startup"]["after"]["orchestrator_enabled"] is True
+    stdout = json.loads(capsys.readouterr().out)
+    assert stdout["replicator_startup"] == evidence["replicator_startup"]
     result = json.loads((validated["output_directory"] / "result.json").read_text(encoding="utf-8"))
     assert set(result["artifacts"]) == SOURCES._SMOKE_ARTIFACTS
     assert "renderer_registration" not in result["artifacts"]
@@ -111,7 +129,7 @@ def test_enable_failure_skips_update_probe_and_capture_but_closes_app(
 
     assert V2.execute(
         job, app_factory=lambda: App(validated["output_directory"], events), runner=forbidden,
-        enable_extension=enable, registration_probe=forbidden,
+        enable_extension=enable, registration_probe=forbidden, startup_configure=forbidden,
     ) == 1
     assert events == ["close"]
     failure = json.loads((validated["output_directory"] / "failure.json").read_text(encoding="utf-8"))
@@ -135,6 +153,7 @@ def test_missing_annotator_does_not_enter_capture(
     assert V2.execute(
         job, app_factory=lambda: App(validated["output_directory"], events), runner=forbidden,
         enable_extension=lambda name: True, registration_probe=lambda: registered,
+        startup_configure=lambda: {"before": {}, "after": {}},
     ) == 1
     evidence = json.loads((validated["output_directory"] / V2.RECEIPT_FILE).read_text(encoding="utf-8"))
     assert evidence["app_update_completed"] is True
@@ -157,6 +176,7 @@ def test_capture_failure_keeps_registration_and_v1_failure_before_close(
         job, app_factory=lambda: App(validated["output_directory"], events), runner=capture,
         enable_extension=lambda name: True,
         registration_probe=lambda: {name: True for name in V2.ANNOTATORS},
+        startup_configure=lambda: {"before": {}, "after": {}},
     ) == 1
     assert events == ["update", "capture", "close"]
     evidence = json.loads((validated["output_directory"] / V2.RECEIPT_FILE).read_text(encoding="utf-8"))
@@ -189,5 +209,35 @@ def test_default_runner_selects_original_v1_mode(
         app_factory=lambda: App(validated["output_directory"], events),
         enable_extension=lambda name: True,
         registration_probe=lambda: {name: True for name in V2.ANNOTATORS},
+        startup_configure=lambda: {"before": {}, "after": {}},
     ) == 0
     assert events == ["update", selected, "close"]
+
+
+def test_startup_readback_failure_skips_capture_and_v1_closes_after_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    events: list[str] = []
+    job, validated = _fixture(tmp_path, monkeypatch, events)
+
+    def startup() -> dict[str, dict[str, bool]]:
+        events.append("startup")
+        assert not validated["output_directory"].exists()
+        raise RuntimeError("startup readback failed")
+
+    def forbidden(*args: object, **kwargs: object) -> Any:
+        raise AssertionError((args, kwargs))
+
+    assert V2.execute(
+        job,
+        app_factory=lambda: App(validated["output_directory"], events),
+        runner=forbidden,
+        enable_extension=lambda name: True,
+        registration_probe=forbidden,
+        startup_configure=startup,
+    ) == 1
+    assert events == ["update", "startup", "close"]
+    failure = json.loads((validated["output_directory"] / "failure.json").read_text(encoding="utf-8"))
+    evidence = json.loads((validated["output_directory"] / V2.RECEIPT_FILE).read_text(encoding="utf-8"))
+    assert failure["stage"] == "record_play" and failure["error_message"] == "startup readback failed"
+    assert evidence["replicator_startup"] is None and evidence["status"] == "failed"

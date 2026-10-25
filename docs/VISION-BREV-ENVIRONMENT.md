@@ -134,10 +134,15 @@ Ubuntu 22.04에서 `libGLU.so.1`이 없을 때 필요한 런타임 패키지는
 [`vision_play_worker_v2.py`](../bench/vision_play_worker_v2.py)는 앱을 시작한 뒤
 `isaacsim.core.nodes` 확장을 활성화하고 한 번 갱신한다. 이어서 `rgb`,
 `IsaacReadTimes`, `ReferenceTime` 등록을 확인해야 기존 녹화·동기화 검사로 들어간다.
+캡처 전에 [준비 함수](../bench/vision_replicator_startup_v1.py)가 Replicator Orchestrator를
+켜고 capture-on-play를 끈 뒤 설정값을 다시 읽는다. 수동 캡처는 허용하고 timeline 재생에
+따른 자동 캡처는 막는다. 설정이 일치하지 않으면 녹화에 들어가지 않는다.
 활성화나 등록 확인이 실패하면 실패 원문을 남기며 대체 시각 값을 만들지 않는다.
 이 순서는 Isaac Sim 4.5의 [확장 활성화 API](https://docs.isaacsim.omniverse.nvidia.com/4.5.0/python_scripting/manual_standalone_python.html)를 따른다.
 
-등록 결과는 `renderer_registration.json` 보조 파일로 보존한다.
+등록 결과와 캡처 준비 전후 설정은 `renderer_registration.json` 보조 파일로 보존한다.
+캡처에 들어가기 전에 job 파일 옆에도 `job.renderer_registration.json`을 기록하므로
+첫 캡처가 시간 제한으로 종료되어도 준비 증거가 남는다.
 기존 녹화 결과·운동 trace·동기화 기준과 모델 사용 조건은 유지한다.
 새 실행 진입점은 기존 프로세스 소유권·시간 제한·GPU 잠금·종료 확인을 재사용하며,
 새 worker와 실행기 소스 해시를 포함한 사전등록에서만 이 경로를 선택한다.
