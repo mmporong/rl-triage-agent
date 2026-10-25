@@ -1,0 +1,69 @@
+{
+  "schema": "vision_brev_preflight_protocol_v1",
+  "protocol_id": "vision-source-s2200-s2201-20261025c",
+  "registered_before_measurement": true,
+  "method": "same_runtime_none20_then_render_sync_smoke_v1",
+  "scope": "infrastructure_preflight_not_model_or_recovery_evidence_v1",
+  "model_use_ready": false,
+  "source_protocol": {
+    "path": "bench/protocols/vision_brev_source_20261025_v3.json",
+    "sha256_lf": "81b8772123c935c1c98d38bf030c6ab7590491eecd10ef47073906cd2806e3a7"
+  },
+  "render_protocol": {
+    "path": "bench/protocols/vision_brev_render_20261025_v4.json",
+    "sha256_lf": "c958c6b571a007020fc909bbfb284a82960eeaf07290b8407b1557a6a8d61da7"
+  },
+  "record_profile_sha256": "18da8f087fd167e48c156f7a60da4e0ce9bb5a2d3c2da466d865df3ffe62cfd5",
+  "controller_sources_lf": {
+    "bench/brev_compute_probe_v1.py": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+    "bench/brev_recovery_worker_v2.py": "607b087234d500b136e3557f0f1db610e6b6926a30dc9ab23c2de7f0d413ad27",
+    "bench/run_vision_brev_batch_v1.py": "32702452d5979d4f34eb37251440dc62c260482dce9279d7b883147cc28ea13c",
+    "bench/run_vision_brev_preflight_v1.py": "1125238a310da8a885a94c097630f358d3cec6593a725373c50fe3263f5e515b",
+    "bench/run_vision_brev_render_v2.py": "dd3f8d5dfb9ebb3ea4fb837f44b722257604ebf85794dbb9b108d6d962db7c2b",
+    "evals/brev_recovery_backend_v4.py": "70520014f927feec0efd70bd721d04709d56c457702b38468e94a0081b2d5e45",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+    "evals/vision_brev_backend_v1.py": "e6be124e2cf5ec35508bd219972a164cf925bd2850d3ccc352d3c8f42ba935df",
+    "evals/vision_brev_render_backend_v2.py": "fddf6026cb610c45cb159b6b747a9f359316cc08f57349b8fc4ed784a818655e",
+    "evals/vision_remote_gpu_v1.py": "a713e0c92c25e9403f361f4853bca298ba32ba99388f3db97e263fbfe6cb6e85"
+  },
+  "training": {
+    "job_id": "preflight-train-s2203",
+    "arm": "NONE",
+    "seed": 2203,
+    "run_name": "preflight-none20-s2203",
+    "iterations": 20,
+    "num_envs": 4096,
+    "stage_relative": "preflight/training/preflight-train-s2203"
+  },
+  "smoke": {
+    "job_id": "preflight-smoke-s2203",
+    "mode": "render_sync_smoke",
+    "checkpoint_logical_id": "preflight-policy-s2203",
+    "policy_steps": 0,
+    "capture_phase_physics_steps": 0,
+    "renderer_combination_only": true
+  },
+  "order": [
+    "train_none20",
+    "render_sync_smoke"
+  ],
+  "limits": {
+    "train_none20": {
+      "max_wall_s": 1800,
+      "max_compute_usd": 0.87
+    },
+    "render_sync_smoke": {
+      "max_wall_s": 900,
+      "max_compute_usd": 0.435
+    },
+    "total_max_wall_s": 2700,
+    "total_max_compute_usd": 1.305
+  },
+  "reservation": {
+    "source_actions_usd": 6.089999999999998,
+    "render_smokes_usd": 1.74,
+    "preflight_usd": 1.305,
+    "whole_batch_budget_usd": 20.0,
+    "source_first_action_reserve_s": 1800
+  }
+}

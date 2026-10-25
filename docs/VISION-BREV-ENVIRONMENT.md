@@ -115,3 +115,16 @@ bash install.sh --expected-manifest-sha256 "$VISION_BUNDLE_MANIFEST_SHA256"
 정책 재생·전체 녹화·회복이나 모델 판단의 근거로 사용하지 않으며
 `model_use_ready`는 항상 `false`다. 이 실행 경로는 CPU 회귀로 확인하며,
 실제 Brev 실행 결과는 별도 기록으로 구분한다.
+
+## 렌더 시스템 의존성
+
+학습에 필요한 패키지 버전이 맞아도 카메라 렌더러의 시스템 라이브러리가 없을 수 있다.
+[`check_vision_renderer_libraries_v1.py`](../bench/check_vision_renderer_libraries_v1.py)는
+Isaac Sim의 `libneuray.so` 한 개를 찾아 CPU에서 `ldd` 종료 코드와 누락 의존성을 검사한다.
+라이브러리·검사 명령이 없거나, 여러 파일이 발견되거나, 검사 오류·시간 초과·누락이 있으면 `not_ready`를 기록한다.
+출력은 새 JSON 파일로 보존하며 GPU나 Isaac Sim 앱을 시작하지 않는다.
+
+Ubuntu 22.04에서 `libGLU.so.1`이 없을 때 필요한 런타임 패키지는
+[`libglu1-mesa`](https://packages.ubuntu.com/jammy/libglu1-mesa)다.
+설치 뒤 이 CPU 검사를 통과하더라도 실제 렌더 동기화 검사를 별도로 통과해야 한다.
+이 검사의 `model_use_ready`는 항상 `false`다.

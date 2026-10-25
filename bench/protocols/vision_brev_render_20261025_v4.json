@@ -1,0 +1,46 @@
+{
+  "schema": "vision_brev_render_protocol_v2",
+  "protocol_id": "vision-source-s2200-s2201-20261025c",
+  "registered_before_measurement": true,
+  "method": "context_then_capture_source_seal_v1",
+  "source_gate_policy": "none_walks_f1_unhealthy_v1",
+  "readiness_scope": "registered_renderer_combination_only",
+  "source_protocol": {
+    "path": "bench/protocols/vision_brev_source_20261025_v3.json",
+    "sha256_lf": "81b8772123c935c1c98d38bf030c6ab7590491eecd10ef47073906cd2806e3a7"
+  },
+  "smoke_plan": [
+    {
+      "action_id": "smoke-record-s2200-none",
+      "job_id": "smoke-record-s2200-none",
+      "record_job_id": "record-s2200-none",
+      "source_job_id": "vision-s2200-none",
+      "checkpoint_logical_id": "source-s2200-none"
+    },
+    {
+      "action_id": "smoke-record-s2200-f1",
+      "job_id": "smoke-record-s2200-f1",
+      "record_job_id": "record-s2200-f1",
+      "source_job_id": "vision-s2200-f1",
+      "checkpoint_logical_id": "source-s2200-f1"
+    },
+    {
+      "action_id": "smoke-record-s2201-none",
+      "job_id": "smoke-record-s2201-none",
+      "record_job_id": "record-s2201-none",
+      "source_job_id": "vision-s2201-none",
+      "checkpoint_logical_id": "source-s2201-none"
+    },
+    {
+      "action_id": "smoke-record-s2201-f1",
+      "job_id": "smoke-record-s2201-f1",
+      "record_job_id": "record-s2201-f1",
+      "source_job_id": "vision-s2201-f1",
+      "checkpoint_logical_id": "source-s2201-f1"
+    }
+  ],
+  "smoke_limits": {
+    "max_wall_s": 900,
+    "max_compute_usd": 0.435
+  }
+}
