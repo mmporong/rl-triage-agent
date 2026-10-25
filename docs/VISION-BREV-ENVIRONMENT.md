@@ -128,3 +128,16 @@ Ubuntu 22.04에서 `libGLU.so.1`이 없을 때 필요한 런타임 패키지는
 [`libglu1-mesa`](https://packages.ubuntu.com/jammy/libglu1-mesa)다.
 설치 뒤 이 CPU 검사를 통과하더라도 실제 렌더 동기화 검사를 별도로 통과해야 한다.
 이 검사의 `model_use_ready`는 항상 `false`다.
+
+## 시각 정보 노드 등록
+
+[`vision_play_worker_v2.py`](../bench/vision_play_worker_v2.py)는 앱을 시작한 뒤
+`isaacsim.core.nodes` 확장을 활성화하고 한 번 갱신한다. 이어서 `rgb`,
+`IsaacReadTimes`, `ReferenceTime` 등록을 확인해야 기존 녹화·동기화 검사로 들어간다.
+활성화나 등록 확인이 실패하면 실패 원문을 남기며 대체 시각 값을 만들지 않는다.
+이 순서는 Isaac Sim 4.5의 [확장 활성화 API](https://docs.isaacsim.omniverse.nvidia.com/4.5.0/python_scripting/manual_standalone_python.html)를 따른다.
+
+등록 결과는 `renderer_registration.json` 보조 파일로 보존한다.
+기존 녹화 결과·운동 trace·동기화 기준과 모델 사용 조건은 유지한다.
+새 실행 진입점은 기존 프로세스 소유권·시간 제한·GPU 잠금·종료 확인을 재사용하며,
+새 worker와 실행기 소스 해시를 포함한 사전등록에서만 이 경로를 선택한다.
