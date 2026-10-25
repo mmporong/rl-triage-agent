@@ -64,3 +64,7 @@ python -m pytest -q tests/test_vision_evidence_contract_v1.py
 
 검증 범위는 파일·시각·출처 결합과 모델 입력 준비다. 영상 관찰의 정확도,
 검사 선택의 기여와 교정 후 회복은 각 단계의 사전등록된 실행에서 평가한다.
+
+같은 Play 실행의 기록은 [Brev 수집 경로](VISION-BREV-DATA.md)에서 준비한다.
+새 녹화기는 실제 상태·카메라·RGB 시각을 함께 보관하며, GPU 동기화 검사가 끝나기 전에는
+녹화를 모델 사용 가능 상태로 표시하지 않는다.
