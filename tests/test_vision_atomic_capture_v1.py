@@ -116,41 +116,49 @@ def test_marker_validation_uses_usd_prim_range_for_root_and_descendants(
     rigid_api = object()
 
     class Prim:
-        def __init__(self, blocked: bool = False) -> None:
+        def __init__(
+            self, stage: Any, path: str, *, blocked: bool = False, valid: bool = True
+        ) -> None:
+            self.stage = stage
+            self.path = path
             self.blocked = blocked
+            self.valid = valid
 
         def IsValid(self) -> bool:
-            return True
+            return self.valid
 
         def HasAPI(self, api: object) -> bool:
             return self.blocked and api is collision_api
 
-    class Attribute:
-        def __init__(self, path: str) -> None:
-            self.path = path
+        def GetStage(self) -> Any:
+            return self.stage
 
-        def get(self) -> list[str]:
-            return [self.path]
+        def GetPath(self) -> str:
+            return self.path
 
-    class Node:
-        def __init__(self, path: str) -> None:
-            self.path = path
+    class Item:
+        def __init__(self, prim: Prim) -> None:
+            self.prim = prim
 
-        def get_attribute(self, _name: str) -> Attribute:
-            return Attribute(self.path)
+        def get_output_prims(self) -> dict[str, list[Prim]]:
+            return {"prims": [self.prim]}
 
-    root = Prim()
-    child = Prim()
-    stage = SimpleNamespace(GetPrimAtPath=lambda _path: root)
+    stage = SimpleNamespace()
+    roots = {
+        f"/World/marker-{index}": Prim(stage, f"/World/marker-{index}")
+        for index in range(9)
+    }
+    stage.GetPrimAtPath = roots.__getitem__
+    child = Prim(stage, "/World/marker-0/child")
     pxr = SimpleNamespace(
-        Usd=SimpleNamespace(PrimRange=lambda prim: [prim, child]),
+        Usd=SimpleNamespace(Prim=Prim, PrimRange=lambda prim: [prim, child]),
         UsdGeom=SimpleNamespace(Imageable=lambda prim: prim),
         UsdPhysics=SimpleNamespace(CollisionAPI=collision_api, RigidBodyAPI=rigid_api),
     )
     monkeypatch.setitem(sys.modules, "pxr", pxr)
     rig = object.__new__(C.MarkerRig)
     rig._items = {
-        f"marker-{index}": SimpleNamespace(node=Node(f"/World/marker-{index}"))
+        f"marker-{index}": Item(roots[f"/World/marker-{index}"])
         for index in range(9)
     }
     rig._paths = {}
@@ -159,6 +167,126 @@ def test_marker_validation_uses_usd_prim_range_for_root_and_descendants(
 
     child.blocked = True
     with pytest.raises(ValueError, match="physics API"):
+        rig.bind_and_validate(stage)
+
+
+@pytest.mark.parametrize("case", ["missing", "empty", "multiple", "wrong_type"])
+def test_marker_validation_rejects_non_single_usd_prim_contract(
+    monkeypatch: pytest.MonkeyPatch, case: str
+) -> None:
+    class Prim:
+        def GetStage(self) -> Any:
+            return stage
+
+        def GetPath(self) -> str:
+            return "/World/marker"
+
+        def IsValid(self) -> bool:
+            return True
+
+        def HasAPI(self, _api: object) -> bool:
+            return False
+
+    stage = SimpleNamespace(GetPrimAtPath=lambda _path: prim)
+    prim = Prim()
+    outputs: object = {
+        "missing": {},
+        "empty": {"prims": []},
+        "multiple": {"prims": [prim, prim]},
+        "wrong_type": {"prims": ["/World/marker"]},
+    }[case]
+    item = SimpleNamespace(get_output_prims=lambda: outputs)
+    monkeypatch.setitem(
+        sys.modules,
+        "pxr",
+        SimpleNamespace(
+            Usd=SimpleNamespace(Prim=Prim, PrimRange=lambda current: [current]),
+            UsdGeom=SimpleNamespace(Imageable=lambda current: current),
+            UsdPhysics=SimpleNamespace(CollisionAPI=object(), RigidBodyAPI=object()),
+        ),
+    )
+    rig = object.__new__(C.MarkerRig)
+    rig._items = {f"marker-{index}": item for index in range(9)}
+    rig._paths = {}
+    error = TypeError if case == "wrong_type" else ValueError
+    with pytest.raises(error, match="Usd.Prim"):
+        rig.bind_and_validate(stage)
+
+
+@pytest.mark.parametrize("case", ["invalid", "foreign_stage", "not_imageable"])
+def test_marker_validation_rejects_unusable_usd_prim(
+    monkeypatch: pytest.MonkeyPatch, case: str
+) -> None:
+    class Prim:
+        def __init__(self, selected_stage: Any, *, valid: bool = True) -> None:
+            self.selected_stage = selected_stage
+            self.valid = valid
+
+        def GetStage(self) -> Any:
+            return self.selected_stage
+
+        def GetPath(self) -> str:
+            return "/World/marker"
+
+        def IsValid(self) -> bool:
+            return self.valid
+
+        def HasAPI(self, _api: object) -> bool:
+            return False
+
+    stage = SimpleNamespace()
+    foreign_stage = SimpleNamespace()
+    prim = Prim(
+        foreign_stage if case == "foreign_stage" else stage,
+        valid=case != "invalid",
+    )
+    stage.GetPrimAtPath = lambda _path: prim
+    item = SimpleNamespace(get_output_prims=lambda: {"prims": [prim]})
+    monkeypatch.setitem(
+        sys.modules,
+        "pxr",
+        SimpleNamespace(
+            Usd=SimpleNamespace(Prim=Prim, PrimRange=lambda current: [current]),
+            UsdGeom=SimpleNamespace(
+                Imageable=lambda current: current if case != "not_imageable" else None
+            ),
+            UsdPhysics=SimpleNamespace(CollisionAPI=object(), RigidBodyAPI=object()),
+        ),
+    )
+    rig = object.__new__(C.MarkerRig)
+    rig._items = {f"marker-{index}": item for index in range(9)}
+    rig._paths = {}
+    expected = "USD stage" if case == "foreign_stage" else "Imageable"
+    with pytest.raises(ValueError, match=expected):
+        rig.bind_and_validate(stage)
+
+
+def test_marker_validation_accepts_real_usd_prim_contract() -> None:
+    pxr = pytest.importorskip("pxr")
+    stage = pxr.Usd.Stage.CreateInMemory()
+    prims = [
+        pxr.UsdGeom.Cube.Define(stage, f"/World/marker_{index}").GetPrim()
+        for index in range(9)
+    ]
+    rig = object.__new__(C.MarkerRig)
+    rig._items = {
+        f"marker-{index}": SimpleNamespace(
+            get_output_prims=lambda selected=prim: {"prims": [selected]}
+        )
+        for index, prim in enumerate(prims)
+    }
+    rig._paths = {}
+    rig.bind_and_validate(stage)
+    assert rig._paths == {
+        f"marker-{index}": f"/World/marker_{index}" for index in range(9)
+    }
+
+    foreign_stage = pxr.Usd.Stage.CreateInMemory()
+    foreign_prim = pxr.UsdGeom.Cube.Define(foreign_stage, "/World/marker_0").GetPrim()
+    rig._items["marker-0"] = SimpleNamespace(
+        get_output_prims=lambda: {"prims": [foreign_prim]}
+    )
+    with pytest.raises(ValueError, match="USD stage"):
         rig.bind_and_validate(stage)
 
 

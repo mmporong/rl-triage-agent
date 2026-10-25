@@ -628,3 +628,149 @@ def test_real_git_code_then_source_then_compatibility_commits_have_no_cycle(
         ["git", "-C", str(fx.repo), "rev-list", "--count", "HEAD"], check=True, text=True,
         stdout=subprocess.PIPE,
     ).stdout.strip() == "3"
+
+
+def cumulative_fixture(fx):
+    protocol = json.loads(json.dumps(fx.protocol))
+    protocol["schema"] = C.CUMULATIVE_SCHEMA
+    resources = protocol["resources"]
+    resources.pop("prior_stop_receipt")
+    resources.update(prior_lifecycle_compute_usd=1.8, fresh_lifecycle_budget_usd=18.2)
+    resources["prior_stop_receipts"] = []
+    fx.controller.source["resources"].update(whole_batch_budget_usd=18.2, owned_instance_id="resource-1")
+    for i in range(2):
+        start = NOW - timedelta(hours=3 - i)
+        path = fx.repo / f"archive/lifecycle-{i}.json"
+        write(path, {
+            "schema": "v04_owned_vm_stop_receipt_v1", "status": "STOPPED",
+            "owned_instance": {"id": "resource-1"},
+            "execution_identity": {
+                "run_id": f"previous-{i}", "lease_id": f"previous-lease-{i}",
+                "protocol_sha256": "a" * 64, "resource_proof_sha256": "b" * 64,
+            },
+            "cost_estimate": {
+                "compute_started_at_utc": start.isoformat(),
+                "stopped_observed_at_utc": (start + timedelta(minutes=30)).isoformat(),
+                "estimated_wall_clock_seconds": 1800,
+                "hourly_compute_rate_usd": "1.8", "estimated_compute_cost_usd": "0.900000",
+                "estimate_basis": "compute_start_to_stopped_observation_wall_clock",
+                "storage_charges_included": False, "provider_billing_equivalence_claimed": False,
+                "resource_proof": {"sha256": "b" * 64},
+            },
+        })
+        resources["prior_stop_receipts"].append(C._reference(fx.repo, path))
+    return protocol
+
+
+def rewrite_stop(fx, protocol, index, mutate):
+    reference = protocol["resources"]["prior_stop_receipts"][index]
+    path = fx.repo / reference["path"]
+    body = C._read(path)
+    mutate(body)
+    write(path, body)
+    protocol["resources"]["prior_stop_receipts"][index] = C._reference(fx.repo, path)
+
+
+def test_v2_sums_distinct_stopped_lifecycles_without_resetting_program_budget(fx):
+    protocol = cumulative_fixture(fx)
+    checked, source = C.validate_protocol(protocol, fx.repo)
+    assert checked["resources"]["prior_lifecycle_compute_usd"] == 1.8
+    assert source["resources"]["whole_batch_budget_usd"] == 18.2
+    write(fx.protocol_path, protocol)
+    controller = C.AtomicCompatibilityController(
+        fx.repo, fx.protocol_path, C._sha(fx.protocol_path, lf=True),
+        fx.resource_path, C._sha(fx.resource_path), fx.repo / "IsaacLab", fx.repo / "python",
+        now=fx.clock, backend_factory=fx.controller.backend_factory,
+    )
+    controller.register_checkpoint(fx.checkpoint)
+    controller.approve("operator")
+    assert controller.advance_one()["stage"] == "atomic_smoke"
+    assert controller.advance_one()["status"] == "complete"
+    assert fx.holder.batch.backend.calls == ["smoke", "record"]
+
+
+@pytest.mark.parametrize("change", ["duplicate", "omit", "reverse", "total", "inflate_budget"])
+def test_v2_rejects_repeated_omitted_or_out_of_order_costs_and_budget_changes(fx, change):
+    protocol = cumulative_fixture(fx)
+    resources = protocol["resources"]
+    if change == "duplicate":
+        resources["prior_stop_receipts"][1] = resources["prior_stop_receipts"][0]
+    elif change == "omit":
+        resources["prior_stop_receipts"].pop()
+    elif change == "reverse":
+        resources["prior_stop_receipts"].reverse()
+    elif change == "total":
+        resources["prior_lifecycle_compute_usd"] = 0.9
+    else:
+        resources["fresh_lifecycle_budget_usd"] = 20.0
+    with pytest.raises(ValueError, match="누적 비용|비용·deadline"):
+        C.validate_protocol(protocol, fx.repo)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("estimated_compute_cost_usd", "NaN"),
+    ("estimated_compute_cost_usd", "Infinity"),
+    ("estimated_compute_cost_usd", "-1"),
+    ("estimated_compute_cost_usd", True),
+    ("estimated_compute_cost_usd", "0.1"),
+    ("estimated_wall_clock_seconds", 1700),
+    ("hourly_compute_rate_usd", "0"),
+    ("provider_billing_equivalence_claimed", True),
+])
+def test_v2_rejects_invalid_cost_values_even_when_receipt_sha_matches(fx, field, value):
+    protocol = cumulative_fixture(fx)
+    rewrite_stop(fx, protocol, 1, lambda body: body["cost_estimate"].update({field: value}))
+    with pytest.raises((ValueError, TypeError), match="누적 비용"):
+        C.validate_protocol(protocol, fx.repo)
+
+
+@pytest.mark.parametrize("kind", ["owner", "status", "lease", "overlap", "resource_sha"])
+def test_v2_rejects_foreign_unstopped_overlapping_or_unbound_lifecycle(fx, kind):
+    protocol = cumulative_fixture(fx)
+    def mutate(body):
+        if kind == "owner":
+            body["owned_instance"]["id"] = "other-vm"
+        elif kind == "status":
+            body["status"] = "RUNNING"
+        elif kind == "lease":
+            body["execution_identity"]["lease_id"] = "previous-lease-0"
+        elif kind == "resource_sha":
+            body["cost_estimate"]["resource_proof"]["sha256"] = "c" * 64
+        else:
+            body["cost_estimate"]["compute_started_at_utc"] = (NOW - timedelta(hours=3)).isoformat()
+    rewrite_stop(fx, protocol, 1, mutate)
+    with pytest.raises(ValueError, match="누적 비용"):
+        C.validate_protocol(protocol, fx.repo)
+
+
+@pytest.mark.parametrize("kind", ["clock", "lease"])
+def test_v2_rejects_new_compute_clock_before_previous_stop_or_reused_lease(fx, kind):
+    protocol = cumulative_fixture(fx)
+    write(fx.protocol_path, protocol)
+    resource = dict(fx.resource)
+    if kind == "clock":
+        resource["compute_started_at_utc"] = (NOW - timedelta(hours=3)).isoformat()
+    else:
+        resource["lease_id"] = "previous-lease-0"
+    write(fx.resource_path, resource)
+    controller = C.AtomicCompatibilityController(
+        fx.repo, fx.protocol_path, C._sha(fx.protocol_path, lf=True),
+        fx.resource_path, C._sha(fx.resource_path), fx.repo / "IsaacLab", fx.repo / "python",
+        now=fx.clock, backend_factory=fx.controller.backend_factory,
+    )
+    with pytest.raises(ValueError, match="이전 STOPPED"):
+        controller.register_checkpoint(fx.checkpoint)
+    assert not controller.registration_path.exists()
+
+
+def test_v2_uses_same_half_up_money_rounding_as_stop_receipt(fx):
+    protocol = cumulative_fixture(fx)
+    def mutate(body):
+        cost = body["cost_estimate"]
+        cost["stopped_observed_at_utc"] = (C._stamp(cost["stopped_observed_at_utc"]) + timedelta(milliseconds=1)).isoformat()
+        cost["estimated_wall_clock_seconds"] = 1800.001
+        cost["estimated_compute_cost_usd"] = "0.900001"
+    rewrite_stop(fx, protocol, 1, mutate)
+    protocol["resources"].update(prior_lifecycle_compute_usd=1.800001, fresh_lifecycle_budget_usd=18.199999)
+    fx.controller.source["resources"]["whole_batch_budget_usd"] = 18.199999
+    C.validate_protocol(protocol, fx.repo)

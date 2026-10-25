@@ -115,22 +115,38 @@ class MarkerRig:
 
         paths: dict[str, str] = {}
         for key, item in self._items.items():
-            raw = item.node.get_attribute("outputs:prims").get()
+            outputs = item.get_output_prims()
+            prims = outputs.get("prims") if isinstance(outputs, Mapping) else None
+            if not isinstance(prims, list) or len(prims) != 1:
+                count = len(prims) if isinstance(prims, list) else None
+                raise ValueError(
+                    "marker output prim이 단일 Usd.Prim이 아니다 "
+                    f"(outputs={type(outputs).__name__}, "
+                    f"prims={type(prims).__name__}, count={count})"
+                )
+            output_prim = prims[0]
+            if not isinstance(output_prim, Usd.Prim):
+                raise TypeError(
+                    "marker output prim이 Usd.Prim이 아니다 "
+                    f"(type={type(output_prim).__name__})"
+                )
+            if output_prim.GetStage() != stage:
+                raise ValueError("marker output prim이 현재 USD stage에 속하지 않는다")
+            path = str(output_prim.GetPath())
+            prim = stage.GetPrimAtPath(path)
             if (
-                not isinstance(raw, list)
-                or len(raw) != 1
-                or not isinstance(raw[0], str)
+                not prim
+                or not prim.IsValid()
+                or prim != output_prim
+                or not UsdGeom.Imageable(prim)
             ):
-                raise ValueError("marker prim path가 단일 문자열이 아니다")
-            prim = stage.GetPrimAtPath(raw[0])
-            if not prim or not prim.IsValid() or not UsdGeom.Imageable(prim):
                 raise ValueError("marker prim이 유효한 Imageable이 아니다")
             for descendant in Usd.PrimRange(prim):
                 if descendant.HasAPI(UsdPhysics.CollisionAPI) or descendant.HasAPI(
                     UsdPhysics.RigidBodyAPI
                 ):
                     raise ValueError("marker 또는 자손에 physics API가 있다")
-            paths[key] = raw[0]
+            paths[key] = path
         if len(paths) != 9:
             raise ValueError("atomic marker는 정확히 아홉 prim이어야 한다")
         self._paths = paths

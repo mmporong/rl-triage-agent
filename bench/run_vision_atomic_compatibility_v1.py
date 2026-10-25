@@ -10,6 +10,7 @@ import re
 import sys
 from collections.abc import Callable, Mapping
 from datetime import datetime, timedelta, timezone
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +25,7 @@ import run_vision_brev_preflight_v1 as PREFLIGHT
 import vision_brev_render_backend_v5 as BACKEND  # pyright: ignore[reportMissingImports]
 
 SCHEMA = "vision_atomic_compatibility_protocol_v1"
+CUMULATIVE_SCHEMA = "vision_atomic_compatibility_protocol_v2"
 REGISTRATION_SCHEMA = "vision_atomic_checkpoint_registration_v1"
 APPROVAL_SCHEMA = "vision_atomic_compatibility_approval_v1"
 INTENT_SCHEMA = "vision_atomic_compatibility_intent_v1"
@@ -103,13 +105,80 @@ def _regular(repo: Path, reference: Any, anchor: str, *, lf: bool = False) -> Pa
     return path
 
 
+def _finite_decimal(value: Any) -> Decimal:
+    if isinstance(value, bool) or not isinstance(value, (str, int, float)):
+        raise TypeError("누적 비용 숫자 형식이 다르다")
+    try:
+        parsed = Decimal(str(value))
+    except InvalidOperation as error:
+        raise ValueError("누적 비용 숫자를 읽을 수 없다") from error
+    if not parsed.is_finite() or parsed < 0:
+        raise ValueError("누적 비용이 음수이거나 유한하지 않다")
+    return parsed
+
+
+def _validate_prior_stops(
+    resources: Mapping[str, Any], source: Mapping[str, Any], repo: Path,
+) -> tuple[datetime, set[str]]:
+    references = resources.get("prior_stop_receipts")
+    if not isinstance(references, list) or not references:
+        raise ValueError("누적 비용에 STOPPED 원문 목록이 없다")
+    total = Decimal(0)
+    previous_end: datetime | None = None
+    seen_runs: set[str] = set()
+    seen_leases: set[str] = set()
+    seen_hashes: set[str] = set()
+    for reference in references:
+        path = _regular(repo, reference, "prior stop receipt")
+        stop = _read(path)
+        identity, cost = stop.get("execution_identity"), stop.get("cost_estimate")
+        if (stop.get("schema") != "v04_owned_vm_stop_receipt_v1" or stop.get("status") != "STOPPED"
+                or not isinstance(stop.get("owned_instance"), Mapping)
+                or stop["owned_instance"].get("id") != source["resources"].get("owned_instance_id")
+                or not isinstance(identity, Mapping) or not isinstance(cost, Mapping)):
+            raise ValueError("누적 비용 STOPPED 인스턴스 또는 계약이 다르다")
+        run, lease = identity.get("run_id"), identity.get("lease_id")
+        if (not isinstance(run, str) or SLUG.fullmatch(run) is None or run == source["protocol_id"]
+                or not isinstance(lease, str) or not lease.strip()
+                or run in seen_runs or lease in seen_leases or reference["sha256"] in seen_hashes):
+            raise ValueError("누적 비용 lifecycle identity가 비었거나 중복됐다")
+        for field in ("protocol_sha256", "resource_proof_sha256"):
+            if not isinstance(identity.get(field), str) or HEX64.fullmatch(identity[field]) is None:
+                raise ValueError("누적 비용 lifecycle SHA가 다르다")
+        if (not isinstance(cost.get("resource_proof"), Mapping)
+                or cost["resource_proof"].get("sha256") != identity["resource_proof_sha256"]
+                or cost.get("estimate_basis") != "compute_start_to_stopped_observation_wall_clock"
+                or cost.get("storage_charges_included") is not False
+                or cost.get("provider_billing_equivalence_claimed") is not False):
+            raise ValueError("누적 비용 근거 범위가 다르다")
+        start = _stamp(cost.get("compute_started_at_utc"))
+        end = _stamp(cost.get("stopped_observed_at_utc"))
+        if end < start or (previous_end is not None and start < previous_end):
+            raise ValueError("누적 비용 lifecycle 시각이 겹치거나 순서가 다르다")
+        elapsed = _finite_decimal(cost.get("estimated_wall_clock_seconds"))
+        rate = _finite_decimal(cost.get("hourly_compute_rate_usd"))
+        amount = _finite_decimal(cost.get("estimated_compute_cost_usd"))
+        if (rate <= 0 or abs(elapsed - Decimal(str((end - start).total_seconds()))) > Decimal("0.000001")
+                or amount != (elapsed * rate / Decimal(3600)).quantize(Decimal("0.000001"), rounding=ROUND_HALF_UP)):
+            raise ValueError("누적 비용 시각·요율·금액 계산이 다르다")
+        total += amount
+        previous_end = end
+        seen_runs.add(run)
+        seen_leases.add(lease)
+        seen_hashes.add(reference["sha256"])
+    if total != _finite_decimal(resources["prior_lifecycle_compute_usd"]):
+        raise ValueError("누적 비용 합계가 STOPPED 기록과 다르다")
+    assert previous_end is not None
+    return previous_end, seen_leases
+
+
 def validate_protocol(value: Mapping[str, Any], repo: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     required = {
         "schema", "protocol_id", "registered_before_measurement", "source_anchor",
         "source_protocol", "historical_checkpoint", "stages", "resources", "expected",
         "controller_sources_lf",
     }
-    if set(value) != required or value.get("schema") != SCHEMA or value.get("registered_before_measurement") is not True:
+    if set(value) != required or value.get("schema") not in (SCHEMA, CUMULATIVE_SCHEMA) or value.get("registered_before_measurement") is not True:
         raise ValueError("compatibility protocol 필드 또는 등록 상태가 다르다")
     protocol = dict(value)
     if not isinstance(protocol.get("protocol_id"), str) or SLUG.fullmatch(protocol["protocol_id"]) is None:
@@ -178,18 +247,28 @@ def validate_protocol(value: Mapping[str, Any], repo: Path) -> tuple[dict[str, A
         seen.add(row["job_id"])
 
     resources = protocol.get("resources")
+    cumulative = protocol["schema"] == CUMULATIVE_SCHEMA
+    prior_field = "prior_stop_receipts" if cumulative else "prior_stop_receipt"
     if not isinstance(resources, Mapping) or set(resources) != {
         "prior_lifecycle_compute_usd", "fresh_lifecycle_budget_usd", "compute_quote_usd_per_h",
-        "total_program_budget_usd", "prior_stop_receipt", "deadline_utc", "fresh_admission_max_age_s",
+        "total_program_budget_usd", prior_field, "deadline_utc", "fresh_admission_max_age_s",
     }:
         raise ValueError("compatibility resource 계약 필드가 다르다")
     numbers = (resources["prior_lifecycle_compute_usd"], resources["fresh_lifecycle_budget_usd"],
                resources["total_program_budget_usd"])
-    stop_path = _regular(repo, resources["prior_stop_receipt"], "prior stop receipt")
-    stop = _read(stop_path)
-    stopped_cost = stop.get("cost_estimate")
-    if (resources["prior_lifecycle_compute_usd"] != 6.610104
-            or any(isinstance(item, bool) or not isinstance(item, (int, float)) or not math.isfinite(float(item))
+    if cumulative:
+        _validate_prior_stops(resources, source, repo)
+    else:
+        stop_path = _regular(repo, resources["prior_stop_receipt"], "prior stop receipt")
+        stop = _read(stop_path)
+        stopped_cost = stop.get("cost_estimate")
+        if (resources["prior_lifecycle_compute_usd"] != 6.610104
+                or stop.get("schema") != "v04_owned_vm_stop_receipt_v1" or stop.get("status") != "STOPPED"
+                or not isinstance(stopped_cost, Mapping)
+                or float(stopped_cost.get("estimated_compute_cost_usd", -1))
+                != float(resources["prior_lifecycle_compute_usd"])):
+            raise ValueError("compatibility 비용·deadline 계약이 다르다")
+    if (any(isinstance(item, bool) or not isinstance(item, (int, float)) or not math.isfinite(float(item))
                    or float(item) < 0 for item in numbers)
             or resources["total_program_budget_usd"] != 20.0
             or abs(float(resources["prior_lifecycle_compute_usd"])
@@ -197,10 +276,6 @@ def validate_protocol(value: Mapping[str, Any], repo: Path) -> tuple[dict[str, A
                    - float(resources["total_program_budget_usd"])) > 1e-9
             or float(source["resources"]["whole_batch_budget_usd"])
             != float(resources["fresh_lifecycle_budget_usd"])
-            or stop.get("schema") != "v04_owned_vm_stop_receipt_v1" or stop.get("status") != "STOPPED"
-            or not isinstance(stopped_cost, Mapping)
-            or float(stopped_cost.get("estimated_compute_cost_usd", -1))
-            != float(resources["prior_lifecycle_compute_usd"])
             or float(resources["compute_quote_usd_per_h"]) != quote
             or resources["deadline_utc"] != source["resources"]["deadline_utc"]
             or resources["fresh_admission_max_age_s"] != 30
@@ -433,6 +508,12 @@ class AtomicCompatibilityController:
 
     def _fresh_resource(self, batch: Any, current: datetime) -> None:
         resource = batch._verify_resource(_read(batch.resource_path))
+        if self.protocol["schema"] == CUMULATIVE_SCHEMA:
+            previous_end, prior_leases = _validate_prior_stops(self.protocol["resources"], self.source, self.repo)
+            if _stamp(resource["compute_started_at_utc"]) < previous_end:
+                raise ValueError("새 lifecycle 시작이 이전 STOPPED 시각보다 빠르다")
+            if resource["lease_id"] in prior_leases:
+                raise ValueError("새 lifecycle lease가 이전 STOPPED lease와 같다")
         issued = _stamp(resource["issued_at_utc"])
         age = (current - issued).total_seconds()
         if not 0 <= age <= self.protocol["resources"]["fresh_admission_max_age_s"]:
