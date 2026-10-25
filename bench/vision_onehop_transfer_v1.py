@@ -503,6 +503,10 @@ def execute_packet(
     intent_path = attempt / "intent.json"
     result_path = attempt / "result.json"
     with _kernel_lock(attempt / "attempt.lock"):
+        intent_present = intent_path.exists() or intent_path.is_symlink()
+        result_present = result_path.exists() or result_path.is_symlink()
+        if result_present and not intent_present:
+            raise ValueError("attempt result에 대응하는 intent가 없다")
         intent = {
             "schema": "vision_onehop_intent_v1",
             "attempt_id": packet["attempt_id"],
@@ -510,11 +514,11 @@ def execute_packet(
             "payload_sha256": stage["sha256"],
             "dry_run": bool(dry_run),
         }
-        if intent_path.exists():
+        if intent_present:
             stored = _read_canonical(intent_path, "attempt intent")
             if stored != intent:
                 raise ValueError("attempt payload 또는 packet binding이 다르다")
-            if result_path.exists():
+            if result_present:
                 result = _read_canonical(result_path, "attempt result")
                 _validate_result(
                     result,

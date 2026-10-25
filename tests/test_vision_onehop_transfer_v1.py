@@ -222,6 +222,43 @@ def test_same_attempt_replays_complete_without_stage_call(tmp_path: Path) -> Non
     assert second == first and calls == [1]
 
 
+@pytest.mark.parametrize("replay_now", [NOW, NOW + timedelta(hours=1)])
+def test_orphan_result_never_replays_or_creates_intent(
+    tmp_path: Path,
+    replay_now: datetime,
+) -> None:
+    _, encoded = packet()
+    execute(encoded, tmp_path, lambda *_: {"exit_code": 0})
+    attempt = tmp_path / "attempt-01"
+    original_result = (attempt / "result.json").read_bytes()
+    (attempt / "intent.json").unlink()
+    calls = []
+    with pytest.raises(ValueError, match="대응하는 intent"):
+        execute(
+            encoded,
+            tmp_path,
+            lambda *_: calls.append(1),
+            now=replay_now,
+        )
+    assert calls == []
+    assert not (attempt / "intent.json").exists()
+    assert (attempt / "result.json").read_bytes() == original_result
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX symlink 경계")
+def test_orphan_result_symlink_stops_before_intent_and_stage(tmp_path: Path) -> None:
+    _, encoded = packet()
+    attempt = tmp_path / "attempt-01"
+    attempt.mkdir()
+    outside = tmp_path / "outside-result.json"
+    outside.write_bytes(b"{}\n")
+    (attempt / "result.json").symlink_to(outside)
+    calls = []
+    with pytest.raises(ValueError, match="대응하는 intent"):
+        execute(encoded, tmp_path, lambda *_: calls.append(1))
+    assert calls == [] and not (attempt / "intent.json").exists()
+
+
 def test_partial_attempt_requires_reconcile_without_stage_call(tmp_path: Path) -> None:
     value, encoded = packet()
     packet_sha = O.sha256_bytes(O.canonical_json(value))
