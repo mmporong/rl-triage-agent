@@ -1,0 +1,93 @@
+# Brev 환경 재사용과 복원 자료
+
+설치된 환경의 주요 패키지와 Isaac Lab commit이 맞으면 재설치를 생략한다.
+새 VM에는 같은 버전을 지정한 설치 스크립트를 사용하고, 단계별 결과를 확인해 재개한다.
+현재 확인 범위는 CPU에서의 bundle 생성·검증과 설치 제어 흐름이다.
+이 경로로 새 VM을 복원하거나 Isaac을 실행한 결과는 아직 없다.
+
+## 고정하는 항목
+
+| 항목 | 버전 또는 소스 |
+| --- | --- |
+| Python | 3.10.12 |
+| pip | 26.2.1 |
+| uv bootstrap | 0.13.5 |
+| PyTorch / torchvision | 2.7.0+cu128 / 0.22.0+cu128 |
+| Isaac Sim | 4.5.0.0 |
+| Isaac Lab | commit `90b79bb2d44feb8d833f260f2bf37da3487180ba`, package 0.41.3 |
+| isaaclab_rl | 0.1.8 |
+| RSL-RL / Gymnasium | 2.3.3 / 1.2.0 |
+
+이 값은 기존 Brev 실행에서 회수한 설치 보고서와 소스 결합을 따른다.
+OS image digest는 확보되지 않아 `null`로 남긴다. 다른 wheel 전체와 드라이버까지
+같은 환경이라는 뜻은 아니며, 새 자원의 CUDA·Isaac 시작·영상 한 프레임은 별도로 확인해야 한다.
+uv bootstrap wheel은 [공식 PyPI metadata](https://pypi.org/pypi/uv/0.13.5/json)의
+Linux x86-64 파일 SHA-256을 recipe에 고정한다.
+
+## 로컬에서 자료 준비
+
+[`vision_brev_environment_v1.py`](../bench/vision_brev_environment_v1.py)는 설치나 다운로드 없이
+새 폴더에 pins, 설치 스크립트, 검증 스크립트, constraints와 파일별 해시를 만든다.
+생성 중에는 torch를 import하거나 GPU를 조회하지 않는다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+New-Item -ItemType Directory -Force '.triage-runtime/vision-environment' | Out-Null
+python bench/vision_brev_environment_v1.py build --output .triage-runtime/vision-environment/bundle-v1
+python bench/vision_brev_environment_v1.py verify-bundle --bundle .triage-runtime/vision-environment/bundle-v1
+(Get-FileHash -Algorithm SHA256 '.triage-runtime/vision-environment/bundle-v1/bundle-manifest.json').Hash.ToLowerInvariant()
+```
+
+출력 경로가 이미 있으면 덮어쓰지 않는다. `bundle-manifest.json`은 각 recipe 파일의
+bytes·SHA-256과 LF 해시, pins와 cache manifest의 해시를 묶는다.
+VM에 옮긴 뒤에도 같은 파일 집합과 해시를 대조하고 로컬 원본을 보존한다.
+로컬에서 확인한 `bundle-manifest.json`의 SHA-256도 따로 보관한다.
+설치·재사용 명령의 `--expected-manifest-sha256`에는 이 값을 전달한다.
+원격 사본에서 새로 계산한 값을 승인된 원본 해시 대신 사용하지 않는다.
+
+자산·wheel cache를 기록하려면 `build --cache-spec <로컬 JSON 경로>`를 사용한다.
+입력은 `logical_id`, `root`, `files`를 가진 객체의 배열이며, `files`에는 root 안의
+상대 경로를 하나씩 명시한다. 출력에는 root의 절대 경로를 넣지 않는다.
+홈 폴더를 훑어 cache나 자격증명을 찾지 않으며 symlink·hardlink·경로 이탈을 거부한다.
+
+cache manifest는 파일 목록과 해시다. 자산 bytes를 옮기거나 복원을 마쳤다는 증거가 아니다.
+cache 입력을 생략한 bundle은 빈 목록을 기록한다. 실제 필요한 자산은 실행 전에 확보하고
+회수 inventory에도 포함해야 하며, 자격증명은 이 자료에 넣지 않는다.
+
+## 설치된 환경 검사
+
+현재 잔액·견적·소유 자원과 실행 사전등록을 확인한 뒤, 준비된 Brev Linux에서 검사한다.
+예를 들어 기존 설치 폴더를 읽는 명령은 다음과 같다. bundle 경로는 복사한 로컬 원본과
+해시 대조를 마친 경로로 정한다.
+
+```bash
+cd "$HOME/workspace/rl-triage-vision-bundle-v1"
+bash install.sh \
+  --expected-manifest-sha256 "$VISION_BUNDLE_MANIFEST_SHA256" \
+  --existing-environment-root "$HOME/workspace/rl-triage-brev-e2e-20261024" \
+  --reuse-receipt "$HOME/workspace/vision-existing-environment-reuse-v1.json"
+```
+
+이 모드는 대상 환경을 수정하거나 ownership marker를 새로 만들지 않는다.
+주요 패키지 버전과 Python·Isaac Lab HEAD가 맞고 추적 파일에 변경이 없을 때만 `reusable`을 기록한다.
+맞지 않거나 interpreter가 없으면 해당 상태와 실패 코드를 남기며 설치로 전환하지 않는다.
+
+## 새 환경 설치와 재개
+
+등록된 자원·예산 안에서 새 환경 설치가 필요한 경우에만 같은 bundle의 설치 경로를 실행한다.
+
+```bash
+cd "$HOME/workspace/rl-triage-vision-bundle-v1"
+bash install.sh --expected-manifest-sha256 "$VISION_BUNDLE_MANIFEST_SHA256"
+```
+
+기본 대상은 `$HOME/workspace/rl-triage-vision-v1`이다.
+작업 전용 ownership marker가 없는 기존 비어 있지 않은 폴더는 거부한다.
+단계 완료 기록이 있어도 현재 버전·소스 검사를 통과해야 해당 단계를 생략한다.
+모든 항목이 이미 맞으면 설치 명령을 다시 실행하지 않고 재사용 결과를 남긴다.
+실패 코드는 유지하고 attempt별 결과를 보관하며, 부분 설치를 완료로 세지 않는다.
+
+설치 결과는 패키지 준비 범위다. 실제 자원별 GPU 입장, 짧은 학습, renderer 동기화와
+영상 확인은 [Brev 수집 경로](VISION-BREV-DATA.md)의 별도 실행 조건이다.
+실제 복원 시험을 수행하면 설치·자산 준비·검증을 포함한 시간을 기록하고,
+단계별 자료를 로컬로 회수한 뒤 소유 VM을 종료한다.

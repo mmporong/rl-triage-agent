@@ -40,6 +40,8 @@ A [CPU-verified selection path](docs/VISION-INSPECTION-SELECTION.md) gives all t
 
 The [Brev data collection path](docs/VISION-BREV-DATA.md) binds video frames to commands, motion and camera timing from the same playback. It keeps a fixed six-training-run ledger, checks completed artifacts before reuse and requires a separate renderer synchronization check before model use. This path has CPU coverage; its new GPU collection and synchronization runs are pending.
 
+A [portable environment bundle](docs/VISION-BREV-ENVIRONMENT.md) records pinned package versions, installation recipes and explicit cache-file hashes. It can inspect an existing environment without changing it and skip installation when the checked versions match. The bundle has CPU coverage; restoration on a new VM and GPU validation remain pending.
+
 ## Key results
 
 | Question | Result | Evidence |
@@ -296,6 +298,7 @@ Earlier development steps, each with its own protocol, results and limits:
 - 영상 입력 준비기는 원본에서 프레임 여섯 장을 추출하고 정책·동기화 운동 기록과 묶습니다. 기록이 없는 수치는 null로 남기며, 모델 입력에서는 실행 ID·파일명·평가 정답을 제외합니다. 새 관찰 실행기는 Nemotron 3.5가 인용한 프레임 ID·시각을 검증하고 요청 원장을 재개합니다. 기존 Go2·G1 영상 두 입력을 개발 확인용으로 고정했으며, API 상한은 합계 6회입니다. 영상의 행동 묘사와 원인 확정·회복 판정은 구분합니다. [입력 계약](docs/VISION-EVIDENCE-CONTRACT.md) · [개발 사전등록](bench/protocols/grounded_vision_development_v1.json)
 - 세 입력이 같은 Play 수치·시각·검사 목록·예산을 공유하는 검사 선택 경로를 CPU로 검증했습니다. 텍스트와 결합 입력의 학습 기록도 같고, 결합 입력에는 여섯 프레임과 인용 ID를 더합니다. 호출기는 입력과 요청 원장을 보존하며 모델은 검사·근거 ID만 고릅니다. 인자는 호스트가 만들고 판단 보류·무효는 실행 요청 없이 멈춥니다. 영상 기여의 판정 기준은 [비교 사전등록](bench/protocols/vision_selection_comparison_v1.json)에 고정했으며 아직 효과를 측정하지 않았습니다. [검사 선택 계약](docs/VISION-INSPECTION-SELECTION.md)
 - [Brev 수집 경로](docs/VISION-BREV-DATA.md)는 같은 Play의 영상·명령·운동·카메라 시각을 묶고 완료 산출물을 확인해 재사용합니다. 학습 여섯 건 상한과 교정 승인 경계를 유지하며, 실제 GPU 동기화 검사가 끝나기 전에는 녹화를 모델 사용 가능 상태로 표시하지 않습니다. 이 경로의 새 GPU 수집은 아직 실행하지 않았습니다.
+- [환경 bundle](docs/VISION-BREV-ENVIRONMENT.md)은 버전·설치 recipe·명시한 cache 파일 해시를 보관합니다. 기존 환경을 수정 없이 검사하고 주요 버전이 맞으면 재설치를 생략합니다. CPU 검증을 마쳤으며 새 VM 복원과 GPU 검증은 남아 있습니다.
 
 - 새 PPO 진단 고리는 모델 출력을 검사·근거 ID 선택으로 제한하고, 저장된 API 오류 뒤 완료 단계의 SHA를 확인해 재개합니다. 미완료 요청은 자동 재전송하지 않습니다. 첫 검사는 모델, 이후 검사와 교정은 등록 규칙이 선택합니다. CPU 상태 전이 검증과 실제 새 seed의 GPU 회복 확인을 구분합니다. [구현과 실행](docs/RESUMABLE-DIAGNOSIS.md)
 
