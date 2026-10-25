@@ -14,6 +14,11 @@ from typing import Any
 
 import record_vision_evidence_v1 as R
 
+CameraCapture = Callable[
+    [Any, Any, list[Any], Mapping[str, Any], list[float], list[float], int],
+    dict[str, Any],
+]
+
 
 def _tensor_values(value: Any) -> list[float]:
     return [float(item) for item in value.detach().cpu().flatten().tolist()]
@@ -74,7 +79,51 @@ def _set_camera_and_capture(
     return _capture_pixels_and_timing(rep, annotators, camera_profile)
 
 
-def run_real(validated: Mapping[str, Any], app: Any) -> tuple[dict[str, Path], Path]:
+def _capture_with_ordinal(
+    capture: CameraCapture | None, base: Any, rep: Any, annotators: list[Any],
+    camera_profile: Mapping[str, Any], eye: list[float], lookat: list[float], ordinal: int,
+) -> dict[str, Any]:
+    if capture is not None:
+        return capture(base, rep, annotators, camera_profile, eye, lookat, ordinal)
+    return _set_camera_and_capture(base, rep, annotators, camera_profile, eye, lookat)
+
+
+def _cleanup_capture_resources(
+    encoder: Any, render_product: Any, annotators: list[Any], env: Any,
+    primary_error: BaseException | None,
+) -> None:
+    errors: list[BaseException] = []
+    if encoder is not None:
+        try:
+            if not encoder.finished:
+                encoder.abort()
+        except BaseException as error:  # noqa: BLE001 - 나머지 SDK 자원도 정리한다.
+            errors.append(error)
+    if render_product is not None:
+        for annotator in annotators:
+            try:
+                annotator.detach(render_product)
+            except BaseException as error:  # noqa: BLE001 - destroy와 env.close를 이어간다.
+                errors.append(error)
+        try:
+            render_product.destroy()
+        except BaseException as error:  # noqa: BLE001 - env.close를 이어간다.
+            errors.append(error)
+    if env is not None:
+        try:
+            env.close()
+        except BaseException as error:  # noqa: BLE001 - 첫 실패를 보존한다.
+            errors.append(error)
+    if primary_error is not None:
+        for error in errors:
+            traceback.print_exception(error)
+    elif errors:
+        raise errors[0]
+
+
+def run_real(
+    validated: Mapping[str, Any], app: Any, *, camera_capture: CameraCapture | None = None,
+) -> tuple[dict[str, Path], Path]:
     import gymnasium as gym  # pyright: ignore[reportMissingImports]
     import isaaclab_tasks  # noqa: F401  # pyright: ignore[reportMissingImports]
     import omni.replicator.core as rep  # pyright: ignore[reportMissingImports]
@@ -165,8 +214,8 @@ def run_real(validated: Mapping[str, Any], app: Any) -> tuple[dict[str, Path], P
             root = before["root_position_world_m"]
             eye = [root[i] + [3.0, 3.0, 2.0][i] for i in range(3)]
             lookat = [root[i] + [0.0, 0.0, 0.35][i] for i in range(3)]
-            capture = _set_camera_and_capture(
-                base, rep, annotators, camera_profile, eye, lookat
+            capture = _capture_with_ordinal(
+                camera_capture, base, rep, annotators, camera_profile, eye, lookat, index
             )
             after = state_snapshot()
             R.validate_render_state_unchanged(before, after)
@@ -192,16 +241,14 @@ def run_real(validated: Mapping[str, Any], app: Any) -> tuple[dict[str, Path], P
         )
         return artifacts, video
     finally:
-        if encoder is not None and not encoder.finished:
-            encoder.abort()
-        if render_product is not None:
-            for annotator in annotators:
-                annotator.detach(render_product)
-        if env is not None:
-            env.close()
+        _cleanup_capture_resources(
+            encoder, render_product, annotators, env, sys.exc_info()[1]
+        )
 
 
-def run_render_sync_smoke(validated: Mapping[str, Any], app: Any) -> tuple[dict[str, Path], Path]:
+def run_render_sync_smoke(
+    validated: Mapping[str, Any], app: Any, *, camera_capture: CameraCapture | None = None,
+) -> tuple[dict[str, Path], Path]:
     """정책·physics step 없이 현재 renderer의 A-B-A capture 동기화를 검사한다."""
     import gymnasium as gym  # pyright: ignore[reportMissingImports]
     import isaaclab_tasks  # noqa: F401  # pyright: ignore[reportMissingImports]
@@ -225,6 +272,7 @@ def run_render_sync_smoke(validated: Mapping[str, Any], app: Any) -> tuple[dict[
     env = None
     render_product = None
     annotators: list[Any] = []
+    capture_ordinal = 0
     try:
         env = gym.make(profile["task"], cfg=env_cfg)
         base = env.unwrapped
@@ -256,15 +304,18 @@ def run_render_sync_smoke(validated: Mapping[str, Any], app: Any) -> tuple[dict[
             }
 
         def capture(label: str, eye_offset: list[float]) -> dict[str, Any]:
+            nonlocal capture_ordinal
             before = state_snapshot()
             root = before["root_position_world_m"]
             eye = [root[index] + eye_offset[index] for index in range(3)]
             lookat_offset = camera_profile["lookat_offset_m"]
             lookat = [root[index] + lookat_offset[index] for index in range(3)]
             simulation_time_before = float(base.sim.current_time)
-            rendered = _set_camera_and_capture(
-                base, rep, annotators, camera_profile, eye, lookat
+            rendered = _capture_with_ordinal(
+                camera_capture, base, rep, annotators, camera_profile, eye, lookat,
+                capture_ordinal,
             )
+            capture_ordinal += 1
             after = state_snapshot()
             return {
                 "label": label, "rgb": rendered["rgb"], "state_before": before, "state_after": after,
@@ -286,11 +337,9 @@ def run_render_sync_smoke(validated: Mapping[str, Any], app: Any) -> tuple[dict[
             artifacts[f"audit_rgb_{index}"] = rgb_path
         return artifacts, report_path
     finally:
-        if render_product is not None:
-            for annotator in annotators:
-                annotator.detach(render_product)
-        if env is not None:
-            env.close()
+        _cleanup_capture_resources(
+            None, render_product, annotators, env, sys.exc_info()[1]
+        )
 
 
 def execute(

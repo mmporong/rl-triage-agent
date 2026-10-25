@@ -44,7 +44,7 @@ The [Brev data collection path](docs/VISION-BREV-DATA.md) binds video frames to 
 
 The [attested render controller](docs/VISION-BREV-RENDER-V2.md) connects source collection to one renderer check per checkpoint and validates retrieved pairs on CPU before releasing model inputs. Its new Isaac collection and model comparison remain pending.
 
-A [portable environment bundle](docs/VISION-BREV-ENVIRONMENT.md) records pinned package versions, installation recipes and explicit cache-file hashes. It can inspect an existing environment without changing it and skip installation when the checked versions match. A separate preflight connects a 20-update normal training run to the existing renderer check under the same GPU lock and budget; its result does not release model inputs. A CPU check detects missing renderer shared libraries before launch, and the capture worker verifies timestamp annotators and reads back the settings that enable manual Replicator capture. These paths have CPU coverage; restoration on a new VM and complete GPU validation remain pending.
+A [portable environment bundle](docs/VISION-BREV-ENVIRONMENT.md) records pinned package versions, installation recipes and explicit cache-file hashes. It can inspect an existing environment without changing it and skip installation when the checked versions match. A separate preflight connects a 20-update normal training run to the existing renderer check under the same GPU lock and budget; its result does not release model inputs. A CPU check detects missing renderer shared libraries before launch. The capture worker checks timestamp annotator registration and manual-capture settings, preserves raw timing fields before validation, and separates the SDK execution port from timing data. These paths have CPU coverage; restoration on a new VM and complete GPU validation remain pending.
 
 ## Key results
 
@@ -304,7 +304,7 @@ Earlier development steps, each with its own protocol, results and limits:
 - [비교 실행 경계](docs/VISION-SELECTION-EXECUTION.md)는 등록 입력을 원본 Play·렌더 확인·GPU 런타임 기록과 대조합니다. 완료 응답을 보존하고 미완료 요청의 재전송을 차단합니다. 새 GPU 자료를 사용하는 비교 실행은 남아 있습니다.
 - [Brev 수집 경로](docs/VISION-BREV-DATA.md)는 같은 Play의 영상·명령·운동·카메라 시각을 묶고 완료 산출물을 확인해 재사용합니다. 학습 여섯 건 상한과 교정 승인 경계를 유지하며, 실제 GPU 동기화 검사가 끝나기 전에는 녹화를 모델 사용 가능 상태로 표시하지 않습니다. 이 경로의 새 GPU 수집은 아직 실행하지 않았습니다.
 - [렌더 연결 실행기](docs/VISION-BREV-RENDER-V2.md)는 checkpoint별 동기화 확인을 별도 원장으로 관리하고, 회수한 녹화·확인 기록을 CPU에서 검증한 뒤 모델 입력 준비 상태를 기록합니다. 새 Isaac 수집과 모델 비교는 아직 실행하지 않았습니다.
-- [환경 bundle](docs/VISION-BREV-ENVIRONMENT.md)은 버전·설치 recipe·명시한 cache 파일 해시를 보관합니다. 기존 환경을 수정 없이 검사하고 주요 버전이 맞으면 재설치를 생략합니다. 별도 사전 점검은 같은 GPU 잠금·예산 안에서 정상 정책 20회 학습과 기존 렌더 검사를 연결하며 모델 입력 준비와 구분합니다. 렌더러 공유 라이브러리 누락은 실행 전에 CPU로 검사하고, 캡처 worker는 시각 annotator 등록과 Replicator 수동 캡처 설정값을 확인합니다. 이 경로는 CPU 회귀로 확인하며 새 VM 복원과 전체 GPU 검증은 남아 있습니다.
+- [환경 bundle](docs/VISION-BREV-ENVIRONMENT.md)은 버전·설치 recipe·명시한 cache 파일 해시를 보관합니다. 기존 환경을 수정 없이 검사하고 주요 버전이 맞으면 재설치를 생략합니다. 별도 사전 점검은 같은 GPU 잠금·예산 안에서 정상 정책 20회 학습과 기존 렌더 검사를 연결하며 모델 입력 준비와 구분합니다. 렌더러 공유 라이브러리 누락은 실행 전에 CPU로 검사합니다. 캡처 worker는 시각 annotator 등록과 수동 캡처 설정값을 확인하고, 검증 전에 반환 필드를 보존한 뒤 SDK 실행 포트를 시각 정보와 분리합니다. 이 경로는 CPU 회귀로 확인하며 새 VM 복원과 전체 GPU 검증은 남아 있습니다.
 
 - 새 PPO 진단 고리는 모델 출력을 검사·근거 ID 선택으로 제한하고, 저장된 API 오류 뒤 완료 단계의 SHA를 확인해 재개합니다. 미완료 요청은 자동 재전송하지 않습니다. 첫 검사는 모델, 이후 검사와 교정은 등록 규칙이 선택합니다. CPU 상태 전이 검증과 실제 새 seed의 GPU 회복 확인을 구분합니다. [구현과 실행](docs/RESUMABLE-DIAGNOSIS.md)
 

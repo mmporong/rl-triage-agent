@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import importlib
 import json
 import sys
@@ -13,6 +14,17 @@ sys.path.insert(0, str(ROOT / "bench"))
 V1 = importlib.import_module("vision_play_worker_v1")
 V2 = importlib.import_module("vision_play_worker_v2")
 SOURCES = importlib.import_module("vision_selection_sources_v1")
+
+
+def _read_times(simulation_time: float = 1.0) -> dict[str, int | float]:
+    return {
+        "durationDenominator": 50, "durationNumerator": 1,
+        "externalTimeOfSimNs": 1_000_000_000, "frameNumber": 50,
+        "rationalTimeOfSimDenominator": 50, "rationalTimeOfSimNumerator": 50,
+        "sampleTimeOffsetInSimFrames": 0, "simulationTime": simulation_time,
+        "simulationTimeMonotonic": simulation_time, "swhFrameNumber": 50,
+        "systemTime": 1_001.0,
+    }
 
 
 def _fixture(
@@ -195,8 +207,11 @@ def test_default_runner_selects_original_v1_mode(
     events: list[str] = []
     job, validated = _fixture(tmp_path, monkeypatch, events, mode=mode)
 
-    def capture(current: dict[str, Any], app: App) -> tuple[dict[str, Path], Path]:
+    def capture(
+        current: dict[str, Any], app: App, *, camera_capture: Any,
+    ) -> tuple[dict[str, Path], Path]:
         del app
+        assert callable(camera_capture)
         events.append(selected)
         current["output_directory"].mkdir()
         primary = current["output_directory"] / "primary.json"
@@ -241,3 +256,69 @@ def test_startup_readback_failure_skips_capture_and_v1_closes_after_failure(
     evidence = json.loads((validated["output_directory"] / V2.RECEIPT_FILE).read_text(encoding="utf-8"))
     assert failure["stage"] == "record_play" and failure["error_message"] == "startup readback failed"
     assert evidence["replicator_startup"] is None and evidence["status"] == "failed"
+
+
+@pytest.mark.parametrize("preserve_rgb", [False, True])
+def test_journaled_capture_writes_raw_before_validation_and_smoke_only_rgb(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, preserve_rgb: bool,
+) -> None:
+    job = tmp_path / ("smoke.json" if preserve_rgb else "record.json")
+    job.write_text("{}\n", encoding="utf-8")
+    rgb = b"captured-rgb"
+    raw = {
+        "rgb": rgb, "read_times": {**_read_times(), "unexpected": object()},
+        "reference_time": {"referenceTimeNumerator": 1, "referenceTimeDenominator": 1},
+    }
+    monkeypatch.setattr(V1, "_set_camera_and_capture", lambda *args: raw)
+    base = type("Base", (), {"sim": type("Sim", (), {"current_time": 1.0})()})()
+    capture = V2._journaled_camera_capture({"job_path": job}, preserve_rgb=preserve_rgb)
+    with pytest.raises(ValueError, match="11필드|12필드"):
+        capture(base, object(), [], {}, [], [], 2)
+    journal = job.with_name(f"{job.stem}.capture-000002.timing-raw.json")
+    body = json.loads(journal.read_text(encoding="utf-8"))
+    assert "unexpected" in body["read_times"]["fields"]
+    rgb_path = job.with_name(f"{job.stem}.capture-000002.rgb")
+    assert rgb_path.exists() is preserve_rgb
+    if preserve_rgb:
+        assert rgb_path.read_bytes() == rgb
+        assert body["rgb_artifact"]["sha256"] == hashlib.sha256(rgb).hexdigest()
+    else:
+        assert body["rgb_artifact"] is None
+
+
+@pytest.mark.parametrize("capture_fails", [False, True])
+def test_default_isaac45_proxy_closes_after_success_or_failure_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capture_fails: bool,
+) -> None:
+    events: list[str] = []
+    job, validated = _fixture(tmp_path, monkeypatch, events)
+
+    class RawApp:
+        def update(self) -> None:
+            events.append("raw-update")
+
+        def close(self, *, wait_for_replicator: bool) -> None:
+            assert wait_for_replicator is False
+            expected = "failure.json" if capture_fails else "result.json"
+            assert (validated["output_directory"] / expected).is_file()
+            events.append("raw-close-false")
+
+    monkeypatch.setattr(V2, "_default_app_factory", lambda: V2._Isaac45AppProxy(RawApp()))
+
+    def capture(current: dict[str, Any], app: Any) -> tuple[dict[str, Path], Path]:
+        del app
+        events.append("capture")
+        if capture_fails:
+            raise RuntimeError("capture failed")
+        current["output_directory"].mkdir()
+        primary = current["output_directory"] / "primary.json"
+        primary.write_text("{}\n", encoding="utf-8")
+        return {"primary": primary}, primary
+
+    code = V2.execute(
+        job, runner=capture, enable_extension=lambda _name: True,
+        registration_probe=lambda: {name: True for name in V2.ANNOTATORS},
+        startup_configure=lambda: {"before": {}, "after": {}},
+    )
+    assert code == (1 if capture_fails else 0)
+    assert events == ["raw-update", "capture", "raw-close-false"]

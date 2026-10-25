@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
@@ -10,6 +11,7 @@ from typing import Any
 import record_vision_evidence_v1 as R
 import vision_play_worker_v1 as V1
 import vision_replicator_startup_v1 as STARTUP
+import vision_timing_adapter_v1 as TIMING
 
 SCHEMA = "vision_play_worker_registration_v2"
 EXTENSION = "isaacsim.core.nodes"
@@ -20,6 +22,24 @@ CaptureRunner = Callable[[Mapping[str, Any], Any], tuple[dict[str, Path], Path]]
 EnableExtension = Callable[[str], bool]
 RegistrationProbe = Callable[[], Mapping[str, bool]]
 StartupConfigure = Callable[[], Mapping[str, Mapping[str, Any]]]
+
+
+class _Isaac45AppProxy:
+    def __init__(self, app: Any) -> None:
+        self._app = app
+
+    def update(self) -> Any:
+        return self._app.update()
+
+    def close(self) -> Any:
+        return self._app.close(wait_for_replicator=False)
+
+
+def _default_app_factory() -> _Isaac45AppProxy:
+    from isaaclab.app import AppLauncher  # pyright: ignore[reportMissingImports]
+
+    app = AppLauncher(headless=True, enable_cameras=True, fast_shutdown=False).app
+    return _Isaac45AppProxy(app)
 
 
 def _enable_extension(name: str) -> bool:
@@ -105,6 +125,41 @@ def _guarded_runner(
     return artifacts, primary
 
 
+def _journaled_camera_capture(
+    validated: Mapping[str, Any], *, preserve_rgb: bool,
+) -> V1.CameraCapture:
+    def capture(
+        base: Any, rep: Any, annotators: list[Any], camera_profile: Mapping[str, Any],
+        eye: list[float], lookat: list[float], ordinal: int,
+    ) -> dict[str, Any]:
+        raw = V1._set_camera_and_capture(
+            base, rep, annotators, camera_profile, eye, lookat
+        )
+        rgb_sha256 = hashlib.sha256(raw["rgb"]).hexdigest()
+        TIMING.write_capture_journal(
+            validated["job_path"], ordinal, raw["read_times"], raw["reference_time"],
+            rgb_sha256, rgb_bytes=raw["rgb"] if preserve_rgb else None,
+        )
+        normalized = TIMING.normalize_render_timing(
+            raw["read_times"], raw["reference_time"], float(base.sim.current_time)
+        )
+        return {"rgb": raw["rgb"], "read_times": normalized["read_times"],
+                "reference_time": normalized["reference_time"]}
+
+    return capture
+
+
+def _default_capture_runner(
+    validated: Mapping[str, Any], app: Any,
+) -> tuple[dict[str, Path], Path]:
+    smoke = validated["job"]["mode"] == R.RENDER_SYNC_SMOKE_MODE
+    selected = V1.run_render_sync_smoke if smoke else V1.run_real
+    return selected(
+        validated, app,
+        camera_capture=_journaled_camera_capture(validated, preserve_rgb=smoke),
+    )
+
+
 def execute(
     job_path: Path,
     *,
@@ -119,13 +174,7 @@ def execute(
     selected_startup = startup_configure or STARTUP.configure_replicator_startup
 
     def injected(validated: Mapping[str, Any], app: Any) -> tuple[dict[str, Path], Path]:
-        selected_runner = runner
-        if selected_runner is None:
-            selected_runner = (
-                V1.run_render_sync_smoke
-                if validated["job"]["mode"] == R.RENDER_SYNC_SMOKE_MODE
-                else V1.run_real
-            )
+        selected_runner = runner or _default_capture_runner
         return _guarded_runner(
             validated,
             app,
@@ -135,7 +184,9 @@ def execute(
             startup_configure=selected_startup,
         )
 
-    return V1.execute(job_path, app_factory=app_factory, runner=injected)
+    return V1.execute(
+        job_path, app_factory=app_factory or _default_app_factory, runner=injected
+    )
 
 
 def main(argv: Sequence[str] | None = None) -> int:
