@@ -366,6 +366,15 @@ def _verify_capture(repo: Path, refs: dict, mode: str, source_protocol: dict,
 def _verify_smoke(capture: dict) -> dict:
     paths, result = capture["artifact_paths"], capture["result"]
     report_path = paths["render_sync_smoke"]
+    if _read(report_path).get("schema") == "vision_render_sync_smoke_v2":
+        import vision_atomic_smoke_v1 as ATOMIC  # pyright: ignore[reportMissingImports]
+        _require(result["video_sha256"] is None
+                 and result["primary_artifact_sha256"] == _sha(report_path),
+                 "render smoke primary 결과가 다르다")
+        report = ATOMIC.verify_report(report_path, capture["paths"]["job"], paths)
+        _require(all(row["atomic_bundle"]["camera"]["resolution"] == [RECORD.WIDTH, RECORD.HEIGHT]
+                     for row in report["captures"]), "atomic smoke resolution이 고정 profile과 다르다")
+        return report
     report = _exact(_read(report_path), {"schema", "status", "capture_order", "policy_steps",
                                        "capture_phase_physics_steps", "environment_reset_performed", "delta_time_s",
                                        "rt_subframes", "pause_timeline", "renderer_combination_only",

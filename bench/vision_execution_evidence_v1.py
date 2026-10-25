@@ -343,6 +343,10 @@ def verify_manifest(manifest_path: Path, job_path: Path, result_path: Path) -> d
     if manifest != stage / MANIFEST_NAME:
         raise ValueError("execution evidence manifest 이름 또는 위치가 다르다")
     value = R.read_object(manifest)
+    if value.get("schema") == "vision_play_execution_evidence_v2":
+        import vision_execution_evidence_v2 as V2
+
+        return V2.verify_manifest(manifest, job, result)
     expected = {"schema", "execution_schema", "completed", "sdk_child_exit_code",
                 "supervisor_verification_complete", "job_sha256", "result_sha256", "mode",
                 "capture_count", "readiness", "shutdown_policy", "captures"}

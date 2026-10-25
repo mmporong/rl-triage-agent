@@ -27,7 +27,8 @@ def _required(
 
 
 def _render(
-    args: argparse.Namespace, parser: argparse.ArgumentParser
+    args: argparse.Namespace, parser: argparse.ArgumentParser,
+    backend_factory: Any = BACKEND.SupervisedVisionBrevBackend.from_runtime,
 ) -> dict[str, Any]:
     common = (
         args.repo,
@@ -79,13 +80,14 @@ def _render(
         args.resource_sha256,
         args.isaaclab,
         args.python,
-        backend_factory=BACKEND.SupervisedVisionBrevBackend.from_runtime,
+        backend_factory=backend_factory,
     )
     return batch.verify() if args.command == "verify" else batch.advance()
 
 
 def _preflight(
-    args: argparse.Namespace, parser: argparse.ArgumentParser
+    args: argparse.Namespace, parser: argparse.ArgumentParser,
+    backend_factory: Any = BACKEND.SupervisedVisionBrevBackend.from_runtime,
 ) -> dict[str, Any]:
     if args.command in {"export", "finalize"}:
         parser.error(f"preflight phase에는 {args.command}가 없다")
@@ -128,12 +130,13 @@ def _preflight(
         *offline,
         args.isaaclab,
         args.python,
-        backend_factory=BACKEND.SupervisedVisionBrevBackend.from_runtime,
+        backend_factory=backend_factory,
     )
     return batch.verify() if args.command == "verify" else batch.advance()
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, *, backend_factory: Any = None) -> int:
+    selected_backend = backend_factory or BACKEND.SupervisedVisionBrevBackend.from_runtime
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--phase", required=True, choices=("preflight", "render"))
     parser.add_argument(
@@ -158,7 +161,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     args.repo = Path(args.repo).resolve(strict=True)
     result = (
-        _preflight(args, parser) if args.phase == "preflight" else _render(args, parser)
+        _preflight(args, parser, selected_backend)
+        if args.phase == "preflight" else _render(args, parser, selected_backend)
     )
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 2 if result["status"] == "HOLD" else 0

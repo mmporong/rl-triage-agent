@@ -18,6 +18,9 @@ CameraCapture = Callable[
     [Any, Any, list[Any], Mapping[str, Any], list[float], list[float], int],
     dict[str, Any],
 ]
+CameraCaptureFactory = Callable[
+    [Any, Any, Any, Mapping[str, Any]], tuple[CameraCapture, Callable[[], None]],
+]
 
 
 def _tensor_values(value: Any) -> list[float]:
@@ -91,6 +94,7 @@ def _capture_with_ordinal(
 def _cleanup_capture_resources(
     encoder: Any, render_product: Any, annotators: list[Any], env: Any,
     primary_error: BaseException | None,
+    *, capture_cleanup: Callable[[], None] | None = None,
 ) -> None:
     errors: list[BaseException] = []
     if encoder is not None:
@@ -98,6 +102,11 @@ def _cleanup_capture_resources(
             if not encoder.finished:
                 encoder.abort()
         except BaseException as error:  # noqa: BLE001 - 나머지 SDK 자원도 정리한다.
+            errors.append(error)
+    if capture_cleanup is not None:
+        try:
+            capture_cleanup()
+        except BaseException as error:  # noqa: BLE001 - RP와 환경 정리를 이어간다.
             errors.append(error)
     if render_product is not None:
         for annotator in annotators:
@@ -123,7 +132,10 @@ def _cleanup_capture_resources(
 
 def run_real(
     validated: Mapping[str, Any], app: Any, *, camera_capture: CameraCapture | None = None,
+    camera_capture_factory: CameraCaptureFactory | None = None,
 ) -> tuple[dict[str, Path], Path]:
+    if camera_capture is not None and camera_capture_factory is not None:
+        raise ValueError("capture callback과 factory는 함께 지정할 수 없다")
     import gymnasium as gym  # pyright: ignore[reportMissingImports]
     import isaaclab_tasks  # noqa: F401  # pyright: ignore[reportMissingImports]
     import omni.replicator.core as rep  # pyright: ignore[reportMissingImports]
@@ -158,6 +170,7 @@ def run_real(
     render_product = None
     annotators: list[Any] = []
     encoder = None
+    capture_cleanup: Callable[[], None] | None = None
     output = validated["output_directory"]
     video = output / "same_play.mp4"
     try:
@@ -185,7 +198,14 @@ def run_real(
         render_product = rep.create.render_product(
             camera_profile["camera_prim_path"], (R.WIDTH, R.HEIGHT)
         )
-        annotators = _create_capture_annotators(rep, render_product)
+        if camera_capture_factory is None:
+            annotators = _create_capture_annotators(rep, render_product)
+        else:
+            camera_capture, capture_cleanup = camera_capture_factory(
+                base, rep, render_product, camera_profile,
+            )
+            if not callable(camera_capture) or not callable(capture_cleanup):
+                raise TypeError("capture factory는 callback과 cleanup을 반환해야 한다")
         obs, _ = env.get_observations()
 
         def state_snapshot() -> dict[str, Any]:
@@ -242,14 +262,21 @@ def run_real(
         return artifacts, video
     finally:
         _cleanup_capture_resources(
-            encoder, render_product, annotators, env, sys.exc_info()[1]
+            encoder, render_product, annotators, env, sys.exc_info()[1],
+            capture_cleanup=capture_cleanup,
         )
 
 
 def run_render_sync_smoke(
     validated: Mapping[str, Any], app: Any, *, camera_capture: CameraCapture | None = None,
+    camera_capture_factory: CameraCaptureFactory | None = None,
+    smoke_collector: Callable[..., Any] | None = None,
 ) -> tuple[dict[str, Path], Path]:
     """정책·physics step 없이 현재 renderer의 A-B-A capture 동기화를 검사한다."""
+    if camera_capture is not None and camera_capture_factory is not None:
+        raise ValueError("capture callback과 factory는 함께 지정할 수 없다")
+    if camera_capture_factory is not None and smoke_collector is None:
+        raise ValueError("새 capture factory에는 해당 smoke 판정기가 필요하다")
     import gymnasium as gym  # pyright: ignore[reportMissingImports]
     import isaaclab_tasks  # noqa: F401  # pyright: ignore[reportMissingImports]
     import omni.replicator.core as rep  # pyright: ignore[reportMissingImports]
@@ -272,6 +299,7 @@ def run_render_sync_smoke(
     env = None
     render_product = None
     annotators: list[Any] = []
+    capture_cleanup: Callable[[], None] | None = None
     capture_ordinal = 0
     try:
         env = gym.make(profile["task"], cfg=env_cfg)
@@ -290,7 +318,14 @@ def run_render_sync_smoke(
         render_product = rep.create.render_product(
             camera_profile["camera_prim_path"], (R.WIDTH, R.HEIGHT)
         )
-        annotators = _create_capture_annotators(rep, render_product)
+        if camera_capture_factory is None:
+            annotators = _create_capture_annotators(rep, render_product)
+        else:
+            camera_capture, capture_cleanup = camera_capture_factory(
+                base, rep, render_product, camera_profile,
+            )
+            if not callable(camera_capture) or not callable(capture_cleanup):
+                raise TypeError("capture factory는 callback과 cleanup을 반환해야 한다")
 
         def state_snapshot() -> dict[str, Any]:
             return {
@@ -317,15 +352,18 @@ def run_render_sync_smoke(
             )
             capture_ordinal += 1
             after = state_snapshot()
-            return {
+            result = {
                 "label": label, "rgb": rendered["rgb"], "state_before": before, "state_after": after,
                 "simulation_time_before_s": simulation_time_before,
                 "simulation_time_after_s": float(base.sim.current_time),
                 "read_times": rendered["read_times"], "reference_time": rendered["reference_time"],
                 "camera": {"eye_world_m": eye, "lookat_world_m": lookat},
             }
+            if "atomic_bundle" in rendered:
+                result["atomic_bundle"] = rendered["atomic_bundle"]
+            return result
 
-        captures, report = R.collect_render_sync_smoke(capture)
+        captures, report = (smoke_collector or R.collect_render_sync_smoke)(capture)
         output = validated["output_directory"]
         output.mkdir(parents=True, exist_ok=False)
         report_path = output / "render_sync_smoke.json"
@@ -338,7 +376,8 @@ def run_render_sync_smoke(
         return artifacts, report_path
     finally:
         _cleanup_capture_resources(
-            None, render_product, annotators, env, sys.exc_info()[1]
+            None, render_product, annotators, env, sys.exc_info()[1],
+            capture_cleanup=capture_cleanup,
         )
 
 

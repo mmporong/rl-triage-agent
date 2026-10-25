@@ -67,9 +67,19 @@ context를 만들지 않은 기존 녹화는 이 경로에서 사용 가능 상�
 수집 실행기에 이 기록을 연결하고 실제 GPU에서 확인하는 단계는 별도로 남아 있다.
 
 readiness 범위는 `registered_renderer_combination_only`다.
-smoke의 warmup RGB와 state before/after 원문은 기존 산출물에 남지 않는다.
+기존 v1 smoke의 warmup RGB와 state before/after 원문은 해당 산출물에 남지 않는다.
 후검증은 동결 assessor의 통과 기록과 보존 RGB를 대조하며, 보존되지 않은 상태를
 다시 계산했다고 표현하지 않는다. 보편적인 pixel lag 보장도 하지 않는다.
+
+[새 atomic capture 경로](VISION-ATOMIC-CAPTURE.md)는 RGB·semantic mask·카메라 행렬·시각을 하나의 Replicator
+`Writer.write(data)`에서 복사한다. 정지 화면 검사에는 프레임마다 바뀌는 표식을 넣어
+이전 RGB나 semantic mask가 섞이면 거부하고, 정책 녹화에는 표식을 넣지 않는다.
+배경 픽셀 전체의 일치와 프레임의 시각 결합을 구분하며 기존 결과의 판정은 유지한다.
+
+각 callback의 배열과 metadata를 보존하고, 실행 manifest를 읽을 때 카메라·시각·RGB·
+물리 상태와 원문을 다시 대조한다. readiness와 renderer 설정, SDK 종료 및 GPU 해제 검사는
+같이 유지한다. 새 worker·backend는 별도 source 결합을 사용한다. 수집·원문 대조의 CPU 검증을 통과했으며
+실제 Isaac 호환성 검사를 통과하기 전에는 모델 입력을 내보내지 않는다.
 
 ## 호출과 재개
 
