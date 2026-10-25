@@ -1,0 +1,96 @@
+{
+  "schema": "vision_brev_preflight_protocol_v1",
+  "protocol_id": "vision-source-20261025j",
+  "registered_before_measurement": true,
+  "method": "same_runtime_none20_then_render_sync_smoke_v1",
+  "scope": "infrastructure_preflight_not_model_or_recovery_evidence_v1",
+  "model_use_ready": false,
+  "source_protocol": {
+    "path": "bench/protocols/vision_brev_source_20261025_v10.json",
+    "sha256_lf": "e52cf51665cb2da3338686092a6bf5ff66ff94484e6334eb9dc2a58a5c7bcaeb"
+  },
+  "render_protocol": {
+    "path": "bench/protocols/vision_brev_render_20261025_v11.json",
+    "sha256_lf": "3842946473b5954a7a45ac17d890ee967cdc3eb618c2369a708adae6ca0457c7"
+  },
+  "record_profile_sha256": "18da8f087fd167e48c156f7a60da4e0ce9bb5a2d3c2da466d865df3ffe62cfd5",
+  "controller_sources_lf": {
+    "bench/brev_compute_probe_v1.py": "61ba27c2bf930b3fbbed2f344fa8e3fe3ab6f05e028d7fd211c2a0f5724eb6dc",
+    "bench/brev_recovery_worker_v2.py": "607b087234d500b136e3557f0f1db610e6b6926a30dc9ab23c2de7f0d413ad27",
+    "bench/run_vision_brev_batch_v1.py": "32702452d5979d4f34eb37251440dc62c260482dce9279d7b883147cc28ea13c",
+    "bench/run_vision_brev_preflight_v1.py": "1125238a310da8a885a94c097630f358d3cec6593a725373c50fe3263f5e515b",
+    "bench/run_vision_brev_render_v2.py": "dd3f8d5dfb9ebb3ea4fb837f44b722257604ebf85794dbb9b108d6d962db7c2b",
+    "evals/brev_recovery_backend_v4.py": "70520014f927feec0efd70bd721d04709d56c457702b38468e94a0081b2d5e45",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+    "evals/vision_brev_backend_v1.py": "e6be124e2cf5ec35508bd219972a164cf925bd2850d3ccc352d3c8f42ba935df",
+    "evals/vision_brev_render_backend_v2.py": "3ca48022391eef0934d125b34bed898425c2e7b3ca3489b48cb1c3f75851c1bb",
+    "evals/vision_remote_gpu_v1.py": "a713e0c92c25e9403f361f4853bca298ba32ba99388f3db97e263fbfe6cb6e85",
+    "bench/vision_play_worker_v2.py": "a4507f4b9e7cff3e093f82b3d10d40fcd620382697e6fe2cc14a0231b988b09a",
+    "evals/vision_brev_render_backend_v3.py": "d9cc965a3f2e1c875443ca4081b2538308a16f6bc4d39e709e0f002bca55c31e",
+    "bench/run_vision_brev_annotated_v1.py": "66353d0fafb3d6b646337959efda34f6552a2c6efcbc3a2968d78ef830e5f734",
+    "tests/test_vision_play_worker_v2.py": "ba01c57c62c65cc134a13f9967ee012ed3f0e1a0fbba0f0db3ebf7885a1ad5d7",
+    "tests/test_vision_brev_annotated_v1.py": "4e011724baf4d69c57ba86519a1de823052e7f6e9f91d382a8b8c2d013c26097",
+    "bench/vision_replicator_startup_v1.py": "93f523293520abd52cc7651034980f2fef13e83d9354189aa8514f56fa818a80",
+    "tests/test_vision_replicator_startup_v1.py": "59f00676a219a0cf44fa93f1cdeedba3fc9e5c86953bdc3370a0e30408d927d0",
+    "bench/vision_timing_adapter_v1.py": "beaaf51eb234ba2eaa37c685adf9448c9c24b92b6ea130f377791e449c4e567f",
+    "tests/test_vision_timing_adapter_v1.py": "a3c349449cb0ff1da3daba22929eecdf8c7a326f67c7b6842190022c4c2ff42d",
+    "tests/test_vision_capture_lifecycle_v1.py": "cf68e64307cfc7543da810554baae85d2025ffe4c059b907321e631c2b0ce373",
+    "bench/vision_capture_readiness_v1.py": "e36f81d3242b36ac5ca573a775e6a7d9b3b52de48d3ea95ec35e68adfb6acb99",
+    "tests/test_vision_capture_readiness_v1.py": "508fc276351a4db0d3d904be63ef4caff8a648c61b965513752b84ef1d1fd6ab",
+    "bench/vision_play_worker_v3.py": "20d5a1e228747de02288b65b4568f9a441b96000e719405ef98bde05b7ccbdc7",
+    "tests/test_vision_play_worker_v3.py": "0c9bb65c99266ae739b6ea9298f6afab7e5b129de0f8d1755f3f350d9dfca97b",
+    "evals/vision_brev_render_backend_v4.py": "e9ffad8d7f44b8c380818784dcd77c42166f973732ff9632b472e6a946c108d0",
+    "tests/test_vision_brev_render_backend_v4.py": "aa3eca39baa96b8a769dae2b833d84c90ee91b5cd5f0375408b0c2cb7e5b21cb",
+    "bench/run_vision_brev_annotated_v2.py": "552e8757a61d66eb27fa4a2bcf1f1acb53d1b579148f9169b4d8104db040691a",
+    "tests/test_run_vision_brev_annotated_v2.py": "02c0a06e5f3257743f73cb55047a0b39675778ea43668f4d6fe8be8f5a6a351e",
+    "bench/vision_shutdown_policy_v1.py": "6c599533c568b08e3facf39b9e058c1759b9ac5c11509077be0bba9cfe9d3018",
+    "tests/test_vision_shutdown_policy_v1.py": "b41f2ae713809c011ce4c4b3d9227ffdab36947026586d4ae69f49234c0d7dcd",
+    "bench/vision_execution_evidence_v1.py": "70925c90dff5f2d7d2a8e4f0a5f0641cb9386714995940dc512b226add19948d",
+    "tests/test_vision_execution_evidence_v1.py": "7e5eabcd03069ccc3827d188bf4afc6078a6389653b9f9435854ca623dd26914",
+    "tests/test_vision_supervised_evidence_integration_v1.py": "49e4b201a79a283f5551dc30ffb77cbb70f5f08b6345143867cdb94326ca2cd5",
+    "tests/test_vision_render_readiness_v2.py": "9165b2e139dbe23e7e5aebccf0a111858887aa3ac513dc46b2151a944d8bb19c",
+    "tests/test_vision_preflight_source_closure_v1.py": "48cd949ab3207e48639f6b4e22b8b07924f84ed598c8ffd66d5122c8e13e4edc",
+    "bench/vision_fxaa_policy_v1.py": "4d02b1dc907c69bab4a207278d7c045bcced1d4c50948d3e08e00ab34b74bc49",
+    "tests/test_vision_fxaa_policy_v1.py": "b7ac17942e4f136c3ec66fca79a67d4302d8eaec04c5810e719f2005a48377d6"
+  },
+  "training": {
+    "job_id": "preflight-train-s2208",
+    "arm": "NONE",
+    "seed": 2208,
+    "run_name": "preflight-none20-s2208",
+    "iterations": 20,
+    "num_envs": 4096,
+    "stage_relative": "preflight/training/preflight-train-s2208"
+  },
+  "smoke": {
+    "job_id": "preflight-smoke-s2208",
+    "mode": "render_sync_smoke",
+    "checkpoint_logical_id": "preflight-policy-s2208",
+    "policy_steps": 0,
+    "capture_phase_physics_steps": 0,
+    "renderer_combination_only": true
+  },
+  "order": [
+    "train_none20",
+    "render_sync_smoke"
+  ],
+  "limits": {
+    "train_none20": {
+      "max_wall_s": 1800,
+      "max_compute_usd": 0.87
+    },
+    "render_sync_smoke": {
+      "max_wall_s": 900,
+      "max_compute_usd": 0.435
+    },
+    "total_max_wall_s": 2700,
+    "total_max_compute_usd": 1.305
+  },
+  "reservation": {
+    "source_actions_usd": 6.09,
+    "render_smokes_usd": 1.74,
+    "preflight_usd": 1.305,
+    "whole_batch_budget_usd": 20.0,
+    "source_first_action_reserve_s": 1800
+  }
+}

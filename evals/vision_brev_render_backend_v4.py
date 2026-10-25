@@ -22,6 +22,7 @@ SOURCE_FILES = frozenset({
     "evals/vision_brev_render_backend_v4.py",
     "bench/run_vision_brev_annotated_v2.py",
     "bench/vision_execution_evidence_v1.py",
+    "bench/vision_fxaa_policy_v1.py",
     "tests/test_vision_shutdown_policy_v1.py",
 })
 

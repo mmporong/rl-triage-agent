@@ -23,8 +23,8 @@ def test_preserved_v8_fails_before_worker_launch() -> None:
         B._verify_source_closure(_protocol(8))
 
 
-def test_registered_v9_factory_accepts_the_actual_prepared_source_set(monkeypatch) -> None:
-    protocol = _protocol(9)
+def test_registered_v10_factory_accepts_the_actual_prepared_source_set(monkeypatch) -> None:
+    protocol = _protocol(10)
     calls = []
     sentinel = object()
 
@@ -44,6 +44,6 @@ def test_registered_v9_factory_accepts_the_actual_prepared_source_set(monkeypatc
 
 
 def test_recording_and_runtime_source_sets_are_identical() -> None:
-    protocol = _protocol(9)
+    protocol = _protocol(10)
     assert protocol["recording"]["source_files_lf"] == protocol["source_sha256_lf"]
     B._verify_source_closure(protocol)

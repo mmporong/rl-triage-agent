@@ -10,6 +10,7 @@ from typing import Any
 
 import record_vision_evidence_v1 as R
 import vision_capture_readiness_v1 as READINESS
+import vision_fxaa_policy_v1 as FXAA
 import vision_shutdown_policy_v1 as SHUTDOWN
 import vision_timing_adapter_v1 as TIMING
 
@@ -85,7 +86,7 @@ def _event_counts(value: Any) -> dict[str, int]:
     return value
 
 
-def _verify_readiness(path: Path) -> None:
+def _verify_readiness(path: Path, *, require_fxaa: bool = False) -> None:
     value = R.read_object(path)
     bounds = value.get("bounds")
     counts = _event_counts(value.get("event_counts"))
@@ -153,11 +154,20 @@ def _verify_readiness(path: Path) -> None:
             or not isinstance(renderer.get("carb_settings"), dict)
             or set(renderer["carb_settings"]) != set(READINESS.CARB_SETTING_KEYS)):
         raise ValueError("capture readiness live renderer readback이 다르다")
+    if require_fxaa:
+        FXAA.verify_receipt(renderer.get("render_policy"))
+        if (renderer["carb_settings"]["/rtx/post/aa/op"] != 2
+                or renderer["carb_settings"]["/rtx/rendermode"]
+                != renderer["render_policy"]["after"]["/rtx/rendermode"]):
+            raise ValueError("FXAA 정책과 readiness renderer 원문이 다르다")
 
 
-def _verify_reset(path: Path, ordinal: int) -> None:
-    if R.read_object(path) != {"schema": RESET_SCHEMA, "capture_ordinal": ordinal,
-                               "completed": True, "method": RESET_METHOD}:
+def _verify_reset(path: Path, ordinal: int, *, require_fxaa: bool = False) -> None:
+    value = R.read_object(path)
+    if require_fxaa:
+        FXAA.verify_readback(value.pop("render_policy_readback", None))
+    if value != {"schema": RESET_SCHEMA, "capture_ordinal": ordinal,
+                 "completed": True, "method": RESET_METHOD}:
         raise ValueError("renderer reset receipt가 ordinal과 다르다")
 
 
@@ -269,14 +279,15 @@ def _build(job_path: Path, result_path: Path, sdk_child_exit_code: int) -> dict[
     readiness, policy, captures = _paths(stage, job, count, smoke)
     _reject_extra_capture_sidecars(stage, job, captures)
     readiness_path = _regular(readiness, stage, "readiness")
-    _verify_readiness(readiness_path)
+    require_fxaa = FXAA.required(R.read_object(job))
+    _verify_readiness(readiness_path, require_fxaa=require_fxaa)
     SHUTDOWN.verify(job, {"job_sha256": job_sha}, result)
     rows = []
     for ordinal, (reset, timing, rgb) in enumerate(captures):
         reset_path = _regular(reset, stage, "reset")
         timing_path = _regular(timing, stage, "timing")
         rgb_path = _regular(rgb, stage, "RGB") if rgb is not None else None
-        _verify_reset(reset_path, ordinal)
+        _verify_reset(reset_path, ordinal, require_fxaa=require_fxaa)
         report_row = report_rows[ordinal]
         if not isinstance(report_row, Mapping):
             raise TypeError("result capture row가 mapping이 아니다")

@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import record_vision_evidence_v1 as R
+import vision_fxaa_policy_v1 as FXAA
 import vision_play_worker_v1 as V1
 import vision_play_worker_v2 as V2
 
@@ -274,6 +275,7 @@ def run_capture(validated: Mapping[str, Any], app: Any) -> tuple[dict[str, Path]
     settings = _carb_settings()
     readiness: dict[str, Any] | None = None
     reset_count = 0
+    use_fxaa = FXAA.required(validated["job"])
 
     def capture(
         base: Any, rep: Any, annotators: list[Any], camera_profile: Mapping[str, Any],
@@ -281,10 +283,16 @@ def run_capture(validated: Mapping[str, Any], app: Any) -> tuple[dict[str, Path]
     ) -> dict[str, Any]:
         nonlocal readiness, reset_count
         if readiness is None:
+            policy = FXAA.apply(rep, settings) if use_fxaa else None
+            renderer = _renderer_readback(context, camera_profile, settings)
+            if policy is not None:
+                renderer["render_policy"] = policy
             readiness = _wait_capture_ready(
                 base, app, context, stage_events, sidecar,
-                _renderer_readback(context, camera_profile, settings),
+                renderer,
             )
+        if use_fxaa:
+            FXAA.verify_readback(FXAA.readback(settings))
 
         def reset_after_camera() -> None:
             nonlocal reset_count
@@ -293,15 +301,22 @@ def run_capture(validated: Mapping[str, Any], app: Any) -> tuple[dict[str, Path]
             reset_path = Path(validated["job_path"]).with_name(
                 f"{Path(validated['job_path']).stem}.capture-{ordinal:06d}.renderer-reset.json",
             )
-            R.write_new(reset_path, {
+            reset_receipt: dict[str, Any] = {
                 "schema": "vision_capture_renderer_reset_v1",
                 "capture_ordinal": ordinal,
                 "completed": True,
                 "method": "omni.usd.UsdContext.reset_renderer_accumulation",
-            })
+            }
+            if use_fxaa:
+                observed = FXAA.readback(settings)
+                FXAA.verify_readback(observed)
+                reset_receipt["render_policy_readback"] = observed
+            R.write_new(reset_path, reset_receipt)
 
         proxy = _BaseProxy(base, reset_after_camera)
         result = journal_capture(proxy, rep, annotators, camera_profile, eye, lookat, ordinal)
+        if use_fxaa:
+            FXAA.verify_readback(FXAA.readback(settings))
         if reset_count != ordinal + 1:
             raise RuntimeError("camera capture마다 renderer accumulation이 한 번씩 초기화되지 않았다")
         return result

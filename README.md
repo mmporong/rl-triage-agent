@@ -40,7 +40,7 @@ A [CPU-verified selection path](docs/VISION-INSPECTION-SELECTION.md) gives all t
 
 The [comparison execution boundary](docs/VISION-SELECTION-EXECUTION.md) checks the registered inputs against original playback records, renderer checks and GPU runtime receipts before model requests. It preserves completed responses and blocks retransmission of unknown pending requests. Fresh-data comparison runs remain pending.
 
-The [Brev data collection path](docs/VISION-BREV-DATA.md) binds video frames to commands, motion and camera timing from the same playback. It keeps a fixed six-training-run ledger, checks completed artifacts before reuse and requires a separate renderer synchronization check before model use. This path has CPU coverage; its new GPU collection and synchronization runs are pending.
+The [Brev data collection path](docs/VISION-BREV-DATA.md) binds video frames to commands, motion and camera timing from the same playback. It keeps a fixed six-training-run ledger, checks completed artifacts before reuse and requires a separate renderer synchronization check before model use. A registered FXAA capture policy binds renderer settings to each capture. CPU checks pass; GPU synchronization and the new data collection remain pending.
 
 The [attested render controller](docs/VISION-BREV-RENDER-V2.md) connects source collection to one renderer check per checkpoint and validates retrieved pairs on CPU before releasing model inputs. Its new Isaac collection and model comparison remain pending.
 
