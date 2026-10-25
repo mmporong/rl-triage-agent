@@ -1,0 +1,42 @@
+{
+  "checked_at": "2026-10-25T15:29:04.753459+09:00",
+  "account_controls_checked": [
+    "organization/payments",
+    "organization/billing-details",
+    "organization/settings",
+    "project/rate-limits",
+    "project/api-keys"
+  ],
+  "bank_card_present": true,
+  "automatic_charging_policy": "negative balance can trigger automatic card charge under current official billing documentation",
+  "automatic_charging_disabled": false,
+  "platform_hard_spend_cap": "not_found_in_checked_ui_or_docs; no account-wide guarantee",
+  "project_rate_limits": "requests/tokens per minute; not dollar cap",
+  "inference_test": {
+    "max_calls": 2,
+    "completed_calls": 2,
+    "sdk_retries": 0,
+    "max_output_tokens_per_call": 4096,
+    "cap_usd": "0.05",
+    "reserved_upper_bound_usd": "0.0131442",
+    "usage_calculated_usd": "0.0010902",
+    "cost_type": "usage multiplied by current catalog prices; not settled invoice"
+  },
+  "post_test": {
+    "project_api_key_list_empty": true,
+    "test_key_revoked_http_401": true,
+    "local_secret_removed": true,
+    "local_file_mode": "0600",
+    "new_gpu_instances_or_jobs_created": false,
+    "persistent_inference_worker_started": false
+  },
+  "limits": [
+    "This blocks further authenticated requests using the temporary test key, not future manually authorized keys or Playground use.",
+    "Billing usage UI had not yet reflected the two requests; invoice amount is not confirmed.",
+    "No credit application or program consent was submitted."
+  ],
+  "sources": [
+    "https://docs.tokenfactory.nebius.com/other-capabilities/billing-new",
+    "https://docs.tokenfactory.nebius.com/other-capabilities/billing"
+  ]
+}
