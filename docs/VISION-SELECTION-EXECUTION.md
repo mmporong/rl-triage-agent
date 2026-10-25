@@ -16,6 +16,9 @@
 | [입력 구성기](../evals/vision_selection_materialize_v1.py) | 네 source readiness에서 두 구간·세 입력 조건을 만들고 production 입력 검증기로 다시 확인 |
 | [실행 결과 검증](../evals/vision_selection_execution_v1.py) | 호출 상태·남은 명령과 실제 Brev 검사 원문 여섯 종의 결합을 검증 |
 | [종단 요청 계약](../evals/vision_selection_e2e_v1.py) | 비교 결과를 보기 전에 두 결합 입력을 고정하고 검사·교정·후속 관찰의 조건을 검사 |
+| [종단 호출기](../evals/vision_selection_e2e_caller_v1.py) | 승인·소비와 부분 실행 원문을 보존하고 다음 단계 한 개를 진행 |
+| [Brev 실행 연결](../evals/vision_selection_brev_adapter_v1.py) | 등록 검사·교정·고정 평가·녹화의 원문과 source 결합을 대조 |
+| [종단 CLI](../evals/run_vision_selection_e2e_v1.py) | 검증·남은 명령 조회·한 단계 실행·결과 요약 |
 | [기존 비교 방법](../bench/protocols/vision_selection_comparison_v1.json) | 두 source seed·두 정책·두 구간의 세 입력 조건과 판정 기준 |
 
 모델은 등록 검사와 현재 입력에 보이는 근거 ID를 고른다. 이 실행기는 검사 실행,
@@ -83,7 +86,7 @@ readiness 범위는 `registered_renderer_combination_only`다.
 
 ## 호출과 재개
 
-현재 실행기는 `comparison`만 허용한다. 논리 선택 24개, 전역 요청 최대 72회이며
+비교 실행기는 `comparison`만 허용한다. 논리 선택 24개, 전역 요청 최대 72회이며
 선택당 최대 3회 안에서 의미 피드백 1회와 인프라 재시도 1회만 허용한다.
 SDK 재시도는 0회다. 이 상한은 기존 core 배정의 비교 몫이며 다른 단계의 몫을 사용하지 않는다.
 
@@ -126,5 +129,15 @@ evidence를 만든다. 승인과 소비 뒤의 evidence가 같아야 CORRECTED �
 
 이 상태 전이는 CPU 계약으로 검증했다. API 32회는 초기 선택과 후속 관찰이 공유하며,
 한 상태 조회마다 모델 명령 하나만 반환해 다음 호출 전에 원장을 다시 확인한다.
-실제 승인 원장 소비, GPU 검사·교정·고정 평가와 후속 영상 호출을 연결하는 실행 adapter는
-별도 구현 중이다. 현재 CPU 검증은 새 종단 회복 결과를 뜻하지 않는다.
+종단 호출기는 등록 실행 protocol의 source·backend·검증기와 일치하는 작업만 연결한다.
+검사 쌍은 실행 명령에 결합된 승인을 소비한 뒤 진행한다. 교정 평가에 필요한 NONE 정책은
+검증된 완료 기록에서 읽으며, 기록이 없으면 새 기준 학습을 시작하지 않고 보류한다.
+
+완료 단계는 원문과 승인 원장을 대조해 재사용한다. 부분 실행은 완료한 arm의 원문과 GPU
+시간을 보존하고 보류하며, 이미 소비한 요청을 다시 실행하지 않는다. 임대가 끝난 뒤에도
+완료 기록을 조회할 수 있지만 새 실행에는 현재 임대·시간·비용 확인이 필요하다.
+
+종단 CLI는 `verify`, `remaining_commands`, `advance`, `summarize`를 제공한다.
+교정 후 녹화는 등록 job·checkpoint·고정 평가와 대조하고 V01 입력을 만든 뒤 관찰 호출에
+전달한다. 이 경로는 CPU 회귀와 저장된 Brev 검사 원문으로 검증했다. 실제 수집한 새 영상의
+결합과 GPU 교정·후속 관찰 실행은 남아 있으며, 현재 검증은 새 종단 회복 결과를 뜻하지 않는다.
