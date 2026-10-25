@@ -133,6 +133,23 @@ class App:
             self.base.sim.current_time += 0.1
 
 
+class FakeClock:
+    def __init__(self) -> None:
+        self.now = 0.0
+        self.sleeps: list[float] = []
+
+    def __call__(self) -> float:
+        return self.now
+
+    def advance(self, seconds: float) -> None:
+        self.now += seconds
+
+    def sleep(self, seconds: float) -> None:
+        assert seconds >= 0.0
+        self.sleeps.append(seconds)
+        self.advance(seconds)
+
+
 EVENT_TYPES = SimpleNamespace(ASSETS_LOADING=1, ASSETS_LOADED=2, ASSETS_LOAD_ABORTED=3)
 PROFILE = {
     "camera_prim_path": "/OmniverseKit_Persp", "capture_primitive": "replicator_orchestrator_step_v1",
@@ -224,8 +241,18 @@ def test_timeout_stops_before_camera_or_orchestrator(tmp_path: Path, monkeypatch
     )
     monkeypatch.setattr(C, "MAX_UPDATES", 2)
     receipt = tmp_path / "timeout.json"
+    clock = FakeClock()
     with pytest.raises(TimeoutError, match="상한"):
-        C._wait_capture_ready(base, app, app.context, EVENT_TYPES, receipt, {})
+        C._wait_capture_ready(
+            base,
+            app,
+            app.context,
+            EVENT_TYPES,
+            receipt,
+            {},
+            clock=clock,
+            sleeper=clock.sleep,
+        )
     assert events == ["update", "update"]
     assert json.loads(receipt.read_text(encoding="utf-8"))["reason"] == "poll_budget_exhausted"
 
@@ -311,6 +338,30 @@ def test_aborted_load_is_terminal_but_never_ready(
     assert body["loading_history"][-1]["pending_asset_batches"] == 0
 
 
+def test_aborted_load_does_not_wait_for_streaming_pacing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _, context, base, app, _ = _install_capture(
+        monkeypatch,
+        tmp_path,
+        statuses=[("loading", 1, 1, True)] * 2,
+        events_by_update={1: [3]},
+    )
+    clock = FakeClock()
+    with pytest.raises(RuntimeError, match="asset load"):
+        C._wait_capture_ready(
+            base,
+            app,
+            context,
+            EVENT_TYPES,
+            tmp_path / "aborted-busy.json",
+            {},
+            clock=clock,
+            sleeper=clock.sleep,
+        )
+    assert clock.sleeps == []
+
+
 def test_orphan_loaded_event_records_synthetic_pair(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -339,6 +390,134 @@ def test_elapsed_budget_is_checked_between_updates_and_seals_receipt(
     body = json.loads(receipt.read_text(encoding="utf-8"))
     assert body["updates"] == 1 and body["elapsed_s"] == 31.0
     assert body["bounds"]["polling_elapsed_budget_scope"].endswith("not_a_hard_watchdog")
+
+
+@pytest.mark.parametrize("busy_until_s", [10.0, 24.0])
+def test_busy_streaming_uses_full_poll_window_before_idle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, busy_until_s: float
+) -> None:
+    _, context, base, app, _ = _install_capture(
+        monkeypatch,
+        tmp_path,
+        statuses=[("", 0, 0, True)] * C.MAX_UPDATES,
+        events_by_update={},
+    )
+    clock = FakeClock()
+    original_update = app.update
+
+    def fast_update() -> None:
+        clock.advance(0.014)
+        original_update()
+
+    app.update = fast_update
+    context.get_stage_streaming_status = lambda: clock() < busy_until_s
+    body = C._wait_capture_ready(
+        base,
+        app,
+        context,
+        EVENT_TYPES,
+        tmp_path / f"busy-{busy_until_s}.json",
+        {},
+        clock=clock,
+        sleeper=clock.sleep,
+    )
+    assert body["status"] == "ready"
+    assert body["updates"] < C.MAX_UPDATES
+    assert busy_until_s <= body["elapsed_s"] < busy_until_s + 0.1
+    assert sum(row["pacing_wait_s"] for row in body["loading_history"]) > 0.0
+    assert body["loading_history"][-1]["loading"]["streaming_busy"] is False
+
+
+def test_permanent_streaming_busy_consumes_240_updates_and_30_seconds(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _, context, base, app, _ = _install_capture(
+        monkeypatch,
+        tmp_path,
+        statuses=[("", 0, 0, True)] * C.MAX_UPDATES,
+        events_by_update={},
+    )
+    clock = FakeClock()
+    receipt = tmp_path / "permanent-busy.json"
+    with pytest.raises(TimeoutError, match="상한"):
+        C._wait_capture_ready(
+            base,
+            app,
+            context,
+            EVENT_TYPES,
+            receipt,
+            {},
+            clock=clock,
+            sleeper=clock.sleep,
+        )
+    body = json.loads(receipt.read_text(encoding="utf-8"))
+    assert body["updates"] == 240
+    assert body["elapsed_s"] == pytest.approx(30.0)
+    assert body["loading_history"][-1]["pacing_wait_s"] == pytest.approx(0.125)
+
+
+def test_slow_busy_updates_add_no_pacing_sleep(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(C, "MAX_UPDATES", 2)
+    _, context, base, app, _ = _install_capture(
+        monkeypatch,
+        tmp_path,
+        statuses=[("", 0, 0, True)] * 3,
+        events_by_update={},
+    )
+    clock = FakeClock()
+    original_update = app.update
+
+    def slow_update() -> None:
+        clock.advance(20.0)
+        original_update()
+
+    app.update = slow_update
+    receipt = tmp_path / "slow-busy.json"
+    with pytest.raises(TimeoutError, match="상한"):
+        C._wait_capture_ready(
+            base,
+            app,
+            context,
+            EVENT_TYPES,
+            receipt,
+            {},
+            clock=clock,
+            sleeper=clock.sleep,
+        )
+    body = json.loads(receipt.read_text(encoding="utf-8"))
+    assert body["updates"] == 2
+    assert clock.sleeps == []
+    assert all(row["pacing_wait_s"] == 0.0 for row in body["loading_history"])
+
+
+def test_non_streaming_non_idle_state_adds_no_pacing_sleep(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(C, "MAX_UPDATES", 2)
+    _, context, base, app, _ = _install_capture(
+        monkeypatch,
+        tmp_path,
+        statuses=[("loading", 1, 1, False)] * 3,
+        events_by_update={},
+    )
+    clock = FakeClock()
+    receipt = tmp_path / "non-streaming-non-idle.json"
+    with pytest.raises(TimeoutError, match="상한"):
+        C._wait_capture_ready(
+            base,
+            app,
+            context,
+            EVENT_TYPES,
+            receipt,
+            {},
+            clock=clock,
+            sleeper=clock.sleep,
+        )
+    body = json.loads(receipt.read_text(encoding="utf-8"))
+    assert clock.sleeps == []
+    assert all(row["pacing_wait_s"] == 0.0 for row in body["loading_history"])
 
 
 @pytest.mark.parametrize("initial", [True, False])

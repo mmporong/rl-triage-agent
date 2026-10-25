@@ -102,6 +102,7 @@ def _wait_capture_ready(
     renderer: Mapping[str, Any],
     *,
     clock: Callable[[], float] = time.monotonic,
+    sleeper: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any]:
     """asset event와 loading·streaming idle을 함께 확인하며 physics 불변을 검사한다."""
     event_history: list[dict[str, Any]] = []
@@ -138,6 +139,7 @@ def _wait_capture_ready(
     status = "failed"
     reason = "unknown"
     primary_error: BaseException | None = None
+    deadline = started + TIMEOUT_S
     try:
         subscription = context.get_stage_event_stream().create_subscription_to_pop(
             on_stage_event, name="rl-triage-capture-readiness",
@@ -148,13 +150,35 @@ def _wait_capture_ready(
         while updates < MAX_UPDATES and clock() - started <= TIMEOUT_S:
             update_control = _asset_update(base, app)
             updates += 1
-            if clock() - started > TIMEOUT_S:
+            polled_at = clock()
+            if polled_at > deadline:
                 raise TimeoutError("USD asset loading·streaming 캡처 준비 시간이 상한을 넘었다")
             after_loading = _loading_readback(context)
             pending = counts["loading"] - counts["loaded"] - counts["aborted"]
-            history.append({"update": updates, "loading": dict(after_loading),
-                            "event_counts": dict(counts), "pending_asset_batches": pending,
-                            "simulation_update_control": update_control})
+            pacing_wait = 0.0
+            if after_loading["streaming_busy"] is True and not counts["aborted"]:
+                target = started + updates * TIMEOUT_S / MAX_UPDATES
+                pacing_wait = min(
+                    max(0.0, target - polled_at), max(0.0, deadline - polled_at)
+                )
+                if pacing_wait > 0.0:
+                    sleeper(pacing_wait)
+                paced_at = clock()
+                if paced_at > deadline:
+                    raise TimeoutError(
+                        "USD asset loading·streaming 캡처 준비 시간이 상한을 넘었다"
+                    )
+            history.append(
+                {
+                    "update": updates,
+                    "loading": dict(after_loading),
+                    "event_counts": dict(counts),
+                    "pending_asset_batches": pending,
+                    "simulation_update_control": update_control,
+                    "poll_elapsed_s": max(0.0, polled_at - started),
+                    "pacing_wait_s": pacing_wait,
+                }
+            )
             if counts["aborted"]:
                 raise RuntimeError("USD asset load가 중단되어 캡처 준비를 확인할 수 없다")
             idle = (
