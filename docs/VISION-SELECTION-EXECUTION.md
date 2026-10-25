@@ -13,6 +13,9 @@
 | [환경 원문 기록](../bench/vision_render_context_v1.py) | 선택한 Isaac Python과 GPU UUID·이름·드라이버·Torch CUDA 정보를 결합 |
 | [실행 순서 기록](../bench/vision_render_attestation_v1.py) | 환경 수집 뒤 실행하고 source 전후·실행·결과 SHA를 봉인 |
 | [WSL 실행기](../evals/vision_selection_worker_v1.py) | 커밋·입력·호출 순서·프로세스 소유권을 검사하고 기존 caller를 실행 |
+| [입력 구성기](../evals/vision_selection_materialize_v1.py) | 네 source readiness에서 두 구간·세 입력 조건을 만들고 production 입력 검증기로 다시 확인 |
+| [실행 결과 검증](../evals/vision_selection_execution_v1.py) | 호출 상태·남은 명령과 실제 Brev 검사 원문 여섯 종의 결합을 검증 |
+| [종단 요청 계약](../evals/vision_selection_e2e_v1.py) | 비교 결과를 보기 전에 두 결합 입력을 고정하고 검사·교정·후속 관찰의 조건을 검사 |
 | [기존 비교 방법](../bench/protocols/vision_selection_comparison_v1.json) | 두 source seed·두 정책·두 구간의 세 입력 조건과 판정 기준 |
 
 모델은 등록 검사와 현재 입력에 보이는 근거 ID를 고른다. 이 실행기는 검사 실행,
@@ -91,3 +94,27 @@ SDK 재시도는 0회다. 이 상한은 기존 core 배정의 비교 몫이며 �
 
 검증 대상은 구현 계약과 CPU 개발 fixture다. 새 GPU 자료, 입력별 비교 결과,
 검사 지지와 회복 효과는 실제 사전등록 실행 뒤에 보고한다.
+
+## 검사 결과에서 교정 요청까지
+
+입력 구성기는 네 source의 readiness를 확인해 두 구간의 V01 입력 여덟 개와 세 입력 조건의
+capsule 24개를 만든다. 작성한 protocol과 위치 파일은 실제 비교 실행기의 입력 검증기로
+다시 확인한다. 녹화 checkpoint와 학습 telemetry, 같은 seed의 NONE 기준이 달라지면 거부한다.
+
+Brev 검사 근거는 job, worker, execution, backend result, report jobs, report 여섯 원문을
+결합한다. 각 파일의 SHA뿐 아니라 task, checkpoint, source, 실행 protocol, 완료·종료·GPU 정리와
+판정값도 대조한다. source 데이터 protocol과 검사 실행 protocol은 각각 검증한다.
+
+종단 요청 계약은 비교의 canonical 결과 위치에 완료 응답이나 결과가 생기기 전에
+두 seed의 F1 첫 구간 결합 입력을 고정한다. 학습 job, 녹화 job, 영상 계보와 CORRECTED job은
+각각 원문과 등록 training plan에서 읽는다. 문자열을 덧붙여 교정 job을 만들지 않는다.
+
+모델이 선택한 유효 검사는 NONE/F1 쌍 검사의 후보가 된다. `P_reward`에서 NONE normal과
+F1 abnormal 영수증이 같은 seed·checkpoint에 결합된 경우에만 보상 복원과 재학습의 승인
+evidence를 만든다. 승인과 소비 뒤의 evidence가 같아야 CORRECTED 요청이 열린다.
+후속 영상 관찰은 고정 평가의 회복 판정을 바꾸지 않는다.
+
+이 상태 전이는 CPU 계약으로 검증했다. API 32회는 초기 선택과 후속 관찰이 공유하며,
+한 상태 조회마다 모델 명령 하나만 반환해 다음 호출 전에 원장을 다시 확인한다.
+실제 승인 원장 소비, GPU 검사·교정·고정 평가와 후속 영상 호출을 연결하는 실행 adapter는
+별도 구현 중이다. 현재 CPU 검증은 새 종단 회복 결과를 뜻하지 않는다.
