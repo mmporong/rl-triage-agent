@@ -91,3 +91,27 @@ bash install.sh --expected-manifest-sha256 "$VISION_BUNDLE_MANIFEST_SHA256"
 영상 확인은 [Brev 수집 경로](VISION-BREV-DATA.md)의 별도 실행 조건이다.
 실제 복원 시험을 수행하면 설치·자산 준비·검증을 포함한 시간을 기록하고,
 단계별 자료를 로컬로 회수한 뒤 소유 VM을 종료한다.
+
+## 학습·렌더 실행 전 점검
+
+[`run_vision_brev_preflight_v1.py`](../bench/run_vision_brev_preflight_v1.py)는
+별도 seed의 `NONE` 정책을 환경 4,096개에서 20회 학습한 뒤,
+생성된 checkpoint를 결합한 기존 A→B→A 렌더 동기화 검사를 실행한다.
+소스 수집과 같은 runtime·GPU 잠금·자원 증거를 사용하며, 한 번의 `advance`는 한 단계만 진행한다.
+
+점검은 별도 원장에 남긴다. 정상·결함·교정 각 두 건의 300회 학습 계획과
+소스 수집 10개 action, checkpoint별 렌더 검사 네 건은 유지한다.
+점검의 최대 시간은 학습 1,800초·렌더 900초다. 사전등록은 기존 소스·렌더 예약액에
+이 2,700초의 비용을 더해 전체 compute 상한을 검사한다.
+실행 전과 단계 사이에도 현재 임대·기한·GPU 점유·비용 여유를 다시 확인한다.
+
+학습의 실제 갱신 수·checkpoint·학습 기록·자식 종료 증거와 렌더 실행의
+환경·소스·동기화 원문이 모두 유효해야 `ready_for_source_batch=true`를 반환한다.
+그때도 첫 소스 action에 필요한 1,800초의 유효 시간이 남아 있어야 한다.
+완료 자료는 새 GPU 실행 없이 재검증할 수 있으며, 불명확한 pending은 자동 반복하지 않는다.
+
+렌더 점검은 checkpoint 바이트를 확인하지만 정책을 로드하거나 물리 step을 진행하지 않는다.
+따라서 이 결과는 짧은 학습과 해당 렌더 조합의 실행 근거다.
+정책 재생·전체 녹화·회복이나 모델 판단의 근거로 사용하지 않으며
+`model_use_ready`는 항상 `false`다. 이 실행 경로는 CPU 회귀로 확인하며,
+실제 Brev 실행 결과는 별도 기록으로 구분한다.
