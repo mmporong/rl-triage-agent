@@ -51,6 +51,109 @@ def _single_render_product(value: Any, label: str) -> tuple[str, Any]:
     return key, item
 
 
+def _type_name(value: Any) -> str:
+    kind = type(value)
+    return f"{kind.__module__}.{kind.__qualname__}"
+
+
+def _mapping_keys(value: Any) -> list[str]:
+    if not isinstance(value, Mapping):
+        return []
+    return sorted(key for key in value if isinstance(key, str))
+
+
+def _metadata_value(value: Any, name: str) -> Any:
+    try:
+        item = getattr(value, name)
+    except BaseException as error:  # noqa: BLE001 - descriptor는 원래 오류를 가리지 않는다.
+        return {"error_type": _type_name(error)}
+    if item is None or type(item) in (bool, int, float, str):
+        return item
+    if isinstance(item, np.dtype):
+        return item.name
+    if isinstance(item, (list, tuple)) and all(type(part) is int for part in item):
+        return list(item)
+    return {"type": _type_name(item)}
+
+
+def _data_descriptor(value: Any) -> dict[str, Any]:
+    descriptor = {
+        "type": _type_name(value),
+        "is_none": value is None,
+        "dtype": None,
+        "shape": None,
+        "device": None,
+    }
+    if isinstance(value, np.ndarray):
+        descriptor.update(dtype=value.dtype.name, shape=list(value.shape))
+        return descriptor
+    if value is not None:
+        descriptor.update(
+            dtype=_metadata_value(value, "dtype"),
+            shape=_metadata_value(value, "shape"),
+            device=_metadata_value(value, "device"),
+        )
+    return descriptor
+
+
+def _render_product_descriptor(value: Any) -> dict[str, Any]:
+    descriptor: dict[str, Any] = {
+        "type": _type_name(value),
+        "is_none": value is None,
+        "mapping_keys": _mapping_keys(value),
+    }
+    if isinstance(value, Mapping):
+        if "data" in value:
+            descriptor["data"] = _data_descriptor(value["data"])
+        descriptor["fields"] = {
+            key: {
+                "type": _type_name(value[key]),
+                "is_none": value[key] is None,
+            }
+            for key in _mapping_keys(value)
+            if key != "data"
+        }
+    else:
+        descriptor["data"] = _data_descriptor(value)
+    return descriptor
+
+
+def describe_writer_payload(payload: Any) -> dict[str, Any]:
+    """본문을 읽거나 배열 변환을 호출하지 않고 Writer 구조만 기술한다."""
+    result: dict[str, Any] = {
+        "schema": "vision_writer_payload_descriptor_v1",
+        "payload_type": _type_name(payload),
+        "top_level_keys": [],
+        "annotators": {},
+    }
+    try:
+        result["top_level_keys"] = _mapping_keys(payload)
+        annotators = payload.get("annotators") if isinstance(payload, Mapping) else None
+        if not isinstance(annotators, Mapping):
+            result["annotators_type"] = _type_name(annotators)
+            return result
+        described: dict[str, Any] = {}
+        for annotator in _mapping_keys(annotators):
+            render_products = annotators[annotator]
+            row = {
+                "type": _type_name(render_products),
+                "mapping_keys": _mapping_keys(render_products),
+                "render_products": {},
+            }
+            if isinstance(render_products, Mapping):
+                row["render_products"] = {
+                    render_product: _render_product_descriptor(
+                        render_products[render_product]
+                    )
+                    for render_product in _mapping_keys(render_products)
+                }
+            described[annotator] = row
+        result["annotators"] = described
+    except BaseException as error:  # noqa: BLE001 - 진단 실패를 데이터 오류보다 앞세우지 않는다.
+        result["descriptor_error_type"] = _type_name(error)
+    return result
+
+
 def _array(
     value: Any, label: str, *, shape: tuple[int, ...] | None = None
 ) -> np.ndarray:
@@ -59,6 +162,26 @@ def _array(
     if shape is not None and value.shape != shape:
         raise ValueError(f"{label} shape가 다르다")
     return value.copy(order="C")
+
+
+def _semantic_labels(value: Any) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        raise TypeError("semantic idToLabels는 mapping이어야 한다")
+    labels: dict[str, Any] = {}
+    for runtime_id, label in value.items():
+        if not isinstance(runtime_id, str):
+            raise TypeError("semantic idToLabels ID는 string이어야 한다")
+        if isinstance(label, str):
+            labels[runtime_id] = label
+        elif (
+            isinstance(label, Mapping)
+            and all(isinstance(key, str) for key in label)
+            and all(isinstance(item, str) for item in label.values())
+        ):
+            labels[runtime_id] = deepcopy(dict(label))
+        else:
+            raise TypeError("semantic idToLabels 값 형식이 다르다")
+    return labels
 
 
 def _matrix16(value: Any, label: str) -> list[list[float]]:
@@ -116,22 +239,32 @@ def _decode_json_safe(value: Any, label: str) -> Any:
     if not isinstance(value, dict):
         raise TypeError(f"{label} JSON evidence 형식이 다르다")
     if set(value) == {"encoding", "dtype", "shape", "values"}:
-        if value.get("encoding") != "ndarray" or not isinstance(value.get("shape"), list):
+        if value.get("encoding") != "ndarray" or not isinstance(
+            value.get("shape"), list
+        ):
             raise ValueError(f"{label} ndarray evidence 형식이 다르다")
         decoded = _decode_json_safe(value.get("values"), f"{label}.values")
         array = np.asarray(decoded)
-        if list(array.shape) != value["shape"] or not isinstance(value.get("dtype"), str):
+        if list(array.shape) != value["shape"] or not isinstance(
+            value.get("dtype"), str
+        ):
             raise ValueError(f"{label} ndarray shape가 values와 다르다")
         return decoded
     if any(not isinstance(key, str) for key in value):
         raise TypeError(f"{label} mapping key가 문자열이 아니다")
-    return {key: _decode_json_safe(item, f"{label}.{key}") for key, item in value.items()}
+    return {
+        key: _decode_json_safe(item, f"{label}.{key}") for key, item in value.items()
+    }
 
 
 def _typed_timing(
     value: Any, required: set[str], label: str, *, allow_execution_port: bool = False
 ) -> dict[str, Any]:
-    allowed = (required, required | {TIMING.EXECUTION_PORT}) if allow_execution_port else (required,)
+    allowed = (
+        (required, required | {TIMING.EXECUTION_PORT})
+        if allow_execution_port
+        else (required,)
+    )
     if (
         not isinstance(value, dict)
         or set(value) != {"type", "fields", "non_string_key_types"}
@@ -163,9 +296,17 @@ def verify_writer_bundle(
     """보존한 Writer 원문 metadata를 normalized atomic bundle에 다시 결합한다."""
     writer = journal.get("writer_payload")
     keys = {
-        "mode", "ordinal", "callback_ref", "render_product_ref", "swh_frame_number",
-        "writer_reference_time", "reference_time", "isaac_read_times", "camera_params",
-        "camera", "resolution",
+        "mode",
+        "ordinal",
+        "callback_ref",
+        "render_product_ref",
+        "swh_frame_number",
+        "writer_reference_time",
+        "reference_time",
+        "isaac_read_times",
+        "camera_params",
+        "camera",
+        "resolution",
     }
     if not isinstance(writer, dict) or set(writer) != keys:
         raise ValueError("atomic writer payload 필드가 다르다")
@@ -180,11 +321,15 @@ def verify_writer_bundle(
     ):
         raise ValueError("atomic writer identity가 bundle과 다르다")
     read_times = _typed_timing(
-        writer.get("isaac_read_times"), set(R.ISAAC_READ_TIMES_FIELDS),
-        "atomic IsaacReadTimes", allow_execution_port=True,
+        writer.get("isaac_read_times"),
+        set(R.ISAAC_READ_TIMES_FIELDS),
+        "atomic IsaacReadTimes",
+        allow_execution_port=True,
     )
     reference = _typed_timing(
-        writer.get("reference_time"), set(TIMING.REFERENCE_FIELDS), "atomic ReferenceTime"
+        writer.get("reference_time"),
+        set(TIMING.REFERENCE_FIELDS),
+        "atomic ReferenceTime",
     )
     physics = bundle.get("physics")
     if not isinstance(physics, Mapping):
@@ -192,14 +337,11 @@ def verify_writer_bundle(
     simulation_time = R._finite(
         physics.get("simulation_time_before_s"), "atomic bundle simulation time"
     )
-    normalized = TIMING.normalize_render_timing(
-        read_times, reference, simulation_time
-    )
-    if (
-        normalized != bundle.get("timing")
-        or writer.get("writer_reference_time")
-        != [reference.get("referenceTimeNumerator"), reference.get("referenceTimeDenominator")]
-    ):
+    normalized = TIMING.normalize_render_timing(read_times, reference, simulation_time)
+    if normalized != bundle.get("timing") or writer.get("writer_reference_time") != [
+        reference.get("referenceTimeNumerator"),
+        reference.get("referenceTimeDenominator"),
+    ]:
         raise ValueError("atomic writer timing 원문이 bundle과 다르다")
     camera_params = _decode_json_safe(writer.get("camera_params"), "CameraParams")
     resolution = _decode_json_safe(writer.get("resolution"), "resolution")
@@ -207,8 +349,12 @@ def verify_writer_bundle(
     if not isinstance(camera_params, Mapping) or not isinstance(camera, Mapping):
         raise TypeError("atomic CameraParams 또는 bundle camera가 없다")
     try:
-        view = np.asarray(camera_params["cameraViewTransform"], dtype=np.float64).reshape(4, 4)
-        projection = np.asarray(camera_params["cameraProjection"], dtype=np.float64).reshape(4, 4)
+        view = np.asarray(
+            camera_params["cameraViewTransform"], dtype=np.float64
+        ).reshape(4, 4)
+        projection = np.asarray(
+            camera_params["cameraProjection"], dtype=np.float64
+        ).reshape(4, 4)
     except (KeyError, TypeError, ValueError) as error:
         raise ValueError("atomic CameraParams matrix가 flat16이 아니다") from error
     if (
@@ -220,11 +366,12 @@ def verify_writer_bundle(
         or resolution != camera.get("resolution")
     ):
         raise ValueError("atomic CameraParams 원문이 bundle과 다르다")
-    if (
-        writer.get("camera") != R.fixed_profile()["camera"]["camera_prim_path"]
-        or resolution != [R.WIDTH, R.HEIGHT]
-    ):
-        raise ValueError("atomic Writer camera path 또는 resolution이 fixed profile과 다르다")
+    if writer.get("camera") != R.fixed_profile()["camera"][
+        "camera_prim_path"
+    ] or resolution != [R.WIDTH, R.HEIGHT]:
+        raise ValueError(
+            "atomic Writer camera path 또는 resolution이 fixed profile과 다르다"
+        )
 
 
 def decode_writer_payload(payload: Any) -> dict[str, Any]:
@@ -258,25 +405,23 @@ def decode_writer_payload(payload: Any) -> dict[str, Any]:
     ):
         raise ValueError("Writer resolution이 [width,height]가 아니다")
     width, height = (int(resolution[0]), int(resolution[1]))
-    rgba = _array(rows["rgb"][1], "Writer rgb", shape=(height, width, 4))
+    rgb_payload = rows["rgb"][1]
+    if not isinstance(rgb_payload, Mapping) or set(rgb_payload) != {"data"}:
+        raise ValueError("Writer rgb nonlegacy payload 필드는 data여야 한다")
+    rgba = _array(rgb_payload["data"], "Writer rgb", shape=(height, width, 4))
     if rgba.dtype != np.uint8:
         raise ValueError("Writer rgb는 uint8 RGBA여야 한다")
     rgb = rgba[:, :, :3].copy(order="C")
 
     semantic = rows["semantic_segmentation"][1]
-    if not isinstance(semantic, Mapping) or set(semantic) != {"data", "info"}:
-        raise ValueError("semantic_segmentation payload 필드가 다르다")
+    if not isinstance(semantic, Mapping) or set(semantic) != {"data", "idToLabels"}:
+        raise ValueError("semantic_segmentation nonlegacy payload 필드가 다르다")
     mask = _array(semantic["data"], "semantic mask")
     if mask.shape == (height, width, 1):
         mask = mask[:, :, 0].copy(order="C")
     if mask.shape != (height, width) or mask.dtype != np.uint32:
         raise ValueError("semantic mask는 resolution과 같은 uint32 HxW여야 한다")
-    info = semantic["info"]
-    if not isinstance(info, Mapping) or set(info) != {"idToLabels"}:
-        raise ValueError("semantic info는 idToLabels만 가져야 한다")
-    labels = deepcopy(info["idToLabels"])
-    if not isinstance(labels, Mapping):
-        raise TypeError("semantic idToLabels는 mapping이어야 한다")
+    labels = _semantic_labels(semantic["idToLabels"])
 
     camera_params = rows["CameraParams"][1]
     required_camera = {
@@ -340,7 +485,8 @@ def decode_writer_payload(payload: Any) -> dict[str, Any]:
         "camera": camera,
         "camera_params_raw": deepcopy(camera_params),
         "camera_path": deepcopy(rows["camera"][1]),
-        "render_product_resolution": deepcopy(rows["resolution"][1]),
+        "render_product_resolution": [width, height],
+        "render_product_resolution_raw": deepcopy(rows["resolution"][1]),
         "writer_swh_frame_number": writer_swh_frame,
         "read_times": read_times,
         "read_times_observed": dict(raw_read_times),
@@ -390,11 +536,13 @@ def create_payload_writer(rep: Any, sink: Callable[[dict[str, Any]], None]) -> A
             self.callback_count = 0
             self.callback_error: BaseException | None = None
             self.last_decoded: dict[str, Any] | None = None
+            self.last_payload_descriptor: dict[str, Any] | None = None
 
         def write(self, data: dict[str, Any]) -> None:
             self.callback_count += 1
             if self.callback_error is not None:
                 return
+            self.last_payload_descriptor = describe_writer_payload(data)
             try:
                 decoded = decode_writer_payload(data)
                 self.last_decoded = decoded
@@ -460,7 +608,7 @@ def write_atomic_journal(
             ),
             "camera": _json_safe(decoded.get("camera_path"), "camera"),
             "resolution": _json_safe(
-                decoded.get("render_product_resolution"), "resolution"
+                decoded.get("render_product_resolution_raw"), "resolution"
             ),
         },
     }

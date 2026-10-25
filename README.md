@@ -18,7 +18,7 @@ New experiment versions use **Nemotron 3.5 Super VL** for diagnosis, correction 
 
 *Seed 2030, reward-frame fault: the failed policy stands still, the policy retrained after the registered correction walks, and the healthy policy is shown for reference. Same Play settings for all three. Recovery is judged by the fixed evaluation, not by this video.*
 
-[Presentation replay](https://mmporong.github.io/rl-triage-agent/replay/) · [Interactive architecture diagram](https://mmporong.github.io/rl-triage-agent/?view=single-dark) · [한국어 요약](#한국어-요약)
+[Presentation replay](https://mmporong.github.io/rl-triage-agent/replay/) · [Interactive architecture diagram](https://mmporong.github.io/rl-triage-agent/?view=single-dark) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [한국어 요약](#한국어-요약)
 
 ## What the agent does
 

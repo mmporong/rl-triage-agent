@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import traceback
 from collections.abc import Callable, Mapping
 from pathlib import Path
@@ -16,6 +17,7 @@ import vision_timing_adapter_v1 as TIMING
 import vision_writer_payload_v1 as PAYLOAD
 
 RESET_SCHEMA = "vision_capture_renderer_reset_v1"
+DESCRIPTOR_SCHEMA = "vision_writer_payload_descriptor_v1"
 MARKER_ROOT = "rl_triage_atomic"
 
 
@@ -201,6 +203,34 @@ def _detach(writer: Any, primary_error: BaseException | None) -> None:
             raise
 
 
+def _write_writer_descriptor(
+    validated: Mapping[str, Any], ordinal: int, writer: Any
+) -> Path | None:
+    """값을 제외한 실제 callback 구조를 job에 결합해 write-once로 남긴다."""
+    descriptor = writer.last_payload_descriptor
+    if descriptor is None:
+        return None
+    if not isinstance(descriptor, Mapping):
+        raise TypeError("Writer callback descriptor가 mapping이 아니다")
+    job_path = Path(validated["job_path"])
+    if job_path.is_symlink() or not job_path.is_file():
+        raise ValueError("Writer descriptor job은 regular file이어야 한다")
+    error = writer.callback_error
+    body = {
+        "schema": DESCRIPTOR_SCHEMA,
+        "capture_ordinal": ordinal,
+        "job_sha256": hashlib.sha256(job_path.read_bytes()).hexdigest(),
+        "callback_count": writer.callback_count,
+        "callback_error_type": type(error).__name__ if error is not None else None,
+        "descriptor": dict(descriptor),
+    }
+    path = job_path.with_name(
+        f"{job_path.stem}.writer-descriptor-{ordinal:06d}.json"
+    )
+    R.write_new(path, body)
+    return path
+
+
 def make_capture_factory(
     validated: Mapping[str, Any],
     app: Any,
@@ -283,7 +313,14 @@ def make_capture_factory(
                 raise ValueError("atomic capture camera profile이 factory와 다르다")
             writer = persistent_writer
             if writer is not None:
-                writer.raise_callback_error()
+                try:
+                    writer.raise_callback_error()
+                except BaseException:
+                    try:
+                        _write_writer_descriptor(validated, ordinal, writer)
+                    except BaseException as descriptor_error:  # noqa: BLE001
+                        traceback.print_exception(descriptor_error)
+                    raise
             before = READY._physics_snapshot(base)
             simulation_time = float(base.sim.current_time)
             expected_code = ordinal if smoke else None
@@ -314,6 +351,7 @@ def make_capture_factory(
             if writer is None:
                 raise RuntimeError("atomic Writer가 생성되지 않았다")
             primary: BaseException | None = None
+            descriptor_written = False
             try:
                 callback_before = writer.callback_count
                 last_decoded = None
@@ -325,6 +363,9 @@ def make_capture_factory(
                     raise RuntimeError(
                         "custom event capture callback이 정확히 한 번 오지 않았다"
                     )
+                if smoke or ordinal == 0:
+                    _write_writer_descriptor(validated, ordinal, writer)
+                    descriptor_written = True
                 _verify_decoded_camera(last_decoded)
                 after = READY._physics_snapshot(base)
                 bundle = sync.close(ordinal, after, float(base.sim.current_time))
@@ -356,6 +397,11 @@ def make_capture_factory(
                 }
             except BaseException as error:
                 primary = error
+                if not descriptor_written:
+                    try:
+                        _write_writer_descriptor(validated, ordinal, writer)
+                    except BaseException as descriptor_error:  # noqa: BLE001
+                        traceback.print_exception(descriptor_error)
                 raise
             finally:
                 if smoke:

@@ -92,16 +92,19 @@ def _payload(ordinal: int, *, smoke: bool) -> dict[str, Any]:
         "named_outputs": {},
         "annotators": {
             "camera": {rp: C.R.fixed_profile()["camera"]["camera_prim_path"]},
-            "resolution": {rp: [10, 10]},
-            "rgb": {rp: rgba},
+            "resolution": {rp: np.array([10, 10], dtype=np.int32)},
+            "rgb": {rp: {"data": rgba}},
             "semantic_segmentation": {
-                rp: {"data": mask, "info": {"idToLabels": labels}}
+                rp: {
+                    "data": mask,
+                    "idToLabels": {str(key): value for key, value in labels.items()},
+                }
             },
             "CameraParams": {
                 rp: {
                     "cameraViewTransform": view,
                     "cameraProjection": np.eye(4).reshape(16),
-                    "renderProductResolution": [10, 10],
+                    "renderProductResolution": np.array([10, 10], dtype=np.int32),
                 }
             },
             "IsaacReadTimes": {rp: times},

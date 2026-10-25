@@ -173,6 +173,9 @@ def _decoded(
         "camera_params_raw": camera_raw,
         "camera_path": R.fixed_profile()["camera"]["camera_prim_path"],
         "render_product_resolution": [rgb.shape[1], rgb.shape[0]],
+        "render_product_resolution_raw": np.array(
+            [rgb.shape[1], rgb.shape[0]], dtype=np.int32
+        ),
         "writer_swh_frame_number": 0,
         "read_times": read_times,
         "read_times_raw": TIMING._typed_mapping(read_times, "IsaacReadTimes"),

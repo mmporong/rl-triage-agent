@@ -31,12 +31,16 @@ def _fixture(tmp_path: Path):
         array, semantic = FRAME_FIXTURE._marker_arrays(ordinal, background=ordinal * 3)
         raw = PAYLOAD_FIXTURE._payload(frame=55 + ordinal)
         annotations = raw["annotators"]
-        annotations["rgb"]["RenderProduct_0"] = np.concatenate(
-            [array, np.full((10, 10, 1), 255, dtype=np.uint8)], axis=2
-        )
+        annotations["rgb"]["RenderProduct_0"] = {
+            "data": np.concatenate(
+                [array, np.full((10, 10, 1), 255, dtype=np.uint8)], axis=2
+            )
+        }
         annotations["semantic_segmentation"]["RenderProduct_0"] = {
             "data": semantic["mask"].astype(np.uint32),
-            "info": {"idToLabels": semantic["idToLabels"]},
+            "idToLabels": {
+                str(key): value for key, value in semantic["idToLabels"].items()
+            },
         }
         annotations["CameraParams"]["RenderProduct_0"].update(
             {
@@ -47,7 +51,9 @@ def _fixture(tmp_path: Path):
                 "renderProductResolution": np.array([10, 10]),
             }
         )
-        annotations["resolution"]["RenderProduct_0"] = [10, 10]
+        annotations["resolution"]["RenderProduct_0"] = np.array(
+            [10, 10], dtype=np.int32
+        )
         decoded = P.decode_writer_payload(raw)
         sync.arm(ordinal, ordinal, state, 2.0)
         sync.before_step(ordinal)

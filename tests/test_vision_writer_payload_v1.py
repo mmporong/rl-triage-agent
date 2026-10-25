@@ -56,10 +56,10 @@ def _payload(
     }
     annotations = {
         "camera": {rp: R.fixed_profile()["camera"]["camera_prim_path"]},
-        "resolution": {rp: [4, 3]},
-        "rgb": {rp: rgba},
+        "resolution": {rp: np.array([4, 3], dtype=np.int32)},
+        "rgb": {rp: {"data": rgba}},
         "semantic_segmentation": {
-            rp: {"data": mask, "info": {"idToLabels": {1: {"class": "robot/body"}}}}
+            rp: {"data": mask, "idToLabels": {"1": {"class": "robot/body"}}}
         },
         "CameraParams": {rp: camera},
         "IsaacReadTimes": {rp: _times(frame)},
@@ -87,7 +87,7 @@ def _bundle(decoded: dict[str, Any]) -> dict[str, Any]:
 def test_decoder_copies_rgba_mask_flat16_and_preserves_top_swh_metadata() -> None:
     raw = _payload(top_swh=91)
     decoded = P.decode_writer_payload(raw)
-    raw["annotators"]["rgb"]["RenderProduct_0"][:] = 255
+    raw["annotators"]["rgb"]["RenderProduct_0"]["data"][:] = 255
     raw["annotators"]["semantic_segmentation"]["RenderProduct_0"]["data"][:] = 8
     raw["annotators"]["CameraParams"]["RenderProduct_0"]["cameraViewTransform"][:] = -1
 
@@ -98,6 +98,8 @@ def test_decoder_copies_rgba_mask_flat16_and_preserves_top_swh_metadata() -> Non
     assert decoded["writer_swh_frame_number"] == 91
     assert decoded["read_times"]["swhFrameNumber"] == 0
     assert decoded["writer_reference_time"] == [55, 30]
+    assert decoded["render_product_resolution"] == [4, 3]
+    assert isinstance(decoded["render_product_resolution_raw"], np.ndarray)
 
 
 def test_decoder_preserves_unsupported_exec_port_as_typed_metadata() -> None:
@@ -127,7 +129,7 @@ def test_decoder_rejects_malformed_or_cross_render_product_payload(
             "other": raw["annotators"]["rgb"]["RenderProduct_0"]
         }
     elif mutation == "rgba":
-        raw["annotators"]["rgb"]["RenderProduct_0"] = np.zeros(
+        raw["annotators"]["rgb"]["RenderProduct_0"]["data"] = np.zeros(
             (3, 4, 3), dtype=np.uint8
         )
     elif mutation == "mask":
@@ -176,6 +178,12 @@ def test_atomic_journal_round_trip_binds_bundle_and_raw_arrays(tmp_path: Path) -
     assert raw[0] == decoded["rgb"].tobytes(order="C")
     assert raw[1] == decoded["semantic"]["mask"].tobytes(order="C")
     assert journal["writer_payload"]["swh_frame_number"] == 77
+    assert journal["writer_payload"]["resolution"] == {
+        "encoding": "ndarray",
+        "dtype": "int32",
+        "shape": [2],
+        "values": [4, 3],
+    }
     with pytest.raises(FileExistsError):
         P.write_atomic_journal(job, 0, F.RECORD_MODE, decoded, bundle)
 
