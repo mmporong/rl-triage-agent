@@ -95,17 +95,13 @@ def _operational_base(snapshot: dict) -> tuple[dict, dict]:
     return checked, base
 
 
-def _video_facts(contract: dict) -> dict[str, Any]:
+def _play_facts(contract: dict) -> dict[str, Any]:
     facts: dict[str, Any] = {}
     samples = {row["timestamp_s"]: row for row in contract["synchronized_samples"]}
     for frame in contract["frames"]:
         frame_id = frame["frame_id"]
         timestamp = frame["timestamp_s"]
-        facts[f"vision:frame:{frame_id}"] = {
-            "evidence_type": "raw_frame",
-            "timestamp_s": timestamp,
-            "source_group": "visual_source_1",
-        }
+        facts[f"vision:play:{frame_id}:timestamp_s"] = timestamp
         sample = samples[timestamp]
         for group in ("command", "motion", "pose"):
             for name, value in sample[group].items():
@@ -114,6 +110,17 @@ def _video_facts(contract: dict) -> dict[str, Any]:
                              "같은 Play 수치가 유한수가 아니다")
                 facts[f"vision:play:{frame_id}:{group}:{name}"] = value
     return facts
+
+
+def _frame_facts(contract: dict) -> dict[str, Any]:
+    return {
+        f"vision:frame:{row['frame_id']}": {
+            "evidence_type": "raw_frame",
+            "timestamp_s": row["timestamp_s"],
+            "source_group": "visual_source_1",
+        }
+        for row in contract["frames"]
+    }
 
 
 def _build(snapshot: dict, contract_path: Path, source_binding: dict, view_kind: str) -> dict:
@@ -131,15 +138,20 @@ def _build(snapshot: dict, contract_path: Path, source_binding: dict, view_kind:
     _require(provenance["checkpoint"]["sha256"] == case_checkpoint,
              "V01 checkpoint와 선택 case checkpoint가 다르다")
 
-    facts: dict[str, Any] = {}
+    facts = _play_facts(contract)
     if view_kind in {"text_only", "text_and_video"}:
         facts.update(deepcopy(checked["view"]["evidence_facts"]))
     if view_kind in {"video_only", "text_and_video"}:
-        facts.update(_video_facts(contract))
+        facts.update(_frame_facts(contract))
+    play = provenance["play"]
     selection_view = {
         "schema": VIEW_SCHEMA,
-        "view_kind": view_kind,
         "evidence_facts": facts,
+        "play_context": {
+            "command_name": play["command_name"],
+            "coordinate_frames": {"command": play["command_frame"], "motion": play["motion_frame"]},
+            "sample_timestamps_s": [row["timestamp_s"] for row in contract["frames"]],
+        },
         "candidate_categories": deepcopy(base["candidate_categories"]),
         "remaining_candidates": deepcopy(base["remaining_candidates"]),
         "probe_catalog": deepcopy(base["probe_catalog"]),
@@ -147,12 +159,22 @@ def _build(snapshot: dict, contract_path: Path, source_binding: dict, view_kind:
         "budget_left": base["budget_left"],
         "execution_budget_s": base["execution_budget_s"],
         "status": base["status"],
-        "evidence_accounting": {
-            "raw_frame_source_count": 1 if view_kind != "text_only" else 0,
-            "raw_frame_count": VISION.FRAME_COUNT if view_kind != "text_only" else 0,
-            "model_interpretation_source_count": 0,
-            "independent_confirmation_sources_added": 0,
-        },
+    }
+    measurement_values = [
+        value
+        for sample in contract["synchronized_samples"]
+        for group in ("command", "motion", "pose")
+        for value in sample[group].values()
+    ]
+    accounting = {
+        "sample_count": VISION.FRAME_COUNT,
+        "measurement_source_count": provenance["evidence_independence"]["measurement_source_count"],
+        "measurement_non_null_count": sum(value is not None for value in measurement_values),
+        "measurement_null_count": sum(value is None for value in measurement_values),
+        "raw_frame_source_count": 1 if view_kind != "text_only" else 0,
+        "raw_frame_count": VISION.FRAME_COUNT if view_kind != "text_only" else 0,
+        "model_interpretation_source_count": 0,
+        "independent_confirmation_sources_added": 0,
     }
     source = {
         "contract_sha256": contract_sha,
@@ -173,6 +195,7 @@ def _build(snapshot: dict, contract_path: Path, source_binding: dict, view_kind:
         "operational_base_digest": _digest(base),
         "selection_view": selection_view,
         "selection_view_digest": _digest(selection_view),
+        "evidence_accounting": accounting,
         "source": source,
     }
 

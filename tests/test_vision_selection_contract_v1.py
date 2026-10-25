@@ -120,14 +120,35 @@ def test_three_views_share_operational_base_and_expose_only_registered_evidence(
     text_facts = bundles["text_only"]["selection_view"]["evidence_facts"]
     video_facts = bundles["video_only"]["selection_view"]["evidence_facts"]
     combined = bundles["text_and_video"]["selection_view"]["evidence_facts"]
-    assert all(not key.startswith("vision:") for key in text_facts)
+    common_ids = {key for key in video_facts if key.startswith("vision:play:")}
+    assert common_ids and all({key: row["selection_view"]["evidence_facts"][key] for key in common_ids}
+                              == {key: video_facts[key] for key in common_ids}
+                              for row in bundles.values())
+    text_telemetry = {key: value for key, value in text_facts.items() if not key.startswith("vision:")}
+    combined_telemetry = {key: value for key, value in combined.items() if not key.startswith("vision:")}
+    assert text_telemetry == combined_telemetry and text_telemetry
+    assert not any(not key.startswith("vision:") for key in video_facts)
     assert video_facts and all(key.startswith("vision:") for key in video_facts)
-    assert combined == {**text_facts, **video_facts}
+    assert combined == {**video_facts, **text_telemetry}
     assert [key for key in video_facts if key.startswith("vision:frame:")] == [
         f"vision:frame:f{i:02d}" for i in range(1, 7)
     ]
-    assert all(row["evidence_accounting"]["independent_confirmation_sources_added"] == 0
-               for row in (bundle["selection_view"] for bundle in bundles.values()))
+    assert not any(key.startswith("vision:frame:") for key in text_facts)
+    counts = [{key: bundle["evidence_accounting"][key] for key in (
+        "sample_count", "measurement_source_count", "measurement_non_null_count", "measurement_null_count",
+    )} for bundle in bundles.values()]
+    assert counts == [counts[0]] * 3
+    assert counts[0] == {"sample_count": 6, "measurement_source_count": 1,
+                         "measurement_non_null_count": 36, "measurement_null_count": 12}
+    assert all(bundle["evidence_accounting"]["independent_confirmation_sources_added"] == 0
+               for bundle in bundles.values())
+    play_contexts = [bundle["selection_view"]["play_context"] for bundle in bundles.values()]
+    assert play_contexts == [play_contexts[0]] * 3
+    assert play_contexts[0] == {
+        "command_name": "base_velocity",
+        "coordinate_frames": {"command": "body", "motion": "world"},
+        "sample_timestamps_s": [0.5, 1.5, 2.5, 3.5, 4.5, 5.5],
+    }
 
 
 def test_payload_has_six_real_images_only_in_video_views_and_leaks_no_provenance(tmp_path: Path) -> None:
@@ -143,6 +164,8 @@ def test_payload_has_six_real_images_only_in_video_views_and_leaks_no_provenance
             assert forbidden not in encoded
         assert "walking" not in encoded
         assert '"args"' not in encoded and '"expect"' not in encoded and "approval_granted" not in encoded
+        assert '"view_kind"' not in encoded and '"evidence_accounting"' not in encoded
+        assert '"source"' not in encoded and '"metadata"' not in encoded
 
 
 def test_exact_choice_accepts_visible_frame_fact_and_rejects_fake_fact_or_fields(tmp_path: Path) -> None:
@@ -162,6 +185,12 @@ def test_exact_choice_accepts_visible_frame_fact_and_rejects_fake_fact_or_fields
         S.validate_choice(bundle, json.dumps(fake))
     with pytest.raises(S.ChoiceError, match="F_JSON_DUPLICATE_KEY"):
         S.validate_choice(bundle, '{"action":"hold","action":"continue","probe":null,"fact_ids":["vision:frame:f01"]}')
+
+    text = S.prepare(snapshot, contract, binding, "text_only")
+    play_fact = "vision:play:f01:timestamp_s"
+    assert S.validate_choice(text, valid_content(text, play_fact))["fact_ids"] == [play_fact]
+    with pytest.raises(S.ChoiceError, match="S_FACT_UNKNOWN"):
+        S.validate_choice(text, valid_content(text, "vision:frame:f01"))
 
 
 def test_contract_checkpoint_lineage_and_bound_bytes_are_checked_before_messages(tmp_path: Path) -> None:

@@ -1,0 +1,505 @@
+{
+  "schema": "vision_selection_comparison_method_v1",
+  "protocol_id": "vision_selection_comparison_v1_20261025",
+  "registration_status": "method_fixed_requires_committed_input_and_execution_manifest",
+  "source_binding_rule": "anchor_is_head_ancestor_and_bound_file_lf_bytes_equal",
+  "source_sha256_lf": {
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/ppo_ratio_mutation_v1.py": "19c15646515e7481c34bd909d5e0d6ef52b708ce1a5daec1810c774c602702a3",
+    "bench/ppo_ratio_repair_training.py": "ba47de10661fab2d3349a9c43148a5de9cf8b66daae110d8755adf3845b4cf27",
+    "bench/r1_repair_training.py": "0b1b9aca9d17a4c8fce0a2f1aa451393bea701df66f4769156c2ff9d1f958ae6",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/residual_faults_v1.py": "fae165b431588cb01e5140bd75481e907a0b3b71571df2beb6ba11278527ec25",
+    "bench/residual_training_v1.py": "13e9d5733a9b49908e136e54dd0ac8b7dae387b40fa4115f254536c9d6692517",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/upstream_faults.py": "58d7c07f481328c606a191ea55ba8f9f8e54388db9db121e925c69c8878ae249",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/export_ppo_ratio_repair_v2.py": "b2008d96818851ac3d9e5ddefe7429bcfc4eba3f27320235486caa7ff98b9f97",
+    "evals/export_ppo_ratio_repair_v3.py": "ff339fd870f375dac729deaa8bc7a6ec163598531fc92c3783bdf741e351ee79",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/grounded_vision_observer_v1.py": "112373db86887fc540edf8d74c60177377088c0d7938f4ec7868b7205abb25a1",
+    "evals/model_decision_journal_v1.py": "255b8ed9c0de88a26aadc2f1b4a90b0b01f57b2417aab05ac295031061d23ac2",
+    "evals/nemotron_bottleneck_ledger_v2.py": "94ce9e8b008a9d2ffc405f6dd9adfef4cb86d70d6dd10cd8bfa2f7b541bd20c2",
+    "evals/nemotron_endpoint_ledger_v3.py": "1392f20918c013ee108eeef80bfc91fbfacf0547e95b7db59f0e7a7371e65124",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "evals/ppo_gradient_invariant_v1.py": "bdbe4a9d99f8d4fd55a9181238357b4a0e6b1e677164d8c2ded61cdc47316fd3",
+    "evals/ppo_gradient_invariant_v2.py": "ad0bc58500165da891092ae84c283bf5522c25de4d227a1dd818b0b4b7fc41c8",
+    "evals/ppo_ratio_pilot_v1.py": "7f2de406650956ef73de8ca5f0507219c9724852c44b8900750444de4bed8098",
+    "evals/ppo_ratio_pilot_v2.py": "768bc440a844ab23dd2884dfa8b0905358d4d969834bd166c1f7dc752def615b",
+    "evals/ppo_ratio_repair_contract.py": "9382beccad713e6b35bb8e7bde4b4ce11bebed9d08fbadaa1621df07f9066c18",
+    "evals/ppo_ratio_repair_contract_v2.py": "2551ea48a6a6f52d9de609890aad05e1f7d9af2b43975481da1fed52a3e5e0df",
+    "evals/ppo_ratio_repair_demo_v2.py": "2bb585572d509053800b502e68a15c738b80a49064278ff9ae3630fe1b45338a",
+    "evals/ppo_ratio_repair_demo_v3.py": "cd85cd6a4d232e70918de6914ba8ea20c0e2cf1deff94106d36d8c0d30d31bd0",
+    "evals/ppo_ratio_repair_execution.py": "5139e7dfb2e402b45ac1844abc8f6105fa96bda5cebf3fe40b36a4ff01f30026",
+    "evals/ppo_ratio_repair_execution_v2.py": "26aa7283df00c83655bb98f71b653d320daa82af5981ea6637fae987020be357",
+    "evals/ppo_ratio_repair_execution_v3.py": "40bce19bb59eff05f761d4ddaaeee82b27fec233bff5db0c0dbc3790d77f207b",
+    "evals/ppo_ratio_repair_model_call_v2.py": "c6d0d630c88b5395dbe70e93406c3a5bac17bce5360b70e096d08a0e30f2ac82",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+    "evals/r1_repair_contract.py": "eeefe5819928cc0c5f81b0c3f38ae9900b31277698b4936eb2a850e7ec72f159",
+    "evals/r1_repair_demo.py": "e98a7c8fee2f832ae0846d79bd9dee1cb3a626782e7a243730cc01d5ab2f52bf",
+    "evals/r1_repair_demo_v2.py": "da34390e1c3d996427cd3830166191b74524c4cee1e574345fef6ab669c8c63c",
+    "evals/r1_repair_execution.py": "c76f508fb921c642a33a76de3c3ae65bf0ae2624283d4b206a744c715788c1eb",
+    "evals/r1_repair_execution_v2.py": "a16f0c3dd2b9655b2173440879cd8c9cad0f6415752f04944e3a8ce8dc82cd99",
+    "evals/r1_repair_model_call.py": "d8d51011f42a42cb417b1144ad3a6727ff2c6d53470cbc0f7934e3a83194d6b2",
+    "evals/residual_contract_v1.py": "0ad37bcc9399885a1d0c1e6e59b64053706fe1a1bd25b5253ac59b30068c5a90",
+    "evals/residual_demo_v1.py": "09a6bd9179219aff98774b57a836e6798e398ecde494278c17abedfe6a572e45",
+    "evals/residual_execution_v1.py": "a62522debd84a0d37986b418ddf75600b1825da28151eafb216d758d45a5277a",
+    "evals/residual_model_call_v1.py": "b3afed7cbbe347acb1aaae9214e986bb18c5fac0fd81299cd95b6fb96e424797",
+    "evals/residual_selection_v2.py": "d1a0028afbe00d2697246e4fe30640ec780e3c4b15486dd4f1ed7e722aec6bc8",
+    "evals/run_upstream_r1_smoke.py": "a06e582d440b916c75b7e7b5a8cdb521701870f774207f14f01f13439853127c",
+    "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+    "evals/selection_comparison_call_v2.py": "46c5b97c993e6a66598d9ddd5eb15e62fe7bbf9282225fcb0c68c6b6c6291992",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "evals/selection_comparison_gpu_v1.py": "30fef05e8e68e02d825d271dea19ee7e3969dcc25e8a0f59ee91985932c40c60",
+    "evals/selection_comparison_view_v1.py": "5180b96296251b3ae117edd612baba24676197dab93bab28f2e1cc0ef1d9e33d",
+    "evals/vision_evidence_contract_v1.py": "82f370942492611246832aed4e6fefbc8b71cfa38a8b4d2798f809437d67babf",
+    "evals/vision_selection_call_v1.py": "bff59fe0e58e78fb633d2a31968b3ccb5b2d1e4eef8c3c55a838f35ddff249e6",
+    "evals/vision_selection_comparison_v1.py": "a1da4e2c1f38377286525891d1802a06f97ebb139bc100de81d8a4e801638d86",
+    "evals/vision_selection_contract_v1.py": "faf1c530420cb0b8a68e800d79eaeb221db8d9d93821fea7a12c1a0a716656bb",
+    "evals/vision_selection_loop_v1.py": "9e0bdd5840180daedb1cecf3421027716e6ed744702f77270a2de493d3977e7f",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/grounded_evidence.py": "203d04e7f92ed464b3b7b799ec6bceaa2c8a487282eba4203e8d4c020f1ee79d",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/mechanism_registry.py": "0bc3c47e52bdb6eb511cad5f6b76d047edfdfd1ca3c09d52fd637c47909d75d0",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "src/rl_triage/runtime_observers.py": "cd1d65375065cef5812eadd874990e19f00acde062524587da19b3892f0188a0",
+    "src/rl_triage/single_run.py": "2c5946f90e1d14f3cbc5727198d606aaae5b7ce3acf166c75f09b8fae91a2d16",
+    "src/rl_triage/tracking_alarm.py": "31d457c6f77ec77a274c3e7a627899ebe1711ddc4c03832c6a2cd5c2ed88e24c",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af"
+  },
+  "evidence_sha256_lf": {
+    "bench/protocols/selection_comparison_view_v1.json": "81be94f3b359ea397179bd365d10d3694e5f7854675e909c495920c8d1129781",
+    "bench/protocols/selection_comparison_controller_v1.json": "d446a9c7d2e97f333c03dc53459012d3e6d6357382636fd31d0f7adc7b1be9b9",
+    "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "tests/test_vision_selection_contract_v1.py": "3db735ad86c46a67352afb574aebed2aef55e609dc963952233cc9e475f5bca9",
+    "tests/test_vision_selection_loop_v1.py": "9fcccac4eb15672394fe07dcaa991f80d0855fc0b9d58ac24fc726a999696c85",
+    "tests/test_vision_selection_call_v1.py": "f311421561944844c79fe3ebf3cd46673079ccc74eeae60a1da6c316641c80f6",
+    "tests/test_vision_selection_comparison_v1.py": "2aea28e757ef2450097ce43f467cc05e81d4da2d475c8810c062c8383e1309b8",
+    "docs/VISION-INSPECTION-SELECTION.md": "a3f3355dbdacc23093e25441ba1357d9e5f01c9fdc110a7435b235e24888e0e8"
+  },
+  "source_closure_rule": "static_local_import_closure_from_four_selection_entry_modules",
+  "review_evidence_is_runtime_source_equality_gate": false,
+  "capsule_method_policy": "three_capsule_method_raw_SHA_equal_execution_manifest_and_actual_local_bytes_then_LF_SHA_equal_method_source_map",
+  "acceptance": [
+    "three_views_common_Play_facts_and_coordinates",
+    "model_visible_metadata_leak_zero",
+    "exact_trio_binding_and_seed_role_order_balance",
+    "raw_H_and_grounded_H_separate",
+    "incomplete_before_effect_classification",
+    "host_arguments_approval_receipt_unchanged",
+    "pending_no_resend_and_terminal_replay_provider_zero"
+  ],
+  "api": {
+    "phase": "comparison",
+    "total_cap": 72,
+    "logical_decisions": 24,
+    "max_calls_per_decision": 3,
+    "semantic_feedback": 1,
+    "infra_retry": 1,
+    "sdk_retries": 0,
+    "infra_retry_delay_s": 30,
+    "counts_reservations_and_failed_requests": true,
+    "unknown_pending_auto_resend": false
+  },
+  "request_params": {
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 1024,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "provider_aliases": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "global_allocation": {
+    "core_cap": 120,
+    "development": 6,
+    "comparison": 72,
+    "e2e": 32,
+    "heldout": 10,
+    "unused_allocation_transfer": false
+  },
+  "question_ko": "같은 수치·학습 기록에서 실제 프레임 근거 묶음 추가가 첫 등록 검사 선택을 바꾸며 실제 검사로 지지되는가",
+  "prediction_ko": "등록 F1의 영상이 P_reward 선택을 늘릴 수 있다는 가설을 시험한다. 이득 없음과 퇴행도 유효한 결과다.",
+  "views": {
+    "common": [
+      "same_Play_actual_timestamps",
+      "same_Play_command_motion_pose_with_nulls",
+      "coordinate_frames",
+      "candidate_categories",
+      "remaining_candidates",
+      "probe_catalog",
+      "eligible_probes",
+      "budgets",
+      "status"
+    ],
+    "text_only": {
+      "telemetry_and_receipt_facts": true,
+      "raw_frames": 0
+    },
+    "video_only": {
+      "telemetry_and_receipt_facts": false,
+      "raw_frames": 6
+    },
+    "text_and_video": {
+      "telemetry_and_receipt_facts": true,
+      "raw_frames": 6
+    },
+    "primary_contrast": "text_and_video_minus_text_only_raw_frame_evidence_package",
+    "pure_pixel_effect_claim": false,
+    "observer_summary_in_selection": false,
+    "model_visible_condition_names_or_accounting": false
+  },
+  "inputs": {
+    "slots": [
+      {
+        "slot_id": "input-01",
+        "seed_group": "source-01",
+        "source_role": "normal",
+        "window": "window-01",
+        "view_order": [
+          "text_only",
+          "video_only",
+          "text_and_video"
+        ]
+      },
+      {
+        "slot_id": "input-02",
+        "seed_group": "source-01",
+        "source_role": "normal",
+        "window": "window-02",
+        "view_order": [
+          "text_and_video",
+          "video_only",
+          "text_only"
+        ]
+      },
+      {
+        "slot_id": "input-03",
+        "seed_group": "source-01",
+        "source_role": "registered-f1",
+        "window": "window-01",
+        "view_order": [
+          "video_only",
+          "text_only",
+          "text_and_video"
+        ]
+      },
+      {
+        "slot_id": "input-04",
+        "seed_group": "source-01",
+        "source_role": "registered-f1",
+        "window": "window-02",
+        "view_order": [
+          "text_and_video",
+          "text_only",
+          "video_only"
+        ]
+      },
+      {
+        "slot_id": "input-05",
+        "seed_group": "source-02",
+        "source_role": "normal",
+        "window": "window-01",
+        "view_order": [
+          "text_only",
+          "text_and_video",
+          "video_only"
+        ]
+      },
+      {
+        "slot_id": "input-06",
+        "seed_group": "source-02",
+        "source_role": "normal",
+        "window": "window-02",
+        "view_order": [
+          "video_only",
+          "text_and_video",
+          "text_only"
+        ]
+      },
+      {
+        "slot_id": "input-07",
+        "seed_group": "source-02",
+        "source_role": "registered-f1",
+        "window": "window-01",
+        "view_order": [
+          "video_only",
+          "text_only",
+          "text_and_video"
+        ]
+      },
+      {
+        "slot_id": "input-08",
+        "seed_group": "source-02",
+        "source_role": "registered-f1",
+        "window": "window-02",
+        "view_order": [
+          "text_and_video",
+          "video_only",
+          "text_only"
+        ]
+      }
+    ],
+    "independent_source_seed_groups": 2,
+    "windows_per_checkpoint": 2,
+    "registered_fault_family_count": 1,
+    "registered_fault_checkpoint_count": 2,
+    "normal_policy_count": 2,
+    "windows_are_independent_trials": false,
+    "same_group_NONE_F1_share_source_seed": true,
+    "source_seed_differs_between_groups": true,
+    "slot_order": [
+      "input-01",
+      "input-02",
+      "input-03",
+      "input-04",
+      "input-05",
+      "input-06",
+      "input-07",
+      "input-08"
+    ],
+    "play": {
+      "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+      "seed": 42,
+      "num_envs": 1,
+      "duration_s": 12.5,
+      "action_scale": 0.25,
+      "constant_command": {
+        "lin_vel_x": 1.0,
+        "lin_vel_y": 0.0,
+        "ang_vel_z": 0.0,
+        "frame": "body"
+      },
+      "window-01_requested_timestamps_s": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "window-02_requested_timestamps_s": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "frame_resolution_and_pts_rule": "frozen_V01_contract",
+      "inference_overlays": false,
+      "camera_policy": {
+        "name": "root_translation_world_orientation",
+        "eye_offset_xyz_m": [
+          3.0,
+          3.0,
+          2.0
+        ],
+        "lookat_offset_xyz_m": [
+          0.0,
+          0.0,
+          0.35
+        ],
+        "update": "before_each_RGB_capture",
+        "role_or_label_dependent": false,
+        "settings_binding": "FOV_resolution_offsets_and_update_rule_SHA_in_source_protocol",
+        "audit": "each_frame_root_and_camera_pose_in_separate_SHA_bound_audit_artifact"
+      },
+      "camera_interpretation_ko": "같은 카메라 정책을 적용한다. 궤적은 정책 움직임에 따라 다르며 추적 화면은 월드 이동 단서를 약하게 할 수 있다."
+    },
+    "same_base_snapshot_within_each_input": true,
+    "snapshot_epoch": 1,
+    "snapshot_prior_probe_receipts": 0,
+    "snapshot_policy": "model_adaptive",
+    "all_slots_retained_including_invalid_or_healthy_fault_sources": true,
+    "g1_development_footage_in_primary": false,
+    "g1_reason_ko": "자막·수치와 정책 차이가 있어 V02 개발 확인에만 사용한다"
+  },
+  "execution_gate": {
+    "training_or_api_authorized_by_this_method_file": false,
+    "before_source_training": [
+      "commit_new_source_resource_protocol",
+      "fresh_seed_guard",
+      "verified_current_balance_price",
+      "GPU_admission"
+    ],
+    "before_comparison_api": [
+      "this_method_committed",
+      "source_data_collected_without_model_selection",
+      "same_Play_trace_synced",
+      "all_24_capsules_and_order_committed",
+      "method_and_runtime_source_closure_bound",
+      "source_anchor_verified"
+    ],
+    "input_manifest_fields": [
+      "call_id",
+      "camera_pose_audit_sha256",
+      "capsule_method_raw_sha256",
+      "capsule_sha256",
+      "checkpoint_sha256",
+      "contract_sha256",
+      "messages_sha256",
+      "method_protocol_sha256",
+      "parent_lineage_id",
+      "seed_group",
+      "slot_id",
+      "snapshot_sha256",
+      "source_lineage_id",
+      "source_protocol_sha256",
+      "source_role",
+      "source_seed",
+      "split",
+      "trace_sha256",
+      "video_sha256",
+      "view_kind",
+      "window"
+    ],
+    "fixed_call_ids": [
+      "choice-01",
+      "choice-02",
+      "choice-03",
+      "choice-04",
+      "choice-05",
+      "choice-06",
+      "choice-07",
+      "choice-08",
+      "choice-09",
+      "choice-10",
+      "choice-11",
+      "choice-12",
+      "choice-13",
+      "choice-14",
+      "choice-15",
+      "choice-16",
+      "choice-17",
+      "choice-18",
+      "choice-19",
+      "choice-20",
+      "choice-21",
+      "choice-22",
+      "choice-23",
+      "choice-24"
+    ],
+    "choice_result_fields": [
+      "slot_id",
+      "view_kind",
+      "call_id",
+      "capsule_sha256",
+      "messages_sha256",
+      "terminal_sha256",
+      "model_status",
+      "action",
+      "probe",
+      "fact_ids"
+    ],
+    "fixed_eval_evidence_fields": [
+      "checkpoint_sha256",
+      "fixed_eval_artifact_sha256",
+      "label"
+    ],
+    "probe_evidence_fields": [
+      "checkpoint_sha256",
+      "receipt_sha256",
+      "authorization_sha256",
+      "probe",
+      "outcome",
+      "approval_consumed",
+      "usable"
+    ],
+    "artifact_verification_ko": "실행기가 원본 SHA와 요청·terminal 재생, 고정 평가·승인·receipt의 원본 결합을 검사한 뒤 요약기에 투영한다. 요약기는 대응 ID와 체크포인트 결합을 재검사하며 파일 진실성을 스스로 보장하지 않는다.",
+    "public_paths": "repo_relative_or_logical_identifiers_only",
+    "exact_seeds_fixed_before_training": true,
+    "source_lineage_split_overlap": 0,
+    "no_post_outcome_seed_replacement": true,
+    "source_infra_retry": "source_protocol_only_new_tag_with_prior_record_preserved_no_semantic_retry",
+    "missing_or_F1_failure_absent": "retain_all_slots_no_drop_or_replacement_effect_inconclusive",
+    "unknown_pending": "HOLD_preserve_consumption_no_new_execution_id_escape"
+  },
+  "primary_metric": {
+    "eligible_input_roles": [
+      "registered-f1"
+    ],
+    "registered_target_probe": "P_reward",
+    "target_hit": "contract_valid_continue_and_probe_is_P_reward",
+    "H_raw": "text_only_not_target_hit_and_text_and_video_target_hit",
+    "H_grounded": "H_raw_and_combined_cites_at_least_one_visible_vision_frame_fact",
+    "R": "text_only_target_hit_and_text_and_video_not_target_hit_excluding_infra_or_unknown_pending",
+    "denominator": "four_registered_f1_windows_nested_in_two_source_seed_groups",
+    "support_requires": [
+      "all_24_choices_terminal_and_auditable",
+      "source_NONE_fixed_eval_healthy_and_F1_unhealthy_in_both_seed_groups",
+      "each_seed_group_has_at_least_one_H_grounded",
+      "all_R_zero",
+      "approved_same_checkpoint_P_reward_abnormal_usable_receipt_in_both_seed_groups",
+      "receipt_matches_registered_F1_expectation"
+    ],
+    "normal_control": "no_unique_positive_target_report_choices_HOLD_and_P_reward_selection_counts_only",
+    "receipt_collection": "two_preregistered_approved_P_reward_validation_probes_one_per_F1_checkpoint_regardless_of_model_choice",
+    "verification_probes_are_model_selection_effects": false,
+    "receipt_cross_reference": "same_checkpoint_two_windows_scientific_reference_only_never_reuse_controller_authorization_or_consumed_ledger_effect",
+    "other_probe_choice_is_diagnostic_error": false,
+    "frame_citation_is_independent_confirmation": false
+  },
+  "classification_in_order": [
+    {
+      "outcome": "inconclusive",
+      "when": "missing_terminal_or_unknown_pending_or_source_or_receipt_prerequisite_not_met"
+    },
+    {
+      "outcome": "regression",
+      "when": "all_prerequisites_met_and_R_at_least_one"
+    },
+    {
+      "outcome": "selection_supported",
+      "when": "every_support_requirement_met"
+    },
+    {
+      "outcome": "observation_only",
+      "when": "all_prerequisites_met_and_no_R_but_H_grounded_support_not_met"
+    }
+  ],
+  "completion_separate_from_effect": true,
+  "infrastructure_or_unknown_pending_is_model_regression": false,
+  "secondary_descriptive_only": [
+    "valid_HOLD_semantic_invalid_P_reward_counts_by_view",
+    "video_only_vs_text_only_choice_difference",
+    "combined_vs_video_only_choice_difference"
+  ],
+  "report_fields": [
+    "first_call_contract_valid",
+    "feedback_final_valid",
+    "model_hold",
+    "semantic_invalid",
+    "infrastructure_failure",
+    "unknown_pending",
+    "chosen_probe",
+    "cited_fact_types",
+    "choice_changed",
+    "H_raw_by_source_seed",
+    "H_grounded_by_source_seed",
+    "R_by_source_seed",
+    "actual_probe_support",
+    "reserved_requests",
+    "tokens",
+    "provider_wall_s",
+    "GPU_probe_wall_s_separate",
+    "correction_recovery_outcome_separate"
+  ],
+  "wording": {
+    "selection_supported": "동일 수치·학습 기록에 프레임 근거 묶음을 추가한 조건이 두 source seed에서 P_reward 선택과 실행 검사 지지의 사전등록 기준을 충족했다.",
+    "observation_only": "이 비교에서 프레임 근거 묶음이 첫 검사 선택을 보탠다는 사전등록 기준을 충족하지 못했다.",
+    "regression": "프레임 근거 묶음을 추가한 조건에서 사전등록 퇴행 지표가 발생했다.",
+    "inconclusive": "필수 입력·완료 판단·확인 검사 조건이 충족되지 않아 영상 기여를 판정하지 못했다.",
+    "scope_ko": "새 seed의 등록 F1 확인이며 처음 보는 결함 대응·일반화·LLM 우월·GPU 절감 근거로 쓰지 않는다."
+  }
+}
