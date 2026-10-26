@@ -1,0 +1,36 @@
+{
+  "schema": "vision_policy_record_actual_result_v1",
+  "program_id": "vision-source-20261026u",
+  "source_commit": "1db53d8e86db5184b71dc09e48e9f111c4af7c32",
+  "checkout_commit": "740492419e546c6f005775fa48e3b7de5ea7be96",
+  "status": "infrastructure_failure",
+  "recording_completed": false,
+  "confirmed": [
+    "checkpoint 원문과 SHA 등록 통과",
+    "run_real FileNotFoundError",
+    "Writer attach 전 실패·frame0",
+    "parent가 first cause를 성공/실패 혼재 오류로 가림",
+    "exit0만으로 완료를 인정하지 않음",
+    "GPUafter[]·cleanup true·377파일SHA회수·STOPPED"
+  ],
+  "hypotheses": [
+    "run_real의 ffmpeg executable 부재 가능성; 최초 오류의 message/stack이 소실돼 미확정"
+  ],
+  "next": "새 v2에서 ffmpeg/ffprobe 사전 점검·부재 시 환경 설치, 원오류 traceback 보존, partial report+failure를 유효한 실패 증거로 처리. 기존 u 재실행 금지.",
+  "training_actions": 0,
+  "model_api_requests": 0,
+  "measured_frames": 0,
+  "cost": {
+    "this_lifecycle_usd": "0.204719",
+    "cumulative_usd": "9.480185",
+    "remaining_usd": "10.519815",
+    "cap_usd": "20",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "execution_wall_s": 24.106001827,
+  "cleanup_verified": true,
+  "gpu_after_count": 0,
+  "retrieved_files": 377,
+  "vm_status": "STOPPED"
+}
