@@ -1,0 +1,223 @@
+{
+  "schema": "vision_callback_boundary_development_result_v1",
+  "protocol_id": "callback-boundary-20261026aa",
+  "source_commit": "c8b0f832bf3273ff7480e93f28003c4e9cd4286d",
+  "checkout_commit": "a52f18fd9908baedf3e3e9778bf8a9407995fcb3",
+  "protocol_sha256_lf": "d0406f471238c611f632ae821ab28929689a8cb18dcdb3ec9d02d1ccf5799ba9",
+  "status": "diagnostic_instrumentation_failed",
+  "variant_results": {
+    "custom_event": {
+      "diagnostic_complete": false,
+      "capture_approved": false,
+      "wall_s": 29.52421692300001,
+      "callbacks": [
+        {
+          "ordinal": 0,
+          "window": "preparing",
+          "frame_number": null,
+          "reference_time": null,
+          "marker_code": null,
+          "raw_payload_sha256": null,
+          "instrumentation_error": {
+            "error_message": "semantic mask는 resolution과 같은 uint32 HxW여야 한다",
+            "error_type": "builtins.ValueError"
+          },
+          "operation_counts_before": {
+            "orchestrator_step": {
+              "complete": 0,
+              "failed": 0,
+              "started": 1
+            },
+            "schedule_write": {
+              "complete": 0,
+              "failed": 0,
+              "started": 0
+            },
+            "send_og_event": {
+              "complete": 1,
+              "failed": 0,
+              "started": 1
+            }
+          }
+        },
+        {
+          "ordinal": 1,
+          "window": "preparing",
+          "frame_number": 58,
+          "reference_time": [
+            58,
+            30
+          ],
+          "marker_code": 3,
+          "raw_payload_sha256": "932c00a33b2f45efb4379831cbd48fa7a635f66110a7ec6b86dab89e6735f16a",
+          "instrumentation_error": null,
+          "operation_counts_before": {
+            "orchestrator_step": {
+              "complete": 0,
+              "failed": 0,
+              "started": 1
+            },
+            "schedule_write": {
+              "complete": 0,
+              "failed": 0,
+              "started": 0
+            },
+            "send_og_event": {
+              "complete": 1,
+              "failed": 0,
+              "started": 1
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "window": "arming0",
+          "frame_number": 59,
+          "reference_time": [
+            59,
+            30
+          ],
+          "marker_code": 0,
+          "raw_payload_sha256": "dae78e8dd2bfe7966f8b4975a6474775fa8ce0cba12cf706f23e1e0ecb833317",
+          "instrumentation_error": null,
+          "operation_counts_before": {
+            "orchestrator_step": {
+              "complete": 1,
+              "failed": 0,
+              "started": 2
+            },
+            "schedule_write": {
+              "complete": 0,
+              "failed": 0,
+              "started": 0
+            },
+            "send_og_event": {
+              "complete": 2,
+              "failed": 0,
+              "started": 2
+            }
+          }
+        },
+        {
+          "ordinal": 3,
+          "window": "arming0",
+          "frame_number": 59,
+          "reference_time": [
+            59,
+            30
+          ],
+          "marker_code": 0,
+          "raw_payload_sha256": "ae8840c52f12b1006d6b562ea8d5f2ad446534d58e5977c353cdec8bd382eb13",
+          "instrumentation_error": null,
+          "operation_counts_before": {
+            "orchestrator_step": {
+              "complete": 1,
+              "failed": 0,
+              "started": 2
+            },
+            "schedule_write": {
+              "complete": 0,
+              "failed": 0,
+              "started": 0
+            },
+            "send_og_event": {
+              "complete": 2,
+              "failed": 0,
+              "started": 2
+            }
+          }
+        }
+      ],
+      "operation_counts": {
+        "orchestrator_step": {
+          "complete": 2,
+          "failed": 0,
+          "started": 2
+        },
+        "schedule_write": {
+          "complete": 0,
+          "failed": 0,
+          "started": 0
+        },
+        "send_og_event": {
+          "complete": 2,
+          "failed": 0,
+          "started": 2
+        }
+      },
+      "capture_on_play": {
+        "after_startup": false,
+        "before": true,
+        "restore_changed": true,
+        "restored": true
+      },
+      "underlying_failure": {
+        "code": "callback_cardinality_invalid",
+        "error_type": null,
+        "raw_callback_index": 3,
+        "state": "arming0"
+      },
+      "callback_classifications": [
+        {
+          "raw_index": 0,
+          "window": "preparing",
+          "classification": "bootstrap_empty",
+          "frame_number": null
+        },
+        {
+          "raw_index": 1,
+          "window": "preparing",
+          "classification": "valid",
+          "frame_number": 58
+        },
+        {
+          "raw_index": 2,
+          "window": "arming0",
+          "classification": "valid",
+          "frame_number": 59
+        },
+        {
+          "raw_index": 3,
+          "window": "arming0",
+          "classification": "valid",
+          "frame_number": 59
+        }
+      ]
+    },
+    "manual_schedule": {
+      "status": "not_started_after_instrumentation_failure"
+    }
+  },
+  "confirmed_cause": "준비 단계 bootstrap_empty 콜백은 기존 mux가 허용하지만 진단 fingerprint가 유효 semantic mask만 허용해 계측 오류로 기록했다. 이 오류가 diagnostic_complete를 거부했다.",
+  "observation": "arm0의 유효 콜백 두 건은 같은 frame59이며 두 번째 orchestrator.step 내부에서 발생했다. 두 원문 전체 SHA는 서로 다르다. 성분별 SHA는 이 판의 저장 행에 없어 어느 성분이 다른지는 가르지 못했다.",
+  "interpretation": "수동 예약 방식은 미실행이므로 두 방식 비교와 scheduling 원인 판정은 보류한다. 기존 strict capture 기준과 과거 결과는 유지한다.",
+  "execution": {
+    "exit_code": 0,
+    "cleanup_verified": true,
+    "gpu_before": [],
+    "gpu_after": [],
+    "timed_out": false
+  },
+  "child_exit_accepted": false,
+  "training_actions": 0,
+  "model_api_requests": 0,
+  "full_recordings": 0,
+  "model_ready": false,
+  "used_for_decision": false,
+  "development_measurement": true,
+  "raw_evidence_sha256": {
+    "job.json": "c9e3b9ece221c408fc57224d1eb674cd409b473ce3b2d245a269318a5cd4c015",
+    "execution.json": "9fc0c704632506ee76ae75db67c1e3a1835a295d92ce5fd02b2d32f4c90b7953",
+    "output/callback-boundary-report.json": "3bcc1e314da7c2a9aa19e635df85d573ab65cb9f5e97c39e36a20ccf6a3c36d0",
+    "output/primary-error.json": "a5d665650fff9b155859b5056d0925edc91ad84806f2ae4dfe203f71fc81c582",
+    "output/failure.json": "fe6a87f615827425527a87ad3656f8b2bce33a2b54aaafb5be433d5745d30f30"
+  },
+  "transfer_sha256": "c580762df24b75d250c6967dbfad7d1e9f5785cf0340b6babd05e6afa56f9ccb",
+  "retrieved_raw_files": 427,
+  "final_verified_copy_files": 443,
+  "owned_vm_status": "STOPPED",
+  "compute_cost_estimate_usd": "0.197218",
+  "cumulative_compute_estimate_usd": "15.808282",
+  "remaining_program_budget_usd": "4.191718",
+  "provider_invoice_verified": false
+}

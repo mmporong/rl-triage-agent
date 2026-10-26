@@ -220,6 +220,26 @@
 - 확인 범위: 실제 등록 복구가 통과한 뒤 checkpoint 캡처까지 도달했다. 이후 실패는 위 CAP-16의 callback 문제이며 등록 실패와 구분한다.
   기존 실패 기록은 보존하고, 해소 영수증이 일치하는 실패 한 건에만 후속 실행을 허용한다.
 
+### CAP-17: 허용된 준비 callback과 진단 fingerprint의 입력 범위
+
+- 관찰: callback 경계 진단은 custom-event 방식에서 준비 callback 두 건과 첫 arm callback 두 건을 기록했다.
+  첫 준비 callback은 기존 mux가 허용하는 `bootstrap_empty`였으나, 진단 fingerprint는 유효한 semantic mask만 받아 계측 오류를 남겼다.
+  그 결과 `diagnostic_complete=false`가 되어 수동 예약 방식은 시작하지 않았다.
+- 확인: 첫 arm의 두 callback은 frame 59이며 두 번째 `orchestrator.step()` 내부에서 발생했다.
+  원문 전체 SHA는 서로 다르다. 이 판은 RGB 등 성분별 SHA를 저장하지 않아 차이가 난 성분은 확인하지 못했다.
+- 후속 수정: 원문 fingerprint와 semantic 유효성 검사를 분리하고, 준비 빈 mask·유효 준비·같은 arm의 중복이라는 실제 입력 순서를 회귀에 넣는다.
+  기존 mux의 exact-one 기준과 실패 결과는 유지한다. 두 예약 방식의 비교 결과는 아직 없다.
+- 보존: 원문 427파일을 회수했으며 종료 자료를 포함한 사본 443파일의 SHA를 확인했다.
+  소유 프로세스와 GPU가 비어 있음을 두 번 확인한 뒤 VM을 정지했다. 새 학습·모델 호출·전체 녹화는 0건이다.
+  [진단 결과](../evals/results/vision_callback_boundary_dev_20261026aa/summary.json).
+
+### OPS-18: 회수 identity와 자원 binding의 필드 구분
+
+- 관찰: 강한 회수 검증 뒤 종료 승인 검사가 VM ID를 찾지 못했다.
+- 원인과 수정: 회수 검증기의 identity 반환값은 protocol·proof·lease·run의 네 필드이며, VM ID와 이름은 검증된 transfer binding에 있다.
+  새 종료 승인기는 두 자료를 각각 확인하고 네 공통 필드를 대조한다. 기존 원문·Start·GPU·비용 검증은 유지한다.
+- 확인: 해당 실행에서 종료 승인과 소유 VM의 `STOPPED` 확인까지 완료했다. 이전 실행기는 보존했다.
+
 ## 새 실패를 남길 때
 
 실행별 내부 기록은 다음 항목을 포함한다. 공개 이슈나 PR에는 재현에 필요한 코드·환경·오류만 옮긴다.
