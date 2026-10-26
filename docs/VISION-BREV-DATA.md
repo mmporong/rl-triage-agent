@@ -105,8 +105,17 @@ Writer·render product·환경을 정리하고 원문을 봉인한다. 준비 �
 입력 승인을 다시 확인할 때도 봉인한 binding과 원본 영상·journal·실행 결과의 해시를 재계산한다.
 정책 역할은 학습 기록, 행동 라벨은 고정 평가에서 받으며 영상에서 라벨을 만들지 않는다.
 
-이 연결은 CPU 회귀로 확인한 구현이다. 새 checkpoint의 정책 실행·동기화 검사와 실제 모델 비교는
-GPU/API 실행 결과를 별도로 남긴다. 앞선 20회 학습 checkpoint의 기술 녹화는 비교 자료로 승격하지 않는다.
+첫 새 checkpoint의 실제 검사에서는 정책 추론 뒤 캡처 arm에 callback 두 건이 들어왔다.
+[순서를 분리한 v2](../bench/protocols/vision_checkpoint_smoke_20261026_v2.json)에서도
+캡처 뒤로 미룬 정책 step에 도달하기 전 같은 중복이 발생했다.
+따라서 정책 step 위치만으로 설명할 수 없다. 두 실행 모두 나머지 정책 녹화와 모델 호출을 시작하지 않았다.
+[v1 결과](../evals/results/vision_checkpoint_smoke_dev_20261026y/summary.json) ·
+[v2 결과](../evals/results/vision_checkpoint_smoke_dev_20261026z/summary.json).
+
+새 `evals/vision_record_source_readiness_v2.py`와 선택 입력·실행 연결은 CPU 회귀를 통과했다.
+네 정책의 전체 녹화와 각 자원 증거를 모두 검증해야 입력 24개를 만들 수 있다.
+현재 그 실제 자료는 부족하며 모델 비교 준비 완료로 표기하지 않는다.
+앞선 20회 학습 checkpoint의 기술 녹화도 비교 자료로 승격하지 않는다.
 
 ## 비용과 종료
 

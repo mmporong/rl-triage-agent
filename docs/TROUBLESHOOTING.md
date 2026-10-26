@@ -201,10 +201,24 @@
   원문 475파일을 회수하고 해시를 확인했다. 두 callback의 RGB 바이트 동일성과 캡처 전 정책 step의 인과는 미확정이다.
 - 새 구현: 같은 환경에서 checkpoint를 로딩한 뒤 엄격 A-A-B-A 캡처, Writer detach, 정책 1 step, 환경 종료 순서로 실행한다.
   중복 callback을 버리거나 허용하지 않으며, 새 v2 schema로 기존 실행과 구분한다.
-  CPU 회귀를 통과했으며 실제 checkpoint 재검사는 별도 사전등록 뒤 수행한다.
+  CPU 회귀를 통과한 뒤 새 사전등록으로 실행했지만, 정책 step에 도달하기 전 같은 arm 중복이 재현됐다.
+  따라서 캡처 전 정책 step만 옮기면 해결된다는 가설은 지지되지 않는다.
+- 다음 분해: callback 발생 경계를 기록하면서 custom-event Writer와 수동 Writer 예약을 비교한다.
+  `trigger=None`과 `schedule_write()`는 설치 버전의 [공식 API](https://docs.omniverse.nvidia.com/kit/docs/omni_replicator/1.11.35/source/extensions/omni.replicator.core/docs/API.html)가 지원한다.
+  두 callback의 발생 경로나 SDK 결함 여부는 이 문서만으로 확정하지 않는다.
 - 근거: [실패 요약](../evals/results/vision_checkpoint_smoke_dev_20261026y/summary.json),
   [새 smoke 실행기](../bench/run_vision_checkpoint_smoke_v2.py),
-  [새 입력 검증기](../evals/vision_record_source_readiness_v2.py).
+  [새 입력 검증기](../evals/vision_record_source_readiness_v2.py),
+  [순서 변경 뒤 실제 결과](../evals/results/vision_checkpoint_smoke_dev_20261026z/summary.json).
+
+### OPS-17: 준비 검사의 source 필드와 Python 경로 불일치
+
+- 관찰: 새 준비 스크립트가 source 프로토콜에 없는 `source_commit` 필드를 검사해 GPU 실행 전에 멈췄다.
+  후속 조정 스크립트는 시스템 Python에서 필요한 패키지를 찾지 못했다.
+- 수정: source 코드 앵커와 프로토콜 커밋을 구분하고, 설치된 환경의 Python으로 검증했다.
+  이미 복사한 원문은 다시 쓰지 않고 해시를 확인했으며 누락된 결합 기록만 생성했다.
+- 확인 범위: 실제 등록 복구가 통과한 뒤 checkpoint 캡처까지 도달했다. 이후 실패는 위 CAP-16의 callback 문제이며 등록 실패와 구분한다.
+  기존 실패 기록은 보존하고, 해소 영수증이 일치하는 실패 한 건에만 후속 실행을 허용한다.
 
 ## 새 실패를 남길 때
 

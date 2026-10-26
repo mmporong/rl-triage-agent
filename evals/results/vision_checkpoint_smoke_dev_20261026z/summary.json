@@ -1,0 +1,103 @@
+{
+  "schema": "vision_checkpoint_capture_first_development_result_v1",
+  "program_id": "prepared-policy-record-20261026z",
+  "status": "checkpoint_smoke_failed",
+  "source_commit": "28830c74d97331249825128c0cc6be1ea83845ad",
+  "checkout_commit": "9966e43cbe44cd9a06b247e55481458c5f02e49e",
+  "source_protocol_sha256_lf": "10b2baa3b4529ff29f67ed552e6514bdc5db036e8afa24be005616144e77d02c",
+  "checkpoint_logical_id": "source-s2220-f1",
+  "checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+  "policy_probe_reached": false,
+  "capture_completed": false,
+  "capture": {
+    "prepare_completed": true,
+    "preparation_frame": 40,
+    "arm0_frame": 41,
+    "valid_arm0_callback_count": 2,
+    "raw_callbacks": 4,
+    "callback_rows_dropped": 0,
+    "failure_code": "callback_cardinality_invalid",
+    "callbacks": [
+      {
+        "raw_index": 0,
+        "window": "preparing",
+        "classification": "bootstrap_empty",
+        "frame_number": null
+      },
+      {
+        "raw_index": 1,
+        "window": "preparing",
+        "classification": "valid",
+        "frame_number": 40
+      },
+      {
+        "raw_index": 2,
+        "window": "arming0",
+        "classification": "valid",
+        "frame_number": 41
+      },
+      {
+        "raw_index": 3,
+        "window": "arming0",
+        "classification": "valid",
+        "frame_number": 41
+      }
+    ]
+  },
+  "execution": {
+    "exit_code": 0,
+    "cleanup_verified": true,
+    "gpu_before": [],
+    "gpu_after": [],
+    "wall_s": 15.360540605000097,
+    "timed_out": false,
+    "error_type": "builtins.RuntimeError",
+    "error_message": "arm callback 계약이 실패했다",
+    "failure_atom": {
+      "child_exit_accepted": false,
+      "child_exit_code": 0,
+      "failure": {
+        "bytes": 22505,
+        "file": "failure.json",
+        "sha256": "83038b0eb82bf895bd2220d48c1ce02a5fe67e49a01640181da3d32657e79c86"
+      },
+      "first_cause": {
+        "bytes": 589,
+        "file": "primary-error.json",
+        "sha256": "364d1d580ab84d95490aad431e04697297882655fb58d6a1996b686f2015d898"
+      },
+      "first_cause_message": "arm callback 계약이 실패했다",
+      "first_cause_type": "builtins.RuntimeError",
+      "schema": "vision_checkpoint_smoke_failure_atom_v2",
+      "status": "failed"
+    }
+  },
+  "inference": "정책 step을 캡처 뒤로 옮긴 판에서도 같은 중복이 재현됐다. 캡처 전 정책 step만으로 발생한다는 설명은 지지되지 않는다. callback을 만든 scheduling 경로는 아직 미확정이다.",
+  "training_actions": 0,
+  "model_api_requests": 0,
+  "full_recordings": 0,
+  "other_checkpoints_started": 0,
+  "model_ready": false,
+  "development_measurement": true,
+  "used_for_decision": false,
+  "raw_evidence_sha256": {
+    "job.json": "fb81c5f3e0d2a07ce565f0b2736870a0cae7125440bb74e92906860a6bb062e7",
+    "execution.json": "fb0448e8ea57932cde087a2d6ff73305fd585b34b61bf7b18d9291e2e489ca58",
+    "output/primary-error.json": "364d1d580ab84d95490aad431e04697297882655fb58d6a1996b686f2015d898",
+    "output/failure.json": "83038b0eb82bf895bd2220d48c1ce02a5fe67e49a01640181da3d32657e79c86",
+    "output/checkpoint-smoke-v2-sdk-report.json": "8a9f957cd10449b1afccd8178cae96561fedb2938d1cc9613393c8c0946093cd"
+  },
+  "transfer_sha256": "8dec1ec2baec909c4895a785222928c2dcf9cc390f1707c642fefd84b8343989",
+  "retrieved_files": 422,
+  "stop_receipt_sha256": "a5b8e08a90599cb3568401c06d870d63c311e837b6c4380e9b5069652e189f4c",
+  "vm_status": "STOPPED",
+  "cost": {
+    "this_lifecycle_usd": "3.477343",
+    "cumulative_usd": "15.611064",
+    "remaining_usd": "4.388936",
+    "cap_usd": "20.000000",
+    "this_lifecycle_scope": "source4train_2fixed_eval_checkpoint_smoke_y_and_z_setup_idle_retrieval",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  }
+}
