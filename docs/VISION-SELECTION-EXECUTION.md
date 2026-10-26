@@ -108,6 +108,22 @@ SDK 재시도는 0회다. 이 상한은 기존 core 배정의 비교 몫이며 �
 검증 대상은 구현 계약과 CPU 개발 fixture다. 새 GPU 자료, 입력별 비교 결과,
 검사 지지와 회복 효과는 실제 사전등록 실행 뒤에 보고한다.
 
+## 준비 출력을 분리한 녹화와 연결
+
+새 정책 녹화와 checkpoint smoke는
+[`vision_record_source_readiness_v1.py`](../evals/vision_record_source_readiness_v1.py)에서 원문을 재검증한다.
+기존 녹화 경로의 context나 attestation을 만들어 채우지 않는다.
+
+[`vision_record_selection_inputs_v1.py`](../evals/vision_record_selection_inputs_v1.py)는 이 검증기를
+기존 입력 구성기에 주입한다. 비교 입력 24행과 원본·카메라·V01 contract·capsule·messages 검증은 유지한다.
+[`vision_record_selection_worker_v1.py`](../evals/vision_record_selection_worker_v1.py)는 같은 입력 검증을
+모델 실행 준비와 단일 호출에 연결하며 기존 원장·재시도·API 상한·종료 코드를 사용한다.
+[`vision_record_selection_execution_v1.py`](../evals/vision_record_selection_execution_v1.py)는 상태 조회와
+다음 명령 생성, 검사·고정 평가 근거의 집계를 이 경로에 맞춘다.
+
+CPU 검증에서는 새 readiness의 원문 재계산과 변조 거부를 확인했다. 기존 24행 자료를 재사용한 검사는
+호출 경계와 인자 전달의 확인이다. 새 정책의 SDK 원문부터 모델 비교·회복까지 통과했다는 뜻은 아니다.
+
 ## 검사 결과에서 교정 요청까지
 
 입력 구성기는 네 source의 readiness를 확인해 두 구간의 V01 입력 여덟 개와 세 입력 조건의

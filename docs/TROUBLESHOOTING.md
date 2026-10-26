@@ -144,6 +144,41 @@
 - 근거: [실패 결과](../evals/results/vision_prepared_record_dev_20261026u/summary.json) ·
   [후속 녹화 결과](../evals/results/vision_prepared_record_dev_20261026v/summary.json).
 
+### CPU-05: 비용 원장과 전이 참조를 중복 소비로 처리함
+
+- 현상: 최신 Stop 영수증을 누적 비용 원장과 이전 판의 전이 참조에 함께 기록한 새 판이 실행 준비에서 거부됐다.
+  GPU·학습·API 실행 전이었다.
+- 원인: 두 참조의 출현 횟수를 합쳐 하나만 허용했다. 원장 내 중복과 같은 영수증의 전이 참조는 구분해야 한다.
+- 수정 확인: 원장 마지막 항목이 유일하고 전이 참조의 해시가 같아야 통과하도록 분리했다.
+  이중 원장·해시 충돌·순서 오류는 거부한다. 실제 사전등록 입력의 준비 생성과
+  Windows·Linux Python 3.10의 관련 CPU 검사 각 21개를 통과했다. 새 GPU 실행 결과는 별도로 남긴다.
+- 근거: [학습·평가 접두 실행 사전등록](../bench/protocols/vision_source_prefix_20261026_v1.json).
+
+### CAP-15: renderer 검사와 정책별 입력 승인의 범위가 다름
+
+- 확인한 차이: 앞선 정지 장면 smoke는 checkpoint를 불러오지 않았다. 이 결과만으로 다른 정책의 영상 입력을 승인할 수 없다.
+- 구현: 새 정책별 smoke는 실제 환경 관측으로 정책 행동을 계산하고 환경을 한 번 진행한 뒤 reset한다.
+  이후 기존 A-A-B-A 검사 기준을 적용한다. 완료 표시만 읽는 대신 녹화·검사·checkpoint·자원·학습·고정 평가의
+  원문을 다시 검증하며, 기존 실행에 없던 attestation을 만들어 채우지 않는다.
+- 확인 범위: 최초 오류 보존, 종료 코드 0의 실패 거부, 준비 완료 표시 위조·영상 교체·근거 변조 거부를
+  CPU 회귀로 확인했다. 새 checkpoint에서 이 smoke를 수행하는 GPU 확인은 남아 있다.
+- 코드: [정책별 smoke](../bench/run_vision_checkpoint_smoke_v1.py) ·
+  [입력 승인 검증](../evals/vision_record_source_readiness_v1.py).
+
+### TRAIN-01: 학습 실행 이름의 두 검증 계약이 다름
+
+- 현상: 첫 source 학습 예약 뒤 worker가 약 1.37초 만에 종료 코드 1을 반환했다.
+  stdout은 비었고 stderr에는 `ValueError` 타입만 남았다. 부모는 `InvalidExecutionEvidence`로 보류했다.
+- 원인: worker job은 `vision-s2210-none`을 허용하지만, 다음 residual 학습 매니페스트는
+  실행 이름에 영문·숫자·밑줄만 허용한다. 매니페스트 생성이 Isaac 실행보다 앞에 있어 학습은 시작되지 않았다.
+- 증거 분리: 소스 전후 일치, worker 정리, GPU idle은 통과했다. worker 완료 결과와 학습 매니페스트는 없었다.
+  따라서 모델의 진단이나 학습 회복 실패로 집계하지 않는다.
+- 후속 수정: 새 판은 두 이름 계약을 학습 전에 함께 검증하고, 실패 메시지·traceback을 원문으로 보존한다.
+  기존 실패는 유지하며 새 seed에서 같은 학습·평가 기준을 사용한다.
+- 근거: [실패 결과](../evals/results/vision_source_prefix_dev_20261026w/summary.json) ·
+  [worker job 계약](../bench/brev_recovery_worker_v2.py) ·
+  [학습 매니페스트 계약](../bench/residual_training_v1.py).
+
 ## 새 실패를 남길 때
 
 실행별 내부 기록은 다음 항목을 포함한다. 공개 이슈나 PR에는 재현에 필요한 코드·환경·오류만 옮긴다.

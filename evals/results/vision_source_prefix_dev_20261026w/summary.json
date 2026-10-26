@@ -1,0 +1,69 @@
+{
+  "schema": "vision_source_prefix_development_result_v1",
+  "program_id": "vision-source-20261026w",
+  "status": "invalid_before_isaac_training",
+  "source_commit": "48a495f62260deed61030adca6882a3dc20cea81",
+  "checkout_commit": "fd8adb2e2fe39e028a0bbcee47035a504aafedcd",
+  "source_protocol": {
+    "path": "bench/protocols/vision_brev_source_20261026_v7.json",
+    "sha256_lf": "5d67895c8b1beeb01b25dd50c0e7746b3e238d90eecf54638d4d1af6fb5829ed"
+  },
+  "execution_protocol": {
+    "path": "bench/protocols/vision_source_prefix_20261026_v1.json",
+    "sha256_lf": "ccc04a26e9097234011bc75a1072f3f899adcc59ef3a645085b6b66db42301df"
+  },
+  "registered_seeds": [
+    2210,
+    2211
+  ],
+  "first_reserved_training_seed": 2210,
+  "reserved_source_actions": 1,
+  "isaac_training_started": false,
+  "completed_source_trainings": 0,
+  "learning_updates": 0,
+  "paired_fixed_evaluations": 0,
+  "full_recordings": 0,
+  "model_api_requests": 0,
+  "model_comparison_ready": false,
+  "failure": {
+    "stage": "train_job_to_residual_manifest_validation",
+    "worker_reported_error_type": "ValueError",
+    "parent_error_type": "InvalidExecutionEvidence",
+    "run_name": "vision-s2210-none",
+    "confirmed_cause": "worker job의 run_name 계약은 하이픈을 허용하지만 다음 residual training manifest 계약은 허용하지 않는다. manifest 검증이 Isaac 실행 전에 실패했다.",
+    "failure_message_from_contract": "run_name은 영문·숫자·밑줄만 쓴다",
+    "original_worker_saved_message_or_traceback": false
+  },
+  "execution": {
+    "exit_code": 1,
+    "timed_out": false,
+    "cleanup_verified": true,
+    "gpu_before": [],
+    "gpu_after": [],
+    "wall_s": 1.37417697900014
+  },
+  "source_unchanged": true,
+  "raw_evidence": {
+    "execution_sha256": "0bf6f24fe1b043a6d123d548bd1c6171126e7f492add6bd7c66ad7b197ae5885",
+    "job_sha256": "c8b097429694a79d959ca36b262d7ef22933833982d92dc61b7c49bdbbd9374b",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "0135eaacbb334943b08b64f68949c70386f975761025896d778969df240087eb",
+    "worker_result_exists": false,
+    "training_manifest_exists": false,
+    "retrieved_files": 251,
+    "archive_sha256": "4f740f3a8e622cee214e71f2eac4b7fc58c3f22ade32bcbc0e333d5ed3e223a9",
+    "strong_transfer_sha256": "cdb911696ff4f5d9c3eeb6650035cce10b22152d7c5139b5ca6ba08656cf8dd3",
+    "stop_sha256": "60a04d4c6f32e6fcbf1f81f2603cd4f3f1e458b3ecab1e20a49c0dbb7908679b"
+  },
+  "vm_status": "STOPPED",
+  "cost": {
+    "lifecycle_estimate_usd": "1.813904",
+    "cumulative_estimate_usd": "12.133721",
+    "remaining_program_usd": "7.866279",
+    "program_cap_usd": "20.000000",
+    "includes_idle_setup_retrieval": true,
+    "includes_storage": false,
+    "provider_invoice_verified": false
+  },
+  "observation": "첫 학습 호출은 학습 전 계약 불일치로 끝났다. 학습·고정 평가·영상·모델 효과는 판정하지 않는다. 기존 invalid 기록을 보존하고 새 판은 이름 계약의 교차 검증과 원오류 보존을 먼저 확인한다."
+}
