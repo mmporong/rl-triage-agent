@@ -1,7 +1,7 @@
 # Nebius x NVIDIA 출품 준비
 
-확인일: 2026-10-25. 대상: 기존 RL Triage Agent 개선본, Physical AI 트랙.
-계정 로그인과 제한된 API 연동 시험을 완료했다. Devpost 접수·최종 제출은 아직 완료하지 않았다.
+확인일: 2026-10-26. 대상: 기존 RL Triage Agent 개선본, Physical AI 트랙.
+계정 로그인과 제한된 API 연동 시험을 완료했다. 사용자가 Devpost 참가 등록을 마쳤고, 프로젝트 기본 정보는 초안으로 저장했다. 최종 제출은 하지 않았다.
 
 ## 재출품 판정
 
@@ -50,7 +50,7 @@ uv run rl-triage inspect-run c01 --workspace workspace/imported-c01 \
 
 1. [Token Factory](https://tokenfactory.nebius.com/) 로그인과 카드 등록 상태를 확인했다. 2026-10-25 체험 잔액은 $1, 잔여 29일이었다. 제한 시험 후 시험용 키를 폐기했고 로컬 보안 파일의 키 할당도 제거했다. 현재 계속 사용할 키는 없다.
 2. [행사 리소스](https://nebiusglobalaihackathon.devpost.com/resources)의 폼과 Builders Program에서
-   각각 안내하는 Token Factory 25달러 크레딧을 확인했다. 폼의 `NEBIUS-DEVPOST-GLOBAL26`은 실제 코드를 받기 위한 활성화 코드다. 신청·약관 동의·크레딧 발급은 아직 수행하지 않았다.
+   각각 안내하는 Token Factory 25달러 크레딧을 확인했다. 폼의 `NEBIUS-DEVPOST-GLOBAL26`은 실제 코드를 받기 위한 활성화 코드다. 사용자가 개인정보 처리와 Builders 약관 수락에 동의한 뒤 두 신청을 전송했다. 해커톤 폼은 접수 완료와 코드 이메일 발송 예정 안내를 표시했다. Builders는 접수 완료 화면과 2영업일 이내 검토 결과 안내 메일을 확인했다. 코드 발급·적용과 $50 잔액 반영은 아직 확인되지 않았다.
 3. 키는 저장소·채팅·명령 기록에 넣지 않고 현재 터미널 환경에 넣는다.
 
 ```bash
@@ -133,10 +133,20 @@ $0.0131442로, 사용자에게 제시한 $0.05 상한 이하였다. 자동 재�
 - Physical AI 영상에는 실물 또는 핵심 시뮬레이션 모듈의 동작 장면 1분 이상을 포함하고 전체는 3분 미만으로 제작.
 - 공개 코드·라이선스·실행 README, 영문 설명·영상/번역·기술 피드백을 준비.
 - 공개 저장소의 단독 저작권 및 제3자 모델·코드·에셋 라이선스를 제출 구성에 맞춰 대조.
-- Devpost 등록·최종 제출과 개인정보·약관 동의는 실제 수용 상태를 확인한 뒤 완료 처리.
+- Devpost의 남은 주관적 평가 문항과 영상 URL을 채운 뒤 별도 최종 검수·제출. 참가 등록과 기본 초안 저장은 완료했다.
 
 제출 마감은 **2026-10-31 02:00 KST**이며 [공식 일정](https://nebiusglobalaihackathon.devpost.com/details/dates)은
-2026-10-30 10:00 PDT로 표시한다. 현재 상태는 `selected / bounded_api_smoke_complete / credentials_revoked`이며 `ready_to_submit`이 아니다.
+2026-10-30 10:00 PDT로 표시한다. 현재 상태는 `registered / draft_saved / bounded_api_smoke_complete / credentials_revoked`이며 `ready_to_submit`이 아니다.
+
+## Devpost 기본 초안
+
+두 크레딧 신청은 접수 완료이며, 현재 해커톤 코드는 이메일 발급 대기, Builders는 심사 대기다. 이번 작업에서는 추론·GPU 실행·새 API 키 생성·결제를 수행하지 않았다.
+
+[프로젝트 개요](https://devpost.com/submit-to/30790-nebius-x-nvidia-global-ai-hackathon/manage/submissions/1264681-rl-triage-agent/project-overview)에 프로젝트명·한 줄 소개를 저장했다. 영문 본문·기술 태그·공개 저장소 링크와 추가 정보 16개도 저장 후 다시 열어 일치를 확인했다. 화면 상태는 `DRAFT · 2/5`다. 영상과 주관적 점수·학습 경험 답변은 비웠으며, 최종 약관 체크와 제출 버튼은 실행하지 않았다.
+
+[초안 정본](../submission/nebius-devpost-draft.json)은 별도 verifier의 초안 저장 범위 검수를 통과했다. 기존 NVIDIA 경로의 실행 기록과 Nebius의 2회 연결 시험을 구분한다. 등록 승인 장치를 사람 신원 인증으로 표현하지 않는다.
+
+최초 구현 커밋 `4acb1ed`는 2026-09-26, 공개 저장소 생성은 2026-09-27이다. 기록상 대회 시작일인 2026-08-26 이후이므로 해당 날짜 기준 신규/기존 문항은 `New`로 선택했다. 이전 Team Mollet 2인 출품과 이번 개인 출품은 별도로 설명했다. 사용자는 단독 저작물이라고 확인했으며, 최종 제출 전 공개 NOTICE·README와 제출물의 권리·이력 표기를 대조한다.
 
 ## 공식 기술 근거
 

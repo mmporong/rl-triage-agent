@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "prepared_on": "2026-10-26",
+  "event_url": "https://nebiusglobalaihackathon.devpost.com/",
+  "submission_id": "1264681",
+  "submission_status": "draft",
+  "ready_to_submit": false,
+  "overview": {
+    "project_name": "RL Triage Agent",
+    "elevator_pitch": "An evidence-driven agent for robot RL training failures: inspect telemetry, test hypotheses with approved probes, and verify recovery after registered corrections."
+  },
+  "details": {
+    "about": "## Inspiration\nA robot policy can earn more training reward while failing to follow motion commands. Training curves alone do not show whether the cause is the reward, actuator, exploration, optimizer, physics, or termination logic. RL Triage Agent helps a developer move from a failed run to a testable next step.\n\n## What it does\nThe agent reads Isaac Lab training telemetry and uses NVIDIA Nemotron to rank possible failure mechanisms. It proposes a short measurement probe, records the evidence, and narrows the hypotheses. Supported mechanisms map to registered corrections and a recovery mode. Probes and retraining require recorded approval; a fixed behavior evaluation judges recovery. Unsupported causes or insufficient evidence produce HOLD.\n\n## How it is built\nThe project uses Python, NVIDIA Isaac Lab, RSL-RL, and NVIDIA NeMo Agent Toolkit. Deterministic tools validate inputs, record experiment provenance, and enforce the approval and correction workflow. A single-run import path checks telemetry and preserves its source hash.\n\nFor Nebius integration, NVIDIA Nemotron 3 Super 120B A12B is accessed through the Token Factory OpenAI-compatible API. A bounded connectivity test completed a model tool call, a real local telemetry inspection, and a follow-up model response. This verifies that API and tool exchange; the complete correction and retraining workflow has separate existing execution evidence and has not yet been rerun end to end through Nebius.\n\n## Progress since the earlier NVIDIA hackathon entry\nThe project has expanded from telemetry diagnosis and experiment registration to approved probes, registered corrections, retraining, and fixed behavior verification. Recorded development runs include a second diagnostic epoch for a remaining fault and an ANYmal-C port. The Nebius preparation adds dedicated provider configurations and telemetry import with provenance checks.\n\n## Challenges and lessons\nThe main challenge is separating a plausible model explanation from a cause supported by measurements. A successful API response does not establish diagnostic accuracy, and an improved training reward does not establish recovered robot behavior. The workflow keeps these judgments separate and preserves the evidence used for each decision.\n\n## Next steps\nComplete the Nebius workflow validation within a fixed credit budget, finish the simulation demo video, and publish the final reproducible configuration and execution record before submission.",
+    "built_with": [
+      "python",
+      "nebius",
+      "nvidia-nemotron",
+      "nvidia-isaac-lab",
+      "nemo-agent-toolkit",
+      "rsl-rl"
+    ],
+    "urls": [
+      "https://github.com/mmporong/rl-triage-agent"
+    ],
+    "demo_video_url": null
+  },
+  "additional_info": {
+    "submitter_type": "Individual",
+    "organization_name": "N/A",
+    "country_of_residence": "Korea Republic of",
+    "canadian_province": "N/A",
+    "track": "Physical AI",
+    "project_before_2026_08_26": "New",
+    "project_history": "The first recorded implementation commit is dated September 26, 2026, after the August 26 start date. An earlier version was submitted to the NVIDIA Korea Agentic AI Hackathon 2026 as Team Mollet, a two-person team. The current Devpost entry is individual. The project story describes the subsequent improvements.",
+    "public_repository_url": "https://github.com/mmporong/rl-triage-agent",
+    "working_demo_url": null,
+    "models": "NVIDIA Nemotron 3 Super 120B A12B (nvidia/nemotron-3-super-120b-a12b). The project uses its reasoning and tool-calling interface for telemetry inspection and failure hypotheses. This variant is available through Nebius Token Factory and supports the tool exchange used by the project. No comparative model-size benchmark is claimed.",
+    "nemotron_output_quality_rating": null,
+    "model_approach": "Prompt engineering and tool calling, without fine-tuning. Structured telemetry, bounded analysis tools, experiment records, and deterministic validation ground the model's hypotheses. A recorded approval gate and registered rules control probes and corrections; model output alone does not authorize retraining.",
+    "other_model_comparison": "No controlled cross-model comparison is reported for the Nebius integration. Existing project experiments compare workflow and input variants using Nemotron; they do not establish that Nemotron outperforms another model family.",
+    "nebius_capabilities": "Token Factory's serverless OpenAI-compatible API provided access to NVIDIA Nemotron 3 Super and its tool-calling interface without provisioning a GPU instance. A two-request test completed a model tool call, local telemetry inspection, and follow-up response. Dedicated endpoints, autoscaling, and GPU deployment were not used in that test.",
+    "recommendation_rating": null,
+    "inference_experience_rating": null,
+    "requested_nebius_improvements": "A configurable dollar spending cap per API key or project, with a hard stop before paid overage, would make bounded research runs easier to manage. Immediate usage and credit reporting would also help reconcile small tool-calling experiments.",
+    "requested_nemotron_improvements": "More reliable preservation of measurement units, explicit uncertainty for ambiguous telemetry, and consistent structured tool responses for long diagnostic workflows would be useful for robot-training analysis.",
+    "tavily_used": "No",
+    "irl_city": null,
+    "ai_tools": "NVIDIA Nemotron is the runtime reasoning model. OpenAI Codex and Anthropic Claude were used as development assistants for code, documentation, and hackathon preparation. NVIDIA NeMo Agent Toolkit orchestrates the configured agent workflows.",
+    "learning_level": null,
+    "career_value": null
+  },
+  "evidence": {
+    "code_commit": "8f6f456",
+    "initial_commit": "4acb1ed",
+    "initial_commit_date": "2026-09-26T11:37:21+09:00",
+    "repository_created_at": "2026-09-27T05:23:03Z",
+    "sources": [
+      "README.md",
+      "docs/NEBIUS-HACKATHON.md",
+      "docs/E2E-REWARD-DEMO.md",
+      "docs/RESIDUAL-DIAGNOSIS-RESULT.md",
+      "docs/ANYMAL-C-PORT.md",
+      "evals/results/nebius_smoke_public_20261025T152338+0900/summary.json"
+    ]
+  },
+  "pending_before_final_submission": [
+    "Verify both promotional credit applications, email verification, code redemption, and the actual account balance.",
+    "Run and preserve the full intended Nebius workflow within an explicitly bounded credit budget.",
+    "Review and publish the final Nebius code and setup instructions to the public repository.",
+    "Produce the required demo video and add its real public or unlisted URL.",
+    "Obtain the participant's subjective ratings, learning level, and career-value answers.",
+    "Recheck eligibility, license, factual claims, and final form requirements; retain draft status until final submission is authorized."
+  ],
+  "ui_verification": {
+    "checked_at": "2026-10-26T12:36:39+09:00",
+    "draft_url": "https://devpost.com/submit-to/30790-nebius-x-nvidia-global-ai-hackathon/manage/submissions/1264681-rl-triage-agent/project-overview",
+    "ui_state": "DRAFT",
+    "completed_steps_display": "2/5",
+    "overview_reopened": true,
+    "story_matches_reviewed_text": true,
+    "additional_fields_reopened_and_matched": 16,
+    "demo_video_blank": true,
+    "subjective_answers_blank": true,
+    "final_terms_unchecked": true,
+    "final_submit_clicked": false,
+    "reviewer": "/root/nebius_draft_review_20261026",
+    "review_verdict": "PASS for draft saving only"
+  }
+}
