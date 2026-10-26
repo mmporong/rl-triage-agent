@@ -1,0 +1,164 @@
+{
+  "schema": "vision_semantic_settle_development_result_v1",
+  "protocol_id": "semantic-settle-20261026ad",
+  "protocol_sha256_lf": "1359c26d6046edb124d229c3bc244bd415f45530eaa03fabfafcb4807246b462",
+  "source_commit": "dc899dd490d2cffffe71028f42ef50c49b9c86b0",
+  "checkout_commit": "5687df5b55d8dd053467d71f6337e76d58683ce8",
+  "status": "settle_noninterference_passed_strict_capture_failed",
+  "checkpoint_logical_id": "source-s2220-f1",
+  "checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+  "diagnostic_complete": false,
+  "boundary_instrumentation_complete": true,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "development_measurement": true,
+  "settles": [
+    {
+      "callback_delta": 0,
+      "callbacks_after": 2,
+      "callbacks_before": 2,
+      "code": 0,
+      "error_message": null,
+      "error_type": null,
+      "marker_after": {
+        "code": 0,
+        "path_count": 9,
+        "semantic_attribute_count": 18,
+        "semantic_attributes_sha256": "e8ad7319c691758d371929c1c2f861a7632491c53e466af9a36e28021aef9cc9",
+        "visibility_sha256": "a560b33515e16f4d3c3f72610776801ba2e8dfbda39c04a355fde222b2721b22",
+        "visible_count": 5
+      },
+      "marker_before": {
+        "code": 0,
+        "path_count": 9,
+        "semantic_attribute_count": 18,
+        "semantic_attributes_sha256": "e8ad7319c691758d371929c1c2f861a7632491c53e466af9a36e28021aef9cc9",
+        "visibility_sha256": "a560b33515e16f4d3c3f72610776801ba2e8dfbda39c04a355fde222b2721b22",
+        "visible_count": 5
+      },
+      "ordinal": 0,
+      "physics_after_sha256": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+      "physics_before_sha256": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+      "physics_equal": true,
+      "render_contract": {
+        "delta_time_s": 0.0,
+        "pause_timeline": false,
+        "rt_subframes": 1
+      },
+      "simulation_time_after_s": 0.009999999776482582,
+      "simulation_time_before_s": 0.009999999776482582,
+      "status": "complete"
+    }
+  ],
+  "callback_rows": [
+    {
+      "ordinal": 0,
+      "window": "preparing",
+      "classification": "bootstrap_empty",
+      "frame_number": null,
+      "reference_time": [
+        58,
+        30
+      ],
+      "raw_payload_sha256": "2ef38d6f945370d26bb7a73c20f7dbe1fad76a1858948a685c4a1be86f860fc5",
+      "mux_failure": null
+    },
+    {
+      "ordinal": 1,
+      "window": "preparing",
+      "classification": "valid",
+      "frame_number": 58,
+      "reference_time": [
+        58,
+        30
+      ],
+      "raw_payload_sha256": "1b6614b09d4ec71a46c232e5fb0ac32ef80da83e11264dc5451a3f17aea199ab",
+      "mux_failure": null
+    },
+    {
+      "ordinal": 2,
+      "window": "arming0",
+      "classification": "valid",
+      "frame_number": 60,
+      "reference_time": [
+        60,
+        30
+      ],
+      "raw_payload_sha256": "900683d08705cd2ddd4320ae58d4a12653135325abd575beca7a4bdbf68bee2e",
+      "mux_failure": null
+    },
+    {
+      "ordinal": 3,
+      "window": "arming0",
+      "classification": "valid",
+      "frame_number": 60,
+      "reference_time": [
+        60,
+        30
+      ],
+      "raw_payload_sha256": "900683d08705cd2ddd4320ae58d4a12653135325abd575beca7a4bdbf68bee2e",
+      "mux_failure": {
+        "code": "callback_cardinality_invalid",
+        "error_type": null,
+        "raw_callback_index": 3,
+        "state": "arming0"
+      }
+    }
+  ],
+  "arm0_component_sha_equal": {
+    "camera_identity": true,
+    "camera_params": true,
+    "distribution_outputs": true,
+    "isaac_read_times": true,
+    "named_outputs": true,
+    "reference_time": true,
+    "render_product_identity": true,
+    "resolution": true,
+    "rgb_data": true,
+    "semantic_labels": true,
+    "semantic_mask": true,
+    "semantic_segmentation": true,
+    "trigger_outputs": true,
+    "writer_swh_frame_number": true
+  },
+  "arm0_raw_payload_equal": true,
+  "callback_rows_dropped": 0,
+  "arms_completed": 0,
+  "policy_probe_reached": false,
+  "primary_error": {
+    "error_message": "arm callback 계약이 실패했다",
+    "error_type": "builtins.RuntimeError"
+  },
+  "wall_s": 31.111546611999984,
+  "child_exit_code": 0,
+  "child_exit_accepted": false,
+  "parent_cleanup_verified": true,
+  "gpu_after": [],
+  "sdk_environment_closed": false,
+  "training_actions": 0,
+  "model_api_requests": 0,
+  "full_recordings": 0,
+  "evidence_sha256": {
+    "execution": "7fbc0b8f6a215ff67a8805c7148047ae1a7c6295861fd3ddf2ed2ff06b08a41a",
+    "semantic_settle_report": "0990a6c133416e0530d5cea01f0bd586fb89f37f5540161d7b46a7e8fd3ca8fd",
+    "primary_error": "77a028e0c8ee838ae2608cc40b445350fa836c313882038da6e13aa2d2ce1ad4",
+    "strong_transfer": "5a8055324e1db40ac05d4b4abf211e860714eb533bfca40fdd45715ccd1ab204",
+    "stop_receipt": "de6333a7e845a30bc1e814cd57a92d10454367ec9e0cb951bc07045a2ba5de6f"
+  },
+  "interpretation": {
+    "fact": "한 checkpoint에서 settle은 callback 0·physics/time 불변이었고, 뒤 arm0의 두 callback은 14성분과 전체 payload SHA가 같았다. exact-one 조건은 실패했다.",
+    "inference": "의미 분할 갱신 지연과 동일 내용 callback 중복은 분리해 다룰 필요가 있다. 이 실행만으로 SDK 내부 원인이나 다른 checkpoint의 동작을 확정하지 않는다."
+  },
+  "resource_state": {
+    "status": "STOPPED",
+    "observed_at_utc": "2026-10-26T11:54:28.503175+00:00",
+    "gpu_work_started_once": true,
+    "estimated_lifecycle_compute_usd": "0.860506",
+    "cumulative_compute_estimate_usd": "16.884401",
+    "remaining_program_budget_usd": "3.115599",
+    "program_cap_usd": "20.000000",
+    "lifecycle_cap_usd": "1.000000",
+    "provider_invoice_verified": false,
+    "storage_charges_included": false
+  }
+}

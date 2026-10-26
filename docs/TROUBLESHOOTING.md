@@ -262,3 +262,13 @@
 
 기록의 `CPU 통과`, `실제 후속 단계 도달`, `전체 실행 완료` 상태를 구분한다.
 모델의 무효 답, 적용 불가, source 실패 부재와 `HOLD`를 모두 같은 실행 오류로 합치지 않는다.
+
+
+### CAP-18: 의미 분할 사전 갱신 뒤에도 동일 callback 두 건
+
+- 관찰: seed 2220 F1 checkpoint에서 marker 변경 뒤 Writer를 예약하지 않은 delta-zero render를 한 번 수행했다. 이 구간은 callback 증가 0, physics SHA·simulation time·marker 상태 불변을 통과했다.
+- 실제 캡처: 이어진 arm0에 frame 60의 유효 callback 두 건이 들어왔다. 두 건의 전체 payload와 14개 성분 SHA가 모두 같았지만 exact-one 조건은 실패했다. callback은 버리지 않았고 입력 승인·모델 사용은 하지 않았다.
+- 확인 범위: 앞선 AB의 서로 다른 semantic mask 현상과 이번 동일 payload 중복은 구분한다. 이번 한 checkpoint의 결과만으로 사전 렌더의 일반적 효과나 SDK 내부 원인을 확정하지 않는다.
+- 실행: 31.112초, 새 학습·모델 API·전체 녹화 0. 자식 exit 0은 성공으로 받아들이지 않았고, 부모 cleanup과 GPU process 부재는 확인했다. SDK environment close는 실패 기록을 유지했다.
+- 다음 조치: marker·renderer 동기화 기준을 유지하며 Writer dispatch의 중복 경로와 단일 callback을 보장하는 수집 방법을 분리한다. 같은 후보를 반복하지 않는다.
+- 근거: [실제 결과](../evals/results/vision_semantic_settle_dev_20261026ad/summary.json).
