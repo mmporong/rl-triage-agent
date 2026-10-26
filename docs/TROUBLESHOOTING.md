@@ -117,6 +117,10 @@
   proof 발급부터 실행 시작까지 약 0.016초였으며 freshness 30초 기준은 유지했다.
 - 근거: [개발 진단 결과](../evals/results/vision_semantic_sdk_dev_20261026r/summary.json),
   [진단 사전등록](../bench/protocols/vision_semantic_sdk_20261026_v2.json).
+- 원문 해시를 추가한 후속 진단에서는 frame 60과 61에 정상 콜백이 하나씩 왔다.
+  각 콜백의 14개 항목 해시를 남겼지만, 같은 프레임의 비교쌍이 없어 동등성 결과는
+  `insufficient`였다. 이 결과를 중복 정규화의 승인으로 쓰지 않는다.
+  [후속 진단 결과](../evals/results/vision_semantic_fingerprint_dev_20261026s/summary.json).
 - 이슈/PR 판단: 첫 오류 이후 출력을 버리는 프로젝트 처리와 SDK 초기 출력을 구분해 기록한다.
   SDK 자체의 결함으로 확정하지 않는다.
 
