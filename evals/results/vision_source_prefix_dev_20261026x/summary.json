@@ -1,0 +1,163 @@
+{
+  "schema": "vision_source_prefix_public_result_v1",
+  "tag": "vision_source_prefix_dev_20261026x",
+  "measurement_type": "preregistered_new_source_seed_pair",
+  "source_commit": "38402cb4ce58c26a1551747b562f0c78be0c9e0f",
+  "execution_commit": "486ee16527da04cb9043fe9723be6f389f863553",
+  "source_protocol": {
+    "path": "bench/protocols/vision_brev_source_20261026_v8.json",
+    "sha256_lf": "10b2baa3b4529ff29f67ed552e6514bdc5db036e8afa24be005616144e77d02c"
+  },
+  "cost_protocol": {
+    "path": "bench/protocols/vision_source_prefix_20261026_v2.json",
+    "sha256_lf": "a0644f415ad5baec915c7e43501e18ccfd154252a99c3360c23a350b0058ad53"
+  },
+  "status": "source_training_and_fixed_evaluation_complete",
+  "training_actions": 4,
+  "paired_fixed_evaluations": 2,
+  "record_actions": 0,
+  "model_api_requests": 0,
+  "source_failure_confirmed_seeds": 2,
+  "training": [
+    {
+      "job_id": "vision-s2220-none",
+      "seed": 2220,
+      "arm": "NONE",
+      "iterations": 300,
+      "checkpoint_sha256": "41c417b040b458c2f3cf5eb025ba6b5bd8e551c184f63a6c0c7809e0c5165d42",
+      "last_training_tracking_error": 0.1810222864151001,
+      "training_wall_s": 198.9652767739999,
+      "cleanup_verified": true,
+      "gpu_after_empty": true,
+      "raw_sha256": "6a2bd72cd1ec679717792e17b8339ce485508f82a2cbe74236aec88720fe37ea"
+    },
+    {
+      "job_id": "vision-s2220-f1",
+      "seed": 2220,
+      "arm": "F1",
+      "iterations": 300,
+      "checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+      "last_training_tracking_error": 1.491910696029663,
+      "training_wall_s": 186.359184616,
+      "cleanup_verified": true,
+      "gpu_after_empty": true,
+      "raw_sha256": "100034e2d085b5034721319a4e8fc12994809647546ec1f2742c8bb5896b8210"
+    },
+    {
+      "job_id": "vision-s2221-none",
+      "seed": 2221,
+      "arm": "NONE",
+      "iterations": 300,
+      "checkpoint_sha256": "b346a0c3e3ad6410ce93dcf73e6165ed69e2d6ab95b2c5398943b3a8874cf54d",
+      "last_training_tracking_error": 0.1964135617017746,
+      "training_wall_s": 190.21358967799983,
+      "cleanup_verified": true,
+      "gpu_after_empty": true,
+      "raw_sha256": "91e623de29347b664ce5228b90d42e56a9d72ebe2c12b73ed00c408b8f19ecd4"
+    },
+    {
+      "job_id": "vision-s2221-f1",
+      "seed": 2221,
+      "arm": "F1",
+      "iterations": 300,
+      "checkpoint_sha256": "1d73d523c97c5c89c988febfbd3d5e533e90681cd0e6132d6ffe13888fa95731",
+      "last_training_tracking_error": 1.4460697174072266,
+      "training_wall_s": 181.80874018899976,
+      "cleanup_verified": true,
+      "gpu_after_empty": true,
+      "raw_sha256": "444fab4784e0d5799c856bf8e096143865fa048d019551a9221efe62395a9907"
+    }
+  ],
+  "evaluations": [
+    {
+      "seed": 2220,
+      "conditions_per_policy": 26,
+      "metrics": {
+        "F1": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.1838501504588557,
+          "yaw_rate_rmse_radps": 0.5977873315612978
+        },
+        "NONE": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.14136327886224342,
+          "yaw_rate_rmse_radps": 0.24923038485402926
+        }
+      },
+      "source_gate": {
+        "verdict": {
+          "label": "unhealthy",
+          "failed": [
+            "err_xy_ratio",
+            "err_yaw_ratio"
+          ],
+          "short_horizon": false,
+          "checks": {
+            "survival_ratio": true,
+            "fall_frac": true,
+            "err_xy_ratio": false,
+            "err_yaw_ratio": false
+          }
+        },
+        "outcome": "not_recovered"
+      },
+      "raw_sha256": "a5e4827f4e7c037ed845e9178dbd2c0ade23e36eb73c210b1dfa1a73614c58af"
+    },
+    {
+      "seed": 2221,
+      "conditions_per_policy": 26,
+      "metrics": {
+        "F1": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.1883324165037523,
+          "yaw_rate_rmse_radps": 0.6385533400729231
+        },
+        "NONE": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.14866341790838303,
+          "yaw_rate_rmse_radps": 0.1720315751064877
+        }
+      },
+      "source_gate": {
+        "verdict": {
+          "label": "unhealthy",
+          "failed": [
+            "err_xy_ratio",
+            "err_yaw_ratio"
+          ],
+          "short_horizon": false,
+          "checks": {
+            "survival_ratio": true,
+            "fall_frac": true,
+            "err_xy_ratio": false,
+            "err_yaw_ratio": false
+          }
+        },
+        "outcome": "not_recovered"
+      },
+      "raw_sha256": "a106e84e97cf6a04281d21d2336b90e0ce2a8d4384c9c8729da9988ba8b10b42"
+    }
+  ],
+  "artifact_transfer": {
+    "files": 437,
+    "sha256": "602f69adc121ae5e62578c5bcab2c2e0a34ba567c5fcc2ea5ff241ab73a53eab"
+  },
+  "handoff_sha256": "774494c5b8d69522ff20977adcb992983b46ad3a5555af15e21dddc07cb9aafc",
+  "transport_reconciliation": {
+    "completed_native_command_verified": true,
+    "reexecutions": 0,
+    "original_unknown_preserved": true,
+    "reconciliation_sha256": "44a1dab37f5a904a0b721378c41c3668f4020c349fcd20807301f67f65d4be93"
+  },
+  "scope": {
+    "fixed_evaluation_is_behavior_label": true,
+    "new_checkpoint_smoke_or_record_completed": false,
+    "model_comparison_or_correction_completed": false,
+    "comparison_to_normal_is_not_repair": true
+  },
+  "resource_lifecycle": "same_start_open_for_preregistered_recording; no_final_cost_claim"
+}

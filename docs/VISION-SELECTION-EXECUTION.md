@@ -157,3 +157,5 @@ evidence를 만든다. 승인과 소비 뒤의 evidence가 같아야 CORRECTED �
 교정 후 녹화는 등록 job·checkpoint·고정 평가와 대조하고 V01 입력을 만든 뒤 관찰 호출에
 전달한다. 이 경로는 CPU 회귀와 저장된 Brev 검사 원문으로 검증했다. 실제 수집한 새 영상의
 결합과 GPU 교정·후속 관찰 실행은 남아 있으며, 현재 검증은 새 종단 회복 결과를 뜻하지 않는다.
+
+`evals/vision_record_selection_e2e_v1.py`는 새 readiness의 학습 action과 record job 원문을 검증해 같은 seed의 F1·교정 job에 결합한다. 이전 중첩 필드를 합성하지 않으며, 승인·검사 receipt·고정 평가·무효 판단의 HOLD 경계는 기존 상태 기계를 사용한다. 이 연결은 CPU 회귀 범위이고 실제 새 영상으로 수행한 종단 결과는 별도로 남긴다.
