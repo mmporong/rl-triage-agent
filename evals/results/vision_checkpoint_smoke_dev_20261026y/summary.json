@@ -1,0 +1,99 @@
+{
+  "schema": "vision_source_record_failure_result_v1",
+  "program_id": "prepared-policy-record-20261026y",
+  "status": "checkpoint_smoke_failed",
+  "source_commit": "38402cb4ce58c26a1551747b562f0c78be0c9e0f",
+  "checkout_commit": "63f0ce286555c094e9307c4c71a09818bd4e8dde",
+  "checkpoint_logical_id": "source-s2220-f1",
+  "checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+  "policy_probe": {
+    "action": {
+      "dtype": "torch.float32",
+      "sha256": "da9031d683cb8303f51842ffa2272b00036713fb1cf525962b674633648abf5c",
+      "shape": [
+        1,
+        12
+      ]
+    },
+    "actual_environment_observation_used": true,
+    "checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+    "command": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "environment_steps": 1,
+    "observation": {
+      "dtype": "torch.float32",
+      "sha256": "685a4b15b3464ff29f2b0e3baefaa65aee18661599d4a8a10cabe105b0e3c165",
+      "shape": [
+        1,
+        48
+      ]
+    },
+    "pure_checkpoint_read_only": false,
+    "reset_required_before_capture": true,
+    "schema": "vision_checkpoint_policy_probe_v1",
+    "step_counter_after": 1,
+    "step_counter_before": 0
+  },
+  "capture": {
+    "prepare_completed": true,
+    "arms_completed": 0,
+    "raw_callbacks": 4,
+    "callback_rows_dropped": 0,
+    "failure_code": "callback_cardinality_invalid",
+    "prepare_frame": 58,
+    "arm_frame": 59,
+    "arm_callback_count": 2,
+    "required_arm_callback_count": 1,
+    "duplicate_rgb_byte_equality_established": false
+  },
+  "execution": {
+    "completed": false,
+    "exit_code": 0,
+    "cleanup_verified": true,
+    "gpu_before": [],
+    "gpu_after": [],
+    "wall_s": 20.617345064000347,
+    "timed_out": false,
+    "error_type": "builtins.RuntimeError",
+    "error_message": "arm callback 계약이 실패했다",
+    "failure_atom": {
+      "child_exit_accepted": false,
+      "child_exit_code": 0,
+      "failure": {
+        "bytes": 23014,
+        "file": "failure.json",
+        "sha256": "d2707ad56db4a05bf15608e4c0b82e39865007332d44dcd12e937c8fc0ace074"
+      },
+      "first_cause": {
+        "bytes": 589,
+        "file": "primary-error.json",
+        "sha256": "831e830627f0739fddc869a3c87dc57a7a34777fca3acd9c1f75fe1b98e29a97"
+      },
+      "first_cause_message": "arm callback 계약이 실패했다",
+      "first_cause_type": "builtins.RuntimeError",
+      "schema": "vision_checkpoint_smoke_failure_atom_v1",
+      "status": "failed"
+    }
+  },
+  "confirmed_cause": "최초 arm에 callback 두 건이 들어와 exact-one 계약을 위반했다.",
+  "remaining_hypothesis": "캡처 전 정책 step과 Replicator 그래프 상태의 관계는 미확정이다.",
+  "next_candidate": "새 v2는 strict A-A-B-A 캡처와 Writer detach 뒤에 같은 환경·정책의 1 step을 수행한다. 중복 허용·삭제는 하지 않는다.",
+  "full_recordings": 0,
+  "training_actions": 0,
+  "model_api_requests": 0,
+  "other_checkpoints_started": 0,
+  "model_ready": false,
+  "cost_finalized": false,
+  "raw_evidence_sha256": {
+    "execution.json": "a75faeb2780cc501169d3927592b9e05b6890c248387792a4eb8203462b68e67",
+    "output/primary-error.json": "831e830627f0739fddc869a3c87dc57a7a34777fca3acd9c1f75fe1b98e29a97",
+    "output/failure.json": "d2707ad56db4a05bf15608e4c0b82e39865007332d44dcd12e937c8fc0ace074",
+    "output/checkpoint-smoke-sdk-report.json": "6f606f414296baffa7912daf4cc2f4a7032a51521a9e14a1b40762be9c9c4964"
+  },
+  "transfer_sha256": "ef7e82375e5b337f09e0fb5f5464646b6f1de7d9469e88c1199ff9cbd5935c57",
+  "retrieved_files": 475,
+  "development_measurement": true
+}

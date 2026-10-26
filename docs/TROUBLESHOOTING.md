@@ -161,7 +161,7 @@
   이후 기존 A-A-B-A 검사 기준을 적용한다. 완료 표시만 읽는 대신 녹화·검사·checkpoint·자원·학습·고정 평가의
   원문을 다시 검증하며, 기존 실행에 없던 attestation을 만들어 채우지 않는다.
 - 확인 범위: 최초 오류 보존, 종료 코드 0의 실패 거부, 준비 완료 표시 위조·영상 교체·근거 변조 거부를
-  CPU 회귀로 확인했다. 새 checkpoint에서 이 smoke를 수행하는 GPU 확인은 남아 있다.
+  CPU 회귀로 확인했다. 후속 checkpoint 검사의 실제 실패와 새 순서의 검증은 아래 CAP-16에서 구분한다.
 - 코드: [정책별 smoke](../bench/run_vision_checkpoint_smoke_v1.py) ·
   [입력 승인 검증](../evals/vision_record_source_readiness_v1.py).
 
@@ -191,6 +191,20 @@
 - 원인: 실행 중 생성된 별도 상태 조회 intent까지 같은 실행의 후보로 셌다. 완료 명령의 snapshot과 일치하는 intent는 한 건이었다.
 - 복구: 그 한 건으로 동결한 packet·script·stdout·결과 envelope 검증을 다시 수행했고, 원문 437파일의 해시를 확인했다. 원격 action 재실행과 이전 unknown 기록 변경은 없었다.
 - 후속 경계: 실행과 상태 조회의 호스트 기록 폴더를 분리한다. 실행 성공, 호스트 전달 검증, 회수 완료를 별도 상태로 남긴다.
+
+### CAP-16: 정책 검사는 통과했으나 캡처 arm에 callback 두 건이 들어옴
+
+- 관찰: 새 source 정책의 checkpoint 로딩, 환경 관측 `1×48`, 정책 행동 `1×12`, 환경 1 step은 통과했다.
+  준비 callback 뒤 첫 캡처 arm에 유효 callback 두 건이 들어와 exact-one 검사가 실패했다.
+  child 종료 코드가 0이어도 저장된 최초 오류와 실패 envelope를 근거로 성공을 거부했다.
+- 보존: cleanup은 통과했고 GPU compute process는 남지 않았다. 나머지 정책 세 개와 전체 녹화·모델 호출은 시작하지 않았다.
+  원문 475파일을 회수하고 해시를 확인했다. 두 callback의 RGB 바이트 동일성과 캡처 전 정책 step의 인과는 미확정이다.
+- 새 구현: 같은 환경에서 checkpoint를 로딩한 뒤 엄격 A-A-B-A 캡처, Writer detach, 정책 1 step, 환경 종료 순서로 실행한다.
+  중복 callback을 버리거나 허용하지 않으며, 새 v2 schema로 기존 실행과 구분한다.
+  CPU 회귀를 통과했으며 실제 checkpoint 재검사는 별도 사전등록 뒤 수행한다.
+- 근거: [실패 요약](../evals/results/vision_checkpoint_smoke_dev_20261026y/summary.json),
+  [새 smoke 실행기](../bench/run_vision_checkpoint_smoke_v2.py),
+  [새 입력 검증기](../evals/vision_record_source_readiness_v2.py).
 
 ## 새 실패를 남길 때
 
