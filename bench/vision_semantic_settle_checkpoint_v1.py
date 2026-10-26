@@ -47,6 +47,7 @@ SETTLE_KEYS = frozenset(
         "simulation_time_before_s",
         "simulation_time_after_s",
         "physics_equal",
+        "render_contract",
         "marker_before",
         "marker_after",
         "error_type",
@@ -189,6 +190,17 @@ def _instrument_dependencies(
     raw_render = raw["capture_render_step"]
     raw_orchestrator = raw["rep"].orchestrator
     holder: dict[str, _MarkerProxy] = {}
+    render_contract = {
+        "delta_time_s": profile.get("delta_time_s"),
+        "rt_subframes": profile.get("rt_subframes"),
+        "pause_timeline": profile.get("pause_timeline"),
+    }
+    if render_contract != {
+        "delta_time_s": 0.0,
+        "rt_subframes": 1,
+        "pause_timeline": False,
+    }:
+        raise ValueError("semantic settle render 계약이 고정값과 다르다")
 
     def create_marker(rep: Any, root: Any) -> _MarkerProxy:
         marker = _MarkerProxy(marker_factory(rep, root), marker_states)
@@ -218,6 +230,7 @@ def _instrument_dependencies(
             "simulation_time_before_s": None,
             "simulation_time_after_s": None,
             "physics_equal": False,
+            "render_contract": deepcopy(render_contract),
             "marker_before": deepcopy(pending["marker_before"]),
             "marker_after": None,
             "error_type": None,
@@ -274,8 +287,15 @@ def _settles_complete(value: Any) -> bool:
         and row.get("ordinal") == ordinal
         and row.get("code") == ordinal
         and row.get("status") == "complete"
+        and type(row.get("monotonic_ns")) is int
+        and row["monotonic_ns"] > 0
+        and type(row.get("thread_id")) is int
+        and row["callbacks_before"] == row["callbacks_after"]
         and row.get("callback_delta") == 0
         and row.get("physics_equal") is True
+        and row.get("simulation_time_before_s") == row.get("simulation_time_after_s")
+        and row.get("render_contract")
+        == {"delta_time_s": 0.0, "rt_subframes": 1, "pause_timeline": False}
         and row.get("marker_before") == row.get("marker_after")
         and all(
             isinstance(row.get(key), str)
@@ -332,7 +352,9 @@ def _report(
     underlying = boundary.get("underlying")
     probe = underlying.get("policy_probe") if isinstance(underlying, Mapping) else None
     complete = (
-        boundary.get("diagnostic_complete") is True
+        primary is None
+        and boundary.get("primary_error") is None
+        and boundary.get("diagnostic_complete") is True
         and _settles_complete(settles)
         and _marker_states_complete(marker_states)
         and isinstance(probe, Mapping)
@@ -385,6 +407,10 @@ def run_semantic_settle_diagnostic(
     capture_on_play: dict[str, Any] = {}
     settles: list[dict[str, Any]] = []
     marker_states: list[dict[str, Any]] = []
+    profile = job.get("profile")
+    camera_profile = profile.get("camera") if isinstance(profile, Mapping) else None
+    if not isinstance(camera_profile, Mapping):
+        raise TypeError("semantic settle camera profile이 mapping이 아니다")
     deps = _instrument_dependencies(
         selected,
         callbacks,
@@ -392,7 +418,7 @@ def run_semantic_settle_diagnostic(
         capture_on_play,
         settles,
         marker_states,
-        job["profile"],
+        camera_profile,
     )
     inner = dict(validated)
     inner["job"] = {**dict(job), "mode": CHECKPOINT.MODE}

@@ -101,6 +101,11 @@ def _settles() -> list[dict[str, Any]]:
                 "simulation_time_before_s": 2.0,
                 "simulation_time_after_s": 2.0,
                 "physics_equal": True,
+                "render_contract": {
+                    "delta_time_s": 0.0,
+                    "rt_subframes": 1,
+                    "pause_timeline": False,
+                },
                 "marker_before": {
                     key: value for key, value in marker.items() if key != "phase"
                 },

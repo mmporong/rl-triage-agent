@@ -229,9 +229,11 @@ def _validated(tmp_path: Path) -> dict[str, Any]:
             "mode": D.MODE,
             "callback_variant": D.VARIANT,
             "profile": {
-                "delta_time_s": 0.0,
-                "rt_subframes": 1,
-                "pause_timeline": False,
+                "camera": {
+                    "delta_time_s": 0.0,
+                    "rt_subframes": 1,
+                    "pause_timeline": False,
+                }
             },
         },
         "checkpoint_path": checkpoint,
@@ -265,7 +267,8 @@ def _run_checkpoint() -> Any:
         mux.begin_prepare(before, 2.0, marker_code=3)
         dependencies["rep"].utils.send_og_event("capture")
         dependencies["capture_render_step"](
-            dependencies["rep"].orchestrator, validated["job"]["profile"]
+            dependencies["rep"].orchestrator,
+            validated["job"]["profile"]["camera"],
         )
         writer.raise_callback_error()
         mux.end_prepare(dependencies["physics_snapshot"](dependencies["rep"].base), 2.0)
@@ -275,7 +278,8 @@ def _run_checkpoint() -> Any:
             mux.begin_arm(ordinal, before, 2.0, marker_code=ordinal)
             dependencies["rep"].utils.send_og_event("capture")
             dependencies["capture_render_step"](
-                dependencies["rep"].orchestrator, validated["job"]["profile"]
+                dependencies["rep"].orchestrator,
+                validated["job"]["profile"]["camera"],
             )
             writer.raise_callback_error()
             mux.end_arm(

@@ -68,6 +68,7 @@ def _diagnostic(validated: Mapping[str, Any], value: Any) -> bool:
         and capture.get("after_startup") is False
         and capture.get("restored") == capture.get("before")
         and boundary.get("diagnostic_complete") is True
+        and boundary.get("primary_error") is None
         and boundary.get("used_for_decision") is False
         and boundary.get("approved") is False
         and SDK._settles_complete(value.get("settles"))
@@ -75,10 +76,7 @@ def _diagnostic(validated: Mapping[str, Any], value: Any) -> bool:
         and value.get("diagnostic_complete") is True
         and value.get("used_for_decision") is False
         and value.get("approved") is False
-        and (
-            value.get("primary_error") is None
-            or isinstance(value.get("primary_error"), Mapping)
-        )
+        and value.get("primary_error") is None
     )
 
 
