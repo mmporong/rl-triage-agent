@@ -57,6 +57,19 @@ CPU에서 시각·파일 결합이 맞아도 렌더링된 픽셀이 최신 상�
 `capture_complete_gpu_smoke_pending`으로 남기고, 실제 GPU 동기화 검사를 연결하기 전에는
 선택 비교 입력으로 사용하지 않는다. 영상 관찰·검사 선택·원인 확인·회복은 각각 별도로 판정한다.
 
+새 준비 분리 경로는 한 Writer를 붙인 채 준비 출력 한 번을 검증하고, 측정 네 장을 수집한 뒤
+Writer·render product·환경을 정리하고 원문을 봉인한다. 준비 출력은 측정 journal에서 제외한다.
+[GPU 개발 확인](../evals/results/vision_prepared_capture_dev_20261026t/summary.json)에서는
+준비 frame 32 뒤 측정 frame 33~36이 왔고, callback 다섯 개에서 측정 journal 네 개를 만들었다.
+기존 marker·frame/rational/reference 시각·A-A-B-A 픽셀·물리 불변 기준과 정리 검증을 통과했다.
+회수한 원문에서도 journal과 픽셀을 다시 대조했다.
+
+이 경로는 앞선 초기 빈 출력·복수 callback을 본 뒤 설계한 개발 확인이다.
+이번 실행에서는 빈 출력이 관찰되지 않았으며, 이전 SDK 출력의 원인을 확정하지 않는다.
+학습·모델 API·정책 전체 녹화는 각각 0회다. 결과는 이 renderer 조합의 정지 장면 동기화 범위이며,
+정책 전체 녹화 연결은 새 실행 판으로 이어가며,
+[이번 사전등록](../bench/protocols/vision_prepared_capture_20261026_v1.json)의 네 프레임 smoke와 구분한다.
+
 ## 비용과 종료
 
 실행기는 다음 action의 최대 시간·compute 비용을 시작 전에 예약하고, 완료 뒤 측정값을 검사한다.

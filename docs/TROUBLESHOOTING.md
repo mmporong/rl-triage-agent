@@ -121,6 +121,12 @@
   각 콜백의 14개 항목 해시를 남겼지만, 같은 프레임의 비교쌍이 없어 동등성 결과는
   `insufficient`였다. 이 결과를 중복 정규화의 승인으로 쓰지 않는다.
   [후속 진단 결과](../evals/results/vision_semantic_fingerprint_dev_20261026s/summary.json).
+- 수정 확인: 한 Writer에서 준비 출력과 측정 네 장을 분리한 새 경로가 실제 GPU smoke를 통과했다.
+  준비 frame 32, 측정 frame 33~36의 콜백 다섯 개에서 journal 네 개를 만들었다.
+  기존 marker·시각·A-A-B-A 픽셀·물리 불변·정리 기준을 유지했고, 회수한 원문에서도 재검증했다.
+  이번 실행에 빈 출력은 없었다. 이 결과는 정지 장면 동기화 확인이며 정책 전체 녹화는 다음 단계다.
+  [준비 분리 개발 결과](../evals/results/vision_prepared_capture_dev_20261026t/summary.json) ·
+  [사전등록](../bench/protocols/vision_prepared_capture_20261026_v1.json).
 - 이슈/PR 판단: 첫 오류 이후 출력을 버리는 프로젝트 처리와 SDK 초기 출력을 구분해 기록한다.
   SDK 자체의 결함으로 확정하지 않는다.
 
