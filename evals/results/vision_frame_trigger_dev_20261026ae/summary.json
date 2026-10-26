@@ -1,0 +1,67 @@
+{
+  "schema": "vision_frame_trigger_development_result_v1",
+  "protocol_id": "frame-trigger-20261026ae",
+  "protocol_sha256_lf": "6c47765f07216cd4bd03529c3304cb13a4eb02cebfc2d6c6b13523221211619e",
+  "source_commit": "36e51da3ef056cf10edf35a595545da5351e21d0",
+  "checkout_commit": "8b3c37def786463c9265af4b3b2741854f71e707",
+  "status": "default_writer_prepare_no_callback",
+  "development_measurement": true,
+  "checkpoint_logical_id": "source-s2220-f1",
+  "checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+  "variant": "default_frame_step",
+  "diagnostic_complete": false,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "dispatch_counts": {
+    "on_custom_event_requests_suppressed": 1,
+    "on_custom_event_underlying_calls": 0,
+    "orchestrator_step_calls": 1,
+    "schedule_write_calls": 0,
+    "send_og_event_requests_suppressed": 1,
+    "send_og_event_underlying_calls": 0
+  },
+  "capture_on_play": {
+    "after_startup": false,
+    "before": true,
+    "restore_changed": true,
+    "restored": true
+  },
+  "callback_rows": [],
+  "callback_rows_dropped": 0,
+  "arms_completed": 0,
+  "policy_probe_reached": false,
+  "primary_error": {
+    "error_message": "prepare callback 계약이 실패했다",
+    "error_type": "builtins.RuntimeError"
+  },
+  "wall_s": 31.120025989,
+  "child_exit_code": 0,
+  "child_exit_accepted": false,
+  "parent_cleanup_verified": true,
+  "gpu_after": [],
+  "training_actions": 0,
+  "model_api_requests": 0,
+  "full_recordings": 0,
+  "evidence_sha256": {
+    "execution": "ec41c8a9c0bb57ff6a697462045ac579293e6b35916c29e2abf213d6f6d71661",
+    "frame_trigger_report": "0579c72118d5f02ee41c3569844037c320e2a91fc0936fb4910408f1459e0611",
+    "primary_error": "f11ae4fcd57e91582fa75681309f6ea486d5bddc7cdf1eb6426d72e4e73e5b56",
+    "strong_transfer": "787f64391635ed6e4435b90afb5fbaaeaf1cb58cf361e3c798de53bbb9b32f55",
+    "stop_receipt": "45bb1233c1277c953730113f758fa9fb9e8c3972e3e1f063a9f172d01e36815c"
+  },
+  "interpretation": {
+    "fact": "기본 Writer attach와 underlying event/schedule 0·prepare step1 조건에서 callback 0으로 prepare가 실패했다. arm·정책 추론 확인에는 도달하지 않았다.",
+    "inference": "captureOnPlay false와 기본 Writer trigger의 상호작용을 SDK 원문으로 확인할 필요가 있다. 이 실행은 중복 callback의 해소나 수리를 뜻하지 않는다."
+  },
+  "resource_state": {
+    "status": "STOPPED",
+    "observed_at_utc": "2026-10-26T12:43:22.456774+00:00",
+    "estimated_lifecycle_compute_usd": "0.617950",
+    "cumulative_compute_estimate_usd": "17.502351",
+    "remaining_program_budget_usd": "2.497649",
+    "program_cap_usd": "20.000000",
+    "lifecycle_cap_usd": "1.000000",
+    "provider_invoice_verified": false,
+    "storage_charges_included": false
+  }
+}

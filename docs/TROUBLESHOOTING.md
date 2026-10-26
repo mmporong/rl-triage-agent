@@ -272,3 +272,12 @@
 - 실행: 31.112초, 새 학습·모델 API·전체 녹화 0. 자식 exit 0은 성공으로 받아들이지 않았고, 부모 cleanup과 GPU process 부재는 확인했다. SDK environment close는 실패 기록을 유지했다.
 - 다음 조치: marker·renderer 동기화 기준을 유지하며 Writer dispatch의 중복 경로와 단일 callback을 보장하는 수집 방법을 분리한다. 같은 후보를 반복하지 않는다.
 - 근거: [실제 결과](../evals/results/vision_semantic_settle_dev_20261026ad/summary.json).
+
+
+### CAP-19: 기본 Writer와 step 단독 경로에서 준비 callback 0건
+
+- 관찰: 같은 seed 2220 F1 checkpoint에서 Writer를 기본 인자로 attach하고 event·schedule 실호출을 제거했다. prepare의 renderer step은 한 번이었으나 callback이 한 건도 없어 prepare가 실패했다. arm과 정책 추론 확인은 실행되지 않았다.
+- 확인 범위: 앞선 manual 경로의 중복과 다른 결과다. callback 0을 중복 해소나 캡처 성공으로 해석하지 않는다. `captureOnPlay=False`는 readback했고 실제 dispatch 수는 결과에 남겼다.
+- 실행: 31.120초, 새 학습·모델 API·전체 녹화 0, 부모 cleanup 확인, 종료 뒤 GPU process 없음. 자식 exit 0은 성공으로 받아들이지 않았다.
+- 다음 조치: 설치된 동일 버전 SDK 원문에서 기본 trigger의 활성화 조건을 확인한 뒤 다음 후보를 정한다. 같은 후보를 반복하지 않는다.
+- 근거: [실제 결과](../evals/results/vision_frame_trigger_dev_20261026ae/summary.json).
