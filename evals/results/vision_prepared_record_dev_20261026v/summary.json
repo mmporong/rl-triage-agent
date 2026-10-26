@@ -1,0 +1,91 @@
+{
+  "schema": "vision_policy_record_actual_result_v1",
+  "program_id": "vision-source-20261026v",
+  "status": "record_complete",
+  "source_commit": "664bbb5e9b10e1958b985577927a27580f6a2452",
+  "checkout_commit": "4e86a3e757773b781b355aea8b8d61fc93decf37",
+  "source_protocol": {
+    "path": "bench/protocols/vision_brev_source_20261026_v6.json",
+    "sha256_lf": "ec7a219755c44450106b5f3fe7399744175adcf2638ef2abe9b92150e96d0e25"
+  },
+  "record_protocol": {
+    "path": "bench/protocols/vision_prepared_record_20261026_v2.json",
+    "sha256_lf": "e0b2e5276e1adbfcc1f40b4c5a86f852ec16131970d9557855ffa1b453745644"
+  },
+  "recording_completed": true,
+  "frame_count": 625,
+  "fps": 50,
+  "raw_callback_count": 626,
+  "committed_count": 625,
+  "artifact_count": 8,
+  "artifacts": {
+    "encoder_receipt": {
+      "bytes": 551,
+      "file": "encoder_receipt.json",
+      "sha256": "6212180c14d04d889ed6f151992b95a2a110c33ef466bff40b2acef4b3949406"
+    },
+    "measurement_1": {
+      "bytes": 2995,
+      "file": "window_1_measurements.json",
+      "sha256": "a41e5b76bc74a528c58719ec102637ecf8a8fa2cf5409a062c1094622a775823"
+    },
+    "measurement_2": {
+      "bytes": 3020,
+      "file": "window_2_measurements.json",
+      "sha256": "b64d4cafa18ed8b723e57c52ba0b4cd2f26a8ec0c1f2f55c89d7b2eb7788e30a"
+    },
+    "raw_trace": {
+      "bytes": 1106994,
+      "file": "raw_trace.json",
+      "sha256": "4e2a70035d1551fdc626b77050897ac2d15c5ccec8fa63285316b0da846aaf65"
+    },
+    "spec_1": {
+      "bytes": 2640,
+      "file": "window_1_v01_spec.json",
+      "sha256": "1fbb60508314fe5208e85e986006c1e9e6b69e56ef88414f9e52bf588cdb1cce"
+    },
+    "spec_2": {
+      "bytes": 2643,
+      "file": "window_2_v01_spec.json",
+      "sha256": "dc832546b00acc524181893129e3e63f65343b14e5d322d5ee42ce2274038657"
+    },
+    "timing_receipt": {
+      "bytes": 6705,
+      "file": "timing_receipt.json",
+      "sha256": "e3d4c7df14e7150c0cef32ff68f97cc419a0e14892a30c219d65dccfd8edcb40"
+    },
+    "video": {
+      "bytes": 516473,
+      "file": "same_play.mp4",
+      "sha256": "cfc23557bce53b9b95993c8a781520b0ff6f041bfe0f06db14b888a4e11a5e00"
+    }
+  },
+  "checkpoint": {
+    "logical_id": "pilot-none20-s2208",
+    "sha256": "6b6dc979dc0df7a4c4fa62f8f96ec26d5912df4d75506c5e396f972a0f465c2d",
+    "training_updates": 20
+  },
+  "execution_wall_s": 60.52699516000007,
+  "cleanup_verified": true,
+  "gpu_after_count": 0,
+  "vm_status": "STOPPED",
+  "local_frozen_verification": "PASS",
+  "retrieved_files": 2901,
+  "transfer_sha256": "2eefbea430a8575c9b7e9e3ea2307c84b733e7f7574ef153d3d803a97aa1fd61",
+  "result_sha256": "da0959d0e57b6437787c38e70a07aa5fa5bece9ebdfafd3954d44a65b1661f67",
+  "stop_sha256": "37dca8839cd59363581654dd572685303a1785153a71b7a5dfdcf20b46606518",
+  "training_actions": 0,
+  "model_api_requests": 0,
+  "model_comparison_ready": false,
+  "healthy_label": null,
+  "recovery_label": null,
+  "observation": "준비 출력을 제외한 정책 영상 625프레임과 같은 Play 기록·실제 PTS·checkpoint 및 정리 검증을 통과했다. 기존 20회 학습 정책의 기술 녹화이며 정상·회복 결과나 모델 비교 준비 완료로 집계하지 않는다.",
+  "cost": {
+    "this_lifecycle_usd": "0.839632",
+    "cumulative_usd": "10.319817",
+    "remaining_usd": "9.680183",
+    "cap_usd": "20",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  }
+}
