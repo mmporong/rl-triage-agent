@@ -1,0 +1,104 @@
+{
+  "schema": "vision_semantic_sdk_actual_result_v1",
+  "created_at_utc": "2026-10-26T02:16:18.728707+00:00",
+  "execution_head": "ee2344dcd7f74dc71a8375387ff5f8fc7bfc4231",
+  "protocol": "bench/protocols/vision_semantic_sdk_20261026_v2.json",
+  "program_id": "vision-source-20261026r",
+  "status": "diagnostic_collection_complete_capture_not_approved",
+  "observation": {
+    "callbacks": [
+      {
+        "ordinal": 0,
+        "window": "event_0_running",
+        "classification": "invalid",
+        "semantic_dtype": "float64",
+        "semantic_shape": [
+          0
+        ],
+        "frame_number": 32
+      },
+      {
+        "ordinal": 1,
+        "window": "event_0_running",
+        "classification": "valid",
+        "semantic_dtype": "uint32",
+        "semantic_shape": [
+          480,
+          640
+        ],
+        "frame_number": 32
+      },
+      {
+        "ordinal": 2,
+        "window": "event_1_running",
+        "classification": "valid",
+        "semantic_dtype": "uint32",
+        "semantic_shape": [
+          480,
+          640
+        ],
+        "frame_number": 33
+      },
+      {
+        "ordinal": 3,
+        "window": "event_1_running",
+        "classification": "valid",
+        "semantic_dtype": "uint32",
+        "semantic_shape": [
+          480,
+          640
+        ],
+        "frame_number": 33
+      }
+    ],
+    "events_completed": 2,
+    "physics_equal_all_events": true,
+    "hold_observations": [
+      "empty_observed",
+      "mixed_valid_empty"
+    ],
+    "valid_observed": true,
+    "continued_empty": false,
+    "callback_event_causality_proven": false,
+    "pixel_duplicate_equality_measured": false
+  },
+  "timing": {
+    "registration_simulated_admission_s": 0.4866947849999974,
+    "registration_protocol_validation_count": 4,
+    "smoke_prevalidation_wall_s": 0.11566733000000795,
+    "proof_to_execution_start_wall_s": 0.01639,
+    "diagnostic_wall_s": 27.882135212999998
+  },
+  "resources": {
+    "owned_instance_id": "3655a80oo",
+    "status": "STOPPED",
+    "gpu_after": [],
+    "training_actions": 0,
+    "model_api_requests": 0,
+    "full_recordings": 0,
+    "lifecycle_estimate_usd": "0.232234",
+    "program_estimate_usd": "8.732908",
+    "remaining_cap_usd": "11.267092",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "confirmed": "같은 Writer의 첫 event에서 빈 semantic callback 뒤 정상 uint32[480,640] callback이 관찰됐으며 다음 event도 정상이었다. 기존 Writer는 첫 예외를 고정하고 뒤 callback을 버린다.",
+  "inference": "지속적인 semantic 파이프라인 고장보다 Writer attach 뒤 초기 출력의 준비 시점이 기존 실패에 관여했다는 설명을 지지한다.",
+  "unknown": [
+    "동일 frame 복수 valid callback의 픽셀 일치",
+    "trigger 인과와 late callback 구별",
+    "marker/RGB/semantic 동기화와 ABA 재현",
+    "실제 정책 full recording"
+  ],
+  "next": "새 persistent Writer 준비/arm 계약을 CPU에서 고정한다. 준비용 출력은 측정에서 제외하고 arm 이후 빈 출력·오염·stale/중복 불일치는 HOLD한다. 새 GPU 판은 커밋 후 실행한다.",
+  "evidence_sha256": {
+    "observation": "0e3b614fb14b8e865632a9f62ebb430df1d96c7cde35166aa9950692a5fcf296",
+    "execution": "d355fc705063109b5bfc710d4383af1ae3408d686bf8df8fb0b862352e4cc4d1",
+    "registration": "6f19c03d58d2e2aea24d307c714c48fc0619b1081a88515be3f62d53509c4956",
+    "admission_timing": "06e145873740e33fe8d4382c7482d08e9de3926644e9e0dec89f4b31ec3b8fb5",
+    "transfer": "18e86fa0692d56ab3028dd6d7d2ac864e37e4d38b1c3caec5604c2a9601f318c",
+    "stop": "71f6c34072e065a1f8a3326ce18213a5fa606e936b0769f9e75808869498a5f4",
+    "operation_gate": "38c36ac6523cd805a33bff316304da32a8b3573a7e572636c165e100526f9e45"
+  },
+  "measurement_kind": "development_diagnostic_after_observed_failure"
+}
