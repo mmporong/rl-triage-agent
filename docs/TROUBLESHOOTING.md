@@ -228,7 +228,13 @@
 - 확인: 첫 arm의 두 callback은 frame 59이며 두 번째 `orchestrator.step()` 내부에서 발생했다.
   원문 전체 SHA는 서로 다르다. 이 판은 RGB 등 성분별 SHA를 저장하지 않아 차이가 난 성분은 확인하지 못했다.
 - 후속 수정: 원문 fingerprint와 semantic 유효성 검사를 분리하고, 준비 빈 mask·유효 준비·같은 arm의 중복이라는 실제 입력 순서를 회귀에 넣는다.
-  기존 mux의 exact-one 기준과 실패 결과는 유지한다. 두 예약 방식의 비교 결과는 아직 없다.
+  기존 mux의 exact-one 기준과 실패 결과는 유지한다.
+- 실제 후속 결과: 수정판은 custom-event와 수동 예약 모두 `diagnostic_complete=true`를 남겼다.
+  준비 빈 callback의 계측 오류는 해소됐으나 두 방식 모두 첫 arm에 유효 callback 두 건이 들어와 캡처는 거부됐다.
+  첫 callback의 semantic mask·labels는 직전 prepare와 같은 SHA였고 RGB·시각은 현재 arm의 값이었다.
+  두 번째 callback은 RGB·시각·카메라 등 나머지 성분이 같고 semantic 세 성분의 SHA만 바뀌었다.
+  Writer 예약 방식만으로는 해결되지 않았으며, 마커 변경 뒤 의미 분할 출력의 갱신 경로로 다음 검사를 좁혔다.
+  SDK 내부 노드의 인과는 아직 미확정이다. [두 방식의 실제 결과](../evals/results/vision_callback_boundary_dev_20261026ab/summary.json).
 - 보존: 원문 427파일을 회수했으며 종료 자료를 포함한 사본 443파일의 SHA를 확인했다.
   소유 프로세스와 GPU가 비어 있음을 두 번 확인한 뒤 VM을 정지했다. 새 학습·모델 호출·전체 녹화는 0건이다.
   [진단 결과](../evals/results/vision_callback_boundary_dev_20261026aa/summary.json).
