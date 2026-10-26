@@ -281,3 +281,9 @@
 - 실행: 31.120초, 새 학습·모델 API·전체 녹화 0, 부모 cleanup 확인, 종료 뒤 GPU process 없음. 자식 exit 0은 성공으로 받아들이지 않았다.
 - 다음 조치: 설치된 동일 버전 SDK 원문에서 기본 trigger의 활성화 조건을 확인한 뒤 다음 후보를 정한다. 같은 후보를 반복하지 않는다.
 - 근거: [실제 결과](../evals/results/vision_frame_trigger_dev_20261026ae/summary.json).
+
+### OPS-29: 준비 렌더의 카메라 설정 계약
+
+- 준비 프레임을 분리한 새 진단은 렌더 함수에 전체 Play 설정을 넘겨 `rt_subframes` 조회에서 실패했다. 해당 함수는 `profile.camera`를 입력으로 받는다.
+- 실제 렌더 step과 callback은 모두 0건이므로 Writer 가설은 평가되지 않았다. 실패 원문과 종료 증거를 보존했으며, 다음 판은 중첩 카메라 설정을 소비하는 실제 렌더 함수로 회귀를 확인한다.
+- 근거: [실행 결과](../evals/results/vision_frame_primed_dev_20261027af/summary.json).

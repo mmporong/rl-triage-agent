@@ -1,0 +1,81 @@
+{
+  "schema": "vision_frame_trigger_development_result_v2",
+  "protocol_id": "frame-primed-20261027af",
+  "protocol_sha256_lf": "0e3fffd947f6cdcb1379556e59b237e6b7cf74dfbb3e1241a42540f417b8ee2e",
+  "source_commit": "49200c9c12f3b5e855747fc95bd7def676e8e118",
+  "checkout_commit": "1fae7a3e74a1d6d9c55cb0dec587d07690b7e1b0",
+  "status": "invalid_before_baseline_render",
+  "development_measurement": true,
+  "checkpoint_logical_id": "source-s2220-f1",
+  "checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+  "variant": "default_frame_primed",
+  "diagnostic_complete": false,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "dispatch_counts": {
+    "on_custom_event_requests_suppressed": 1,
+    "on_custom_event_underlying_calls": 0,
+    "orchestrator_step_calls": 0,
+    "schedule_write_calls": 0,
+    "send_og_event_requests_suppressed": 0,
+    "send_og_event_underlying_calls": 0
+  },
+  "capture_on_play": {
+    "after_startup": false,
+    "before": true,
+    "restore_changed": true,
+    "restored": true
+  },
+  "baseline": {
+    "attempted": true,
+    "callback_count_before": 0,
+    "complete": false,
+    "physics_sha256_before": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+    "physx_time_before_s": 0.009999999776482582
+  },
+  "fabric_time": {
+    "all_captures_after_baseline": false,
+    "basis": "rep.orchestrator._orchestrator._sim_times_to_write[-1]",
+    "callbacks_match_scheduled_reference_time": false,
+    "captures": [],
+    "meaning": "scheduled capture reference time; current OgnReadFabricTime may be one frame ahead"
+  },
+  "callback_rows": [],
+  "callback_rows_dropped": 0,
+  "arms_completed": 0,
+  "policy_probe_reached": false,
+  "primary_error": {
+    "error_message": "'rt_subframes'",
+    "error_type": "builtins.KeyError"
+  },
+  "wall_s": 34.195793061,
+  "child_exit_code": 0,
+  "child_exit_accepted": false,
+  "parent_cleanup_verified": true,
+  "gpu_after": [],
+  "training_actions": 0,
+  "model_api_requests": 0,
+  "full_recordings": 0,
+  "evidence_sha256": {
+    "execution": "407b31cacb878bd892baab357c537515e220c033c59f45947ed1cc7ae43cfa28",
+    "frame_trigger_report": "2c4263496936d542851158d32364eaae72aef2476a6927038917cbcdd63f4652",
+    "primary_error": "aa25a3d2eab8bbb17f1de8ca9c3696cc292ec04e4c5bcfc8bb9c68c8bdcfd08e",
+    "strong_transfer": "052319a3987d9e03e754d841690b92bb0f9b1cc04f39994e747b76ad256cbaa9",
+    "stop_receipt": "d71f35f7d7995874755f609a3c97ee84724a0d8b1292a6aec13e33439549a1f1"
+  },
+  "interpretation": {
+    "fact": "baseline 렌더 함수에 카메라 하위 설정 대신 전체 Play 설정이 전달돼 rt_subframes KeyError로 종료됐다. 실제 orchestrator step과 callback은 0건이다.",
+    "inference": "이 실행은 준비 프레임 분리 가설을 평가하지 못했다. 카메라 설정 연결을 고친 새 판에서 같은 가설을 검사한다."
+  },
+  "resource_state": {
+    "status": "STOPPED",
+    "observed_at_utc": "2026-10-26T23:08:49.489085+00:00",
+    "estimated_lifecycle_compute_usd": "0.309461",
+    "cumulative_compute_estimate_usd": "17.811812",
+    "remaining_program_budget_usd": "2.188188",
+    "program_cap_usd": "20.000000",
+    "lifecycle_cap_usd": "1.000000",
+    "provider_invoice_verified": false,
+    "storage_charges_included": false
+  }
+}
