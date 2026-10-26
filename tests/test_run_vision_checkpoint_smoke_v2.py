@@ -114,4 +114,3 @@ def test_valid_failure_is_not_accepted_as_exit_zero(
     )
     with pytest.raises(R.ChildFailure, match="boom"):
         R.verify_terminal(validated)
-

@@ -33,4 +33,3 @@ def test_protocol_contract_requires_checkpoint_specific_preregistration() -> Non
         "limits",
         "preregistration",
     }
-
