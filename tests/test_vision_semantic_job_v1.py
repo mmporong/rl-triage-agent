@@ -430,6 +430,112 @@ def test_validation_deadline_clamps_git_rejects_expiry_and_resets(
     assert timeouts == [5.0, 5.0, 30.0]
 
 
+def test_git_batch_reads_raw_blobs_and_normalizes_lf(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-q")
+    _git(repo, "config", "user.email", "test@example.com")
+    _git(repo, "config", "user.name", "test")
+    _git(repo, "config", "core.autocrlf", "false")
+    source = repo / "source.txt"
+    source.write_bytes(b"alpha\r\nbeta\r\n")
+    _git(repo, "add", "source.txt")
+    _git(repo, "commit", "-qm", "source")
+    commit = _git(repo, "rev-parse", "HEAD")
+    expected = hashlib.sha256(b"alpha\nbeta\n").hexdigest()
+    J._verify_source_blobs(repo.resolve(), commit, {"source.txt": expected})
+
+
+@pytest.mark.parametrize(
+    ("raw", "match"),
+    [
+        (b"HEAD:path missing\n", "파일이 없다"),
+        (b"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa tree 1\nx\n", "blob 계약"),
+        (b"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa blob 3\nx", "짧거나 separator"),
+        (b"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa blob 1\nx\ntrailing", "후행 데이터"),
+        (
+            f"{'a' * 40} blob {J.MAX_SINGLE_BLOB_BYTES + 1}\n".encode(),
+            "상한",
+        ),
+        (b"header-without-newline", "header"),
+    ],
+)
+def test_git_batch_parser_rejects_malformed_missing_and_oversized_output(
+    raw: bytes, match: str,
+) -> None:
+    with pytest.raises(ValueError, match=match):
+        J._parse_batch_blobs(raw, [("path", hashlib.sha256(b"x").hexdigest())])
+
+
+@pytest.mark.parametrize(
+    ("raw", "match"),
+    [
+        (b"HEAD:path missing\n", "파일이 없다"),
+        (b"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa tree 1\n", "blob 계약"),
+        (
+            f"{'a' * 40} blob {J.MAX_SINGLE_BLOB_BYTES + 1}\n".encode(),
+            "상한",
+        ),
+        (b"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa blob 1", "잘렸다"),
+        (
+            (b"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa blob 1\n"
+             b"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb blob 1\n"),
+            "행 수",
+        ),
+    ],
+)
+def test_git_batch_check_parser_rejects_bad_metadata(raw: bytes, match: str) -> None:
+    with pytest.raises(ValueError, match=match):
+        J._parse_batch_check(raw, [("path", hashlib.sha256(b"x").hexdigest())])
+
+
+def test_git_batch_check_rejects_oversized_blob_before_content_request(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "source.txt"
+    source.write_bytes(b"x")
+    expected = hashlib.sha256(b"x").hexdigest()
+    calls: list[str] = []
+
+    def run(args, **kwargs):
+        calls.append(args[-1])
+        kwargs["stdout"].write(
+            f"{'a' * 40} blob {J.MAX_SINGLE_BLOB_BYTES + 1}\n".encode()
+        )
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setattr(J.subprocess, "run", run)
+    with pytest.raises(ValueError, match="상한"):
+        J._verify_source_blobs(tmp_path.resolve(), "a" * 40, {"source.txt": expected})
+    assert calls == ["--batch-check"]
+
+
+@pytest.mark.parametrize("path", ["../escape", "line\nfeed", "nul\0byte"])
+def test_git_batch_rejects_unsafe_paths(path: str) -> None:
+    with pytest.raises(ValueError, match="상대 경로|POSIX"):
+        J._source_rows({path: "a" * 64})
+
+
+def test_git_batch_rejects_duplicate_paths_and_timeout(tmp_path: Path, monkeypatch) -> None:
+    class DuplicateItems(dict[str, str]):
+        def items(self):
+            return [("source.txt", "a" * 64), ("source.txt", "a" * 64)]
+
+    with pytest.raises(ValueError, match="중복"):
+        J._source_rows(DuplicateItems())
+
+    source = tmp_path / "source.txt"
+    source.write_bytes(b"x")
+    expected = hashlib.sha256(b"x").hexdigest()
+
+    def timeout(*args, **kwargs):
+        raise subprocess.TimeoutExpired(args[0], kwargs["timeout"])
+
+    monkeypatch.setattr(J.subprocess, "run", timeout)
+    with pytest.raises(TimeoutError, match="batch"):
+        J._verify_source_blobs(tmp_path.resolve(), "a" * 40, {"source.txt": expected})
+
+
 @pytest.mark.skipif(os.name == "nt", reason="POSIX venv Python은 말단 symlink를 사용한다")
 def test_python_executable_preserves_posix_venv_symlink(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,

@@ -10,6 +10,7 @@ import re
 import stat
 import subprocess
 import sys
+import tempfile
 import time
 from collections.abc import Mapping
 from contextlib import contextmanager
@@ -84,6 +85,10 @@ REQUIRED_SOURCE_FILES = {
 _VALIDATION_DEADLINE: ContextVar[float | None] = ContextVar(
     "vision_semantic_validation_deadline", default=None,
 )
+MAX_BATCH_BLOB_BYTES = 64 * 1024 * 1024
+MAX_SINGLE_BLOB_BYTES = 16 * 1024 * 1024
+MAX_BATCH_ENTRIES = 4096
+MAX_GIT_STDERR_READ_BYTES = 4096
 
 
 @contextmanager
@@ -101,6 +106,16 @@ def _check_deadline() -> None:
     deadline = _VALIDATION_DEADLINE.get()
     if deadline is not None and deadline - time.monotonic() <= 0:
         raise TimeoutError("semantic validation deadline을 넘었다")
+
+
+def _subprocess_timeout() -> float:
+    deadline = _VALIDATION_DEADLINE.get()
+    if deadline is None:
+        return 30.0
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise TimeoutError("semantic validation deadline을 넘었다")
+    return min(30.0, remaining)
 
 
 def _canonical(value: Any) -> bytes:
@@ -231,7 +246,8 @@ def _hash(value: Any, anchor: str) -> str:
 
 
 def _relative(value: Any, anchor: str) -> str:
-    if not isinstance(value, str) or not value or "\\" in value:
+    if (not isinstance(value, str) or not value or "\\" in value
+            or any(marker in value for marker in ("\0", "\n", "\r"))):
         raise ValueError(f"{anchor}는 POSIX 상대 경로여야 한다")
     path = Path(value)
     if path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts):
@@ -240,14 +256,7 @@ def _relative(value: Any, anchor: str) -> str:
 
 
 def _git(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
-    deadline = _VALIDATION_DEADLINE.get()
-    if deadline is None:
-        timeout = 30.0
-    else:
-        remaining = deadline - time.monotonic()
-        if remaining <= 0:
-            raise TimeoutError("semantic validation deadline을 넘었다")
-        timeout = min(30.0, remaining)
+    timeout = _subprocess_timeout()
     try:
         result = subprocess.run(
             ["git", "-C", str(repo), *args], capture_output=True, check=False, text=True,
@@ -257,6 +266,134 @@ def _git(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
         raise TimeoutError("semantic validation Git 조회가 시간 상한을 넘었다") from error
     _check_deadline()
     return result
+
+
+def _parse_batch_blobs(
+    raw: bytes, rows: list[tuple[str, str]], metadata: list[tuple[bytes, int]] | None = None,
+) -> None:
+    offset = 0
+    total = 0
+    for index, (relative, expected) in enumerate(rows):
+        end = raw.find(b"\n", offset)
+        if end < 0 or end - offset > 256:
+            raise ValueError(f"git batch header가 잘렸거나 과도하다: {relative}")
+        header = raw[offset:end]
+        offset = end + 1
+        parts = header.split(b" ")
+        if len(parts) == 2 and parts[1] == b"missing":
+            raise ValueError(f"source commit에 파일이 없다: {relative}")
+        if (len(parts) != 3 or re.fullmatch(rb"[0-9a-f]{40}", parts[0]) is None
+                or parts[1] != b"blob" or re.fullmatch(rb"[0-9]+", parts[2]) is None):
+            raise ValueError(f"git batch object header가 blob 계약과 다르다: {relative}")
+        size = int(parts[2])
+        if metadata is not None and (parts[0], size) != metadata[index]:
+            raise ValueError(f"git batch blob이 사전 확인 metadata와 다르다: {relative}")
+        if size > MAX_SINGLE_BLOB_BYTES or total + size > MAX_BATCH_BLOB_BYTES:
+            raise ValueError(f"git batch blob 출력이 상한을 넘는다: {relative}")
+        body_end = offset + size
+        if body_end > len(raw) or raw[body_end:body_end + 1] != b"\n":
+            raise ValueError(f"git batch blob이 짧거나 separator가 없다: {relative}")
+        body = raw[offset:body_end]
+        actual = hashlib.sha256(body.replace(b"\r\n", b"\n")).hexdigest()
+        if actual != expected:
+            raise ValueError(f"source commit blob이 현재 결합과 다르다: {relative}")
+        total += size
+        offset = body_end + 1
+    if offset != len(raw):
+        raise ValueError("git batch 출력에 후행 데이터가 있다")
+
+
+def _parse_batch_check(raw: bytes, rows: list[tuple[str, str]]) -> list[tuple[bytes, int]]:
+    if not raw.endswith(b"\n"):
+        raise ValueError("git batch-check metadata가 잘렸다")
+    headers = raw[:-1].split(b"\n")
+    if len(headers) != len(rows):
+        raise ValueError("git batch-check metadata 행 수 또는 후행 데이터가 다르다")
+    metadata: list[tuple[bytes, int]] = []
+    total = 0
+    for header, (relative, _) in zip(headers, rows, strict=True):
+        if len(header) > 256:
+            raise ValueError(f"git batch-check header가 과도하다: {relative}")
+        parts = header.split(b" ")
+        if len(parts) == 2 and parts[1] == b"missing":
+            raise ValueError(f"source commit에 파일이 없다: {relative}")
+        if (len(parts) != 3 or re.fullmatch(rb"[0-9a-f]{40}", parts[0]) is None
+                or parts[1] != b"blob" or re.fullmatch(rb"[0-9]+", parts[2]) is None):
+            raise ValueError(f"git batch-check object header가 blob 계약과 다르다: {relative}")
+        size = int(parts[2])
+        if size > MAX_SINGLE_BLOB_BYTES or total + size > MAX_BATCH_BLOB_BYTES:
+            raise ValueError(f"git batch-check blob 크기가 상한을 넘는다: {relative}")
+        total += size
+        metadata.append((parts[0], size))
+    return metadata
+
+
+def _source_rows(sources: Mapping[str, str]) -> list[tuple[str, str]]:
+    rows = list(sources.items())
+    if not rows or len(rows) > MAX_BATCH_ENTRIES:
+        raise ValueError("source blob batch 항목 수가 상한 밖이다")
+    paths = [_relative(relative, "source path") for relative, _ in rows]
+    if len(paths) != len(set(paths)):
+        raise ValueError("source blob batch 경로가 중복됐다")
+    return [
+        (relative, _hash(expected, f"source[{relative}]"))
+        for relative, (_, expected) in zip(paths, rows, strict=True)
+    ]
+
+
+def _verify_current_files(repo: Path, sources: Mapping[str, str]) -> list[tuple[str, str]]:
+    rows = _source_rows(sources)
+    total = 0
+    for relative, expected in rows:
+        path = _regular(repo / relative, f"source file {relative}")
+        path.relative_to(repo)
+        size = path.stat().st_size
+        if size > MAX_SINGLE_BLOB_BYTES:
+            raise ValueError(f"현재 source 파일이 batch 단일 상한을 넘는다: {relative}")
+        total += size
+        if total > MAX_BATCH_BLOB_BYTES:
+            raise ValueError("현재 source 파일 합계가 batch 상한을 넘는다")
+        if _sha(path, lf=True) != expected:
+            raise ValueError(f"source LF SHA가 다르다: {relative}")
+    return rows
+
+
+def _run_cat_file(repo: Path, mode: str, request: bytes, output_cap: int) -> bytes:
+    timeout = _subprocess_timeout()
+    try:
+        with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
+            result = subprocess.run(
+                ["git", "-C", str(repo), "cat-file", mode], input=request,
+                stdout=stdout, stderr=stderr, check=False, timeout=timeout,
+            )
+            _check_deadline()
+            if result.returncode != 0:
+                stderr.seek(0)
+                detail = stderr.read(MAX_GIT_STDERR_READ_BYTES).decode("utf-8", errors="replace")
+                raise ValueError(f"git {mode} 조회 실패: {detail.strip()}")
+            if stdout.tell() > output_cap:
+                raise ValueError(f"git {mode} 전체 출력이 상한을 넘는다")
+            stdout.seek(0)
+            return stdout.read()
+    except subprocess.TimeoutExpired as error:
+        raise TimeoutError(f"semantic validation Git {mode} 조회가 시간 상한을 넘었다") from error
+
+
+def _verify_commit_blobs(repo: Path, commit: str, rows: list[tuple[str, str]]) -> None:
+    request = b"".join(f"{commit}:{relative}\n".encode() for relative, _ in rows)
+    if len(request) > 1024 * 1024:
+        raise ValueError("git batch 요청이 상한을 넘는다")
+    metadata_raw = _run_cat_file(repo, "--batch-check", request, len(rows) * 257)
+    metadata = _parse_batch_check(metadata_raw, rows)
+    # immutable commit의 blob 합계를 batch-check에서 제한한 뒤에만 contents를 요청한다.
+    raw = _run_cat_file(
+        repo, "--batch", request, MAX_BATCH_BLOB_BYTES + len(rows) * 320,
+    )
+    _parse_batch_blobs(raw, rows, metadata)
+
+
+def _verify_source_blobs(repo: Path, commit: str, sources: Mapping[str, str]) -> None:
+    _verify_commit_blobs(repo, commit, _verify_current_files(repo, sources))
 
 
 def _verify_blob(repo: Path, commit: str, relative: str, expected: str) -> None:
@@ -410,8 +547,7 @@ def validate_protocol(path: Path, *, repo: Path | None = None) -> dict[str, Any]
     if not REQUIRED_SOURCE_FILES <= set(source_map):
         raise ValueError("semantic diagnostic source closure가 빠졌다")
     _check_deadline()
-    for relative, expected in source_map.items():
-        _verify_blob(repo, commit, relative, expected)
+    _verify_source_blobs(repo, commit, source_map)
     _check_deadline()
 
     if protocol["profile_sha256"] != RECORD.digest(RECORD.fixed_profile()):
@@ -498,8 +634,7 @@ def validate_job(
     if commit != protocol["source_commit"] or source_map != protocol["source_sha256_lf"]:
         raise ValueError("job source가 semantic protocol과 다르다")
     _check_deadline()
-    for relative, expected in source_map.items():
-        _verify_blob(repo, commit, relative, expected)
+    _verify_current_files(repo, source_map)
     _check_deadline()
 
     resource_ref = _exact(job["resource_proof"], {"path", "sha256"}, "resource proof")
