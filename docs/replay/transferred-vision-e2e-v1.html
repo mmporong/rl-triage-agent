@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>RL Triage · Vision E2E Replay</title>
+<style>
+:root {--nv:#76b900;--ink:#17220f;--muted:#62705b;--line:#d9e4d3;--soft:#f4f8f1;--warn:#936200}
+*{box-sizing:border-box} html,body{margin:0;background:#fff;color:var(--ink);font-family:Inter,"Noto Sans KR",sans-serif}
+#viewport{position:fixed;inset:0;overflow:hidden;background:#fff}
+#stage{position:absolute;width:1920px;height:1080px;overflow:hidden;padding:54px 64px 44px;background:linear-gradient(135deg,#fff 0 72%,#f2f8ed 100%)}
+.top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid var(--nv);padding-bottom:20px}
+h1{font-size:48px;line-height:1.08;margin:0 0 10px} .kicker{font-weight:800;color:#4d7800;letter-spacing:.08em}
+.scope{margin:0;color:var(--muted);font-size:20px} .badge{background:var(--nv);color:#102000;padding:14px 22px;border-radius:999px;font-size:22px;font-weight:850}
+.evidence{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0 16px}
+.evidence div{border:1px solid var(--line);border-radius:14px;padding:13px 16px;background:#fff;min-height:82px}
+.evidence b{display:block;color:#4d7800;font-size:16px;margin-bottom:6px} .evidence span{font-size:20px;font-weight:760}
+.seeds{display:grid;grid-template-columns:1fr 1fr;gap:22px;height:660px;overflow:hidden}
+.seed-card{border:2px solid #cbd9c3;border-top:8px solid var(--nv);border-radius:18px;background:#fff;padding:18px 20px;overflow:hidden}
+.seed-card header{display:flex;justify-content:space-between;font-size:24px;margin-bottom:14px} .seed-card header strong{color:#4d7800}
+.media-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;height:220px} figure{margin:0;overflow:hidden;border-radius:10px;background:#0c1209;position:relative}
+video{width:100%;height:180px;object-fit:cover;display:block} figcaption{color:#fff;padding:6px 10px;font-size:15px}
+.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px;overflow:hidden}
+.timeline div{min-height:122px;border:1px solid var(--line);border-radius:10px;padding:11px;background:var(--soft);overflow:hidden}
+.timeline b{display:block;font-size:16px;color:#4d7800;margin-bottom:8px} .timeline span{font-size:17px;line-height:1.3}
+.timeline img{width:100%;height:74px;object-fit:cover;border-radius:6px} .observation-step{position:relative} .observation-step span{position:absolute;left:14px;right:14px;bottom:12px;background:rgba(9,20,6,.78);color:#fff;padding:4px 6px;border-radius:5px;font-size:13px;line-height:1.15} .compact{grid-template-columns:repeat(2,1fr);margin-top:30px}
+.compact div{min-height:165px;padding:20px} .pending-step{border-style:dashed!important;color:var(--warn)}
+footer{position:absolute;left:64px;right:64px;bottom:18px;display:flex;justify-content:space-between;color:var(--muted);font-size:15px}
+@media(max-width:1200px),(max-height:760px){#stage{transform-origin:top left}}
+</style></head><body><div id="viewport"><main id="stage">
+<section class="top"><div><div class="kicker">NVIDIA · RL TRIAGE</div><h1>관찰에서 교정 후 평가까지, 근거 한 줄로 추적</h1>
+<p class="scope">등록 F1 두 seed 개발판 · 처음 보는 결함 평가 아님 · 세 입력 조건 비교는 observation_only</p></div><div class="badge">E2E 2/2 recovered</div></section>
+<section class="evidence"><div><b>비교 모델 선택</b><span>24/24 유효 · P_reward</span></div><div><b>새 E2E 첫 판단</b><span>2/2 유효 · P_reward</span></div><div><b>영상에 따른 선택 변화</b><span>0회</span></div><div><b>비교 단계 검사</b><span>NONE normal · F1 abnormal</span></div></section>
+<section class="seeds">
+      <article class="seed-card">
+        <header><span>seed 2220</span><strong>recovered</strong></header>
+        <div class="media-row">
+          <figure><video muted loop controls preload="metadata" src="../../evals/results/vision_transferred_pull_record_dev_20261027b_v3/f1/same_play.mp4"></video>
+            <figcaption>관찰 · F1</figcaption></figure>
+          <figure><video muted loop controls preload="metadata" src="../../evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2220-corrected.mp4"></video>
+            <figcaption>후속 관찰 · corrected</figcaption></figure>
+        </div>
+        <div class="timeline">
+          <div><b>관찰</b><img src="../../evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2220-fault.jpg" alt="seed 2220 F1 프레임"></div>
+          <div><b>선택</b><span>P_reward</span></div>
+          <div><b>검사</b><span>새 E2E 확인 검사 · abnormal</span></div>
+          <div><b>교정</b><span>등록 보상 복원 · restart</span></div>
+          <div><b>고정 평가</b><span>RMSE 0.141 m/s · 낙상률 0.000</span></div>
+          <div class="observation-step"><b>후속 관찰 · valid · 판정 미사용</b><img src="../../evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2220-corrected.jpg" alt="seed 2220 corrected 프레임"><span>walking yes · in-place no · falling no</span></div>
+        </div>
+      </article>
+      <article class="seed-card">
+        <header><span>seed 2221</span><strong>recovered</strong></header>
+        <div class="media-row">
+          <figure><video muted loop controls preload="metadata" src="../../evals/results/vision_transferred_pull_record_dev_20261027c_v1/f1/same_play.mp4"></video>
+            <figcaption>관찰 · F1</figcaption></figure>
+          <figure><video muted loop controls preload="metadata" src="../../evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2221-corrected.mp4"></video>
+            <figcaption>후속 관찰 · corrected</figcaption></figure>
+        </div>
+        <div class="timeline">
+          <div><b>관찰</b><img src="../../evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2221-fault.jpg" alt="seed 2221 F1 프레임"></div>
+          <div><b>선택</b><span>P_reward</span></div>
+          <div><b>검사</b><span>새 E2E 확인 검사 · abnormal</span></div>
+          <div><b>교정</b><span>등록 보상 복원 · restart</span></div>
+          <div><b>고정 평가</b><span>RMSE 0.149 m/s · 낙상률 0.000</span></div>
+          <div class="observation-step"><b>후속 관찰 · valid · 판정 미사용</b><img src="../../evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2221-corrected.jpg" alt="seed 2221 corrected 프레임"><span>walking yes · in-place no · falling no</span></div>
+        </div>
+      </article></section>
+<footer><span>후속 관찰 used_for_decision=false · 초기 영상+로그 선택 used_for_decision=true · 선택 변화 0회와 별도</span><span>1920 × 1080 · overflow 0</span></footer>
+</main></div><script type="application/json" id="source-bindings">{"comparison":{"summary.json":{"path":"evals/results/vision_transferred_selection_dev_20261027_v1/summary.json","sha256":"143ba9982cfe4e3dd04848263070b11fe75e8636c79f993869509d3f9b06900b"},"model-selections.json":{"path":"evals/results/vision_transferred_selection_dev_20261027_v1/model-selections.json","sha256":"ce8be81d4ec6fdcaf87c1aba7041bd5d2f07ba4d9c37173b99ff174e7e02448c"},"probe-pairs.json":{"path":"evals/results/vision_transferred_selection_dev_20261027_v1/probe-pairs.json","sha256":"d17d4ee6ea726f0bb0e28d374e72cb020fc7781f9c53690b88b43d5e4b357a7f"}},"e2e_status":"complete"}</script>
+<script>(()=>{const s=document.getElementById('stage'),v=document.getElementById('viewport');function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);s.style.transform=`scale(${k})`;s.style.left=`${(innerWidth-1920*k)/2}px`;s.style.top=`${(innerHeight-1080*k)/2}px`;requestAnimationFrame(()=>{window.__REPLAY_LAYOUT__={width:1920,height:1080,overflowX:Math.max(0,s.scrollWidth-1920),overflowY:Math.max(0,s.scrollHeight-1080)};v.dataset.overflow=window.__REPLAY_LAYOUT__.overflowX+window.__REPLAY_LAYOUT__.overflowY===0?'0':'1'})}addEventListener('resize',fit);fit()})();</script>
+</body></html>

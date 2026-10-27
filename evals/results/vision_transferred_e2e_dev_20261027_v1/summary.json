@@ -1,0 +1,97 @@
+{
+  "api": {
+    "combined_requests": 4,
+    "initial_requests": 2,
+    "local_cap": 6,
+    "local_post_observation_responses": 2,
+    "original_e2e_cap": 32
+  },
+  "checkpoint_identity": {
+    "all_corrected_byte_identical_to_registered_none": true,
+    "corrected_count": 2,
+    "rows": [
+      {
+        "corrected_checkpoint_sha256": "41c417b040b458c2f3cf5eb025ba6b5bd8e551c184f63a6c0c7809e0c5165d42",
+        "registered_none_checkpoint_sha256": "41c417b040b458c2f3cf5eb025ba6b5bd8e551c184f63a6c0c7809e0c5165d42",
+        "seed": 2220
+      },
+      {
+        "corrected_checkpoint_sha256": "b346a0c3e3ad6410ce93dcf73e6165ed69e2d6ab95b2c5398943b3a8874cf54d",
+        "registered_none_checkpoint_sha256": "b346a0c3e3ad6410ce93dcf73e6165ed69e2d6ab95b2c5398943b3a8874cf54d",
+        "seed": 2221
+      }
+    ]
+  },
+  "comparison": {
+    "outcome": "observation_only",
+    "selection_change_count": 0
+  },
+  "confirmation_probe": {
+    "none_controls": "normal",
+    "outcome": "abnormal",
+    "pairs": 2
+  },
+  "correction_execution": {
+    "evaluation_resume_recovered": 2,
+    "original_unknown_failure": 2
+  },
+  "cost": {
+    "basis": "stop_receipt_quote_only",
+    "lifecycle_cap_usd": "5.5",
+    "lifecycle_estimate_usd": "5.198280",
+    "program_cap_usd": "35",
+    "program_estimate_usd": "33.409058",
+    "provider_invoice_verified": false,
+    "stop_receipt_sha256": "4eb626693ba64ca84b2eb2fc59bd4178ec6f2c45dafc3bae56b912284c0745e1"
+  },
+  "fixed_evaluation": {
+    "recovered": 2,
+    "seeds": [
+      {
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.14136327886224342,
+        "seed": 2220
+      },
+      {
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.14866341790838303,
+        "seed": 2221
+      }
+    ],
+    "total": 2
+  },
+  "initial_selection": {
+    "evidence": "telemetry_fact_only",
+    "probe": "P_reward",
+    "total": 2,
+    "used_for_decision": true,
+    "valid": 2
+  },
+  "native_recordings": {
+    "count": 2,
+    "fps": 50,
+    "frame_count_each": 625,
+    "videos": [
+      {
+        "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2220-corrected.mp4",
+        "seed": 2220,
+        "sha256": "5ed6de5f9bda943135584b0a68bab3da7cdc13d8e7af215fbe44f0ce2ab2c09e"
+      },
+      {
+        "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2221-corrected.mp4",
+        "seed": 2221,
+        "sha256": "67acfdda0aa024b4d81feb8bd02222464d3b5801d13f289bf0f70218844f138f"
+      }
+    ]
+  },
+  "post_observation": {
+    "execution_location": "local_wsl_after_brev_stop",
+    "hold": 0,
+    "protocol_seal_sha256": "5f9b3528852b81d6b5f9e5d955b338dc745aca4b1a27b24af1da4f5633e645fb",
+    "used_for_decision": false,
+    "valid": 2
+  },
+  "schema": "vision_transferred_e2e_public_summary_v1",
+  "scope": "registered_f1_two_seed_development_e2e",
+  "status": "complete"
+}

@@ -1,0 +1,165 @@
+{
+  "corrected_checkpoint_sha256": "b346a0c3e3ad6410ce93dcf73e6165ed69e2d6ab95b2c5398943b3a8874cf54d",
+  "corrected_is_byte_identical_to_registered_none": true,
+  "evaluation_resume": {
+    "outcome": "recovered",
+    "receipt_sha256": "d200243c9c41dd12e065a0ca024847307bb702d5582d6a764f5d33e1628f0cc1",
+    "result_sha256": "916ee13fa89be4f2938c0571e1a5f3beeadda55bb15fb2fa0d094e44448af56d"
+  },
+  "fixed_eval": {
+    "artifact": null,
+    "fall_rate": 0.0,
+    "lin_vel_rmse_mps": 0.14866341790838303,
+    "outcome": "recovered"
+  },
+  "initial_model": {
+    "model_status": "valid",
+    "probe": "P_reward",
+    "public_evidence": "telemetry_fact_only",
+    "terminal_sha256": "674d5860b8b07d50bea8c1ac3dff9749f82fc9469eb40de139b57e5650213fe8"
+  },
+  "native": {
+    "capture_approved": false,
+    "model_ready": false,
+    "receipt_sha256": "5abd1d09ae7cacdc398fab4ad77c4af68960c51048ae6857e18b7913d8b14709",
+    "used_for_decision": false
+  },
+  "new_probe": {
+    "F1": "abnormal",
+    "NONE": "normal",
+    "name": "P_reward",
+    "pair_sha256": "109b15d8dd2e06848fdd9740e1790c4d81e86b7ade307492511f25f65fa9a14c"
+  },
+  "original_attempt": {
+    "outcome": "unknown_failure",
+    "receipt_sha256": "c2f2aab384258b223cdb0b819eeada01b2fa51c0454d2ddaf5e881791a0a6223",
+    "sha256": "61718db47b30f89d0b0f59899fc5a007710121a653c6571dc47ecb3ecd3d288a"
+  },
+  "post_observation": {
+    "bound_protocol_sha256": "514998e25a0c0111f0bfcbef7d7e6dec3b26a025b646d50ba094f2d8a899c16f",
+    "calls": [
+      {
+        "attempt": 1,
+        "response_sha256": "5490e85caa57a71389c9d6347131adf7461f3c7d2e32f60ea9c8768fc7a655b7",
+        "tokens": {
+          "input_tokens": 3205,
+          "output_tokens": 403,
+          "total_tokens": 3608
+        },
+        "transport": "completed",
+        "validation": {
+          "status": "valid"
+        },
+        "wall_s": 2.5490015799878165
+      }
+    ],
+    "calls_sha256": "a58b3b52a194da0043e99ac467072e455d8db05bfb39785263caf591e765e1b7",
+    "contract_sha256": "fc475a1f9b764201b2ae5bf0c155f62f882d726c5068a3c7fd21d6cf2c7a31d2",
+    "execution_location": "local_wsl_after_brev_stop",
+    "native_receipt_sha256": "5abd1d09ae7cacdc398fab4ad77c4af68960c51048ae6857e18b7913d8b14709",
+    "observation": {
+      "evidence": {
+        "falling": [
+          {
+            "frame_id": "f01",
+            "timestamp_s": 1.0
+          },
+          {
+            "frame_id": "f02",
+            "timestamp_s": 2.0
+          },
+          {
+            "frame_id": "f03",
+            "timestamp_s": 3.0
+          },
+          {
+            "frame_id": "f04",
+            "timestamp_s": 4.0
+          },
+          {
+            "frame_id": "f05",
+            "timestamp_s": 5.0
+          },
+          {
+            "frame_id": "f06",
+            "timestamp_s": 6.0
+          }
+        ],
+        "in_place": [
+          {
+            "frame_id": "f01",
+            "timestamp_s": 1.0
+          },
+          {
+            "frame_id": "f02",
+            "timestamp_s": 2.0
+          },
+          {
+            "frame_id": "f03",
+            "timestamp_s": 3.0
+          },
+          {
+            "frame_id": "f04",
+            "timestamp_s": 4.0
+          },
+          {
+            "frame_id": "f05",
+            "timestamp_s": 5.0
+          },
+          {
+            "frame_id": "f06",
+            "timestamp_s": 6.0
+          }
+        ],
+        "walking": [
+          {
+            "frame_id": "f01",
+            "timestamp_s": 1.0
+          },
+          {
+            "frame_id": "f02",
+            "timestamp_s": 2.0
+          },
+          {
+            "frame_id": "f03",
+            "timestamp_s": 3.0
+          },
+          {
+            "frame_id": "f04",
+            "timestamp_s": 4.0
+          },
+          {
+            "frame_id": "f05",
+            "timestamp_s": 5.0
+          },
+          {
+            "frame_id": "f06",
+            "timestamp_s": 6.0
+          }
+        ]
+      },
+      "falling": "no",
+      "in_place": "no",
+      "walking": "yes"
+    },
+    "protocol_seal_sha256": "5f9b3528852b81d6b5f9e5d955b338dc745aca4b1a27b24af1da4f5633e645fb",
+    "provenance": {
+      "contract_sha256": "fc475a1f9b764201b2ae5bf0c155f62f882d726c5068a3c7fd21d6cf2c7a31d2",
+      "evidence_type": "model_interpretation",
+      "provider_identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    "response_validity": [
+      "valid"
+    ],
+    "result_sha256": "0e66147ec570d6005e826ce147c04866bd21cd400a7e7981b7d2049788304a55",
+    "same_request_messages_sha256": "a964c6c6460b9a46f654ba2b24024aff59d4180f2f496ddcbd0c594ea7db9b58",
+    "status": "observation_ready",
+    "terminal_sha256": "52324f896b358b4b4b42679d391fc7774f3dc9ee9c8edcddfe273fff8f58b203",
+    "used_for_decision": false
+  },
+  "schema": "vision_transferred_e2e_seed_public_v1",
+  "seed": 2221,
+  "source_fault_checkpoint_sha256": "1d73d523c97c5c89c988febfbd3d5e533e90681cd0e6132d6ffe13888fa95731",
+  "status": "recovered"
+}

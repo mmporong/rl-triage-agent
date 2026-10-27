@@ -39,6 +39,34 @@ seed 2220 `0.278958`, seed 2221 `0.310117`이었다.
 [완전한 history를 쓰는 인프라 재시도](../bench/protocols/vision_transferred_probe_history_retry1_20261027.json)를
 등록한 뒤 같은 입력·기준으로 실행했다.
 
+## 등록 F1의 종단 개발 결과
+
+비교와 분리해 사전등록한 [종단 개발 실행](VISION-TRANSFERRED-E2E-DEVELOPMENT.md)은
+seed 2220·2221의 첫 결합 입력을 사용했다. Nemotron 3.5 Super VL의 첫 판단은 2/2
+유효했고 모두 `P_reward`를 선택했다. 인용한 근거 ID는 telemetry 항목뿐이었다.
+새 승인 검사에서는 두 seed 모두 NONE `normal`, F1 `abnormal`이었다.
+
+기존 `unknown` 교정 receipt 두 개는 수정하지 않았다. 완료된 300회 학습 산출물을 검증해
+재학습하지 않았다. seed 2220은 새 paired 고정 평가를 한 번 실행했고, seed 2221은 이미
+완료된 평가 원문을 재검증했다. 기존 26조건 계약의 aggregate 판정은 두 seed 모두
+`recovered`였다. 각 교정
+checkpoint는 같은 seed의 NONE checkpoint와 바이트까지 같았다. 교정 checkpoint 두 개의
+native 녹화도 각각 625프레임·50fps로 완료됐다.
+
+[공개 결과](../evals/results/vision_transferred_e2e_dev_20261027_v1/summary.json),
+[종단 manifest](../evals/results/vision_transferred_e2e_dev_20261027_v1/e2e-manifest.json)와
+[재생 화면](replay/transferred-vision-e2e-v1.html)은 첫 판단부터 검사, 승인·소비, 교정,
+고정 평가와 후속 녹화까지 연결한다. 후속 영상 관찰은 회복 판정에 사용하지 않는다.
+
+VM을 중지한 뒤 WSL에서 실행한 보조 관찰은 2/2 `observation_ready`였다. 두 교정 영상에서
+Nemotron 3.5 Super VL은 `walking=yes`, `in_place=no`, `falling=no`를 반환했고, 프레임
+1~6의 인용 ID와 시각이 유효했다. 보조 관찰은 API 2/6회, 원격 호출 0회였고 첫 판단을
+포함한 E2E 원장은 4/32회다. 이 관찰의 `used_for_decision`은 `false`다.
+
+이 실행은 등록 F1과 앞선 비교에서 이미 사용한 두 seed의 개발 통합 근거다. 처음 보는
+결함이나 seed의 성능을 뜻하지 않는다. 앞선 24입력 비교는 계속 `observation_only`이고
+선택 변경은 0이므로 영상이 선택을 개선했다거나 모델이 규칙보다 낫다고 해석하지 않는다.
+
 ## 구성
 
 | 파일 | 역할 |
@@ -139,8 +167,8 @@ SDK 재시도는 0회다. 이 상한은 기존 core 배정의 비교 몫이며 �
 다른 프로세스를 종료하거나 stale 소유 파일을 지워 재시작하지 않는다.
 실행 receipt는 지정한 stage 아래에 추가 기록한다.
 
-검증 대상은 구현 계약과 CPU 개발 fixture다. 새 GPU 자료, 입력별 비교 결과,
-검사 지지와 회복 효과는 실제 사전등록 실행 뒤에 보고한다.
+이 절의 실행기 계약은 CPU fixture로 검증했다. 실제 비교와 종단 개발 측정은 위 결과
+절에서 분리해 보고하며, 서로 다른 판의 수치와 판정을 합치지 않는다.
 
 ## 준비 출력을 분리한 녹화와 연결
 
@@ -155,8 +183,9 @@ SDK 재시도는 0회다. 이 상한은 기존 core 배정의 비교 몫이며 �
 [`vision_record_selection_execution_v1.py`](../evals/vision_record_selection_execution_v1.py)는 상태 조회와
 다음 명령 생성, 검사·고정 평가 근거의 집계를 이 경로에 맞춘다.
 
-CPU 검증에서는 새 readiness의 원문 재계산과 변조 거부를 확인했다. 기존 24행 자료를 재사용한 검사는
-호출 경계와 인자 전달의 확인이다. 새 정책의 SDK 원문부터 모델 비교·회복까지 통과했다는 뜻은 아니다.
+CPU 검증에서는 새 readiness의 원문 재계산과 변조 거부를 확인했다. 그 뒤 공개한 실제
+비교는 네 source 정책의 SDK 원문과 24입력을 검증했고, 별도 종단 개발 실행은 두 등록 F1
+case의 검사·교정·고정 평가·교정 정책 녹화까지 완료했다. 두 실행의 판정은 따로 유지한다.
 
 ## 검사 결과에서 교정 요청까지
 
@@ -189,7 +218,8 @@ evidence를 만든다. 승인과 소비 뒤의 evidence가 같아야 CORRECTED �
 
 종단 CLI는 `verify`, `remaining_commands`, `advance`, `summarize`를 제공한다.
 교정 후 녹화는 등록 job·checkpoint·고정 평가와 대조하고 V01 입력을 만든 뒤 관찰 호출에
-전달한다. 이 경로는 CPU 회귀와 저장된 Brev 검사 원문으로 검증했다. 실제 수집한 새 영상의
-결합과 GPU 교정·후속 관찰 실행은 남아 있으며, 현재 검증은 새 종단 회복 결과를 뜻하지 않는다.
+전달한다. CPU 회귀와 저장된 Brev 검사 원문을 거친 뒤 실제 종단 실행에서 두 seed의
+회복과 두 교정 정책의 625프레임 녹화를 확인했다. 후속 관찰은 별도 보조 단계이며 고정
+평가의 판정을 바꾸지 않는다.
 
-`evals/vision_record_selection_e2e_v1.py`는 새 readiness의 학습 action과 record job 원문을 검증해 같은 seed의 F1·교정 job에 결합한다. 이전 중첩 필드를 합성하지 않으며, 승인·검사 receipt·고정 평가·무효 판단의 HOLD 경계는 기존 상태 기계를 사용한다. 이 연결은 CPU 회귀 범위이고 실제 새 영상으로 수행한 종단 결과는 별도로 남긴다.
+`evals/vision_record_selection_e2e_v1.py`는 새 readiness의 학습 action과 record job 원문을 검증해 같은 seed의 F1·교정 job에 결합한다. 이전 중첩 필드를 합성하지 않으며, 승인·검사 receipt·고정 평가·무효 판단의 HOLD 경계는 기존 상태 기계를 사용한다. 실제 종단 결과는 위 공개 결과와 manifest에 별도로 남긴다.

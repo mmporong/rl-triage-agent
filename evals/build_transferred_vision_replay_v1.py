@@ -116,6 +116,49 @@ def _contains(value: Any, expected: str) -> bool:
     return False
 
 
+def _post_observation(public_documents: list[dict], seed: int) -> dict | None:
+    candidates = [document for document in public_documents
+                  if document.get("schema") == "vision_transferred_e2e_seed_public_v1"]
+    if not candidates:
+        return None
+    if len(candidates) != 1:
+        raise ValueError("seed 공개 결과가 하나가 아니다")
+    document = candidates[0]
+    if document.get("seed") != seed or document.get("status") != "recovered":
+        raise ValueError("seed 공개 결과의 identity가 다르다")
+    result = document.get("post_observation")
+    if not isinstance(result, dict):
+        raise TypeError("후속 관찰 결과가 없다")
+    observation = result.get("observation")
+    if (result.get("used_for_decision") is not False
+            or result.get("execution_location") != "local_wsl_after_brev_stop"):
+        raise ValueError("후속 관찰 판정 계약이 다르다")
+    if result.get("status") == "observed_HOLD":
+        if observation is not None or not isinstance(result.get("reason"), str) or not result["reason"]:
+            raise ValueError("후속 관찰 HOLD 계약이 다르다")
+        return result
+    validity = result.get("response_validity")
+    if (result.get("status") != "observation_ready"
+            or not isinstance(validity, list) or not validity or validity[-1] != "valid"
+            or not isinstance(observation, dict)
+            or any(observation.get(name) not in {"yes", "no", "unclear"}
+                   for name in ("walking", "in_place", "falling"))):
+        raise ValueError("후속 관찰 판정 계약이 다르다")
+    expected = {f"f{index:02d}": float(index) for index in range(1, 7)}
+    evidence = observation.get("evidence")
+    if (not isinstance(evidence, dict)
+            or set(evidence) != {"walking", "in_place", "falling"}
+            or any(not isinstance(citations, list) or not citations
+                   or any(not isinstance(item, dict) or set(item) != {"frame_id", "timestamp_s"}
+                          or item.get("frame_id") not in expected
+                          or type(item.get("timestamp_s")) not in {float, int}
+                          or item["timestamp_s"] != expected[item["frame_id"]]
+                          for item in citations)
+                   for citations in evidence.values())):
+        raise ValueError("후속 관찰 프레임 근거가 다르다")
+    return result
+
+
 def validate_e2e(manifest: dict, root: Path = ROOT) -> dict:
     fixed = {
         "schema": SCHEMA,
@@ -176,7 +219,7 @@ def validate_e2e(manifest: dict, root: Path = ROOT) -> dict:
         for checkpoint_key in ("source_fault_checkpoint_sha256", "corrected_checkpoint_sha256"):
             if not any(_contains(document, row[checkpoint_key]) for document in public_documents):
                 raise ValueError("공개 결과가 checkpoint SHA를 결합하지 않는다")
-        verified.append(row)
+        verified.append({**row, "post_observation": _post_observation(public_documents, row["seed"])})
     return {"status": "complete", "seeds": verified}
 
 
@@ -209,6 +252,16 @@ def _seed_card(seed: int, pair: dict, row: dict | None, root: Path, output: Path
     videos = row["videos"]
     frames = {phase: next(item for item in row["frame_evidence"] if item["phase"] == phase)
               for phase in ("fault", "corrected")}
+    post = row["post_observation"]
+    if post is None:
+        post_text, post_state = "보조 관찰 미결합", "used_for_decision=false"
+    elif post["status"] == "observed_HOLD":
+        post_text, post_state = "관찰 보류", "HOLD · 판정 미사용"
+    else:
+        observation = post["observation"]
+        post_text = (f"walking {observation['walking']} · in-place {observation['in_place']}"
+                     f" · falling {observation['falling']}")
+        post_state = "valid · 판정 미사용"
     return f"""
       <article class="seed-card">
         <header><span>seed {seed}</span><strong>recovered</strong></header>
@@ -224,7 +277,7 @@ def _seed_card(seed: int, pair: dict, row: dict | None, root: Path, output: Path
           <div><b>검사</b><span>새 E2E 확인 검사 · abnormal</span></div>
           <div><b>교정</b><span>등록 보상 복원 · restart</span></div>
           <div><b>고정 평가</b><span>RMSE {_escape(f"{row['fixed_eval']['lin_vel_rmse_mps']:.3f}")} m/s · 낙상률 {_escape(f"{row['fixed_eval']['fall_rate']:.3f}")}</span></div>
-          <div><b>후속 관찰</b><img src="{_escape(_web_path(root, output, frames['corrected']['path']))}" alt="seed {seed} corrected 프레임"></div>
+          <div class="observation-step"><b>후속 관찰 · {_escape(post_state)}</b><img src="{_escape(_web_path(root, output, frames['corrected']['path']))}" alt="seed {seed} corrected 프레임"><span>{_escape(post_text)}</span></div>
         </div>
       </article>"""
 
@@ -245,10 +298,10 @@ def render(comparison: dict, e2e: dict, root: Path, output: Path) -> str:
 .top{{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid var(--nv);padding-bottom:20px}}
 h1{{font-size:48px;line-height:1.08;margin:0 0 10px}} .kicker{{font-weight:800;color:#4d7800;letter-spacing:.08em}}
 .scope{{margin:0;color:var(--muted);font-size:20px}} .badge{{background:var(--nv);color:#102000;padding:14px 22px;border-radius:999px;font-size:22px;font-weight:850}}
-.evidence{{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:16px;margin:24px 0 20px}}
-.evidence div{{border:1px solid var(--line);border-radius:14px;padding:15px 18px;background:#fff;min-height:88px}}
-.evidence b{{display:block;color:#4d7800;font-size:17px;margin-bottom:7px}} .evidence span{{font-size:22px;font-weight:760}}
-.seeds{{display:grid;grid-template-columns:1fr 1fr;gap:22px;height:720px;overflow:hidden}}
+.evidence{{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0 16px}}
+.evidence div{{border:1px solid var(--line);border-radius:14px;padding:13px 16px;background:#fff;min-height:82px}}
+.evidence b{{display:block;color:#4d7800;font-size:16px;margin-bottom:6px}} .evidence span{{font-size:20px;font-weight:760}}
+.seeds{{display:grid;grid-template-columns:1fr 1fr;gap:22px;height:660px;overflow:hidden}}
 .seed-card{{border:2px solid #cbd9c3;border-top:8px solid var(--nv);border-radius:18px;background:#fff;padding:18px 20px;overflow:hidden}}
 .seed-card header{{display:flex;justify-content:space-between;font-size:24px;margin-bottom:14px}} .seed-card header strong{{color:#4d7800}}
 .media-row{{display:grid;grid-template-columns:1fr 1fr;gap:10px;height:220px}} figure{{margin:0;overflow:hidden;border-radius:10px;background:#0c1209;position:relative}}
@@ -256,14 +309,14 @@ video{{width:100%;height:180px;object-fit:cover;display:block}} figcaption{{colo
 .timeline{{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px;overflow:hidden}}
 .timeline div{{min-height:122px;border:1px solid var(--line);border-radius:10px;padding:11px;background:var(--soft);overflow:hidden}}
 .timeline b{{display:block;font-size:16px;color:#4d7800;margin-bottom:8px}} .timeline span{{font-size:17px;line-height:1.3}}
-.timeline img{{width:100%;height:74px;object-fit:cover;border-radius:6px}} .compact{{grid-template-columns:repeat(2,1fr);margin-top:30px}}
+.timeline img{{width:100%;height:74px;object-fit:cover;border-radius:6px}} .observation-step{{position:relative}} .observation-step span{{position:absolute;left:14px;right:14px;bottom:12px;background:rgba(9,20,6,.78);color:#fff;padding:4px 6px;border-radius:5px;font-size:13px;line-height:1.15}} .compact{{grid-template-columns:repeat(2,1fr);margin-top:30px}}
 .compact div{{min-height:165px;padding:20px}} .pending-step{{border-style:dashed!important;color:var(--warn)}}
 footer{{position:absolute;left:64px;right:64px;bottom:18px;display:flex;justify-content:space-between;color:var(--muted);font-size:15px}}
 @media(max-width:1200px),(max-height:760px){{#stage{{transform-origin:top left}}}}
 </style></head><body><div id="viewport"><main id="stage">
 <section class="top"><div><div class="kicker">NVIDIA · RL TRIAGE</div><h1>관찰에서 교정 후 평가까지, 근거 한 줄로 추적</h1>
 <p class="scope">등록 F1 두 seed 개발판 · 처음 보는 결함 평가 아님 · 세 입력 조건 비교는 observation_only</p></div><div class="badge">{_escape(state)}</div></section>
-<section class="evidence"><div><b>모델 선택</b><span>24/24 유효 · P_reward 24회</span></div><div><b>영상에 따른 선택 변화</b><span>0회</span></div><div><b>비교 단계 검사</b><span>NONE normal · F1 abnormal</span></div></section>
+<section class="evidence"><div><b>비교 모델 선택</b><span>24/24 유효 · P_reward</span></div><div><b>새 E2E 첫 판단</b><span>2/2 유효 · P_reward</span></div><div><b>영상에 따른 선택 변화</b><span>0회</span></div><div><b>비교 단계 검사</b><span>NONE normal · F1 abnormal</span></div></section>
 <section class="seeds">{cards}</section>
 <footer><span>후속 관찰 used_for_decision=false · 초기 영상+로그 선택 used_for_decision=true · 선택 변화 0회와 별도</span><span>1920 × 1080 · overflow 0</span></footer>
 </main></div><script type="application/json" id="source-bindings">{source_json}</script>

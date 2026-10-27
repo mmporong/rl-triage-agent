@@ -1,0 +1,141 @@
+{
+  "fault_novelty": "registered_f1_not_unseen_fault",
+  "measurement_scope": "registered_f1_two_seed_development_e2e",
+  "schema": "transferred_vision_replay_e2e_manifest_v1",
+  "seeds": [
+    {
+      "corrected_checkpoint_sha256": "41c417b040b458c2f3cf5eb025ba6b5bd8e551c184f63a6c0c7809e0c5165d42",
+      "correction": {
+        "id": "restore_body_frame_reward",
+        "recovery_mode": "restart",
+        "registered": true
+      },
+      "fixed_eval": {
+        "artifact": {
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/fixed-eval/seed-2220-corrected.json",
+          "sha256": "e63a87ef7b6bbb10a062c04db1557f88f36bfcd73e0d368337aba895ca23896e"
+        },
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.14136327886224342,
+        "outcome": "recovered"
+      },
+      "frame_evidence": [
+        {
+          "frame_index": 150,
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2220-fault.jpg",
+          "phase": "fault",
+          "pts_s": 3.0,
+          "sha256": "58c341419125bdbd3152788a79562a5582e9aa627ca55a2021680675737ef977"
+        },
+        {
+          "frame_index": 150,
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2220-corrected.jpg",
+          "phase": "corrected",
+          "pts_s": 3.0,
+          "sha256": "6bd4caa43ea4f51cf9f8b384436bb24883f376d42879903daef42e4f2d738bd2"
+        }
+      ],
+      "probe": {
+        "name": "P_reward",
+        "outcome": "abnormal"
+      },
+      "public_result_refs": [
+        {
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/seed-2220.json",
+          "sha256": "322e91c91f85bd3019b8cfa276b320969a28920d31ee956cca132074ba44d400"
+        },
+        {
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/fixed-eval/seed-2220-corrected.json",
+          "sha256": "e63a87ef7b6bbb10a062c04db1557f88f36bfcd73e0d368337aba895ca23896e"
+        }
+      ],
+      "seed": 2220,
+      "selection": {
+        "model_status": "valid",
+        "probe": "P_reward",
+        "used_for_decision": true
+      },
+      "source_fault_checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+      "status": "recovered",
+      "videos": {
+        "corrected": {
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2220-corrected.mp4",
+          "sha256": "5ed6de5f9bda943135584b0a68bab3da7cdc13d8e7af215fbe44f0ce2ab2c09e"
+        },
+        "fault": {
+          "path": "evals/results/vision_transferred_pull_record_dev_20261027b_v3/f1/same_play.mp4",
+          "sha256": "5acc277d070703aef231a98102749594e791d127c5a35df65f0a62da1bac8357"
+        }
+      }
+    },
+    {
+      "corrected_checkpoint_sha256": "b346a0c3e3ad6410ce93dcf73e6165ed69e2d6ab95b2c5398943b3a8874cf54d",
+      "correction": {
+        "id": "restore_body_frame_reward",
+        "recovery_mode": "restart",
+        "registered": true
+      },
+      "fixed_eval": {
+        "artifact": {
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/fixed-eval/seed-2221-corrected.json",
+          "sha256": "d16ff2b318f245977cc2edd716e09e7a6065d501374d3761a954daa7c96a14cc"
+        },
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.14866341790838303,
+        "outcome": "recovered"
+      },
+      "frame_evidence": [
+        {
+          "frame_index": 150,
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2221-fault.jpg",
+          "phase": "fault",
+          "pts_s": 3.0,
+          "sha256": "7a7e61a58eed8d7cef18c8b4555b6ffffbd2ec787860dc39bb9ca6d5a7f984fd"
+        },
+        {
+          "frame_index": 150,
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2221-corrected.jpg",
+          "phase": "corrected",
+          "pts_s": 3.0,
+          "sha256": "2ae79fbdb9e18e5ee4c264c0eb78d4d053eb5d960937e9ac8e929d38f10c5d10"
+        }
+      ],
+      "probe": {
+        "name": "P_reward",
+        "outcome": "abnormal"
+      },
+      "public_result_refs": [
+        {
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/seed-2221.json",
+          "sha256": "c5e0316b5b63439721b1d1778f4b6fe5bc3e436da242a868d349a749da632117"
+        },
+        {
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/fixed-eval/seed-2221-corrected.json",
+          "sha256": "d16ff2b318f245977cc2edd716e09e7a6065d501374d3761a954daa7c96a14cc"
+        }
+      ],
+      "seed": 2221,
+      "selection": {
+        "model_status": "valid",
+        "probe": "P_reward",
+        "used_for_decision": true
+      },
+      "source_fault_checkpoint_sha256": "1d73d523c97c5c89c988febfbd3d5e533e90681cd0e6132d6ffe13888fa95731",
+      "status": "recovered",
+      "videos": {
+        "corrected": {
+          "path": "evals/results/vision_transferred_e2e_dev_20261027_v1/media/seed-2221-corrected.mp4",
+          "sha256": "67acfdda0aa024b4d81feb8bd02222464d3b5801d13f289bf0f70218844f138f"
+        },
+        "fault": {
+          "path": "evals/results/vision_transferred_pull_record_dev_20261027c_v1/f1/same_play.mp4",
+          "sha256": "66ed325d66aaa9b8e71f84dac37ccea337af38fcee8bdca2ef479b6eb9b44796"
+        }
+      }
+    }
+  ],
+  "selection_change_count": 0,
+  "selection_outcome": "observation_only",
+  "status": "complete",
+  "used_for_decision": false
+}
