@@ -350,4 +350,5 @@
 - 후속 실행은 AABA 네 장면의 NPZ·영수증·JSON 보고서를 저장했고, 회수 후 보고서와 배열 metadata·해시 대조도 통과했다. CAP-25의 저장 경계 수정은 실제 실행에서 확인됐다. 그러나 자식 종료가 완료되지 않아 약 410.74초 뒤 부모 정리로 끝났고 record 앱은 시작하지 않았다.
 - RL 환경 종료와 앱 프로세스 종료는 별개다. 실제 factory의 `AppProxy`는 close 전에 `result.json` 또는 `failure.json` 정확히 하나를 요구하지만, AABA 성공 출력에는 진단 보고서만 있었다. 이 경로는 종료 정책을 적용할 수 없으며, SDK close가 반환해도 보류된 정책 오류 때문에 exit 0이 될 수 없다.
 - `wait_for_replicator=False`는 이미 적용돼 있었다. SDK close 내부의 긴 대기 위치는 stack 근거가 없어 미확정이며, 이를 NVIDIA SDK 결함으로 단정하지 않는다. 새 경계는 AABA 원문을 검증하는 종료 정책과 phase별 영수증을 사용하고, 보고서·종료 정책·child exit·정리 증거를 나눠 검증한다.
+- SDK close의 Python 반환을 정상 종료의 필수 조건으로 삼지 않는다. fast shutdown에서는 프로세스가 먼저 끝날 수 있으므로, 종료 진입 증거와 부모가 관찰한 자연 exit 0·자원 정리를 필수로 검증하고 Python 반환은 관측됐을 때만 기록한다. [NVIDIA의 4.5 종료 동작 답변](https://forums.developer.nvidia.com/t/how-to-keep-a-standalone-script-running-after-calling-simulationapp-close/331754).
 - 원문 522개, 회수 사본 526개와 host 메타데이터 334개를 대조했고 소유 VM은 정지했다. 새 학습·모델 API·전체 영상은 0건이다. [실제 결과](../evals/results/vision_pull_record_dev_20261027ak/summary.json) · [종료 계약 진단](../evals/results/vision_pull_record_dev_20261027ak/termination_contract_diagnosis.json).
