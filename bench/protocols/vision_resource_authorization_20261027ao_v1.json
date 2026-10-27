@@ -1,0 +1,39 @@
+{
+  "schema": "vision_resource_authorization_v1",
+  "authorization_id": "native-policy-record-20261027ao-resource",
+  "registered_before_execution": true,
+  "registered_at_utc": "2026-10-27T06:32:47Z",
+  "source_protocol": {
+    "path": "bench/protocols/vision_brev_source_20261026_v8.json",
+    "sha256_lf": "10b2baa3b4529ff29f67ed552e6514bdc5db036e8afa24be005616144e77d02c"
+  },
+  "execution_protocol": {
+    "path": "bench/protocols/vision_pull_record_20261027_v7.json",
+    "sha256_lf": "949e2f577ca99590066fa65eb6b064ca6496bd319ca40c6dcd3553184a4e231d"
+  },
+  "historical_source_deadline_utc": "2026-10-27T06:00:00Z",
+  "authorization_deadline_utc": "2026-10-30T06:32:47Z",
+  "minimum_remaining_s": 1800,
+  "resource_id": "3655a80oo",
+  "resource_name": "rl-triage-e2e-20261024-c9f4",
+  "scope": {
+    "operation": "existing_checkpoint_recording_only",
+    "training_actions": 0,
+    "model_api_requests": 0,
+    "max_full_recordings": 2,
+    "max_wall_s_per_recording": 600,
+    "max_compute_usd_batch": "0.580000"
+  },
+  "checkpoint_catalog": [
+    {
+      "isaaclab_relative": "logs/rsl_rl/unitree_go2_flat/2026-10-26_08-11-26_vision_s2220_none/model_299.pt",
+      "logical_id": "source-s2220-none",
+      "sha256": "41c417b040b458c2f3cf5eb025ba6b5bd8e551c184f63a6c0c7809e0c5165d42"
+    },
+    {
+      "isaaclab_relative": "logs/rsl_rl/unitree_go2_flat/2026-10-26_08-14-40_vision_s2220_f1/model_299.pt",
+      "logical_id": "source-s2220-f1",
+      "sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474"
+    }
+  ]
+}
