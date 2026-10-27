@@ -384,3 +384,9 @@
 
 - 보존한 견적에는 `massedcompute_L40S`가 있었지만, 생성 직전 같은 조회의 결과에는 없었다. 생성 명령 전에 중단했으며 새 인스턴스·학습·영상 수집·모델 호출은 없었다. catalog에서 빠진 공급자 측 이유는 확인하지 못했다.
 - 다른 공급자의 L40S·200 GB 디스크·새 견적을 별도 판으로 고정한다. 생성 전 최신 catalog 검사와 정확한 소유 ID 확인은 유지한다. [중단 기록](../evals/results/vision_environment_transfer_20261027a/summary.json).
+
+## OPS-48: 정규화한 시간 값을 검사한 뒤 원문을 소비자에 반환
+
+- 새 L40S에서 설치 버전과 의존성 검증이 통과했고, AABA 입장 검사를 마친 뒤 첫 정책 sample을 수집했다. 수집 원문의 `IsaacReadTimes`에는 시각 11필드와 실행 포트 `execOut`이 있었다.
+- producer는 기존 정규화 함수를 호출했지만 반환값에는 12필드 원문을 넣었다. 시각 11필드를 요구하는 소비자가 첫 sample을 거부했다. 원문에는 오류를 가릴 필드와 값이 남았고, GPU 자식 정리도 확인됐다. 완성 영상과 모델 입력은 생성되지 않았으며 결함 정책은 실행하지 않았다.
+- 원문·NPZ·해시는 유지하고, 소비자와 manifest 비교에는 같은 정규화 값을 쓰도록 새 판을 준비한다. 알 수 없는 필드와 시각 불일치의 거부 기준은 유지한다. [설치 검증](../evals/results/vision_environment_transfer_20261027b/summary.json), [첫 촬영 실패](../evals/results/vision_transferred_pull_record_dev_20261027b_v1/summary.json).
