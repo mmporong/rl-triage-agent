@@ -359,3 +359,10 @@
 - 전용 factory가 `AppLauncher` 생성 전에 `carb.settings`를 import한 것이 원인이다. 앱 부팅이 제공하는 모듈을 먼저 불러 생긴 실행 코드의 순서 오류이며, SDK의 영상 수집이나 종료 정책을 평가한 결과는 아니다.
 - 단독 fake app 회귀로는 부팅 순서를 확인하지 못했다. 새 회귀는 `carb`가 없는 별도 Python 프로세스에서 factory를 실행하고, 앱 생성 뒤에만 해당 모듈을 사용할 수 있게 한다. 기존 실행과 원문은 보존한다.
 - 원문 525개, 회수 사본 529개와 host 메타데이터 339개의 SHA를 대조했고 소유 VM의 정지를 확인했다. 새 학습·모델 API·전체 영상은 0건이다. [실제 결과](../evals/results/vision_pull_record_dev_20261027al/summary.json).
+
+### CAP-28: 부모와 Play worker의 출력 폴더 생성 충돌
+
+- 다음 실행은 앱 부팅 뒤 AABA 네 장면과 NPZ·원시 영수증 각 네 개를 저장했다. 종료 정책·close 진입·부모가 관찰한 자연 exit 0·정리·GPU 관찰의 결합도 회수 후 검증을 통과했다. CAP-26과 CAP-27의 수정은 이 범위에서 실제 확인됐다. SDK가 Python으로 반환한 영수증은 없으며, 이는 fast shutdown 계약에서 허용하는 경로다.
+- 이어 시작한 record 자식이 `FileExistsError`를 남겼다. 부모는 AABA 뒤 record output 폴더를 생성하고, 자식의 job 검증은 그 폴더가 있어야 통과하지만, Play worker는 같은 폴더를 `exist_ok=False`로 생성한다. 서로 다른 세 경계의 폴더 소유권 계약이 맞지 않았다.
+- 새 판은 Play worker가 폴더를 생성하도록 맞춘다. 부모는 기존 output을 거부하고, 유효한 AABA continuation을 검증한 자식만 생성 경계에 도달한다. 이미 존재하는 결과·symlink를 지우거나 재사용해 통과시키지 않는다. CPU 통합 회귀와 실제 625프레임 완료는 구분한다.
+- 원문 556개, 회수 사본 560개와 host 메타데이터 341개의 SHA를 대조했고 소유 VM은 정지했다. 새 학습·모델 API·완료 영상은 0건이다. [실제 결과](../evals/results/vision_pull_record_dev_20261027am/summary.json).

@@ -1,0 +1,71 @@
+{
+  "schema": "vision_pull_record_development_failure_v4",
+  "protocol_id": "native-policy-record-20261027am",
+  "status": "HOLD",
+  "source_commit": "a8b4d124c84a8b3dd05c6181478bb466239743e2",
+  "protocol_commit": "b40ec32b6345f725136aa291365f21285de828f2",
+  "protocol": {
+    "path": "bench/protocols/vision_pull_record_20261027_v5.json",
+    "sha256_lf": "a8872909de8278386974de50161ea50fc4327f5ff6338ed645750c229ea306f9"
+  },
+  "AABA": {
+    "diagnostic_complete": true,
+    "captures": 4,
+    "raw_npz": 4,
+    "raw_receipts": 4,
+    "report_and_shutdown_policy_validation": "PASS",
+    "raw_npz_and_receipts_validation": "PASS",
+    "parent_process_exit_validation": "PASS",
+    "natural_exit_code": 0,
+    "cleanup_verified": true,
+    "gpu_after": [],
+    "close_returned_observed": false,
+    "report_sha256": "ff95589784e5eddcb59740b0eee20b7f10bdcea6c5da6f392104a0cb665add1f",
+    "shutdown_policy_sha256": "9b5f917b32c29e4e967c1a97122a17835757f110deb59c76d199140f9bd12b2e",
+    "process_exit_sha256": "8053da95ce4d496df3679447fa91bbf56fd416f5b00ef259b3dadcc1a498a1d1"
+  },
+  "failure": {
+    "stage": "record_output_directory_creation",
+    "error_type": "builtins.FileExistsError",
+    "error_message": "File exists: <record-output>",
+    "confirmed_cause": "부모 실행기가 record output 폴더를 먼저 생성하고, 자식 job 검증은 기존 폴더를 요구하며, Play worker는 같은 폴더를 배타 생성한다. 폴더 생성 소유권 계약이 충돌했다.",
+    "source_locations": [
+      "bench/run_vision_pull_record_v4.py:532",
+      "bench/vision_pull_record_job_v4.py:403",
+      "bench/vision_play_worker_v1.py:185"
+    ],
+    "timed_out": false,
+    "wall_s": 40.059027539,
+    "record_child_started": true,
+    "second_checkpoint_started": false
+  },
+  "evidence": {
+    "raw_files": 556,
+    "verified_copy_files": 560,
+    "verified_host_metadata_files": 341,
+    "all_copied_sha256_equal": true,
+    "archive_sha256": "d1489556be993f64d3a9c4cced8de620c84a5ddee6c37cb9bd6e96a3bac322fd",
+    "inventory_sha256": "b5a7a74c044f3dcf732a3ec3cb6e5b72fbca5b4ef66852f95ff3c6779343aabc",
+    "canonical_stop_sha256": "044d0a7e785fa992c4f2477a7295d15f652f4060bbaa7ce44bfc3e654f3b8794",
+    "execution_sha256": "adc17b487cafc2396b73fb8d5f13fe5f7d7637167c3e9b41ea81063840682def",
+    "first_error_sha256": "510635e71957ff60d92afb4d0031c77412d6f9bfc74b2bc62bd9428ee1f05247"
+  },
+  "cleanup_verified": true,
+  "gpu_after": [],
+  "vm_status": "STOPPED",
+  "stopped_observed_at_utc": "2026-10-27T05:25:40.830579+00:00",
+  "actual_recordings": 0,
+  "new_training_actions": 0,
+  "model_api_requests": 0,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "cost": {
+    "this_lifecycle_estimate_usd": "0.158520",
+    "cumulative_program_estimate_usd": "19.750913",
+    "remaining_program_usd": "0.249087",
+    "program_cap_usd": "20.000000",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "interpretation": "앱 부팅과 AABA 보고서·종료 정책·부모 exit 0 결합은 실제 통과했다. 이후 출력 폴더 계약 오류로 녹화를 완료하지 못했다. 영상 비교·교정·회복 결과는 측정하지 않았다."
+}
