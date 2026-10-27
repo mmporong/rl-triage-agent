@@ -169,7 +169,10 @@ def _verified_acceptance(receipt_path: Path, *, verify_raw_rgb: bool,
             or receipt.get("payload_count") != 24 or receipt.get("complete_four_policy_set") is not True):
         raise ValueError("acceptance v3 완전한 4 policy/24 payload 영수증이 아니다")
     use = receipt.get("use_scope_attestation")
-    if (not isinstance(use, dict) or use.get("mechanically_verified") is not True
+    domains = receipt.get("mechanical_verification")
+    if (not isinstance(domains, dict) or set(domains) != set(ACCEPT.MECHANICAL_DOMAINS)
+            or any(value is not True for value in domains.values())
+            or not isinstance(use, dict) or use.get("scopes") != list(ACCEPT.USE_SCOPE)
             or use.get("behavior_labels_created") is not False
             or use.get("behavior_ground_truth_assigned") is not False
             or use.get("model_use_authorized") is not False

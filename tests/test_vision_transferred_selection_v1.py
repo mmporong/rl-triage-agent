@@ -83,21 +83,13 @@ def _fixture(base: Path) -> tuple[Path, dict[int, dict]]:
                              "nested_lineage": lineages, "payloads": payloads})
         capture = _write(base / f"capture-{seed}.json", {"policies": capture_policies})
         pair = {"seed": seed, "protocol": _absref(protocol), "capture_receipt": _absref(capture),
-                "training_receipt": _absref(training), "policies": policies}
+                "training_receipt": _absref(training), "policies": policies,
+                "mechanical_verification": {name: True for name in M.ACCEPT.MECHANICAL_DOMAINS}}
         pairs.append(pair)
         by_seed[seed] = pair
-    receipt = {
-        "schema": "vision_transferred_input_acceptance_v3", "status": "HOLD",
-        "cpu_preparation": "PASS", "pairs": pairs, "policy_count": 4, "payload_count": 24,
-        "expected_complete_payload_count": 24, "complete_four_policy_set": True,
-        "use_scope_attestation": {"scopes": ["registered_native_pull_combination_only",
-            "first_probe_comparison_only"], "mechanically_verified": True,
-            "behavior_labels_created": False, "behavior_ground_truth_assigned": False,
-            "model_use_authorized": False, "used_for_decision": False,
-            "final_approval": "leader_pending"},
-        "model_api_requests": 0, "gpu_executions": 0, "new_training_actions": 0,
-    }
-    return _write(base / "acceptance-v3.json", receipt), by_seed
+    receipt_path = base / "acceptance-v3.json"
+    M.ACCEPT.attest(pairs, receipt_path)
+    return receipt_path, by_seed
 
 
 def _acceptor(by_seed: dict[int, dict]):
