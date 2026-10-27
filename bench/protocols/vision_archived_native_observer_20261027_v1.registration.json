@@ -1,0 +1,49 @@
+{
+  "api": {
+    "combined_api_requests_after_upper_bound": 8,
+    "new_api_cap": 6,
+    "original_e2e_api_cap": 32,
+    "prior_initial_model_api_requests": 2,
+    "remote_post_observation_api_requests": 0
+  },
+  "archive_sha256": "f572a21a3f638b781af8f6471fef3499de2c7998e6b732119a3e6b555136c78b",
+  "auxiliary_used_for_decision": false,
+  "bound_protocol_sha256": "514998e25a0c0111f0bfcbef7d7e6dec3b26a025b646d50ba094f2d8a899c16f",
+  "model": {
+    "name": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "params": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 1024,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "stream": false,
+      "temperature": 0
+    }
+  },
+  "protocol_id": "vision-archived-native-observer-development-20261027-v1",
+  "rows": [
+    {
+      "checkpoint_sha256": "41c417b040b458c2f3cf5eb025ba6b5bd8e551c184f63a6c0c7809e0c5165d42",
+      "contract_sha256": "f718bd81d72cdebad660426d81e89bb7ab32cdf6a621645993135c995aa0481c",
+      "group": "source-01",
+      "request_messages_sha256": "b59e581b45dea3ea4639972953f80b9a79e26cd69aeefd2a217e9aeca0096477",
+      "seed": 2220
+    },
+    {
+      "checkpoint_sha256": "b346a0c3e3ad6410ce93dcf73e6165ed69e2d6ab95b2c5398943b3a8874cf54d",
+      "contract_sha256": "fc475a1f9b764201b2ae5bf0c155f62f882d726c5068a3c7fd21d6cf2c7a31d2",
+      "group": "source-02",
+      "request_messages_sha256": "a964c6c6460b9a46f654ba2b24024aff59d4180f2f496ddcbd0c594ea7db9b58",
+      "seed": 2221
+    }
+  ],
+  "schema": "vision_archived_native_observer_registration_v1",
+  "source_commit": "85c004e6ffe55ba5b3c924b455a84ac1873538f2",
+  "source_sha256_lf": {
+    "evals/grounded_vision_observer_v1.py": "112373db86887fc540edf8d74c60177377088c0d7938f4ec7868b7205abb25a1",
+    "evals/model_decision_journal_v1.py": "255b8ed9c0de88a26aadc2f1b4a90b0b01f57b2417aab05ac295031061d23ac2",
+    "evals/vision_archived_native_observer_v1.py": "d2bb10977e5453ecb580145eb3b5b76db3c2d4945b6cdaede30a640a556cf8a0",
+    "evals/vision_evidence_contract_v1.py": "82f370942492611246832aed4e6fefbc8b71cfa38a8b4d2798f809437d67babf"
+  }
+}
