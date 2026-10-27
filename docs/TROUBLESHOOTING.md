@@ -352,3 +352,10 @@
 - `wait_for_replicator=False`는 이미 적용돼 있었다. SDK close 내부의 긴 대기 위치는 stack 근거가 없어 미확정이며, 이를 NVIDIA SDK 결함으로 단정하지 않는다. 새 경계는 AABA 원문을 검증하는 종료 정책과 phase별 영수증을 사용하고, 보고서·종료 정책·child exit·정리 증거를 나눠 검증한다.
 - SDK close의 Python 반환을 정상 종료의 필수 조건으로 삼지 않는다. fast shutdown에서는 프로세스가 먼저 끝날 수 있으므로, 종료 진입 증거와 부모가 관찰한 자연 exit 0·자원 정리를 필수로 검증하고 Python 반환은 관측됐을 때만 기록한다. [NVIDIA의 4.5 종료 동작 답변](https://forums.developer.nvidia.com/t/how-to-keep-a-standalone-script-running-after-calling-simulationapp-close/331754).
 - 원문 522개, 회수 사본 526개와 host 메타데이터 334개를 대조했고 소유 VM은 정지했다. 새 학습·모델 API·전체 영상은 0건이다. [실제 결과](../evals/results/vision_pull_record_dev_20261027ak/summary.json) · [종료 계약 진단](../evals/results/vision_pull_record_dev_20261027ak/termination_contract_diagnosis.json).
+
+### CAP-27: 앱 부팅 전에 가져온 SDK 모듈
+
+- 후속 실행은 정상 checkpoint의 AABA 자식이 시작된 지 약 0.43초 만에 `ModuleNotFoundError: No module named 'carb'`로 종료됐다. 최초 traceback과 exit 1, 정리 완료 기록이 남아 있다. 본 녹화와 두 번째 checkpoint는 시작하지 않았다.
+- 전용 factory가 `AppLauncher` 생성 전에 `carb.settings`를 import한 것이 원인이다. 앱 부팅이 제공하는 모듈을 먼저 불러 생긴 실행 코드의 순서 오류이며, SDK의 영상 수집이나 종료 정책을 평가한 결과는 아니다.
+- 단독 fake app 회귀로는 부팅 순서를 확인하지 못했다. 새 회귀는 `carb`가 없는 별도 Python 프로세스에서 factory를 실행하고, 앱 생성 뒤에만 해당 모듈을 사용할 수 있게 한다. 기존 실행과 원문은 보존한다.
+- 원문 525개, 회수 사본 529개와 host 메타데이터 339개의 SHA를 대조했고 소유 VM의 정지를 확인했다. 새 학습·모델 API·전체 영상은 0건이다. [실제 결과](../evals/results/vision_pull_record_dev_20261027al/summary.json).

@@ -1,0 +1,54 @@
+{
+  "schema": "vision_pull_record_development_failure_v3",
+  "protocol_id": "native-policy-record-20261027al",
+  "status": "HOLD",
+  "source_commit": "387a2478a2d525e508e51249db94f85592302e8a",
+  "protocol_commit": "7ab35949960ece54633463a9610bfca6561c086f",
+  "protocol": {
+    "path": "bench/protocols/vision_pull_record_20261027_v4.json",
+    "sha256_lf": "ed783a6ccbb5bcea6e750aee6c2a40e330c0e7095e89ea82f1a12e5219cb7e5f"
+  },
+  "failure": {
+    "stage": "aaba_sdk_app_factory_before_launcher",
+    "error_type": "builtins.ModuleNotFoundError",
+    "error_message": "No module named 'carb'",
+    "confirmed_cause": "AABA 전용 factory가 AppLauncher 생성 전에 carb.settings를 import했다. 앱 부팅이 제공하는 모듈을 먼저 불러 ModuleNotFoundError로 종료됐다. 진단·종료 정책·본 녹화는 미도달이다.",
+    "source_location": "bench/vision_aaba_shutdown_v1.py:358",
+    "timed_out": false,
+    "aaba_child_exit_code": 1,
+    "wall_s": 0.4296820160000152,
+    "record_child_started": false,
+    "second_checkpoint_started": false,
+    "aaba_diagnostic_reached": false,
+    "shutdown_policy_reached": false
+  },
+  "evidence": {
+    "raw_files": 525,
+    "verified_copy_files": 529,
+    "verified_host_metadata_files": 339,
+    "all_copied_sha256_equal": true,
+    "archive_sha256": "3bb7286038dbb18abcab1cdccca5c153d5e983d19aca77bebc15a176a65ca6a4",
+    "inventory_sha256": "85c98288ca0a116aa61c81c76daea2830c21da89c5691bd028dd1bd6cc758710",
+    "canonical_stop_sha256": "103415471c3f9ba38dc07bf36250ec8bffcb42d529a924bcc19300420b4736c2",
+    "execution_sha256": "3af2b2f407f30e2f01f2f376da2069236359faf3ad6b8b28b668243c180b0fd7",
+    "first_error_sha256": "f58a8719d188a051a0e40bea11e9c4f025c7af3264e1d4053957d2767c3de592"
+  },
+  "cleanup_verified": true,
+  "gpu_after": [],
+  "vm_status": "STOPPED",
+  "stopped_observed_at_utc": "2026-10-27T05:00:57.961828+00:00",
+  "actual_recordings": 0,
+  "new_training_actions": 0,
+  "model_api_requests": 0,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "cost": {
+    "this_lifecycle_estimate_usd": "0.140889",
+    "cumulative_program_estimate_usd": "19.592393",
+    "remaining_program_usd": "0.407607",
+    "program_cap_usd": "20.000000",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "interpretation": "앱 부팅 전 import 순서 오류가 보존됐다. AABA 종료 계약의 실제 성공·영상 입력 효과·교정·회복 결과는 측정하지 않았다."
+}
