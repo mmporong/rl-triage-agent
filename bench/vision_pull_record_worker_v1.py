@@ -13,11 +13,38 @@ import run_vision_prepared_record_v1 as RECORD_VERIFY
 import vision_play_worker_v1 as PLAY
 import vision_pull_record_capture_v1 as CAPTURE
 import vision_pull_record_job_v1 as JOB
+import vision_replicator_startup_v1 as STARTUP
+import vision_semantic_sdk_v1 as SDK
 
 SCHEMA = "vision_pull_record_worker_v1"
 MANIFEST_SCHEMA = "vision_pull_record_native_capture_manifest_v1"
 MANIFEST_NAME = "native_capture_manifest.json"
 REPORT_NAME = "native-policy-record.report.json"
+
+
+def verify_startup(value: Any) -> dict[str, Any]:
+    checked = SDK._startup_readback(value)
+    after = checked["after"]
+    if after.get("orchestrator_enabled") is not True or after.get("capture_on_play") is not False:
+        raise ValueError("녹화 앱 startup readback이 고정 설정과 다르다")
+    return checked
+
+
+def prepare_record_app(app: Any, *, dependencies: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """별도 녹화 앱의 설정을 환경 생성 전에 고정하고 readback을 보존한다."""
+    deps = {
+        "enable_extension": SDK._sdk_enable_extension,
+        "settings": STARTUP._load_settings,
+        "replicator": STARTUP._load_replicator,
+    }
+    if dependencies is not None:
+        deps.update(dependencies)
+    if deps["enable_extension"](SDK.EXTENSION) is not True:
+        raise RuntimeError("녹화 앱 isaacsim.core.nodes 활성화 실패")
+    app.update()
+    return verify_startup(STARTUP.configure_replicator_startup(
+        settings=deps["settings"](), replicator=deps["replicator"](),
+    ))
 
 
 class PullRecordFailure(RuntimeError):
@@ -193,6 +220,7 @@ def run_policy_record(
     seal_report: Callable[[Mapping[str, Any]], None],
     run_real: Callable[..., tuple[dict[str, Path], Path]] = PLAY.run_real,
     capture_factory: Callable[..., PLAY.CameraCaptureFactory] = CAPTURE.make_capture_factory,
+    prepare_app: Callable[[Any], dict[str, Any]] = prepare_record_app,
 ) -> dict[str, Any]:
     """625-frame Play를 native pull capture로 실행하고 close 전 보고서를 봉인한다."""
     if not callable(seal_report):
@@ -208,6 +236,8 @@ def run_policy_record(
         "used_for_decision": False,
     }
     try:
+        startup = verify_startup(prepare_app(app))
+        report["startup"] = startup
         factory = capture_factory(validated, app)
         artifacts, video = run_real(
             validated, app, camera_capture_factory=factory
@@ -218,6 +248,7 @@ def run_policy_record(
         manifest_path = Path(validated["output_directory"]) / MANIFEST_NAME
         JOB.write_new(manifest_path, manifest)
         report = _report(validated, artifacts, manifest_path)
+        report["startup"] = startup
         seal_report(report)
         return report
     except BaseException as error:

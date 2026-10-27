@@ -78,6 +78,7 @@ def verify_result(validated: Mapping[str, Any]) -> dict[str, Any]:
     result = BASE._read(BASE._regular(output / "result.json"))
     report_path = BASE._regular(output / REPORT_NAME)
     report = BASE._read(report_path)
+    WORKER.verify_startup(report.get("startup"))
     manifest_path = BASE._regular(output / WORKER.MANIFEST_NAME)
     manifest = BASE._read(manifest_path)
     artifacts = report.get("artifacts")

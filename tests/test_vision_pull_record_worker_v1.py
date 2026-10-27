@@ -121,7 +121,94 @@ def test_run_policy_record_wires_factory_to_real_worker_and_seals_after_validati
         value, app, seal_report=lambda report: seen.append(dict(report)),
         run_real=run_real,
         capture_factory=lambda validated, actual_app: factory,
+        prepare_app=lambda actual_app: {
+            "before": {"orchestrator_enabled": False, "capture_on_play": True},
+            "after": {"orchestrator_enabled": True, "capture_on_play": False},
+        },
     )
-    assert result == {"technical_recording_complete": True}
+    assert result["technical_recording_complete"] is True
+    assert result["startup"]["after"] == {
+        "orchestrator_enabled": True, "capture_on_play": False,
+    }
     assert seen == ["record", result]
     assert json.loads((value["output_directory"] / W.MANIFEST_NAME).read_text()) == manifest
+
+
+def test_cold_record_app_configures_real_startup_before_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from types import SimpleNamespace
+
+    value = _validated(tmp_path)
+    events: list[str] = []
+    values = {W.STARTUP.ORCHESTRATOR_ENABLED: False, W.STARTUP.CAPTURE_ON_PLAY: True}
+
+    class Settings:
+        def get(self, key: str) -> Any:
+            return values[key]
+
+        def set_bool(self, key: str, item: bool) -> None:
+            values[key] = item
+            events.append("enable_orchestrator")
+
+    def capture_on_play(item: bool) -> None:
+        values[W.STARTUP.CAPTURE_ON_PLAY] = item
+        events.append("disable_capture_on_play")
+
+    app = SimpleNamespace(update=lambda: events.append("app_update"))
+    rep = SimpleNamespace(orchestrator=SimpleNamespace(set_capture_on_play=capture_on_play))
+    monkeypatch.setattr(W.SDK, "_sdk_enable_extension", lambda name: events.append(name) or True)
+    monkeypatch.setattr(W.STARTUP, "_load_settings", lambda: Settings())
+    monkeypatch.setattr(W.STARTUP, "_load_replicator", lambda: rep)
+
+    def factory(*_args: Any) -> Any:
+        assert values[W.STARTUP.ORCHESTRATOR_ENABLED] is True
+        assert values[W.STARTUP.CAPTURE_ON_PLAY] is False
+        events.append("factory_before_environment")
+        raise RuntimeError("environment sentinel")
+
+    sealed: list[dict[str, Any]] = []
+    with pytest.raises(W.PullRecordFailure, match="environment sentinel"):
+        W.run_policy_record(value, app, seal_report=lambda report: sealed.append(dict(report)), capture_factory=factory)
+    assert events == [
+        "isaacsim.core.nodes", "app_update", "enable_orchestrator",
+        "disable_capture_on_play", "factory_before_environment",
+    ]
+    assert sealed[0]["startup"]["after"]["orchestrator_enabled"] is True
+    assert sealed[0]["technical_recording_complete"] is False
+
+
+@pytest.mark.parametrize("failure", ["extension", "readback"])
+def test_cold_start_failure_seals_before_factory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str,
+) -> None:
+    from types import SimpleNamespace
+
+    value = _validated(tmp_path)
+    events: list[str] = []
+    monkeypatch.setattr(W.SDK, "_sdk_enable_extension", lambda _name: failure != "extension")
+    monkeypatch.setattr(W.STARTUP, "_load_settings", lambda: SimpleNamespace(
+        get=lambda _key: False, set_bool=lambda *_args: None,
+    ))
+    monkeypatch.setattr(W.STARTUP, "_load_replicator", lambda: object())
+    app = SimpleNamespace(update=lambda: events.append("app_update"))
+    sealed: list[dict[str, Any]] = []
+    with pytest.raises(W.PullRecordFailure):
+        W.run_policy_record(
+            value, app, seal_report=lambda report: sealed.append(dict(report)),
+            capture_factory=lambda *_args: events.append("factory"),
+        )
+    assert "factory" not in events
+    assert sealed[0]["technical_recording_complete"] is False
+    assert sealed[0]["error_type"] == "builtins.RuntimeError"
+    assert ("활성화 실패" if failure == "extension" else "readback") in sealed[0]["error_message"]
+
+
+@pytest.mark.parametrize("after", [
+    {"orchestrator_enabled": False, "capture_on_play": False},
+    {"orchestrator_enabled": True, "capture_on_play": True},
+    {"orchestrator_enabled": 1, "capture_on_play": 0},
+])
+def test_startup_report_requires_observed_boolean_settings(after: dict[str, Any]) -> None:
+    with pytest.raises(ValueError, match="startup readback"):
+        W.verify_startup({"before": {}, "after": after})
