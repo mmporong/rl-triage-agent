@@ -428,3 +428,9 @@
 - 첫 모델 선택은 spool root가 준비되지 않아 `SpoolIntegrityError`로 멈췄다. Journal 예약 1건과 relay allocation은 남았지만 spool 요청 파일과 provider 호출은 없었다. 이 예약을 응답으로 채우거나 다시 보내지 않았다. 새 학습도 시작하지 않았다.
 - [새 실행판 v3](../bench/protocols/vision_transferred_e2e_20261027_v3.json)는 같은 두 입력·모델 인자·학습 상한을 유지하며 요청 폴더를 먼저 준비한다. [이전 시도와 비용 연결](../bench/protocols/vision_transferred_e2e_20261027_v3.infra.json)에 지연 사유와 새 종료 시각을 등록했다. 비용 시작 시각과 $5 구간·$35 전체 상한은 그대로다.
 - 이 준비 단계에서 Brev CLI는 원격 비영 종료 뒤 SSH 연결 확인과 명령 재실행을 보였다. 부수효과가 있는 host 준비 명령은 오류 원문과 실패 상태를 반환하는 외부 envelope로 감싸며, 이미 생성된 원장·결과를 덮어쓰지 않는다.
+
+### OPS-55: 완료 학습과 저장소 내부 증거 경로의 연결
+
+- 전송 E2E seed 2220의 CORRECTED 학습은 300회를 마치고 정리도 완료했지만, 다음 `training_evidence`가 Isaac Lab 로그의 외부 checkpoint 경로를 저장소 상대 참조로 바꾸지 못해 `HOLD`로 끝났다. 고정 평가는 실행하지 않았다. 원래 승인 소비와 unknown receipt, 완료 학습 원문을 보존한다.
+- 이 checkpoint는 기존 seed 2220 NONE과 SHA가 같다. 별도 정책이나 처음 보는 결함의 새 증거로 세지 않는다. 새 학습을 반복하지 않고 원문 해시를 확인한 저장소 내부 사본과 평가 전용 재개 경로를 준비한다.
+- [다음 학습의 경로 등록](../bench/protocols/vision_transferred_portable_lab_layout_20261027_v1.json)은 같은 Isaac Lab commit을 저장소 내부 실제 디렉터리에 복원한다. 인터프리터·학습 인자·소스는 유지하며 환경을 재설치하지 않는다. 이 기록만으로 회복을 판정하지 않는다.

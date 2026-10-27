@@ -21,6 +21,18 @@ X = importlib.import_module("vision_selection_execution_v1")
 UTC_TZ = timezone.utc  # noqa: UP017 - Python 3.10 compatibility
 
 
+class FixedFixtureDateTime(datetime):
+    @classmethod
+    def now(cls, tz=None):
+        value = datetime(2026, 10, 25, 1, tzinfo=UTC_TZ)
+        return value if tz is None else value.astimezone(tz)
+
+
+@pytest.fixture(autouse=True)
+def fixed_adapter_clock(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(A, "datetime", FixedFixtureDateTime)
+
+
 def write(path: Path, value: object) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, sort_keys=True) + "\n", encoding="utf-8")

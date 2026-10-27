@@ -167,7 +167,7 @@ def test_prepare_plan_uses_actual_materializer_and_call_initialize(
     polluted["rows"][0]["test_only_extra"] = True
     polluted_protocol = repo / "private/e2e-source-protocol-polluted.json"
     polluted_protocol.write_text(json.dumps(polluted, sort_keys=True) + "\n", encoding="utf-8")
-    with pytest.raises(ValueError, match="protocol row"):
+    with pytest.raises(ValueError, match="^실행 protocol LF SHA가 다르다$"):
         E.prepare_plan(
             repo, polluted_protocol, locations, repo / "private/polluted.json",
             execution_id="polluted",
@@ -179,7 +179,7 @@ def test_prepare_plan_uses_actual_materializer_and_call_initialize(
         row["source_protocol_sha256"] = "0" * 64
     rebound_protocol = repo / "private/e2e-source-protocol-rebound.json"
     rebound_protocol.write_text(json.dumps(rebound, sort_keys=True) + "\n", encoding="utf-8")
-    with pytest.raises(ValueError, match="source protocol LF SHA"):
+    with pytest.raises(ValueError, match="^실행 protocol LF SHA가 다르다$"):
         E.prepare_plan(repo, rebound_protocol, locations, repo / "private/rebound.json",
                        execution_id="rebound", source_anchor=anchor,
                        protocol_sha256=E._sha(rebound_protocol))

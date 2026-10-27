@@ -22,6 +22,7 @@ F = importlib.import_module("test_vision_selection_contract_v1")
 G = importlib.import_module("test_grounded_vision_observer_v1")
 AF = importlib.import_module("test_vision_selection_brev_adapter_v1")
 GRF = importlib.import_module("test_grounded_recovery")
+fixed_adapter_clock = AF.fixed_adapter_clock
 
 
 def write(path: Path, value: object) -> Path:
