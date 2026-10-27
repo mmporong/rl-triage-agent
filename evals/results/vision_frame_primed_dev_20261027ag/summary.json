@@ -1,0 +1,422 @@
+{
+  "schema": "vision_frame_trigger_development_result_v3",
+  "protocol_id": "frame-profile-20261027ag",
+  "protocol_sha256_lf": "d20df140998711cd6ee5fd122e850bdab5a17ea235f622c1680975463c16bab9",
+  "source_commit": "a4db0005279284fba9ad64cdecd21050f39b615f",
+  "checkout_commit": "9f8633d8829f02e56e0457331af56dde20557330",
+  "status": "failed_strict_prepare_callback_count",
+  "development_measurement": true,
+  "checkpoint_logical_id": "source-s2220-f1",
+  "checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+  "variant": "default_frame_primed",
+  "diagnostic_complete": false,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "dispatch_counts": {
+    "on_custom_event_requests_suppressed": 1,
+    "on_custom_event_underlying_calls": 0,
+    "orchestrator_step_calls": 2,
+    "schedule_write_calls": 0,
+    "send_og_event_requests_suppressed": 1,
+    "send_og_event_underlying_calls": 0
+  },
+  "capture_on_play": {
+    "after_startup": false,
+    "before": true,
+    "restore_changed": true,
+    "restored": true
+  },
+  "baseline": {
+    "attempted": true,
+    "callback_count_after": 0,
+    "callback_count_before": 0,
+    "callback_count_delta": 0,
+    "complete": true,
+    "physics_sha256_after": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+    "physics_sha256_before": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+    "physics_unchanged": true,
+    "physx_time_after_s": 0.009999999776482582,
+    "physx_time_before_s": 0.009999999776482582,
+    "physx_time_unchanged": true,
+    "scheduled_reference_time": [
+      29,
+      15
+    ]
+  },
+  "fabric_time": {
+    "all_captures_after_baseline": true,
+    "basis": "rep.orchestrator._orchestrator._sim_times_to_write[-1]",
+    "callbacks_match_scheduled_reference_time": false,
+    "captures": [
+      [
+        59,
+        30
+      ]
+    ],
+    "meaning": "scheduled capture reference time; current OgnReadFabricTime may be one frame ahead"
+  },
+  "callback_rows": [
+    {
+      "ordinal": 0,
+      "classification": "valid",
+      "frame_number": 59,
+      "reference_time": [
+        59,
+        30
+      ],
+      "marker_code": 3,
+      "window": "preparing",
+      "raw_payload_sha256": "af7bd4b4d7b55fbcc6218f001ae75d9369cde238a807f28e5f7b481fecd213eb",
+      "components": {
+        "camera_identity": {
+          "metadata": {
+            "length": 19,
+            "type": "builtins.str"
+          },
+          "sha256": "bf4ddcf7bbe055872b15fb2bcfdb3d683f5ca3016afcfd453a03435817d1b840"
+        },
+        "camera_params": {
+          "metadata": {
+            "key_types": [
+              "builtins.str"
+            ],
+            "length": 18,
+            "type": "builtins.dict"
+          },
+          "sha256": "b2bf73513ed5414024fa92216d76458e795e09b827941376be0042d4ed05e54a"
+        },
+        "distribution_outputs": {
+          "metadata": {
+            "key_types": [],
+            "length": 0,
+            "type": "builtins.dict"
+          },
+          "sha256": "8408bf451ef64c1763f6d69a5a703e0adcaa5c024a9689f32234d61ddb6c5ad8"
+        },
+        "isaac_read_times": {
+          "metadata": {
+            "key_types": [
+              "builtins.str"
+            ],
+            "length": 11,
+            "type": "builtins.dict"
+          },
+          "sha256": "2634bec9797f73f68090af76d881406546a5593e2db36df73a2023fc9cf4c116"
+        },
+        "named_outputs": {
+          "metadata": {
+            "key_types": [],
+            "length": 0,
+            "type": "builtins.dict"
+          },
+          "sha256": "8408bf451ef64c1763f6d69a5a703e0adcaa5c024a9689f32234d61ddb6c5ad8"
+        },
+        "reference_time": {
+          "metadata": {
+            "length": 2,
+            "type": "builtins.tuple"
+          },
+          "sha256": "b0a7c6a78ef0f15e33db766808bc671e27a04f52aad3bf6fb8b751100c31ff9e"
+        },
+        "render_product_identity": {
+          "metadata": {
+            "length": 10,
+            "type": "builtins.str"
+          },
+          "sha256": "825bbcdf01d00fac5fdfa067bde8cbc092bff1f7f1e1880d405cfb0301e51777"
+        },
+        "resolution": {
+          "metadata": {
+            "dtype": "<i4",
+            "nbytes": 8,
+            "shape": [
+              2
+            ],
+            "type": "numpy.ndarray"
+          },
+          "sha256": "b39112d377c9b84f6e288bbfc7cd4b94c2447b71f2c5a173c6c2408bc9253120"
+        },
+        "rgb_data": {
+          "metadata": {
+            "dtype": "|u1",
+            "nbytes": 1228800,
+            "shape": [
+              480,
+              640,
+              4
+            ],
+            "type": "numpy.ndarray"
+          },
+          "sha256": "f0ef775fff1b2eb87e0e9c27dff0b84faa4ec767265eda707d4222be00705561"
+        },
+        "semantic_labels": {
+          "metadata": {
+            "key_types": [
+              "builtins.str"
+            ],
+            "length": 7,
+            "type": "builtins.dict"
+          },
+          "sha256": "ac2edc013e3c57562ca10e0aecc9f23662d498cc171a651b438de795f2421a17"
+        },
+        "semantic_mask": {
+          "metadata": {
+            "dtype": "<u4",
+            "nbytes": 1228800,
+            "shape": [
+              480,
+              640
+            ],
+            "type": "numpy.ndarray"
+          },
+          "sha256": "37dab9b361ac874d9d68aa08d88b5dd777a522cae6452a969c5ce3738c3e241c"
+        },
+        "semantic_segmentation": {
+          "metadata": {
+            "key_types": [
+              "builtins.str"
+            ],
+            "length": 2,
+            "type": "builtins.dict"
+          },
+          "sha256": "4f2627890456f2e2f1055163d76a8130277e5b2c34881be698e506a422128928"
+        },
+        "trigger_outputs": {
+          "metadata": {
+            "key_types": [],
+            "length": 0,
+            "type": "builtins.dict"
+          },
+          "sha256": "8408bf451ef64c1763f6d69a5a703e0adcaa5c024a9689f32234d61ddb6c5ad8"
+        },
+        "writer_swh_frame_number": {
+          "metadata": {
+            "bit_length": 0,
+            "type": "builtins.int"
+          },
+          "sha256": "bc9e34c1df51acf2c849b487f237da6bfc0b9914d76cdb023dcd0161c55ed440"
+        }
+      }
+    },
+    {
+      "ordinal": 1,
+      "classification": "valid",
+      "frame_number": 59,
+      "reference_time": [
+        59,
+        30
+      ],
+      "marker_code": 3,
+      "window": "preparing",
+      "raw_payload_sha256": "af7bd4b4d7b55fbcc6218f001ae75d9369cde238a807f28e5f7b481fecd213eb",
+      "components": {
+        "camera_identity": {
+          "metadata": {
+            "length": 19,
+            "type": "builtins.str"
+          },
+          "sha256": "bf4ddcf7bbe055872b15fb2bcfdb3d683f5ca3016afcfd453a03435817d1b840"
+        },
+        "camera_params": {
+          "metadata": {
+            "key_types": [
+              "builtins.str"
+            ],
+            "length": 18,
+            "type": "builtins.dict"
+          },
+          "sha256": "b2bf73513ed5414024fa92216d76458e795e09b827941376be0042d4ed05e54a"
+        },
+        "distribution_outputs": {
+          "metadata": {
+            "key_types": [],
+            "length": 0,
+            "type": "builtins.dict"
+          },
+          "sha256": "8408bf451ef64c1763f6d69a5a703e0adcaa5c024a9689f32234d61ddb6c5ad8"
+        },
+        "isaac_read_times": {
+          "metadata": {
+            "key_types": [
+              "builtins.str"
+            ],
+            "length": 11,
+            "type": "builtins.dict"
+          },
+          "sha256": "2634bec9797f73f68090af76d881406546a5593e2db36df73a2023fc9cf4c116"
+        },
+        "named_outputs": {
+          "metadata": {
+            "key_types": [],
+            "length": 0,
+            "type": "builtins.dict"
+          },
+          "sha256": "8408bf451ef64c1763f6d69a5a703e0adcaa5c024a9689f32234d61ddb6c5ad8"
+        },
+        "reference_time": {
+          "metadata": {
+            "length": 2,
+            "type": "builtins.tuple"
+          },
+          "sha256": "b0a7c6a78ef0f15e33db766808bc671e27a04f52aad3bf6fb8b751100c31ff9e"
+        },
+        "render_product_identity": {
+          "metadata": {
+            "length": 10,
+            "type": "builtins.str"
+          },
+          "sha256": "825bbcdf01d00fac5fdfa067bde8cbc092bff1f7f1e1880d405cfb0301e51777"
+        },
+        "resolution": {
+          "metadata": {
+            "dtype": "<i4",
+            "nbytes": 8,
+            "shape": [
+              2
+            ],
+            "type": "numpy.ndarray"
+          },
+          "sha256": "b39112d377c9b84f6e288bbfc7cd4b94c2447b71f2c5a173c6c2408bc9253120"
+        },
+        "rgb_data": {
+          "metadata": {
+            "dtype": "|u1",
+            "nbytes": 1228800,
+            "shape": [
+              480,
+              640,
+              4
+            ],
+            "type": "numpy.ndarray"
+          },
+          "sha256": "f0ef775fff1b2eb87e0e9c27dff0b84faa4ec767265eda707d4222be00705561"
+        },
+        "semantic_labels": {
+          "metadata": {
+            "key_types": [
+              "builtins.str"
+            ],
+            "length": 7,
+            "type": "builtins.dict"
+          },
+          "sha256": "ac2edc013e3c57562ca10e0aecc9f23662d498cc171a651b438de795f2421a17"
+        },
+        "semantic_mask": {
+          "metadata": {
+            "dtype": "<u4",
+            "nbytes": 1228800,
+            "shape": [
+              480,
+              640
+            ],
+            "type": "numpy.ndarray"
+          },
+          "sha256": "37dab9b361ac874d9d68aa08d88b5dd777a522cae6452a969c5ce3738c3e241c"
+        },
+        "semantic_segmentation": {
+          "metadata": {
+            "key_types": [
+              "builtins.str"
+            ],
+            "length": 2,
+            "type": "builtins.dict"
+          },
+          "sha256": "4f2627890456f2e2f1055163d76a8130277e5b2c34881be698e506a422128928"
+        },
+        "trigger_outputs": {
+          "metadata": {
+            "key_types": [],
+            "length": 0,
+            "type": "builtins.dict"
+          },
+          "sha256": "8408bf451ef64c1763f6d69a5a703e0adcaa5c024a9689f32234d61ddb6c5ad8"
+        },
+        "writer_swh_frame_number": {
+          "metadata": {
+            "bit_length": 0,
+            "type": "builtins.int"
+          },
+          "sha256": "bc9e34c1df51acf2c849b487f237da6bfc0b9914d76cdb023dcd0161c55ed440"
+        }
+      }
+    }
+  ],
+  "callback_rows_dropped": 0,
+  "prepare_valid_callbacks": 2,
+  "duplicate_payloads_identical": true,
+  "identical_component_count": 14,
+  "arms_completed": 0,
+  "policy_probe_reached": false,
+  "primary_error": {
+    "error_message": "prepare callback 계약이 실패했다",
+    "error_type": "builtins.RuntimeError"
+  },
+  "wall_s": 32.12289886099998,
+  "child_exit_code": 0,
+  "child_exit_accepted": false,
+  "parent_cleanup_verified": true,
+  "gpu_before": [],
+  "gpu_after": [],
+  "sdk_environment_close_complete": false,
+  "sdk_secondary_errors": [
+    {
+      "error_type": "builtins.RuntimeError",
+      "phase": "environment_close"
+    }
+  ],
+  "training_actions": 0,
+  "model_api_requests": 0,
+  "full_recordings": 0,
+  "infrastructure_attempts": [
+    {
+      "attempt": "ag_boot",
+      "stage": "before_initialize",
+      "gpu_measurement_attempts": 0,
+      "confirmed_cause": "transient_UNHEALTHY_rejected",
+      "estimated_compute_usd": "0.107019"
+    },
+    {
+      "attempt": "ag_retry1",
+      "stage": "before_initialize",
+      "gpu_measurement_attempts": 0,
+      "confirmed_cause": "RUNNING_without_HEALTHY_passed_boot_gate",
+      "estimated_compute_usd": "0.021769"
+    },
+    {
+      "attempt": "ag_retry2",
+      "stage": "candidate_budget_admission",
+      "gpu_measurement_attempts": 0,
+      "confirmed_cause": "exclusive_budget_receipt_collision",
+      "estimated_compute_usd": "0.119469"
+    }
+  ],
+  "infrastructure_fixes_actual_passed": {
+    "healthy_readiness_twice": true,
+    "initialize": true,
+    "admission": true,
+    "two_distinct_budget_receipts": true
+  },
+  "evidence_sha256": {
+    "execution": "ff7816e09e25fc472caf5589d28f942c170168029b4c503e7341d0f1284af13d",
+    "frame_trigger_report": "b1d4d4723d3bfffa2ac602765301feb24e2f865e33c13ee3a768dad02283d17d",
+    "primary_error": "b50fc9c1987bccf54faaf1fd79292738706dca58cf077b12eac05fd5a7cbcdaa",
+    "strong_transfer": "6dbda1f598c334e299621bf6c1407595c9a0aac80625558e56cc9f612120370c",
+    "stop_receipt": "ed7527c2c0fc88f2a9fd1ccb0b2e0e10d4f6c310a7354db628407315aa1207c0"
+  },
+  "interpretation": {
+    "fact": "baseline은 callback 0·물리 상태·PhysX 시각 불변을 통과했다. 다음 prepare에는 같은 frame/reference time의 유효 callback 두 건이 들어왔고 전체 payload와 14개 성분 SHA가 모두 같았다.",
+    "inference": "baseline을 분리하는 것만으로 exact-one 전달을 확보하지 못했다. SDK 내부 인과는 미확정이며 Writer trigger 변형을 더 반복하지 않는다. 별도 annotator-pull 경계는 아직 실제 GPU에서 확인하지 않았다."
+  },
+  "resource_state": {
+    "status": "STOPPED",
+    "observed_at_utc": "2026-10-27T00:35:28.732636+00:00",
+    "estimated_lifecycle_compute_usd": "0.151435",
+    "estimated_protocol_group_compute_usd": "0.399692",
+    "cumulative_compute_estimate_usd": "18.211504",
+    "remaining_program_budget_usd": "1.788496",
+    "program_cap_usd": "20.000000",
+    "lifecycle_cap_usd": "1.000000",
+    "provider_invoice_verified": false,
+    "storage_charges_included": false
+  }
+}

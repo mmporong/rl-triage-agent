@@ -287,3 +287,23 @@
 - 준비 프레임을 분리한 새 진단은 렌더 함수에 전체 Play 설정을 넘겨 `rt_subframes` 조회에서 실패했다. 해당 함수는 `profile.camera`를 입력으로 받는다.
 - 실제 렌더 step과 callback은 모두 0건이므로 Writer 가설은 평가되지 않았다. 실패 원문과 종료 증거를 보존했으며, 다음 판은 중첩 카메라 설정을 소비하는 실제 렌더 함수로 회귀를 확인한다.
 - 근거: [실행 결과](../evals/results/vision_frame_primed_dev_20261027af/summary.json).
+
+### OPS-31: 클라우드 기동 상태와 실행 준비 상태
+
+- `RUNNING` 조회 뒤에도 건강 상태가 `UNAVAILABLE`이거나 다음 조회가 `STARTING`일 수 있었다. 상태 문자열 하나만으로 원격 실행을 시작하면 초기화 경계에서 중단된다.
+- 실행기는 `RUNNING`, build `COMPLETED`, shell `READY`, health `HEALTHY`를 간격을 둔 두 조회에서 확인하고 단계 입장에서도 다시 확인한다. 비동기 Stop도 접수와 완료를 구분한다.
+- 수정판은 이 경계를 넘어 초기화·등록·준비 검사와 실제 렌더링까지 도달했다. 기동 중단 두 건은 렌더링 결과와 구분해 보존하고 비용에 포함했다.
+
+### OPS-33: 두 입장 검사의 배타 기록 경로 충돌
+
+- 실행 입장과 후보 입장은 같은 Start의 비용을 각각 확인한다. 두 검사가 동일 파일을 배타 생성하면 두 번째 검사에서 `FileExistsError`가 난다. 해당 실행은 후보 렌더링 전에 중단됐다.
+- 기록을 `lifecycle_admission`과 `candidate_admission` 단계별 경로로 분리했다. 같은 Start에서 실제 예산 함수를 두 번 호출하는 통합 회귀와 상한 초과 거부를 확인했으며, 실제 후속 실행도 두 입장을 통과했다. 기존 기록은 덮어쓰지 않는다.
+- 근거: [실제 렌더 결과와 선행 중단 요약](../evals/results/vision_frame_primed_dev_20261027ag/summary.json).
+
+### CAP-20: 기본 Writer의 baseline 뒤에도 동일 callback 두 건
+
+- 관찰: 기본 Writer를 attach한 뒤 baseline 렌더 한 번을 분리했다. 이 구간은 callback 0, physics SHA와 PhysX 시각 불변을 통과했다. 다음 prepare 렌더 한 번에는 frame 59, reference time `[59, 30]`인 유효 callback 두 건이 들어왔다.
+- 확인: 두 payload 전체와 14개 성분 SHA가 모두 같았다. event·schedule 실호출은 0이었고 baseline 포함 renderer step은 총 두 번이었다. 콜백은 삭제하거나 병합하지 않았으며 exact-one 조건은 실패로 보존했다.
+- 실행: 32.123초, AABA arm·정책 추론 확인 미도달, 새 학습·모델 API·전체 녹화 0. 부모 cleanup과 GPU process 부재를 확인하고 소유 VM의 정지를 완료했다. SDK 환경 close의 후속 오류도 원문에 남아 있다.
+- 판단: 준비 프레임을 분리하는 것만으로 단일 전달을 확보하지 못했다. SDK 내부 원인은 미확정이다. Writer trigger 변형을 더 반복하지 않고, annotator 출력과 frame·시각·카메라·마커·물리 상태를 보존하는 별도 수집 경계를 검증한다. 새 방식의 성공은 아직 확인되지 않았다.
+- 근거: [실제 결과](../evals/results/vision_frame_primed_dev_20261027ag/summary.json).
