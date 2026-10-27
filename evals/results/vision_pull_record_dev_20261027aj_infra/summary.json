@@ -1,0 +1,50 @@
+{
+  "schema": "vision_pull_record_infrastructure_summary_v1",
+  "protocol": "bench/protocols/vision_pull_record_20261027_v2.json",
+  "protocol_sha256_lf": "7ea0dc825e02438564fb9e11f43a1ebadaf8b6623a9e41741cd3ecbfdb956e40",
+  "source_commit": "299a8b176a9466a767ec13e89c79f01037731a2f",
+  "protocol_commit": "7934f621003bb9fdf6b588db4133e1fc6e143662",
+  "outcome": "infrastructure_failure_before_capture",
+  "stage": "initialize_response_validation",
+  "setup": {
+    "completed": true,
+    "validated_source_files": 359,
+    "validated_stop_rows": 22,
+    "install_attempted": false,
+    "returned_schema": "vision_native_policy_record_setup_v1",
+    "client_expected_schema": "vision_native_policy_record_ai_setup_v1"
+  },
+  "confirmed_cause": "설정 완료 응답의 스키마 이름과 클라이언트 기대값이 일치하지 않았다.",
+  "gpu_candidate_executions": 0,
+  "training_actions": 0,
+  "model_api_requests": 0,
+  "full_recordings": 0,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "owned_vm_status": "STOPPED",
+  "stop_observed_at_utc": "2026-10-27T02:41:58.991152+00:00",
+  "gpu_process_observation": {
+    "observed": false,
+    "count": null,
+    "basis": "VM 정지 뒤 추가 GPU 조회는 수행하지 않았다."
+  },
+  "evidence_sha256": {
+    "lifecycle": "2be6e519ed64e4e47fad87db34b4e692bc581b36419d827a71529a9cb57ed5b9",
+    "setup_stdout": "cc14fbf9bd94f8d55f4b66d0cb89025e05f0f34a9f38ab7081ff055a2261c5b9",
+    "infrastructure_prefix_ledger": "c22290a32bc49eea0d6148b3d9e15f894b1eed1fe6ad9866e29e12fc457bad36",
+    "metadata_copy_verification": "9f74b9a847e1bd6d684ae2a51cc0af8929995853cb36dc31b9d8dae92eb2e9a6"
+  },
+  "metadata_files_verified": 202,
+  "cost": {
+    "this_start_estimate_usd": "0.058680",
+    "cumulative_compute_estimate_usd": "18.539357",
+    "remaining_program_budget_usd": "1.460643",
+    "program_cap_usd": "20.000000",
+    "original_batch_cap_usd": "1.000000",
+    "remaining_original_batch_budget_usd": "0.941320",
+    "estimated_wall_clock_seconds": "121.407803",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "interpretation": "후보 영상 수집은 시작되지 않았으므로 수집 방식의 성패는 평가되지 않았다. 기존 판정 기준과 원문을 보존하고 응답 계약의 CPU 회귀와 별도 인프라 시도로 구분한다."
+}
