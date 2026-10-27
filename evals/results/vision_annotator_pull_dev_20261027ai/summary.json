@@ -1,0 +1,222 @@
+{
+  "schema": "vision_annotator_pull_development_result_v2",
+  "protocol_id": "annotator-pull-20261027ai",
+  "status": "diagnostic_passed",
+  "source_commit": "2cff01e379bd582904dceb0d9753a78b3affb53b",
+  "protocol_commit": "d673a29bf9b00f00c858fdbfbbd815c353517304",
+  "protocol": {
+    "path": "bench/protocols/vision_annotator_pull_20261027_v2.json",
+    "sha256_lf": "de692af3b0b1720f7106c5dc1c15990a9703f3441b4ec10992763690d263336b"
+  },
+  "checkpoint": {
+    "logical_id": "source-s2220-f1",
+    "sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474"
+  },
+  "validation": {
+    "approved": true,
+    "atomicity_claimed": false,
+    "camera_sequence": [
+      "A",
+      "A",
+      "B",
+      "A"
+    ],
+    "capture_count": 4,
+    "frame_numbers": [
+      57,
+      58,
+      59,
+      60
+    ],
+    "marker_codes": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "physics_sha256": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+    "rational_times": [
+      [
+        19,
+        10
+      ],
+      [
+        29,
+        15
+      ],
+      [
+        59,
+        30
+      ],
+      [
+        2,
+        1
+      ]
+    ],
+    "schema": "vision_annotator_pull_validation_v1"
+  },
+  "native_update_counter": {
+    "after_extension_update": 15,
+    "fail_closed": true,
+    "initial_value": 14,
+    "method": "app.get_update_number()",
+    "source": "omni.kit.app.IApp.get_update_number"
+  },
+  "captures": [
+    {
+      "ordinal": 0,
+      "step": {
+        "call_count": 1,
+        "delta_time_s": 0.0,
+        "pause_timeline": false,
+        "rt_subframes": 1
+      },
+      "app_update_counts": {
+        "after_pull": 58,
+        "after_render_before_pull": 58,
+        "before_render": 57
+      },
+      "render_window_app_updates": 1,
+      "pull_window_app_updates": 0,
+      "physics_sha256_before": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+      "physics_sha256_after": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+      "simulation_time_s": 0.009999999776482582
+    },
+    {
+      "ordinal": 1,
+      "step": {
+        "call_count": 1,
+        "delta_time_s": 0.0,
+        "pause_timeline": false,
+        "rt_subframes": 1
+      },
+      "app_update_counts": {
+        "after_pull": 59,
+        "after_render_before_pull": 59,
+        "before_render": 58
+      },
+      "render_window_app_updates": 1,
+      "pull_window_app_updates": 0,
+      "physics_sha256_before": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+      "physics_sha256_after": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+      "simulation_time_s": 0.009999999776482582
+    },
+    {
+      "ordinal": 2,
+      "step": {
+        "call_count": 1,
+        "delta_time_s": 0.0,
+        "pause_timeline": false,
+        "rt_subframes": 1
+      },
+      "app_update_counts": {
+        "after_pull": 60,
+        "after_render_before_pull": 60,
+        "before_render": 59
+      },
+      "render_window_app_updates": 1,
+      "pull_window_app_updates": 0,
+      "physics_sha256_before": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+      "physics_sha256_after": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+      "simulation_time_s": 0.009999999776482582
+    },
+    {
+      "ordinal": 3,
+      "step": {
+        "call_count": 1,
+        "delta_time_s": 0.0,
+        "pause_timeline": false,
+        "rt_subframes": 1
+      },
+      "app_update_counts": {
+        "after_pull": 61,
+        "after_render_before_pull": 61,
+        "before_render": 60
+      },
+      "render_window_app_updates": 1,
+      "pull_window_app_updates": 0,
+      "physics_sha256_before": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+      "physics_sha256_after": "f3f004ad318df2c8807249aef006071e66482d5f431447b5943a464cbc1a3cee",
+      "simulation_time_s": 0.009999999776482582
+    }
+  ],
+  "policy_probe": {
+    "action": {
+      "dtype": "torch.float32",
+      "sha256": "da9031d683cb8303f51842ffa2272b00036713fb1cf525962b674633648abf5c",
+      "shape": [
+        1,
+        12
+      ]
+    },
+    "actual_environment_observation_used": true,
+    "annotators_detached_before_policy_step": true,
+    "capture_completed_before_policy_step": true,
+    "checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+    "command": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "environment_steps": 1,
+    "observation": {
+      "dtype": "torch.float32",
+      "sha256": "685a4b15b3464ff29f2b0e3baefaa65aee18661599d4a8a10cabe105b0e3c165",
+      "shape": [
+        1,
+        48
+      ]
+    },
+    "schema": "vision_annotator_pull_policy_probe_v1",
+    "step_counter_after": 1,
+    "step_counter_before": 0
+  },
+  "sdk_lifecycle": {
+    "annotators_attached": true,
+    "annotators_detached": true,
+    "environment_closed": true,
+    "render_product_destroyed": true
+  },
+  "writer_calls": {
+    "attach": 0,
+    "callback": 0,
+    "create": 0,
+    "detach": 0
+  },
+  "execution": {
+    "completed": true,
+    "diagnostic_complete": true,
+    "exit_code": 0,
+    "wall_s": 33.73114804400001,
+    "cleanup_verified": true,
+    "gpu_before": [],
+    "gpu_after": []
+  },
+  "diagnostic_complete": true,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "atomicity_claimed": false,
+  "new_training_actions": 0,
+  "new_model_api_requests": 0,
+  "full_recordings": 0,
+  "raw_evidence": {
+    "report_sha256": "d6fddb9a6128b600f0b02460511c9d42d4d8e3393f1d7e2f16d429461c80bce9",
+    "execution_sha256": "66027492d0c49306f6bd5ecca873148b6abd6caf0693f5c7ce23f6656efa7e98",
+    "npz_artifact_count": 4,
+    "strong_raw_files": 501,
+    "archive_sha256": "8072726db45a470026c41a8aecae02b75e375af825176a64286a7ba80083b258",
+    "inventory_sha256": "8b7d23e8af68429a511968f0144583a0bfb7fcee33c2ad57de648a5ff24e8776",
+    "strong_transfer_sha256": "aac59a79449cc859fd0107ce94f4066fbbf9b3b441c9b0acd5e86d467de409a8",
+    "canonical_final_stop_sha256": "e786d0b59dd2d8f325da00ed9f7172e718b061ec7804d1c651f6b032eb54ce17"
+  },
+  "owned_vm_status": "STOPPED",
+  "cost": {
+    "this_lifecycle_estimate_usd": "0.150112",
+    "cumulative_compute_estimate_usd": "18.480677",
+    "remaining_program_budget_usd": "1.519323",
+    "program_cap_usd": "20.000000",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "interpretation": "같은 F1 checkpoint에서 네 장면의 연속 annotator 읽기와 후속 정책 한 step이 등록 조건을 통과했다. 이는 수집 경계의 개발 진단이며 전체 정책 영상·정상/실패 묶음·모델 비교의 완료를 뜻하지 않는다."
+}
