@@ -159,6 +159,13 @@ source seed 2220·2221의 정상·F1 정책 네 개가 각각 native 동기화 �
 두 seed의 실행 검사는 정상과 F1을 구분했지만, 영상 추가로 첫 검사 선택이 개선되지는 않았다.
 이 단계의 완료와 교정 후 회복·영상 확인의 완료는 구분한다.
 
+[seed 2220 영상과 원문 해시](../evals/results/vision_transferred_pull_record_dev_20261027b_v3/summary.json),
+[seed 2221 영상과 원문 해시](../evals/results/vision_transferred_pull_record_dev_20261027c_v1/summary.json)를 공개했다.
+추가 수집·검사 단계는 소유 작업 종료와 자료 회수 뒤 VM `STOPPED`를 확인해 마감했다.
+이 단계의 Start부터 Stop 관찰까지 견적 계산 상한은 $3.755867, 이전 단계 포함 $28.210778이다.
+청구서 확정액·저장 비용·다른 프로젝트 비용과 구분한다.
+[계산 원문](../evals/results/vision_transferred_pull_record_dev_20261027c_v1/compute-reconciliation.json).
+
 ## CPU 실행 명령
 
 ```powershell
