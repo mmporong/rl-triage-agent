@@ -434,3 +434,8 @@
 - 전송 E2E seed 2220의 CORRECTED 학습은 300회를 마치고 정리도 완료했지만, 다음 `training_evidence`가 Isaac Lab 로그의 외부 checkpoint 경로를 저장소 상대 참조로 바꾸지 못해 `HOLD`로 끝났다. 고정 평가는 실행하지 않았다. 원래 승인 소비와 unknown receipt, 완료 학습 원문을 보존한다.
 - 이 checkpoint는 기존 seed 2220 NONE과 SHA가 같다. 별도 정책이나 처음 보는 결함의 새 증거로 세지 않는다. 새 학습을 반복하지 않고 원문 해시를 확인한 저장소 내부 사본과 평가 전용 재개 경로를 준비한다.
 - [다음 학습의 경로 등록](../bench/protocols/vision_transferred_portable_lab_layout_20261027_v1.json)은 같은 Isaac Lab commit을 저장소 내부 실제 디렉터리에 복원한다. 인터프리터·학습 인자·소스는 유지하며 환경을 재설치하지 않는다. 이 기록만으로 회복을 판정하지 않는다.
+
+### OPS-56: 완료 고정 평가의 arm 이름과 고리 검증기의 이름 대응
+
+- seed 2221의 교정 학습과 고정 평가 자식은 정상 종료했다. backend는 `NONE`·`CORRECTED`라는 이름의 원문 report를 생성했지만, 고리 adapter는 mapping 키만 `none`·`corrected`로 바꾼 뒤 report 본문의 이름도 소문자라고 검증해 `HOLD`를 반환했다. 이 시도의 unknown receipt와 평가 원문은 보존한다.
+- 재개 판은 원문의 arm 이름을 명시한 대응표로 검증하고, 26조건·checkpoint·프로토콜·수치 재집계·실행 및 원장 SHA 검증을 유지한다. 원본 report를 수정하거나 완료 학습을 반복하지 않는다. seed 2221은 이미 완료된 평가를 읽는 개발 측정이며, seed 2220의 누락된 평가는 별도 등록 후 한 번만 실행한다.

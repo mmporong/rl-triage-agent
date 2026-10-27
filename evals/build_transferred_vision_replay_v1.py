@@ -188,16 +188,21 @@ def _escape(value: Any) -> str:
     return html.escape(str(value), quote=True)
 
 
+def _script_json(value: Any) -> str:
+    """raw script text로 읽을 수 있는 JSON을 만들고 닫힘 태그 시작을 막는다."""
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
+
+
 def _seed_card(seed: int, pair: dict, row: dict | None, root: Path, output: Path) -> str:
-    error = pair["measurements"]["F1"]["track_lin_vel_xy_exp_rel_error"]
     if row is None:
+        error = pair["measurements"]["F1"]["track_lin_vel_xy_exp_rel_error"]
         return f"""
         <article class="seed-card pending">
           <header><span>seed {seed}</span><strong>E2E 결과 대기</strong></header>
           <div class="timeline compact">
             <div><b>관찰</b><span>등록 F1 개발 영상</span></div>
             <div><b>선택</b><span>P_reward</span></div>
-            <div><b>검사</b><span>abnormal · 상대오차 {_escape(f'{error:.3f}')}</span></div>
+            <div><b>비교 단계 검사</b><span>abnormal · 상대오차 {_escape(f'{error:.3f}')}</span></div>
             <div class="pending-step"><b>교정 이후</b><span>공개 export가 생기기 전에는 표시하지 않음</span></div>
           </div>
         </article>"""
@@ -216,7 +221,7 @@ def _seed_card(seed: int, pair: dict, row: dict | None, root: Path, output: Path
         <div class="timeline">
           <div><b>관찰</b><img src="{_escape(_web_path(root, output, frames['fault']['path']))}" alt="seed {seed} F1 프레임"></div>
           <div><b>선택</b><span>P_reward</span></div>
-          <div><b>검사</b><span>abnormal · 상대오차 {_escape(f'{error:.3f}')}</span></div>
+          <div><b>검사</b><span>새 E2E 확인 검사 · abnormal</span></div>
           <div><b>교정</b><span>등록 보상 복원 · restart</span></div>
           <div><b>고정 평가</b><span>RMSE {_escape(f"{row['fixed_eval']['lin_vel_rmse_mps']:.3f}")} m/s · 낙상률 {_escape(f"{row['fixed_eval']['fall_rate']:.3f}")}</span></div>
           <div><b>후속 관찰</b><img src="{_escape(_web_path(root, output, frames['corrected']['path']))}" alt="seed {seed} corrected 프레임"></div>
@@ -228,7 +233,7 @@ def render(comparison: dict, e2e: dict, root: Path, output: Path) -> str:
     rows = {row["seed"]: row for row in e2e["seeds"]}
     cards = "".join(_seed_card(seed, comparison["pairs"][seed], rows.get(seed), root, output) for seed in SEEDS)
     state = "E2E 2/2 recovered" if e2e["status"] == "complete" else "E2E 공개 결과 대기"
-    source_json = json.dumps({"comparison": comparison["files"], "e2e_status": e2e["status"]}, ensure_ascii=False)
+    source_json = _script_json({"comparison": comparison["files"], "e2e_status": e2e["status"]})
     return f"""<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>RL Triage · Vision E2E Replay</title>
@@ -258,10 +263,10 @@ footer{{position:absolute;left:64px;right:64px;bottom:18px;display:flex;justify-
 </style></head><body><div id="viewport"><main id="stage">
 <section class="top"><div><div class="kicker">NVIDIA · RL TRIAGE</div><h1>관찰에서 교정 후 평가까지, 근거 한 줄로 추적</h1>
 <p class="scope">등록 F1 두 seed 개발판 · 처음 보는 결함 평가 아님 · 세 입력 조건 비교는 observation_only</p></div><div class="badge">{_escape(state)}</div></section>
-<section class="evidence"><div><b>모델 선택</b><span>24/24 유효 · P_reward 24회</span></div><div><b>영상에 따른 선택 변화</b><span>0회</span></div><div><b>확인 검사</b><span>NONE normal · F1 abnormal</span></div></section>
+<section class="evidence"><div><b>모델 선택</b><span>24/24 유효 · P_reward 24회</span></div><div><b>영상에 따른 선택 변화</b><span>0회</span></div><div><b>비교 단계 검사</b><span>NONE normal · F1 abnormal</span></div></section>
 <section class="seeds">{cards}</section>
-<footer><span>후속 영상 관찰은 회복 판정에 사용하지 않음 · used_for_decision=false</span><span>1920 × 1080 · overflow 0</span></footer>
-</main></div><script type="application/json" id="source-bindings">{html.escape(source_json)}</script>
+<footer><span>후속 관찰 used_for_decision=false · 초기 영상+로그 선택 used_for_decision=true · 선택 변화 0회와 별도</span><span>1920 × 1080 · overflow 0</span></footer>
+</main></div><script type="application/json" id="source-bindings">{source_json}</script>
 <script>(()=>{{const s=document.getElementById('stage'),v=document.getElementById('viewport');function fit(){{const k=Math.min(innerWidth/1920,innerHeight/1080);s.style.transform=`scale(${{k}})`;s.style.left=`${{(innerWidth-1920*k)/2}}px`;s.style.top=`${{(innerHeight-1080*k)/2}}px`;requestAnimationFrame(()=>{{window.__REPLAY_LAYOUT__={{width:1920,height:1080,overflowX:Math.max(0,s.scrollWidth-1920),overflowY:Math.max(0,s.scrollHeight-1080)}};v.dataset.overflow=window.__REPLAY_LAYOUT__.overflowX+window.__REPLAY_LAYOUT__.overflowY===0?'0':'1'}})}}addEventListener('resize',fit);fit()}})();</script>
 </body></html>\n"""
 

@@ -1,6 +1,7 @@
 import copy
 import hashlib
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -84,6 +85,16 @@ def _complete(root: Path) -> dict:
     return {**_pending(), "status": "complete", "seeds": rows}
 
 
+def _source_bindings(rendered: str) -> tuple[str, dict]:
+    match = re.search(
+        r'<script type="application/json" id="source-bindings">(.*?)</script>',
+        rendered,
+        flags=re.DOTALL,
+    )
+    assert match is not None
+    return match.group(1), json.loads(match.group(1))
+
+
 def test_actual_comparison_is_cross_validated():
     result = R.validate_comparison(ROOT)
     assert result["summary"]["validity"]["valid"] == 24
@@ -113,7 +124,28 @@ def test_pending_renders_no_invented_recovery_media_or_frames(tmp_path):
     assert "<video" not in rendered and "<img" not in rendered
     assert "2/2 recovered" not in rendered
     assert "영상에 따른 선택 변화</b><span>0회" in rendered
-    assert "후속 영상 관찰은 회복 판정에 사용하지 않음" in rendered
+    assert rendered.count("비교 단계 검사") == 3
+    assert "후속 관찰 used_for_decision=false" in rendered
+    assert "초기 영상+로그 선택 used_for_decision=true" in rendered
+    assert "선택 변화 0회와 별도" in rendered
+
+
+def test_source_bindings_is_raw_json_bound_to_render_inputs(tmp_path):
+    root = _root(tmp_path)
+    manifest = Path("pending.json")
+    _write(root / manifest, _pending())
+    rendered = R.build(root, manifest, Path("out/replay.html"))
+    raw, parsed = _source_bindings(rendered)
+    comparison = R.validate_comparison(root)
+    assert parsed == {"comparison": comparison["files"], "e2e_status": "pending"}
+    assert "&quot;" not in raw
+
+
+def test_script_json_escapes_tag_open_without_changing_value():
+    value = {"path": "</script><script>alert(1)</script>", "sha256": "a" * 64}
+    encoded = R._script_json(value)
+    assert "<" not in encoded and "\\u003c/script>" in encoded
+    assert json.loads(encoded) == value
 
 
 def test_complete_manifest_binds_two_seed_media_frames_and_metrics(tmp_path):
@@ -128,6 +160,9 @@ def test_complete_manifest_binds_two_seed_media_frames_and_metrics(tmp_path):
     assert rendered.count("<img") == 4
     assert rendered.count("등록 보상 복원 · restart") == 2
     assert rendered.count("RMSE 0.140 m/s · 낙상률 0.000") == 2
+    assert rendered.count("새 E2E 확인 검사 · abnormal") == 2
+    assert "상대오차" not in rendered
+    assert rendered.count("비교 단계 검사") == 1
 
 
 @pytest.mark.parametrize("mutation", ["scope", "selection", "probe", "correction", "metric", "video", "frame", "ref"])
