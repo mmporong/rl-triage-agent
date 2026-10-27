@@ -1,0 +1,115 @@
+{
+  "schema": "vision_transferred_probe_protocol_v1",
+  "protocol_id": "vision-transferred-p-reward-20261027-v1",
+  "registered_before_execution": true,
+  "deadline_utc": "2026-10-28T15:00:00Z",
+  "probe": "P_reward",
+  "measurement_type": "preregistered_registered_fault_confirmation",
+  "execution_root": ".triage-runtime/vision-transferred-probe-v1",
+  "source_training": {
+    "summary": {
+      "path": "evals/results/vision_source_prefix_dev_20261026x/summary.json",
+      "sha256": "ee3548e973b052fcc72928dc3af0dbc9bcf8e852bdf91abfe362ff04d8a769de"
+    },
+    "archive_layout": "retrieved_20261026T082752839592Z_root",
+    "source_protocol": {
+      "path": "bench/protocols/vision_brev_source_20261026_v8.json",
+      "sha256": "10b2baa3b4529ff29f67ed552e6514bdc5db036e8afa24be005616144e77d02c"
+    }
+  },
+  "probe_runtime": {
+    "source_anchor": "38402cb4ce58c26a1551747b562f0c78be0c9e0f",
+    "source_protocol": {
+      "path": "bench/protocols/vision_brev_source_20261026_v8.json",
+      "sha256_lf": "10b2baa3b4529ff29f67ed552e6514bdc5db036e8afa24be005616144e77d02c"
+    },
+    "backend": {
+      "path": "evals/brev_recovery_backend_v4.py",
+      "sha256_lf": "70520014f927feec0efd70bd721d04709d56c457702b38468e94a0081b2d5e45"
+    },
+    "worker": {
+      "path": "bench/brev_recovery_worker_v2.py",
+      "sha256_lf": "607b087234d500b136e3557f0f1db610e6b6926a30dc9ab23c2de7f0d413ad27"
+    }
+  },
+  "groups": [
+    {
+      "group": "source-01",
+      "seed": 2220,
+      "checkpoints": {
+        "NONE": {
+          "path": "tree/rl-triage-brev-e2e-20261024/IsaacLab/logs/rsl_rl/unitree_go2_flat/2026-10-26_08-11-26_vision_s2220_none/model_299.pt",
+          "sha256": "41c417b040b458c2f3cf5eb025ba6b5bd8e551c184f63a6c0c7809e0c5165d42"
+        },
+        "F1": {
+          "path": "tree/rl-triage-brev-e2e-20261024/IsaacLab/logs/rsl_rl/unitree_go2_flat/2026-10-26_08-14-40_vision_s2220_f1/model_299.pt",
+          "sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474"
+        }
+      },
+      "training_manifests": {
+        "NONE": "tree/rl-triage-brev-e2e-20261024/repo/.triage-runtime/vision-brev/vision-source-20261026x/training/vision-s2220-none/training.manifest.json",
+        "F1": "tree/rl-triage-brev-e2e-20261024/repo/.triage-runtime/vision-brev/vision-source-20261026x/training/vision-s2220-f1/training.manifest.json"
+      },
+      "execution": {
+        "NONE": {"stage": "none", "run_name": "vision_probe_s2220_none"},
+        "F1": {"stage": "f1", "run_name": "vision_probe_s2220_f1"}
+      }
+    },
+    {
+      "group": "source-02",
+      "seed": 2221,
+      "checkpoints": {
+        "NONE": {
+          "path": "tree/rl-triage-brev-e2e-20261024/IsaacLab/logs/rsl_rl/unitree_go2_flat/2026-10-26_08-17-51_vision_s2221_none/model_299.pt",
+          "sha256": "b346a0c3e3ad6410ce93dcf73e6165ed69e2d6ab95b2c5398943b3a8874cf54d"
+        },
+        "F1": {
+          "path": "tree/rl-triage-brev-e2e-20261024/IsaacLab/logs/rsl_rl/unitree_go2_flat/2026-10-26_08-21-05_vision_s2221_f1/model_299.pt",
+          "sha256": "1d73d523c97c5c89c988febfbd3d5e533e90681cd0e6132d6ffe13888fa95731"
+        }
+      },
+      "training_manifests": {
+        "NONE": "tree/rl-triage-brev-e2e-20261024/repo/.triage-runtime/vision-brev/vision-source-20261026x/training/vision-s2221-none/training.manifest.json",
+        "F1": "tree/rl-triage-brev-e2e-20261024/repo/.triage-runtime/vision-brev/vision-source-20261026x/training/vision-s2221-f1/training.manifest.json"
+      },
+      "execution": {
+        "NONE": {"stage": "none", "run_name": "vision_probe_s2221_none"},
+        "F1": {"stage": "f1", "run_name": "vision_probe_s2221_f1"}
+      }
+    }
+  ],
+  "limits": {
+    "probe_pairs": 2,
+    "gpu_probe_runs": 4,
+    "total_gpu_s": 600,
+    "pair_gpu_s": 300,
+    "api_requests": 0,
+    "training_runs": 0
+  },
+  "resources": {
+    "instance_id": "j1kxncj4e",
+    "instance_type": "gpu-l40s-a.1gpu-16vcpu-64gb",
+    "compute_quote_usd_per_h": 2.09616,
+    "additional_brev_cap_usd": 3,
+    "program_cap_usd": 35
+  },
+  "predictions": {
+    "NONE": "normal",
+    "F1": "abnormal",
+    "pair_count": 2
+  },
+  "classification": {
+    "confirmed": "두 pair 모두 NONE normal, F1 abnormal이며 approval-consume-receipt와 actual six-source 원문 검증 통과",
+    "not_confirmed": "완료된 pair 중 하나 이상에서 등록 기대와 다른 유효 결과",
+    "inconclusive": "원문·승인·비용·완료 조건 중 하나라도 미충족"
+  },
+  "wording": {
+    "scope_ko": "등록 F1 두 seed의 확인 검사이며 처음 보는 결함 대응·일반화·모델 우월 근거로 쓰지 않는다.",
+    "provenance_ko": "학습 checkpoint와 manifest의 source-training provenance, 새 P_reward 검사의 실행 provenance를 분리한다."
+  },
+  "source_binding": {
+    "status": "draft",
+    "source_anchor": null,
+    "source_sha256_lf": {}
+  }
+}
