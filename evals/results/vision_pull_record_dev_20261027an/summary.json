@@ -1,0 +1,46 @@
+{
+  "schema": "vision_pull_record_infrastructure_failure_v1",
+  "protocol_id": "native-policy-record-20261027an",
+  "status": "HOLD",
+  "source_commit": "3949f044e6ac49c1f02e63ea9e7d2c50be303493",
+  "protocol_commit": "7303e6f7f3f4e6cb4fea6878a7773dc5ebbf87e3",
+  "protocol": {
+    "path": "bench/protocols/vision_pull_record_20261027_v6.json",
+    "sha256_lf": "388e558c6f9f7b7cd81c106edf4ec11d4b4bd170808f324909b1167a51ee8b87"
+  },
+  "failure": {
+    "stage": "resource_registration",
+    "error_type": "ValueError",
+    "error_message": "첫 action의 유효 시간이 부족하다",
+    "source_deadline_utc": "2026-10-27T06:00:00Z",
+    "start_request_utc": "2026-10-27T06:00:57.237579Z",
+    "confirmed_cause": "이전 소스 수집의 자원 기한이 새 촬영 시작 전에 만료돼 자원 증명 발급이 거절됐다.",
+    "resource_proof_created": false,
+    "registration_reexecuted": false,
+    "registration_stage_stderr_sha256": "cd0a1d098c3afda823d12b288a2bf969b31c72cb3d96c23da6f6f6454300ddcb"
+  },
+  "cleanup": {
+    "automatic_stop_label_mismatch": true,
+    "owned_gpu_processes_before_stop": 0,
+    "owned_child_processes_before_stop": 0,
+    "vm_status": "STOPPED",
+    "stop_observed_at_utc": "2026-10-27T06:10:21.762600Z",
+    "followup_read_only_recovery_starts": 2,
+    "followup_stop_confirmed": true
+  },
+  "actual_recordings": 0,
+  "new_training_actions": 0,
+  "model_api_requests": 0,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "cost": {
+    "failed_lifecycle_estimate_usd": "0.272854",
+    "read_only_recovery_estimate_usd": "0.064157",
+    "cumulative_program_estimate_usd": "20.087924",
+    "remaining_program_estimate_usd": "4.912076",
+    "program_cap_usd": "25.000000",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "interpretation": "실행 전 자원 등록이 중단됐으므로 영상 녹화와 모델 입력의 성공 여부를 판단하지 않는다. 이전 소스 기록은 보존하고 후속 수집의 자원 유효기간을 별도로 등록한다."
+}
