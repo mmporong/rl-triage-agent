@@ -1,0 +1,41 @@
+{
+  "schema": "vision_pull_record_infrastructure_failure_v1",
+  "protocol_id": "native-policy-record-20261027ao-retry1",
+  "status": "HOLD",
+  "source_commit": "d724b54f18abecb1a8bdc181fd8b873fd7db6146",
+  "protocol_commit": "3301e912b970fc8f0a214ee70aaa6b196f946035",
+  "supplemental_protocol": {
+    "path": "bench/protocols/vision_pull_record_20261027ao_retry1.json",
+    "sha256_lf": "22023fabd8be5466bdf7b21b934722d00dda3663fef3464b869beb1dbf2c6b22"
+  },
+  "failure": {
+    "stage": "instance_readiness",
+    "error_type": "TimeoutError",
+    "confirmed": "기동 요청은 성공으로 반환됐으나 제한된 조회 안에서 인스턴스 준비 상태를 충족하지 못했다.",
+    "cause": "미확정",
+    "lifecycle_receipt_sha256": "7f38570dbc95aa3f2e5702fd07db8dd7166c95adf01d175c786084f3f0975d08"
+  },
+  "cleanup": {
+    "status": "already_stopped_preserved",
+    "consecutive_stopped_observations": 2,
+    "remote_exec_called": false,
+    "stop_requested": false,
+    "stop_observed_at_utc": "2026-10-27T07:20:34.993294+00:00"
+  },
+  "actual_recordings": 0,
+  "new_training_actions": 0,
+  "model_api_requests": 0,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "cost": {
+    "prior_program_upper_bound_usd": "20.245996",
+    "attempt_conservative_upper_bound_usd": "0.130072",
+    "cumulative_estimate_including_upper_bound_usd": "20.376068",
+    "remaining_program_budget_lower_bound_usd": "4.623932",
+    "program_cap_usd": "25.000000",
+    "basis": "기동 요청부터 STOPPED 재확인까지 연속 과금으로 계산한 상한이며 중간 정지 구간도 포함한다.",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "interpretation": "인프라 기동 대기에서 중단돼 영상·모델 성능을 평가하지 않았다."
+}
