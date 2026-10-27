@@ -1,0 +1,44 @@
+{
+  "schema": "vision_aaba_termination_contract_diagnosis_v1",
+  "result": "summary.json",
+  "classification": "application_shutdown_terminal_contract_mismatch",
+  "confirmed": [
+    "AABA 진단 보고서와 NPZ·영수증 각 네 개가 유효하다.",
+    "AABA 출력에는 result.json과 failure.json이 없다.",
+    "실제 앱 factory는 vision_shutdown_policy_v1.AppProxy를 반환한다.",
+    "AppProxy의 기존 종료 정책은 result.json 또는 failure.json 정확히 한 개를 요구한다.",
+    "따라서 AABA 성공 경로에서는 종료 정책이 실패하며 fastShutdown 전환에 도달하지 못한다.",
+    "AppProxy는 정책 오류를 보류한 채 이미 wait_for_replicator=False로 SDK close를 호출한다.",
+    "SDK close가 반환해도 보류된 정책 오류를 다시 발생시키므로 기존 경로는 정상 exit 0이 될 수 없다."
+  ],
+  "source_boundaries": [
+    {
+      "path": "bench/run_vision_pull_record_v2.py",
+      "function": "aaba_child"
+    },
+    {
+      "path": "bench/vision_play_worker_v3.py",
+      "function": "_sdk_app_factory"
+    },
+    {
+      "path": "bench/vision_shutdown_policy_v1.py",
+      "functions": ["_terminal", "apply", "AppProxy.close"]
+    }
+  ],
+  "observed_states": {
+    "report_complete": true,
+    "environment_closed": true,
+    "child_natural_exit": false,
+    "owner_cleanup_verified": true,
+    "gpu_after": [],
+    "record_child_started": false
+  },
+  "not_established": "SDK close 내부에서 어떤 대기가 오래 걸렸는지는 stack 근거가 없다. terminal 계약 불일치와 SDK 내부 대기 위치를 구분한다.",
+  "next_contract": "AABA 보고서·checkpoint·원시 자료를 terminal로 검증하는 전용 종료 정책과 별도 phase 영수증을 둔다. 부모는 유효 보고서, 종료 정책, child exit 0, 소유 프로세스 정리·GPU 부재를 모두 확인한 뒤에만 record로 넘어간다.",
+  "invalid_fix": "wait_for_replicator=False는 기존 실행에도 적용됐으므로 이 옵션 변경을 해결책으로 삼지 않는다.",
+  "upstream_sdk_bug_claimed": false,
+  "new_gpu_runs_for_diagnosis": 0,
+  "new_api_requests_for_diagnosis": 0,
+  "capture_approved": false,
+  "used_for_decision": false
+}

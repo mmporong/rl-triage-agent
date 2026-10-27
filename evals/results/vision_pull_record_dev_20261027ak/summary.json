@@ -1,0 +1,72 @@
+{
+  "schema": "vision_pull_record_development_failure_v2",
+  "protocol_id": "native-policy-record-20261027ak",
+  "status": "HOLD",
+  "source_commit": "4dbac02c8587ae11afbc03a25e76d677102cc268",
+  "protocol_commit": "20f1435c79aa70a6b06950775017d9fd0697abfd",
+  "protocol": {
+    "path": "bench/protocols/vision_pull_record_20261027_v3.json",
+    "sha256_lf": "32eef517477332fce7a18d5350a506ce241fe505299c34ac949ea2311b000018"
+  },
+  "AABA": {
+    "diagnostic_complete": true,
+    "formal_report_validation": "PASS",
+    "raw_npz_and_receipts_validation": "PASS",
+    "captures": 4,
+    "raw_npz": 4,
+    "raw_receipts": 4,
+    "primary_error": null,
+    "report_sha256": "7560957c8f34c9b6b04c16293fa3932ce84a31543d20ea965f003e8582aa5b47",
+    "worker_lifecycle": {
+      "annotators_attached": true,
+      "annotators_detached": true,
+      "environment_closed": true,
+      "render_product_destroyed": true
+    },
+    "native_counter": {
+      "after_extension_update": 15,
+      "fail_closed": true,
+      "initial_value": 14,
+      "method": "app.get_update_number()",
+      "source": "omni.kit.app.IApp.get_update_number"
+    }
+  },
+  "failure": {
+    "stage": "aaba_child_termination",
+    "error_type": "TimeoutError",
+    "error_message": "AABA child가 제한 시간 안에 종료되지 않았다",
+    "timed_out": true,
+    "wall_s": 410.741353042,
+    "record_child_started": false,
+    "second_checkpoint_started": false,
+    "child_internal_wait_stack_captured": false
+  },
+  "evidence": {
+    "raw_files": 522,
+    "verified_copy_files": 526,
+    "verified_host_metadata_files": 334,
+    "all_copied_sha256_equal": true,
+    "archive_sha256": "0af9c4c88afc4fce600ba8d2fec50d15c561a3030405404174665fb5eaf4a1aa",
+    "inventory_sha256": "dd7bc17daa5a95e14e5c05d10cf083a46b8f599e5fc0b93320527849e94f52bb",
+    "canonical_stop_sha256": "e23f0fe0a8e6fe4bca3b0900c4ca8273d92114c85349aa94df457571563f886c",
+    "execution_sha256": "a26d7a7ac9db2c6fe9909500d50c9cf891ebf2159200ee214d69396ee28825cd"
+  },
+  "cleanup_verified": true,
+  "gpu_after": [],
+  "vm_status": "STOPPED",
+  "stopped_observed_at_utc": "2026-10-27T04:23:28.241294+00:00",
+  "actual_recordings": 0,
+  "new_training_actions": 0,
+  "model_api_requests": 0,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "cost": {
+    "this_lifecycle_estimate_usd": "0.333297",
+    "cumulative_program_estimate_usd": "19.451504",
+    "remaining_program_usd": "0.548496",
+    "program_cap_usd": "20.000000",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "interpretation": "출력 폴더 분리와 NPZ·JSON 저장은 실제 네 장면에서 통과했다. 이후 자식 프로세스 종료가 제한 시간 안에 완료되지 않아 전체 녹화를 승인하지 않는다. 영상 입력 효과·교정·회복 결과는 측정하지 않았다."
+}

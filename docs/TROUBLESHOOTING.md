@@ -344,3 +344,10 @@
 - 코드와 CPU 재현에서 AABA 출력 폴더가 없으면 NPZ 저장이 실패하고, collection에 남은 배열이 다음 JSON 저장 오류를 일으켜 앞선 오류를 가릴 수 있음을 확인했다. 실제 원문에는 직렬화 오류만 남아 내부 최초 오류 전체를 복원할 수는 없다. 최초 resource freshness는 통과했지만 이후 record 단계의 freshness 재검증은 미도달 경로다.
 - 원문 502개, 회수 사본 506개와 최종 host 메타데이터 331개의 해시를 대조했고 VM 정지를 확인했다. 새 학습·모델 호출·전체 정책 영상은 0건이다. 새 실행판은 진단·영상 출력 경로를 분리하고, 원시 NPZ와 최초 오류를 앱 종료 전에 보존하는 경계를 검증한다.
 - 근거: [실행·회수·정지 결과](../evals/results/vision_pull_record_dev_20261027aj_retry2/summary.json).
+
+### CAP-26: 진단 보고서와 앱 종료 래퍼의 terminal 계약
+
+- 후속 실행은 AABA 네 장면의 NPZ·영수증·JSON 보고서를 저장했고, 회수 후 보고서와 배열 metadata·해시 대조도 통과했다. CAP-25의 저장 경계 수정은 실제 실행에서 확인됐다. 그러나 자식 종료가 완료되지 않아 약 410.74초 뒤 부모 정리로 끝났고 record 앱은 시작하지 않았다.
+- RL 환경 종료와 앱 프로세스 종료는 별개다. 실제 factory의 `AppProxy`는 close 전에 `result.json` 또는 `failure.json` 정확히 하나를 요구하지만, AABA 성공 출력에는 진단 보고서만 있었다. 이 경로는 종료 정책을 적용할 수 없으며, SDK close가 반환해도 보류된 정책 오류 때문에 exit 0이 될 수 없다.
+- `wait_for_replicator=False`는 이미 적용돼 있었다. SDK close 내부의 긴 대기 위치는 stack 근거가 없어 미확정이며, 이를 NVIDIA SDK 결함으로 단정하지 않는다. 새 경계는 AABA 원문을 검증하는 종료 정책과 phase별 영수증을 사용하고, 보고서·종료 정책·child exit·정리 증거를 나눠 검증한다.
+- 원문 522개, 회수 사본 526개와 host 메타데이터 334개를 대조했고 소유 VM은 정지했다. 새 학습·모델 API·전체 영상은 0건이다. [실제 결과](../evals/results/vision_pull_record_dev_20261027ak/summary.json) · [종료 계약 진단](../evals/results/vision_pull_record_dev_20261027ak/termination_contract_diagnosis.json).
