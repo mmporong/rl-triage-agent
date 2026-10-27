@@ -1145,7 +1145,7 @@ class Runtime:
         value = runner.bind_protocol(template, bindings, source_commit=payload["source_commit"],
             source_sha256_lf=payload["source_sha256_lf"], recording_target=payload["recording_target"],
             resources=payload["resources"], registered_at_utc=payload["registered_at_utc"], output=output)
-        return {"status": "native_protocol_bound_requires_main_commit_and_fresh_resource",
+        return {"status": "native_protocol_bound_requires_public_seal_commit_and_fresh_resource",
                 "bound_protocol": ref(output), "checkpoints": len(value["checkpoints"]), "gpu_executions": 0}
 
     def observe(self, group: str, payload: dict, complete: Callable) -> dict:
@@ -1191,6 +1191,9 @@ class Runtime:
 
 def runtime_cli(args: argparse.Namespace, *, complete: Callable | None = None) -> dict:
     """등록/lease 확인 이후에만 provider와 생산 backend를 생성한다."""
+    if args.operation in {"initial", "observe"}:
+        require(getattr(args, "relay_config", None) is not None,
+                "모델 실행에는 등록된 WSL relay config가 필수다")
     validate_method()
     root = args.repo.resolve(strict=True)
     def portable(path: Path, sha: str) -> dict:
@@ -1204,7 +1207,7 @@ def runtime_cli(args: argparse.Namespace, *, complete: Callable | None = None) -
         require(scope.get("model_relay_config") == ref(args.relay_config), "등록 relay config SHA/경로 불일치")
         if complete is None:
             complete = RelayComplete(ADAPTER._read(args.relay_config), runtime.path / "model-relay")
-    callback = complete if complete is not None else OBSERVER.default_complete
+    callback = complete
     group, operation = args.group, args.operation
     payload = ADAPTER._read(args.payload) if args.payload else {}
     if operation == "verify":

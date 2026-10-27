@@ -284,3 +284,9 @@ def test_registration_file_change_cannot_be_hidden_by_new_reference_sha(tmp_path
 def test_public_registration_rejects_private_and_user_paths(private: str) -> None:
     with pytest.raises(ValueError, match="private 경로"):
         E.public_registration({"schema": "vision_corrected_record_registration_v1", "leak": private})
+
+
+@pytest.mark.parametrize("operation", ["initial", "observe"])
+def test_model_cli_requires_registered_relay_before_context_or_provider(operation: str) -> None:
+    with pytest.raises(ValueError, match="relay config"):
+        E.runtime_cli(E.argparse.Namespace(operation=operation, relay_config=None))
