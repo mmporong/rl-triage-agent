@@ -12,7 +12,7 @@ import model_decision_journal_v1 as JOURNAL
 import vision_selection_call_v1 as CALL
 import vision_selection_execution_v1 as V1
 
-UTC_TZ = timezone.utc
+UTC_TZ = timezone.utc  # noqa: UP017 - Python 3.10 호환
 _DECISION_NAMES = {"manifest.json", "events", "terminal.json", ".active"}
 _API_NAMES = {"manifest.json", "reservations", "responses", "receipts", ".active"}
 

@@ -397,3 +397,21 @@
 - 다음 실행은 정상 checkpoint의 AABA와 625프레임 수집을 마치고 영상·trace·두 measurement·두 spec을 생성했다. `build_trace_and_v01_specs`는 이 5개 파일의 mapping과 primary video를 별도 값으로 반환하지만, worker는 8키 artifact mapping을 가정해 후처리에서 실패했다. 영상 경로 변경 문제로 해석하지 않는다.
 - v3 adapter는 5키와 별도 영상을 output 경계의 단일 regular file로 검사하고, trace에 내장된 encoder·timing receipt를 write-once 파일로 봉인한다. 영상 SHA·trace·PTS·receipt 결합과 기존 8키 검증을 통과한 뒤에만 manifest 단계로 넘기며, 기존 파일과 symlink는 거부한다.
 - 실제 625프레임 형태의 CPU 회귀와 원문 사본의 사후 검증은 통과했지만 원래 v2 실행 상태는 실패로 유지한다. 새 v3 두 정책의 실제 성공 여부는 별도 실행 결과로 판정한다. 결함 정책은 실행하지 않았고 새 학습·모델 API 호출은 0건이다. [v2 실행 결과](../evals/results/vision_transferred_pull_record_dev_20261027b_v2/summary.json).
+
+### OPS-50: 재기동한 VM의 GPU 신원과 작업 소유권
+
+- 같은 공급자 VM을 Stop/Start한 뒤 GPU UUID가 바뀌었다. 과거 boot의 UUID를 요구하던 환경 진입 검사는 새 GPU 작업 전에 중단했다. 별도 검사에서는 OS의 Python 기반 서비스도 학습 작업으로 분류했다.
+- 공급자 VM ID·이름·type·새 견적과 설치 버전을 먼저 확인하고, 해당 boot의 실제 L40S UUID와 유휴 증거를 새로 결합했다. 프로세스 소유권은 등록된 작업 경로로 검사한다. 같은 boot 안에서 실행 전후 GPU 신원을 확인하는 조건은 유지한다.
+- 수정한 환경 진입 뒤 seed 2221 두 정책의 native 녹화를 완료했다. 환경 재설치는 하지 않았다. [데이터 경로와 완료 범위](VISION-BREV-DATA.md#전송-정책-네-개의-입력선택-비교).
+
+### OPS-51: 증분 bundle은 불완전한 Git history를 복원하지 못함
+
+- 확인 검사 실행 전 source snapshot이 과거 학습 commit을 읽지 못해 중단했다. 실행 기록은 `launch.session_id=null`, 자식 exit code 없음, `wall_s=0.00545`초였다. 이 시도에서 검사는 시작하지 않았다.
+- 원격 저장소에는 최신 commit 일부만 있었고, 증분 bundle은 이미 있다고 가정한 과거 object를 채우지 않았다. [완전한 history를 사용하는 새 시도](../bench/protocols/vision_transferred_probe_history_retry1_20261027.json)를 등록했다. 실제 backend의 source snapshot을 승인 소비 전에 확인한 뒤 같은 두 pair를 실행했다.
+- 두 pair 모두 NONE `normal`, F1 `abnormal`로 완료했다. 최초 중단·승인 소비 기록은 보존했다. [원문 해시와 검사 결과](../evals/results/vision_transferred_selection_dev_20261027_v1/probe-pairs.json).
+
+### OPS-52: 공유 API 원장과 미시작 decision의 구분
+
+- 첫 응답을 완료하면 공유 API manifest가 생기지만 다음 decision manifest는 아직 없다. 동결 inspector는 이 정상 미시작 상태를 부분 생성으로 거부했다. 최초 stack trace는 별도 파일로 보존되지 않았다.
+- 활성 호출과 미응답 reservation이 없음을 확인한 뒤 등록된 빈 decision manifest만 준비했다. 기존 응답은 재사용했고, 이 준비 과정의 API 호출은 0건이었다. 이후 비교는 24/24 완료했다.
+- [새 읽기 전용 inspector](../evals/vision_selection_inspection_v2.py)는 미시작 상태를 구분한다. 실제 부분 기록·소유 manifest 누락·변조·미완료 reservation은 계속 거부하며 조회 중 파일을 생성하지 않는다. [실제 caller 기반 회귀](../tests/test_vision_selection_inspection_v2.py)는 첫 terminal 뒤 다음 decision이 없는 경우와 미완료 요청의 재전송 차단을 확인한다. 완료한 비교에는 새 inspector를 소급 적용하지 않았다.
