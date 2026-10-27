@@ -2,8 +2,10 @@
 
 설치된 환경의 주요 패키지와 Isaac Lab commit이 맞으면 재설치를 생략한다.
 새 VM에는 같은 버전을 지정한 설치 스크립트를 사용하고, 단계별 결과를 확인해 재개한다.
-현재 확인 범위는 CPU에서의 bundle 생성·검증과 설치 제어 흐름이다.
-이 경로로 새 VM을 복원하거나 Isaac을 실행한 결과는 아직 없다.
+bundle 생성·검증과 설치 제어 흐름을 CPU에서 확인한 뒤, 새 L40S VM에서 고정 패키지 복원을 완료했다.
+[복원 결과](../evals/results/vision_environment_transfer_20261027b/summary.json)의 버전·의존성 검사를 통과했고,
+옮긴 seed 2220 정상·결함 체크포인트의 [625프레임 기술 녹화 두 건](../evals/results/vision_transferred_pull_record_dev_20261027b_v3/summary.json)도 완료했다.
+새 환경에서 추가 학습이나 모델 호출은 하지 않았다. 영상 입력 승인은 별도 CPU 경로에서 확인한다.
 
 ## 고정하는 항목
 

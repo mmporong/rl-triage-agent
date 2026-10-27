@@ -390,3 +390,9 @@
 - 새 L40S에서 설치 버전과 의존성 검증이 통과했고, AABA 입장 검사를 마친 뒤 첫 정책 sample을 수집했다. 수집 원문의 `IsaacReadTimes`에는 시각 11필드와 실행 포트 `execOut`이 있었다.
 - producer는 기존 정규화 함수를 호출했지만 반환값에는 12필드 원문을 넣었다. 시각 11필드를 요구하는 소비자가 첫 sample을 거부했다. 원문에는 오류를 가릴 필드와 값이 남았고, GPU 자식 정리도 확인됐다. 완성 영상과 모델 입력은 생성되지 않았으며 결함 정책은 실행하지 않았다.
 - 원문·NPZ·해시는 유지하고, 소비자와 manifest 비교에는 같은 정규화 값을 쓰도록 새 판을 준비한다. 알 수 없는 필드와 시각 불일치의 거부 기준은 유지한다. [설치 검증](../evals/results/vision_environment_transfer_20261027b/summary.json), [첫 촬영 실패](../evals/results/vision_transferred_pull_record_dev_20261027b_v1/summary.json).
+
+### OPS-49: 녹화 함수의 5키 반환값과 worker의 8키 artifact 계약
+
+- 다음 실행은 정상 checkpoint의 AABA와 625프레임 수집을 마치고 영상·trace·두 measurement·두 spec을 생성했다. `build_trace_and_v01_specs`는 이 5개 파일의 mapping과 primary video를 별도 값으로 반환하지만, worker는 8키 artifact mapping을 가정해 후처리에서 실패했다. 영상 경로 변경 문제로 해석하지 않는다.
+- v3 adapter는 5키와 별도 영상을 output 경계의 단일 regular file로 검사하고, trace에 내장된 encoder·timing receipt를 write-once 파일로 봉인한다. 영상 SHA·trace·PTS·receipt 결합과 기존 8키 검증을 통과한 뒤에만 manifest 단계로 넘기며, 기존 파일과 symlink는 거부한다.
+- 실제 625프레임 형태의 CPU 회귀와 원문 사본의 사후 검증은 통과했지만 원래 v2 실행 상태는 실패로 유지한다. 새 v3 두 정책의 실제 성공 여부는 별도 실행 결과로 판정한다. 결함 정책은 실행하지 않았고 새 학습·모델 API 호출은 0건이다. [v2 실행 결과](../evals/results/vision_transferred_pull_record_dev_20261027b_v2/summary.json).

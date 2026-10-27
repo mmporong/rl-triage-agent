@@ -117,6 +117,21 @@ Writer·render product·환경을 정리하고 원문을 봉인한다. 준비 �
 현재 그 실제 자료는 부족하며 모델 비교 준비 완료로 표기하지 않는다.
 앞선 20회 학습 checkpoint의 기술 녹화도 비교 자료로 승격하지 않는다.
 
+## 정상·결함 정책의 native 수집 결과
+
+[전송 후 녹화 v3](../evals/results/vision_transferred_pull_record_dev_20261027b_v3/summary.json)는 seed 2220의 NONE·F1 정책에서 기술 녹화를 완료했다. 두 정책은 각자의 AABA 진단과 정책 step 확인을 통과한 뒤 같은 Play 설정으로 촬영했다.
+
+| 정책 | 프레임 | 영상 길이·해상도 | 자식 종료·GPU 정리 | 영상 |
+|---|---:|---|---|---|
+| NONE | 625 | 12.5초·50fps·640×480 | exit 0·정리 확인 | [MP4](../evals/results/vision_transferred_pull_record_dev_20261027b_v3/none/same_play.mp4) |
+| F1 | 625 | 12.5초·50fps·640×480 | exit 0·정리 확인 | [MP4](../evals/results/vision_transferred_pull_record_dev_20261027b_v3/f1/same_play.mp4) |
+
+프레임마다 RGB·semantic segmentation·CameraParams·IsaacReadTimes·ReferenceTime을 읽고 원시 NPZ와 영수증을 보존했다. 연속 읽기 사이의 native Kit 갱신은 0회였으며 렌더 구간의 물리 상태·시각 불변을 검사했다. Writer attach·callback은 쓰지 않았다. 이는 등록한 수집 경계의 확인이며 원자성을 주장하지 않는다.
+
+회수한 3,865개 파일의 크기·SHA가 원격 manifest와 일치했다. 전체 원시 배열은 별도 보관하고 공개 폴더에는 영상·같은 Play trace·측정·인코더와 PTS 영수증·수집 manifest·실행 결과를 제공한다. 로컬 경로가 들어 있는 V01 입력 명세는 공개 사본에서 제외했다. 원본의 `capture_approved=false`, `model_ready=false`, `used_for_decision=false`는 유지한다. 같은 Play 기록의 입력 수용, 두 번째 seed의 녹화, 영상이 검사 선택에 주는 효과는 아직 확인 단계다.
+
+새 VM의 복원·준비·실패 수정·회수와 예상 밖에 켜져 있던 기존 VM의 유휴 구간을 포함한 이번 원장의 compute 상한 추정은 $24.454911이다. 견적과 관찰 시각으로 계산한 값으로 저장소 과금·공급자 청구액은 포함하지 않는다. 두 소유 VM의 정지를 확인했으며 설치 환경은 보존했다. [비용 근거](../evals/results/vision_transferred_pull_record_dev_20261027b_v3/compute-reconciliation.json).
+
 ## 비용과 종료
 
 실행기는 다음 action의 최대 시간·compute 비용을 시작 전에 예약하고, 완료 뒤 측정값을 검사한다.

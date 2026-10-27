@@ -1,0 +1,76 @@
+{
+  "schema": "vision_transferred_record_public_failure_v2",
+  "status": "HOLD",
+  "protocol": "bench/protocols/vision_transferred_pull_record_20261027b_v2.json",
+  "protocol_sha256_lf": "7e729369faf1af7c8ee46689020b537ed4bdae8e1fe535b7fab1aece516d31ad",
+  "source_commit": "43281f8871792112f49f0fe3805e3a5001e1d11e",
+  "first_policy": "source-s2220-none",
+  "aaba_gate_completed": true,
+  "raw_frames_preserved": 625,
+  "raw_npz_files_preserved": 625,
+  "primary_video": {
+    "file": "same_play.mp4",
+    "bytes": 2856008,
+    "sha256": "67c911ec7c07059878b4368174e36d858bd367a6dffc8686b808b3ce07f01186"
+  },
+  "build_trace_outputs": {
+    "trace": {
+      "file": "raw_trace.json",
+      "bytes": 1100865,
+      "sha256": "5b1310017ce36b3338e8195cd8f649f77fa2df4f33f28bd7babab61b741ba28b"
+    },
+    "measurement_1": {
+      "file": "window_1_measurements.json",
+      "bytes": 2987,
+      "sha256": "5a331a344990bcdee9b9d5bb976453c4e16fcf57faf34e51f88e5842d4ebf024"
+    },
+    "spec_1": {
+      "file": "window_1_v01_spec.json",
+      "bytes": 2771,
+      "sha256": "98cf30893a12dce2ea72e2dd21eaf80ab2772fef70d2d1602e49cfd87e57bff7"
+    },
+    "measurement_2": {
+      "file": "window_2_measurements.json",
+      "bytes": 2982,
+      "sha256": "8bf697b67a562a532af8185cdc948bd5f6e007cb705a6621ab3e90e042c9a901"
+    },
+    "spec_2": {
+      "file": "window_2_v01_spec.json",
+      "bytes": 2774,
+      "sha256": "6fd3293ba3e9ffceed84442e5b608f5f33e664d530b0597948a51dffeaf2a65a"
+    }
+  },
+  "failure_stage": "worker_postprocess_artifact_contract",
+  "confirmed_cause": "build_trace_and_v01_specs는 trace·두 measurement·두 spec의 5키 mapping과 primary video를 별도 값으로 반환한다. v2 worker는 8키 artifact mapping을 가정하고 mapping 안의 video를 별도 primary video와 비교해 실패했다.",
+  "primary_error_type": "builtins.ValueError",
+  "execution_wall_s": 134.6035142830001,
+  "second_policy_executed": false,
+  "full_recordings": 0,
+  "cleanup_verified": true,
+  "gpu_after": [],
+  "capture_approved": false,
+  "model_ready": false,
+  "used_for_decision": false,
+  "new_training_actions": 0,
+  "model_api_requests": 0,
+  "original_evidence": {
+    "job_sha256": "3b21832c0768c71317b31509382c85fae678ba94bde5809837983ad38e4efacc",
+    "execution_sha256": "a4e1bb020efe1d975d06766c60cf63daeccd3358fd76014c5790a15003721b05",
+    "terminal_collection_sha256": "13630d565159b605c99e30c207cd760cbb11a2b8953f081f77c7f408a5d661e4",
+    "failure_sha256": "4b8632296090e7c98f8344b21b7399d0e6cc3a6d0c448bf805aa1c569ce8f423",
+    "primary_error_sha256": "2567317b4b60209ad644cf05444d6cdf35db1ef81162b4534b77bf337fd03a69",
+    "partial_report_sha256": "8e3992c33e26ee3f066b0fcecffe351d3362218806f49f1be74c147a8b818f21"
+  },
+  "posthoc_cpu_copy_audit": {
+    "separate_from_original_execution": true,
+    "audit_sha256": "0d43edf6d672c90e7b5bc18146d844bed18ccc982605a287d50d0cd4d85b9441",
+    "canonical_artifacts": 8,
+    "raw_frames": 625,
+    "manifest_sha256": "7f157261ead27dfd89d8e29d376e23380eef7d972238e15176b8fd683fb8da47",
+    "original_execution_status_unchanged": "failed",
+    "gpu_apps_started": 0,
+    "new_training_actions": 0,
+    "model_api_requests": 0
+  },
+  "next": "새 판은 실제 5키 반환값과 별도 primary video를 엄격히 검증해 기존 8키 artifact 계약으로 변환한다. CPU 사후 검증과 새 판의 실제 실행 결과는 구분한다."
+}
