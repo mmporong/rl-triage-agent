@@ -15,6 +15,7 @@
 | RL-05 | 올바른 원인 후보에도 존재하지 않는 근거를 붙임 | D3에서 원인 변경을 1위로 고른 답이 없는 diff 줄을 인용해 무효였다. hunk와 실제 코드 문자열을 검증하는 계약을 별도로 만들었다 | 원인 순위와 근거 유효성을 분리한다. 새 모델의 출력·근거·도구 인자 비교도 등록한 해결 기준을 충족하지 못했다 | [D3](D3-MULTI-CHANGE.md), [모델 비교](NEMOTRON-ENDPOINT-COMPARISON-V3.md) |
 | RL-06 | 다른 로봇에 같은 결함을 넣어도 실패 시연이 성립하지 않음 | ANYmal-C F2는 적용 불가, F6는 source 행동 실패가 없어 종단 시연을 중단 | 실행·판정 오류로 취급하지 않는다. 활성 함수·주입 효과·source 실패·교정 범위를 적용성 계약으로 먼저 확인한다 | [ANYmal-C](ANYMAL-C-PORT.md), [조합 적용성](COMBINATION-APPLICABILITY.md) |
 | RL-07 | 모델의 검사 선택이 규칙보다 나은지 결론을 내리지 못함 | seed 2171의 한 복합 사례에서 세 선택 방식은 회복했고 한 방식은 인프라 재시도 소진 후 HOLD였다 | 한 사례의 서로 다른 arm으로 선택 정책의 우위를 주장하지 않는다. 영상 추가 효과도 별도 사전등록 비교 전에는 미측정이다 | [선택기 비교](SELECTION-COMPARISON.md), [영상 선택 비교](VISION-INSPECTION-SELECTION.md) |
+| RL-08 | 프레임 근거를 더해도 첫 검사 선택이 달라지지 않음 | seed 2220·2221의 정상·F1, 두 구간·세 입력 조건에서 24/24 유효 응답이 모두 `P_reward`를 선택했다. 실행 검사는 정상과 F1을 구분했다 | 사전등록 판정은 `observation_only`다. 이 등록 결함 비교에서 영상에 따른 선택 개선이 없었다. 정상 창의 검사 요청과 오진 확정은 구분한다 | [실측 비교](../evals/results/vision_transferred_selection_dev_20261027_v1/summary.json) |
 
 ## 클라우드 영상 수집
 

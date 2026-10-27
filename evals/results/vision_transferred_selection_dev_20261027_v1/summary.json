@@ -1,0 +1,496 @@
+{
+  "schema": "vision_transferred_selection_public_v1",
+  "status": "complete",
+  "measurement_scope": "registered_f1_two_seed_development_comparison",
+  "selection_outcome": "observation_only",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "source_anchor": "8dddefba25bcd382cc67124faf190f2e26b70ad9",
+  "selection_protocol": "bench/protocols/vision_transferred_selection_20261027_v1.json",
+  "selection_protocol_sha256_lf": "244662880ef538d690e5874e63bad53c0bfe0177af6d0a2eaebedf566ae1a174",
+  "validity": {
+    "denominator": 24,
+    "infrastructure_failed": 0,
+    "semantic_invalid": 0,
+    "terminal": 24,
+    "unknown_pending": 0,
+    "valid": 24,
+    "valid_rate": 1.0
+  },
+  "api_usage": {
+    "provider_wall_s_sum": 27.791678284993395,
+    "requests": 24,
+    "tokens": {
+      "known": 24,
+      "missing": 0,
+      "sum": 115824
+    }
+  },
+  "comparison": {
+    "bindings": {
+      "fixed_eval_sha256": [
+        "1c36ec2f46ea953d06a443a560c15aeeb772f68147258ad0dc9f249ccabb2a1d",
+        "92ed5b026480f366dfdfdee53b6b06327da6cdd3c166680b11d37c79996b736c",
+        "b1cad4a033edb3bc5785b786d98ac508e1e223935b4022f2cf631dc08cc78ef7",
+        "e8832fbb682abe1db0a3f74c96a02f3d52f00acabb3e618074a34267e10b6274"
+      ],
+      "method_protocol_sha256": "9c4570bad03453c04182e8568e7f4105205479e9efeb69c8de0dc4df9b53b6bb",
+      "probe_receipt_sha256": [
+        "5affa9b59ef07a46fa7e6997e98f30a7df5070e56d7cef9c4b619b575e2443c6",
+        "aa6299499c66007401c52f2a32f6da2cc2f96cafbda39bb169c00d9b4753fca1"
+      ],
+      "source_protocol_sha256": "10b2baa3b4529ff29f67ed552e6514bdc5db036e8afa24be005616144e77d02c",
+      "terminal_sha256": [
+        "d38244887b3ed0acd249b21c24eafa20cc122441d97789f0fbaf653b7886cf4a",
+        "a0cb82d3bbd6d22431ac31da8504ae4e8143fba8ba14ddd4767094f62e626a71",
+        "08353a6288c03bfd9d370a26c676a444e0059db229d61ae514f4939a40a2f191",
+        "3887a8dc2ad6bdbaa2bf31b356705ab4f15a7eac5d4f9e9c6f54e15145c477cf",
+        "ebd2da4c2bca9dca791c820123da8f6df44165d8417059cac624b0a266b68834",
+        "c9e3f5477095b95c71dc0bb93b98a814549d0d09ea8240ea5687fdfb4834a758",
+        "7b71380704d3241e1a0fbd2868b423f2a74b85b95598acb435d39549970d7d1a",
+        "bfe28a22d5feffe2badea74d1381610dd826d591f96f6fab086c57e88f5bcde6",
+        "481c2e06977eb59d2883d7be73a397563224cc47d2ced6a7583a0bb52e30fd9c",
+        "fbb372775b0cf06205f346e8ee40f0df96d1de2f6c481c5a5b7d0960ce0f3bdf",
+        "030d058ea91a12524c72ec671e0a937329d50974df43f46ff1fcec5207918bb8",
+        "54f4614872516bc74c198608479aba7b8181d81719d90c21258f336c8e857989",
+        "5c7216c9e4f3874647fbe4bfc776edb0fac82237a9a72dbdd64c291e0a4846b3",
+        "5e2183686d608b564e60696e59b1d28ca1c7e248c82fc37ecd8df341c51532fc",
+        "c8a047b814fd32fe636cb7c3f93e30a9ff7b5a1c32f044e2a3af2ad36010c091",
+        "6f664c0257a280c6d2f0a46a32395183848c42441fa4642f00d0bf419efd0317",
+        "a028a1e6f804f464268a69d5f34cd931ebfcaa7b79479cda135ceb0da161928f",
+        "8a7927c30924d934304e857b6808edd2077491193ff9a433a94b20394d068e95",
+        "1be411d74586022697d5a2cb3a8a55907c729381c0561471c5d296881aab264e",
+        "0356224f30310b2dd1e8c1bc9a4c413983e49a732fba7d15f4fed1d1a614bc3e",
+        "f4bb4b947cab043908e6859bc2d34c7ae98aa785364f77c8253e5b61f4457eb6",
+        "ea6917433290c8f1f3ed01fb146963a4d6b92c6f8473834c7b77cca964d9b302",
+        "623bb6c4bd7d16c80aafa990037cce449fa02ff13cbadd0f71c25dd0f01c9895",
+        "79e3b1ca69d3ae9a6adbd2ae209c560851dad6a66e3e5c57dfb1e51618ae7dc5"
+      ]
+    },
+    "choice_status_counts": {
+      "valid": 24
+    },
+    "counts_by_source_seed": {
+      "source-01": {
+        "H_grounded": 0,
+        "H_raw": 0,
+        "R": 0
+      },
+      "source-02": {
+        "H_grounded": 0,
+        "H_raw": 0,
+        "R": 0
+      }
+    },
+    "execution_status": "complete",
+    "fault_windows": [
+      {
+        "H_grounded": false,
+        "H_raw": false,
+        "R": false,
+        "measurable": true,
+        "seed_group": "source-01",
+        "slot_id": "input-03"
+      },
+      {
+        "H_grounded": false,
+        "H_raw": false,
+        "R": false,
+        "measurable": true,
+        "seed_group": "source-01",
+        "slot_id": "input-04"
+      },
+      {
+        "H_grounded": false,
+        "H_raw": false,
+        "R": false,
+        "measurable": true,
+        "seed_group": "source-02",
+        "slot_id": "input-07"
+      },
+      {
+        "H_grounded": false,
+        "H_raw": false,
+        "R": false,
+        "measurable": true,
+        "seed_group": "source-02",
+        "slot_id": "input-08"
+      }
+    ],
+    "frame_citation_is_causal_confirmation": false,
+    "independent_source_seed_groups": 2,
+    "normal_choices": [
+      {
+        "choices": {
+          "text_and_video": {
+            "action": "continue",
+            "call_id": "choice-03",
+            "capsule_sha256": "276d620dc727b4c1f7c00181d17fb20416173704fc07da39f09e0250e29d3d66",
+            "fact_ids": [
+              "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+              "telemetry:case:Episode_Reward/track_ang_vel_z_exp"
+            ],
+            "messages_sha256": "e8fa4df58a523534fe280e60f318151b1716a5212fcecce3ecb4f850077610d9",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-01",
+            "terminal_sha256": "08353a6288c03bfd9d370a26c676a444e0059db229d61ae514f4939a40a2f191",
+            "view_kind": "text_and_video"
+          },
+          "text_only": {
+            "action": "continue",
+            "call_id": "choice-01",
+            "capsule_sha256": "fd55da57057548410ed565ae9952083cce05c4c19cb2b50b6e9f9b1f06b74f90",
+            "fact_ids": [
+              "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+              "telemetry:case:Episode_Reward/track_ang_vel_z_exp"
+            ],
+            "messages_sha256": "976aad2648940b26656078f5034250d8726cfc9a26f95139f8608e643e5cff64",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-01",
+            "terminal_sha256": "d38244887b3ed0acd249b21c24eafa20cc122441d97789f0fbaf653b7886cf4a",
+            "view_kind": "text_only"
+          },
+          "video_only": {
+            "action": "continue",
+            "call_id": "choice-02",
+            "capsule_sha256": "ef1b558da207b86bba79f1e485de17884ad052d014434d14dc061370a87e3cbf",
+            "fact_ids": [
+              "vision:play:f01:command:linear_x_mps",
+              "vision:play:f01:motion:linear_x_mps",
+              "vision:play:f06:command:linear_x_mps",
+              "vision:play:f06:motion:linear_x_mps"
+            ],
+            "messages_sha256": "cea8d3faf7a279bde9cf7846c876f9cc642342913ddc9e5c6c08d3234e66dda5",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-01",
+            "terminal_sha256": "a0cb82d3bbd6d22431ac31da8504ae4e8143fba8ba14ddd4767094f62e626a71",
+            "view_kind": "video_only"
+          }
+        },
+        "seed_group": "source-01",
+        "slot_id": "input-01"
+      },
+      {
+        "choices": {
+          "text_and_video": {
+            "action": "continue",
+            "call_id": "choice-04",
+            "capsule_sha256": "3d23f40e1edd9cb7a96e01643cf7ab07e0b43786375ec4aa44333f23a79d3648",
+            "fact_ids": [
+              "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+              "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp"
+            ],
+            "messages_sha256": "7548e2b00de8fc98353ed808a7b5ec666aaa715a143564540e07fe888ead479c",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-02",
+            "terminal_sha256": "3887a8dc2ad6bdbaa2bf31b356705ab4f15a7eac5d4f9e9c6f54e15145c477cf",
+            "view_kind": "text_and_video"
+          },
+          "text_only": {
+            "action": "continue",
+            "call_id": "choice-06",
+            "capsule_sha256": "a1fc87bb1d79d88c2500d05d8bac4ac92c78d782840902120fa1492f293e3cc1",
+            "fact_ids": [
+              "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+              "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+              "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+              "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+            ],
+            "messages_sha256": "ccd6353a406d471b715bc1013bb5ac7531a5f7b001bc1745c368be06f1f6d67c",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-02",
+            "terminal_sha256": "c9e3f5477095b95c71dc0bb93b98a814549d0d09ea8240ea5687fdfb4834a758",
+            "view_kind": "text_only"
+          },
+          "video_only": {
+            "action": "continue",
+            "call_id": "choice-05",
+            "capsule_sha256": "62689c377b4435f582c410cc87920bd0140ec4bb8634fc7ce340d7df2c2c378a",
+            "fact_ids": [
+              "vision:play:f01:command:linear_x_mps",
+              "vision:play:f01:motion:linear_x_mps",
+              "vision:play:f06:command:linear_x_mps",
+              "vision:play:f06:motion:linear_x_mps"
+            ],
+            "messages_sha256": "202b94f40ba635f1a49b6155b4723149c813edb1894599f36e8bf539c4f96b68",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-02",
+            "terminal_sha256": "ebd2da4c2bca9dca791c820123da8f6df44165d8417059cac624b0a266b68834",
+            "view_kind": "video_only"
+          }
+        },
+        "seed_group": "source-01",
+        "slot_id": "input-02"
+      },
+      {
+        "choices": {
+          "text_and_video": {
+            "action": "continue",
+            "call_id": "choice-14",
+            "capsule_sha256": "3e427f13c3c06d121a2cc64b6aa2d5a572611cdced76d51d776ecf86fa742817",
+            "fact_ids": [
+              "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+              "telemetry:case:Episode_Reward/track_ang_vel_z_exp"
+            ],
+            "messages_sha256": "1ece37552cd0ed569ccdbcec8f4c9782fdaf81af7d1b0e05e3b35d1f486ed487",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-05",
+            "terminal_sha256": "5e2183686d608b564e60696e59b1d28ca1c7e248c82fc37ecd8df341c51532fc",
+            "view_kind": "text_and_video"
+          },
+          "text_only": {
+            "action": "continue",
+            "call_id": "choice-13",
+            "capsule_sha256": "71f79d37c31f45a37ab1b4d89b26d809ecf07b66e600152c6f9c1357c8bc80ad",
+            "fact_ids": [
+              "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+              "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+              "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+              "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+            ],
+            "messages_sha256": "e6534b723d564c98336c69245ff24f16d4c088d49d91cd52d246474079ffeba6",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-05",
+            "terminal_sha256": "5c7216c9e4f3874647fbe4bfc776edb0fac82237a9a72dbdd64c291e0a4846b3",
+            "view_kind": "text_only"
+          },
+          "video_only": {
+            "action": "continue",
+            "call_id": "choice-15",
+            "capsule_sha256": "2235b299d0edaec5d962c1c0820a6182eef2e6eafa9c7dcfc0a38f29c0c8a28f",
+            "fact_ids": [
+              "vision:play:f01:command:linear_x_mps",
+              "vision:play:f01:motion:linear_x_mps",
+              "vision:play:f02:command:linear_x_mps",
+              "vision:play:f02:motion:linear_x_mps"
+            ],
+            "messages_sha256": "b2d4229db1c2781bb7d7eecdc8b6a961ffc0932337a783443d7418dbe12f69a4",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-05",
+            "terminal_sha256": "c8a047b814fd32fe636cb7c3f93e30a9ff7b5a1c32f044e2a3af2ad36010c091",
+            "view_kind": "video_only"
+          }
+        },
+        "seed_group": "source-02",
+        "slot_id": "input-05"
+      },
+      {
+        "choices": {
+          "text_and_video": {
+            "action": "continue",
+            "call_id": "choice-17",
+            "capsule_sha256": "d1c166c727e357798d16328ea233e76823ac5b62f1b9435334dc0b1a6138e586",
+            "fact_ids": [
+              "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+              "telemetry:case:Episode_Reward/track_ang_vel_z_exp"
+            ],
+            "messages_sha256": "1c090f6960fc5dfada5a8afe4249c439dca7b5351a38789209ec1d787699e2bd",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-06",
+            "terminal_sha256": "a028a1e6f804f464268a69d5f34cd931ebfcaa7b79479cda135ceb0da161928f",
+            "view_kind": "text_and_video"
+          },
+          "text_only": {
+            "action": "continue",
+            "call_id": "choice-18",
+            "capsule_sha256": "e564f1cc2e5cade47879ac1d0b2d2ac9d1e8dc3b543dabe1b0be8851f2438843",
+            "fact_ids": [
+              "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+              "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+              "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+              "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+            ],
+            "messages_sha256": "03d930400505b7e17e3e36b4fbfe4f08da9969afc67f6cccfaa8e25ade5c2c10",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-06",
+            "terminal_sha256": "8a7927c30924d934304e857b6808edd2077491193ff9a433a94b20394d068e95",
+            "view_kind": "text_only"
+          },
+          "video_only": {
+            "action": "continue",
+            "call_id": "choice-16",
+            "capsule_sha256": "06dcb4b09ee2e0c2fd620b0531c736688f0e9c15763f9844579ffa91eb3d5b34",
+            "fact_ids": [
+              "vision:play:f01:command:linear_x_mps",
+              "vision:play:f01:motion:linear_x_mps",
+              "vision:play:f02:command:linear_x_mps",
+              "vision:play:f02:motion:linear_x_mps"
+            ],
+            "messages_sha256": "0865b88fea50d4d5c5f48c63af489579ec031cdae4012a8a0f352fbcf8bc47e2",
+            "model_status": "valid",
+            "probe": "P_reward",
+            "slot_id": "input-06",
+            "terminal_sha256": "6f664c0257a280c6d2f0a46a32395183848c42441fa4642f00d0bf419efd0317",
+            "view_kind": "video_only"
+          }
+        },
+        "seed_group": "source-02",
+        "slot_id": "input-06"
+      }
+    ],
+    "other_probe_is_generic_misdiagnosis": false,
+    "prerequisites": {
+      "actual_probe_support": true,
+      "all_choices_terminal": true,
+      "source_labels": true
+    },
+    "registered_fault_checkpoint_count": 2,
+    "registered_fault_family_count": 1,
+    "schema": "vision_selection_comparison_summary_v1",
+    "secondary_pairwise": {
+      "text_and_video_vs_video_only": {
+        "descriptive_only": true,
+        "different_probe_or_hold": 0,
+        "valid_pairs": 8
+      },
+      "video_only_vs_text_only": {
+        "descriptive_only": true,
+        "different_probe_or_hold": 0,
+        "valid_pairs": 8
+      }
+    },
+    "selection_outcome": "observation_only",
+    "view_counts": {
+      "text_and_video": {
+        "P_reward_selections": 8,
+        "states": {
+          "valid": 8
+        },
+        "valid_hold": 0
+      },
+      "text_only": {
+        "P_reward_selections": 8,
+        "states": {
+          "valid": 8
+        },
+        "valid_hold": 0
+      },
+      "video_only": {
+        "P_reward_selections": 8,
+        "states": {
+          "valid": 8
+        },
+        "valid_hold": 0
+      }
+    }
+  },
+  "probe_pairs": {
+    "source-01": {
+      "schema": "vision_transferred_probe_pair_result_v1",
+      "status": "complete",
+      "group": "source-01",
+      "seed": 2220,
+      "probe": "P_reward",
+      "gpu_s": 30.389706471999943,
+      "measurements": {
+        "F1": {
+          "track_ang_vel_z_exp_rel_error": 1.675291310565541e-08,
+          "track_lin_vel_xy_exp_rel_error": 0.27895845800638197
+        },
+        "NONE": {
+          "track_ang_vel_z_exp_rel_error": 1.6571694159139838e-08,
+          "track_lin_vel_xy_exp_rel_error": 1.6846636987644104e-08
+        }
+      },
+      "outcomes": {
+        "F1": "abnormal",
+        "NONE": "normal"
+      },
+      "usable": true,
+      "original_result_sha256": "e9bfd354da26b49d54302c088e792dd11304eb95069b4896c5ca7855939f533c",
+      "approval_ledger_sha256": "aa6299499c66007401c52f2a32f6da2cc2f96cafbda39bb169c00d9b4753fca1"
+    },
+    "source-02": {
+      "schema": "vision_transferred_probe_pair_result_v1",
+      "status": "complete",
+      "group": "source-02",
+      "seed": 2221,
+      "probe": "P_reward",
+      "gpu_s": 29.784561950999887,
+      "measurements": {
+        "F1": {
+          "track_ang_vel_z_exp_rel_error": 1.655903052011354e-08,
+          "track_lin_vel_xy_exp_rel_error": 0.310116790831089
+        },
+        "NONE": {
+          "track_ang_vel_z_exp_rel_error": 1.63568028144212e-08,
+          "track_lin_vel_xy_exp_rel_error": 1.675116676036481e-08
+        }
+      },
+      "outcomes": {
+        "F1": "abnormal",
+        "NONE": "normal"
+      },
+      "usable": true,
+      "original_result_sha256": "5c491fc0a335aed1316f9cc8a6b29eb208b4a9ef3a422b9440dba0273ecf2804",
+      "approval_ledger_sha256": "5affa9b59ef07a46fa7e6997e98f30a7df5070e56d7cef9c4b619b575e2443c6"
+    }
+  },
+  "source_labels": {
+    "source-01": {
+      "normal": {
+        "checkpoint_sha256": "41c417b040b458c2f3cf5eb025ba6b5bd8e551c184f63a6c0c7809e0c5165d42",
+        "fixed_eval_artifact_sha256": "92ed5b026480f366dfdfdee53b6b06327da6cdd3c166680b11d37c79996b736c",
+        "label": "healthy"
+      },
+      "registered-f1": {
+        "checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+        "fixed_eval_artifact_sha256": "e8832fbb682abe1db0a3f74c96a02f3d52f00acabb3e618074a34267e10b6274",
+        "label": "unhealthy"
+      }
+    },
+    "source-02": {
+      "normal": {
+        "checkpoint_sha256": "b346a0c3e3ad6410ce93dcf73e6165ed69e2d6ab95b2c5398943b3a8874cf54d",
+        "fixed_eval_artifact_sha256": "b1cad4a033edb3bc5785b786d98ac508e1e223935b4022f2cf631dc08cc78ef7",
+        "label": "healthy"
+      },
+      "registered-f1": {
+        "checkpoint_sha256": "1d73d523c97c5c89c988febfbd3d5e533e90681cd0e6132d6ffe13888fa95731",
+        "fixed_eval_artifact_sha256": "1c36ec2f46ea953d06a443a560c15aeeb772f68147258ad0dc9f249ccabb2a1d",
+        "label": "unhealthy"
+      }
+    }
+  },
+  "source_recordings": {
+    "policies": 4,
+    "training_seeds": [
+      2220,
+      2221
+    ],
+    "frames_per_policy": 625,
+    "fps": 50,
+    "resolution": [
+      640,
+      480
+    ],
+    "duration_s": 12.5,
+    "source_flags_preserved": {
+      "capture_approved": false,
+      "model_ready": false,
+      "used_for_decision": false
+    }
+  },
+  "interpretation": "세 입력 조건의 검사 선택이 모두 같아 영상에 따른 선택 개선은 관측되지 않았다.",
+  "normal_controls": "정상 창도 P_reward를 선택했다. 검사 선택과 결함 확정은 구분한다.",
+  "archive": {
+    "files_verified": 473,
+    "manifest_sha256": "0f3f32055f7b2ae74e651517594d1f31f899a000fbe899a0e4f6be27df9ce438",
+    "archive_sha256": "39662a727d8664fb982100e1cae0af0d1e04d70d4aa23af8db272c73f35fa1f9",
+    "two_storage_copies_verified": true
+  },
+  "original_summary_sha256": "2defecf3839a07750e83f6d04f53e0b87b7e8103aa0d59adaee5e415f32024d3",
+  "probe_execution_protocol": "bench/protocols/vision_transferred_probe_v1.json",
+  "infrastructure_retry_protocol": "bench/protocols/vision_transferred_probe_history_retry1_20261027.json",
+  "post_correction_e2e": "not_part_of_this_comparison"
+}

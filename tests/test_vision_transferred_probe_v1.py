@@ -101,15 +101,18 @@ def _six(root: Path, stage: Path, *, arm: str, seed: int, checkpoint: str,
     return descriptor_path
 
 
-def test_protocol_is_preregistered_draft_with_two_exact_pairs() -> None:
+def test_protocol_has_two_exact_pairs_and_unbound_draft_is_rejected(tmp_path: Path) -> None:
     protocol = P.validate_protocol(ROOT / "bench/protocols/vision_transferred_probe_v1.json")
     assert [row["seed"] for row in protocol["groups"]] == [2220, 2221]
     assert protocol["execution_root"] == ".triage-runtime/vision-transferred-probe-v1"
     assert protocol["limits"] == {"probe_pairs": 2, "gpu_probe_runs": 4, "total_gpu_s": 600,
                                   "pair_gpu_s": 300, "api_requests": 0, "training_runs": 0}
+    protocol["source_binding"] = {"status": "draft", "source_anchor": None,
+                                  "source_sha256_lf": {}}
+    draft = tmp_path / "draft.json"
+    _write(draft, protocol)
     with pytest.raises(ValueError, match="committed"):
-        P.validate_protocol(ROOT / "bench/protocols/vision_transferred_probe_v1.json",
-                            require_bound=True)
+        P.validate_protocol(draft, require_bound=True)
 
 
 def test_actual_six_source_consumer_and_pair_receipt_replay(tmp_path: Path, monkeypatch) -> None:

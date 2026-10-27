@@ -1,0 +1,183 @@
+{
+  "schema": "vision_corrected_pull_protocol_template_v1",
+  "template_status": "before_training_requires_verified_late_binding",
+  "protocol_id": "vision-corrected-pull-record-20261027-v1",
+  "source_lineage": {
+    "source_protocol": {
+      "path": "bench/protocols/vision_brev_source_20261026_v8.json",
+      "sha256_lf": "10b2baa3b4529ff29f67ed552e6514bdc5db036e8afa24be005616144e77d02c"
+    },
+    "base_record_protocol": {
+      "path": "bench/protocols/vision_prepared_record_20261026_v4.json",
+      "sha256_lf": "001bf823c2776d58b7fb7e47adf34e3f6071d0ade6fb3441ae4012be805d831e"
+    }
+  },
+  "record_profile": {
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+    "seed": 42,
+    "num_envs": 1,
+    "action_scale": 0.25,
+    "command": {
+      "name": "base_velocity",
+      "frame": "body",
+      "linear_x_mps": 1.0,
+      "linear_y_mps": 0.0,
+      "yaw_rate_rps": 0.0,
+      "heading_command": false,
+      "relative_standing_envs": 0.0,
+      "resampling_time_range_s": [
+        12.5,
+        12.5
+      ]
+    },
+    "motion_frame": "body",
+    "duration_s": 12.5,
+    "fps": 50,
+    "frame_count": 625,
+    "resolution": {
+      "width": 640,
+      "height": 480
+    },
+    "camera": {
+      "identifier": "robot_parallel_world_camera_v1",
+      "mode": "parallel_track_root_position_world_axes",
+      "camera_prim_path": "/OmniverseKit_Persp",
+      "eye_offset_m": [
+        3.0,
+        3.0,
+        2.0
+      ],
+      "lookat_offset_m": [
+        0.0,
+        0.0,
+        0.35
+      ],
+      "rotation_tracks_robot": false,
+      "projection": "perspective",
+      "horizontal_fov_deg": 60.0,
+      "horizontal_aperture_mm": 20.955,
+      "focal_length_mm": 18.147562,
+      "clipping_range_m": [
+        0.01,
+        1000.0
+      ],
+      "capture_primitive": "replicator_orchestrator_step_v1",
+      "rt_subframes": 1,
+      "pause_timeline": false,
+      "delta_time_s": 0.0,
+      "read_after_capture": true,
+      "isaac_read_times_contract": "isaac_sim_4_5_outputs_11_v1",
+      "isaac_read_times_fields": [
+        "durationDenominator",
+        "durationNumerator",
+        "externalTimeOfSimNs",
+        "frameNumber",
+        "rationalTimeOfSimDenominator",
+        "rationalTimeOfSimNumerator",
+        "sampleTimeOffsetInSimFrames",
+        "simulationTime",
+        "simulationTimeMonotonic",
+        "swhFrameNumber",
+        "systemTime"
+      ],
+      "overlay_count": 0
+    },
+    "launcher": {
+      "headless": true,
+      "enable_cameras": true,
+      "fast_shutdown": false
+    },
+    "sample_windows_s": [
+      [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        6.0
+      ],
+      [
+        7.0,
+        8.0,
+        9.0,
+        10.0,
+        11.0,
+        12.0
+      ]
+    ],
+    "time_basis": "relative_actual_video_frame_pts_from_first_decoded_frame"
+  },
+  "limits": {
+    "max_policies": 2,
+    "max_wall_s_per_policy": 600,
+    "max_child_s_per_policy": 400,
+    "postflight_reserve_s_per_policy": 200,
+    "frames_per_policy": 625,
+    "fps": 50,
+    "annotators_per_frame": 5,
+    "raw_files_per_policy": 1250,
+    "training_actions": 0,
+    "model_api_requests": 0
+  },
+  "fixed_flags": {
+    "per_checkpoint_aaba_required": true,
+    "writer_calls": 0,
+    "atomicity_claimed": false,
+    "capture_approval": false,
+    "model_ready": false,
+    "used_for_decision": false,
+    "native_counter_source": "omni.kit.app.IApp.get_update_number",
+    "native_pull_window_updates": 0,
+    "orchestrator_steps_per_frame": 1,
+    "physics_state_time_unchanged": true,
+    "reference_time_source": "rep.annotators.get(ReferenceTime)",
+    "clean_reserved_marker_count": 0,
+    "actual_pts_required": true,
+    "aaba_output_separate_from_record": true,
+    "aaba_raw_receipts_required": true,
+    "first_error_preserved_before_close": true,
+    "aaba_verified_terminal_before_fast_shutdown": true,
+    "aaba_shutdown_receipt_required": true,
+    "aaba_app_close_phase_receipts": true,
+    "record_shutdown_policy_unchanged": true
+  },
+  "groups": [
+    {
+      "logical_id": "corrected-s2220",
+      "seed": 2220,
+      "correction_job_id": "vision-s2220-corrected",
+      "source_f1_checkpoint_sha256": "8a7f43ec0f1cebf470f7e8116bf5f1905f9ae742fbec3afddf6720438d7e4474",
+      "correction_request_binding": {
+        "correction_id": "restore_body_frame_reward",
+        "recovery_mode": "restart",
+        "protocol_case_arm": {
+          "case": "case_01",
+          "arm": "corrected"
+        }
+      }
+    },
+    {
+      "logical_id": "corrected-s2221",
+      "seed": 2221,
+      "correction_job_id": "vision-s2221-corrected",
+      "source_f1_checkpoint_sha256": "1d73d523c97c5c89c988febfbd3d5e533e90681cd0e6132d6ffe13888fa95731",
+      "correction_request_binding": {
+        "correction_id": "restore_body_frame_reward",
+        "recovery_mode": "restart",
+        "protocol_case_arm": {
+          "case": "case_01",
+          "arm": "corrected"
+        }
+      }
+    }
+  ],
+  "late_binding_contract": {
+    "checkpoint_from": "validated_correction.training.checkpoint",
+    "job_id_must_equal": "registered_correction_job_id",
+    "approval_receipt_required": true,
+    "bind_before_aaba_and_record": true
+  },
+  "post_observer": {
+    "used_for_decision": false
+  }
+}
