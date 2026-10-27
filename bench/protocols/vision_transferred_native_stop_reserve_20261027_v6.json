@@ -1,0 +1,32 @@
+{
+  "additional_lifecycle_allocation_usd": "0.5",
+  "allowed_actions": {
+    "after_native_admission_deadline": "read_only_inflight_monitoring_artifact_archive_and_owned_Stop_only",
+    "native_admission_before_utc": "2026-10-27T14:55:00Z",
+    "native_recordings_max": 1,
+    "new_fixed_evaluations": 0,
+    "new_model_api_requests": 0,
+    "new_training_runs": 0,
+    "remaining_group": "source-02"
+  },
+  "compute_started_at_utc": "2026-10-27T12:44:29.424013Z",
+  "deadline_utc": "2026-10-27T15:05:00Z",
+  "maximum_program_upper_usd": "33.710778",
+  "previous_phase": {
+    "path": "bench/protocols/vision_transferred_native_continuation_20261027_v5.json",
+    "sha256": "9c56b214ba5db3ce04eb20a1c91fd897d6f2efced596b0a16ec1e77a19808c82"
+  },
+  "prior_closed_program_upper_usd": "28.210778",
+  "program_cap_usd": "35",
+  "protocol_id": "vision-transferred-native-stop-reserve-20261027-v6",
+  "reason": "Reserve additional lifecycle headroom for the already registered remaining capture, artifact preservation and variable provider Stop latency. This preserves the whole-program 35 USD cap; no effectiveness criterion, seed, checkpoint, model or capture setting changes.",
+  "registered_at_utc": "2026-10-27T14:54:14.532903+00:00",
+  "resources": {
+    "compute_quote_usd_per_h": 2.09616,
+    "whole_batch_budget_usd": 5.5
+  },
+  "same_Start_and_compute_clock": true,
+  "schema": "vision_transferred_native_stop_reserve_v6",
+  "source_anchor": "ae336d88c88214ceed52808f50afb91ff1621c6e",
+  "stop_reserve_usd": "0.4"
+}
