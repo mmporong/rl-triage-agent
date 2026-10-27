@@ -1,0 +1,51 @@
+{
+  "schema": "vision_annotator_pull_development_result_v1",
+  "protocol_id": "annotator-pull-20261027ah",
+  "status": "invalid_before_gpu_candidate",
+  "source_commit": "982cf9047772438bfb5902b1a0e55bfb733e7c77",
+  "protocol_commit": "9ac52867cca72f99aa3167c463ec62b6eecce066",
+  "protocol": {
+    "path": "bench/protocols/vision_annotator_pull_20261027_v1.json",
+    "sha256_lf": "454bfc9f8fe6054cc68fb89f3955f53cf108f2f3f2557032a12b8096504cabdb"
+  },
+  "completed_stages": [
+    "initialize",
+    "admission",
+    "dry_run",
+    "bootstrap",
+    "registration",
+    "readiness"
+  ],
+  "failure": {
+    "stage": "candidate_operation_dispatch",
+    "error_type": "ValueError",
+    "error_message": "미등록 callback 운영 단계다",
+    "confirmed_cause": "새 annotator_pull 단계 이름을 기존 default_frame_primed 전용 command map에 넘겼다. record payload와 GPU 자식 실행 전 등록 검사에서 거부됐다."
+  },
+  "gpu_candidate_attempts": 0,
+  "render_steps": 0,
+  "annotator_captures": 0,
+  "diagnostic_complete": false,
+  "new_training_actions": 0,
+  "new_model_api_requests": 0,
+  "full_recordings": 0,
+  "used_for_decision": false,
+  "capture_approved": false,
+  "owned_vm_status": "STOPPED",
+  "owned_gpu_processes_after": [],
+  "strong_raw_file_count": 452,
+  "archive_sha256": "9f8d22258f6de67aaa0fb6402b4e08ad54d2401add8fff3f8f92fec588c73ca7",
+  "inventory_sha256": "9f7f0ec4562b66069fdf49d0358bc9c23bf14d44cd190a6824fe7866de121af1",
+  "strong_transfer_sha256": "c960c6a63d204efaaa774d8b1c8c8036ff99dc26e9d2e96138c376191bdf4af8",
+  "canonical_stop_sha256": "31e8eb7ee0c7570599327a4680b83eccd0b49289d2405bfc825a54ae55f8d9fe",
+  "cost": {
+    "this_lifecycle_estimate_usd": "0.119061",
+    "cumulative_compute_estimate_usd": "18.330565",
+    "remaining_program_budget_usd": "1.669435",
+    "program_cap_usd": "20.000000",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "interpretation": "수집 방식의 성공·실패는 평가되지 않았다. 단계 연결 수정은 인프라 수정으로 구분하며 기존 기록을 보존한다.",
+  "final_stop_schema": "v04_owned_vm_stop_receipt_v1"
+}
