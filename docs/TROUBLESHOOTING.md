@@ -379,3 +379,8 @@
 - 정리 함수는 소유 작업의 부재를 확인하려고 `brev exec`을 사용했다. 그 호출의 출력은 인스턴스를 시작한다고 표시했고, 이후 원격 유휴 상태를 확인한 뒤 정지했다. 이 호출은 정지 상태를 확인하는 용도로 사용할 때도 기동 부수효과가 생길 수 있다.
 - 원격 명령 전에 대상과 최신 상태를 확인하고, 이미 정지된 경우 원격 호출 없이 그 증거를 남기는 경계를 추가한다. [실행 결과](../evals/results/vision_pull_record_dev_20261027ao/summary.json).
 - 후속 실행도 준비 상태에 도달하지 못했지만, 수정된 정리 경계는 `STOPPED`를 두 차례 확인하고 원격 명령·추가 정지 요청 없이 끝났다. `brev` 0.6.335의 [공개 코드](https://github.com/brevdev/brev-cli/blob/v0.6.335/pkg/cmd/exec/exec.go#L184-L211)도 SSH 실패 뒤 상태가 `STOPPED`이면 기동 함수를 호출한다. 최초 기동이 실패한 공급자 측 이유는 이 코드만으로 알 수 없다. [후속 실행 결과](../evals/results/vision_pull_record_dev_20261027ao_retry1/summary.json).
+
+## OPS-45: 생성 직전 catalog에서 선택 GPU type이 사라짐
+
+- 보존한 견적에는 `massedcompute_L40S`가 있었지만, 생성 직전 같은 조회의 결과에는 없었다. 생성 명령 전에 중단했으며 새 인스턴스·학습·영상 수집·모델 호출은 없었다. catalog에서 빠진 공급자 측 이유는 확인하지 못했다.
+- 다른 공급자의 L40S·200 GB 디스크·새 견적을 별도 판으로 고정한다. 생성 전 최신 catalog 검사와 정확한 소유 ID 확인은 유지한다. [중단 기록](../evals/results/vision_environment_transfer_20261027a/summary.json).
