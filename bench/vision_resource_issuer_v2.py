@@ -70,7 +70,7 @@ def issue(authorization_path: Path, start_path: Path, provider: Path, gpu: Path,
     auth_sha = AUTH._sha(authorization_path, lf=True)
     common = {
         "status": "granted", "resource_id": resource_id, "gpu_uuid": capture["gpu_uuid"],
-        "lease_id": f"v04a-{auth_sha[:18]}", "issued_at_utc": current.isoformat(),
+        "lease_id": f"v04-{B.sha256(start_path)[:20]}", "issued_at_utc": current.isoformat(),
         "expires_at_utc": deadline.isoformat(), "compute_started_at_utc": started.isoformat(),
         "protocol_sha256": source_sha,
         **{key: capture[key] for key in (
@@ -142,6 +142,7 @@ def verify_issuance(authorization_path: Path, issuance_path: Path, resource_path
         raise ValueError("resource issuance가 새 승인·자원 원문과 다르다")
     resource = B.read(resource_path)
     if (resource.get("protocol_sha256") != authorization["source_protocol"]["sha256_lf"]
+            or resource.get("lease_id") != f"v04-{issuance['start_observation_sha256'][:20]}"
             or B._stamp(resource.get("expires_at_utc"))
             != B._stamp(authorization["authorization_deadline_utc"])):
         raise ValueError("resource proof가 새 승인 기한과 과거 source 계보를 함께 보존하지 않는다")

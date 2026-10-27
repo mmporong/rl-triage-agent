@@ -149,11 +149,25 @@ def test_issuer_binds_new_deadline_and_old_source_sha_without_rewriting_either(t
         now=NOW, repo=tmp_path,
     )
     assert proof["protocol_sha256"] == AUTH._sha(source_path, lf=True)
+    assert proof["lease_id"] == f"v04-{SOURCE.sha256(start)[:20]}"
     assert proof["expires_at_utc"] == "2026-10-27T09:00:00+00:00"
     assert issuance["historical_source_deadline_utc"] == "2026-10-27T06:00:00Z"
     assert issuance["source_experiment_extended"] is False
     assert source_path.read_bytes() == source_before
     assert authorization_path.read_bytes() == authorization_before
+
+
+def test_issuance_rejects_different_start_for_same_authorization(tmp_path: Path) -> None:
+    _source_path, _execution_path, authorization_path = _fixture(tmp_path)
+    start, provider, gpu, processes = _captures(tmp_path, authorization_path)
+    output = tmp_path / "issued"
+    ISSUER.issue(authorization_path, start, provider, gpu, processes, output, now=NOW, repo=tmp_path)
+    issuance_path = output / "issuance.json"
+    issuance = json.loads(issuance_path.read_text(encoding="utf-8"))
+    issuance["start_observation_sha256"] = "f" * 64
+    _write(issuance_path, issuance)
+    with pytest.raises(ValueError, match="resource"):
+        ISSUER.verify_issuance(authorization_path, issuance_path, output / "resource.json", now=NOW, repo=tmp_path)
 
 
 def test_issuance_rejects_changed_authorization_deadline(tmp_path: Path) -> None:
