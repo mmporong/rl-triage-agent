@@ -415,3 +415,16 @@
 - 첫 응답을 완료하면 공유 API manifest가 생기지만 다음 decision manifest는 아직 없다. 동결 inspector는 이 정상 미시작 상태를 부분 생성으로 거부했다. 최초 stack trace는 별도 파일로 보존되지 않았다.
 - 활성 호출과 미응답 reservation이 없음을 확인한 뒤 등록된 빈 decision manifest만 준비했다. 기존 응답은 재사용했고, 이 준비 과정의 API 호출은 0건이었다. 이후 비교는 24/24 완료했다.
 - [새 읽기 전용 inspector](../evals/vision_selection_inspection_v2.py)는 미시작 상태를 구분한다. 실제 부분 기록·소유 manifest 누락·변조·미완료 reservation은 계속 거부하며 조회 중 파일을 생성하지 않는다. [실제 caller 기반 회귀](../tests/test_vision_selection_inspection_v2.py)는 첫 terminal 뒤 다음 decision이 없는 경우와 미완료 요청의 재전송 차단을 확인한다. 완료한 비교에는 새 inspector를 소급 적용하지 않았다.
+
+### OPS-53: Stop 요청 성공과 공급자 정지 완료는 다른 상태
+
+- seed 2221 촬영·비교 원문을 회수하고 GPU 유휴 상태를 확인한 뒤 Stop 명령은 exit 0으로 끝났지만, 공급자는 약 8분 46초 동안 `STOPPING`을 반환했다. 첫 40회 관찰 한도 초과도 보존했다. 이 상태를 정지 완료로 기록하지 않았다.
+- Stop을 다시 보내거나 VM에 접속하지 않고 목록 조회만 이어가 `STOPPED`를 확인했다. 내부 지연 원인은 확인되지 않았다. 다음 실행도 새 Start 요청과 두 번의 READY 관찰을 요구한다.
+- 비용 상한 추정에는 학습·촬영 시간뿐 아니라 시작·설정·복사·CPU 대기·정지 확인까지의 전체 구간을 포함한다. [정지 관찰과 비용 범위](../evals/results/vision_transferred_pull_record_dev_20261027c_v1/compute-reconciliation.json).
+
+### OPS-54: 전송 사본·relay 참조·요청 폴더의 사전 준비
+
+- E2E v2의 첫 입력 승인은 native 원시 영수증의 hardlink를 거부했다. 전송 mirror 7,728개를 바이트 해시가 같은 독립 파일로 바꿨다. 이어 relay 설정을 저장소 상대경로로 준 host scope가 절대 참조를 요구하는 소비자에서 거부돼, 원문을 보존하고 새 scope를 만들었다.
+- 첫 모델 선택은 spool root가 준비되지 않아 `SpoolIntegrityError`로 멈췄다. Journal 예약 1건과 relay allocation은 남았지만 spool 요청 파일과 provider 호출은 없었다. 이 예약을 응답으로 채우거나 다시 보내지 않았다. 새 학습도 시작하지 않았다.
+- [새 실행판 v3](../bench/protocols/vision_transferred_e2e_20261027_v3.json)는 같은 두 입력·모델 인자·학습 상한을 유지하며 요청 폴더를 먼저 준비한다. [이전 시도와 비용 연결](../bench/protocols/vision_transferred_e2e_20261027_v3.infra.json)에 지연 사유와 새 종료 시각을 등록했다. 비용 시작 시각과 $5 구간·$35 전체 상한은 그대로다.
+- 이 준비 단계에서 Brev CLI는 원격 비영 종료 뒤 SSH 연결 확인과 명령 재실행을 보였다. 부수효과가 있는 host 준비 명령은 오류 원문과 실패 상태를 반환하는 외부 envelope로 감싸며, 이미 생성된 원장·결과를 덮어쓰지 않는다.
