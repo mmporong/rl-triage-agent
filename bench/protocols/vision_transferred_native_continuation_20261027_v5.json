@@ -1,0 +1,46 @@
+{
+  "schema": "vision_transferred_native_continuation_v5",
+  "protocol_id": "vision-transferred-native-second-continuation-20261027-v5",
+  "registered_at_utc": "2026-10-27T14:47:39.619107+00:00",
+  "deadline_utc": "2026-10-27T14:55:00Z",
+  "source_anchor": "ae336d88c88214ceed52808f50afb91ff1621c6e",
+  "previous_phase": {
+    "path": "bench/protocols/vision_transferred_native_continuation_20261027_v4.json",
+    "sha256": "275ab69a97027d5a3dbf3a8cd5adcd7d65544e50518e4a1c0ad30b35b1fab6d1"
+  },
+  "native_registration": {
+    "path": "bench/protocols/vision_transferred_native_20261027_v5.registration.json",
+    "sha256": "7a4f27765bfc17ee6010fe9cf6106e70531b8a43b3ad2763d0764d466c0c4b36"
+  },
+  "resources": {
+    "compute_quote_usd_per_h": 2.09616,
+    "whole_batch_budget_usd": 5
+  },
+  "compute_started_at_utc": "2026-10-27T12:44:29.424013Z",
+  "same_Start_and_compute_clock": true,
+  "prior_closed_program_upper_usd": "28.210778",
+  "program_cap_usd": "35",
+  "stop_reserve_usd": "0.4",
+  "allowed_actions": {
+    "seed_group": "source-02",
+    "native_recordings_max": 1,
+    "training_runs": 0,
+    "fixed_evaluations": 0,
+    "model_api_requests": 0
+  },
+  "reason": "The registered host-use scope expired while the native static handoff was verifying inputs. Renew only the remaining second native capture; preserve the expired attempt and first capture.",
+  "unchanged": {
+    "capture_frames": 625,
+    "fps": 50,
+    "entry_freshness_s": 30,
+    "ticket_ttl_s": 120,
+    "checkpoint_bindings": true,
+    "AABA": true
+  },
+  "auxiliary_observation": "A new local post-retrieval protocol must be committed before any auxiliary model call; no remote post-observation is authorized by this continuation.",
+  "prediction": "The remaining verified source-02 corrected checkpoint completes native synchronization and 625-frame recording.",
+  "outcome_wording": {
+    "complete": "Second native capture completed under the same total cost cap.",
+    "incomplete": "Keep recovered fixed evaluation and report incomplete native capture without substituting earlier clips."
+  }
+}
