@@ -240,8 +240,8 @@ def validate_protocol(
         raise ValueError("새 recording resource 상한이 다르다")
     quote = _positive_decimal(resources["compute_quote_usd_per_h"], "compute quote")
     budget = _positive_decimal(resources["batch_budget_usd"], "batch budget")
-    required = quote * Decimal(TECHNICAL_LIMITS["max_policies"])
-    required *= Decimal(TECHNICAL_LIMITS["max_wall_s_per_policy"]) / Decimal(3600)
+    required = (quote * Decimal(TECHNICAL_LIMITS["max_policies"])
+                * Decimal(TECHNICAL_LIMITS["max_wall_s_per_policy"]) / Decimal(3600))
     if budget < required:
         raise ValueError("새 recording batch budget이 등록 wall 상한보다 작다")
     registered = _utc(protocol["registered_at_utc"], "registered")

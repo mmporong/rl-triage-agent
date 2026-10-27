@@ -165,6 +165,20 @@ def test_new_source_and_target_pass_without_mutating_historical_inputs(
     assert before == (source_path.read_bytes(), base_path.read_bytes())
 
 
+@pytest.mark.parametrize(("budget", "accepted"), [("0.698720", True), ("0.698719", False)])
+def test_exact_wall_budget_boundary(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, budget: str, accepted: bool
+) -> None:
+    path, protocol, repo = _protocol(tmp_path, monkeypatch)
+    protocol["resources"].update(compute_quote_usd_per_h="2.09616", batch_budget_usd=budget)
+    _write(path, protocol)
+    if accepted:
+        J.validate_protocol(path, repo=repo, now=NOW)
+    else:
+        with pytest.raises(ValueError, match="batch budget"):
+            J.validate_protocol(path, repo=repo, now=NOW)
+
+
 def test_resource_builder_uses_only_new_target_capture(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
