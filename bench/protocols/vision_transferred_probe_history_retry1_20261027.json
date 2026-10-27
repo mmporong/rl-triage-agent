@@ -1,0 +1,42 @@
+{
+  "schema": "vision_transferred_probe_infrastructure_retry_v1",
+  "retry_id": "vision-transferred-probe-history-retry1-20261027",
+  "registered_before_gpu_measurement": true,
+  "base_protocol": {
+    "path": "bench/protocols/vision_transferred_probe_v1.json",
+    "sha256_lf": "9d95556e461722f0f4a81b6c4f5952c1f449d399eb0bb5ca60517de63bf5ef96"
+  },
+  "checkout_commit": "85120de65ad9c75f99b9ec57f1b8909b9b63b79b",
+  "new_execution_repository": "rl-triage-probe-transfer-20261027-retry1",
+  "historical_runtime_anchor": "38402cb4ce58c26a1551747b562f0c78be0c9e0f",
+  "full_git_history_required": true,
+  "shallow_repository_allowed": false,
+  "failed_attempt": {
+    "execution_sha256": "140fa529ae25961f6dfe15eedec6316de529fd78887d71861cda251d565eb5e9",
+    "child_session_id": null,
+    "source_snapshot_completed": false,
+    "cleanup_verified": true,
+    "gpu_after": [],
+    "measurement_runs": 0,
+    "source_group": "source-01",
+    "approval_consumption_preserved": true
+  },
+  "retry_condition": "historical runtime commit absent before subprocess launch; full source snapshot must pass before a fresh authorization",
+  "limits": {
+    "retry_lifecycles": 1,
+    "source_pairs": 2,
+    "gpu_probe_runs": 4,
+    "gpu_s": 600,
+    "model_api_requests": 0,
+    "new_training": 0
+  },
+  "resources": {
+    "instance_id": "j1kxncj4e",
+    "instance_type": "gpu-l40s-a.1gpu-16vcpu-64gb",
+    "quoted_usd_per_h": "2.09616",
+    "additional_phase_cap_usd": "3.000000",
+    "whole_program_cap_usd": "35.000000"
+  },
+  "semantics": "same seeds, checkpoints, frozen P_reward implementation, classifier, predictions and wording; new attempt preserves the original invalid record and uses fresh approvals",
+  "deadline_utc": "2026-10-27T12:30:00Z"
+}
