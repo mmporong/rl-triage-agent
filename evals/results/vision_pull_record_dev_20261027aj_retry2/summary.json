@@ -1,0 +1,62 @@
+{
+  "schema": "vision_pull_record_development_failure_v1",
+  "protocol_id": "native-policy-record-20261027aj",
+  "attempt": "retry2",
+  "status": "HOLD",
+  "science_outcome": "not_measured",
+  "source_commit": "299a8b176a9466a767ec13e89c79f01037731a2f",
+  "protocol_commit": "7934f621003bb9fdf6b588db4133e1fc6e143662",
+  "protocol": {
+    "path": "bench/protocols/vision_pull_record_20261027_v2.json",
+    "sha256_lf": "7ea0dc825e02438564fb9e11f43a1ebadaf8b6623a9e41741cd3ecbfdb956e40"
+  },
+  "completed_boundaries": [
+    "setup",
+    "dry_run",
+    "bootstrap",
+    "registration",
+    "smoke",
+    "normal_checkpoint_environment_and_policy_load",
+    "annotator_readiness"
+  ],
+  "failure": {
+    "stage": "normal_checkpoint_aaba_report",
+    "first_preserved_error_type": "builtins.TypeError",
+    "first_preserved_error_message": "Object of type ndarray is not JSON serializable",
+    "secondary_parent_timeout_s": 399.9259395659999,
+    "original_nested_error_fully_recoverable": false,
+    "source_and_cpu_reproduction": "AABA 출력 폴더가 없으면 raw NPZ 저장이 실패하고 collection에 남은 ndarray가 JSON 저장 오류를 일으켜 앞선 오류를 가릴 수 있다.",
+    "record_phase_started": false,
+    "second_checkpoint_started": false,
+    "readiness_app_updates": 38,
+    "readiness_physics_unchanged": true,
+    "record_continuation_resource_freshness_tested": false
+  },
+  "evidence": {
+    "raw_files": 502,
+    "verified_copy_files": 506,
+    "verified_host_metadata_files": 331,
+    "all_copied_sha256_equal": true,
+    "archive_sha256": "84f6ce2b2b678b7a676e90ba168749ca7ff465e2e82954102d022094ab3fe025",
+    "inventory_sha256": "a090208d94f3f0f0778c8c4753a806ffdcc793e729e816c2d944a6904590c1a9",
+    "failure_terminal_sha256": "53f615bca4ea219370246e29d16ef64e9c73accacfc597a6f1bb579577771842",
+    "canonical_stop_sha256": "d9b03cb83bc712753b4d82250fe74ec4021a470d71ad05f17880ba020985313e"
+  },
+  "actual_recordings": 0,
+  "new_training_actions": 0,
+  "model_api_requests": 0,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "vm_status": "STOPPED",
+  "stopped_observed_at_utc": "2026-10-27T03:35:06.725202Z",
+  "cost": {
+    "this_lifecycle_estimate_usd": "0.336100",
+    "AJ_attempt_group_estimate_usd": "0.637530",
+    "cumulative_program_estimate_usd": "19.118207",
+    "remaining_program_usd": "0.881793",
+    "program_cap_usd": "20.000000",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "interpretation": "준비 경계와 AABA readiness 뒤의 저장·오류 보존 실패다. 전체 영상 수집이나 영상 입력 효과를 판정하지 않는다. 기존 실행·원문·비용을 보존하고 새 실행판에서 폴더 분리와 첫 오류 보존을 먼저 검증한다."
+}

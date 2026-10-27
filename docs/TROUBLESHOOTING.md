@@ -337,3 +337,10 @@
 - 이어 제어기가 광고한 `snapshot`·`failure-snapshot`이 6개 실행 stage 목록으로 전달돼 회수가 중단됐다. 등록된 실패 snapshot 경로로 복구해 원문 468개를 회수했고, 사본 472개와 최종 host 메타데이터 311개의 해시를 대조한 뒤 소유 VM 정지를 완료했다.
 - 정책 녹화·새 학습·모델 호출은 0건이다. 다음 준비 검사에서는 생성한 모드 검사 코드를 실행하며, 전체 제어 명령의 소비 경로와 누적 인프라 비용을 함께 확인한다. 기존 실행·원문·판정 기준은 보존한다.
 - 근거: [시도와 회수·정지 요약](../evals/results/vision_pull_record_dev_20261027aj_retry1/summary.json).
+
+### CAP-25: 진단 산출물 저장 실패와 원오류 보존
+
+- 설정·등록·준비 검사를 통과하고 정상 checkpoint의 환경·정책 로드와 annotator readiness까지 도달했으나, AABA 보고서 저장에서 `ndarray` JSON 직렬화 오류가 보존됐다. record 자식과 두 번째 checkpoint는 시작하지 않았다. 오류 뒤 종료 지연으로 약 400초의 부모 timeout도 발생했다.
+- 코드와 CPU 재현에서 AABA 출력 폴더가 없으면 NPZ 저장이 실패하고, collection에 남은 배열이 다음 JSON 저장 오류를 일으켜 앞선 오류를 가릴 수 있음을 확인했다. 실제 원문에는 직렬화 오류만 남아 내부 최초 오류 전체를 복원할 수는 없다. 최초 resource freshness는 통과했지만 이후 record 단계의 freshness 재검증은 미도달 경로다.
+- 원문 502개, 회수 사본 506개와 최종 host 메타데이터 331개의 해시를 대조했고 VM 정지를 확인했다. 새 학습·모델 호출·전체 정책 영상은 0건이다. 새 실행판은 진단·영상 출력 경로를 분리하고, 원시 NPZ와 최초 오류를 앱 종료 전에 보존하는 경계를 검증한다.
+- 근거: [실행·회수·정지 결과](../evals/results/vision_pull_record_dev_20261027aj_retry2/summary.json).
