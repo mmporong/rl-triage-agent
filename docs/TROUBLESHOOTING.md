@@ -439,3 +439,9 @@
 
 - seed 2221의 교정 학습과 고정 평가 자식은 정상 종료했다. backend는 `NONE`·`CORRECTED`라는 이름의 원문 report를 생성했지만, 고리 adapter는 mapping 키만 `none`·`corrected`로 바꾼 뒤 report 본문의 이름도 소문자라고 검증해 `HOLD`를 반환했다. 이 시도의 unknown receipt와 평가 원문은 보존한다.
 - 재개 판은 원문의 arm 이름을 명시한 대응표로 검증하고, 26조건·checkpoint·프로토콜·수치 재집계·실행 및 원장 SHA 검증을 유지한다. 원본 report를 수정하거나 완료 학습을 반복하지 않는다. seed 2221은 이미 완료된 평가를 읽는 개발 측정이며, seed 2220의 누락된 평가는 별도 등록 후 한 번만 실행한다.
+
+### OPS-57: 교정 녹화 adapter와 RUN5의 helper 계약
+
+- 두 교정 정책의 고정 평가를 확인한 뒤 첫 native 녹화가 `AttributeError`로 중단됐다. 교정 JOB adapter가 RUN5의 `write_new`를 제공하지 않았다. 원문에서 자식 launch 파일 0개와 GPU 유휴 상태를 확인했으며, 이 시도는 완성 영상으로 세지 않는다.
+- [새 adapter](../bench/run_vision_corrected_pull_record_v2.py)는 필요한 파일·해시 helper와 v2 자식 진입점을 제공한다. 기존 녹화 intent·stage·실패는 보존하고 새 판의 경로를 사용한다. 30초 자원 확인, 120초 ticket, AABA, 625프레임·50 fps와 원문·PTS 검증은 유지한다.
+- [후속 단계 등록](../bench/protocols/vision_transferred_native_continuation_20261027_v4.json)은 녹화와 보조 관찰만 허용한다. 원래 Start부터의 비용 시계와 $5 구간·$35 전체 상한을 유지하며, 학습·고정 평가·초기 선택을 다시 실행하지 않는다.
