@@ -1,0 +1,55 @@
+{
+  "schema": "vision_pull_record_retry1_infrastructure_summary_v1",
+  "protocol": "bench/protocols/vision_pull_record_20261027_v2.json",
+  "protocol_sha256_lf": "7ea0dc825e02438564fb9e11f43a1ebadaf8b6623a9e41741cd3ecbfdb956e40",
+  "source_commit": "299a8b176a9466a767ec13e89c79f01037731a2f",
+  "protocol_commit": "7934f621003bb9fdf6b588db4133e1fc6e143662",
+  "outcome": "infrastructure_failure_before_policy_record",
+  "completed_stages": [
+    "setup",
+    "dry_run",
+    "bootstrap",
+    "registration"
+  ],
+  "failed_stage": "smoke",
+  "confirmed_cause": "준비 스크립트가 실제 등록 모드 record 대신 이전 모드 prepared_policy_record_only를 요구했다.",
+  "receiver_evidence": {
+    "first_payload_executed": true,
+    "first_payload_completed": false,
+    "intent_without_result": true,
+    "subsequent_status": "requires_reconcile",
+    "subsequent_stage_executed": false,
+    "interpretation": "후속 호출의 false는 첫 실행 부재가 아니라 재실행 거부를 뜻한다."
+  },
+  "finalization": {
+    "initial_error": "snapshot/failure-snapshot이 광고된 제어 명령에서 실행 stage 목록으로 전달돼 거부됐다.",
+    "recovery": "등록된 실패 snapshot을 실행하고 검증 회수 뒤 소유 VM을 정지했다.",
+    "snapshot_status": "partial",
+    "raw_files": 468,
+    "D_copy_files_verified": 472,
+    "host_metadata_files_verified": 311,
+    "archive_sha256": "050932a191619bfaad68042f6895750c57df09e5864ff2a8f244cba03f2eca5e",
+    "inventory_sha256": "4dadc9ef4559e10e7c2b82b05e8b92b7e0061fdfe5d5dcaebb9f52f128d49d9f",
+    "canonical_stop_sha256": "b93ba86c984c9ce478bdadb9333cbf99f8e5e89c69e8a7003589ea662a9937b7"
+  },
+  "owned_vm_status": "STOPPED",
+  "stopped_observed_at_utc": "2026-10-27T03:04:56.246328+00:00",
+  "policy_recording_attempts": 0,
+  "full_recordings": 0,
+  "training_actions": 0,
+  "model_api_requests": 0,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "cost": {
+    "this_lifecycle_estimate_usd": "0.242750",
+    "AJ_infrastructure_prefix_and_retry_usd": "0.301430",
+    "cumulative_compute_estimate_usd": "18.782107",
+    "remaining_program_budget_usd": "1.217893",
+    "program_cap_usd": "20.000000",
+    "original_batch_cap_usd": "1.000000",
+    "remaining_original_batch_budget_usd": "0.698570",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "next_boundary": "생성된 준비 코드의 모드 검사를 실제 실행하는 CPU 회귀와 전체 제어 명령 경로를 확인한 뒤 별도 인프라 시도로 구분한다. 수집기 판정 기준은 유지한다."
+}
