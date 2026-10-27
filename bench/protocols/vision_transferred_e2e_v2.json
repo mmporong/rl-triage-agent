@@ -1,0 +1,317 @@
+{
+  "comparison_registration": "8dddefba25bcd382cc67124faf190f2e26b70ad9",
+  "corrected_recorder_sources": {
+    "bench/protocols/vision_corrected_pull_record_template_v1.json": {
+      "sha256": "5b9b8212fc906e8b04d52850b0cec7c252786c1e0ee059e6b8a3955740a83b61",
+      "sha256_lf": "c0614938d32e7c32add1e7cce77f5836b341327206ba5e5c5c1327e54094f9cc"
+    },
+    "bench/run_vision_corrected_pull_record_v1.py": {
+      "sha256": "a9bf7e123836d7d11890f335a7696f870b7fc60fdbb163ba488c1c2b414e6611",
+      "sha256_lf": "a9bf7e123836d7d11890f335a7696f870b7fc60fdbb163ba488c1c2b414e6611"
+    },
+    "evals/vision_corrected_record_service_v1.py": {
+      "sha256": "77e11005204b10016702c863fd69fb32bde5a9be05f191f7ea12917249fe9acf",
+      "sha256_lf": "951fbf6fec5a069285cb190d47f3fdce6997242774f22d8a825578aa12b992da"
+    }
+  },
+  "cost_scope": "historical_quote_is_estimate_only_new_resource_admission_required",
+  "development_scope": "post_comparison_development_no_effect_or_generalization_claim",
+  "execution_registration": "external_committed_bundle_proof_required",
+  "execution_registration_order": [
+    "preserve_v1_guard_and_draft",
+    "verify_original_target_and_precomparison_capsule_objects",
+    "create_development_blueprint_and_plan",
+    "main_commit_v2_sources_method_and_execution_bundle",
+    "main_activate_selection_manifest",
+    "fresh_E2E_admission_and_scope",
+    "fresh_initial_two_logical_calls_no_terminal_copy",
+    "fresh_E2E_probes_approvals",
+    "two_CORRECTED_training_and_fixed_evaluation",
+    "bind_native_protocol_once_after_both_results",
+    "main_commit_bound_native_protocol",
+    "fresh_native_record_resource_then_observation_only"
+  ],
+  "host_use_scope": {
+    "capture_approved": false,
+    "required": [
+      "model_use_authorized",
+      "approval_id",
+      "execution_protocol_sha256",
+      "plan_sha256",
+      "blueprint_sha256",
+      "resource_sha256",
+      "capsules",
+      "lineages",
+      "issued_at_utc",
+      "expires_at_utc",
+      "execution_registration_anchor",
+      "development_sources_lf"
+    ],
+    "schema": "vision_transferred_e2e_host_use_v2",
+    "scope": "post_comparison_development_fixed_transferred_v05_e2e_native_post_observation",
+    "used_for_decision": false
+  },
+  "immutable_baseline": {
+    "bench/protocols/fixed_eval_v1.json": {
+      "sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46"
+    },
+    "bench/protocols/vision_brev_source_20261026_v8.json": {
+      "sha256_lf": "10b2baa3b4529ff29f67ed552e6514bdc5db036e8afa24be005616144e77d02c"
+    },
+    "evals/vision_selection_brev_adapter_v1.py": {
+      "sha256_lf": "defd8ba53b8bdd4d5630926c98c44ad8fbcaa61742fa274c149f11ce4f54f99a"
+    },
+    "evals/vision_selection_e2e_v1.py": {
+      "sha256_lf": "10fb75b1a7e1a947d4fa2f84ea5d4b6d038e87000489f2065ebc227499f11542"
+    }
+  },
+  "initial_selection_reuse": "same_e2e_terminal_only_no_comparison_terminal_copy",
+  "limits": {
+    "comparison_api_requests": 72,
+    "corrected_runs": 2,
+    "e2e_api_requests": 32,
+    "gpu_probe_runs": 4,
+    "new_source_trainings": 0,
+    "probe_pairs": 2
+  },
+  "model_relay_design": {
+    "callback": "complete(messages, params)",
+    "config_optional": true,
+    "copy_credentials_to_Brev": false,
+    "driver_injection": "runtime_cli(args, complete=registered_callback)",
+    "implementation_status": "external_pending_not_implemented_here",
+    "initial_and_observe_same_callback": true,
+    "key_location": "WSL_environment_only",
+    "module_owner": "separate_vision_model_spool_v1",
+    "propose_callback_accepted_not_called": true,
+    "scope_pin": "model_relay_config.path+sha256"
+  },
+  "native_record_interface": {
+    "class": "NativeCorrectedRecordService",
+    "constructor": "bound_protocol_path",
+    "from_runtime_allowed": false,
+    "keyword_only": [
+      "resource_proof",
+      "resource_sha256",
+      "isaaclab",
+      "python",
+      "stage",
+      "logical_id",
+      "correction_result",
+      "approval_receipt",
+      "receipt_output",
+      "normal_reference"
+    ],
+    "legacy_writer_result_allowed": false,
+    "method": "record",
+    "module": "vision_corrected_record_service_v1",
+    "order": [
+      "two_verified_corrections",
+      "export_ledger_bound_approvals",
+      "bind_protocol_once",
+      "main_commit_bound_protocol",
+      "fresh_record_resource",
+      "record_each_policy",
+      "V01_observation_only"
+    ],
+    "receipt_schema": "vision_corrected_native_record_receipt_v1",
+    "result_keys": [
+      "status",
+      "job",
+      "native_receipt"
+    ]
+  },
+  "native_record_profile": {
+    "action_scale": 0.25,
+    "camera": {
+      "camera_prim_path": "/OmniverseKit_Persp",
+      "capture_primitive": "replicator_orchestrator_step_v1",
+      "clipping_range_m": [
+        0.01,
+        1000.0
+      ],
+      "delta_time_s": 0.0,
+      "eye_offset_m": [
+        3.0,
+        3.0,
+        2.0
+      ],
+      "focal_length_mm": 18.147562,
+      "horizontal_aperture_mm": 20.955,
+      "horizontal_fov_deg": 60.0,
+      "identifier": "robot_parallel_world_camera_v1",
+      "isaac_read_times_contract": "isaac_sim_4_5_outputs_11_v1",
+      "isaac_read_times_fields": [
+        "durationDenominator",
+        "durationNumerator",
+        "externalTimeOfSimNs",
+        "frameNumber",
+        "rationalTimeOfSimDenominator",
+        "rationalTimeOfSimNumerator",
+        "sampleTimeOffsetInSimFrames",
+        "simulationTime",
+        "simulationTimeMonotonic",
+        "swhFrameNumber",
+        "systemTime"
+      ],
+      "lookat_offset_m": [
+        0.0,
+        0.0,
+        0.35
+      ],
+      "mode": "parallel_track_root_position_world_axes",
+      "overlay_count": 0,
+      "pause_timeline": false,
+      "projection": "perspective",
+      "read_after_capture": true,
+      "rotation_tracks_robot": false,
+      "rt_subframes": 1
+    },
+    "command": {
+      "frame": "body",
+      "heading_command": false,
+      "linear_x_mps": 1.0,
+      "linear_y_mps": 0.0,
+      "name": "base_velocity",
+      "relative_standing_envs": 0.0,
+      "resampling_time_range_s": [
+        12.5,
+        12.5
+      ],
+      "yaw_rate_rps": 0.0
+    },
+    "duration_s": 12.5,
+    "fps": 50,
+    "frame_count": 625,
+    "launcher": {
+      "enable_cameras": true,
+      "fast_shutdown": false,
+      "headless": true
+    },
+    "motion_frame": "body",
+    "num_envs": 1,
+    "resolution": {
+      "height": 480,
+      "width": 640
+    },
+    "sample_windows_s": [
+      [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        6.0
+      ],
+      [
+        7.0,
+        8.0,
+        9.0,
+        10.0,
+        11.0,
+        12.0
+      ]
+    ],
+    "seed": 42,
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+    "time_basis": "relative_actual_video_frame_pts_from_first_decoded_frame"
+  },
+  "native_template": "bench/protocols/vision_corrected_pull_record_template_v1.json",
+  "observed_resource": {
+    "fresh_admission": false,
+    "gpu_model": "L40S",
+    "gpu_uuid": "GPU-0f931b2e-7073-9fa1-572c-a8099830fc47",
+    "instance_type": "gpu-l40s-a.1gpu-16vcpu-64gb",
+    "last_quote_usd_per_h": 2.09616,
+    "parent_lifecycle_cap_usd": 5,
+    "program_cap_usd": 35,
+    "provider": "Nebius",
+    "resource_id": "j1kxncj4e",
+    "source": "TASK_2_user_supplied_observation",
+    "start_utc": "2026-10-27T10:35:16Z"
+  },
+  "original_before_comparison_policy": "attempt1_v1_preserved_not_satisfied_not_waived",
+  "post_observation_used_for_decision": false,
+  "probe_base": {
+    "path": "bench/protocols/vision_transferred_probe_v1.json",
+    "sha256_lf": "9d95556e461722f0f4a81b6c4f5952c1f449d399eb0bb5ca60517de63bf5ef96"
+  },
+  "probe_purpose": "fresh_E2E_approval_and_new_stage_no_comparison_receipt_reuse",
+  "protocol_id": "vision-transferred-e2e-development-20261027-v2",
+  "registered_before_execution": false,
+  "request_params": {
+    "extra_body": {
+      "reasoning_effort": "none"
+    },
+    "max_tokens": 1024,
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "stream": false,
+    "temperature": 0
+  },
+  "required_bindings": [
+    "committed_method_and_adapter_sources",
+    "fresh_24_capsule_acceptance_v3",
+    "source_cache_four_actual_training_jobs",
+    "comparison_and_e2e_plan_hashes",
+    "selected_capsule_activation_live_snapshot_contract",
+    "new_probe_authorization_consumed_receipt_after_activation",
+    "fresh_correction_approval_consume_receipt",
+    "registered_corrected_render_plan_and_record_service",
+    "execution_protocol_resource_budget_lease",
+    "precise_host_use_scope_expiry_capsule_lineage"
+  ],
+  "required_development_sources": [
+    "evals/vision_transferred_e2e_v2.py",
+    "evals/vision_transferred_selection_v1.py",
+    "evals/vision_transferred_input_acceptance_v3.py",
+    "evals/vision_transferred_probe_v1.py",
+    "bench/run_vision_corrected_pull_record_v1.py",
+    "evals/vision_corrected_record_service_v1.py",
+    "bench/protocols/vision_corrected_pull_record_template_v1.json"
+  ],
+  "schema": "vision_transferred_e2e_method_v2",
+  "source_binding": {
+    "source_anchor": null,
+    "source_sha256_lf": {},
+    "status": "draft_external_registration_required"
+  },
+  "source_flags_preserved": {
+    "capture_approved": false,
+    "model_ready": false,
+    "used_for_decision": false
+  },
+  "source_history_required": {
+    "historical_failure_measurements": 0,
+    "historical_runtime_anchor": "38402cb4ce58c26a1551747b562f0c78be0c9e0f",
+    "retry_companion": "bench/protocols/vision_transferred_probe_history_retry1_20261027.json",
+    "shallow_repository_allowed": false
+  },
+  "status": "development_draft_prepared_after_comparison",
+  "success_condition": "existing_fixed_eval_protocol_and_registered_recovery_bands",
+  "targets": [
+    {
+      "seed_group": "source-01",
+      "slot_id": "input-03",
+      "source_role": "registered-f1",
+      "view_kind": "text_and_video",
+      "window": "window-01"
+    },
+    {
+      "seed_group": "source-02",
+      "slot_id": "input-07",
+      "source_role": "registered-f1",
+      "view_kind": "text_and_video",
+      "window": "window-01"
+    }
+  ],
+  "training": {
+    "correction_id": "restore_body_frame_reward",
+    "iterations": 300,
+    "mode": "restart",
+    "num_envs": 4096,
+    "seeds": [
+      2220,
+      2221
+    ]
+  }
+}
