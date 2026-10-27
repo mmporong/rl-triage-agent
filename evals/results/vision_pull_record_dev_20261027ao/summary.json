@@ -1,0 +1,42 @@
+{
+  "schema": "vision_pull_record_infrastructure_failure_v1",
+  "protocol_id": "native-policy-record-20261027ao",
+  "status": "HOLD",
+  "source_commit": "d724b54f18abecb1a8bdc181fd8b873fd7db6146",
+  "protocol_commit": "49f5fe9e865260d8279a8b97d33e9492f9b1a23b",
+  "protocol": {
+    "path": "bench/protocols/vision_pull_record_20261027_v7.json",
+    "sha256_lf": "949e2f577ca99590066fa65eb6b064ca6496bd319ca40c6dcd3553184a4e231d"
+  },
+  "failure": {
+    "stage": "instance_readiness",
+    "error_type": "TimeoutError",
+    "confirmed": "명시 기동 요청 뒤 준비 조건이 제한된 조회 횟수 안에 연속 충족되지 않았다. 초기 STARTING 뒤 STOPPED가 관측됐다.",
+    "initial_start_failure_reason": "미확정",
+    "cleanup_exec_reported_instance_start": true,
+    "cleanup_exec_stdout_sha256": "380acab78c7718a96fe1f71e42fdb497cb6924ff71a9582054cd857e8e77d7b5",
+    "lifecycle_receipt_sha256": "6af5fef09aa5d0f61da647ed81e685a75bb081ccba58df69dba674797717ead2"
+  },
+  "cleanup": {
+    "remote_gpu_compute_processes_observed": 0,
+    "remote_owned_child_processes_observed": 0,
+    "vm_status": "STOPPED",
+    "stop_observed_at_utc": "2026-10-27T06:57:13.192555+00:00"
+  },
+  "actual_recordings": 0,
+  "new_training_actions": 0,
+  "model_api_requests": 0,
+  "capture_approved": false,
+  "used_for_decision": false,
+  "cost": {
+    "prior_program_estimate_usd": "20.087924",
+    "attempt_conservative_upper_bound_usd": "0.158072",
+    "cumulative_estimate_including_upper_bound_usd": "20.245996",
+    "remaining_program_budget_lower_bound_usd": "4.754004",
+    "program_cap_usd": "25.000000",
+    "basis": "최초 명시 기동 요청부터 마지막 STOPPED 관찰까지 연속 과금으로 상한 추정. 중간 STOPPED 구간도 포함한다.",
+    "storage_included": false,
+    "provider_invoice_verified": false
+  },
+  "interpretation": "영상 수집 단계에 진입하지 못했으므로 녹화·모델 입력 성공 여부를 판단하지 않는다."
+}
