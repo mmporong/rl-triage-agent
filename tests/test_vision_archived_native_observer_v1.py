@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -36,7 +37,7 @@ def _contract(checkpoint: str = "c" * 64) -> dict:
 
 def _protocol_fixture(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> tuple[Path, Path, dict]:
+) -> tuple[Path, Path, Path, dict, dict]:
     archive = tmp_path / "archive"
     contract_path = archive / "tree/repo/native/source-01/contract.json"
     receipt_path = archive / "tree/repo/native/source-01/receipt.json"
@@ -71,6 +72,8 @@ def _protocol_fixture(
     }
     manifest_path = archive / "retrieved/e2e-close-manifest.json"
     _write(manifest_path, manifest)
+    raw_archive_path = archive / "retrieved/e2e-close-raw.tar.gz"
+    raw_archive_path.write_bytes(b"archive fixture")
     checked_contract = _contract()
     monkeypatch.setattr(A.V01, "verify", lambda path: checked_contract)
     monkeypatch.setattr(
@@ -147,6 +150,7 @@ def _protocol_fixture(
                 "sha256": A.file_sha(manifest_path),
             },
             "archive_repo_prefix": "repo",
+            "raw_archive_sha256": A.file_sha(raw_archive_path),
         },
         "model": {"name": A.OBSERVER.MODEL, "params": A.OBSERVER.REQUEST_PARAMS},
         "limits": {"new_api_requests": 6, "cases": 2, "max_calls_per_case": 3},
@@ -166,14 +170,52 @@ def _protocol_fixture(
     }
     protocol_path = tmp_path / "protocol.json"
     _write(protocol_path, protocol)
-    return protocol_path, archive, protocol
+    registration = {
+        "schema": A.REGISTRATION_SCHEMA,
+        "protocol_id": protocol["protocol_id"],
+        "bound_protocol_sha256": A.file_sha(protocol_path),
+        "source_commit": protocol["source_commit"],
+        "source_sha256_lf": protocol["source_sha256_lf"],
+        "archive_sha256": protocol["archive"]["raw_archive_sha256"],
+        "rows": [
+            {
+                "group": item["group"],
+                "seed": item["seed"],
+                "checkpoint_sha256": item["checkpoint_sha256"],
+                "contract_sha256": item["contract"]["sha256"],
+                "request_messages_sha256": item["request_messages_sha256"],
+            }
+            for item in protocol["rows"]
+        ],
+        "model": protocol["model"],
+        "api": {
+            "new_api_cap": 6,
+            "remote_post_observation_api_requests": 0,
+            "prior_initial_model_api_requests": 2,
+            "combined_api_requests_after_upper_bound": 8,
+            "original_e2e_api_cap": 32,
+        },
+        "auxiliary_used_for_decision": False,
+    }
+    registration_path = tmp_path / "registration.json"
+    _write(registration_path, registration)
+    return protocol_path, registration_path, archive, protocol, registration
 
 
 def test_relocated_contract_binds_remote_member_and_same_model_view(
     tmp_path, monkeypatch
 ):
-    protocol_path, archive, _ = _protocol_fixture(tmp_path, monkeypatch)
-    checked = A.validate_protocol(protocol_path, archive, verify_source=False)
+    protocol_path, registration, archive, _, _ = _protocol_fixture(
+        tmp_path, monkeypatch
+    )
+    checked = A.validate_protocol(
+        protocol_path,
+        archive,
+        registration,
+        "f" * 40,
+        repo=tmp_path,
+        verify_source=False,
+    )
     assert [row["group"] for row in checked["rows"]] == ["source-01", "source-02"]
     assert all(
         row["request_messages_sha256"] == row["original_request_messages_sha256"]
@@ -182,19 +224,33 @@ def test_relocated_contract_binds_remote_member_and_same_model_view(
 
 
 def test_frame_state_or_checkpoint_tamper_is_rejected(tmp_path, monkeypatch):
-    _protocol_path, archive, protocol = _protocol_fixture(tmp_path, monkeypatch)
+    _, registration, archive, protocol, _ = _protocol_fixture(tmp_path, monkeypatch)
     protocol["rows"][0]["evidence"]["state_digest"] = "0" * 64
     _write(tmp_path / "tampered.json", protocol)
     with pytest.raises(ValueError, match="frame/video/state/checkpoint"):
-        A.validate_protocol(tmp_path / "tampered.json", archive, verify_source=False)
+        A.validate_protocol(
+            tmp_path / "tampered.json",
+            archive,
+            registration,
+            "f" * 40,
+            repo=tmp_path,
+            verify_source=False,
+        )
 
 
 def test_archive_path_escape_is_rejected(tmp_path, monkeypatch):
-    _protocol_path, archive, protocol = _protocol_fixture(tmp_path, monkeypatch)
+    _, registration, archive, protocol, _ = _protocol_fixture(tmp_path, monkeypatch)
     protocol["rows"][0]["contract"]["path"] = "../outside.json"
     _write(tmp_path / "escape.json", protocol)
     with pytest.raises(ValueError, match="탈출"):
-        A.validate_protocol(tmp_path / "escape.json", archive, verify_source=False)
+        A.validate_protocol(
+            tmp_path / "escape.json",
+            archive,
+            registration,
+            "f" * 40,
+            repo=tmp_path,
+            verify_source=False,
+        )
 
 
 def test_prepare_and_advance_keep_shared_cap_and_auxiliary_boundary(
@@ -210,6 +266,8 @@ def test_prepare_and_advance_keep_shared_cap_and_auxiliary_boundary(
     }
     checked = {
         "sha256": A.file_sha(protocol_path),
+        "registration_sha256": "d" * 64,
+        "registration_anchor": "e" * 40,
         "value": protocol,
         "rows": [
             {
@@ -238,10 +296,76 @@ def test_prepare_and_advance_keep_shared_cap_and_auxiliary_boundary(
 
     monkeypatch.setattr(A.OBSERVER, "run", run)
     output = tmp_path / "out"
-    assert A.prepare(protocol_path, tmp_path, output)["api_cap"] == 6
+    registration = tmp_path / "registration.json"
+    _write(registration, {"fixture": True})
+    assert (
+        A.prepare(protocol_path, tmp_path, registration, "e" * 40, output)["api_cap"]
+        == 6
+    )
     result = A.advance(
-        protocol_path, tmp_path, output, "source-01", complete=lambda *_: {}
+        protocol_path,
+        tmp_path,
+        registration,
+        "e" * 40,
+        output,
+        "source-01",
+        complete=lambda *_: {},
     )
     assert result["status"] == "observation_ready"
     assert result["used_for_decision"] is False
     assert calls[0][3] == output / "shared-api" and calls[0][4] == 6
+
+
+def test_forged_public_registration_is_rejected(tmp_path, monkeypatch):
+    protocol_path, registration_path, archive, _, registration = _protocol_fixture(
+        tmp_path, monkeypatch
+    )
+    registration["rows"][0]["contract_sha256"] = "0" * 64
+    _write(tmp_path / "forged-registration.json", registration)
+    with pytest.raises(ValueError, match="registration과 비공개 bound protocol"):
+        A.validate_protocol(
+            protocol_path,
+            archive,
+            tmp_path / "forged-registration.json",
+            "f" * 40,
+            repo=tmp_path,
+            verify_source=False,
+        )
+    assert registration_path.is_file()
+
+
+def test_bound_protocol_sha_tamper_is_rejected(tmp_path, monkeypatch):
+    protocol_path, _, archive, _, registration = _protocol_fixture(
+        tmp_path, monkeypatch
+    )
+    registration["bound_protocol_sha256"] = "0" * 64
+    tampered = tmp_path / "tampered-registration.json"
+    _write(tampered, registration)
+    with pytest.raises(ValueError, match="registration과 비공개 bound protocol"):
+        A.validate_protocol(
+            protocol_path,
+            archive,
+            tampered,
+            "f" * 40,
+            repo=tmp_path,
+            verify_source=False,
+        )
+
+
+def test_uncommitted_registration_anchor_is_rejected(tmp_path, monkeypatch):
+    registration = tmp_path / "registration.json"
+    _write(registration, {"schema": A.REGISTRATION_SCHEMA})
+    calls = []
+
+    def run(argv, **_kwargs):
+        calls.append(argv)
+        if argv[1:3] == ["rev-parse", "HEAD"]:
+            return SimpleNamespace(stdout="a" * 40 + "\n", returncode=0)
+        if argv[1:3] == ["merge-base", "--is-ancestor"]:
+            return SimpleNamespace(stdout=b"", returncode=1)
+        raise AssertionError("ancestor 실패 뒤 git show를 호출하면 안 된다")
+
+    monkeypatch.setattr(A.subprocess, "run", run)
+    with pytest.raises(ValueError, match="현재 HEAD의 조상이 아니다"):
+        A._git_registration(tmp_path, registration, "f" * 40)
+    assert len(calls) == 2

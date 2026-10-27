@@ -28,6 +28,7 @@ import model_decision_journal_v1 as JOURNAL
 import vision_evidence_contract_v1 as V01
 
 SCHEMA = "vision_archived_native_observer_protocol_v1"
+REGISTRATION_SCHEMA = "vision_archived_native_observer_registration_v1"
 PREPARED_SCHEMA = "vision_archived_native_observer_prepared_v1"
 RESULT_SCHEMA = "vision_archived_native_observer_result_v1"
 GROUPS = {"source-01": 2220, "source-02": 2221}
@@ -131,6 +132,37 @@ def _source_context(repo: Path, protocol: dict[str, Any]) -> None:
             raise ValueError(f"source 변경: {relative}")
 
 
+def _git_registration(repo: Path, path: Path, anchor: str) -> None:
+    if HEX40.fullmatch(anchor) is None:
+        raise ValueError("registration anchor 형식 불일치")
+    repository = Path(repo).resolve(strict=True)
+    target = Path(path).resolve(strict=True)
+    relative = target.relative_to(repository).as_posix()
+    current = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", anchor, current],
+        cwd=repository,
+        check=False,
+        capture_output=True,
+    )
+    if ancestor.returncode != 0:
+        raise ValueError("registration anchor가 현재 HEAD의 조상이 아니다")
+    blob = subprocess.run(
+        ["git", "show", f"{anchor}:{relative}"],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+    ).stdout
+    if hashlib.sha256(blob).hexdigest() != file_sha(target):
+        raise ValueError("공개 registration의 committed blob과 현재 파일이 다르다")
+
+
 def evidence_fingerprint(contract: dict[str, Any]) -> dict[str, Any]:
     provenance = contract["provenance"]
     commands = provenance["frame_extraction"]["commands"]
@@ -195,6 +227,8 @@ def _manifest_binding(
 def validate_protocol(
     protocol_path: Path,
     archive_root: Path,
+    registration_path: Path,
+    registration_anchor: str,
     *,
     repo: Path = ROOT,
     verify_source: bool = True,
@@ -221,8 +255,10 @@ def validate_protocol(
         protocol.get("registered_before_api") is not True
         or protocol.get("development_scope")
         != "known_healthy_corrected_policy_auxiliary_observation"
-        or set(protocol.get("archive", {})) != {"manifest", "archive_repo_prefix"}
+        or set(protocol.get("archive", {}))
+        != {"manifest", "archive_repo_prefix", "raw_archive_sha256"}
         or protocol["archive"].get("archive_repo_prefix") != "repo"
+        or HEX64.fullmatch(str(protocol["archive"].get("raw_archive_sha256"))) is None
         or protocol.get("model")
         != {"name": OBSERVER.MODEL, "params": OBSERVER.REQUEST_PARAMS}
         or protocol.get("limits")
@@ -247,6 +283,13 @@ def validate_protocol(
     if verify_source:
         _source_context(Path(repo).resolve(strict=True), protocol)
     archive = Path(archive_root).resolve(strict=True)
+    raw_archive = archive / "retrieved" / "e2e-close-raw.tar.gz"
+    if (
+        raw_archive.is_symlink()
+        or not raw_archive.is_file()
+        or file_sha(raw_archive) != protocol["archive"]["raw_archive_sha256"]
+    ):
+        raise ValueError("회수 archive SHA 결합 불일치")
     manifest = _archive_manifest(archive, protocol)
     rows = protocol.get("rows")
     if not isinstance(rows, list) or len(rows) != 2:
@@ -307,18 +350,76 @@ def validate_protocol(
         checked.append({**deepcopy(row), "contract_path": contract_path})
     if {row["group"] for row in checked} != set(GROUPS):
         raise ValueError("관찰 group 중복 또는 누락")
-    return {"path": path, "sha256": file_sha(path), "value": protocol, "rows": checked}
+    protocol_sha = file_sha(path)
+    registration_file = Path(registration_path).resolve(strict=True)
+    registration_file.relative_to(Path(repo).resolve(strict=True))
+    registration = _read(registration_file)
+    expected_registration = {
+        "schema": REGISTRATION_SCHEMA,
+        "protocol_id": protocol["protocol_id"],
+        "bound_protocol_sha256": protocol_sha,
+        "source_commit": protocol["source_commit"],
+        "source_sha256_lf": protocol["source_sha256_lf"],
+        "archive_sha256": protocol["archive"]["raw_archive_sha256"],
+        "rows": [
+            {
+                "group": row["group"],
+                "seed": row["seed"],
+                "checkpoint_sha256": row["checkpoint_sha256"],
+                "contract_sha256": row["contract"]["sha256"],
+                "request_messages_sha256": row["request_messages_sha256"],
+            }
+            for row in protocol["rows"]
+        ],
+        "model": protocol["model"],
+        "api": {
+            "new_api_cap": 6,
+            "remote_post_observation_api_requests": 0,
+            "prior_initial_model_api_requests": 2,
+            "combined_api_requests_after_upper_bound": 8,
+            "original_e2e_api_cap": 32,
+        },
+        "auxiliary_used_for_decision": False,
+    }
+    if registration != expected_registration:
+        raise ValueError("공개 registration과 비공개 bound protocol 불일치")
+    if any(
+        token in json.dumps(registration, ensure_ascii=False)
+        for token in ("bench/private", ".triage-runtime", "tree/repo", "/home/", "C:\\")
+    ):
+        raise ValueError("공개 registration에 private·runtime·절대 경로가 있다")
+    if verify_source:
+        _git_registration(Path(repo), registration_file, registration_anchor)
+    return {
+        "path": path,
+        "sha256": protocol_sha,
+        "value": protocol,
+        "rows": checked,
+        "registration": registration,
+        "registration_sha256": file_sha(registration_file),
+        "registration_anchor": registration_anchor,
+    }
 
 
-def prepare(protocol_path: Path, archive_root: Path, output: Path) -> dict[str, Any]:
+def prepare(
+    protocol_path: Path,
+    archive_root: Path,
+    registration_path: Path,
+    registration_anchor: str,
+    output: Path,
+) -> dict[str, Any]:
     target = Path(output)
     if target.exists() or target.is_symlink():
         raise FileExistsError(target)
-    checked = validate_protocol(protocol_path, archive_root)
+    checked = validate_protocol(
+        protocol_path, archive_root, registration_path, registration_anchor
+    )
     target.mkdir(parents=True)
     value = {
         "schema": PREPARED_SCHEMA,
         "protocol_sha256": checked["sha256"],
+        "registration_sha256": checked["registration_sha256"],
+        "registration_anchor": checked["registration_anchor"],
         "archive_manifest_sha256": checked["value"]["archive"]["manifest"]["sha256"],
         "groups": [row["group"] for row in checked["rows"]],
         "api_cap": 6,
@@ -333,6 +434,8 @@ def _prepared(output: Path, checked: dict[str, Any]) -> dict[str, Any]:
     if (
         value.get("schema") != PREPARED_SCHEMA
         or value.get("protocol_sha256") != checked["sha256"]
+        or value.get("registration_sha256") != checked["registration_sha256"]
+        or value.get("registration_anchor") != checked["registration_anchor"]
         or value.get("groups") != [row["group"] for row in checked["rows"]]
         or value.get("api_cap") != 6
         or value.get("used_for_decision") is not False
@@ -344,11 +447,15 @@ def _prepared(output: Path, checked: dict[str, Any]) -> dict[str, Any]:
 def advance(
     protocol_path: Path,
     archive_root: Path,
+    registration_path: Path,
+    registration_anchor: str,
     output: Path,
     group: str,
     complete: Callable[[list[dict], dict], dict] = OBSERVER.default_complete,
 ) -> dict[str, Any]:
-    checked = validate_protocol(protocol_path, archive_root)
+    checked = validate_protocol(
+        protocol_path, archive_root, registration_path, registration_anchor
+    )
     _prepared(output, checked)
     rows = [row for row in checked["rows"] if row["group"] == group]
     if len(rows) != 1:
@@ -393,8 +500,16 @@ def advance(
     return value
 
 
-def inspect(protocol_path: Path, archive_root: Path, output: Path) -> dict[str, Any]:
-    checked = validate_protocol(protocol_path, archive_root)
+def inspect(
+    protocol_path: Path,
+    archive_root: Path,
+    registration_path: Path,
+    registration_anchor: str,
+    output: Path,
+) -> dict[str, Any]:
+    checked = validate_protocol(
+        protocol_path, archive_root, registration_path, registration_anchor
+    )
     _prepared(output, checked)
     rows = []
     for row in checked["rows"]:
@@ -425,18 +540,39 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("operation", choices=("prepare", "advance", "inspect"))
     parser.add_argument("--protocol", type=Path, required=True)
+    parser.add_argument("--registration", type=Path, required=True)
+    parser.add_argument("--registration-anchor", required=True)
     parser.add_argument("--archive-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--group", choices=tuple(GROUPS))
     args = parser.parse_args()
     if args.operation == "prepare":
-        result = prepare(args.protocol, args.archive_root, args.output)
+        result = prepare(
+            args.protocol,
+            args.archive_root,
+            args.registration,
+            args.registration_anchor,
+            args.output,
+        )
     elif args.operation == "advance":
         if args.group is None:
             parser.error("advance에는 --group이 필요하다")
-        result = advance(args.protocol, args.archive_root, args.output, args.group)
+        result = advance(
+            args.protocol,
+            args.archive_root,
+            args.registration,
+            args.registration_anchor,
+            args.output,
+            args.group,
+        )
     else:
-        result = inspect(args.protocol, args.archive_root, args.output)
+        result = inspect(
+            args.protocol,
+            args.archive_root,
+            args.registration,
+            args.registration_anchor,
+            args.output,
+        )
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
 
 
