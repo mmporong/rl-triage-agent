@@ -1,0 +1,62 @@
+{
+  "actions": {
+    "auxiliary_model_requests_max": 6,
+    "native_recordings_max": 2,
+    "new_fixed_evaluations": 0,
+    "new_initial_decisions": 0,
+    "new_training_runs": 0,
+    "used_for_recovery_decision": false
+  },
+  "compute_started_at_utc": "2026-10-27T12:44:29.424013Z",
+  "criteria": {
+    "all_model_requests_remain_in_existing_32_request_ledger": true,
+    "new_paths_preserve_v3_intent_stage_and_failure": true,
+    "ticket_ttl_s": 120,
+    "unchanged_entry_freshness_s": 30,
+    "unchanged_fps": 50,
+    "unchanged_native_frames": 625
+  },
+  "deadline_utc": "2026-10-27T14:50:00Z",
+  "infrastructure_failure": {
+    "path": "bench/protocols/vision_transferred_native_continuation_20261027_v4.infra.json",
+    "sha256": "fea6fe5ccd4d4780751bd1f834ecd259357ee764eb5a29dd616860fc6127f481"
+  },
+  "outcome_wording": {
+    "complete": "Native recordings and auxiliary observation outcomes are separate from fixed-evaluation recovery.",
+    "incomplete": "Preserve completed recovery and report unfinished native or observer stage; do not substitute older videos."
+  },
+  "prediction": "Both verified corrected checkpoints complete the original AABA and 625-frame native capture; auxiliary observation validity is reported separately.",
+  "previous_execution": {
+    "path": "bench/protocols/vision_transferred_e2e_20261027_v3.json",
+    "sha256": "16e8dd813cb97045d0566a443e12d7b2207de4427677bad55e6934c5d0a45cd5"
+  },
+  "previous_native_registration": {
+    "path": "bench/protocols/vision_transferred_native_20261027_v3.registration.json",
+    "sha256": "8edc9e3919ddea82d475d6ba589ca07e038f708f3f9e7bf23ecd1b527d55dd5f"
+  },
+  "prior_closed_program_upper_usd": "28.210778",
+  "program_cap_usd": "35",
+  "protocol_id": "vision-transferred-native-continuation-20261027-v4",
+  "registered_at_utc": "2026-10-27T14:35:24.946366+00:00",
+  "resource": {
+    "id": "j1kxncj4e",
+    "instance_type": "gpu-l40s-a.1gpu-16vcpu-64gb",
+    "name": "rl-triage-l40s-transfer-20261027b"
+  },
+  "resources": {
+    "compute_quote_usd_per_h": 2.09616,
+    "whole_batch_budget_usd": 5
+  },
+  "retry_reason": "RUN5 requires write_new on the corrected JOB adapter; the v3 attempt failed before child launch. Training and fixed-evaluation outcomes are preserved.",
+  "same_Start_and_compute_clock": true,
+  "schema": "vision_transferred_native_continuation_v4",
+  "scope": "completed_two_seed_registered_f1_development_native_continuation",
+  "source_anchor": "ae336d88c88214ceed52808f50afb91ff1621c6e",
+  "source_sha256_lf": {
+    "bench/run_vision_corrected_pull_record_v2.py": "70a01e05337abdc5578841e591aaacd064f9f553c20a91451140acd47154fef9",
+    "evals/vision_corrected_native_handoff_v2.py": "3c55802238efda35319129e8ed4b9a32928d8ec48d30f7647a36f12dd6d03782",
+    "tests/test_vision_corrected_native_handoff_v2.py": "7424d95d1e986cfbd437bad81142f3ef28280b7d9fb5a0a67a99d8c8fa0aed0e",
+    "tests/test_vision_corrected_pull_record_v2.py": "57dfd5eb8b96486209a3c7c3d7ed2c5ed75f26f95b2238bddc092ec6e5c5eadd"
+  },
+  "stop_reserve_usd": "0.4"
+}
