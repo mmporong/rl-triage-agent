@@ -1,0 +1,67 @@
+{
+  "schema": "isaac_camera_startup_actual_v1",
+  "status": "startup_failed",
+  "source_heldout": false,
+  "source_commit": "6a885d5c4755572a0957286d66cb556c797ea444",
+  "protocol": "bench/protocols/agentic_isaac_camera_startup_20261029g_v1.json",
+  "scope": "AppLauncher(headless=true, enable_cameras=true, fast_shutdown=false), app.update 1회, app.close",
+  "attempts": [
+    {
+      "name": "camera_a_r9",
+      "status": "precondition_failed",
+      "exit_code": 1,
+      "wall_s": 1.167731743000104,
+      "failure_stage": "startup",
+      "failure_type": "EOFError",
+      "confirmed_cause": "비대화형 실행에서 EULA 설정을 읽지 못해 입력을 요청했다.",
+      "cleanup_verified": true,
+      "success_eligible": false
+    },
+    {
+      "name": "camera_a_r10",
+      "status": "sdk_startup_failed",
+      "exit_code": -11,
+      "wall_s": 234.0320569879998,
+      "markers": [
+        "startup-entered"
+      ],
+      "last_python_frame": "omni.kit.widget.viewport.impl.texture.__enable_hydra_engine",
+      "gpu_observed": "NVIDIA L40S",
+      "gpu_sdk_activity_observed": true,
+      "cleanup_verified": true,
+      "success_eligible": false
+    }
+  ],
+  "confirmed": {
+    "eula_precondition_removed_before_r10": true,
+    "startup_returned": false,
+    "update_entered": false,
+    "close_entered": false,
+    "policy_runs": 0,
+    "training_runs": 0,
+    "model_api_calls": 0,
+    "driver_only_root_cause": false
+  },
+  "remaining_cause": "Hydra viewport 초기화 중 segmentation fault가 발생했지만 driver, SDK, headless display, CUDA 가시성 중 어느 항목이 원인인지는 가르지 못했다.",
+  "followup": {
+    "camera_a2_executed": false,
+    "reason": "camera A의 사전 고정 성공 조건을 충족하지 못했다."
+  },
+  "archive": {
+    "files_verified": 84,
+    "C_D_all_match": true,
+    "inventory_sha256": "00ecee4f92dada8a9a482f6619a0c1b0f7cdd4bae2c924582d432c345fd6fe69"
+  },
+  "raw_sha256": {
+    "r9_process_receipt": "fbeb14021c6216ea62b816bb3a3fad6e68e5772475718bc125e95d723786f6fb",
+    "r10_process_receipt": "f493a1927555245d5ad1f232bfb0fdefd9492f2ebef61efc5758ffa406658543",
+    "r10_stderr": "e235736960b4e350f88e020a9cb35d1c13023dc3e8fa327a46620bffd54db256",
+    "kit_log": "049572f2381994e86699128d1e576701b8b68a75f2f2f6f264bb954bcbb386d1",
+    "archive_receipt": "d353f2ff9137a4ddb3c957c48940371f42cca81e76328d65326b8890d23fffe5"
+  },
+  "outcome": {
+    "camera_startup_success": false,
+    "new_visual_evidence": false,
+    "recovery_claim": false
+  }
+}

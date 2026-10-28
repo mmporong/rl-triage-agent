@@ -1,0 +1,67 @@
+{
+  "schema": "agentic_runtime_text_pair_infrastructure_v3",
+  "status": "infrastructure_hold_before_probe_launch",
+  "seen_development_seed": 2221,
+  "source_heldout": false,
+  "source_commit": "6b9d971ab2e5924706644e62ffae1b99f1719395",
+  "runtime_anchor": "d31e699830e332f7b4ad1f76793c7cceab7a3c83",
+  "parent_anchor": "b27c4f6ef002efd72573ec1d301f2b181b4447d6",
+  "runtime_protocol": "bench/protocols/agentic_runtime_text_s2221_20261029_v7.json",
+  "parent_protocol": "bench/protocols/agentic_runtime_text_s2221_pair_aws_20261029_v7.json",
+  "stages": {
+    "provider_adoption": "passed",
+    "boot": "passed",
+    "runtime_package_pins": "passed",
+    "io_service": "started",
+    "pair_parent": "hold",
+    "probe_child_launched": false,
+    "probe_runs": 0,
+    "training_runs": 0,
+    "new_model_api_calls": 0
+  },
+  "failure": {
+    "type": "BackendError",
+    "raw_reason": "ValueError",
+    "confirmed_cause": "registered_worker_v1_and_backend_worker_v2_argv_mismatch",
+    "registered_worker": "bench/brev_recovery_worker_v1.py",
+    "backend_worker": "bench/brev_recovery_worker_v2.py",
+    "launch_record_present": false,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "exact_value_error_message_recorded": false,
+    "cpu_reproduction": "BoundedPopen의 승인 명령 일치 검사에서 같은 worker 불일치를 재현했다."
+  },
+  "status_projection": {
+    "remote_top_level": "pending",
+    "nested_pair_status": "hold",
+    "confirmed_cause": "arm outcome 부재 시 최상위 상태가 pending으로 남고 pair HOLD는 하위 필드에만 기록됐다.",
+    "effect": "서비스가 이미 종료된 pair를 대기 상태로 처리했다."
+  },
+  "handoff_collection": {
+    "status": "failed_after_pair_hold",
+    "remote_exit": 75,
+    "confirmed_cause": "heredoc 종결자와 닫는 괄호 사이의 끝 개행이 없어 생성 셸이 PY)로 끝났다.",
+    "independent_from_pair_hold": true
+  },
+  "lease": {
+    "released": true,
+    "redispatch": false
+  },
+  "archive": {
+    "files_verified": 575,
+    "C_D_all_match": true,
+    "inventory_sha256": "6809c944de63797134cfe94b3e600b9f17eda7db1416ee620260e7d68529fb96",
+    "scope": "all_local_R7_evidence_and_bounded_remote_snapshots",
+    "full_remote_namespace_claimed": false
+  },
+  "raw_sha256": {
+    "pair_outcome": "b848db3957f3d6a698886e03687a5e28e7e218fa875509ba7c429ba73ce0e14b",
+    "lease_release": "eae0c6246fb463b6f6b04ffc22ff963f206f6cf20750c43422bc5602a04019ff",
+    "main_result": "46a1877463e80aceb6ea962775709656bb00c76f4de1ff53472ee0b748b01fa8"
+  },
+  "outcome": {
+    "new_recovery": false,
+    "model_success_claim": false,
+    "retry_evidence": false
+  }
+}

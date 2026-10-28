@@ -589,3 +589,26 @@
 - [R6 검사쌍 실행](../evals/results/agentic_runtime_text_pair_20261029_v2/summary.json)은 서버 신원 확인과 boot·런타임 pin 검증을 통과했다. 그다음 실제 호출기가 위치 인자 두 개를 넘겼으나 어댑터가 키워드 인자만 받아 TypeError가 발생했다. 검사·학습·새 모델 호출은 시작되지 않았다.
 - 같은 오류를 실제 동결 호출 방식으로 CPU에서 재현했다. 후속 회귀는 어댑터 모양을 흉내 내는 fixture를 넘어 동결 R48 실행 함수가 첫 전송 경계까지 도달하는지 확인한다. 후속 교정의 adoption helper도 같은 서버 등록으로 묶고 scope 종료 뒤 원복한다.
 - C/D 원문 해시 일치와 STOPPED를 확인했다. [R7 재개 등록](../bench/protocols/agentic_runtime_text_s2221_20261029_v7_resume.json)은 같은 설치 환경에 Start 한 번만 허용하고 이전 생성 시각·비용·절대 종료 기한을 유지한다. 이전 승인 소비와 실패 결과를 덮어쓰지 않으며 모델 실패나 회복 성과로 집계하지 않는다.
+
+### OPS-82: 등록 worker와 backend worker의 명령 불일치
+
+- [R7 검사쌍](../evals/results/agentic_runtime_text_pair_20261029_v3/summary.json)은 서버 adoption·boot·runtime pin과 IO service 기동을 통과했지만 검사 child를 시작하기 전에 HOLD로 끝났다. 등록 명령은 `bench/brev_recovery_worker_v1.py`를 승인했고, 실제 backend는 `bench/brev_recovery_worker_v2.py`를 선택했다. `BoundedPopen`의 정확한 명령 일치 검사가 이 차이를 거부했다.
+- pair 원문에는 `BackendError`와 `ValueError`만 남았고 정확한 예외 문구는 기록되지 않았다. `launch` 기록은 없고 stdout·stderr도 비어 있다. 같은 명령 불일치를 CPU에서 재현했으며, 이 재현 문구를 원격 원문으로 바꾸어 쓰지 않는다. 검사·학습·새 모델 호출은 0건이고 pair 임대 해제를 확인했다.
+- 다음 판은 등록 worker를 선택하는 범위만 새 Parent에 묶는다. 승인 명령 검사를 느슨하게 하거나 허용 목록을 넓히지 않으며, 기존 R7 결과와 승인 소비를 보존한다.
+- R7 로컬 원문과 범위를 제한한 원격 snapshot 575파일의 C/D 해시가 일치했다. 이 수치는 원격 전체 namespace 수집을 뜻하지 않으며, 카메라 A의 별도 84파일 보관 기록과 합치지 않는다.
+
+### OPS-83: pair HOLD를 pending으로 보인 상태 투영
+
+- R7의 원격 pair는 이미 `HOLD`였지만 status 응답의 최상위 값은 `pending`, 하위 `pair.status`만 `hold`였다. arm outcome이 없을 때 최상위 상태를 pending으로 만드는 변환과 최상위 상태만 읽는 polling이 결합해 종료된 pair를 계속 기다렸다.
+- 후속 원격 상태 판은 pair HOLD를 terminal 상태로 올려 보낸다. Parent의 임대 해제 검증은 유지하며, 상태 표현 수정이 실패한 검사를 완료로 바꾸지는 않는다.
+
+### OPS-84: handoff heredoc 끝 개행과 once 종료 코드 75
+
+- pair HOLD 뒤 읽기 전용 handoff 수집은 remote exit 75로 실패했다. 생성된 셸에서 heredoc 종결자 `PY`와 닫는 괄호가 `PY)` 한 줄로 붙어 셸 구문 오류가 났다. once 디렉터리는 그보다 먼저 만들어져 후속 호출에서 75를 반환할 수 있었다.
+- 확인된 원인은 생성 셸의 끝 개행 누락이다. stderr의 연결 재확인 문구는 전송 계층의 후속 동작과 부합하지만 재시도 횟수는 확정하지 않는다. 다음 판은 본문 끝 개행과 `bash -n`을 검사하고 새 nonce를 쓰며 기존 once marker는 지우지 않는다.
+
+### OPS-85: 최소 카메라 초기화에서 남은 Hydra 충돌
+
+- [카메라 초기화 A](../evals/results/isaac_camera_startup_20261029g_v1/summary.json)의 첫 실행은 비대화형 환경에서 EULA 입력을 요청해 exit 1로 끝났다. 등록된 EULA 설정을 복원한 두 번째 실행은 App startup 진입 뒤 234.032초에 `-11`로 종료됐다. startup 반환·update·close marker는 없고 소유 process 정리는 확인됐다.
+- 두 번째 stderr의 마지막 Python frame은 viewport texture의 `__enable_hydra_engine`이다. Kit 로그에는 L40S와 CUDA 장치 사용, RTX/Hydra 초기화가 기록돼 있다. 따라서 정책·학습·모델 API는 모두 0건이지만 SDK startup의 GPU 사용까지 0건으로 쓰지 않는다.
+- driver 하나를 원인으로 확정할 수 없다. SDK, headless display, CUDA 가시성, driver 중 어느 항목이 충돌을 만들었는지는 남아 있다. 원문 84파일의 C/D 해시를 대조했고, A가 성공 조건을 충족하지 못해 A2는 실행하지 않았다.
