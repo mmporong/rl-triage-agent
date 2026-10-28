@@ -100,6 +100,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 [v5 실행](../evals/results/agentic_motor_capture_20261028_v5/summary.json)은 두 프로토콜의 실제 POSIX 잠금 검사를 통과했지만, 이후 입장 검사에서 과거 공급자 조회 시각을 현재 임대 검증 시각으로 재사용해 중단됐다. 영상·상태 frame·학습·모델 호출은 0건이며 정지와 원문 회수를 확인했다. 후속 판은 App 실행 전에 전체 입장 proof의 생성과 소비까지 확인한다.
 
+[v6 수집 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v6.json)은 새 unit v3와 두 종류의 시각을 분리한 receipt를 결합한다. 같은 네 정책·촬영 조건을 유지하며, 기존 실패의 배정 상한을 보존한 새 $5 구간과 필수 소스 135개를 고정한다. 생성된 원격 입장 program의 proof 소비 경로도 실제 OS 잠금을 사용하는 CPU 회귀에서 확인했다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>
