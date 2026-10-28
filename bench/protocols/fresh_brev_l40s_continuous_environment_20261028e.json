@@ -1,0 +1,82 @@
+{
+  "schema": "fresh_brev_l40s_environment_phase_v1",
+  "registered_at_utc": "2026-10-28T14:49:29.753869+00:00",
+  "deadline_utc": "2026-10-28T18:49:29.753869+00:00",
+  "source_commit": "0b979104b967c87625362448997082613cb55f58",
+  "source_sha256_lf": {
+    "bench/vision_brev_environment_v1.py": "abebf8a5aee4e293f38dc086129258a0d12452182486ba2652820aa1d33407e7",
+    "bench/check_vision_renderer_libraries_v1.py": "a4cea8fe12f62d0f84ad656a4d3e68e1552dddb55ef141c70a49243ba4c5dbff"
+  },
+  "controller_sha256": "3e9ba28bf31e069eded17ba6ae80edb7b7a76c1011bb6f3351618e7c018a0d6a",
+  "transport_helper_sha256": "dbe83d996901de4eafe514a47776bd241c1f5740d2eb18887520a708cec191f4",
+  "bundle_manifest_sha256": "9df899b0f9b65737c6fc3a61229456f91300f69ee66be2e575638ca6e6409a55",
+  "quote_stdout_sha256": "0fdab0b2c9ad959253a78377ddc482013a42f16a31f9975d40c742c3b9ba6a54",
+  "inventory_stdout_sha256": "5232b56650a59ba802814b368c4637c7479c2696bcfee9be7fd79b2910516728",
+  "resource_name": "rl-triage-l40s-continuous-20261028e",
+  "instance_type": "g6e.4xlarge",
+  "provider": "aws",
+  "gpu_name": "L40S",
+  "gpu_count": 1,
+  "vram_gb": 48,
+  "memory_gb": 128,
+  "quoted_usd_per_h": "3.605088",
+  "max_creations": 1,
+  "fallback_types": [],
+  "prior_rl_instance_ids": [
+    "j1kxncj4e",
+    "3655a80oo",
+    "tnr498jy5",
+    "82ewdz0tm"
+  ],
+  "min_disk_gb": 500,
+  "stoppable": true,
+  "new_training": 0,
+  "model_api": 0,
+  "policy_recordings": 0,
+  "phase_kind": "infrastructure_creation_and_pinned_environment_restore",
+  "compute_phase_cap_usd": "105",
+  "prior_compute_allocated_usd": "85",
+  "additional_environment_and_next_render_allocation_usd": "20",
+  "total_compute_allocated_usd": "105",
+  "unallocated_compute_reserve_usd": "0",
+  "combined_environment_and_render_cap_usd": "20",
+  "original_program_cap_usd": "35",
+  "original_allocations_and_consumption_preserved": true,
+  "max_lifecycle_s": 14400,
+  "stop_reserve_s": 1200,
+  "cost_origin": "first_create_request_until_observed_STOPPED_includes_install_and_idle",
+  "cost_is_billed_amount": false,
+  "gpu_measurement_gate": "별도의 실제 ID·현재 source·child protocol 등록 전 Isaac·정책 녹화·모델 호출0. 생성한 VM의 CPU 준비·pin 관측만 한다.",
+  "source_versions": "원래 bundle의 Lab90b79bb2/Python3.10.12/IsaacSim4.5.0.0 및 등록한 package/source pin 유지",
+  "prediction": "고정 환경을 복원하고 실제 ID·pin·현재 입장을 확인한 뒤에만 후속 등록 작업을 수행한다. CPU 복원 완료를 GPU 검사·회복·영상 성공으로 해석하지 않는다.",
+  "outcomes": {
+    "ready": "실제 새 ID·이름·유형·READY와 고정 환경 readback을 보존한다. 후속 GPU 측정 성공을 뜻하지 않는다.",
+    "not_ready": "Create 응답·목록·원문을 보존하고 같은 요청을 다시 보내지 않는다. 소유한 새 자원만 정지 확인한다."
+  },
+  "max_parallel_owned_rl_vms": 2,
+  "allowed_parallel_resource_ids": [],
+  "parallel_counterpart": null,
+  "purpose": "새 환경을 한 번 생성한 뒤 실제 검사·교정·녹화의 등록된 각 단계를 연속 수행한다. 단계별 권한은 별도로 등록한다.",
+  "selection_basis": "AWS 새 생성은 고정 환경과 상태 1frame까지 완료한 기록이 있다. 같은 자원의 재시작은 READY 미도달로 종료돼 새 자원 한 건을 준비한다. 재시작 실패의 공급자 원인은 미확정이다.",
+  "new_policy_recording_requires_separate_registration": true,
+  "continuous_ownership": true,
+  "intermediate_stop_policy": "단계 전환 때문에 Stop/Start하지 않는다. 전체 작업 종료·실패·비용 또는 시간 경계에서 소유자가 회수와 Stop 확인을 수행한다.",
+  "cpu_restore_additional_packages": [
+    "libxt6"
+  ],
+  "renderer_gate": "Iray와 MaterialX 공유 라이브러리 네 항목의 CPU 의존성 확인 뒤 별도 GPU 입장·측정을 수행한다.",
+  "previous_failed_record_preserved": {
+    "path": "evals/results/agentic_f1_render_capture_20261028_v1/summary.json",
+    "sha256": "0509c661afa91fe15313b6b378e7cd250502e6767e7eef0146f7a11b64a65bc6"
+  },
+  "prior_restart_evidence": {
+    "start_requests": 1,
+    "ready_observed": false,
+    "final_state": "STOPPED",
+    "new_gpu_work": 0,
+    "new_model_api": 0,
+    "previous_and_current_activity_s": "5842.542675",
+    "activity_quote_upper_estimate_usd": "5.850800135314",
+    "prior_record_overwritten": false
+  }
+}
