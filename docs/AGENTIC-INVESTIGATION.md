@@ -92,6 +92,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 [v4 실행](../evals/results/agentic_motor_capture_20261028_v4/summary.json)은 boot 확인과 네 checkpoint 복사를 통과한 뒤 상태 smoke의 잠금 취득에서 중단됐다. 고정 cache 잠금 경로의 조상에 symlink 또는 reparse point가 있어 거부됐으며, 구체적인 링크 대상은 아직 관측하지 않았다. GPU 입장·Isaac 실행·녹화는 시작하지 않았고 자원 정지를 확인했다. 후속 adapter는 alias와 canonical 경로가 같은 자원 잠금을 사용하게 하며 기존 검증을 유지한다.
 
+[v5 수집 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v5.json)은 이 어댑터와 입력 복사 전 POSIX 잠금 사전 검사를 결합한다. 기존 두 seed·네 정책·625프레임·50fps·AABA 조건은 유지하고, 이전 실패의 배정 상한을 보존한 새 $5 구간으로 실행한다. 실제 녹화 성공 여부는 새 실행 원문으로 판정한다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>
