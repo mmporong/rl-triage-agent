@@ -612,3 +612,9 @@
 - [카메라 초기화 A](../evals/results/isaac_camera_startup_20261029g_v1/summary.json)의 첫 실행은 비대화형 환경에서 EULA 입력을 요청해 exit 1로 끝났다. 등록된 EULA 설정을 복원한 두 번째 실행은 App startup 진입 뒤 234.032초에 `-11`로 종료됐다. startup 반환·update·close marker는 없고 소유 process 정리는 확인됐다.
 - 두 번째 stderr의 마지막 Python frame은 viewport texture의 `__enable_hydra_engine`이다. Kit 로그에는 L40S와 CUDA 장치 사용, RTX/Hydra 초기화가 기록돼 있다. 따라서 정책·학습·모델 API는 모두 0건이지만 SDK startup의 GPU 사용까지 0건으로 쓰지 않는다.
 - driver 하나를 원인으로 확정할 수 없다. SDK, headless display, CUDA 가시성, driver 중 어느 항목이 충돌을 만들었는지는 남아 있다. 원문 84파일의 C/D 해시를 대조했고, A가 성공 조건을 충족하지 못해 A2는 실행하지 않았다.
+
+### OPS-86: 실행 스크립트 폴더가 표준 `operator` 모듈을 가린 경우
+
+- [R10 검사쌍](../evals/results/agentic_runtime_text_pair_20261029_v4/summary.json)은 adoption·boot·runtime pin과 입력 해제를 통과한 뒤 Windows IO child import에서 중단됐다. `argparse → re → enum`이 표준 `operator`를 불러올 때 스크립트 폴더의 `operator.py`를 먼저 선택했고, 순환 import 중인 `re.compile` 접근이 실패했다. 원격 Parent·검사·학습·C 승인·새 모델 호출은 시작되지 않았다.
+- 기존 함수 import fixture는 Python이 파일을 실행할 때 만드는 `sys.path[0]`을 재현하지 못했다. 새 판은 stdlib import 전에 스크립트 폴더만 제거하고 로컬 `operator.py`는 명시 경로로 불러온다. `serve_mailbox.py`, `prepare_operator.py`, `run_continuous_main.py` 세 진입점을 Python 3.10.20과 3.12.13의 실제 subprocess `--help`로 각각 실행해 여섯 건 모두 exit 0을 확인했다.
+- Stop 한 번 뒤 2026-10-28 21:04:17 UTC에 `STOPPED`를 확인했고 stop 오류는 없었다. 원문 248파일의 C/D 해시가 일치했다. 최초 g 생성부터 계산한 $12.2049738302는 상한 견적이며 청구액이 아니다. 앞서 보고한 R6·R7·카메라 구간을 포함하므로 해당 비용과 다시 합산하지 않는다.

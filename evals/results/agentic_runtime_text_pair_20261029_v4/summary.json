@@ -1,0 +1,84 @@
+{
+  "schema": "agentic_runtime_text_pair_infrastructure_v4",
+  "status": "infrastructure_failure_before_pair",
+  "seen_development_seed": 2221,
+  "source_heldout": false,
+  "source_commit": "8dfbbc101609ed2ba8feccc9c5ede956473872ff",
+  "runtime_anchor": "1a33cd1f499795a8c455fe1b23f7b094692c0058",
+  "parent_anchor": "f87516ebde0acc7ce3679fbeaf2e3c779ef85451",
+  "runtime_protocol": "bench/protocols/agentic_runtime_text_s2221_20261029_v10.json",
+  "parent_protocol": "bench/protocols/agentic_runtime_text_s2221_pair_aws_20261029_v10.json",
+  "stages": {
+    "provider_adoption": "passed",
+    "boot": "passed",
+    "runtime_package_pins": "passed",
+    "input_extract": "passed",
+    "io_service_started": false,
+    "remote_parent_started": false,
+    "probe_runs": 0,
+    "training_runs": 0,
+    "C_authorizations": 0,
+    "new_model_api_calls": 0
+  },
+  "failure": {
+    "type": "RuntimeError",
+    "outer_reason": "등록 IO 서비스가 준비되지 않았다",
+    "confirmed_cause": "io_child_script_directory_shadowed_stdlib_operator",
+    "import_chain": "argparse -> re -> enum -> operator",
+    "shadowed_by": "같은 폴더의 operator.py",
+    "terminal_error": "AttributeError: partially initialized module 're' has no attribute 'compile'"
+  },
+  "fix_verification": {
+    "new_execution_performed": false,
+    "script_directory_removed_before_stdlib_imports": true,
+    "actual_cli_entries": [
+      "serve_mailbox.py",
+      "prepare_operator.py",
+      "run_continuous_main.py"
+    ],
+    "python_versions": [
+      "3.10.20",
+      "3.12.13"
+    ],
+    "subprocess_help_runs": 6,
+    "all_exit_zero": true,
+    "framework_import_fixture_used_as_substitute": false
+  },
+  "model_api": {
+    "before": 9,
+    "after": 9,
+    "cap": 12
+  },
+  "resource": {
+    "state": "STOPPED",
+    "observed_at_utc": "2026-10-28T21:04:17.810415+00:00",
+    "stop_requests": 1,
+    "stop_error": null
+  },
+  "budget": {
+    "elapsed_from_original_create_s": 12187.748479,
+    "quote_upper_estimate_usd": "12.20497383018365333333333333",
+    "estimate_is_invoice": false,
+    "includes_setup_idle_and_prior_attempts": true,
+    "must_not_be_added_to_previously_reported_R6_R7_or_camera_costs": true,
+    "budget_reset": false
+  },
+  "archive": {
+    "files_verified": 248,
+    "C_D_all_match": true,
+    "inventory_sha256": "cdeed89cbbbefffee97113a543d7e72bd5a81a2ad7066062508b099c7cd1aa1d",
+    "scope": "actual_R10_main_and_closed_lifecycle_excluding_python_caches"
+  },
+  "raw_sha256": {
+    "main_result": "bdf9ce8b09e5facae4598d4f9dc372edfd1283609ba632c33ae41be138148891",
+    "traceback": "ed46e0bcad7a8b3ffe32b1d0d8114bb81f53e601a682fed0bd04318d1712a2a3",
+    "io_service_stderr": "776839caf1bb809e516985c09a4d5101db37017f713901a99fa52a8e04114851",
+    "stopped": "46e56907aa01f48b7ee35a44f8136c4a7e483da340e68a1a08a16317e9319204",
+    "archive_receipt": "51f363868b84cc1695a78e9cc6f9ab26db68db05964465d1cab058001d634738"
+  },
+  "outcome": {
+    "new_recovery": false,
+    "model_success_claim": false,
+    "retry_evidence": false
+  }
+}
