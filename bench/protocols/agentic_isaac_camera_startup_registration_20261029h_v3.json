@@ -1,0 +1,64 @@
+{
+  "authority": false,
+  "canonical_lease_context": {
+    "alias_string_equality_required": false,
+    "canonical_ancestors_link_free_required": true,
+    "device_inode_must_match_private_observation": true,
+    "formal_job4_scope_required": true,
+    "h_lock_and_heartbeat_inactive_before_parent": true,
+    "parent_flock_heartbeat_uuid_fresh_proof_unchanged": true,
+    "physical_resolve_must_match_private_observation": true
+  },
+  "frozen_child_contract": {
+    "cleanup_required": true,
+    "cuda_visible_devices": "0",
+    "gpu_conditions_changed": false,
+    "markers": 6,
+    "parent": "ri_native_camera_startup_67/run_camera_startup.py",
+    "probe": "bench/probe_isaac_camera_startup_v1.py"
+  },
+  "lease_basis": {
+    "path": "bench/protocols/agentic_isaac_camera_startup_lease_basis_20261029h_v3.json",
+    "protocol_id": "agentic-isaac-camera-startup-lease-basis-20261029h-v3",
+    "schema": "agentic_play_protocol_v4",
+    "sha256_raw": "84b02b897367f15c37e64eab0a84d4b588e90062f9249c3f33ee6a9b0db8293b"
+  },
+  "protocol_id": "agentic-isaac-camera-startup-registration-20261029h-v3",
+  "recording_target": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "registered_at_utc": "2026-10-28T22:46:40.666119+00:00",
+  "resources": {
+    "batch_budget_usd": "20",
+    "compute_quote_usd_per_h": "2.18064",
+    "cost_scope": "new_recording_instance_elapsed_wall_excludes_storage_v1",
+    "deadline_utc": "2026-10-29T00:57:14.675376+00:00",
+    "max_owned_instances": 1
+  },
+  "runtime_loader_context": {
+    "ld_library_path": {
+      "gpu_child_inherits": true,
+      "inherit_original": true,
+      "operation": "prepend_existing_python_base_lib",
+      "restore_parent_after_child": true
+    },
+    "ldd_executable_resolves_same_library": true,
+    "libpython_basename": "libpython3.10.so.1.0",
+    "libpython_sha256_raw": "027fdf662ea0e83a2f418b6e141cd1ef8f5971fac953ede0f7c207ac2ef3d155",
+    "loaded_in_venv_python_before_sdk": true,
+    "logical_python_base_lib": "<python-base>/lib",
+    "new_library_installations": 0,
+    "same_environment_four_library_ldd_required": true
+  },
+  "schema": "agentic_isaac_camera_startup_registration_v3",
+  "status": "registered_before_gpu_child",
+  "supersedes_unexecuted": {
+    "gpu_children_started": 1,
+    "path": "bench/protocols/agentic_isaac_camera_startup_20261029h_v2.json",
+    "reason": "V2 extension fields cannot cross the exact child validator process boundary",
+    "sdk_startup_markers": 0,
+    "sha256_raw": "a1efcbe5c5354cfc63477789b1a2e96dd16081854d2f3e18f004774e97af53cc"
+  }
+}
