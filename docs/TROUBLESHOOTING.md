@@ -468,3 +468,9 @@
 - [모터 영상 수집 v1](../evals/results/agentic_motor_capture_20261028_v1/summary.json)은 두 Start 요청이 접수됐지만 Isaac 실행까지 도달하지 못했다. 한 자원은 기동 대기 상한까지 `STOPPED`였고, 다른 자원의 상태 조회는 control-plane hostname과 다른 인증서를 받아 TLS 검증에 실패했다. 인증서 검증을 끄지 않았다. 공급자의 기동 지연·인증서 배치 원인은 확인되지 않았다.
 - Stop 요청은 접수됐으나 첫 정지 관찰 한도 안에는 `STOPPING`이었다. 이후 목록 조회로 두 자원의 `STOPPED`를 확인했고 Stop을 추가로 보내지 않았다. 학습·녹화·모델 호출은 0건이며 실패 기록과 원문 해시는 보존한다.
 - [후속 수집 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v2.json)은 기존 VM 하나에서 두 job을 순차 실행한다. 상태 조회만 최대 3회 재시도하며 자원 신원 불일치는 즉시 거부한다. Start·실행·복사 요청을 자동 재전송하지 않고, 기동·회수·정지 관찰을 포함해 비용 상한을 계산한다.
+
+### OPS-62: VM별 cache 경로와 원격 비영 종료의 분리
+
+- [순차 수집 v2](../evals/results/agentic_motor_capture_20261028_v2/summary.json)는 SSH 접속 뒤 cache 존재 조건에서 중단됐다. 설정은 첫 VM의 repo 배치를 가정했지만, 다른 VM의 이전 성공 기록에는 별도 repo·Lab 위치가 명시돼 있었다. 당시 조건은 어느 경로가 없었는지 구분하지 않았으므로 현재 환경 소실 여부는 확인되지 않았다. Isaac·학습·녹화는 시작되지 않았다.
+- 같은 traceback이 Brev CLI의 연결 재확인 전후에 두 번 기록됐다. [v3 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v3.json)은 원격 본문이 비영 종료해도 외부 envelope에서 종료 코드를 기록하고, host가 단일 최종 marker를 확인한다. 원자적인 run·label 디렉터리가 같은 본문의 재실행을 막는다. 전송 exit 0만으로 본문 성공을 판단하지 않는다.
+- v3는 VM별 HOME 상대 layout을 등록하고 실제 경로·존재 상태를 판정 전에 출력한다. lexical venv 경로와 source/runtime pin을 유지하며, dirty checkout·없는 cache는 보존하고 중단한다. 재설치나 자동 후보 탐색으로 측정 환경을 바꾸지 않는다. CPU에서는 Python 3.10과 실제 Bash 실행, WSL에서는 symlink를 포함한 97개 검사를 통과했다.
