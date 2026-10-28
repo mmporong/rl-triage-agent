@@ -114,6 +114,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 [v8 실행](../evals/results/agentic_motor_capture_20261028_v8/summary.json)에서는 원격 입력을 재사용했고 상태 시험 한 건이 봉인·세션 종료·fast shutdown·자연 exit 0·소유 자식 정리를 통과했다. 이어진 녹화는 AABA 자식의 exit 0 뒤 GPU 관찰 원문 참조 누락으로 중단됐다. 새 runner v3는 임대 검사를 유지하면서 기존 reader의 현재 `last_receipt`를 전달한다. 관련 새 경계의 WSL 회귀 23개를 통과했으며, 전체 영상 수집은 아직 미완료다.
 
+[v9 수집 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v9.json)은 이 runner와 unit v5를 소스 145개에 결합한다. 같은 네 정책·원격 입력 재사용·종료 증거·촬영 조건을 유지하며 추가 $5 상한으로 실행한다. 등록 host의 WSL 회귀 122개를 통과했고, 실제 전체 녹화는 새 원문으로 판정한다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>
