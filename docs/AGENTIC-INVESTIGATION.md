@@ -205,3 +205,5 @@ cd "$HOME/rl-triage-agent"
 [텍스트 검사쌍의 AWS 환경](../bench/protocols/agentic_runtime_text_s2221_20261028_v2_environment.json)과 [수명 등록](../bench/protocols/agentic_runtime_text_s2221_20261028_v2_lifecycle.json)은 영상 없이 headless 검사쌍을 준비한다. 과거 상태·canonical 관측은 출처로만 쓰고 Parent2가 현재 boot·자원·임대를 새로 확인한다. 기존 Runtime $10 배정과 재시작 거부 추정 기록을 유지하며, 모델의 두 유효 응답을 같은 입력인지 검증해 재사용한다. 환경 등록만으로 새 실행이나 승인을 만들지 않는다.
 
 [새 가동 구간 예산 등록](../bench/protocols/agentic_f1_render_capture_phase_20261028_v3.json)은 검증한 이전 가동 4,523.833015초와 이번 Start부터 Stop까지를 합산한다. 꺼진 구간은 제외하고 최초 생성 시각과 이전 벽시계 추정 기록은 보존한다. 금액 $10·가동 9,500초·촬영 조건은 유지하며 메인 회귀 58개를 통과했다. [AWS 텍스트 고리 등록](../bench/protocols/agentic_runtime_text_s2221_20261028_v2.json)은 기존 두 모델 응답을 같은 입력인지 검증해 재사용하고, 새 기한의 임대 기준과 실제 AWS Python 환경에서 검사쌍을 실행하도록 고정한다. 두 판은 같은 VM을 직렬로 사용한다.
+
+[텍스트 고리 v3](../bench/protocols/agentic_runtime_text_s2221_20261028_v3.json)은 새 IO 계약을 먼저 봉인하고 그 SHA와 Runtime 폴더를 결합한다. v2는 실제 검사 없이 보존한다. 같은 원본의 모델 응답 두 건과 API 원장을 유지하며 GPU 검사는 새 Parent 등록 뒤 실행한다.
