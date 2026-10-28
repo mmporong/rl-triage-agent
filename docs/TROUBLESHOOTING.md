@@ -522,3 +522,9 @@
 
 - v9의 정상 로봇은 뒤쪽 검사 프레임에서 보이지 않았다. [후속 CPU 검사](../evals/results/agentic_motor_capture_20261028_v9/render_visibility_followup.json)는 CameraParams의 카메라 위치와 trace 위치가 일치하는 반면, 밝은 무채색 mask가 현재 root보다 초기 root 투영에 가까운 것을 확인했다. 네 영상의 모델 입력 사용은 보류했다. 파일·타이밍 결합 통과만으로 렌더 형상의 상태 반영을 보장할 수 없다.
 - 확인된 코드 경로에서 capture는 Lab 센서 없이 render product와 orchestrator를 사용했다. Lab의 `forward()`는 articulation kinematics와 fabric 갱신을 수행한다. 해당 갱신 누락은 원인 후보이며 원격 파일 대조와 GPU 시험 전까지 확정하지 않는다. 카메라 profile과 물리 step은 유지하고, 매 capture 전 `forward()` 및 물리 snapshot 불변 검사를 추가한 새 판을 준비한다. 초기 영상과 결과는 덮어쓰지 않는다.
+- [이전 영상 감사](../evals/results/vision_render_integrity_audit_20261028_v1/summary.json)는 정상 source 2220·2221과 교정 두 영상에서도 같은 렌더 불일치 정황을 확인했다. 수평 이동이 작은 F1 정책의 자세 반영은 이 위치 검사로 가르지 못했다. 관련 프레임·발표 10쪽 원본의 새 시각 근거 사용을 보류하고, 시뮬레이션 상태의 평가·회복 기록은 유지한다.
+
+### OPS-71: 기존 VM의 Start 응답과 실제 준비 상태
+
+- [v10 렌더 시험](../evals/results/agentic_motor_render_preflight_20261028_v10/summary.json)은 Start 응답을 받았지만 READY를 관측하지 못했다. `STARTING`·`UNHEALTHY` 뒤 호스트 Stop intent 전 `STOPPED`를 관측했고 등록된 기동 대기 상한에서 종료했다. 원격 boot·Isaac·영상·학습·모델 호출은 모두 0건이다. VM 내부나 공급자 원인은 미확정이다.
+- 호스트는 `STOPPED`를 재확인해 Stop 요청을 추가로 보내지 않았다. 실제 경과와 compute 견적을 곱한 값은 약 $0.7533이며 청구액은 아니다. 같은 Start를 반복하지 않고 새 자원의 환경 복원과 다음 렌더 시험을 준비한다. 이전 결과·원문·소비는 보존한다.
