@@ -1,0 +1,100 @@
+{
+  "schema": "agentic_f1_render_capture_attempt_v2",
+  "tag": "agentic_f1_render_capture_20261029_v2",
+  "outcome": "infrastructure_failure",
+  "case_kind": "development_seen_F1_NONE",
+  "seed": 2221,
+  "phase": {
+    "path": "bench/protocols/agentic_f1_render_capture_phase_20261028_v4.json",
+    "sha256": "379bcca597e14a312f029888d53645a59e92527e1f3a499d2478d73680bd2614",
+    "anchor": "3742ede0531afbb20b2a66e80c4b65449b1dfb44"
+  },
+  "child": {
+    "path": "bench/protocols/agentic_f1_render_capture_s2221_20261028_v4.json",
+    "sha256": "f5ab5018ce20614712a24778790add1af4b41fcd47790e2b65eab7d490ba9a44",
+    "anchor": "3742ede0531afbb20b2a66e80c4b65449b1dfb44"
+  },
+  "renderer_library_readback": {
+    "registered_libraries": 4,
+    "verified": 4,
+    "previous_libXt_missing_error_observed": false
+  },
+  "state_smoke": {
+    "completed": true,
+    "frames": 1,
+    "wall_s": 18.36840135500006,
+    "cleanup_verified": true
+  },
+  "aaba": {
+    "exit_code": -11,
+    "wall_s": 10.139472908000243,
+    "cleanup_verified": true,
+    "stage": "new_stage_viewport_hydra_initialization",
+    "policy_replay_started": false
+  },
+  "native_recordings": 0,
+  "native_frames": 0,
+  "f1_policy_started": false,
+  "model_api_requests": 0,
+  "new_training": 0,
+  "used_for_decision": false,
+  "model_use_approved": false,
+  "behavior_label": null,
+  "renderer_cause": {
+    "confirmed": null,
+    "hypothesis": "IsaacSim4.5_Kit_renderer_and_provider_image_driver_combination",
+    "driver": "595.112.07",
+    "os": "Ubuntu22.04.5",
+    "kernel": "6.8",
+    "prior_success": {
+      "public_result": "evals/results/agentic_motor_render_preflight_20261028_v11/summary.json",
+      "driver": "580.173.02",
+      "os": "Ubuntu24.04.5",
+      "kernel": "6.11"
+    },
+    "driver_only_causality_established": false,
+    "shared_warnings_also_in_prior_success": [
+      "CUDA_VISIBLE_DEVICES",
+      "GLFW_no_display",
+      "preloaded_omni.kit_app"
+    ]
+  },
+  "collection": {
+    "archive_sha256": "e81cb91d03404ddc5e620d1236a3e3cc07cee0a0b6bd9d0f318edef63c6a95fd",
+    "raw_files": 108,
+    "files_with_inventory_verified": 109,
+    "archive_verified": true,
+    "C_D_all_match": true
+  },
+  "resource": {
+    "resource_id": "vaqt1ohdx",
+    "provider": "aws",
+    "instance_type": "g6e.4xlarge",
+    "gpu_model": "L40S",
+    "final_status": "STOPPED",
+    "stopped_at_utc": "2026-10-28T17:12:22.438591+00:00",
+    "quote_usd_per_h": "3.605088",
+    "cost_origin": "first_create_including_install_idle_and_stop",
+    "elapsed_from_create_s": "8527.308602",
+    "shared_quote_estimate_usd": "8.539360531490826666666666667",
+    "is_billed_amount": false,
+    "budget_reset": false,
+    "compute_cap_usd": "20"
+  },
+  "main_finalizer": {
+    "primary_capture_failure_preserved": true,
+    "additional_error": "KeyError_stop_observation_s_in_frozen_lifecycle_environment",
+    "provider_stop_already_observed_by_capture_controller": true,
+    "extra_stop_rpc": 0,
+    "later_read_only_STOPPED_reconfirmation": true
+  },
+  "evidence_sha256": {
+    "execution": "f6ab3ba7c69dfa0c956238f2561a38db7b8c52a54e32539266200b085ba6bc31",
+    "aaba_stdout": "7f6fa922bf1d412ca359ca8d608adbf725eca120596fd03e24dd9ea9c53be004",
+    "aaba_stderr": "cfa3fb4b807ed274d009176c6fc77051fc7d48f99caa47e813ba3bda960ac0c0",
+    "state_unit_result": "57969ec49aea802f4b260c672bfe92f6d41fddd963f16c15b2c3cd72da4671f2",
+    "stopped": "1fabfac1e185839f68895ff689f13c7239dc52240e6eacb80265ca1d78f25b34",
+    "collection": "cbae6449d491cf00755b95edaa6cdfe69361727382eaf297786015032f78d6ba"
+  },
+  "interpretation": "상태 1프레임은 통과했으나 전체 녹화는 시작하지 못했다. 새 영상·회복·시각 기여의 성공으로 쓰지 않는다."
+}

@@ -560,3 +560,19 @@
 - [F1 재시작 기록](../evals/results/agentic_f1_render_restart_20261028_v1/summary.json)은 Start 요청 exit 0 뒤에도 `READY`에 도달하지 못했다. 공급자 상태는 `STARTING`에서 `STOPPED`로 바뀌었고, 호스트는 대기 상한에서 종료했다. 원격 boot·패키지 복구·GPU·녹화·학습·모델 호출은 0건이다. 추가 Start나 Stop을 보내지 않았으며 원문 385파일의 사본 SHA를 확인했다.
 - [Brev 공식 lifecycle](https://docs.nvidia.com/brev/concepts/gpu-instances)은 Stop 때 GPU를 공급자 풀로 반환하고 재시작 때 같은 공급자·리전·유형의 용량을 다시 확보한다고 설명한다. [CLI의 detached 옵션](https://docs.nvidia.com/brev/cli/instance-management)은 상태 polling 없이 반환하므로 요청 접수만으로 준비 완료를 판단하지 않는다. 현 기록은 용량·공급자·bootstrap 원인을 가르지 못하며, 앞선 다른 자원의 HTTP 400과 같은 원인으로 묶지 않는다.
 - [새 환경 등록](../bench/protocols/fresh_brev_l40s_continuous_environment_20261028e.json)은 한 번 생성한 환경에서 등록 작업을 연속 수행하고 종료 때 회수·정지를 확인한다. 최초 생성부터 설치·대기·실행·정지까지의 비용과 시간 상한을 유지하며, 이전 실패 기록과 소비는 보존한다. 새 환경 생성은 검사·회복·영상 성공을 뜻하지 않는다.
+
+### OPS-77: 등록된 잠금 경로와 새 환경 부트스트랩
+
+- [실제 검사쌍 P5](../evals/results/agentic_runtime_text_pair_20261029_v1/summary.json)는 원격 helper의 `prepare`에서 중단됐다. 외부 응답은 `unknown`과 일반적인 schema 오류 문구였지만, 내부 원문은 등록된 canonical lease 디렉터리가 없어 strict 경로 해석이 실패한 `FileNotFoundError`였다. 원격 helper는 정상 종료했고 검사·학습·C 승인·추가 모델 호출은 시작되지 않았다.
+- 입력과 registration 디렉터리만 만든 부트스트랩에 canonical lease 경로 준비가 빠져 있었다. 새 준비기는 등록된 빈 디렉터리만 만들고 모든 선언 root를 같은 `Resolver`로 점검한다. 기존 lease·lock·heartbeat를 복사하지 않으며 다른 경로와 링크는 거부한다. Python 3.10 CPU 회귀는 11개를 통과했다. 기존 `unknown` 응답과 승인 소비는 보존하며 재시도는 새 작업 폴더와 tag를 쓴다.
+
+### OPS-78: 렌더 라이브러리 복구 뒤에도 남은 Hydra 초기화 충돌
+
+- [후속 F1 촬영](../evals/results/agentic_f1_render_capture_20261029_v2/summary.json)은 네 렌더 라이브러리의 readback과 상태 1프레임을 통과했다. 이전 `libXt.so.6` 누락 오류는 없었으나 정상 정책의 AABA 자식이 새 stage의 viewport Hydra engine을 만들다가 `-11`로 종료됐다. 정책 재생·native 녹화·F1 자식은 시작되지 않았고 소유 자식 정리는 확인됐다.
+- 성공한 v11과 이번 실행에는 같은 CUDA 가시성·GLFW·display 경고가 있었다. 이번 AWS 환경은 driver 595.112.07·Ubuntu 22.04 계열, 이전 Nebius 성공 환경은 driver 580.173.02·Ubuntu 24.04 계열이다. 이 차이로 드라이버 하나를 원인으로 확정할 수 없다. 다음 확인은 같은 고정 SDK와 최소 카메라 초기화 경로를 다른 공급자 환경에서 비교하는 것이다.
+- 원문 109파일의 C/D 해시와 `STOPPED`를 확인했다. 최초 생성부터 정지 관찰까지의 견적은 약 $8.54이며 청구액은 아니다. 이 비용은 같은 VM에서 진행한 검사 준비·설치·대기·촬영 시도를 모두 포함하므로 각 단계에 중복 합산하지 않는다. 새 영상·회복·시각 기여 성공으로 집계하지 않는다.
+
+### OPS-79: 생성자 검증과 정지 경로의 필수 설정
+
+- 상위 lifecycle 생성자와 boot가 통과해도 최종 `Driver.stop()`에 필요한 설정이 모두 검증된 것은 아니었다. 촬영 controller는 Stop 한 번과 `STOPPED` 관찰을 끝냈지만, 상위 `finally`는 environment의 `stop_observation_s` 누락으로 `KeyError`를 남겼다. 추가 Stop RPC는 없었고 후속 읽기 전용 조회에서도 정지를 확인했다. 원래 렌더 실패와 이 정지 설정 오류를 별개로 보존한다.
+- 후속 환경 등록 전에는 실제 동결 Driver와 실제 phase 형상으로 정지 경로를 CPU에서 실행한다. 이미 정지된 자원, 실행 중 자원의 단일 Stop, 일시 조회 실패, 불명확한 응답, 자원 신원 불일치를 확인한다. 새 공개 phase에 관찰 상한과 재시도 간격을 명시하고, 종료 시 원래 오류가 정지 오류에 가려지지 않도록 각각 기록한다.

@@ -1,0 +1,86 @@
+{
+  "schema": "agentic_runtime_text_pair_attempt_v1",
+  "tag": "agentic_runtime_text_pair_20261029_v1",
+  "outcome": "infrastructure_failure",
+  "case_kind": "development_seen_F1_NONE",
+  "seed": 2221,
+  "runtime": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261028_v5.json",
+    "sha256": "efa56af3568f77260c3f662342b2d69782c7330f31d0dc6079dc614b9a5f1d90",
+    "anchor": "3742ede0531afbb20b2a66e80c4b65449b1dfb44"
+  },
+  "parent": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_pair_aws_20261028_v5.json",
+    "sha256": "8fb6a649f4c9aeaeae93a21f4429c551e7541b225f054a1ded5da053641553a7",
+    "anchor": "c201630be8676fda84300f4f905b6ea673cdb993"
+  },
+  "probe": "P_reward",
+  "runtime_status": "blocked_host",
+  "transport_status": "unknown",
+  "confirmed_infrastructure_cause": "registered_canonical_lease_directory_absent_before_prepare",
+  "remote_helper": {
+    "exit_code": 0,
+    "status": "HOLD",
+    "dispatched": false,
+    "error_type": "FileNotFoundError",
+    "stage": "strict_registered_root_resolution"
+  },
+  "started": {
+    "probe_reference": false,
+    "probe_case": false,
+    "training": false,
+    "fixed_evaluation": false,
+    "correction": false,
+    "model_followup": false
+  },
+  "approvals": {
+    "parent_registration_events": [
+      "proposed",
+      "approved",
+      "consumed"
+    ],
+    "probe_C_authorization_count": 0,
+    "model_issued_authority": false
+  },
+  "model_api": {
+    "additional_requests": 0,
+    "used_before": 9,
+    "used_after": 9,
+    "cap": 12
+  },
+  "retry": {
+    "new_tag_required": true,
+    "old_response_overwritten": false,
+    "source_training_seed_consumed": false,
+    "new_seed_required": false
+  },
+  "local_io_service": {
+    "actions": [
+      "wait"
+    ],
+    "errors": [],
+    "exit_code": 0,
+    "exited": true,
+    "pid": 121148
+  },
+  "resource": {
+    "resource_id": "vaqt1ohdx",
+    "provider": "aws",
+    "instance_type": "g6e.4xlarge",
+    "gpu_model": "L40S",
+    "final_status": "STOPPED",
+    "stopped_at_utc": "2026-10-28T17:12:22.438591+00:00",
+    "quote_usd_per_h": "3.605088",
+    "cost_origin": "first_create_including_install_idle_and_stop",
+    "elapsed_from_create_s": "8527.308602",
+    "shared_quote_estimate_usd": "8.539360531490826666666666667",
+    "is_billed_amount": false,
+    "budget_reset": false,
+    "compute_cap_usd": "20"
+  },
+  "evidence_sha256": {
+    "runtime_result": "bbe1a324d9f54ac228c302f67bc3ccff944e37377476dc3d336675a5c4f6bd01",
+    "failure_diagnosis": "1c239a66065ae2b896e32e2f757c892859d87ada6e3172c40a9ce2aa2ce15655"
+  },
+  "interpretation": "검사 시작 전 실행 환경 오류이며 모델 오진·교정 미회복 결과로 집계하지 않는다."
+}
