@@ -510,3 +510,9 @@
 - [v7](../evals/results/agentic_motor_capture_20261028_v7/summary.json)은 두 전체 입장 검사 뒤 입력 업로드에서 HTTP 401을 관측했다. 같은 실행의 목록 조회·부분 원문 회수·Stop은 성공했으므로 인증 실패의 지속 여부와 원인은 미확정이다. 인증 검증을 우회하거나 실패한 업로드를 재전송하지 않았다. App·상태 frame·전체 영상·학습·모델 API는 0건이다.
 - 새 판은 이전에 올린 같은 입력 archive의 등록 HOME 상대 경로·일반 파일·단일 링크·SHA를 확인해 새 출력에 보존한다. 누락·변조·경로 이탈·조상 symlink와 복사 뒤 hardlink는 거부하고 원본은 갱신하지 않는다. 회수 경로와 보관 부모는 Start 전에 확인한다. 생성한 원격 program을 포함한 WSL 회귀 122개를 통과했다.
 - 부분 원문 39파일의 사본 해시와 `STOPPED`를 확인했다. 경과 시간과 견적을 곱한 값은 약 $0.4951이며 공급자 청구액은 아니다. 이 실행에서는 이전 SDK 종료 수정의 효과를 측정하지 못했다.
+
+### OPS-69: 임대 검사 래퍼가 가린 GPU 관찰 원문 참조
+
+- [v8](../evals/results/agentic_motor_capture_20261028_v8/summary.json)의 상태 시험은 실제 봉인과 세션 종료 뒤 SDK fast shutdown으로 자연 exit 0을 반환했다. 소유 자식 PID와 정리도 확인돼 OPS-67의 새 종료 경로가 이 한 건에서 통과했다. 이후 AABA 자식도 exit 0으로 끝났지만 부모의 원문 검증이 `prepared GPU 관찰 원문 참조가 없다`로 중단됐다. 녹화 자식은 시작하지 않았다.
+- 원인은 기존 `_leased_reader`가 `StrictRemoteGpuReader`를 함수 closure로 감싸 호출 기능만 남기고 `last_receipt` 속성을 가린 것이다. 새 runner의 callable proxy는 호출과 속성 접근 모두 임대를 먼저 확인하고, 현재 underlying 참조를 캐시·재조립 없이 전달한다. 기존 원문 SHA·자원·GPU 검증과 live 판정은 유지한다.
+- 실제 reader의 파일·receipt 기록과 원래 `_gpu_reference`를 사용하는 CPU 경로에서 이전 실패를 재현하고 새 경로의 통과를 확인했다. 새 경계 WSL 회귀 23개와 작성자 관련 Python 3.10 회귀 175개가 통과했다. 부분 원문 122파일의 C/D 해시와 자원 정지를 확인했으며, 전체 영상과 시각 기여는 아직 판정하지 않는다.

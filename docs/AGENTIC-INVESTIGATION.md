@@ -112,6 +112,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 [v7 실행](../evals/results/agentic_motor_capture_20261028_v7/summary.json)은 두 전체 입장 검사를 통과했지만 입력 전송의 HTTP 401 응답으로 App 전에 종료됐다. 부분 원문 39파일의 사본 해시와 자원 정지를 확인했다. [v8 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v8.json)은 같은 입력의 기존 원격 cache를 SHA 대조해 재사용하며, 회수 경로도 Start 전에 확인한다. 새 경계의 WSL 회귀 122개를 통과했고 촬영 조건은 유지한다. 실제 SDK 종료 개선 여부는 아직 미측정이다.
 
+[v8 실행](../evals/results/agentic_motor_capture_20261028_v8/summary.json)에서는 원격 입력을 재사용했고 상태 시험 한 건이 봉인·세션 종료·fast shutdown·자연 exit 0·소유 자식 정리를 통과했다. 이어진 녹화는 AABA 자식의 exit 0 뒤 GPU 관찰 원문 참조 누락으로 중단됐다. 새 runner v3는 임대 검사를 유지하면서 기존 reader의 현재 `last_receipt`를 전달한다. 관련 새 경계의 WSL 회귀 23개를 통과했으며, 전체 영상 수집은 아직 미완료다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>
