@@ -1,0 +1,102 @@
+{
+  "schema": "agentic_runtime_retry_start_v1_protocol",
+  "registered_at_utc": "2026-10-28T23:53:33.513722+00:00",
+  "source_commit": "ccec942ffd95210fc7c11588b3b5338f966f0129",
+  "target": {
+    "resource_id": "oky8zxbnx",
+    "resource_name": "rl-triage-l40s-headless-20261029g",
+    "instance_type": "g6e.4xlarge",
+    "provider": "aws",
+    "gpu_model": "L40S"
+  },
+  "environment_protocol": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261029_v14_environment.json",
+    "anchor": "e1d300018b624edb4ee20f94ae8c810bc00903ec",
+    "sha256": "0999014d9c05db178944d016255ef3fb084a98c12863e22e12736fd430785371"
+  },
+  "prior_attempt": {
+    "runtime_protocol": {
+      "path": "bench/protocols/agentic_runtime_text_s2221_20261029_v16.json",
+      "sha256": "c1f100b62459394a242c071df5b2e11c0b91cca9830b1997bb436c7ccae0f231"
+    },
+    "parent_protocol": {
+      "path": "bench/protocols/agentic_runtime_text_s2221_pair_aws_20261029_v16.json",
+      "sha256": "24817f70176ae42f0aa91c449b075fd095d027db2ea8a65ffbe9d602e5dcb431"
+    },
+    "status": "infrastructure_failure_service_budget_before_remote_RPC_and_handoff_output_collision",
+    "confirmed_cause": "repo_relative_lifecycle_ref_read_as_native_absolute_in_actual_service_budget_and_reused_frozen_handoff_HERE",
+    "boot_remote_exit_zero": true,
+    "runtime_pins_verified": true,
+    "remote_parent_started": false,
+    "probe_runs": 0,
+    "new_training_runs": 0,
+    "new_model_api_calls": 0,
+    "preserve_all_prior_records": true,
+    "actual_CLI_regression_python_versions": [
+      "3.10.20",
+      "3.12.13"
+    ],
+    "pre_vm_actual_child_config_check_required": true,
+    "pre_vm_actual_remote_entry_import_check_required": true
+  },
+  "retry": {
+    "allowed_start_requests": 1,
+    "allowed_create_requests": 0,
+    "automatic_retry_count": 0,
+    "additional_start_after_failure": false,
+    "required_pre_start_provider_state": "STOPPED",
+    "same_resource_identity_required": true,
+    "reuse_existing_installation": true,
+    "start_controller_binding": {
+      "status": "registered_by_codex_main",
+      "required_fields": [
+        "controller_sha256",
+        "stopped_observation_sha256",
+        "stopped_observed_at_utc"
+      ],
+      "controller_sha256": "c85ef50a1ce28362fb60ecd605529583733b5c691a1a6aebc63fbf0fc080821c",
+      "stopped_observation_sha256": "a1ad5ac42e55b185294bc4d822d598db6dd5df330e77eb31b61b57ed8e3cc9a6",
+      "stopped_observed_at_utc": "2026-10-28T23:32:09.635137+00:00",
+      "bound_at_utc": "2026-10-28T23:53:33.532436+00:00",
+      "budget_helper_sha256": "78e2922cc9ca30c5ea9200385071e6f83332eb238e2655986bbd4071722956f3"
+    },
+    "cumulative_start_requests_before": 5,
+    "cumulative_start_requests_after_success": 6,
+    "cumulative_create_requests": 1
+  },
+  "budget": {
+    "program_cap_usd": "165",
+    "phase_cap_usd": "40",
+    "prior_program_usd": "145",
+    "current_program_cap_including_parallel_renderer_usd": "185",
+    "additional_allocation_for_this_restart_usd": "0",
+    "created_at_utc": "2026-10-28T17:41:10.061936+00:00",
+    "deadline_utc": "2026-10-29T02:34:05.550256+00:00",
+    "latest_start_request_before_utc": "2026-10-29T02:14:05.550256+00:00",
+    "stop_reserve_s": 1200,
+    "consumption_reset": false,
+    "max_lifetime_s": 32400
+  },
+  "scientific_contract": {
+    "seen_development_seed": 2221,
+    "source_heldout": false,
+    "model_prompt_changed": false,
+    "probe_thresholds_changed": false,
+    "decision_rules_changed": false,
+    "cached_model_prefix_decisions": 2,
+    "new_decision_limit": 2,
+    "model_api_before": 9,
+    "model_api_cap": 12
+  },
+  "authority": {
+    "start_authorized": true,
+    "execution_authorized": false,
+    "root_callback_required": false
+  },
+  "intended_next_runtime_protocol": "bench/protocols/agentic_runtime_text_s2221_20261029_v17.json",
+  "time_extension": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261029_resource_time_extension_v3.json",
+    "anchor": "887a2bb12ebb832d2406b0075f0cfd3a03720e1e",
+    "sha256": "b66c461bc3d306c6f42c57d40d68990426c233fa9d260fcfa17fab106f7f52a1"
+  }
+}
