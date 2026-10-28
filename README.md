@@ -320,7 +320,7 @@ Earlier development steps, each with its own protocol, results and limits:
 
 - 새 PPO 진단 고리는 모델 출력을 검사·근거 ID 선택으로 제한하고, 저장된 API 오류 뒤 완료 단계의 SHA를 확인해 재개합니다. 미완료 요청은 자동 재전송하지 않습니다. 첫 검사는 모델, 이후 검사와 교정은 등록 규칙이 선택합니다. CPU 상태 전이 검증과 실제 새 seed의 GPU 회복 확인을 구분합니다. [구현과 실행](docs/RESUMABLE-DIAGNOSIS.md)
 - 같은 Play의 모터 결함 자료는 seed 2033·2046 정상·F2 네 정책의 625프레임·50fps 원문과 관절·기록 토크·속도의 기술 결합을 통과했습니다. 1–6초의 여섯 sample에서 1 m/s 명령에 정상 속도 크기 평균은 1.0384·1.0882 m/s, 결함은 0.0018·0.0033 m/s였습니다. 사후 검사에서 카메라는 현재 sim root를 따라갔지만 렌더 형상은 초기 위치 부근에 남는 정황을 확인해 네 영상 모두 모델 입력 사용을 보류했습니다. 이미 본 개발 자료이며 원래 승인 플래그와 행동 라벨 부재를 유지했습니다. 모델 호출은 0건입니다. [수치·렌더 검사·출처](docs/AGENTIC-INVESTIGATION.md#모터-영상과-상태의-실제-수집)
-- 새 렌더 경로는 정상 정책 한 건에서 화면·상태·봉인·회수 조건 11개를 통과했습니다. capture 전 갱신 625회에서 물리 snapshot이 같았고, 초기·현재 위치가 분리된 표본 23/23에서 형상이 현재 위치를 따랐습니다. 정상 625프레임을 확인한 결과이며 결함 재녹화와 시각 정보의 판단 기여는 후속 실행 대상입니다. [결과](evals/results/agentic_motor_render_preflight_20261028_v11/summary.json) · [시뮬레이션 영상](docs/media/agentic_motor_render_preflight_20261028_v11/normal-s2033.mp4)
+- 새 렌더 경로는 정상 정책 한 건에서 화면·상태·봉인·회수 조건 11개를 통과했습니다. capture 전 갱신 625회에서 물리 snapshot이 같았고, 초기·현재 위치가 분리된 표본 23/23에서 형상이 현재 위치를 따랐습니다. 정상/F1 쌍을 같은 경로로 재녹화하는 새 어댑터도 WSL CPU 회귀 44개를 통과했습니다. 결함 재녹화와 시각 정보의 판단 기여는 후속 실행 대상입니다. [결과](evals/results/agentic_motor_render_preflight_20261028_v11/summary.json) · [시뮬레이션 영상](docs/media/agentic_motor_render_preflight_20261028_v11/normal-s2033.mp4) · [F1 녹화 계약](bench/agentic_play_job_v3.py)
 
 Isaac Lab 로봇 강화학습이 실패했을 때 원인을 찾아 고치는 에이전트입니다. 학습 기록을 읽어 원인 후보를 고르고(Nemotron), 20초 정도 걸리는 검사로 원인을 확인한 뒤, 미리 등록한 수정과 재학습을 승인받아 실행합니다. 회복 여부는 26개 속도 명령으로 정책을 돌리는 고정 평가로 판정합니다.
 

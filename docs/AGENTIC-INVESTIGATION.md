@@ -145,6 +145,8 @@ v10은 VM이 준비 상태에 이르지 못해 boot·App·녹화 전에 종료�
 
 [새 정상 영상](media/agentic_motor_render_preflight_20261028_v11/normal-s2033.mp4)은 640×480·50fps·625프레임·12.5초이며 [3초](media/agentic_motor_render_preflight_20261028_v11/frame-3s.png)·[6초](media/agentic_motor_render_preflight_20261028_v11/frame-6s.png)·[11초](media/agentic_motor_render_preflight_20261028_v11/frame-11s.png) 원본 추출 화면도 함께 보관한다. 원문 2,005파일의 C/D 해시가 일치했고 VM 정지를 확인했다. 생성·설치·대기·시험·정지까지의 견적 환산은 약 $2.943이며 실제 청구액은 아니다. 이미 본 정상 정책 하나의 렌더 확인 결과다. 기존 결함 영상의 모델 입력 보류와 원래 승인 플래그는 유지하며, 결함 재녹화와 모델 판단 기여는 후속 실행에서 확인한다.
 
+새 [F1 등록 계약](../bench/agentic_play_job_v3.py)과 [녹화 unit v7](../bench/run_agentic_capture_unit_v7.py)은 같은 렌더 갱신·임대·native·sidecar·AABA 경로에 정상/F1 정책 쌍을 연결한다. checkpoint 행 전체를 기존 historical catalog와 대조하며, 학습의 보상 결함을 Play 때 다시 주입하지 않는다. 자식은 원본 보상·모터 함수의 출처를 확인하고 부모도 원본 모터 함수 조건을 검사한다. WSL CPU 회귀 44개를 통과했으며 F1 실제 재녹화와 화면 수용은 새 사전등록 뒤 확인한다.
+
 ## 실제 검사 결과를 다음 판단에 연결하는 운반 계층
 
 새 [호스트](../evals/agentic_brev_runtime_host_v1.py)는 정상 참조 원문을 검증한 뒤 case 검사 승인을 소비하고, case 원문이 검증·봉인돼야 다음 조사 snapshot을 반환한다. [mailbox transport](../evals/agentic_brev_mailbox_transport_v1.py)와 [IO service v2](../evals/agentic_brev_mailbox_service_v2.py)는 등록한 원격 helper만 호출한다. IO 응답을 받았다는 이유로 원문 검증을 생략하지 않는다.
