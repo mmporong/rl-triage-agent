@@ -37,6 +37,8 @@
 
 `bench/run_agentic_brev_probe_unit_v1.py`는 명시적으로 승인된 검사 한 건을 기존 POSIX backend에 전달하는 실행 단위다. 기본 동작은 준비·조회이며, 같은 operation의 불완전 기록을 만나면 재실행하지 않는다. 기존 controller로 승인·소비 원장과 등록 소스를 다시 검사하고, 원래 job·실행·GPU·소스 원문을 새 증거 검증기가 확인한 뒤에만 완료를 기록한다. CPU 관련 회귀 98개를 통과했으며, 실제 사용에는 호스트가 유지하는 OS 잠금과 별도 검사 권한 증명이 필요하다. 완료 reference가 없는 첫 대조 검사와 Windows·POSIX 간 승인 운반은 별도 연결 전까지 HOLD다. 이 단위의 CPU 통과를 새 GPU 검사 완료로 세지 않는다.
 
+`bench/run_agentic_brev_probe_parent_v1.py`는 별도로 등록한 검사쌍 승인 원장을 검증해 대조 NONE→사례 F1 순서로 실행하는 부모다. 원문 모델 응답과 history는 보존하고 등록한 사본 경로만 해석한다. 현재 boot의 L40S UUID·활성 OS 잠금·입장 관찰·두 작업의 원문을 결합하며, 지원 probe는 공개 등록의 명시적 부분집합으로 제한한다. 종료 불명 자식은 격리하고 같은 작업을 다시 제출하지 않는다. 부모 CPU 회귀 66개와 저장된 모델 응답의 POSIX 운반 검증을 통과했으며, 새 GPU 검사와 기존 조사 고리에 대한 완료 seal 반영은 후속 단계다.
+
 ## 개발 호출 경로
 
 `run_agentic_development_v1.py`는 자료 조회 결과를 다음 판단 입력에 추가하고, 등록 검사 제안 또는 HOLD에서 멈춘다. 검사와 교정은 실행하지 않는다. Windows 호스트가 API를 예약한 뒤 WSL의 기존 provider를 호출하며, 자격증명은 WSL 환경에만 남는다. 응답이 불명확하게 끊기면 자동 재전송하지 않는다.
@@ -86,6 +88,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 `run_agentic_capture_unit_v3.py`는 공급자 조회와 현재 입장 검증의 시각을 구분한다. 공급자 원문은 30초 신선도로 검사하고, GPU query 뒤 실제 현재시각에서 활성 임대와 resource proof를 검증한다. 조회·query·임대 취득·입장 시각과 원문 SHA를 별도 receipt에 보존한다. 이전 실행기는 수정하지 않는다.
 
+`record_agentic_state_sidecar_v2.py`와 `run_agentic_capture_unit_v4.py`는 상태 시험의 SDK 종료 증거를 연결한다. 결과·sidecar·세션 정상 종료를 검증한 뒤 기존 fast-shutdown 설정을 적용하고, 부모는 자연 exit 0·소유 자식 정리·체크포인트·종료 증거 PID의 일치를 추가 확인한다. 비영 종료를 성공으로 바꾸지 않는다. 종료 정책 helper를 포함한 소스 141개를 결합하며, 새 child·부모·입장 경계의 WSL 회귀 39개를 통과했다. 실제 SDK 충돌의 개선 여부는 새 GPU 실행으로 판정한다.
+
 `agentic_motor_capture_acceptance_v1.py`는 명시한 phase·checkpoint 등록과 회수 archive·C/D 사본·native·sidecar·같은 Play의 trace를 대조한다. 네 정책이 모두 기술 수용돼야 공개 후보 상태 facts를 만들며, 기존 false 승인 플래그와 행동 라벨 부재를 유지한다. 관련 Python 3.10 CPU 회귀 26개를 통과했다. 실제 자료 수용과 모델 사용은 별도 단계다.
 
 [첫 수집 시도](../evals/results/agentic_motor_capture_20261028_v1/summary.json)는 기동 대기 상한과 Brev control-plane의 TLS hostname 불일치로 Isaac 실행 전에 종료됐다. 녹화·학습·모델 호출은 0건이며 두 자원의 `STOPPED`를 확인했다. [새 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v2.json)은 같은 네 정책을 기존 VM 한 대에서 순차 수집한다. 각 녹화의 frame·AABA·child 상한은 유지하며, read-only 상태 조회만 제한 횟수 안에서 다시 시도한다.
@@ -101,6 +105,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 [v5 실행](../evals/results/agentic_motor_capture_20261028_v5/summary.json)은 두 프로토콜의 실제 POSIX 잠금 검사를 통과했지만, 이후 입장 검사에서 과거 공급자 조회 시각을 현재 임대 검증 시각으로 재사용해 중단됐다. 영상·상태 frame·학습·모델 호출은 0건이며 정지와 원문 회수를 확인했다. 후속 판은 App 실행 전에 전체 입장 proof의 생성과 소비까지 확인한다.
 
 [v6 수집 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v6.json)은 새 unit v3와 두 종류의 시각을 분리한 receipt를 결합한다. 같은 네 정책·촬영 조건을 유지하며, 기존 실패의 배정 상한을 보존한 새 $5 구간과 필수 소스 135개를 고정한다. 생성된 원격 입장 program의 proof 소비 경로도 실제 OS 잠금을 사용하는 CPU 회귀에서 확인했다.
+
+[v6 실행](../evals/results/agentic_motor_capture_20261028_v6/summary.json)은 두 전체 입장 검사를 통과하고 상태 1프레임을 봉인했지만 자식이 SIGSEGV로 종료해 실패로 유지됐다. 세션과 앱 종료 중 충돌한 위치는 기존 기록만으로 확정하지 못했다. 새 종료 단계 기록은 그 위치를 구분하며, 전체 정책 영상은 아직 생성하지 않았다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"

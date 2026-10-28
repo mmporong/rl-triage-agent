@@ -498,3 +498,9 @@
 - [v5](../evals/results/agentic_motor_capture_20261028_v5/summary.json)는 canonical 경로에서 두 실제 POSIX 잠금을 검증했다. 다음 입장 검사에서는 잠금 취득 전 공급자 조회 시각을 `verify_lease(now=...)`에 넘겼다. 현재 임대가 활성이어도 그 과거 시각은 취득보다 앞서므로 유효기간 검사에서 거부됐다. GPU query 원문은 남았으며 App과 촬영은 시작하지 않았다.
 - 새 unit v3는 공급자 관찰의 30초 신선도를 별도로 검사하고 GPU query 뒤 현재시각에서 임대와 proof를 확인한다. 조회·query·임대 취득·입장 시각을 분리해 기록하고 기존 유효기간과 허용 오차는 유지한다. WSL 회귀 10개는 이전 실패의 재현과 미래·오래된 조회·query 중 노화·원문 변경·만료 임대·query 실패의 거부를 확인했다.
 - 새 호스트의 생성된 원격 program도 실제 fixture 임대와 fake GPU query로 실행해 proof 소비까지 확인했다. 호스트 WSL 회귀 105개를 통과했으며 실제 클라우드 실행 결과는 별도로 판정한다.
+
+### OPS-67: 상태 봉인 완료와 SDK 자식의 종료 코드
+
+- [v6](../evals/results/agentic_motor_capture_20261028_v6/summary.json)는 전체 입장 검사 후 실제 상태 1프레임·manifest·`dry_run_result.completed=true`를 남겼다. 자식은 이후 `-11`(SIGSEGV)로 끝났으며 소유 process 정리는 확인됐다. 부모는 이를 상태 시험 성공으로 수용하지 않았다. 세션 close와 앱 close 중 충돌 위치는 단계 기록이 없어 미확정이다.
+- 새 상태 child는 기존 녹화기와 같은 순서로 봉인된 terminal과 세션 정상 반환을 검증한 뒤 SDK fast shutdown을 적용한다. 세션·앱 close의 진입·반환·오류, 설정 전후와 근거 SHA를 별도로 기록한다. 부모는 종료 증거의 PID와 소유 자식 PID도 대조한다.
+- 실제 child 생산기와 기존 부모를 합친 CPU 경로에서 성공과 봉인 후 `-11` 거부를 확인했다. 종료 정책 helper 누락 및 격리된 사본의 변조도 실행 전에 거부하며, 관련 WSL 회귀 39개를 통과했다. 이 CPU 통과를 SDK 내부 원인 규명이나 실제 충돌 해소로 쓰지 않는다.
