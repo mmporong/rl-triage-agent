@@ -66,6 +66,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 `bench/record_agentic_state_sidecar_v1.py`는 기존 native 녹화의 프레임 callback에서 simulation time·step과 관절 위치·속도·계산 토크·적용 토크·가용 접촉 상태를 기록한다. 원본에 없는 값은 미가용 사유로 남긴다. 접촉 센서의 lazy update를 일으키는 읽기는 건너뛰며, 별도 시각이나 행동 정답을 만들지 않는다. 녹화 원문과 checkpoint·frame·시각을 맞춰 확인한 뒤 사용할 수 있다.
 
+`evals/agentic_state_facts_v1.py`는 이 결합을 확인하고 기존 두 window의 선언 시각 여섯 개씩에서 몸체 좌표의 명령·속도·벡터 추종 오차와 관절·토크 기록을 요약한다. 없는 값은 미가용으로 남기고, 명령 크기가 0인 상대 오차는 정의하지 않는다. 이 수치는 모델 주장의 인용 근거용이며 보행·넘어짐·원인·회복 라벨을 만들지 않는다. 현재 관절·토크 회귀는 합성 입력으로 검증했으며 새 모터 영상의 관측 결과로 세지 않는다.
+
 `bench/agentic_fault_playback_v1.py`는 새 protocol에 등록한 Go2 F2를 App 생성 뒤 환경 생성 전에 적용하고, 녹화가 끝나거나 실패하면 원래 모터 함수를 복원한다. F2는 전체 DCMotor의 속도 항을 바꾸는 결함이다. 한쪽 다리 고장으로 해석하지 않는다. 학습 당시 결함을 재현한 Play의 관절 상태는 정상 환경에서 수행한 기존 고정 평가와 구분해 기록한다.
 
 두 기능은 CPU callback·실패 봉인·source/checkpoint 검증을 통과했다. 새 모터 checkpoint 등록과 실제 Isaac/Brev 녹화·비간섭 확인은 후속 단계다. 기록기만으로 영상의 진단 기여가 확인된 것은 아니다.
@@ -73,6 +75,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 `bench/agentic_play_job_v1.py`는 새 checkpoint 목록·F2/NONE 쌍·runtime 소스·촬영 profile을 등록한다. `resource_lease()`가 자원별 OS 잠금과 owner start identity·heartbeat를 유지하고, 부모·AABA child·녹화 child·최종 수용 시 같은 임대를 확인한다. 동결 대상에는 잠금·checkpoint·provider 검증 helper도 포함한다. 시험용 process callback을 주입한 결과는 실제 실행으로 표시하지 않는다.
 
 `bench/run_agentic_capture_unit_v1.py`는 임대 context 안에서 fresh provider/GPU 원문을 확인한 뒤 NONE 정책의 1-frame 상태 smoke 또는 등록 정책 하나의 native 녹화를 실행한다. 상태 smoke는 exit code 0에 더해 결과 파일·실패 파일 부재·checkpoint·상태 기록·소유 child 종료·GPU 유휴를 확인한다. 각 VM의 새 프로토콜과 source를 커밋하고 실제 원격 runtime을 대조한 뒤 실행해야 한다. CPU 승인과 실제 GPU 수용을 구분한다.
+
+[첫 수집 시도](../evals/results/agentic_motor_capture_20261028_v1/summary.json)는 기동 대기 상한과 Brev control-plane의 TLS hostname 불일치로 Isaac 실행 전에 종료됐다. 녹화·학습·모델 호출은 0건이며 두 자원의 `STOPPED`를 확인했다. [새 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v2.json)은 같은 네 정책을 기존 VM 한 대에서 순차 수집한다. 각 녹화의 frame·AABA·child 상한은 유지하며, read-only 상태 조회만 제한 횟수 안에서 다시 시도한다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"

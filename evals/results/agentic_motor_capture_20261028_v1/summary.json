@@ -1,0 +1,36 @@
+{
+  "schema": "agentic_motor_capture_result_v1",
+  "status": "infrastructure_failure_before_isaac",
+  "protocol_commit": "f2d546e8c04958a30b17ee5d9a41042260f21444",
+  "source_commit": "895e601d4a87513494c6e7dfe9285db25b60210b",
+  "planned_recordings": 4,
+  "planned_state_smokes": 2,
+  "actual_recordings": 0,
+  "actual_state_smokes": 0,
+  "new_training": 0,
+  "model_API": 0,
+  "technical_acceptance": false,
+  "behavior_labels_created": false,
+  "visual_benefit_measured": false,
+  "vms": [
+    {
+      "resource_id": "3655a80oo",
+      "outcome": "startup_timeout",
+      "start_acknowledged": true,
+      "final_status": "STOPPED",
+      "quote_wall_estimate_usd": "0.3190409373666666666666666667"
+    },
+    {
+      "resource_id": "j1kxncj4e",
+      "outcome": "inventory_tls_hostname_mismatch",
+      "start_acknowledged": true,
+      "stop_acknowledged": true,
+      "initial_stop_observation": "exceeded_420s",
+      "final_status": "STOPPED",
+      "stop_reconciliation_at_utc": "2026-10-28T03:14:11.375738+00:00",
+      "additional_stop_requests": 0
+    }
+  ],
+  "cost_note": "경과시간과 compute 견적의 곱은 청구액이 아니다. 기동 실패의 공급자 원인과 실제 과금은 미확정이다.",
+  "retry": "기존 기록은 보존하고 새 판에서 기존 VM 한 대의 순차 실행을 등록한다."
+}
