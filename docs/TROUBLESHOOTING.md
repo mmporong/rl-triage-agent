@@ -517,3 +517,8 @@
 - 원인은 기존 `_leased_reader`가 `StrictRemoteGpuReader`를 함수 closure로 감싸 호출 기능만 남기고 `last_receipt` 속성을 가린 것이다. 새 runner의 callable proxy는 호출과 속성 접근 모두 임대를 먼저 확인하고, 현재 underlying 참조를 캐시·재조립 없이 전달한다. 기존 원문 SHA·자원·GPU 검증과 live 판정은 유지한다.
 - 실제 reader의 파일·receipt 기록과 원래 `_gpu_reference`를 사용하는 CPU 경로에서 이전 실패를 재현하고 새 경로의 통과를 확인했다. 새 경계 WSL 회귀 23개와 작성자 관련 Python 3.10 회귀 175개가 통과했다. 부분 원문 122파일의 C/D 해시와 자원 정지를 확인했으며, 전체 영상과 시각 기여는 아직 판정하지 않는다.
 - 후속 [v9](../evals/results/agentic_motor_capture_20261028_v9/summary.json)는 두 상태 시험과 정상·F2 네 정책의 native·sidecar·trace·playback 결합을 통과했다. 회수본 7,895파일을 다시 해시 대조해 네 정책을 기술 수용했다. 원래 실패 원문은 보존했으며 이 결과로 시각 정보의 판단 기여를 주장하지 않는다.
+
+### OPS-70: 카메라 추적과 articulation 렌더 상태 갱신
+
+- v9의 정상 로봇은 뒤쪽 검사 프레임에서 보이지 않았다. [후속 CPU 검사](../evals/results/agentic_motor_capture_20261028_v9/render_visibility_followup.json)는 CameraParams의 카메라 위치와 trace 위치가 일치하는 반면, 밝은 무채색 mask가 현재 root보다 초기 root 투영에 가까운 것을 확인했다. 네 영상의 모델 입력 사용은 보류했다. 파일·타이밍 결합 통과만으로 렌더 형상의 상태 반영을 보장할 수 없다.
+- 확인된 코드 경로에서 capture는 Lab 센서 없이 render product와 orchestrator를 사용했다. Lab의 `forward()`는 articulation kinematics와 fabric 갱신을 수행한다. 해당 갱신 누락은 원인 후보이며 원격 파일 대조와 GPU 시험 전까지 확정하지 않는다. 카메라 profile과 물리 step은 유지하고, 매 capture 전 `forward()` 및 물리 snapshot 불변 검사를 추가한 새 판을 준비한다. 초기 영상과 결과는 덮어쓰지 않는다.

@@ -131,7 +131,15 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 이 자료는 등록된 모터 변경을 재적용한 Play 관측이다. 별도 pristine 고정 평가와 구분하며, 모터 변경은 12관절 전체에 적용됐다. 기술 수용 뒤에도 원래 승인 플래그·행동 라벨 부재를 보존했다. 이 수집에서는 Nemotron을 호출하지 않았으므로 시각 정보의 진단 기여를 판정하지 않는다. [영상·checkpoint·상태 출처](../evals/results/agentic_motor_capture_20261028_v9/source_manifest.json) · [공개 facts](../evals/results/agentic_motor_capture_20261028_v9/motor_capture_facts.json).
 
-화면 사후 확인에서는 정상 seed 2033의 3초 프레임에 로봇이 보였지만, 6초·11초 검사 프레임에서는 보이지 않았다. 기술 결합 통과와 모델 시각 입력의 적합성을 구분해 후자는 보류한다. 카메라 원인은 아직 코드로 확정하지 않았으며 새 시야 조건을 준비한다. [시야 관찰 기록](../evals/results/agentic_motor_capture_20261028_v9/visibility_observation.json).
+처음 화면 확인에서는 정상 seed 2033의 3초 프레임에 로봇이 보였지만, 6초·11초 검사 프레임에서는 보이지 않았다. 이후 네 정책 각 26개 표본의 CameraParams와 sim root를 대조했다. 렌더 카메라 위치는 trace의 현재 위치와 최대 약 5.3e-15 m 차이였으며, 밝은 무채색 픽셀의 중심은 현재 root보다 초기 root 투영에 가까웠다. 정상 두 정책에서 초기·현재 root 투영이 100픽셀 이상 떨어진 표본 46개 중 이 mask가 있던 19개를 보면, 초기 투영 30픽셀 안은 17개, 현재 투영 30픽셀 안은 0개였다. mask는 로봇의 시각적 근사이며 행동 정답 라벨은 아니다.
+
+이 관찰은 카메라 추종 변경보다 articulation 렌더 상태 갱신을 점검할 근거다. `sim.forward()` 호출 전후의 물리 상태 동일성을 검사하는 새 경로를 준비하며, SDK 내부 원인과 수정 효과는 GPU 시험 전까지 미확정이다. 네 영상 모두 모델 입력 사용을 보류하고 기존 원문·기술 수용·상태 수치는 보존한다. [최초 화면 관찰](../evals/results/agentic_motor_capture_20261028_v9/visibility_observation.json) · [후속 판정과 근거](../evals/results/agentic_motor_capture_20261028_v9/render_visibility_followup.json) · [104개 표본](../evals/results/agentic_motor_capture_20261028_v9/render_visibility_evidence.json).
+
+## 실제 검사 결과를 다음 판단에 연결하는 운반 계층
+
+새 [호스트](../evals/agentic_brev_runtime_host_v1.py)는 정상 참조 원문을 검증한 뒤 case 검사 승인을 소비하고, case 원문이 검증·봉인돼야 다음 조사 snapshot을 반환한다. [mailbox transport](../evals/agentic_brev_mailbox_transport_v1.py)와 [IO service](../evals/agentic_brev_mailbox_service_v1.py)는 등록한 원격 helper만 호출한다. IO 응답을 받았다는 이유로 원문 검증을 생략하지 않는다.
+
+기존 intent가 남은 요청은 조회로만 재개하며 새 실행·승인을 만들지 않는다. 서비스는 VM을 시작하거나 정지하지 않으며, 공개 사전등록 시각부터 비용·기한을 계산한다. 실제 raw SHA와 등록 root를 검사해 새 파일만 회수한다. 동결한 네 모듈·네 테스트의 메인 WSL 통합 75개를 통과했으며, 실제 Brev 검사쌍과 후속 모델 판단은 새 실행으로 확인한다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"
