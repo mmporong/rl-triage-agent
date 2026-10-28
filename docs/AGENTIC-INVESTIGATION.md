@@ -35,6 +35,8 @@
 
 `agentic_brev_controller_scope_v1.py`는 이 새 원문을 기존 승인·seal·조사 고리에 연결한다. 공개 등록의 필수 소스·검증 helper·Git 조상과 blob을 확인하고, 같은 thread의 context 안에서만 새 GPU 계약을 연다. 새 계약은 합성 시험에서도 승인 원장을 소비하기 전에 소스 등록을 요구하며, 합성 입력을 실제 입력으로 바꾸지 않는다. 종료 시 기존 controller를 복원한다. 완료 원문의 신뢰 digest·예상 probe·operation·checkpoint는 별도의 호스트 봉인에서 받아야 한다. 이 연결은 CPU 검증 단계이며 실제 검사 실행·교정 backend·새 회복 결과를 제공하지 않는다. 호스트는 지원하지 않는 교정 요청을 승인 전에 HOLD로 닫아야 한다.
 
+`bench/run_agentic_brev_probe_unit_v1.py`는 명시적으로 승인된 검사 한 건을 기존 POSIX backend에 전달하는 실행 단위다. 기본 동작은 준비·조회이며, 같은 operation의 불완전 기록을 만나면 재실행하지 않는다. 기존 controller로 승인·소비 원장과 등록 소스를 다시 검사하고, 원래 job·실행·GPU·소스 원문을 새 증거 검증기가 확인한 뒤에만 완료를 기록한다. CPU 관련 회귀 98개를 통과했으며, 실제 사용에는 호스트가 유지하는 OS 잠금과 별도 검사 권한 증명이 필요하다. 완료 reference가 없는 첫 대조 검사와 Windows·POSIX 간 승인 운반은 별도 연결 전까지 HOLD다. 이 단위의 CPU 통과를 새 GPU 검사 완료로 세지 않는다.
+
 ## 개발 호출 경로
 
 `run_agentic_development_v1.py`는 자료 조회 결과를 다음 판단 입력에 추가하고, 등록 검사 제안 또는 HOLD에서 멈춘다. 검사와 교정은 실행하지 않는다. Windows 호스트가 API를 예약한 뒤 WSL의 기존 provider를 호출하며, 자격증명은 WSL 환경에만 남는다. 응답이 불명확하게 끊기면 자동 재전송하지 않는다.
@@ -85,6 +87,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 [순차 수집 v2](../evals/results/agentic_motor_capture_20261028_v2/summary.json)는 원격 접속 뒤 cache 경로 조건에서 중단됐고 정지를 확인했다. [v3 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v3.json)은 이전 성공 기록에 명시된 VM별 HOME 상대 repo·Lab·Python 경로를 사용한다. 환경이 사라졌다고 단정하거나 재설치하지 않으며, 실제 존재 상태를 판정 전에 기록한다. 원격 본문 종료 코드를 별도 marker로 확인하고 같은 요청의 재실행을 거부한다.
 
 [v3의 실제 boot](../evals/results/agentic_motor_capture_20261028_v3/summary.json)는 cache와 source·package pin 확인을 통과했다. CLI가 성공 marker 뒤에 붙인 자원 이름 한 줄을 host가 거부해 녹화 전에 종료했다. [v4 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v4.json)은 등록된 이름 한 줄만 선택적으로 처리하며 단일 marker·비영 종료·예상 밖 출력 거부는 유지한다.
+
+[v4 실행](../evals/results/agentic_motor_capture_20261028_v4/summary.json)은 boot 확인과 네 checkpoint 복사를 통과한 뒤 상태 smoke의 잠금 취득에서 중단됐다. 고정 cache 잠금 경로의 조상에 symlink 또는 reparse point가 있어 거부됐으며, 구체적인 링크 대상은 아직 관측하지 않았다. GPU 입장·Isaac 실행·녹화는 시작하지 않았고 자원 정지를 확인했다. 후속 adapter는 alias와 canonical 경로가 같은 자원 잠금을 사용하게 하며 기존 검증을 유지한다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"

@@ -479,3 +479,15 @@
 
 - [v3 boot](../evals/results/agentic_motor_capture_20261028_v3/summary.json)는 등록 cache·소스·Python 패키지 pin을 확인한 뒤 `AGENTIC_REMOTE_EXIT=0`을 남겼다. Brev CLI가 그 뒤에 자원 이름을 한 줄 붙였고, host는 marker가 마지막 줄이 아니라는 이유로 거부했다. Isaac·녹화·학습·모델 호출은 시작되지 않았다. 정지 완료와 원문 해시는 보존했다.
 - [v4](../bench/protocols/agentic_motor_capture_phase_20261028_v4.json)는 등록된 자원 이름과 정확히 같은 마지막 한 줄만 선택적으로 제외한다. 다른 이름·임의 뒷줄·중복 이름·중복 marker·비영 종료는 계속 거부한다. 실제 v3 stdout을 이용한 회귀와 WSL의 103개 검사를 통과했다. 환경 재설치는 수행하지 않았다.
+
+### OPS-64: 클라우드 cache alias와 OS 잠금 경로
+
+- [v4 실행](../evals/results/agentic_motor_capture_20261028_v4/summary.json)은 boot·pin 확인과 네 checkpoint 복사를 완료했다. 상태 smoke가 자원별 잠금을 취득할 때 고정 cache 경로의 조상 symlink/reparse 검사가 거부했다. GPU 입장과 Isaac 실행 전이며 실제 링크 대상은 아직 확인하지 않았다.
+- alias를 허용하려고 경로 검증을 끄거나 실행별 잠금 위치를 만들면 같은 GPU의 상호 배제가 깨질 수 있다. 새 adapter에서 고정 alias를 canonical 경로에 결합하고, 부모와 모든 자식이 같은 lock inode·owner start identity·heartbeat를 확인하도록 준비한다. CPU 회귀 뒤 새 source와 프로토콜로 실행하며 기존 실패 기록은 유지한다.
+- 원격 부분 원문을 회수하고 자원의 `STOPPED`를 확인했다. 이 시도의 경과 시간과 견적을 곱한 값은 약 $0.5592이며 공급자 청구액은 아니다. 새 영상·학습·모델 호출은 0건이다.
+
+### OPS-65: 승인 JSON과 승인·소비 원장의 결합
+
+- 새 단일 검사 실행기의 첫 CPU 판은 승인 JSON의 SHA·checkpoint·probe·인자를 검사했지만 승인·소비 원장을 다시 읽지 않았다. 구조가 맞는 수동 승인 파일이 통과할 수 있음을 코드 검수에서 확인했다. 이 판의 실제 GPU 실행은 없었다.
+- 수정한 새 파일은 기존 controller의 승인 검증을 재사용해 `proposed → approved → consumed` 이벤트·request·arm/epoch·인자와 등록 prefix SHA를 확인한다. 완료 조회도 원래 승인과 running 또는 해당 완료 receipt의 done 상태를 다시 검사한다. 원장 누락·미승인·미소비·변조·다른 request의 거부를 포함한 관련 Python 3.10 회귀 98개를 통과했다.
+- 기존 controller가 완료 reference를 요구하는 순서는 유지한다. 첫 대조 검사와 다른 OS의 승인 운반을 임의 파일로 채우지 않으며, 별도 pair 승인 연결 전에는 HOLD로 둔다. CPU 준비와 실제 검사 수용을 구분한다.
