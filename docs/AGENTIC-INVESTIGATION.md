@@ -135,6 +135,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 이 관찰은 카메라 추종 변경보다 articulation 렌더 상태 갱신을 점검할 근거다. `sim.forward()` 호출 전후의 물리 상태 동일성을 검사하는 새 경로를 준비하며, SDK 내부 원인과 수정 효과는 GPU 시험 전까지 미확정이다. 네 영상 모두 모델 입력 사용을 보류하고 기존 원문·기술 수용·상태 수치는 보존한다. [최초 화면 관찰](../evals/results/agentic_motor_capture_20261028_v9/visibility_observation.json) · [후속 판정과 근거](../evals/results/agentic_motor_capture_20261028_v9/render_visibility_followup.json) · [104개 표본](../evals/results/agentic_motor_capture_20261028_v9/render_visibility_evidence.json).
 
+새 [runner v4](../bench/run_agentic_play_record_v4.py)와 [unit v6](../bench/run_agentic_capture_unit_v6.py)는 녹화 child의 매 capture 직전에만 fabric 활성·물리 snapshot·`forward()`·snapshot 불변을 검사한다. AABA와 기존 카메라·native frame 조건은 유지한다. sidecar 봉인과 앱 종료 전에 render-sync 기록을 남기고, 부모가 프레임 수와 job SHA를 대조한다. 새 WSL 회귀 22개를 통과했으며 실제 렌더 반영은 정상 한 정책의 새 GPU 시험으로 확인한다.
+
 ## 실제 검사 결과를 다음 판단에 연결하는 운반 계층
 
 새 [호스트](../evals/agentic_brev_runtime_host_v1.py)는 정상 참조 원문을 검증한 뒤 case 검사 승인을 소비하고, case 원문이 검증·봉인돼야 다음 조사 snapshot을 반환한다. [mailbox transport](../evals/agentic_brev_mailbox_transport_v1.py)와 [IO service](../evals/agentic_brev_mailbox_service_v1.py)는 등록한 원격 helper만 호출한다. IO 응답을 받았다는 이유로 원문 검증을 생략하지 않는다.
