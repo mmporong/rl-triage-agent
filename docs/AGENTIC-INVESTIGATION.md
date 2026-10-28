@@ -45,6 +45,14 @@
 
 API 소비는 별도 12회 상한 중 3회, pending 0건이다. 완료 응답 재생은 추가 호출 0회였다. 프레임 조회·확인 검사·교정은 실행되지 않았으므로 영상 효과·원인 확정·회복을 판정하지 않는다. 다음 계약 판에서도 이 응답을 유효한 답으로 보정하지 않으며, 새 호출은 별도 사전등록 뒤 같은 개발 예산의 잔여 안에서 진행한다.
 
+## 영상과 같은 시각의 관절 상태
+
+`bench/record_agentic_state_sidecar_v1.py`는 기존 native 녹화의 프레임 callback에서 simulation time·step과 관절 위치·속도·계산 토크·적용 토크·가용 접촉 상태를 기록한다. 원본에 없는 값은 미가용 사유로 남긴다. 접촉 센서의 lazy update를 일으키는 읽기는 건너뛰며, 별도 시각이나 행동 정답을 만들지 않는다. 녹화 원문과 checkpoint·frame·시각을 맞춰 확인한 뒤 사용할 수 있다.
+
+`bench/agentic_fault_playback_v1.py`는 새 protocol에 등록한 Go2 F2를 App 생성 뒤 환경 생성 전에 적용하고, 녹화가 끝나거나 실패하면 원래 모터 함수를 복원한다. F2는 전체 DCMotor의 속도 항을 바꾸는 결함이다. 한쪽 다리 고장으로 해석하지 않는다. 학습 당시 결함을 재현한 Play의 관절 상태는 정상 환경에서 수행한 기존 고정 평가와 구분해 기록한다.
+
+두 기능은 CPU callback·실패 봉인·source/checkpoint 검증을 통과했다. 새 모터 checkpoint 등록과 실제 Isaac/Brev 녹화·비간섭 확인은 후속 단계다. 기록기만으로 영상의 진단 기여가 확인된 것은 아니다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>
