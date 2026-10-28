@@ -1,0 +1,86 @@
+{
+  "authority": false,
+  "canonical_lease_context": {
+    "alias_string_equality_required": false,
+    "canonical_ancestors_link_free_required": true,
+    "device_inode_must_match_private_observation": true,
+    "formal_job4_scope_required": true,
+    "h_lock_and_heartbeat_inactive_before_parent": true,
+    "parent_flock_heartbeat_uuid_fresh_proof_unchanged": true,
+    "physical_resolve_must_match_private_observation": true
+  },
+  "frozen_child_contract": {
+    "close_return_marker_required": false,
+    "cuda_visible_devices": "0",
+    "exit0_cleanup_required": true,
+    "gpu_conditions_changed": false,
+    "parent": "ri_native_camera_startup_68/run_camera_startup_v2.py",
+    "probe": "bench/probe_isaac_camera_startup_v2.py",
+    "required_markers": [
+      "startup-entered",
+      "startup-returned",
+      "update-entered",
+      "update-returned",
+      "terminal-sealed",
+      "close-entered"
+    ]
+  },
+  "lease_basis": {
+    "path": "bench/protocols/agentic_isaac_camera_startup_lease_basis_20261029h_v4.json",
+    "protocol_id": "agentic-isaac-camera-startup-lease-basis-20261029h-v4",
+    "schema": "agentic_play_protocol_v4",
+    "sha256_raw": "ec2b676d8247cb585a86174d0096de285d32b0025a4c59306d38e30f2cfa5078"
+  },
+  "protocol_id": "agentic-isaac-camera-startup-registration-20261029h-v4",
+  "recording_target": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "registered_at_utc": "2026-10-28T23:14:36.406058+00:00",
+  "resources": {
+    "batch_budget_usd": "20",
+    "compute_quote_usd_per_h": "2.18064",
+    "cost_scope": "new_recording_instance_elapsed_wall_excludes_storage_v1",
+    "deadline_utc": "2026-10-29T00:57:14.675376+00:00",
+    "max_owned_instances": 1
+  },
+  "runtime_loader_context": {
+    "ld_library_path": {
+      "gpu_child_inherits": true,
+      "inherit_original": true,
+      "operation": "prepend_existing_python_base_lib",
+      "restore_parent_after_child": true
+    },
+    "ldd_executable_resolves_same_library": true,
+    "libpython_basename": "libpython3.10.so.1.0",
+    "libpython_sha256_raw": "027fdf662ea0e83a2f418b6e141cd1ef8f5971fac953ede0f7c207ac2ef3d155",
+    "loaded_in_venv_python_before_sdk": true,
+    "logical_python_base_lib": "<python-base>/lib",
+    "new_library_installations": 0,
+    "same_environment_four_library_ldd_required": true
+  },
+  "schema": "agentic_isaac_camera_startup_registration_v4",
+  "shutdown_policy": {
+    "policy": "bench/vision_shutdown_policy_v1.py",
+    "policy_sha256_lf": "6c599533c568b08e3facf39b9e058c1759b9ac5c11509077be0bba9cfe9d3018",
+    "side2_reference": "bench/record_agentic_state_sidecar_v2.py",
+    "side2_sha256_lf": "0590ca77f5773068cc73ada82dd15aeea6a2ab2739830646124b01fba4c48214",
+    "startup_fast_shutdown": false,
+    "terminal_before_transition": true,
+    "transition": {
+      "after": true,
+      "before": false
+    },
+    "wait_for_replicator": false
+  },
+  "status": "registered_before_gpu_child",
+  "supersedes_unexecuted": {
+    "exit_code": -11,
+    "gpu_children_started": 1,
+    "path": "bench/protocols/agentic_isaac_camera_startup_registration_20261029h_v3.json",
+    "reason": "V3 returned all SDK markers but failed process teardown; V4 registers terminal-gated shutdown policy",
+    "sha256_raw": "e3a7620af26098b42e8c5a8dd9c58b566b6e691f8a84854950b5cf3bd6c34c69",
+    "startup_update_close_markers": 6
+  }
+}
