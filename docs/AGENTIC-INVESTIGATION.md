@@ -110,6 +110,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 [v7 수집 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v7.json)은 상태 시험을 봉인 검증 후 SDK fast shutdown을 적용하는 새 자식과 연결한다. 자연 exit 0·소유 자식 정리·종료 증거 PID 일치를 요구하며, 네 정책과 촬영 조건은 유지한다. 관련 host WSL 회귀 105개를 통과했고 필수 소스 141개를 결합했다. 이전 배정 상한을 보존한 새 $5 구간으로, 실제 종료와 영상 수용 여부는 실행 뒤 판정한다.
 
+[v7 실행](../evals/results/agentic_motor_capture_20261028_v7/summary.json)은 두 전체 입장 검사를 통과했지만 입력 전송의 HTTP 401 응답으로 App 전에 종료됐다. 부분 원문 39파일의 사본 해시와 자원 정지를 확인했다. [v8 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v8.json)은 같은 입력의 기존 원격 cache를 SHA 대조해 재사용하며, 회수 경로도 Start 전에 확인한다. 새 경계의 WSL 회귀 122개를 통과했고 촬영 조건은 유지한다. 실제 SDK 종료 개선 여부는 아직 미측정이다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>
