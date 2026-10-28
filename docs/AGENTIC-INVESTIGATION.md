@@ -201,3 +201,5 @@ cd "$HOME/rl-triage-agent"
 [Parent2](../bench/run_agentic_brev_probe_parent_v2.py)·[운반 helper v3](../bench/agentic_brev_probe_transport_remote_v3.py)·[IO service v3](../evals/agentic_brev_mailbox_service_v3.py)는 AWS용 JOB4 계약에 같은 검사쌍을 연결한다. 실제 자식 entry와 production 함수의 신원을 함께 고정하고 기존 승인·임대·증거·metadata 검증을 유지한다. 합성 CPU 경로와 메인 WSL 회귀가 통과했으며 실제 AWS 검사쌍은 별도 사전등록 뒤 실행한다.
 
 [의존성 복구 후속 등록](../bench/protocols/agentic_f1_render_capture_phase_20261028_v2.json)은 같은 자원에서 `libxt6` 한 패키지만 복구하고 네 라이브러리의 전후 원문을 확인한 뒤 같은 두 정책을 재생한다. 앱·GPU 전에 생성한 원격 Python 본문도 컴파일 검사한다. 새 판의 수명 상한은 최초 생성부터 9,500초이며 이전 7,200초 판의 실패와 소비를 보존한다. 최초 생성부터의 비용 기산과 $10 금액 상한, 회수 660초·정지 1,200초 여유, 625프레임·50fps와 모든 촬영 판정 조건은 유지한다.
+
+[텍스트 검사쌍의 AWS 환경](../bench/protocols/agentic_runtime_text_s2221_20261028_v2_environment.json)과 [수명 등록](../bench/protocols/agentic_runtime_text_s2221_20261028_v2_lifecycle.json)은 영상 없이 headless 검사쌍을 준비한다. 과거 상태·canonical 관측은 출처로만 쓰고 Parent2가 현재 boot·자원·임대를 새로 확인한다. 기존 Runtime $10 배정과 재시작 거부 추정 기록을 유지하며, 모델의 두 유효 응답을 같은 입력인지 검증해 재사용한다. 환경 등록만으로 새 실행이나 승인을 만들지 않는다.
