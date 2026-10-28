@@ -108,6 +108,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 [v6 실행](../evals/results/agentic_motor_capture_20261028_v6/summary.json)은 두 전체 입장 검사를 통과하고 상태 1프레임을 봉인했지만 자식이 SIGSEGV로 종료해 실패로 유지됐다. 세션과 앱 종료 중 충돌한 위치는 기존 기록만으로 확정하지 못했다. 새 종료 단계 기록은 그 위치를 구분하며, 전체 정책 영상은 아직 생성하지 않았다.
 
+[v7 수집 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v7.json)은 상태 시험을 봉인 검증 후 SDK fast shutdown을 적용하는 새 자식과 연결한다. 자연 exit 0·소유 자식 정리·종료 증거 PID 일치를 요구하며, 네 정책과 촬영 조건은 유지한다. 관련 host WSL 회귀 105개를 통과했고 필수 소스 141개를 결합했다. 이전 배정 상한을 보존한 새 $5 구간으로, 실제 종료와 영상 수용 여부는 실행 뒤 판정한다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>
