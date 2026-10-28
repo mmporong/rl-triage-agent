@@ -39,6 +39,12 @@
 
 실행은 등록 커밋이 현재 HEAD의 조상이고 결합 파일 blob이 같을 때만 허용한다. 비공개 실행 계획에는 원본 경로·해시·이전 소비 감사·새 출력 위치를 결합한다.
 
+### 첫 개발 측정
+
+[v1 결과](../evals/results/agentic_investigation_dev_20261028_v1/summary.json)는 완료 응답 3건 중 유효 0건, 무효 3건으로 모두 HOLD였다. 학습 수치가 이미 제공된 두 입력은 사용할 수 없는 `read_evidence`에 `target: null`을 반환했고, 설정만 제공한 입력은 등록 대상을 골랐으나 `fact_ids`를 비웠다. 입력의 허용 대상·필수 근거 조건과 모델 원문을 대조해 계약 위반으로 분류했다.
+
+API 소비는 별도 12회 상한 중 3회, pending 0건이다. 완료 응답 재생은 추가 호출 0회였다. 프레임 조회·확인 검사·교정은 실행되지 않았으므로 영상 효과·원인 확정·회복을 판정하지 않는다. 다음 계약 판에서도 이 응답을 유효한 답으로 보정하지 않으며, 새 호출은 별도 사전등록 뒤 같은 개발 예산의 잔여 안에서 진행한다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>
