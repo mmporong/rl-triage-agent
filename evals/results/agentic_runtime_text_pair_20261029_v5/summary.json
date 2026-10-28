@@ -1,0 +1,42 @@
+{
+  "schema": "agentic_runtime_infrastructure_attempt_public_v1",
+  "attempt": "R11/P11",
+  "status": "infrastructure_failure",
+  "confirmed_cause": "child_pair_config_passed_to_typed_operator_config_consumer",
+  "failure_stage": "IO_child_configuration_before_remote_parent",
+  "probe_runs": 0,
+  "new_training_runs": 0,
+  "new_model_api_calls": 0,
+  "model_api_ledger_reserved": 9,
+  "model_api_ledger_cap": 12,
+  "seen_development_seed": 2221,
+  "heldout": false,
+  "scientific_success": false,
+  "prior_result_preserved": true,
+  "raw_main_result_sha256": "2fd8d685c9310ab8fbc84bcad10c208923211f7a18dcade8de629a51b7572661",
+  "stop": {
+    "at_utc": "2026-10-28T21:46:00.335454+00:00",
+    "resource_id": "oky8zxbnx",
+    "status": "STOPPED",
+    "elapsed_s": 14690.273518,
+    "compute_quote_upper_estimate_usd": "14.71103577123877333333333333",
+    "raw_observation_sha256": "3953e1a967825943d78f9a0cb6d5df831635185da483873c55c9a011f8d545ad",
+    "error": null
+  },
+  "archive": {
+    "scope": "closed_local_execution_outputs_and_already_collected_remote_snapshots",
+    "full_remote_namespace_collected": false,
+    "files": 331,
+    "bytes": 8782568,
+    "inventory_sha256": "1b680ed05a0545bbd54f246e4c913610e7c8da1badae16406193e73309c79aa8",
+    "C_D_all_match": true
+  },
+  "cost_interpretation": "cumulative_quote_upper_bound_since_original_g_create_including_prior_attempts_not_invoice_do_not_sum",
+  "following_fix": {
+    "model_or_probe_rule_changed": false,
+    "source_anchor": "78dffa4f7ce5a39e18166e8334b13c38fd3eae68",
+    "remote_python_3_10_import_and_actual_child_config_checks_required": true,
+    "new_infrastructure_codes_do_not_change_unknown_to_normal_or_abnormal": true
+  },
+  "actual_remote_parent_started": false
+}

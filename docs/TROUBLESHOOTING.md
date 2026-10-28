@@ -618,3 +618,16 @@
 - [R10 검사쌍](../evals/results/agentic_runtime_text_pair_20261029_v4/summary.json)은 adoption·boot·runtime pin과 입력 해제를 통과한 뒤 Windows IO child import에서 중단됐다. `argparse → re → enum`이 표준 `operator`를 불러올 때 스크립트 폴더의 `operator.py`를 먼저 선택했고, 순환 import 중인 `re.compile` 접근이 실패했다. 원격 Parent·검사·학습·C 승인·새 모델 호출은 시작되지 않았다.
 - 기존 함수 import fixture는 Python이 파일을 실행할 때 만드는 `sys.path[0]`을 재현하지 못했다. 새 판은 stdlib import 전에 스크립트 폴더만 제거하고 로컬 `operator.py`는 명시 경로로 불러온다. `serve_mailbox.py`, `prepare_operator.py`, `run_continuous_main.py` 세 진입점을 Python 3.10.20과 3.12.13의 실제 subprocess `--help`로 각각 실행해 여섯 건 모두 exit 0을 확인했다.
 - Stop 한 번 뒤 2026-10-28 21:04:17 UTC에 `STOPPED`를 확인했고 stop 오류는 없었다. 원문 248파일의 C/D 해시가 일치했다. 최초 g 생성부터 계산한 $12.2049738302는 상한 견적이며 청구액이 아니다. 앞서 보고한 R6·R7·카메라 구간을 포함하므로 해당 비용과 다시 합산하지 않는다.
+
+
+### OPS-87: 실제 자식 인자와 설정 schema를 함께 검증하기
+
+- [R11 검사쌍](../evals/results/agentic_runtime_text_pair_20261029_v5/summary.json)은 boot와 입력 해제를 통과했지만 IO service가 준비되기 전에 끝났다. 동결 호출기는 `--config`로 pair 설정을 넘겼고, 새 service는 같은 인자를 상위 typed 설정으로 해석했다. 원격 Parent·검사·학습·새 모델 호출은 시작되지 않았다.
+- `--help`와 함수 import만으로는 실행 인자에 담긴 설정의 의미를 확인하지 못했다. 후속 판은 typed 설정과 실제 전달된 pair 설정의 경로·원문 SHA를 함께 확인한 뒤 service 생성자까지 실행하는 cold check를 VM 채택 전에 수행한다. 등록 밖 설정을 허용하거나 승인·receipt 경계를 바꾸지 않는다.
+- 정지 오류 없이 21:46:00 UTC `STOPPED`를 확인했다. 닫힌 로컬 실행 기록과 이미 회수한 원격 snapshot 331파일의 C/D 해시가 일치했으며, 원격 전체 namespace 수집을 뜻하지 않는다.
+
+### OPS-88: 호스트 Python과 원격 Isaac Python의 표준 라이브러리 차이
+
+- [R12 검사쌍](../evals/results/agentic_runtime_text_pair_20261029_v6/summary.json)은 IO ready까지 도달한 뒤 `unknown`으로 끝났다. RPC 원문에는 원격 helper의 `from datetime import UTC, datetime`에서 발생한 ImportError가 남았다. 실행 대상인 Python 3.10에는 `datetime.UTC`가 없어 Parent prepare 전에 종료됐다. 검사·학습·새 모델 호출은 0건이다.
+- 후속 [Remote5](../bench/agentic_brev_probe_transport_remote_v5.py)는 `timezone.utc`를 사용하고 실제 Python 3.10 subprocess 진입을 확인한다. [Service5](../evals/agentic_brev_mailbox_service_v5.py)와 [Transport2](../evals/agentic_brev_mailbox_transport_v2.py)는 제한된 인프라 오류 코드와 RPC 원문 참조를 전달한다. 인프라 실패의 `unknown` 상태를 정상·이상 판정으로 바꾸지 않으며, 모델 실패를 재시도하는 권한으로 사용하지 않는다.
+- 정지 오류 없이 22:14:16 UTC `STOPPED`를 확인했다. 닫힌 로컬 실행 기록과 이미 회수한 원격 snapshot 324파일의 C/D 해시가 일치했다. 누적 견적은 최초 g 생성부터의 상한이며 R11 등 앞선 구간을 다시 더하지 않는다. 새 검사·회복 성과로 집계하지 않는다.
