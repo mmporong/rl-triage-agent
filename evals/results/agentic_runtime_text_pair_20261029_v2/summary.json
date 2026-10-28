@@ -1,0 +1,74 @@
+{
+  "schema": "agentic_runtime_text_pair_infrastructure_v2",
+  "status": "infrastructure_failure_before_pair",
+  "seen_development_seed": 2221,
+  "source_heldout": false,
+  "source_commit": "6b9d971ab2e5924706644e62ffae1b99f1719395",
+  "runtime_anchor": "b03306883da46c537045c172dd8f9f79a9d3b6df",
+  "parent_anchor": "6a885d5c4755572a0957286d66cb556c797ea444",
+  "runtime_protocol": "bench/protocols/agentic_runtime_text_s2221_20261029_v6.json",
+  "parent_protocol": "bench/protocols/agentic_runtime_text_s2221_pair_aws_20261029_v6.json",
+  "stages": {
+    "provider_adoption": "passed",
+    "boot": "passed",
+    "runtime_package_pins": "passed",
+    "boot_remote_exit": 0,
+    "pair_started": false,
+    "remote_parent_prepare": false,
+    "io_service_started": false,
+    "probe_runs": 0,
+    "training_runs": 0,
+    "new_model_api_calls": 0
+  },
+  "failure": {
+    "type": "TypeError",
+    "reason": "_g_lifecycle_scope.<locals>.validate() takes 0 positional arguments but 2 were given"
+  },
+  "confirmed_cause": "positional_call_and_keyword_only_adapter_signature_mismatch",
+  "cpu_reproduction": "same_TypeError_from_actual_frozen_R48_caller_style",
+  "model_api": {
+    "before": 9,
+    "after": 9,
+    "cap": 12,
+    "pending": 0
+  },
+  "authority": {
+    "P6_registration_events": 3,
+    "new_C_authorizations": 0,
+    "preserve_consumed_ledger": true
+  },
+  "resource": {
+    "id": "oky8zxbnx",
+    "state": "STOPPED",
+    "observed_at_utc": "2026-10-28T19:08:56.327872+00:00",
+    "start_requests": 0,
+    "stop_requests": 1,
+    "stop_error": null
+  },
+  "budget": {
+    "original_create_at_utc": "2026-10-28T17:41:10.061936+00:00",
+    "elapsed_through_stop_s": 5266.265936,
+    "quote_upper_estimate_usd": "5.273708925189546666666666667",
+    "estimate_is_invoice": false,
+    "includes_setup_idle_and_failure": true,
+    "phase_cap_usd": "20",
+    "program_cap_usd": "145",
+    "budget_reset": false
+  },
+  "archive": {
+    "files_verified": 266,
+    "C_D_all_match": true,
+    "inventory_sha256": "72cf8b758819dd36b7267a9436e9597f71d0a3fd0a9066939d0f8c19dfa5e32a"
+  },
+  "raw_sha256": {
+    "main_result": "bd9b5c83effa98922ad4ded0391b26b8bb37284523c327905768c19900a641ad",
+    "traceback": "543ee5a9e1bc5b28e2428c3b807c0ef655cb16fc26a3e46dd684d70392160c8e",
+    "stopped": "f52530ff87aa9605cb9b36f67320fd463667ddf99b40ae0209a20528db6cfe18",
+    "cpu_reproduction": "ded739accad7ae1b59a434d97274ca77d35bde3bf47b8caa6f3070f8e5288a3f"
+  },
+  "outcome": {
+    "new_recovery": false,
+    "new_visual_evidence": false,
+    "model_success_claim": false
+  }
+}

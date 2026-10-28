@@ -1,0 +1,85 @@
+{
+  "schema": "agentic_runtime_retry_start_v1_protocol",
+  "registered_at_utc": "2026-10-28T19:12:11.213225+00:00",
+  "source_commit": "6b9d971ab2e5924706644e62ffae1b99f1719395",
+  "target": {
+    "resource_id": "oky8zxbnx",
+    "resource_name": "rl-triage-l40s-headless-20261029g",
+    "instance_type": "g6e.4xlarge",
+    "provider": "aws",
+    "gpu_model": "L40S"
+  },
+  "environment_protocol": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261029_v6_environment.json",
+    "sha256": "afe187df4135dc49ccda6856ff0a80e9ea15ef2685657a5ca9f79504c12a3460"
+  },
+  "runtime_protocol_candidate": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261029_v7.json",
+    "sha256": "d3744dd59b5cdfa59f15e3dcca14541a803b1cb77936203b487adcfe1e9243a5"
+  },
+  "prior_attempt": {
+    "runtime_protocol": {
+      "path": "bench/protocols/agentic_runtime_text_s2221_20261029_v6.json",
+      "sha256": "e75bbd43826360f8e937a1d440126aeb6056596a3a4c8d57225a2c1f26d23bf2"
+    },
+    "parent_protocol": {
+      "path": "bench/protocols/agentic_runtime_text_s2221_pair_aws_20261029_v6.json",
+      "sha256": "e3a3671e8de02a67a67b941f44d4749b6f191645e6a2cf9ea45814077524f291"
+    },
+    "status": "pre_child_invalid",
+    "confirmed_cause": "main_actual_runtime_positional_call_incompatible_with_keyword_only_scope",
+    "boot_remote_exit_zero": true,
+    "runtime_pins_verified": true,
+    "pair_execution_started": false,
+    "probe_runs": 0,
+    "gpu_project_operations": 0,
+    "new_model_api_calls": 0,
+    "preserve_all_prior_records": true
+  },
+  "retry": {
+    "allowed_start_requests": 1,
+    "allowed_create_requests": 0,
+    "automatic_retry_count": 0,
+    "additional_start_after_failure": false,
+    "required_pre_start_provider_state": "STOPPED",
+    "same_resource_identity_required": true,
+    "reuse_existing_installation": true,
+    "start_controller_binding": {
+      "status": "registered_by_codex_main",
+      "required_fields": [
+        "controller_sha256",
+        "stopped_observation_sha256",
+        "stopped_observed_at_utc"
+      ],
+      "controller_sha256": "1d4d1e5a0a7ebe7c8963b638c8a2432bc529cd98ebf0cfb13bcdf5505c9f05fa",
+      "stopped_observation_sha256": "f52530ff87aa9605cb9b36f67320fd463667ddf99b40ae0209a20528db6cfe18",
+      "stopped_observed_at_utc": "2026-10-28T19:08:56.327872+00:00",
+      "bound_at_utc": "2026-10-28T19:15:52.689558+00:00"
+    }
+  },
+  "budget": {
+    "program_cap_usd": "145",
+    "phase_cap_usd": "20",
+    "prior_program_usd": "125",
+    "created_at_utc": "2026-10-28T17:41:10.061936+00:00",
+    "deadline_utc": "2026-10-28T21:34:05.550256+00:00",
+    "latest_start_request_before_utc": "2026-10-28T21:14:05.550256+00:00",
+    "stop_reserve_s": 1200
+  },
+  "scientific_contract": {
+    "seen_development_seed": 2221,
+    "source_heldout": false,
+    "model_prompt_changed": false,
+    "probe_thresholds_changed": false,
+    "decision_rules_changed": false,
+    "cached_model_prefix_decisions": 2,
+    "new_decision_limit": 2,
+    "model_api_before": 9,
+    "model_api_cap": 12
+  },
+  "authority": {
+    "start_authorized": true,
+    "execution_authorized": false,
+    "root_callback_required": false
+  }
+}

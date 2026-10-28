@@ -582,3 +582,10 @@
 
 - [다른 공급자 생성 시도](../evals/results/fresh_brev_render_creation_20261029f_v1/summary.json)에서 Brev CLI 0.6.335의 `search`는 `massedcompute_L40S`를 반환했지만 `create`는 같은 유형을 인식하지 못해 종료했다. 새 VM은 생기지 않았고 같은 요청을 재전송하지 않았다. GPU·학습·모델 호출도 없었다.
 - 상류 [PR #435](https://github.com/brevdev/brev-cli/pull/435)는 공개 search와 조직별 create 목록의 차이로 Shadeform 유형이 거부되는 같은 경로를 설명한다. 이 PR의 수정은 병합되지 않았다. 조회 결과만으로 현재 계정의 생성 가능성을 보장하지 않으며, 접근 필터나 cloud credential 검사를 우회하지 않는다. 후속 헤드리스 고리는 생성이 확인된 AWS 유형을 별도 등록한다.
+
+
+### OPS-81: 실행기 어댑터와 실제 호출기의 인자 계약
+
+- [R6 검사쌍 실행](../evals/results/agentic_runtime_text_pair_20261029_v2/summary.json)은 서버 신원 확인과 boot·런타임 pin 검증을 통과했다. 그다음 실제 호출기가 위치 인자 두 개를 넘겼으나 어댑터가 키워드 인자만 받아 TypeError가 발생했다. 검사·학습·새 모델 호출은 시작되지 않았다.
+- 같은 오류를 실제 동결 호출 방식으로 CPU에서 재현했다. 후속 회귀는 어댑터 모양을 흉내 내는 fixture를 넘어 동결 R48 실행 함수가 첫 전송 경계까지 도달하는지 확인한다. 후속 교정의 adoption helper도 같은 서버 등록으로 묶고 scope 종료 뒤 원복한다.
+- C/D 원문 해시 일치와 STOPPED를 확인했다. [R7 재개 등록](../bench/protocols/agentic_runtime_text_s2221_20261029_v7_resume.json)은 같은 설치 환경에 Start 한 번만 허용하고 이전 생성 시각·비용·절대 종료 기한을 유지한다. 이전 승인 소비와 실패 결과를 덮어쓰지 않으며 모델 실패나 회복 성과로 집계하지 않는다.
