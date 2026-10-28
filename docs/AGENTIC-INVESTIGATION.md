@@ -155,6 +155,8 @@ v10은 VM이 준비 상태에 이르지 못해 boot·App·녹화 전에 종료�
 
 [운반 helper v2](../bench/agentic_brev_probe_transport_remote_v2.py)는 원래 E13 검사 root를 유지하고 unit 부모의 outcome·evidence·request를 별도 metadata layer로 회수한다. 두 map과 원래 request·protocol·binding의 SHA를 archive에 묶고, 필수 원문이 등록 밖에 있거나 서로 다르면 거부한다. 실제 부모 실행과 같은 CPU 폴더 구조에서 양 arm의 metadata 여섯 경로와 원래 검사 근거를 결합하는 WSL 회귀 28개를 통과했다. 부분 회수와 중복 요청은 새 실행이나 승인으로 전환하지 않는다.
 
+[텍스트 전용 후속 등록](../bench/protocols/agentic_runtime_text_s2221_20261028_v1.json)은 이미 본 F1 seed 2221의 실제 학습 기록을 조회한 뒤 실제 검사쌍과 후속 모델 판단을 연결한다. 학습 자료 alias 하나만 제공하고 프레임과 과거 모델 판단 prefix는 재사용하지 않는다. 기존 API 원장의 7건을 보존하며 전체 상한 12회 안에서 새 판단은 최대 4번이다. 정상 참조·case 검사·승인·소비·원문 봉인 뒤에만 다음 snapshot을 연다. 무효 판단과 지원 밖 교정 요청은 HOLD한다. 이 등록의 성공 범위는 검사 원문과 다음 판단의 연결이며 회복·시각 효과·새 seed 성능과 구분한다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>
