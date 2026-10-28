@@ -516,3 +516,4 @@
 - [v8](../evals/results/agentic_motor_capture_20261028_v8/summary.json)의 상태 시험은 실제 봉인과 세션 종료 뒤 SDK fast shutdown으로 자연 exit 0을 반환했다. 소유 자식 PID와 정리도 확인돼 OPS-67의 새 종료 경로가 이 한 건에서 통과했다. 이후 AABA 자식도 exit 0으로 끝났지만 부모의 원문 검증이 `prepared GPU 관찰 원문 참조가 없다`로 중단됐다. 녹화 자식은 시작하지 않았다.
 - 원인은 기존 `_leased_reader`가 `StrictRemoteGpuReader`를 함수 closure로 감싸 호출 기능만 남기고 `last_receipt` 속성을 가린 것이다. 새 runner의 callable proxy는 호출과 속성 접근 모두 임대를 먼저 확인하고, 현재 underlying 참조를 캐시·재조립 없이 전달한다. 기존 원문 SHA·자원·GPU 검증과 live 판정은 유지한다.
 - 실제 reader의 파일·receipt 기록과 원래 `_gpu_reference`를 사용하는 CPU 경로에서 이전 실패를 재현하고 새 경로의 통과를 확인했다. 새 경계 WSL 회귀 23개와 작성자 관련 Python 3.10 회귀 175개가 통과했다. 부분 원문 122파일의 C/D 해시와 자원 정지를 확인했으며, 전체 영상과 시각 기여는 아직 판정하지 않는다.
+- 후속 [v9](../evals/results/agentic_motor_capture_20261028_v9/summary.json)는 두 상태 시험과 정상·F2 네 정책의 native·sidecar·trace·playback 결합을 통과했다. 회수본 7,895파일을 다시 해시 대조해 네 정책을 기술 수용했다. 원래 실패 원문은 보존했으며 이 결과로 시각 정보의 판단 기여를 주장하지 않는다.

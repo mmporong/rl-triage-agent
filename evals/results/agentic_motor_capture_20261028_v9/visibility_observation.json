@@ -1,0 +1,35 @@
+{
+  "schema": "agentic_motor_capture_visibility_observation_v1",
+  "status": "deferred_for_model_frames",
+  "observation_scope": "posthoc_development_assistant_visual_inspection_not_behavior_ground_truth",
+  "technical_capture_status": "technical_complete",
+  "source_video": {
+    "path": "docs/media/agentic_motor_capture_20261028_v9/motor-s2033-none.mp4",
+    "sha256": "2c1bd6cfc31ead24b98a0eac2533f6cf50b52195773bbbf76c8840f0e763c3ce",
+    "bytes": 1455164
+  },
+  "inspected_seeks_s": [
+    3.0,
+    6.0,
+    11.0
+  ],
+  "observations": [
+    {
+      "seek_s": 3.0,
+      "description": "정상 로봇이 화면 오른쪽에 보인다."
+    },
+    {
+      "seek_s": 6.0,
+      "description": "이 검사 프레임에서 로봇이 보이지 않는다."
+    },
+    {
+      "seek_s": 11.0,
+      "description": "이 검사 프레임에서 로봇이 보이지 않는다."
+    }
+  ],
+  "camera_cause_confirmed": false,
+  "model_frame_use_approved": false,
+  "model_API": 0,
+  "new_training": 0,
+  "next_action": "카메라 설정과 실제 render product를 확인하고 로봇의 시야 수용 조건을 등록한 새 판을 준비한다. 원본 영상과 기술 수용 결과는 보존한다."
+}

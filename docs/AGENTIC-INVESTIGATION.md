@@ -116,6 +116,23 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 [v9 수집 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v9.json)은 이 runner와 unit v5를 소스 145개에 결합한다. 같은 네 정책·원격 입력 재사용·종료 증거·촬영 조건을 유지하며 추가 $5 상한으로 실행한다. 등록 host의 WSL 회귀 122개를 통과했고, 실제 전체 녹화는 새 원문으로 판정한다.
 
+## 모터 영상과 상태의 실제 수집
+
+[v9 실제 결과](../evals/results/agentic_motor_capture_20261028_v9/summary.json)는 이미 본 seed 2033·2046의 정상·F2 정책 네 개를 모두 기술 수용했다. 각 영상은 625프레임·50fps·12.5초이며 관절·기록 토크·몸체 속도를 같은 Play의 프레임과 결합했다. 원문 7,895파일의 C/D 사본 해시를 대조하고 VM 정지를 확인했다. 학습과 모델 호출은 0건이다.
+
+1–6초의 고정된 여섯 sample에서 수평 명령 크기는 모두 1.0 m/s였다. 아래는 같은 sample의 몸체 수평 속도 크기와 명령 벡터 추종 오차 평균이다. 전체 영상 평균이나 행동 판정 임계값은 아니다. [전체 수치와 fact 출처](../evals/results/agentic_motor_capture_20261028_v9/window_metrics.json).
+
+| seed | 정책 | 수평 속도 크기 평균 (m/s) | 추종 오차 평균 (m/s) | 같은 Play 영상 |
+|---|---|---:|---:|---|
+| 2033 | 정상 | 1.0384 | 0.0776 | [영상](media/agentic_motor_capture_20261028_v9/motor-s2033-none.mp4) |
+| 2033 | 모터 결함 | 0.0018 | 0.9984 | [영상](media/agentic_motor_capture_20261028_v9/motor-s2033-f2.mp4) |
+| 2046 | 정상 | 1.0882 | 0.1085 | [영상](media/agentic_motor_capture_20261028_v9/motor-s2046-none.mp4) |
+| 2046 | 모터 결함 | 0.0033 | 0.9972 | [영상](media/agentic_motor_capture_20261028_v9/motor-s2046-f2.mp4) |
+
+이 자료는 등록된 모터 변경을 재적용한 Play 관측이다. 별도 pristine 고정 평가와 구분하며, 모터 변경은 12관절 전체에 적용됐다. 기술 수용 뒤에도 원래 승인 플래그·행동 라벨 부재를 보존했다. 이 수집에서는 Nemotron을 호출하지 않았으므로 시각 정보의 진단 기여를 판정하지 않는다. [영상·checkpoint·상태 출처](../evals/results/agentic_motor_capture_20261028_v9/source_manifest.json) · [공개 facts](../evals/results/agentic_motor_capture_20261028_v9/motor_capture_facts.json).
+
+화면 사후 확인에서는 정상 seed 2033의 3초 프레임에 로봇이 보였지만, 6초·11초 검사 프레임에서는 보이지 않았다. 기술 결합 통과와 모델 시각 입력의 적합성을 구분해 후자는 보류한다. 카메라 원인은 아직 코드로 확정하지 않았으며 새 시야 조건을 준비한다. [시야 관찰 기록](../evals/results/agentic_motor_capture_20261028_v9/visibility_observation.json).
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>
