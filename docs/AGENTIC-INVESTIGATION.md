@@ -84,6 +84,10 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 새 `agentic_play_job_v2.py`·`run_agentic_play_record_v2.py`·`run_agentic_capture_unit_v2.py`는 고정 HOME cache alias를 canonical 경로에 결합하는 어댑터다. 부모와 SDK·AABA 자식이 같은 자원별 lock inode를 사용하며, 기존 owner start identity·heartbeat·소스 검증을 유지한다. GPU 입장 전에 alias와 실제 경로 관측을 기록한다. 실제 WSL의 관련 회귀 25개를 통과했고 Windows 전용 1개는 제외됐다. 이 결과는 클라우드 VM에서의 새 녹화 완료를 뜻하지 않는다.
 
+`run_agentic_capture_unit_v3.py`는 공급자 조회와 현재 입장 검증의 시각을 구분한다. 공급자 원문은 30초 신선도로 검사하고, GPU query 뒤 실제 현재시각에서 활성 임대와 resource proof를 검증한다. 조회·query·임대 취득·입장 시각과 원문 SHA를 별도 receipt에 보존한다. 이전 실행기는 수정하지 않는다.
+
+`agentic_motor_capture_acceptance_v1.py`는 명시한 phase·checkpoint 등록과 회수 archive·C/D 사본·native·sidecar·같은 Play의 trace를 대조한다. 네 정책이 모두 기술 수용돼야 공개 후보 상태 facts를 만들며, 기존 false 승인 플래그와 행동 라벨 부재를 유지한다. 관련 Python 3.10 CPU 회귀 26개를 통과했다. 실제 자료 수용과 모델 사용은 별도 단계다.
+
 [첫 수집 시도](../evals/results/agentic_motor_capture_20261028_v1/summary.json)는 기동 대기 상한과 Brev control-plane의 TLS hostname 불일치로 Isaac 실행 전에 종료됐다. 녹화·학습·모델 호출은 0건이며 두 자원의 `STOPPED`를 확인했다. [새 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v2.json)은 같은 네 정책을 기존 VM 한 대에서 순차 수집한다. 각 녹화의 frame·AABA·child 상한은 유지하며, read-only 상태 조회만 제한 횟수 안에서 다시 시도한다.
 
 [순차 수집 v2](../evals/results/agentic_motor_capture_20261028_v2/summary.json)는 원격 접속 뒤 cache 경로 조건에서 중단됐고 정지를 확인했다. [v3 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v3.json)은 이전 성공 기록에 명시된 VM별 HOME 상대 repo·Lab·Python 경로를 사용한다. 환경이 사라졌다고 단정하거나 재설치하지 않으며, 실제 존재 상태를 판정 전에 기록한다. 원격 본문 종료 코드를 별도 marker로 확인하고 같은 요청의 재실행을 거부한다.
@@ -93,6 +97,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 [v4 실행](../evals/results/agentic_motor_capture_20261028_v4/summary.json)은 boot 확인과 네 checkpoint 복사를 통과한 뒤 상태 smoke의 잠금 취득에서 중단됐다. 고정 cache 잠금 경로의 조상에 symlink 또는 reparse point가 있어 거부됐으며, 구체적인 링크 대상은 아직 관측하지 않았다. GPU 입장·Isaac 실행·녹화는 시작하지 않았고 자원 정지를 확인했다. 후속 adapter는 alias와 canonical 경로가 같은 자원 잠금을 사용하게 하며 기존 검증을 유지한다.
 
 [v5 수집 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v5.json)은 이 어댑터와 입력 복사 전 POSIX 잠금 사전 검사를 결합한다. 기존 두 seed·네 정책·625프레임·50fps·AABA 조건은 유지하고, 이전 실패의 배정 상한을 보존한 새 $5 구간으로 실행한다. 실제 녹화 성공 여부는 새 실행 원문으로 판정한다.
+
+[v5 실행](../evals/results/agentic_motor_capture_20261028_v5/summary.json)은 두 프로토콜의 실제 POSIX 잠금 검사를 통과했지만, 이후 입장 검사에서 과거 공급자 조회 시각을 현재 임대 검증 시각으로 재사용해 중단됐다. 영상·상태 frame·학습·모델 호출은 0건이며 정지와 원문 회수를 확인했다. 후속 판은 App 실행 전에 전체 입장 proof의 생성과 소비까지 확인한다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"

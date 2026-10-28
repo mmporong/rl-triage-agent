@@ -492,3 +492,9 @@
 - 새 단일 검사 실행기의 첫 CPU 판은 승인 JSON의 SHA·checkpoint·probe·인자를 검사했지만 승인·소비 원장을 다시 읽지 않았다. 구조가 맞는 수동 승인 파일이 통과할 수 있음을 코드 검수에서 확인했다. 이 판의 실제 GPU 실행은 없었다.
 - 수정한 새 파일은 기존 controller의 승인 검증을 재사용해 `proposed → approved → consumed` 이벤트·request·arm/epoch·인자와 등록 prefix SHA를 확인한다. 완료 조회도 원래 승인과 running 또는 해당 완료 receipt의 done 상태를 다시 검사한다. 원장 누락·미승인·미소비·변조·다른 request의 거부를 포함한 관련 Python 3.10 회귀 98개를 통과했다.
 - 기존 controller가 완료 reference를 요구하는 순서는 유지한다. 첫 대조 검사와 다른 OS의 승인 운반을 임의 파일로 채우지 않으며, 별도 pair 승인 연결 전에는 HOLD로 둔다. CPU 준비와 실제 검사 수용을 구분한다.
+
+### OPS-66: 공급자 조회 시각과 현재 임대 검증 시각
+
+- [v5](../evals/results/agentic_motor_capture_20261028_v5/summary.json)는 canonical 경로에서 두 실제 POSIX 잠금을 검증했다. 다음 입장 검사에서는 잠금 취득 전 공급자 조회 시각을 `verify_lease(now=...)`에 넘겼다. 현재 임대가 활성이어도 그 과거 시각은 취득보다 앞서므로 유효기간 검사에서 거부됐다. GPU query 원문은 남았으며 App과 촬영은 시작하지 않았다.
+- 새 unit v3는 공급자 관찰의 30초 신선도를 별도로 검사하고 GPU query 뒤 현재시각에서 임대와 proof를 확인한다. 조회·query·임대 취득·입장 시각을 분리해 기록하고 기존 유효기간과 허용 오차는 유지한다. WSL 회귀 10개는 이전 실패의 재현과 미래·오래된 조회·query 중 노화·원문 변경·만료 임대·query 실패의 거부를 확인했다.
+- 새 호스트의 생성된 원격 program도 실제 fixture 임대와 fake GPU query로 실행해 proof 소비까지 확인했다. 호스트 WSL 회귀 105개를 통과했으며 실제 클라우드 실행 결과는 별도로 판정한다.
