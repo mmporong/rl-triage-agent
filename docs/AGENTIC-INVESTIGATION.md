@@ -141,9 +141,11 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 ## 실제 검사 결과를 다음 판단에 연결하는 운반 계층
 
-새 [호스트](../evals/agentic_brev_runtime_host_v1.py)는 정상 참조 원문을 검증한 뒤 case 검사 승인을 소비하고, case 원문이 검증·봉인돼야 다음 조사 snapshot을 반환한다. [mailbox transport](../evals/agentic_brev_mailbox_transport_v1.py)와 [IO service](../evals/agentic_brev_mailbox_service_v1.py)는 등록한 원격 helper만 호출한다. IO 응답을 받았다는 이유로 원문 검증을 생략하지 않는다.
+새 [호스트](../evals/agentic_brev_runtime_host_v1.py)는 정상 참조 원문을 검증한 뒤 case 검사 승인을 소비하고, case 원문이 검증·봉인돼야 다음 조사 snapshot을 반환한다. [mailbox transport](../evals/agentic_brev_mailbox_transport_v1.py)와 [IO service v2](../evals/agentic_brev_mailbox_service_v2.py)는 등록한 원격 helper만 호출한다. IO 응답을 받았다는 이유로 원문 검증을 생략하지 않는다.
 
 기존 intent가 남은 요청은 조회로만 재개하며 새 실행·승인을 만들지 않는다. 서비스는 VM을 시작하거나 정지하지 않으며, 공개 사전등록 시각부터 비용·기한을 계산한다. 실제 raw SHA와 등록 root를 검사해 새 파일만 회수한다. 동결한 네 모듈·네 테스트의 메인 WSL 통합 75개를 통과했으며, 실제 Brev 검사쌍과 후속 모델 판단은 새 실행으로 확인한다.
+
+[운반 helper v2](../bench/agentic_brev_probe_transport_remote_v2.py)는 원래 E13 검사 root를 유지하고 unit 부모의 outcome·evidence·request를 별도 metadata layer로 회수한다. 두 map과 원래 request·protocol·binding의 SHA를 archive에 묶고, 필수 원문이 등록 밖에 있거나 서로 다르면 거부한다. 실제 부모 실행과 같은 CPU 폴더 구조에서 양 arm의 metadata 여섯 경로와 원래 검사 근거를 결합하는 WSL 회귀 28개를 통과했다. 부분 회수와 중복 요청은 새 실행이나 승인으로 전환하지 않는다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"

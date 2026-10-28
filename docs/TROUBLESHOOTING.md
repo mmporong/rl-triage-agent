@@ -528,3 +528,8 @@
 
 - [v10 렌더 시험](../evals/results/agentic_motor_render_preflight_20261028_v10/summary.json)은 Start 응답을 받았지만 READY를 관측하지 못했다. `STARTING`·`UNHEALTHY` 뒤 호스트 Stop intent 전 `STOPPED`를 관측했고 등록된 기동 대기 상한에서 종료했다. 원격 boot·Isaac·영상·학습·모델 호출은 모두 0건이다. VM 내부나 공급자 원인은 미확정이다.
 - 호스트는 `STOPPED`를 재확인해 Stop 요청을 추가로 보내지 않았다. 실제 경과와 compute 견적을 곱한 값은 약 $0.7533이며 청구액은 아니다. 같은 Start를 반복하지 않고 새 자원의 환경 복원과 다음 렌더 시험을 준비한다. 이전 결과·원문·소비는 보존한다.
+
+### OPS-72: 검사 raw 디렉터리와 부모 metadata의 서로 다른 범위
+
+- 실제 Parent 배치는 `unit/raw/`에 검사 원문을, `unit/`에 outcome·evidence·request를 쓴다. 첫 운반기의 E13 roots만으로는 부모 파일 여섯 경로를 찾을 수 없었다. CPU 등록 준비에서 이를 확인해 실제 실행 전에 차단했다.
+- 새 운반기는 E13 roots를 넓히지 않고 별도 metadata layer와 두 map의 SHA를 고정한다. 등록 request는 양 arm의 참조를 포함하므로 raw SHA를 검증한 leaf로 보존한다. 이를 한 arm의 resolver에 재귀로 넣던 첫 CPU 실패도 남겼다. 실제 Parent 폴더 구조를 사용한 export→unpack→host metadata→E13 projection의 WSL 회귀 28개를 통과했다. 실제 클라우드 검사는 별도 결과로 판정한다.
