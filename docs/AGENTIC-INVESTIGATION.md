@@ -82,6 +82,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 `bench/run_agentic_capture_unit_v1.py`는 임대 context 안에서 fresh provider/GPU 원문을 확인한 뒤 NONE 정책의 1-frame 상태 smoke 또는 등록 정책 하나의 native 녹화를 실행한다. 상태 smoke는 exit code 0에 더해 결과 파일·실패 파일 부재·checkpoint·상태 기록·소유 child 종료·GPU 유휴를 확인한다. 각 VM의 새 프로토콜과 source를 커밋하고 실제 원격 runtime을 대조한 뒤 실행해야 한다. CPU 승인과 실제 GPU 수용을 구분한다.
 
+새 `agentic_play_job_v2.py`·`run_agentic_play_record_v2.py`·`run_agentic_capture_unit_v2.py`는 고정 HOME cache alias를 canonical 경로에 결합하는 어댑터다. 부모와 SDK·AABA 자식이 같은 자원별 lock inode를 사용하며, 기존 owner start identity·heartbeat·소스 검증을 유지한다. GPU 입장 전에 alias와 실제 경로 관측을 기록한다. 실제 WSL의 관련 회귀 25개를 통과했고 Windows 전용 1개는 제외됐다. 이 결과는 클라우드 VM에서의 새 녹화 완료를 뜻하지 않는다.
+
 [첫 수집 시도](../evals/results/agentic_motor_capture_20261028_v1/summary.json)는 기동 대기 상한과 Brev control-plane의 TLS hostname 불일치로 Isaac 실행 전에 종료됐다. 녹화·학습·모델 호출은 0건이며 두 자원의 `STOPPED`를 확인했다. [새 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v2.json)은 같은 네 정책을 기존 VM 한 대에서 순차 수집한다. 각 녹화의 frame·AABA·child 상한은 유지하며, read-only 상태 조회만 제한 횟수 안에서 다시 시도한다.
 
 [순차 수집 v2](../evals/results/agentic_motor_capture_20261028_v2/summary.json)는 원격 접속 뒤 cache 경로 조건에서 중단됐고 정지를 확인했다. [v3 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v3.json)은 이전 성공 기록에 명시된 VM별 HOME 상대 repo·Lab·Python 경로를 사용한다. 환경이 사라졌다고 단정하거나 재설치하지 않으며, 실제 존재 상태를 판정 전에 기록한다. 원격 본문 종료 코드를 별도 marker로 확인하고 같은 요청의 재실행을 거부한다.

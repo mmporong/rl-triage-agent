@@ -484,6 +484,7 @@
 
 - [v4 실행](../evals/results/agentic_motor_capture_20261028_v4/summary.json)은 boot·pin 확인과 네 checkpoint 복사를 완료했다. 상태 smoke가 자원별 잠금을 취득할 때 고정 cache 경로의 조상 symlink/reparse 검사가 거부했다. GPU 입장과 Isaac 실행 전이며 실제 링크 대상은 아직 확인하지 않았다.
 - alias를 허용하려고 경로 검증을 끄거나 실행별 잠금 위치를 만들면 같은 GPU의 상호 배제가 깨질 수 있다. 새 adapter에서 고정 alias를 canonical 경로에 결합하고, 부모와 모든 자식이 같은 lock inode·owner start identity·heartbeat를 확인하도록 준비한다. CPU 회귀 뒤 새 source와 프로토콜로 실행하며 기존 실패 기록은 유지한다.
+- 새 v2 어댑터는 고정 alias를 resolve한 경로에서 기존 잠금 코드를 사용하고, SDK·AABA 자식을 새 entry로 연결한다. 실제 WSL 회귀 25개에서 링크 재현·동일 inode 경쟁·자식의 부모 잠금 검증을 통과했다. 새 호스트는 입력 복사와 App 실행 전에 실제 OS 잠금만 취득·검증·해제하는 검사를 수행한다. 이 검사가 실패하면 후속 촬영으로 넘어가지 않는다.
 - 원격 부분 원문을 회수하고 자원의 `STOPPED`를 확인했다. 이 시도의 경과 시간과 견적을 곱한 값은 약 $0.5592이며 공급자 청구액은 아니다. 새 영상·학습·모델 호출은 0건이다.
 
 ### OPS-65: 승인 JSON과 승인·소비 원장의 결합
