@@ -1,0 +1,92 @@
+{
+  "schema": "agentic_runtime_retry_start_v1_protocol",
+  "registered_at_utc": "2026-10-28T21:10:49.863650+00:00",
+  "source_commit": "8dfbbc101609ed2ba8feccc9c5ede956473872ff",
+  "target": {
+    "resource_id": "oky8zxbnx",
+    "resource_name": "rl-triage-l40s-headless-20261029g",
+    "instance_type": "g6e.4xlarge",
+    "provider": "aws",
+    "gpu_model": "L40S"
+  },
+  "environment_protocol": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261029_v10_environment.json",
+    "sha256": "831034b696f23e45821a5626bd00cc7d38e281d7d2fa1e39e112d3035533d05a"
+  },
+  "prior_attempt": {
+    "runtime_protocol": {
+      "path": "bench/protocols/agentic_runtime_text_s2221_20261029_v10.json",
+      "sha256": "642efd28fde91750c7c9b6b68710f54069ac41cce559eb8c882a576b2bb89fe7"
+    },
+    "parent_protocol": {
+      "path": "bench/protocols/agentic_runtime_text_s2221_pair_aws_20261029_v10.json",
+      "sha256": "bb3f1fa5660ac4acb544c0cc1fabc5bbc2fc7f643ced0675daf827e713a2e72c"
+    },
+    "status": "infrastructure_failure_IO_child_import_before_remote_parent",
+    "confirmed_cause": "script_directory_operator_module_shadowed_python_stdlib_operator_during_argparse_import",
+    "boot_remote_exit_zero": true,
+    "runtime_pins_verified": true,
+    "remote_parent_started": false,
+    "probe_runs": 0,
+    "new_training_runs": 0,
+    "new_model_api_calls": 0,
+    "preserve_all_prior_records": true,
+    "actual_CLI_regression_python_versions": [
+      "3.10.20",
+      "3.12.13"
+    ]
+  },
+  "retry": {
+    "allowed_start_requests": 1,
+    "allowed_create_requests": 0,
+    "automatic_retry_count": 0,
+    "additional_start_after_failure": false,
+    "required_pre_start_provider_state": "STOPPED",
+    "same_resource_identity_required": true,
+    "reuse_existing_installation": true,
+    "start_controller_binding": {
+      "status": "registered_by_codex_main",
+      "required_fields": [
+        "controller_sha256",
+        "stopped_observation_sha256",
+        "stopped_observed_at_utc"
+      ],
+      "controller_sha256": "c3c0922d3491bcd05615685d9aa63ac367a160f4dca9a96bb8a324c51db07ec0",
+      "stopped_observation_sha256": "46e56907aa01f48b7ee35a44f8136c4a7e483da340e68a1a08a16317e9319204",
+      "stopped_observed_at_utc": "2026-10-28T21:04:17.810415+00:00",
+      "bound_at_utc": "2026-10-28T21:10:49.870957+00:00"
+    },
+    "cumulative_start_requests_before": 2,
+    "cumulative_start_requests_after_success": 3,
+    "cumulative_create_requests": 1
+  },
+  "budget": {
+    "program_cap_usd": "165",
+    "phase_cap_usd": "40",
+    "prior_program_usd": "145",
+    "current_program_cap_including_parallel_renderer_usd": "185",
+    "additional_allocation_for_this_restart_usd": "0",
+    "created_at_utc": "2026-10-28T17:41:10.061936+00:00",
+    "deadline_utc": "2026-10-28T23:34:05.550256+00:00",
+    "latest_start_request_before_utc": "2026-10-28T23:14:05.550256+00:00",
+    "stop_reserve_s": 1200,
+    "consumption_reset": false
+  },
+  "scientific_contract": {
+    "seen_development_seed": 2221,
+    "source_heldout": false,
+    "model_prompt_changed": false,
+    "probe_thresholds_changed": false,
+    "decision_rules_changed": false,
+    "cached_model_prefix_decisions": 2,
+    "new_decision_limit": 2,
+    "model_api_before": 9,
+    "model_api_cap": 12
+  },
+  "authority": {
+    "start_authorized": true,
+    "execution_authorized": false,
+    "root_callback_required": false
+  },
+  "intended_next_runtime_protocol": "bench/protocols/agentic_runtime_text_s2221_20261029_v11.json"
+}
