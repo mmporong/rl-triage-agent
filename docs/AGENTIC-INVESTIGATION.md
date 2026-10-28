@@ -68,6 +68,10 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 두 기능은 CPU callback·실패 봉인·source/checkpoint 검증을 통과했다. 새 모터 checkpoint 등록과 실제 Isaac/Brev 녹화·비간섭 확인은 후속 단계다. 기록기만으로 영상의 진단 기여가 확인된 것은 아니다.
 
+`bench/agentic_play_job_v1.py`는 새 checkpoint 목록·F2/NONE 쌍·runtime 소스·촬영 profile을 등록한다. `resource_lease()`가 자원별 OS 잠금과 owner start identity·heartbeat를 유지하고, 부모·AABA child·녹화 child·최종 수용 시 같은 임대를 확인한다. 동결 대상에는 잠금·checkpoint·provider 검증 helper도 포함한다. 시험용 process callback을 주입한 결과는 실제 실행으로 표시하지 않는다.
+
+`bench/run_agentic_capture_unit_v1.py`는 임대 context 안에서 fresh provider/GPU 원문을 확인한 뒤 NONE 정책의 1-frame 상태 smoke 또는 등록 정책 하나의 native 녹화를 실행한다. 상태 smoke는 exit code 0에 더해 결과 파일·실패 파일 부재·checkpoint·상태 기록·소유 child 종료·GPU 유휴를 확인한다. 각 VM의 새 프로토콜과 source를 커밋하고 실제 원격 runtime을 대조한 뒤 실행해야 한다. CPU 승인과 실제 GPU 수용을 구분한다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>
