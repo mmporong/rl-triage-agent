@@ -1,0 +1,37 @@
+{
+  "schema": "fresh_brev_creation_failure_v1",
+  "tag": "fresh_brev_render_creation_20261029f_v1",
+  "outcome": "client_availability_rejected",
+  "cli_version": "0.6.335",
+  "phase": {
+    "path": "bench/protocols/fresh_brev_l40s_render_environment_20261029f.json",
+    "sha256": "22d98139ffcd8cd8b6cd7dd5d583ebee87d737ab2953861cfca8bd76f3ea9f0c",
+    "anchor": "19e2831e3a994441f4e1017adfd93e293a697d64"
+  },
+  "selected_type": "massedcompute_L40S",
+  "provider": "shadeform",
+  "cloud": "massedcompute",
+  "search_returned_type": true,
+  "create_exit_code": 1,
+  "new_vm_count": 0,
+  "new_gpu_work": 0,
+  "new_training": 0,
+  "new_model_api": 0,
+  "same_create_automatically_resent": false,
+  "global_cli_or_configuration_changed": false,
+  "infrastructure_category": "public_search_and_organization_scoped_create_catalog_disagreement",
+  "upstream_reference": "https://github.com/brevdev/brev-cli/pull/435",
+  "upstream_fix_applied": false,
+  "issue_or_comment_submitted": false,
+  "allocation_usd": "20",
+  "new_resource_compute_time_s": 0,
+  "billing_claimed": false,
+  "evidence_sha256": {
+    "quote": "ae582a65c922731afffb39614202d7eac8c894bb199b673cb78eee7ae5407ea3",
+    "create_intent": "2e1478b00f19a7f3a42ab885ec2915423902af873e2f42dd1848d9160a6dc5aa",
+    "create_receipt": "1fe26b9e367919c477dbf0f7f9ff465f9a11b831b984ae45ac3ed7994684858b",
+    "create_stderr": "98c9c4b7a93699b748bda44678409275cd305ff197f7686095bb4f8e437431b0",
+    "later_provider_inventory": "e0eb303a7ac85ad505f8b8a58c38096625ec87673cf0040ea62524f9170cd77c"
+  },
+  "interpretation": "조회 목록의 GPU가 계정별 생성 검사에서 거부돼 새 자원은 생기지 않았다. 용량 부족이나 모델 실패로 집계하지 않는다."
+}

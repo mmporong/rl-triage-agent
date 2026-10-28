@@ -576,3 +576,8 @@
 
 - 상위 lifecycle 생성자와 boot가 통과해도 최종 `Driver.stop()`에 필요한 설정이 모두 검증된 것은 아니었다. 촬영 controller는 Stop 한 번과 `STOPPED` 관찰을 끝냈지만, 상위 `finally`는 environment의 `stop_observation_s` 누락으로 `KeyError`를 남겼다. 추가 Stop RPC는 없었고 후속 읽기 전용 조회에서도 정지를 확인했다. 원래 렌더 실패와 이 정지 설정 오류를 별개로 보존한다.
 - 후속 환경 등록 전에는 실제 동결 Driver와 실제 phase 형상으로 정지 경로를 CPU에서 실행한다. 이미 정지된 자원, 실행 중 자원의 단일 Stop, 일시 조회 실패, 불명확한 응답, 자원 신원 불일치를 확인한다. 새 공개 phase에 관찰 상한과 재시도 간격을 명시하고, 종료 시 원래 오류가 정지 오류에 가려지지 않도록 각각 기록한다.
+
+### OPS-80: 공개 GPU 조회 목록과 계정별 생성 목록의 차이
+
+- [다른 공급자 생성 시도](../evals/results/fresh_brev_render_creation_20261029f_v1/summary.json)에서 Brev CLI 0.6.335의 `search`는 `massedcompute_L40S`를 반환했지만 `create`는 같은 유형을 인식하지 못해 종료했다. 새 VM은 생기지 않았고 같은 요청을 재전송하지 않았다. GPU·학습·모델 호출도 없었다.
+- 상류 [PR #435](https://github.com/brevdev/brev-cli/pull/435)는 공개 search와 조직별 create 목록의 차이로 Shadeform 유형이 거부되는 같은 경로를 설명한다. 이 PR의 수정은 병합되지 않았다. 조회 결과만으로 현재 계정의 생성 가능성을 보장하지 않으며, 접근 필터나 cloud credential 검사를 우회하지 않는다. 후속 헤드리스 고리는 생성이 확인된 AWS 유형을 별도 등록한다.
