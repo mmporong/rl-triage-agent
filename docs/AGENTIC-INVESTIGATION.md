@@ -29,6 +29,8 @@
 
 `Investigation` 객체는 한 프로세스의 상태 어댑터다. `agentic_investigation_evidence_v1.py`는 등록된 같은 checkpoint의 학습 기록·원본 프레임만 조회하고, 조사용 system prompt 한 개를 유지한다. `agentic_investigation_call_v1.py`는 각 요청의 공개 메시지와 history를 동결해 기존 `model_decision_journal_v1.py`로 예약·응답·재생을 관리한다. 의미 무효는 재요청 없이 HOLD이며, 완료 여부를 모르는 요청은 pending으로 남긴다.
 
+`agentic_investigation_runtime_v1.py`는 판단·승인·실행 요청·완료 영수증을 저장해 프로세스 재시작 뒤에도 같은 작업을 조회한다. 실행 요청 기록이 있으면 새 작업을 제출하지 않으며, 검증된 검사 결과를 받은 뒤 다음 모델 입력을 만든다. 교정 미회복 뒤에는 새 checkpoint에 결합된 두 번째 고리만 허용한다. 실행 callback과 승인은 호스트가 명시해야 하며, 원문·승인 원장·영수증을 기존 controller가 다시 검증한다. CPU 재시작·변조 회귀를 통과했으며, 이 어댑터를 이용한 새 GPU 종단 실행은 아직 측정하지 않았다. 기존 controller의 Windows 실행 영수증과 Brev의 POSIX 영수증은 서로 다른 계약이므로 같은 형식으로 간주하지 않는다.
+
 ## 개발 호출 경로
 
 `run_agentic_development_v1.py`는 자료 조회 결과를 다음 판단 입력에 추가하고, 등록 검사 제안 또는 HOLD에서 멈춘다. 검사와 교정은 실행하지 않는다. Windows 호스트가 API를 예약한 뒤 WSL의 기존 provider를 호출하며, 자격증명은 WSL 환경에만 남는다. 응답이 불명확하게 끊기면 자동 재전송하지 않는다.
