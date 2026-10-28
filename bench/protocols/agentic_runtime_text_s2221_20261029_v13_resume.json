@@ -1,0 +1,102 @@
+{
+  "schema": "agentic_runtime_retry_start_v1_protocol",
+  "registered_at_utc": "2026-10-28T22:33:52.987555+00:00",
+  "source_commit": "78dffa4f7ce5a39e18166e8334b13c38fd3eae68",
+  "target": {
+    "resource_id": "oky8zxbnx",
+    "resource_name": "rl-triage-l40s-headless-20261029g",
+    "instance_type": "g6e.4xlarge",
+    "provider": "aws",
+    "gpu_model": "L40S"
+  },
+  "environment_protocol": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261029_v13_environment.json",
+    "anchor": "e397c6d26f8e65fe340ab7edd77c302e34ca3e90",
+    "sha256": "ba793e74b82943d57f87c2d3ee64bd1b3bf45dbf56fe0631636b46863b8089b4"
+  },
+  "prior_attempt": {
+    "runtime_protocol": {
+      "path": "bench/protocols/agentic_runtime_text_s2221_20261029_v12.json",
+      "sha256": "8eaa77eda73e96570bd15a1b3f690ac2b81cd174c1c4c030d3877042dd5244f8"
+    },
+    "parent_protocol": {
+      "path": "bench/protocols/agentic_runtime_text_s2221_pair_aws_20261029_v12.json",
+      "sha256": "71921fe132f3bef88a3aae65dea0fac742aad850a953360df94b7440e32e9456"
+    },
+    "status": "infrastructure_failure_remote_Python310_import_before_parent_prepare",
+    "confirmed_cause": "datetime.UTC_import_unavailable_on_actual_Python310_remote_entry",
+    "boot_remote_exit_zero": true,
+    "runtime_pins_verified": true,
+    "remote_parent_started": false,
+    "probe_runs": 0,
+    "new_training_runs": 0,
+    "new_model_api_calls": 0,
+    "preserve_all_prior_records": true,
+    "actual_CLI_regression_python_versions": [
+      "3.10.20",
+      "3.12.13"
+    ],
+    "pre_vm_actual_child_config_check_required": true,
+    "pre_vm_actual_remote_entry_import_check_required": true
+  },
+  "retry": {
+    "allowed_start_requests": 1,
+    "allowed_create_requests": 0,
+    "automatic_retry_count": 0,
+    "additional_start_after_failure": false,
+    "required_pre_start_provider_state": "STOPPED",
+    "same_resource_identity_required": true,
+    "reuse_existing_installation": true,
+    "start_controller_binding": {
+      "status": "registered_by_codex_main",
+      "required_fields": [
+        "controller_sha256",
+        "stopped_observation_sha256",
+        "stopped_observed_at_utc"
+      ],
+      "controller_sha256": "7ced5e09c4a15886551bf228ece9e476efeada0e0f07bfff8e3eb9c6e54e86f3",
+      "stopped_observation_sha256": "98a381900e7e5beefc7080e54d49c3d276c7304c9c5e02b4629fa3a21dce0d3c",
+      "stopped_observed_at_utc": "2026-10-28T22:14:16.875401+00:00",
+      "bound_at_utc": "2026-10-28T22:33:52.990083+00:00",
+      "budget_helper_sha256": "b910359b371ed5f89c7282b1d3def4e114f1bd3420654fddb15bff243ff4ae91"
+    },
+    "cumulative_start_requests_before": 4,
+    "cumulative_start_requests_after_success": 5,
+    "cumulative_create_requests": 1
+  },
+  "budget": {
+    "program_cap_usd": "165",
+    "phase_cap_usd": "40",
+    "prior_program_usd": "145",
+    "current_program_cap_including_parallel_renderer_usd": "185",
+    "additional_allocation_for_this_restart_usd": "0",
+    "created_at_utc": "2026-10-28T17:41:10.061936+00:00",
+    "deadline_utc": "2026-10-29T00:34:05.550256+00:00",
+    "latest_start_request_before_utc": "2026-10-29T00:14:05.550256+00:00",
+    "stop_reserve_s": 1200,
+    "consumption_reset": false,
+    "max_lifetime_s": 25200
+  },
+  "scientific_contract": {
+    "seen_development_seed": 2221,
+    "source_heldout": false,
+    "model_prompt_changed": false,
+    "probe_thresholds_changed": false,
+    "decision_rules_changed": false,
+    "cached_model_prefix_decisions": 2,
+    "new_decision_limit": 2,
+    "model_api_before": 9,
+    "model_api_cap": 12
+  },
+  "authority": {
+    "start_authorized": true,
+    "execution_authorized": false,
+    "root_callback_required": false
+  },
+  "intended_next_runtime_protocol": "bench/protocols/agentic_runtime_text_s2221_20261029_v13.json",
+  "time_extension": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261029_resource_time_extension_v2.json",
+    "anchor": "5054f9db6d6daded9ee52b99f26c5200be4efe88",
+    "sha256": "e8f1bff6b522f813b773a33f5ed709e13cc103ab096c6405788f1e81379cdc0f"
+  }
+}
