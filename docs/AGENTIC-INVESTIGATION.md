@@ -149,6 +149,8 @@ v10은 VM이 준비 상태에 이르지 못해 boot·App·녹화 전에 종료�
 
 [독립 F1 수집 환경 등록](../bench/protocols/fresh_brev_l40s_f1_environment_20261028d.json)은 기존 검사 자원과 별도로 AWS 단일 L40S 환경 하나를 준비한다. 생성·고정 환경 복원과 후속 녹화가 같은 $10 상한을 공유하며, 새 자원 ID와 별도 촬영 등록을 결합하기 전에는 Isaac·정책 녹화·모델 호출을 허용하지 않는다.
 
+[AWS용 F1 계약](../bench/agentic_play_job_v4.py)과 [unit v8](../bench/run_agentic_capture_unit_v8.py)은 실제 인스턴스명 `g6e.4xlarge`를 지원한다. 생성 등록과 Brev 견적 원문의 provider·인스턴스명·단일 L40S 48GB·가격·SHA를 대조하고, 현재 GPU와 임대는 실행 시 별도로 검증한다. same-Play·렌더 갱신·native·sidecar·종료 조건은 유지한다. 새 경로의 메인 WSL 회귀 23개가 통과했으며 실제 F1 녹화와 모델 입력 수용은 후속 측정 대상이다.
+
 ## 실제 검사 결과를 다음 판단에 연결하는 운반 계층
 
 새 [호스트](../evals/agentic_brev_runtime_host_v1.py)는 정상 참조 원문을 검증한 뒤 case 검사 승인을 소비하고, case 원문이 검증·봉인돼야 다음 조사 snapshot을 반환한다. [mailbox transport](../evals/agentic_brev_mailbox_transport_v1.py)와 [IO service v2](../evals/agentic_brev_mailbox_service_v2.py)는 등록한 원격 helper만 호출한다. IO 응답을 받았다는 이유로 원문 검증을 생략하지 않는다.
@@ -160,6 +162,8 @@ v10은 VM이 준비 상태에 이르지 못해 boot·App·녹화 전에 종료�
 [텍스트 전용 후속 등록](../bench/protocols/agentic_runtime_text_s2221_20261028_v1.json)은 이미 본 F1 seed 2221의 실제 학습 기록을 조회한 뒤 실제 검사쌍과 후속 모델 판단을 연결한다. 학습 자료 alias 하나만 제공하고 프레임과 과거 모델 판단 prefix는 재사용하지 않는다. 기존 API 원장의 7건을 보존하며 전체 상한 12회 안에서 새 판단은 최대 4번이다. 정상 참조·case 검사·승인·소비·원문 봉인 뒤에만 다음 snapshot을 연다. 무효 판단과 지원 밖 교정 요청은 HOLD한다. 이 등록의 성공 범위는 검사 원문과 다음 판단의 연결이며 회복·시각 효과·새 seed 성능과 구분한다.
 
 실제 모델 두 판단은 학습 기록 조회와 `P_reward` 검사 선택으로 유효했다. 첫 Parent 등록은 명령 canonical hash의 생성·소비 규약 차이로 GPU 전에 차단됐으며, [새 Parent 판](../bench/protocols/agentic_runtime_text_s2221_pair_20261028_v2.json)은 같은 모델 선택과 고정 인자를 유지하고 hash 규약을 맞춘다. [차단 원문 요약](../evals/results/agentic_runtime_text_pair_registration_20261028_v1/summary.json)을 보존하며 이 재등록에 새 모델 호출은 쓰지 않는다.
+
+이후 실제 검사쌍의 호스트·등록 결합은 통과했지만 VM 재시작 요청이 Brev `Bad Request`로 거부됐다. `STOPPED`를 확인했고 GPU 검사와 추가 모델 호출은 시작하지 않았다. [실행 요약](../evals/results/agentic_runtime_text_pair_start_20261028_v1/summary.json)은 이 인프라 실패를 모델 판단이나 검사 결과와 구분한다. 재시작 거부의 상세 원인은 응답만으로 확정하지 않는다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"

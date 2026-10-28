@@ -1,0 +1,43 @@
+{
+  "schema": "agentic_runtime_text_pair_start_result_v1",
+  "status": "infrastructure_failure_before_boot",
+  "model_selection": "P_reward",
+  "model_decisions_valid": 2,
+  "new_model_calls_this_start_attempt": 0,
+  "api_used_total": 9,
+  "api_cap_total": 12,
+  "gpu_probe_runs": 0,
+  "new_training_runs": 0,
+  "remote_boot_runs": 0,
+  "start_requests": 1,
+  "start_exit_code": 1,
+  "start_error_summary": "Bad Request",
+  "detailed_start_cause": "unresolved",
+  "stop_command_requests": 0,
+  "resource_status": "STOPPED",
+  "stop_observed_at_utc": "2026-10-28T12:36:34.946320+00:00",
+  "elapsed_start_to_stop_observation_s": 8.652237,
+  "quote_times_elapsed_estimate_usd_not_invoice": "0.0052409483588",
+  "source_commit": "11384f304fdb5b41c6ca14985d1dceeacb493bff",
+  "runtime_registration": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261028_v1.json",
+    "sha256": "ab830d86075e58d86d5ca425fd809bfd03f72510126d54c6701b62052a5eb727",
+    "anchor": "6327e2f17f5b9a2fe41bd67ac6ea245b409f1407"
+  },
+  "parent_registration": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_pair_20261028_v2.json",
+    "sha256": "439ba3c1e4aa38f1bce02cfb906bd60f416ef7f4cbfb525581f98ea4236c46f3",
+    "anchor": "6d4443b2c2fc68272dc9f8d26a21cf3cee924c9c"
+  },
+  "raw_sha256": {
+    "start_receipt": "e837904e901a752b68f7171fba17ead0d4f4fa658c7ca635cda6c2540bc78026",
+    "start_stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start_stderr": "4fca15967b21ec258fdfe92c5937b460d3f94a163ea0bc1ab7d28fe40f5ef3df",
+    "stop_observation": "6e44b68720707db60b48104d47613aa7a081b3c7882afbcd3ed80687b15db245",
+    "post_start_inventory": "99d5f5e9144c69ab820491dd565638dfff86fc9fc97fd604040def115b46c8eb"
+  },
+  "model_failure_claimed": false,
+  "probe_result_created": false,
+  "existing_results_overwritten": false,
+  "summary_ko": "등록된 검사쌍의 호스트 결합 뒤 VM 재시작이 거부됐다. GPU 검사는 시작하지 않았고 같은 자원의 정지 상태를 확인했다. 모델 두 판단과 기존 원문·승인 소비는 보존한다."
+}

@@ -540,3 +540,9 @@
 
 - [실제 등록 최종검사](../evals/results/agentic_runtime_text_pair_registration_20261028_v1/summary.json)는 모델이 학습 기록을 읽고 `P_reward`를 고른 뒤 GPU 실행 전에 차단됐다. 원인 판별에서 자원·순서·seed·probe·소스 조건은 같았고, `commands_sha256`만 달랐다. 생성기는 `E.digest`를, 동결 Host는 `P.PAIR.digest`를 사용했다. 모델 두 판단은 유효했고 추가 API 호출과 GPU 검사는 0건이었다.
 - 새 준비기는 기존 소비자의 명령 hash 함수를 사용한다. 생성한 pair 전체와 승인 원문을 동결 Host의 `_binding`으로 소비하는 CPU 회귀 2개가 통과했다. 기존 등록·소비 prefix와 원문은 보존하며 새 P 판과 tag로 같은 모델 선택을 재사용한다. hash 규약을 맞춘 CPU 통과와 실제 검사쌍 완료를 구분한다.
+
+### OPS-74: 등록 결합 통과 뒤 Brev 재시작 거부
+
+- [텍스트 고리의 실제 검사쌍](../evals/results/agentic_runtime_text_pair_start_20261028_v1/summary.json)은 수정된 Parent 등록과 lifecycle 생성자 검사를 통과했다. 그 뒤 기존 VM의 Start 요청이 `Bad Request`와 exit 1을 반환했고, 후속 목록에서 같은 자원이 `STOPPED`임을 확인했다. 원격 boot·검사·추가 API 호출은 시작하지 않았다.
+- 응답에는 상세 공급자 사유가 없으므로 용량 부족이나 모델 실패로 단정하지 않는다. Start를 반복하지 않고 원문·기존 모델 응답·승인 소비를 보존한다. 다른 자원에서 이어갈 때는 실제 provider·인스턴스명·GPU·소스·예산을 새 판으로 결합한다.
+- AWS `g6e.4xlarge`는 실제 L40S를 제공해도 이름에 `l40s`가 없어 기존 녹화 계약이 거부했다. 새 계약은 등록된 정확한 유형만 추가하고 생성 protocol과 견적 원문의 AWS·단일 L40S 48GB·가격·SHA를 대조한다. 실제 GPU admission·임대·소유 child·렌더 검증은 유지하며 메인 WSL 회귀 23개가 통과했다.
