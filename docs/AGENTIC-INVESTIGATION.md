@@ -199,3 +199,5 @@ cd "$HOME/rl-triage-agent"
 [확장한 CPU 의존성 검사](../bench/check_agentic_renderer_libraries_v2.py)는 기존 Iray와 해당 MaterialX 세 라이브러리의 `ldd` 결과를 함께 검사한다. Iray만 통과하고 MaterialX에서 `libXt`가 빠진 경우도 거부하며 회귀 12개를 통과했다. Ubuntu 22.04에서 이 파일을 제공하는 패키지는 [공식 목록의 libxt6](https://packages.ubuntu.com/jammy/amd64/libxt6/filelist)이며, 의존성 검사 통과를 렌더 성공으로 취급하지 않는다.
 
 [Parent2](../bench/run_agentic_brev_probe_parent_v2.py)·[운반 helper v3](../bench/agentic_brev_probe_transport_remote_v3.py)·[IO service v3](../evals/agentic_brev_mailbox_service_v3.py)는 AWS용 JOB4 계약에 같은 검사쌍을 연결한다. 실제 자식 entry와 production 함수의 신원을 함께 고정하고 기존 승인·임대·증거·metadata 검증을 유지한다. 합성 CPU 경로와 메인 WSL 회귀가 통과했으며 실제 AWS 검사쌍은 별도 사전등록 뒤 실행한다.
+
+[의존성 복구 후속 등록](../bench/protocols/agentic_f1_render_capture_phase_20261028_v2.json)은 같은 자원에서 `libxt6` 한 패키지만 복구하고 네 라이브러리의 전후 원문을 확인한 뒤 같은 두 정책을 재생한다. 앱·GPU 전에 생성한 원격 Python 본문도 컴파일 검사한다. 새 판의 수명 상한은 최초 생성부터 9,500초이며 이전 7,200초 판의 실패와 소비를 보존한다. 최초 생성부터의 비용 기산과 $10 금액 상한, 회수 660초·정지 1,200초 여유, 625프레임·50fps와 모든 촬영 판정 조건은 유지한다.
