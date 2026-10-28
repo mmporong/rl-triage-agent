@@ -147,6 +147,8 @@ v10은 VM이 준비 상태에 이르지 못해 boot·App·녹화 전에 종료�
 
 새 [F1 등록 계약](../bench/agentic_play_job_v3.py)과 [녹화 unit v7](../bench/run_agentic_capture_unit_v7.py)은 같은 렌더 갱신·임대·native·sidecar·AABA 경로에 정상/F1 정책 쌍을 연결한다. checkpoint 행 전체를 기존 historical catalog와 대조하며, 학습의 보상 결함을 Play 때 다시 주입하지 않는다. 자식은 원본 보상·모터 함수의 출처를 확인하고 부모도 원본 모터 함수 조건을 검사한다. WSL CPU 회귀 44개를 통과했으며 F1 실제 재녹화와 화면 수용은 새 사전등록 뒤 확인한다.
 
+[독립 F1 수집 환경 등록](../bench/protocols/fresh_brev_l40s_f1_environment_20261028d.json)은 기존 검사 자원과 별도로 AWS 단일 L40S 환경 하나를 준비한다. 생성·고정 환경 복원과 후속 녹화가 같은 $10 상한을 공유하며, 새 자원 ID와 별도 촬영 등록을 결합하기 전에는 Isaac·정책 녹화·모델 호출을 허용하지 않는다.
+
 ## 실제 검사 결과를 다음 판단에 연결하는 운반 계층
 
 새 [호스트](../evals/agentic_brev_runtime_host_v1.py)는 정상 참조 원문을 검증한 뒤 case 검사 승인을 소비하고, case 원문이 검증·봉인돼야 다음 조사 snapshot을 반환한다. [mailbox transport](../evals/agentic_brev_mailbox_transport_v1.py)와 [IO service v2](../evals/agentic_brev_mailbox_service_v2.py)는 등록한 원격 helper만 호출한다. IO 응답을 받았다는 이유로 원문 검증을 생략하지 않는다.
