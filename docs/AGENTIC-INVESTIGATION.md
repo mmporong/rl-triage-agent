@@ -137,6 +137,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 새 [runner v4](../bench/run_agentic_play_record_v4.py)와 [unit v6](../bench/run_agentic_capture_unit_v6.py)는 녹화 child의 매 capture 직전에만 fabric 활성·물리 snapshot·`forward()`·snapshot 불변을 검사한다. AABA와 기존 카메라·native frame 조건은 유지한다. sidecar 봉인과 앱 종료 전에 render-sync 기록을 남기고, 부모가 프레임 수와 job SHA를 대조한다. 새 WSL 회귀 22개를 통과했으며 실제 렌더 반영은 정상 한 정책의 새 GPU 시험으로 확인한다.
 
+[정상 한 정책의 렌더 시험 등록](../bench/protocols/agentic_motor_render_preflight_phase_20261028_v10.json)은 같은 seed 2033 checkpoint와 625프레임·50fps 설정을 사용한다. 전체 입장·상태 시험 후 정상 정책만 녹화하며 추가 compute 상한은 $5다. 26개 고정 표본에서 초기·현재 root 투영이 100픽셀 넘게 떨어진 표본을 최소 10개 확보하고, 그중 90% 이상이 현재 투영 30픽셀 안이어야 한다. 초기 투영 30픽셀 안 표본은 0개, 모든 표본의 고정 mask는 200픽셀 이상을 요구한다. 이는 이미 본 영상에서 만든 렌더 시험 기준이며 행동 정답이나 모델 성능 지표가 아니다. 원격 렌더 관련 Lab 파일 다섯 개도 새 pin으로 확인한다.
+
 ## 실제 검사 결과를 다음 판단에 연결하는 운반 계층
 
 새 [호스트](../evals/agentic_brev_runtime_host_v1.py)는 정상 참조 원문을 검증한 뒤 case 검사 승인을 소비하고, case 원문이 검증·봉인돼야 다음 조사 snapshot을 반환한다. [mailbox transport](../evals/agentic_brev_mailbox_transport_v1.py)와 [IO service](../evals/agentic_brev_mailbox_service_v1.py)는 등록한 원격 helper만 호출한다. IO 응답을 받았다는 이유로 원문 검증을 생략하지 않는다.
