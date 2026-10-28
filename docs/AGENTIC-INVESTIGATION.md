@@ -190,3 +190,12 @@ cd "$HOME/rl-triage-agent"
 ```
 
 합성 CPU 경로의 통과는 실제 Nemotron 선택, 실제 학습 회복, 시각 정보의 추가 효과를 의미하지 않는다. 이 세 결과는 새 사전등록과 실제 실행에서 각각 측정한다.
+
+
+## AWS 촬영과 렌더 의존성 점검
+
+[첫 AWS F1 실행](../evals/results/agentic_f1_render_capture_20261028_v1/summary.json)은 실제 임대·입장 검사와 상태 1프레임을 통과했지만, 정상 정책의 촬영 전 AABA에서 `-11`로 끝났다. 로그에는 MaterialX 세 라이브러리의 `libXt.so.6` 누락과 Hydra 초기화 중 충돌이 남았다. 전체 영상과 F1 재생은 시작하지 않았다. 원문 92파일의 C/D 해시와 자원 정지를 확인했다. 두 현상의 인과는 후속 복구 시험에서 확인한다.
+
+[확장한 CPU 의존성 검사](../bench/check_agentic_renderer_libraries_v2.py)는 기존 Iray와 해당 MaterialX 세 라이브러리의 `ldd` 결과를 함께 검사한다. Iray만 통과하고 MaterialX에서 `libXt`가 빠진 경우도 거부하며 회귀 12개를 통과했다. Ubuntu 22.04에서 이 파일을 제공하는 패키지는 [공식 목록의 libxt6](https://packages.ubuntu.com/jammy/amd64/libxt6/filelist)이며, 의존성 검사 통과를 렌더 성공으로 취급하지 않는다.
+
+[Parent2](../bench/run_agentic_brev_probe_parent_v2.py)·[운반 helper v3](../bench/agentic_brev_probe_transport_remote_v3.py)·[IO service v3](../evals/agentic_brev_mailbox_service_v3.py)는 AWS용 JOB4 계약에 같은 검사쌍을 연결한다. 실제 자식 entry와 production 함수의 신원을 함께 고정하고 기존 승인·임대·증거·metadata 검증을 유지한다. 합성 CPU 경로와 메인 WSL 회귀가 통과했으며 실제 AWS 검사쌍은 별도 사전등록 뒤 실행한다.

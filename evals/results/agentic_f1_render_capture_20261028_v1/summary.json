@@ -1,0 +1,60 @@
+{
+  "schema": "agentic_f1_render_capture_result_v1",
+  "status": "infrastructure_failure_before_full_capture",
+  "development_already_seen": true,
+  "seed": 2221,
+  "source_anchor": "e326047bdbdafc50a9293e849551484cb91a8d52",
+  "preregistration_anchor": "aa10c1dae0fd68cad50f456f5f30fede038a783a",
+  "phase": {
+    "path": "bench/protocols/agentic_f1_render_capture_phase_20261028_v1.json",
+    "sha256_lf": "6aa5a86ec64d5fa4125bfc2d461d061299066bb0b93035a6f9401b23bbecd484"
+  },
+  "state_smoke": {
+    "unit_completed": true,
+    "frames": 1,
+    "cleanup_verified": true,
+    "app_close_returned": false
+  },
+  "normal_aaba": {
+    "completed": false,
+    "exit_code": -11,
+    "cleanup_verified": true,
+    "wall_s": 13.071998600999905,
+    "observed_failure_phase": "hydra_engine_initialization"
+  },
+  "missing_shared_libraries_observed": [
+    "libXt.so.6"
+  ],
+  "affected_library_names": [
+    "libMaterialXRenderHw.so",
+    "libMaterialXRenderGlsl.so",
+    "libusdBakeMtlx.so"
+  ],
+  "single_crash_cause_established": false,
+  "full_recordings": 0,
+  "fault_policy_started": false,
+  "new_training_runs": 0,
+  "model_api_calls": 0,
+  "model_use_approved": false,
+  "raw_copy_verification": {
+    "files_verified": 92,
+    "all_match": true,
+    "archive_sha256": "d5efa111db932438114c0b78a592ca0a155bc47241828169b14e512a24a5cfa2"
+  },
+  "shutdown": {
+    "resource_status": "STOPPED",
+    "at_utc": "2026-10-28T13:01:40.788570+00:00",
+    "stop_commands": 1,
+    "elapsed_from_initial_create_s": 4523.833015,
+    "quote_times_elapsed_usd_not_invoice": "4.530226698994533333333333333"
+  },
+  "raw_sha256": {
+    "state_smoke_result": "3bb5135fa4e48b1f41217108bb1fad332a6280724f5581141d6dd42b9983ffe3",
+    "record_execution": "eac939d9e98b8e2f2f53f64acae6af5d8ea3dd42305bd96e5f1f5f3b9877f74b",
+    "aaba_stderr": "cc8717e8e491881f7cf4e605c8cf88d11106ef5dc14269fd8e5aaaea050c9aea",
+    "aaba_stdout": "0a649fe26c4930f5c34b225fe0c626ccc77e731e4dcc9124ac508b79c2191900",
+    "stop_observation": "fa9e87ffaeab7e50f6a31dcf5e0e09b5a1d6c0bd7a61d70b484bdcf9b6ee54a1",
+    "collection": "dfdb31916f8db47a10f82b9d54f2d384558c379379ef4a01d458b418ebc6f7c2"
+  },
+  "summary_ko": "실제 상태 1프레임은 통과했다. 정상 정책의 촬영 전 AABA에서 라이브러리 누락과 렌더 초기화 중 -11을 관측해 두 전체 녹화를 시작하지 않았다. 원문 사본을 대조하고 자원 정지를 확인했다."
+}

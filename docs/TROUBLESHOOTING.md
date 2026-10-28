@@ -546,3 +546,10 @@
 - [텍스트 고리의 실제 검사쌍](../evals/results/agentic_runtime_text_pair_start_20261028_v1/summary.json)은 수정된 Parent 등록과 lifecycle 생성자 검사를 통과했다. 그 뒤 기존 VM의 Start 요청이 `Bad Request`와 exit 1을 반환했고, 후속 목록에서 같은 자원이 `STOPPED`임을 확인했다. 원격 boot·검사·추가 API 호출은 시작하지 않았다.
 - 응답에는 상세 공급자 사유가 없으므로 용량 부족이나 모델 실패로 단정하지 않는다. Start를 반복하지 않고 원문·기존 모델 응답·승인 소비를 보존한다. 다른 자원에서 이어갈 때는 실제 provider·인스턴스명·GPU·소스·예산을 새 판으로 결합한다.
 - AWS `g6e.4xlarge`는 실제 L40S를 제공해도 이름에 `l40s`가 없어 기존 녹화 계약이 거부했다. 새 계약은 등록된 정확한 유형만 추가하고 생성 protocol과 견적 원문의 AWS·단일 L40S 48GB·가격·SHA를 대조한다. 실제 GPU admission·임대·소유 child·렌더 검증은 유지하며 메인 WSL 회귀 23개가 통과했다.
+
+
+### OPS-75: Iray 의존성 통과 뒤 MaterialX 라이브러리 누락
+
+- [AWS F1 촬영 첫 실행](../evals/results/agentic_f1_render_capture_20261028_v1/summary.json)은 임대·입장·상태 1프레임을 통과했다. 이후 AABA의 앱 생성 중 Hydra engine에서 `-11`이 발생했고 소유 자식 정리는 확인됐다. 같은 stderr에는 `libMaterialXRenderHw.so`, `libMaterialXRenderGlsl.so`, `libusdBakeMtlx.so`가 `libXt.so.6`를 찾지 못했다는 기록이 있다. 전체 녹화와 모델 호출은 0건이다.
+- 기존 CPU 검사는 `libneuray.so` 하나만 읽었으므로 이 세 라이브러리의 누락을 검사하지 않았다. 새 검사는 네 대상의 단일 파일·raw SHA·`ldd` exit·stdout/stderr의 미해결 의존성·timeout을 확인한다. Iray만 통과하는 경우도 거부하는 회귀를 포함해 12개를 통과했다.
+- [Ubuntu Jammy 공식 파일 목록](https://packages.ubuntu.com/jammy/amd64/libxt6/filelist)은 `libXt.so.6`를 `libxt6`에 포함한다. 후속 판은 이 패키지의 복구 전후 원문과 같은 렌더 조건을 비교한다. 누락과 SIGSEGV가 함께 관측됐다는 사실만으로 단일 원인을 확정하지 않는다. 원문 92파일의 사본 해시와 `STOPPED`를 확인했고 이전 실행은 보존했다.
