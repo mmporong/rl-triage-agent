@@ -45,6 +45,12 @@
 
 API 소비는 별도 12회 상한 중 3회, pending 0건이다. 완료 응답 재생은 추가 호출 0회였다. 프레임 조회·확인 검사·교정은 실행되지 않았으므로 영상 효과·원인 확정·회복을 판정하지 않는다. 다음 계약 판에서도 이 응답을 유효한 답으로 보정하지 않으며, 새 호출은 별도 사전등록 뒤 같은 개발 예산의 잔여 안에서 진행한다.
 
+### v2 출력 계약 패키지
+
+[v2 등록](../bench/protocols/agentic_investigation_development_20261028_v2.json)은 같은 세 개발 입력에 명시적 prompt와 판단별 `response_format: json_schema`를 함께 적용한다. 현재 허용 행동·대상·공개 fact ID를 enum으로 전달하고 필수 세 필드·배열 길이를 명시한다. 기존 action 검증기가 대상과 행동의 관계, 빈 근거·중복 근거를 계속 확인한다. NVIDIA의 [해당 hosted API](https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3_5-super-vl-120b-a12b-infer)와 [모델별 가이드](https://docs.nvidia.com/nim/large-language-models/2.0.13/get-started/advanced/get-started-nemotron-3.5-super-vl.html)에 JSON Schema 지원이 명시돼 있다. 개별 키워드의 hosted 강제 여부와 이 프로젝트의 유효율 개선은 실제 호출에서 확인한다.
+
+v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회를 고정하고 같은 12회 상한의 잔여 9회만 사용한다. 실제 WSL 요청·응답의 메시지와 schema params 해시를 대조한다. prompt와 schema가 함께 바뀌므로 이 개발 결과를 prompt 단독 효과로 해석하지 않는다.
+
 ## 영상과 같은 시각의 관절 상태
 
 `bench/record_agentic_state_sidecar_v1.py`는 기존 native 녹화의 프레임 callback에서 simulation time·step과 관절 위치·속도·계산 토크·적용 토크·가용 접촉 상태를 기록한다. 원본에 없는 값은 미가용 사유로 남긴다. 접촉 센서의 lazy update를 일으키는 읽기는 건너뛰며, 별도 시각이나 행동 정답을 만들지 않는다. 녹화 원문과 checkpoint·frame·시각을 맞춰 확인한 뒤 사용할 수 있다.
