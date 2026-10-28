@@ -84,6 +84,8 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 [순차 수집 v2](../evals/results/agentic_motor_capture_20261028_v2/summary.json)는 원격 접속 뒤 cache 경로 조건에서 중단됐고 정지를 확인했다. [v3 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v3.json)은 이전 성공 기록에 명시된 VM별 HOME 상대 repo·Lab·Python 경로를 사용한다. 환경이 사라졌다고 단정하거나 재설치하지 않으며, 실제 존재 상태를 판정 전에 기록한다. 원격 본문 종료 코드를 별도 marker로 확인하고 같은 요청의 재실행을 거부한다.
 
+[v3의 실제 boot](../evals/results/agentic_motor_capture_20261028_v3/summary.json)는 cache와 source·package pin 확인을 통과했다. CLI가 성공 marker 뒤에 붙인 자원 이름 한 줄을 host가 거부해 녹화 전에 종료했다. [v4 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v4.json)은 등록된 이름 한 줄만 선택적으로 처리하며 단일 marker·비영 종료·예상 밖 출력 거부는 유지한다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>

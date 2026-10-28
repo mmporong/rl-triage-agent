@@ -474,3 +474,8 @@
 - [순차 수집 v2](../evals/results/agentic_motor_capture_20261028_v2/summary.json)는 SSH 접속 뒤 cache 존재 조건에서 중단됐다. 설정은 첫 VM의 repo 배치를 가정했지만, 다른 VM의 이전 성공 기록에는 별도 repo·Lab 위치가 명시돼 있었다. 당시 조건은 어느 경로가 없었는지 구분하지 않았으므로 현재 환경 소실 여부는 확인되지 않았다. Isaac·학습·녹화는 시작되지 않았다.
 - 같은 traceback이 Brev CLI의 연결 재확인 전후에 두 번 기록됐다. [v3 등록](../bench/protocols/agentic_motor_capture_phase_20261028_v3.json)은 원격 본문이 비영 종료해도 외부 envelope에서 종료 코드를 기록하고, host가 단일 최종 marker를 확인한다. 원자적인 run·label 디렉터리가 같은 본문의 재실행을 막는다. 전송 exit 0만으로 본문 성공을 판단하지 않는다.
 - v3는 VM별 HOME 상대 layout을 등록하고 실제 경로·존재 상태를 판정 전에 출력한다. lexical venv 경로와 source/runtime pin을 유지하며, dirty checkout·없는 cache는 보존하고 중단한다. 재설치나 자동 후보 탐색으로 측정 환경을 바꾸지 않는다. CPU에서는 Python 3.10과 실제 Bash 실행, WSL에서는 symlink를 포함한 97개 검사를 통과했다.
+
+### OPS-63: Brev CLI의 성공 marker 뒤 자원 이름 출력
+
+- [v3 boot](../evals/results/agentic_motor_capture_20261028_v3/summary.json)는 등록 cache·소스·Python 패키지 pin을 확인한 뒤 `AGENTIC_REMOTE_EXIT=0`을 남겼다. Brev CLI가 그 뒤에 자원 이름을 한 줄 붙였고, host는 marker가 마지막 줄이 아니라는 이유로 거부했다. Isaac·녹화·학습·모델 호출은 시작되지 않았다. 정지 완료와 원문 해시는 보존했다.
+- [v4](../bench/protocols/agentic_motor_capture_phase_20261028_v4.json)는 등록된 자원 이름과 정확히 같은 마지막 한 줄만 선택적으로 제외한다. 다른 이름·임의 뒷줄·중복 이름·중복 marker·비영 종료는 계속 거부한다. 실제 v3 stdout을 이용한 회귀와 WSL의 103개 검사를 통과했다. 환경 재설치는 수행하지 않았다.
