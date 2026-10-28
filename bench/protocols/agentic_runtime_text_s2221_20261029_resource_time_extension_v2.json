@@ -1,0 +1,53 @@
+{
+  "schema": "agentic_runtime_resource_time_extension_phase_v2",
+  "registered_at_utc": "2026-10-28T22:16:05.683132+00:00",
+  "resource": {
+    "resource_id": "oky8zxbnx",
+    "resource_name": "rl-triage-l40s-headless-20261029g",
+    "provider": "aws",
+    "instance_type": "g6e.4xlarge",
+    "gpu_model": "L40S"
+  },
+  "base_extension": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261029_resource_extension_v1.json",
+    "sha256": "68a314ee5091395bdcd09ec8ef48dc395d1e295fa94623bf7de764272ba18ee2",
+    "anchor": "db6e5f482f8cb6957b0778696cba792a3e8e1d74"
+  },
+  "base_environment": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261029_v10_environment.json",
+    "sha256": "831034b696f23e45821a5626bd00cc7d38e281d7d2fa1e39e112d3035533d05a",
+    "anchor": "ba4d47ea31feba526e280600c61252336c14c917"
+  },
+  "creation": {
+    "earliest_create_request_utc": "2026-10-28T17:41:10.061936+00:00",
+    "creation_protocol": {
+      "anchor": "6b9d971ab2e5924706644e62ffae1b99f1719395",
+      "path": "bench/protocols/fresh_brev_l40s_headless_environment_20261029g.json",
+      "sha256_lf": "f0dec98b01739d8d5f748edf9104bec00616b521445c115724bc50a940f25dea"
+    }
+  },
+  "funding": {
+    "resource_cap_usd": "40",
+    "g_program_slice_usd": "165",
+    "overall_program_cap_including_renderer_h_usd": "185",
+    "increment_usd": "0",
+    "consumption_reset": false
+  },
+  "time": {
+    "elapsed_origin_utc": "2026-10-28T17:41:10.061936+00:00",
+    "prior_max_lifetime_s": 21600,
+    "max_lifetime_s": 25200,
+    "deadline_utc": "2026-10-29T00:34:05.550256+00:00",
+    "stop_cutoff_utc": "2026-10-29T00:14:05.550256+00:00",
+    "stop_reserve_s": 1200
+  },
+  "restrictions": {
+    "same_resource": true,
+    "reinstall": false,
+    "new_model_api": false,
+    "new_funding": false,
+    "consumption_reset": false
+  },
+  "authority_issued": false,
+  "execution_permitted": false
+}
