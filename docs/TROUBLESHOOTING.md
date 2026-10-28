@@ -535,3 +535,8 @@
 
 - 실제 Parent 배치는 `unit/raw/`에 검사 원문을, `unit/`에 outcome·evidence·request를 쓴다. 첫 운반기의 E13 roots만으로는 부모 파일 여섯 경로를 찾을 수 없었다. CPU 등록 준비에서 이를 확인해 실제 실행 전에 차단했다.
 - 새 운반기는 E13 roots를 넓히지 않고 별도 metadata layer와 두 map의 SHA를 고정한다. 등록 request는 양 arm의 참조를 포함하므로 raw SHA를 검증한 leaf로 보존한다. 이를 한 arm의 resolver에 재귀로 넣던 첫 CPU 실패도 남겼다. 실제 Parent 폴더 구조를 사용한 export→unpack→host metadata→E13 projection의 WSL 회귀 28개를 통과했다. 실제 클라우드 검사는 별도 결과로 판정한다.
+
+### OPS-73: 생성기와 소비자의 명령 canonical hash 규약
+
+- [실제 등록 최종검사](../evals/results/agentic_runtime_text_pair_registration_20261028_v1/summary.json)는 모델이 학습 기록을 읽고 `P_reward`를 고른 뒤 GPU 실행 전에 차단됐다. 원인 판별에서 자원·순서·seed·probe·소스 조건은 같았고, `commands_sha256`만 달랐다. 생성기는 `E.digest`를, 동결 Host는 `P.PAIR.digest`를 사용했다. 모델 두 판단은 유효했고 추가 API 호출과 GPU 검사는 0건이었다.
+- 새 준비기는 기존 소비자의 명령 hash 함수를 사용한다. 생성한 pair 전체와 승인 원문을 동결 Host의 `_binding`으로 소비하는 CPU 회귀 2개가 통과했다. 기존 등록·소비 prefix와 원문은 보존하며 새 P 판과 tag로 같은 모델 선택을 재사용한다. hash 규약을 맞춘 CPU 통과와 실제 검사쌍 완료를 구분한다.

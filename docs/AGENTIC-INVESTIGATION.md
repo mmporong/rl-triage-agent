@@ -159,6 +159,8 @@ v10은 VM이 준비 상태에 이르지 못해 boot·App·녹화 전에 종료�
 
 [텍스트 전용 후속 등록](../bench/protocols/agentic_runtime_text_s2221_20261028_v1.json)은 이미 본 F1 seed 2221의 실제 학습 기록을 조회한 뒤 실제 검사쌍과 후속 모델 판단을 연결한다. 학습 자료 alias 하나만 제공하고 프레임과 과거 모델 판단 prefix는 재사용하지 않는다. 기존 API 원장의 7건을 보존하며 전체 상한 12회 안에서 새 판단은 최대 4번이다. 정상 참조·case 검사·승인·소비·원문 봉인 뒤에만 다음 snapshot을 연다. 무효 판단과 지원 밖 교정 요청은 HOLD한다. 이 등록의 성공 범위는 검사 원문과 다음 판단의 연결이며 회복·시각 효과·새 seed 성능과 구분한다.
 
+실제 모델 두 판단은 학습 기록 조회와 `P_reward` 검사 선택으로 유효했다. 첫 Parent 등록은 명령 canonical hash의 생성·소비 규약 차이로 GPU 전에 차단됐으며, [새 Parent 판](../bench/protocols/agentic_runtime_text_s2221_pair_20261028_v2.json)은 같은 모델 선택과 고정 인자를 유지하고 hash 규약을 맞춘다. [차단 원문 요약](../evals/results/agentic_runtime_text_pair_registration_20261028_v1/summary.json)을 보존하며 이 재등록에 새 모델 호출은 쓰지 않는다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 .venv/Scripts/python.exe evals/run_agentic_development_v1.py run --plan <등록된-비공개-plan.json의-전체경로>

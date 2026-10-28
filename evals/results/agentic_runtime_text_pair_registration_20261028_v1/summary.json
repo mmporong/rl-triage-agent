@@ -1,0 +1,31 @@
+{
+  "schema": "agentic_pair_registration_failure_v1",
+  "status": "blocked_before_GPU",
+  "stage": "parent_registration_finalization",
+  "runtime_protocol_commit": "6327e2f17f5b9a2fe41bd67ac6ea245b409f1407",
+  "parent_protocol_commit": "d63c4a5d44e767da3770fb3e5960253712eb5698",
+  "model_actions": [
+    "read_evidence",
+    "run_probe:P_reward"
+  ],
+  "model_decisions_valid": 2,
+  "api_total_preserved": 9,
+  "api_cap": 12,
+  "additional_api_for_failure": 0,
+  "pair_approval_prefix_events": 3,
+  "GPU_dispatches": 0,
+  "confirmed_cause": "준비기의 명령 hash는 E.digest를 사용했고 동결 Host는 P.PAIR.digest를 요구해 canonical 바이트 규약이 달랐다.",
+  "failed_predicate": "pair.commands_sha256 == P.PAIR.digest(pair.commands)",
+  "other_identity_predicates_passed": true,
+  "model_failure": false,
+  "old_records_and_consumed_prefix_preserved": true,
+  "retry": {
+    "new_parent_protocol": "bench/protocols/agentic_runtime_text_s2221_pair_20261028_v2.json",
+    "new_private_tag": "pair2",
+    "same_model_selection_reused": true,
+    "new_api_requests": 0,
+    "hash_method_matches_existing_consumer": true,
+    "preparer_sha256": "b6ec8f991367462d70c5ea42b9a39f3103a68711c521069f1ec7d4ddeffa72c5",
+    "cpu_host_binding_regressions": 2
+  }
+}
