@@ -149,7 +149,7 @@ v10은 VM이 준비 상태에 이르지 못해 boot·App·녹화 전에 종료�
 
 [독립 F1 수집 환경 등록](../bench/protocols/fresh_brev_l40s_f1_environment_20261028d.json)은 기존 검사 자원과 별도로 AWS 단일 L40S 환경 하나를 준비한다. 생성·고정 환경 복원과 후속 녹화가 같은 $10 상한을 공유하며, 새 자원 ID와 별도 촬영 등록을 결합하기 전에는 Isaac·정책 녹화·모델 호출을 허용하지 않는다.
 
-[AWS용 F1 계약](../bench/agentic_play_job_v4.py)과 [unit v8](../bench/run_agentic_capture_unit_v8.py)은 실제 인스턴스명 `g6e.4xlarge`를 지원한다. 생성 등록과 Brev 견적 원문의 provider·인스턴스명·단일 L40S 48GB·가격·SHA를 대조하고, 현재 GPU와 임대는 실행 시 별도로 검증한다. same-Play·렌더 갱신·native·sidecar·종료 조건은 유지한다. 새 경로의 메인 WSL 회귀 23개가 통과했으며 실제 F1 녹화와 모델 입력 수용은 후속 측정 대상이다.
+[AWS용 F1 계약](../bench/agentic_play_job_v4.py)과 [unit v8](../bench/run_agentic_capture_unit_v8.py)은 실제 인스턴스명 `g6e.4xlarge`를 지원한다. 생성 등록과 Brev 견적 원문의 provider·인스턴스명·단일 L40S 48GB·가격·SHA를 대조하고, 현재 GPU와 임대는 실행 시 별도로 검증한다. same-Play·렌더 갱신·native·sidecar·종료 조건은 유지한다. 새 경로의 메인 WSL 회귀 23개가 통과했으며 실제 F1 녹화와 모델 입력 수용은 후속 측정 대상이다. [촬영 등록](../bench/protocols/agentic_f1_render_capture_phase_20261028_v1.json)은 seed 2221의 정상·F1을 각각 625프레임·50fps로 수집하며 생성·설치·대기와 같은 $10 상한을 공유한다.
 
 ## 실제 검사 결과를 다음 판단에 연결하는 운반 계층
 
