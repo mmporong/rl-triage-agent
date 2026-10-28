@@ -31,6 +31,10 @@
 
 `agentic_investigation_runtime_v1.py`는 판단·승인·실행 요청·완료 영수증을 저장해 프로세스 재시작 뒤에도 같은 작업을 조회한다. 실행 요청 기록이 있으면 새 작업을 제출하지 않으며, 검증된 검사 결과를 받은 뒤 다음 모델 입력을 만든다. 교정 미회복 뒤에는 새 checkpoint에 결합된 두 번째 고리만 허용한다. 실행 callback과 승인은 호스트가 명시해야 하며, 원문·승인 원장·영수증을 기존 controller가 다시 검증한다. CPU 재시작·변조 회귀를 통과했으며, 이 어댑터를 이용한 새 GPU 종단 실행은 아직 측정하지 않았다. 기존 controller의 Windows 실행 영수증과 Brev의 POSIX 영수증은 서로 다른 계약이므로 같은 형식으로 간주하지 않는다.
 
+`agentic_brev_probe_evidence_v1.py`는 Brev F1/NONE 원본의 job·worker·report·POSIX 실행·GPU·임대·소스·checkpoint를 다시 읽는 검사 검증기다. 원격 경로는 원문에 보존하고 등록한 root-map으로만 보관 사본을 찾는다. 기존 여섯 검사와 optimizer 세 update의 측정 규칙을 재사용한다. 과거 session ID만 남은 보관 결과는 부족한 소유 process·GPU·임대 근거를 채우지 않고 HOLD로 둔다.
+
+`agentic_brev_controller_scope_v1.py`는 이 새 원문을 기존 승인·seal·조사 고리에 연결한다. 공개 등록의 필수 소스·검증 helper·Git 조상과 blob을 확인하고, 같은 thread의 context 안에서만 새 GPU 계약을 연다. 새 계약은 합성 시험에서도 승인 원장을 소비하기 전에 소스 등록을 요구하며, 합성 입력을 실제 입력으로 바꾸지 않는다. 종료 시 기존 controller를 복원한다. 완료 원문의 신뢰 digest·예상 probe·operation·checkpoint는 별도의 호스트 봉인에서 받아야 한다. 이 연결은 CPU 검증 단계이며 실제 검사 실행·교정 backend·새 회복 결과를 제공하지 않는다. 호스트는 지원하지 않는 교정 요청을 승인 전에 HOLD로 닫아야 한다.
+
 ## 개발 호출 경로
 
 `run_agentic_development_v1.py`는 자료 조회 결과를 다음 판단 입력에 추가하고, 등록 검사 제안 또는 HOLD에서 멈춘다. 검사와 교정은 실행하지 않는다. Windows 호스트가 API를 예약한 뒤 WSL의 기존 provider를 호출하며, 자격증명은 WSL 환경에만 남는다. 응답이 불명확하게 끊기면 자동 재전송하지 않는다.
