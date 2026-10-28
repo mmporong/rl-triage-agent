@@ -553,3 +553,10 @@
 - [AWS F1 촬영 첫 실행](../evals/results/agentic_f1_render_capture_20261028_v1/summary.json)은 임대·입장·상태 1프레임을 통과했다. 이후 AABA의 앱 생성 중 Hydra engine에서 `-11`이 발생했고 소유 자식 정리는 확인됐다. 같은 stderr에는 `libMaterialXRenderHw.so`, `libMaterialXRenderGlsl.so`, `libusdBakeMtlx.so`가 `libXt.so.6`를 찾지 못했다는 기록이 있다. 전체 녹화와 모델 호출은 0건이다.
 - 기존 CPU 검사는 `libneuray.so` 하나만 읽었으므로 이 세 라이브러리의 누락을 검사하지 않았다. 새 검사는 네 대상의 단일 파일·raw SHA·`ldd` exit·stdout/stderr의 미해결 의존성·timeout을 확인한다. Iray만 통과하는 경우도 거부하는 회귀를 포함해 12개를 통과했다.
 - [Ubuntu Jammy 공식 파일 목록](https://packages.ubuntu.com/jammy/amd64/libxt6/filelist)은 `libXt.so.6`를 `libxt6`에 포함한다. 후속 판은 이 패키지의 복구 전후 원문과 같은 렌더 조건을 비교한다. 누락과 SIGSEGV가 함께 관측됐다는 사실만으로 단일 원인을 확정하지 않는다. 원문 92파일의 사본 해시와 `STOPPED`를 확인했고 이전 실행은 보존했다.
+
+
+### OPS-76: 재시작 요청 접수와 실제 GPU 준비의 구분
+
+- [F1 재시작 기록](../evals/results/agentic_f1_render_restart_20261028_v1/summary.json)은 Start 요청 exit 0 뒤에도 `READY`에 도달하지 못했다. 공급자 상태는 `STARTING`에서 `STOPPED`로 바뀌었고, 호스트는 대기 상한에서 종료했다. 원격 boot·패키지 복구·GPU·녹화·학습·모델 호출은 0건이다. 추가 Start나 Stop을 보내지 않았으며 원문 385파일의 사본 SHA를 확인했다.
+- [Brev 공식 lifecycle](https://docs.nvidia.com/brev/concepts/gpu-instances)은 Stop 때 GPU를 공급자 풀로 반환하고 재시작 때 같은 공급자·리전·유형의 용량을 다시 확보한다고 설명한다. [CLI의 detached 옵션](https://docs.nvidia.com/brev/cli/instance-management)은 상태 polling 없이 반환하므로 요청 접수만으로 준비 완료를 판단하지 않는다. 현 기록은 용량·공급자·bootstrap 원인을 가르지 못하며, 앞선 다른 자원의 HTTP 400과 같은 원인으로 묶지 않는다.
+- [새 환경 등록](../bench/protocols/fresh_brev_l40s_continuous_environment_20261028e.json)은 한 번 생성한 환경에서 등록 작업을 연속 수행하고 종료 때 회수·정지를 확인한다. 최초 생성부터 설치·대기·실행·정지까지의 비용과 시간 상한을 유지하며, 이전 실패 기록과 소비는 보존한다. 새 환경 생성은 검사·회복·영상 성공을 뜻하지 않는다.

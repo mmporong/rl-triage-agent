@@ -1,0 +1,59 @@
+{
+  "schema": "agentic_f1_render_restart_result_v1",
+  "status": "infrastructure_failure_before_boot",
+  "development_already_seen": true,
+  "seed": 2221,
+  "phase": {
+    "path": "bench/protocols/agentic_f1_render_capture_phase_20261028_v3.json",
+    "sha256_lf": "0d27bf0ce6613722b885e347072fd44355c3efea2d5ed09aa445497fd478d08a"
+  },
+  "preregistration_anchor": "a8d1fd1031aa7e311d33a28912a77175166fe77f",
+  "observed": {
+    "start_requests": 1,
+    "start_cli_exit_code": 0,
+    "running_ready_healthy_observed": false,
+    "provider_transition": [
+      "STARTING",
+      "STOPPED"
+    ],
+    "final_shell_status": "NOT READY",
+    "final_health_status": "UNHEALTHY",
+    "failure_type": "TimeoutError",
+    "failure_at_utc": "2026-10-28T14:40:08.413926+00:00",
+    "stop_commands": 0,
+    "boot_commands": 0,
+    "copy_commands": 0
+  },
+  "root_cause_established": false,
+  "new_gpu_runs": 0,
+  "full_recordings": 0,
+  "new_training_runs": 0,
+  "model_api_calls": 0,
+  "model_use_approved": false,
+  "shutdown": {
+    "status": "STOPPED",
+    "at_utc": "2026-10-28T14:40:11.687537+00:00",
+    "activity_elapsed_s": "5842.542675",
+    "wall_since_initial_create_s": "10434.731935",
+    "previous_activity_s": "4523.833015",
+    "current_activity_s": "1318.70966",
+    "activity_quote_upper_estimate_usd": "5.850800135314",
+    "wall_quote_upper_estimate_usd": "10.44947968946813333333333333",
+    "actual_billing_claimed": false,
+    "budget_reset": false
+  },
+  "raw_copy_verification": {
+    "files_verified": 385,
+    "bytes_verified": 383614,
+    "all_match": true
+  },
+  "raw_sha256": {
+    "start-intent.json": "ef1d49cbf41c26d500a5786aeef9453f6bceac5e7d030c10cee3cda7f18c61c3",
+    "failure.json": "f9cfa05edbc8bae74eefb721019b3d0d6095faf811b4cfd57fd31e840e90a683",
+    "stop-intent.json": "628df6d3b4e4b05cb5e4a5d6a694da526fb709bec8cf2d2df4a919a42121327b",
+    "stopped.json": "44aae67f2bbdd814335a66a0d8be20a02af886b6507905a30dd67fcdf7dfe8c4",
+    "result.json": "446d37c00aec1282ca21536224504b02e096d1f5cb7fe7dc8401ca290cb0af9f"
+  },
+  "next_registration": "bench/protocols/fresh_brev_l40s_continuous_environment_20261028e.json",
+  "summary_ko": "재시작 요청은 접수됐지만 READY에 도달하지 못하고 정지 상태가 됐다. 원격 본문과 GPU·녹화·학습·모델 호출은 시작되지 않았다. 실패 원문과 사본을 보존하고 새 환경의 연속 실행을 별도로 등록했다."
+}
