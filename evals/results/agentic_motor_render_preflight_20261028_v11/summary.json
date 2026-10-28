@@ -1,0 +1,82 @@
+{
+  "schema": "agentic_motor_render_preflight_public_v11",
+  "status": "complete",
+  "outcome": "normal_render_accepted",
+  "source_commit": "887abdc6a00cb3f9dd0c5ef2b8492f4805c1146d",
+  "protocol_commit": "7fe0bf58fb2d8e472793b5cd4a9990047f61d038",
+  "resource": {
+    "id": "tnr498jy5",
+    "gpu": "L40S",
+    "vram_gb": 48,
+    "stopped": true
+  },
+  "normal_seed": 2033,
+  "already_seen_development": true,
+  "new_seed_evaluation": false,
+  "state_smoke_complete": true,
+  "normal_recordings": 1,
+  "fault_recordings": 0,
+  "frames": 625,
+  "fps": 50,
+  "duration_s": 12.5,
+  "render_sync": {
+    "forward_calls": 625,
+    "physics_snapshot_exact_equal": true,
+    "fabric_enabled": true
+  },
+  "projection": {
+    "samples": 26,
+    "separated_samples": 23,
+    "near_current_count": 23,
+    "near_initial_count": 0,
+    "current_fraction": 1.0,
+    "min_bright_pixels": 969,
+    "max_camera_trace_eye_error_m": 5.329070518200751e-15,
+    "forward_calls": 625
+  },
+  "checks": {
+    "sample_count": true,
+    "separated_sample_count": true,
+    "near_current_fraction": true,
+    "near_initial_count": true,
+    "mask_bright_pixels": true,
+    "camera_trace": true,
+    "forward_calls": true,
+    "physics_unchanged": true,
+    "fabric_enabled": true,
+    "render_sync_verified": true,
+    "live_native_sidecar_trace": true
+  },
+  "old_v9_same_checkpoint_observation": {
+    "method_unchanged": true,
+    "samples": 26,
+    "separated_samples": 23,
+    "near_current_count": 0,
+    "near_initial_count": 7,
+    "raw_evidence_sha256": "93dbc2ef9921e6b245c9482a6f4145c9276d10e6116de73373384d260eeb9816",
+    "interpretation": "카메라·checkpoint·분석법이 같은 사후 개발 관찰이다. 다른 GPU 실행의 전체 궤적 동등성이나 인과 A/B를 주장하지 않는다."
+  },
+  "archive": {
+    "sha256": "db9b32482a6f2f8fae9cfe991be554b6235bf2031d1263af51b05fe71e78ddc3",
+    "bytes": 188462641,
+    "files_verified": 2005,
+    "two_disk_all_match": true
+  },
+  "lifecycle": {
+    "origin": "first_create_request_including_environment_install_and_idle",
+    "start_utc": "2026-10-28T09:42:00.894029+00:00",
+    "stopped_utc": "2026-10-28T11:02:59.445771+00:00",
+    "elapsed_s": 4858.551729,
+    "quote_usd_per_h": "2.18064",
+    "combined_budget_usd": "10",
+    "elapsed_times_quote_usd": "2.9429867339796",
+    "is_billed_amount": false
+  },
+  "media": "docs/media/agentic_motor_render_preflight_20261028_v11/normal-s2033.mp4",
+  "preregistered_thresholds_unchanged": true,
+  "old_files_and_approval_flags_unchanged": true,
+  "model_usage_approved": false,
+  "new_training": 0,
+  "model_API": 0,
+  "interpretation": "정상 한 정책에서 렌더 형상과 현재 sim 위치의 등록 일치를 확인했다. 결함 영상과 모델 판단의 기여는 새 실행에서 확인한다."
+}

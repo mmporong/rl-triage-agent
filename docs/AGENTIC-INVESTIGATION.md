@@ -141,6 +141,10 @@ v1의 잘못된 세 답은 v2에서도 무효다. 기존 API 원장·소비 3회
 
 v10은 VM이 준비 상태에 이르지 못해 boot·App·녹화 전에 종료됐다. [새 자원의 v11 등록](../bench/protocols/agentic_motor_render_preflight_phase_20261028_v11.json)은 생성 원문에 결합한 L40S 한 대를 사용한다. 환경 복원과 이번 렌더 시험은 최초 Create 요청부터 계산하는 같은 $10 상한을 공유한다. 정상 정책 하나의 625프레임과 렌더 판정 기준은 v10과 같으며, 동결 소스 151개와 실제 환경 pin을 확인한 뒤 실행한다. CPU 환경 복원과 실행기 회귀 28개 통과는 GPU 렌더 통과를 뜻하지 않는다.
 
+[v11 실제 결과](../evals/results/agentic_motor_render_preflight_20261028_v11/summary.json)는 정상 seed 2033 한 정책에서 등록 조건 11개를 통과했다. 625회 `forward()` 전후의 물리 snapshot이 모두 같았고, native·sidecar·trace·playback과 실제 POSIX 임대를 검증했다. 26개 표본 중 초기·현재 root 투영이 100픽셀 넘게 떨어진 23개 모두에서 밝은 형상의 중심이 현재 root 30픽셀 안에 있었으며, 초기 root 30픽셀 안 표본은 0개였다. 전체 표본의 최소 mask는 969픽셀, 카메라·trace 위치의 최대 차이는 약 5.33×10⁻¹⁵m였다. 상한이나 분석법은 실행 뒤 바꾸지 않았다.
+
+[새 정상 영상](media/agentic_motor_render_preflight_20261028_v11/normal-s2033.mp4)은 640×480·50fps·625프레임·12.5초이며 [3초](media/agentic_motor_render_preflight_20261028_v11/frame-3s.png)·[6초](media/agentic_motor_render_preflight_20261028_v11/frame-6s.png)·[11초](media/agentic_motor_render_preflight_20261028_v11/frame-11s.png) 원본 추출 화면도 함께 보관한다. 원문 2,005파일의 C/D 해시가 일치했고 VM 정지를 확인했다. 생성·설치·대기·시험·정지까지의 견적 환산은 약 $2.943이며 실제 청구액은 아니다. 이미 본 정상 정책 하나의 렌더 확인 결과다. 기존 결함 영상의 모델 입력 보류와 원래 승인 플래그는 유지하며, 결함 재녹화와 모델 판단 기여는 후속 실행에서 확인한다.
+
 ## 실제 검사 결과를 다음 판단에 연결하는 운반 계층
 
 새 [호스트](../evals/agentic_brev_runtime_host_v1.py)는 정상 참조 원문을 검증한 뒤 case 검사 승인을 소비하고, case 원문이 검증·봉인돼야 다음 조사 snapshot을 반환한다. [mailbox transport](../evals/agentic_brev_mailbox_transport_v1.py)와 [IO service v2](../evals/agentic_brev_mailbox_service_v2.py)는 등록한 원격 helper만 호출한다. IO 응답을 받았다는 이유로 원문 검증을 생략하지 않는다.
