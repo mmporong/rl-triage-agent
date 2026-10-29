@@ -1,0 +1,35 @@
+{
+  "schema": "fresh_frame_runtime_prefix_development_result_v1",
+  "scope": "saved_actual_model_input_cpu_replay_only",
+  "split": "development",
+  "already_seen_seed": 2221,
+  "model_result": "evals/results/fresh_frame_probe_choice_dev_s2221_20261029_v1/summary.json",
+  "status": "pending_registered_probe",
+  "decisions": [
+    {
+      "action": "run_probe",
+      "fact_ids": [
+        "telemetry:case:Train/mean_reward",
+        "telemetry:reference:Train/mean_reward",
+        "telemetry:case:Metrics/base_velocity/error_vel_xy",
+        "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+        "telemetry:case:Episode_Termination/time_out",
+        "telemetry:reference:Episode_Termination/time_out"
+      ],
+      "target": "P_reward"
+    }
+  ],
+  "pending_action": "run_probe",
+  "new_api_calls": 0,
+  "host_dispatches": 0,
+  "gpu_operations": 0,
+  "probe_receipt_created": false,
+  "cause_confirmed": false,
+  "new_recovery": false,
+  "image_selection_benefit_established": false,
+  "old_model_decision_relabelled_as_new": false,
+  "source_file": "evals/agentic_fresh_selection_prefix_v1.py",
+  "source_sha256": "606b21b809771a33d4ed96b10e24e9a18825a079494247c5e1ff52f384121d1e",
+  "actual_cpu_receipt_sha256": "ff326b3b1490bba63fb3b5e04b2bb638030704bd9446ac5846f214f18eadc065",
+  "initial_data_loading": "host_preloaded_facts_from_original_verified_model_request"
+}

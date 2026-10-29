@@ -1,0 +1,55 @@
+{
+  "actions": {
+    "gpu_execution_authorized": false,
+    "model_api": 0,
+    "new_resource_creations": 0,
+    "start_requests_authorized": 0
+  },
+  "extension": {
+    "absolute_deadline_utc": "2026-10-29T10:35:36.779993+00:00",
+    "additional_allocation_usd": "0",
+    "budget_reset": false,
+    "cost_origin_unchanged": true,
+    "execution_cutoff_utc": "2026-10-29T10:15:36.779993+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "intermediate_stop": false,
+    "max_lifecycle_s": 48600,
+    "program_cap_usd": "195",
+    "quoted_usd_per_h": "2.18064",
+    "resource_cap_usd": "30",
+    "stop_reserve_s": 1200,
+    "worst_case_compute_usd": "29.43864"
+  },
+  "h_state_basis": {
+    "actual_source_head_short": "58",
+    "current_status": "READY",
+    "new_gpu_actions": 0,
+    "new_start_requests": 0,
+    "prior_cumulative_start_requests": 8
+  },
+  "prediction": "같은 H 한 대의 기존 소비를 보존하고 cap 30 안에서 현재 과학 결합 실행과 Stop 관찰 시간을 확보한다.",
+  "previous_registration": {
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_time_extension_20261029h_v5.json",
+    "sha256_lf": "9e6701f0a0ced9f8f6bfe7be9f7cac82bb604e1b2fc857b8f8438ba5cefa4b84"
+  },
+  "recording_target": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "provider": "nebius",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "registered_at_utc": "2026-10-29T08:32:31.401760+00:00",
+  "resource_scope": {
+    "existing_consumption_and_failures_preserved": true,
+    "maximum_concurrent_rl_resources": 1,
+    "new_resources": 0,
+    "same_existing_h_only": true
+  },
+  "schema": "fresh_brev_l40s_renderer_environment_time_extension_v6",
+  "status": "candidate_existing_resource_time_only_no_start_or_gpu_action",
+  "watchdog": {
+    "controller_sha256": "3a1ee72ca31aaf9bcfc7d2d7c9aab298e0673dc98968a0d132f1aabe2a1aae07",
+    "old_watch_owner_handoff_required": true,
+    "owner_pid_and_start_identity_required": true
+  }
+}
