@@ -1,0 +1,69 @@
+{
+  "authority": {
+    "apt_or_driver_changes": 0,
+    "gpu_execution_authorized": false,
+    "model_api": 0,
+    "new_resource_creations": 0,
+    "start_authorized": true
+  },
+  "budget": {
+    "additional_allocation_usd": "0",
+    "budget_reset": false,
+    "deadline_utc": "2026-10-29T02:57:14.675376+00:00",
+    "execution_cutoff_utc": "2026-10-29T02:37:14.675376+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "max_lifecycle_s": 21600,
+    "program_cap_usd": "185",
+    "quoted_usd_per_h": "2.18064",
+    "resource_cap_usd": "20",
+    "stop_reserve_s": 1200
+  },
+  "capture_phase": {
+    "anchor": "51f20006e35ab3522a63e0fd2118a46fe74fe0c5",
+    "path": "bench/protocols/agentic_f1_render_capture_phase_20261029h_v6.json",
+    "sha256_lf": "e700364c8847022a049087fdcd369d7410297b7a70a16e80ad6690fe9f688615"
+  },
+  "controller_sources": {
+    "common_sha256": "b4d441abb3350f565777461493a5fc183c83d55f58ae7ed3653cd31f61c0157d",
+    "controller_sha256": "ae228341c2b11a3152bd7267ada8a409019123268a12ec5617a4916135e1bad9",
+    "watchdog_sha256": "7a76b754860cfc00641badf15f822d23106f1ab8c019ac77efb4f4751586d030"
+  },
+  "prior_attempts": {
+    "h4_gpu_children_started": 0,
+    "h4_result": "boot_path_collision_before_gpu_child",
+    "prior_resume": {
+      "anchor": "2ea64471589cf92f74ecee36619fd9dfbc59912a",
+      "path": "bench/protocols/agentic_f1_render_capture_resume_20261029h_v2.json",
+      "sha256_lf": "6192372eeac2c3af1c9f4c996a9f083f912caa34ef93a14eeb978ce72075cf84"
+    },
+    "prior_start_requests": 1,
+    "resume2_replacement": "preflight failed twice before external calls; Brev 0, Start 0, GPU 0, API 0"
+  },
+  "prior_stopped": {
+    "observed_at_utc": "2026-10-29T00:53:06.132877+00:00",
+    "resource_id": "d3cxwsmgd",
+    "sha256": "eef1bd6a76b93bfab9eaede9ad73c8f8b722285899355388638d90c933285953",
+    "status": "STOPPED"
+  },
+  "private_host_registration": {
+    "host_sha256": "a7df2ef8aa5e6388198c5f381dc4374a0c933b2131c787764dc9f9abd3552c9c",
+    "id": "ri87_h5_finalized_real_git",
+    "owner_stop_intent_id": "ri87_h5_owner_stop_intent",
+    "plan_sha256": "f7f13f943ca41fad6b40791a95a59e583a94680ec50b360413f0b05a514a3ee1",
+    "remote_namespace": "workspace/rl-triage-agentic-f1-render-capture-20261029-h5-8d6f31"
+  },
+  "registered_at_utc": "2026-10-29T01:35:33.079163+00:00",
+  "retry": {
+    "allowed_create_requests": 0,
+    "allowed_start_requests": 1,
+    "cumulative_start_requests_after_success": 2
+  },
+  "schema": "agentic_f1_render_capture_resume_20261029h_v3",
+  "status": "registered_existing_stopped_resource_single_start",
+  "target": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "provider": "nebius",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  }
+}
