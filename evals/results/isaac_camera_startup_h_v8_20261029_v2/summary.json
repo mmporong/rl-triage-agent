@@ -1,0 +1,75 @@
+{
+  "schema": "isaac_camera_startup_h_v8_summary_v2",
+  "status": "accepted",
+  "scope": "sdk_startup_update_shutdown_parent_acceptance",
+  "target": {
+    "provider": "nebius",
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "gpu": "L40S"
+  },
+  "parent": {
+    "child_pid": 89865,
+    "exit_code": 0,
+    "cleanup_verified": true,
+    "wall_s": 10.174214748999475,
+    "accepted": true
+  },
+  "sdk": {
+    "startup_returned": true,
+    "updates_returned": 1,
+    "close_returned": false,
+    "required_markers": [
+      "startup-entered",
+      "startup-returned",
+      "update-entered",
+      "update-returned",
+      "terminal-sealed",
+      "close-entered"
+    ],
+    "terminal_sha256": "21dbcff1687bb354102454f71aee77157ee32ae6dc428e44c341fa6fb25afddc",
+    "shutdown_policy_sha256": "25e7fbe3cf53f7938ade84333e9397946edacc65dbaed3a9aa8044f8f823dc25"
+  },
+  "postflight": {
+    "physical_flock_verified": true,
+    "lease_heartbeat_active": false,
+    "gpu_process_count": 0,
+    "resource_ready": true,
+    "stop_requested": false
+  },
+  "workload": {
+    "camera_startup_runs": 1,
+    "policy_runs": 0,
+    "physics_envs": 0,
+    "replicator_runs": 0,
+    "training_runs": 0,
+    "model_api_calls": 0
+  },
+  "evidence": {
+    "root_acceptance_sha256": "bc810af8af5250d577b7a3876bde255532971992844abff9d5950768db00ac20",
+    "wrapper_packet_sha256": "e0dacb16269636c531eeaddf0efecfac0efe268c4a9058ad93a285ec95c28897",
+    "parent_result_sha256": "c77b06a77ac32982cc0813ea7250c4cbeb49ef5fdebc76467e97fd347eea26f5",
+    "process_receipt_sha256": "d69c5f5ccfadb4cf7eb470cf35422893ff4acd848421c6864a56645d73f5ef7b",
+    "remote_stdout_sha256": "6c7de73e72e01b4d81f064ec890cc911c2ea92750d5442dd95da888d2160ec55",
+    "remote_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "archive": {
+    "status": "complete",
+    "files": 79,
+    "bytes": 102511,
+    "inventory_sha256": "798fcc73cd199543e01418a9e3d86669dd626f496247d15c2116862cba273250",
+    "copy_hashes_all_match": true,
+    "path_overlap_with_v4_v7_archive": 0,
+    "combined_v4_v8_files_without_path_overlap": 331
+  },
+  "comparison_policy": {
+    "v7_failure_preserved": true,
+    "speed_reduction_claim_allowed": false,
+    "reason": "V7과 V8은 종료 계약과 실행 시점의 cache·환경 조건이 달라 wall time을 성능 개선으로 비교하지 않는다."
+  },
+  "not_claimed": [
+    "native 정책 영상 수용",
+    "학습 또는 회복 성공",
+    "LLM 판단 기여",
+    "driver 단독 원인 규명"
+  ]
+}

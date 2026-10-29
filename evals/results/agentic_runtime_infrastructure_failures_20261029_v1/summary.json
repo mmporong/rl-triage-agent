@@ -1,0 +1,133 @@
+{
+  "schema": "agentic_runtime_infrastructure_failures_v1",
+  "status": "infrastructure_failures_preserved",
+  "scope": {
+    "runs": [
+      "R13",
+      "P14",
+      "R15",
+      "R16",
+      "R17"
+    ],
+    "model_api_used": 9,
+    "model_api_cap": 12,
+    "new_model_api_calls": 0,
+    "new_training_runs": 0,
+    "new_gpu_probe_runs": 0,
+    "r18_outcome_measured": false
+  },
+  "cases": [
+    {
+      "id": "r13_repair_lifecycle_binding",
+      "stage": "registration_consumer",
+      "outcome": "rejected_before_remote_prepare",
+      "confirmed_cause": "repair transport가 이전 lifecycle SHA를 상속해 등록된 repair IO/phase 계약과 일치하지 않았다.",
+      "remaining_hypotheses": [],
+      "correction": "Runtime, IO, repair transport의 lifecycle SHA를 같은 등록 판으로 통일했다.",
+      "verification": "후속 R14에서 E.registration과 T.registered 소비가 통과했다.",
+      "next_measurement": "실제 Parent와 검사 child의 종단 결과는 별도 실행 결과에서 판정한다.",
+      "evidence": [
+        {
+          "artifact_id": "r13_registration_result",
+          "sha256": "447d3e97abeef7d8c25df58e81e8c13dcf7a9d9512769b4983c7a939d59b1df5"
+        }
+      ]
+    },
+    {
+      "id": "p14_transport_method_source_binding",
+      "stage": "host_source_validation",
+      "outcome": "invalid_before_remote_prepare",
+      "confirmed_cause": "Transport2의 class source와 Transport1에서 상속한 다섯 bound method의 source 파일이 달라 Host source 검증이 거부했다.",
+      "remaining_hypotheses": [],
+      "correction": "Transport3가 다섯 등록 method를 같은 class와 source 파일에서 명시적으로 정의하고 기존 동작을 위임하도록 바꿨다.",
+      "verification": "후속 P16의 authority 발급 전 Host._sources 검사가 통과했다.",
+      "next_measurement": "원격 Parent 시작과 검사 child 결과는 후속 등록 판에서 확인한다.",
+      "evidence": [
+        {
+          "artifact_id": "p14_finalize_failure",
+          "sha256": "d5c1a5d53cf275c08a2eb9c2df182ce141d17b4719a806c7fdd788d4f0603ee2"
+        }
+      ]
+    },
+    {
+      "id": "r15_public_relative_private_native_contract",
+      "stage": "pair_preparation",
+      "outcome": "rejected_before_authority",
+      "confirmed_cause": "공개 lifecycle 계약은 저장소 상대경로를 요구하지만 private IO가 절대경로 ref를 제공해 Service5 계약과 맞지 않았다.",
+      "remaining_hypotheses": [],
+      "correction": "공개 ref는 상대경로와 raw SHA, commit blob으로 검증하고 native 해석은 private 소비 경계 안으로 제한했다.",
+      "verification": "후속 R16의 E/T 소비와 P16의 authority 발급 전 source 검사가 통과했다.",
+      "next_measurement": "등록된 service의 예산 검사와 원격 Parent 진입은 후속 실행에서 확인한다.",
+      "evidence": [
+        {
+          "artifact_id": "r15_preparation_result",
+          "sha256": "cc5619309800a6d9a24dd73bc078983382f8e7793469da30f1ae9b509f70b409"
+        }
+      ]
+    },
+    {
+      "id": "r16_service_budget_path_resolution",
+      "stage": "service_budget_validation",
+      "outcome": "infrastructure_unknown",
+      "confirmed_cause": "Service5의 예산 검사가 공개 저장소 상대경로를 native 절대경로 resolver에 그대로 넘겨 거부됐다.",
+      "remaining_hypotheses": [],
+      "correction": "Service6는 공개 lifecycle ref의 상대경로, 일반 파일, raw SHA와 committed blob을 확인한 뒤 예산 검사 동안에만 native ref를 사용하고 원래 계약을 복원한다.",
+      "verification": "후속 R17은 이 예산 경계를 지나 Parent launch까지 도달했다.",
+      "next_measurement": "Parent import 이후 검사 child 진입은 후속 실행에서 확인한다.",
+      "evidence": [
+        {
+          "artifact_id": "r16_reference_response",
+          "sha256": "385f5ddaf8ce58ac22ad9b87551ff0ca73a44d774917b0cc5d8a453e0852156f"
+        }
+      ]
+    },
+    {
+      "id": "r17_parent_import_order",
+      "stage": "remote_parent_startup",
+      "outcome": "infrastructure_hold",
+      "confirmed_cause": "Parent3가 저장소의 bench, evals, src 경로를 추가하기 전에 brev_recovery_backend_v4를 import해 ModuleNotFoundError로 종료됐다.",
+      "remaining_hypotheses": [],
+      "correction": "Parent4는 외부 의존 import 전에 등록 저장소 경로를 추가하며 기존 worker 선택, BoundedPopen, 판정 조건을 유지한다.",
+      "verification": "로컬 공개 회귀 9건과 원격 Python 3.10의 Parent4·Remote6·Service7 진입 검사가 통과했다. 이 검증은 검사 child의 GPU 실행 결과가 아니다.",
+      "next_measurement": "R18의 실제 Parent4, 검사 child, 후속 판단 결과는 실행 완료 뒤 별도 판정한다.",
+      "execution_boundary": {
+        "parent_process_ended_before_gpu": true,
+        "gpu_processes_observed": 0,
+        "training_started": false,
+        "new_model_api_calls": 0,
+        "resource_handoff_ready": true
+      },
+      "preservation": {
+        "files_verified": 575,
+        "c_d_all_match": true,
+        "inventory_sha256": "6809c944de63797134cfe94b3e600b9f17eda7db1416ee620260e7d68529fb96",
+        "scope": "R17 로컬 원문과 범위를 제한한 원격 snapshot",
+        "full_remote_namespace_claimed": false
+      },
+      "evidence": [
+        {
+          "artifact_id": "r17_main_result",
+          "sha256": "760b5b8ee52ce11a71529145514b8d0e1d70bd55b4a5488247239a76fb130f7a"
+        },
+        {
+          "artifact_id": "r17_parent_stderr",
+          "sha256": "0287b77c879327983d9c879fba49b3c6c55aa5f48456f6ca1470a0a998d2ccec"
+        },
+        {
+          "artifact_id": "r17_archive_receipt",
+          "sha256": "b2e88ba8cca11486e886dc30fd5b380d236542aae8e15898071fafedc7b0081e"
+        },
+        {
+          "artifact_id": "r17_handoff_evidence",
+          "sha256": "111f734ae64838235c607ebc8a6cccede9cae02484ffde8d1d2fbc2cb55eac75"
+        }
+      ]
+    }
+  ],
+  "claim_boundary": {
+    "registered_corrections_verified_at_cpu_or_next_boundary": true,
+    "end_to_end_recovery_claimed": false,
+    "r18_success_claimed": false,
+    "model_quality_claimed": false
+  }
+}

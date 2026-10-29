@@ -631,3 +631,42 @@
 - [R12 검사쌍](../evals/results/agentic_runtime_text_pair_20261029_v6/summary.json)은 IO ready까지 도달한 뒤 `unknown`으로 끝났다. RPC 원문에는 원격 helper의 `from datetime import UTC, datetime`에서 발생한 ImportError가 남았다. 실행 대상인 Python 3.10에는 `datetime.UTC`가 없어 Parent prepare 전에 종료됐다. 검사·학습·새 모델 호출은 0건이다.
 - 후속 [Remote5](../bench/agentic_brev_probe_transport_remote_v5.py)는 `timezone.utc`를 사용하고 실제 Python 3.10 subprocess 진입을 확인한다. [Service5](../evals/agentic_brev_mailbox_service_v5.py)와 [Transport2](../evals/agentic_brev_mailbox_transport_v2.py)는 제한된 인프라 오류 코드와 RPC 원문 참조를 전달한다. 인프라 실패의 `unknown` 상태를 정상·이상 판정으로 바꾸지 않으며, 모델 실패를 재시도하는 권한으로 사용하지 않는다.
 - 정지 오류 없이 22:14:16 UTC `STOPPED`를 확인했다. 닫힌 로컬 실행 기록과 이미 회수한 원격 snapshot 324파일의 C/D 해시가 일치했다. 누적 견적은 최초 g 생성부터의 상한이며 R11 등 앞선 구간을 다시 더하지 않는다. 새 검사·회복 성과로 집계하지 않는다.
+
+### OPS-89: repair transport와 lifecycle 판의 결합
+
+- R13의 등록 소비는 원격 Parent 시작 전에 `registered repair IO/phase contract`에서 거부됐다. repair transport가 이전 lifecycle SHA를 상속해 Runtime·IO의 현재 판과 달랐던 것이 확인된 원인이다.
+- 후속 판은 Runtime, IO, repair transport의 lifecycle SHA를 하나로 맞췄고 R14의 `E.registration`과 `T.registered` 소비가 통과했다. 이 통과는 원격 검사나 회복 결과가 아니라 등록 결합 경계의 검증이다.
+- 다음 실측은 같은 결합을 사용하는 Parent와 검사 child가 실행되는지 확인한다. R13의 실패 기록과 소비는 보존한다.
+
+### OPS-90: transport class와 등록 bound method의 source 일치
+
+- P14 최종화는 원격 Parent 시작 전에 `transport must use registered bound methods`로 거부됐다. Transport2의 class source와 Transport1에서 상속한 다섯 method의 source 파일이 달라 Host source 검증을 통과하지 못했다.
+- Transport3는 다섯 등록 method를 같은 class와 source 파일에서 명시적으로 정의하고 기존 동작을 위임한다. P16의 authority 발급 전 `Host._sources` 검사가 통과했다.
+- 이 검증은 source 결합만 확인한다. 실제 원격 Parent와 검사 child 결과는 후속 실행에서 판정한다.
+
+### OPS-91: 공개 상대경로와 private native 경로의 역할 분리
+
+- R15 공개판은 Transport3 source를 결합했지만 private IO의 lifecycle ref가 절대경로여서 Service5의 저장소 상대경로 계약에 거부됐다. authority는 발급되지 않았다.
+- 후속 준비기는 공개 ref를 상대경로·raw SHA·commit blob으로 검증하고, native 해석은 private 소비 경계 안으로 제한했다. R16의 E/T 소비와 P16의 authority 발급 전 source 검사가 통과했다.
+- 다음 실측은 등록된 service의 예산 검사와 Parent 진입이다. 공개 결과에는 사용자 경로나 private 경로를 포함하지 않는다.
+
+### OPS-92: 공개 lifecycle ref와 Service 예산 검사의 native 해석
+
+- R16의 reference 응답은 `canonical native absolute path required`와 `unknown`을 기록했다. Service5가 공개 저장소 상대경로를 native 절대경로 resolver에 그대로 넘긴 것이 확인된 원인이다.
+- Service6는 상대경로, 일반 파일, raw SHA와 committed blob을 확인한 뒤 예산 검사 동안에만 native ref를 사용하고 원래 계약을 복원한다. R17이 이 경계를 지나 Parent launch에 도달한 사실로 다음 경계까지의 진행을 확인했다.
+- `unknown`을 정상이나 결함 판정으로 바꾸지 않는다. 검사 child 진입과 모델 판단은 별도 결과에서 확인한다.
+
+### OPS-93: 원격 Parent의 저장소 경로 초기화 순서
+
+- R17은 service budget을 지나 Parent를 시작했지만, Parent3가 저장소의 `bench`, `evals`, `src` 경로를 추가하기 전에 `brev_recovery_backend_v4`를 import해 `ModuleNotFoundError`로 종료됐다. Parent PID는 GPU 진입 전에 끝났고, 관찰된 GPU process는 0건이었다.
+- Parent4는 외부 의존 import 전에 등록 저장소 경로를 추가한다. worker 선택, `BoundedPopen`, 판정 조건은 유지한다. 로컬 공개 회귀 9건과 원격 Python 3.10 진입 검사는 통과했지만 검사 child의 GPU 결과는 아직 별도 판정 대상이다.
+- R17 결과는 `infrastructure_hold`이며 새 모델 호출과 학습은 0건이다. 로컬 원문과 범위를 제한한 원격 snapshot 575파일의 C/D 해시가 일치했고, 이는 원격 전체 namespace 수집을 뜻하지 않는다. R18 결과는 이 기록에 포함하지 않는다.
+
+### OPS-94: Camera V8 종료 증거 보관 완료
+
+- V8은 startup 반환, update 한 번, terminal 봉인, close 진입을 기록했다. `close_returned`는 false였지만 부모가 소유한 자식 PID 89865는 exit 0으로 끝났고 process 정리도 확인됐다. 필수 marker 6개와 terminal·shutdown policy SHA, 물리 FLOCK, inactive heartbeat, GPU process 0, READY 상태를 함께 확인해 SDK startup 1회를 수용했다.
+- V8 원문 79개, 102,511바이트를 별도 보관하고 원본과 사본의 파일별 SHA를 다시 계산했다. 모든 파일이 일치했고 inventory SHA는 `798fcc73cd199543e01418a9e3d86669dd626f496247d15c2116862cba273250`이다. 앞서 보관한 V4~V7 원문 252개와 상대경로가 겹치는 파일은 없다.
+- 수용 범위는 카메라 startup·update·종료 경계다. 정책·물리 환경·Replicator는 실행하지 않았고 native 정책 영상, 학습, 회복, 모델 판단 기여는 확인하지 않았다. V7의 exit `-11` 기록도 그대로 남긴다.
+- V7과 V8은 종료 계약과 실행 시점의 cache·환경 조건이 다르므로 153.330초와 10.174초를 속도 개선 수치로 비교하지 않는다. driver 하나를 원인으로 확정하지도 않는다.
+
+결과: [등록·실행 경계 원문 요약](../evals/results/agentic_runtime_infrastructure_failures_20261029_v1/summary.json), [카메라 startup·종료 수용](../evals/results/isaac_camera_startup_h_v8_20261029_v2/summary.json).
