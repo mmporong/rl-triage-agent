@@ -1,0 +1,63 @@
+{
+  "actions": {
+    "gpu_execution_authorized": false,
+    "model_api": 0,
+    "new_resource_creations": 0,
+    "start_requests_authorized": 1
+  },
+  "extension": {
+    "absolute_deadline_utc": "2026-10-29T15:05:36.779993+00:00",
+    "additional_allocation_usd": "5",
+    "budget_reset": false,
+    "cost_origin_unchanged": true,
+    "execution_cutoff_utc": "2026-10-29T14:45:36.779993+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "intermediate_stop": true,
+    "max_lifecycle_s": 64800,
+    "program_cap_usd": "205",
+    "quoted_usd_per_h": "2.18064",
+    "resource_cap_usd": "40",
+    "stop_reserve_s": 1200,
+    "worst_case_compute_usd": "39.25152"
+  },
+  "h_state_basis": {
+    "current_status": "STOPPED_REQUIRED_BEFORE_START10",
+    "new_gpu_actions": 0,
+    "new_start_requests_maximum": 1,
+    "prior_cumulative_start_requests": 9
+  },
+  "prediction": "Start9 기록과 소비를 보존한다. 같은 H 한 대를 Stop 확인 뒤 Start10으로 한 번만 재개하고 F2 촬영 계약을 유지한다.",
+  "previous_registration": {
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_time_extension_20261029h_v7_r2.json",
+    "sha256_lf": "e7aa0cc0fdef7d4cf68353d47589af8774cdbff11ba7a1acc27d4b60ec257e8d"
+  },
+  "recording_target": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "provider": "nebius",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "registered_at_utc": "2026-10-29T11:06:46.734656+00:00",
+  "resource_scope": {
+    "additional_allocation_is_not_repeated": true,
+    "existing_consumption_and_failures_preserved": true,
+    "existing_consumption_preserved": true,
+    "maximum_concurrent_rl_resources": 1,
+    "new_resources": 0,
+    "prior_program_cap_usd": "200",
+    "prior_resource_cap_usd": "35",
+    "prior_v7_start_requests": 1,
+    "resulting_program_cap_usd": "205",
+    "resulting_resource_cap_usd": "40",
+    "same_existing_h_only": true,
+    "supersedes_unexecuted_v7": false,
+    "time8_new_allocation_usd": "5"
+  },
+  "schema": "fresh_brev_l40s_renderer_environment_time_extension_v8",
+  "status": "candidate_existing_resource_time_and_cap_extension_start_requires_stop_observation",
+  "watchdog": {
+    "controller_sha256": "6f871025ca98a7938bc030d1748332c483a6104c806571aaf3845c714faacaf5",
+    "old_watch_owner_handoff_required": true,
+    "owner_pid_and_start_identity_required": true
+  }
+}
