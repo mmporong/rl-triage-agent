@@ -765,3 +765,9 @@
 - 확인: Host5의 상속된 증거 검증은 옛 Parent schema를 읽었고, Service의 host-intent 재검증은 Host1을 생성했다. 원격 전송의 Parent 선택과 import 시 계산한 provider packet schema도 함께 바꿔야 했다.
 - 수정: [Host6](../evals/agentic_brev_runtime_host_v6.py)·[Service9](../evals/agentic_brev_mailbox_service_v9.py)·[Remote8](../bench/agentic_brev_probe_transport_remote_v8.py)·[Parent8](../bench/run_agentic_brev_probe_parent_v8.py)을 같은 계약으로 연결했다. 등록 prefix 밖의 검증된 후속 검사 요청은 예외 대신 HOLD를 반환하며, 변조·미등록 요청은 계속 거부한다. 기존 판과 결과는 보존했다.
 - 검증 범위: CPU 회귀는 Host 선택, Parent/provider schema 일치, CLI 실행, 원래 비용 기산점과 Stop reserve 검사를 다룬다. 새 GPU 검사·회복 결과는 아직 없다. 유료 실행 전에는 최종 등록의 실제 참조로 Main과 IO가 같은 소스를 소비하는지 확인한다.
+
+### OPS-107: 바깥 실행 창과 내부 교정 lease의 기한 불일치
+
+- 관찰: 새 실행 입력을 준비하던 중 repair layout이 참조한 기존 lease basis의 기한이 바깥 실행 창보다 먼저 끝난 상태임을 확인했다. GPU 실행 전 발견했으며, 이 불일치로 학습이 실패한 결과를 추가하지 않는다.
+- 수정: [새 lease basis](../bench/protocols/agentic_runtime_text_s2221_20261029_v31_lease_basis.json)는 같은 H 자원과 source 체크포인트를 유지하고, Time9의 기한·예산·현재 소스 결합을 사용한다. repair transport·lifecycle·Runtime도 같은 기한과 소스 해시로 다시 생성했다. 최초 생성 시각과 기존 소비는 초기화하지 않는다.
+- 검증: 기존 Linux 셸의 실제 `agentic_play_job_v4.validate_protocol`이 공개 등록 파일의 419개 소스 결합과 유효 기한을 통과했다. 회복 기준·교정·학습량은 바꾸지 않았고, 실제 GPU 입장과 실행 결과는 별도로 확인한다.
