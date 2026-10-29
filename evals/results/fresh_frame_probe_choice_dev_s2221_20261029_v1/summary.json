@@ -1,0 +1,77 @@
+{
+  "already_seen_seed": 2221,
+  "api": {
+    "global_cap": 12,
+    "global_consumed": 10,
+    "global_pending": 0,
+    "new_requests": 1,
+    "original_new_request_cap": 2
+  },
+  "citation_counts": {
+    "frame": 0,
+    "same_play": 0,
+    "telemetry": 6
+  },
+  "decision": {
+    "approval_granted": false,
+    "contract_valid": true,
+    "controller_choice_created": true,
+    "fact_ids": [
+      "telemetry:case:Train/mean_reward",
+      "telemetry:reference:Train/mean_reward",
+      "telemetry:case:Metrics/base_velocity/error_vel_xy",
+      "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+      "telemetry:case:Episode_Termination/time_out",
+      "telemetry:reference:Episode_Termination/time_out"
+    ],
+    "probe": "P_reward",
+    "probe_executed": false,
+    "selected_by": "model"
+  },
+  "finished_at_utc": "2026-10-29T06:30:25.128155+00:00",
+  "input": {
+    "capture_result": "evals/results/agentic_f1_fresh_render_dev_20261029h_v1/summary.json",
+    "case_frames": 3,
+    "frame_count": 6,
+    "host_path_projection_changed_model_messages": false,
+    "messages_sha256": "b56238e766e9c6529ebbaef59169bda2094c5c882c4f83f5134a4b3a869f4883",
+    "reference_frames": 3,
+    "timestamps_s_per_policy": [
+      1,
+      3,
+      6
+    ]
+  },
+  "interpretation": {
+    "cause_confirmed": false,
+    "fresh_image_input_and_action_contract_integrated": true,
+    "image_selection_benefit_established": false,
+    "new_recovery_result": false
+  },
+  "model": {
+    "finish_reason": "stop",
+    "requested": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "returned": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "wall_s": 13.693281898988062
+  },
+  "preregistered_protocols": [
+    "bench/protocols/fresh_frame_decision_public_s2221_20261029_v1.json",
+    "bench/protocols/fresh_frame_linux_host_projection_s2221_20261029_v1.json",
+    "bench/protocols/persistent_brev_provider_transport_20261029_v1.json"
+  ],
+  "private_original_receipt_hashes": {
+    "api_response_sha256": "6d108b5369320db853bbbae2c450d413c4179dc304470dfeb6b6d26eff6e7315",
+    "journal_terminal_sha256": "bf32beacbc199fe0d6913a781bf6c27809d48e91984ba1347d14930c5258d06c",
+    "projected_prepared_sha256": "a522009bfbd05f194fe2376901d1b4518fd081f5703eff90d1d2a3c29e03ceb1"
+  },
+  "response": {
+    "path": "evals/results/fresh_frame_probe_choice_dev_s2221_20261029_v1/model_response.json",
+    "sha256": "25faf6b6feb4554d887c75e2d7995110ec8127a3501be8df75c307860c88b98d"
+  },
+  "schema": "fresh_frame_registered_probe_choice_development_result_v1",
+  "scope": "first_model_proposal_only",
+  "source_anchor": "6431fb69e32d1712d974e33048d397c08c0df12a",
+  "split": "development",
+  "started_at_utc": "2026-10-29T06:30:07.834866+00:00",
+  "status": "valid_registered_probe_choice"
+}
