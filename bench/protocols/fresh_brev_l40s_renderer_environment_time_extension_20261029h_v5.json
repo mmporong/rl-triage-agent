@@ -1,0 +1,80 @@
+{
+  "actions": {
+    "gpu_execution_authorized": false,
+    "model_api": 0,
+    "new_resource_creations": 0,
+    "start_requests_authorized": 0
+  },
+  "completion_anchor": {
+    "collection_sha256": "999736dfe132343f0d23e86c68f2b2575e545b04622f65b5828a736780800bca",
+    "completed_capture_phase_sha256_lf": "57caed43b3fd4e70279a034a47054c99b9aaca4cc3af6c6017389e4771963511",
+    "completed_capture_resume_sha256_lf": "5170a620f89811a83a36924f7f97757277e13d4c340d26d58c40f48784d1d528",
+    "completed_child_sha256_lf": "4aed8ff8cc4ec0acac5882ee16a3ad1e30086c28f2d127394b3a989723165bf3",
+    "handoff_result_sha256": "b691f5b118ab373a08267e3d23a18d3c07c6a41b983f4f14abd99f4bdddf79ab",
+    "retrieved_archive_sha256": "e5eabc52a958ad4f541e82f031d45644c8035a3eb26b72dac83aa72de34e1726",
+    "root_delivery_sha256": "0a883691bc833f407396cb86799ed4bae27fc23d6f48d5b1fe0dbbd4a68a60d4",
+    "status": "completed_capture_collected_and_stopped",
+    "stopped_at_utc": "2026-10-29T05:25:05.756636+00:00",
+    "stopped_sha256": "0b8e7e01780945f4151a55249c4ee716c87f8a6cef399486caf4011e34343647"
+  },
+  "extension": {
+    "absolute_deadline_utc": "2026-10-29T09:05:36.779993+00:00",
+    "additional_allocation_usd": "10",
+    "budget_reset": false,
+    "cost_origin_unchanged": true,
+    "execution_cutoff_utc": "2026-10-29T08:45:36.779993+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "intermediate_stop": true,
+    "max_lifecycle_s": 43200,
+    "program_cap_usd": "195",
+    "quoted_usd_per_h": "2.18064",
+    "resource_cap_usd": "30",
+    "stop_reserve_s": 1200,
+    "worst_case_compute_usd": "26.16768"
+  },
+  "model_api_boundary": {
+    "global_cap": 12,
+    "observed_consumed": 9,
+    "pending": 0,
+    "reset": false
+  },
+  "next_loop": {
+    "cumulative_start_requests_after_success": 7,
+    "maximum_next_start_requests": 1,
+    "prior_cumulative_start_requests": 6,
+    "purpose": "new_frame_model_then_inspection",
+    "recapture_or_reevaluation_of_completed_h110": false,
+    "requires_separate_start_action": true
+  },
+  "original_creation": {
+    "anchor": "698b70c213dc1e17c824534fec3e949648503bbb",
+    "deadline_utc": "2026-10-29T00:57:14.675376+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "max_lifecycle_s": 14400,
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_20261029h.json",
+    "sha256_lf": "eba4abe714879690df8677976988f937fe946bba28e6fba236e08cca9e564aab"
+  },
+  "prediction": "완료된 H110 촬영을 재평가하지 않고 같은 H 한 대에서 다음 모델-검사 고리에 쓸 시간과 비용 상한만 연장한다.",
+  "previous_registration": {
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_time_extension_20261029h_v4.json",
+    "sha256_lf": "7d8a92375d7055f364c84a1a5637be22143c845ffd2c464cfd0705eb390c031a"
+  },
+  "recording_target": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "provider": "nebius",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "registered_at_utc": "2026-10-29T05:40:32.635149+00:00",
+  "resource_scope": {
+    "existing_consumption_and_failures_preserved": true,
+    "g_or_prior_rl5_absence_assumed": false,
+    "maximum_concurrent_rl_resources": 1,
+    "new_resources": 0,
+    "other_project_inventory_assumed_absent": false,
+    "other_project_ownership_assumptions": 0,
+    "same_existing_h_only": true
+  },
+  "schema": "fresh_brev_l40s_renderer_environment_time_extension_v5",
+  "status": "registered_existing_resource_time_only_start_requires_separate_action"
+}
