@@ -1,0 +1,114 @@
+{
+  "actions": {
+    "api_calls_authorized": 0,
+    "gpu_execution_authorized": false,
+    "new_resource_creations": 0,
+    "start_requests_authorized_after_root_finalize": 1
+  },
+  "controller_sha256": "292d4f2105456a988be77d61d1b911627600db64806232bd10ea9e1ea5ec4b61",
+  "failure_contract": {
+    "failure_after_start_request_sent": "one_stop_then_observe_stopped",
+    "failure_before_start_request_sent": "no_stop",
+    "handoff_requires_actual_refs": 10,
+    "observer_hold_is_failure": true,
+    "start_cli_nonzero_or_transport_unknown_is_request_sent": true
+  },
+  "observer": {
+    "actual_ref_keys": [
+      "actual_environment",
+      "actual_host_resource",
+      "actual_metadata",
+      "canonical_lease_observation",
+      "create_intent",
+      "create_receipt",
+      "created_binding",
+      "home_observation",
+      "host_resource",
+      "initial_inventory"
+    ],
+    "brev_contract": "single_at_bash_script",
+    "gpu_system_read_allowed": true,
+    "local_binding": {
+      "base_dependency_sha256": "672a0f6f6b4eb2bc96154a3d6ef09063366678df1f17ddda5ee099a4133c915e",
+      "base_dependency_source_id": "ri_native_h_runtime_observer_109.h_runtime_observer",
+      "entry_sha256": "e9ced446acc47dfa04b1bd75fd0d2bd38e2dc2f9b6340d4702a8a04b03c34c36",
+      "entry_source_id": "ri_native_h_runtime_observer_109.review1.h_runtime_observer_v2"
+    },
+    "metadata_only": true,
+    "model_api": 0,
+    "provider_grant_validation": "before_transport_and_start",
+    "provider_only_grant_is_gpu_authority": false,
+    "renderer_or_training_or_probe": 0
+  },
+  "observed_checkout": {
+    "expected_head": "6f05df1a0054117257d8ac3c4e54de933ebfa8f5",
+    "offline_h110_plan_sha256": "984c0b0dd03ee71bda990872bd4b34338c46d9195ed945673ee3d95bb51cddf7",
+    "policy": "observe_existing_clean_checkout_only",
+    "checkout_commands": 0,
+    "updates": 0
+  },
+  "science_source": {
+    "anchor": "694df50e6c2a196da25b9b40c8788921caebd6a8",
+    "relation_to_checkout": "must_be_commit_and_ancestor",
+    "role": "capture_science_source_not_expected_observed_HEAD"
+  },
+  "prior_attempt": {
+    "id": "ri116_readiness_time5_v3",
+    "start_requests_consumed": 1,
+    "expected_head_error_preserved": true,
+    "final_stopped_required_before_finalize": true
+  },
+  "readiness_sequence": [
+    "offline_h110_checkout_anchor_before_paid_start",
+    "provider_grant_prevalidate",
+    "single_start_after_v3_stopped",
+    "ready_healthy",
+    "observed_checkout_head_and_cleanliness",
+    "science_source_commit_and_ancestor",
+    "runtime_pins_without_install_or_checkout",
+    "metadata_observer_10refs",
+    "handoff_or_failure_stop"
+  ],
+  "registered_at_utc": "2026-10-29T07:41:39.612426+00:00",
+  "resource_scope": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "maximum_concurrent_rl_resources": 1,
+    "new_resources": 0,
+    "provider": "nebius",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "runtime_pins": {
+    "home_placeholder": "<remote-home>",
+    "installation_commands": 0,
+    "isaac_lab": "<remote-home>/workspace/rl-triage-vision-v1/IsaacLab",
+    "metadata_expected_uuid": null,
+    "python": "<remote-home>/workspace/rl-triage-vision-v1/venv/bin/python",
+    "repo": "<remote-home>/workspace/rl-triage-fresh-source-renderer-h-20261029",
+    "updates": 0
+  },
+  "start_policy": {
+    "cumulative_start_requests_after_success": 8,
+    "maximum_start_requests": 1,
+    "prior_cumulative_start_requests": 7,
+    "requires_stopped": true
+  },
+  "stopped_basis": {
+    "at_utc": "2026-10-29T05:25:05.756636+00:00",
+    "sha256": "0b8e7e01780945f4151a55249c4ee716c87f8a6cef399486caf4011e34343647",
+    "status": "STOPPED"
+  },
+  "time5": {
+    "absolute_deadline_utc": "2026-10-29T09:05:36.779993+00:00",
+    "execution_cutoff_utc": "2026-10-29T08:45:36.779993+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "max_lifecycle_s": 43200,
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_time_extension_20261029h_v5.json",
+    "program_cap_usd": "195",
+    "resource_cap_usd": "30",
+    "sha256_lf": "9e6701f0a0ced9f8f6bfe7be9f7cac82bb604e1b2fc857b8f8438ba5cefa4b84",
+    "stop_reserve_s": 1200
+  },
+  "schema": "agentic_h_readiness_time5_20261029_v4",
+  "status": "registered_not_started_root_finalize_required"
+}

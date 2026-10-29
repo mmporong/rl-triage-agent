@@ -731,3 +731,10 @@
 - 관찰: Windows에서 WSL의 loopback 연결을 시도하면 `WinError 10054`가 발생했다. 원인은 확정하지 않았다. Linux 안의 같은 서버에 접속한 Brev 조회는 통과했다.
 - 처리: Windows forwarding을 완료 근거로 쓰지 않고, 기존 Linux 세션 안의 client·server 경로로 첫 모델 호출을 실행했다. API 키는 Linux에 유지했고 새 WSL 진입과 GPU 작업은 추가하지 않았다. Windows loopback은 계속 미확인 상태다.
 - 결과: 원래 요청 9건을 보존하고 새 요청 한 건을 정산해 10/12, pending 0이 됐다. 이 전송은 GPU 승인이나 새 자원 생성 권한을 대신하지 않는다. [전송 등록](../bench/protocols/persistent_brev_provider_transport_20261029_v1.json)
+
+### OPS-102: 녹화 소스와 원격 checkout 커밋의 혼동
+
+- 관찰: H 재시작은 READY에 도달했지만 metadata 관측이 예상 HEAD 불일치로 멈췄다. 실제 저장소는 clean 상태의 `6f05df1a0054117257d8ac3c4e54de933ebfa8f5`였고, 관측 등록은 녹화 소스 기준인 `694df50e6c2a196da25b9b40c8788921caebd6a8`을 HEAD로 요구했다. GPU 검사와 새 API 요청은 시작하지 않았다.
+- 확인: 이전 녹화의 boot 계획은 phase 등록 커밋을 checkout하며, 녹화에 필요한 소스는 그 조상 커밋과 파일 결합으로 검사한다. 두 커밋의 역할을 구분해야 한다.
+- 수정: [관측 등록 v4](../bench/protocols/agentic_h_readiness_time5_20261029_v4.json)는 예상 원격 HEAD와 녹화 소스 기준을 분리하고, 유료 Start 전에 이전 boot 계획의 실제 checkout 값을 읽어 대조한다. 이전 실패 원문과 소비 기록은 보존한다.
+- 검증 범위: 이전 boot 계획을 소비하는 CPU 검사와 잘못된 예상 HEAD 거부를 확인했다. v4의 실제 metadata 수집과 후속 GPU 검사는 별도 실행 결과로 기록한다.
