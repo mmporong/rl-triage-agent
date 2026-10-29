@@ -1,0 +1,64 @@
+{
+  "authority": {
+    "gpu_execution_authorized": false,
+    "model_api": 0,
+    "new_resource_creations": 0,
+    "start_authorized_after_stopped": true
+  },
+  "budget": {
+    "absolute_deadline_utc": "2026-10-29T06:05:36.779993+00:00",
+    "additional_allocation_usd": "0",
+    "budget_reset": false,
+    "execution_cutoff_utc": "2026-10-29T05:45:36.779993+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "max_lifecycle_s": 32400,
+    "program_cap_usd": "185",
+    "resource_cap_usd": "20",
+    "stop_reserve_s": 1200,
+    "worst_case_compute_usd": "19.62576"
+  },
+  "capture_child": {
+    "path": "bench/protocols/agentic_f1_render_capture_s2221_20261029h_v4.json",
+    "require_current": true,
+    "sha256_lf": "4aed8ff8cc4ec0acac5882ee16a3ad1e30086c28f2d127394b3a989723165bf3"
+  },
+  "capture_phase": {
+    "path": "bench/protocols/agentic_f1_render_capture_phase_20261029h_v9.json",
+    "sha256_lf": "4861d90b3db47aca46da32a3ad6cf1890d7adb012124e23fa376cc75db2d8128"
+  },
+  "controller": {
+    "id": "ri107_start_watch_v1",
+    "job4_require_current_prestart": true,
+    "python": "sys.executable",
+    "sha256": "c4f714ba1618e553c7f586212f3642071b2d5bbe76b96fe500dc848a6e78b5b2"
+  },
+  "private_plan": {
+    "host_sha256": "2ec8c92b5cb31904e3800ef80b009c9623fdc3df86c25a958129d28271b97e15",
+    "namespace": "workspace/rl-triage-agentic-f1-render-capture-20261029-h6-child-renewal-107",
+    "sha256": "3b1ded97ad6030ec9a88ddff29eb7460cc5dde3a7257d245277625b9cc8d77be"
+  },
+  "registered_at_utc": "2026-10-29T04:15:28.104049+00:00",
+  "retry": {
+    "allowed_create_requests": 0,
+    "allowed_start_requests": 1,
+    "cumulative_start_requests_after_success": 5,
+    "inventory_read_attempts": 4,
+    "inventory_retry_delays_s": [
+      2,
+      5,
+      10
+    ]
+  },
+  "schema": "agentic_f1_render_capture_resume_20261029h_v6",
+  "status": "registered_stopped_h_child_deadline_renewal_single_start",
+  "target": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "provider": "nebius",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "time_extension": {
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_time_extension_20261029h_v4.json",
+    "sha256_lf": "7d8a92375d7055f364c84a1a5637be22143c845ffd2c464cfd0705eb390c031a"
+  }
+}
