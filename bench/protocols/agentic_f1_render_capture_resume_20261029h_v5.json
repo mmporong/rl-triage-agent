@@ -1,0 +1,67 @@
+{
+  "authority": {
+    "gpu_execution_authorized": false,
+    "model_api": 0,
+    "new_resource_creations": 0,
+    "start_authorized_after_stopped": true
+  },
+  "budget": {
+    "absolute_deadline_utc": "2026-10-29T05:05:36.779993+00:00",
+    "additional_allocation_usd": "0",
+    "budget_reset": false,
+    "execution_cutoff_utc": "2026-10-29T04:45:36.779993+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "max_lifecycle_s": 28800,
+    "program_cap_usd": "185",
+    "resource_cap_usd": "20",
+    "stop_reserve_s": 1200
+  },
+  "capture_phase": {
+    "path": "bench/protocols/agentic_f1_render_capture_phase_20261029h_v8.json",
+    "sha256_lf": "284e956b2ee43ed97758ae4ec341fe5bf1f415418934d1031427f0e3c05eae7b"
+  },
+  "controller": {
+    "id": "ri106_start_watch_v1",
+    "inventory_retry_only": true,
+    "python": "sys.executable",
+    "sha256": "bd203a12a7525be7c4f78d577a8a506a0c810c7bbcce6e2f98b82166c9b2c46c"
+  },
+  "prior_failure": {
+    "boot_entered": false,
+    "gpu_children_started": 0,
+    "reason": "resource exhausted",
+    "stage": "ready-inventory",
+    "stderr_sha256": "c55161486e28972c5e5e686efadd957a3526ec03994d284b72375255428ea623",
+    "stop_requests": 1,
+    "stopped_observed": true
+  },
+  "private_plan": {
+    "host_sha256": "ef274c901fabd516d6d5267ce0a75c1ded67a83c4cd1eabb0df6f32097819cbe",
+    "namespace": "workspace/rl-triage-agentic-f1-render-capture-20261029-h6-recovery-96",
+    "sha256": "0432c49cbf2ee3badb1bf1e5398be61a13208b7340479bf18c870399a2a594e2"
+  },
+  "registered_at_utc": "2026-10-29T03:56:21.889311+00:00",
+  "retry": {
+    "allowed_create_requests": 0,
+    "allowed_start_requests": 1,
+    "cumulative_start_requests_after_success": 4,
+    "inventory_read_attempts": 4,
+    "inventory_retry_delays_s": [
+      2,
+      5,
+      10
+    ]
+  },
+  "schema": "agentic_f1_render_capture_resume_20261029h_v5",
+  "status": "registered_stopped_h_inventory_transport_recovery_single_start",
+  "target": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "provider": "nebius",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "time_extension": {
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_time_extension_20261029h_v3.json",
+    "sha256_lf": "335cdd56c186028f962978305929d7f0d43192ca85db82d468813922c2efc5a4"
+  }
+}
