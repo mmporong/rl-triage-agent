@@ -1,0 +1,57 @@
+{
+  "actions": {
+    "gpu_execution_authorized": false,
+    "model_api": 0,
+    "new_resource_creations": 0,
+    "start_requests_authorized": 1
+  },
+  "extension": {
+    "absolute_deadline_utc": "2026-10-29T13:05:36.779993+00:00",
+    "additional_allocation_usd": "5",
+    "budget_reset": false,
+    "cost_origin_unchanged": true,
+    "execution_cutoff_utc": "2026-10-29T12:45:36.779993+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "intermediate_stop": true,
+    "max_lifecycle_s": 57600,
+    "program_cap_usd": "200",
+    "quoted_usd_per_h": "2.18064",
+    "resource_cap_usd": "35",
+    "stop_reserve_s": 1200,
+    "worst_case_compute_usd": "34.89024"
+  },
+  "h_state_basis": {
+    "current_status": "STOPPING_OR_STOPPED_REQUIRED_BEFORE_START9",
+    "new_gpu_actions": 0,
+    "new_start_requests_maximum": 1,
+    "prior_cumulative_start_requests": 8
+  },
+  "prediction": "실행되지 않은 v7을 대체한다. 같은 H 한 대를 Stop 확인 뒤 한 번만 다시 시작하고 기존 F2 촬영 계약과 회수·Stop 여유를 보존한다.",
+  "previous_registration": {
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_time_extension_20261029h_v6.json",
+    "sha256_lf": "81434ad52b160ae905f238ae2d29fbfc108c5b34668c878ab25f43e3549916d1"
+  },
+  "recording_target": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "provider": "nebius",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "registered_at_utc": "2026-10-29T10:20:00.000000+00:00",
+  "resource_scope": {
+    "existing_consumption_and_failures_preserved": true,
+    "additional_allocation_is_not_repeated": true,
+    "maximum_concurrent_rl_resources": 1,
+    "new_resources": 0,
+    "prior_v7_start_requests": 0,
+    "supersedes_unexecuted_v7": true,
+    "same_existing_h_only": true
+  },
+  "schema": "fresh_brev_l40s_renderer_environment_time_extension_v7",
+  "status": "candidate_existing_resource_time_and_cap_extension_start_requires_stop_observation",
+  "watchdog": {
+    "controller_sha256": "28d0a3de4b5b2b80cdb65f82216f976cecdeef64c600e4151b495d23455736cc",
+    "old_watch_owner_handoff_required": true,
+    "owner_pid_and_start_identity_required": true
+  }
+}
