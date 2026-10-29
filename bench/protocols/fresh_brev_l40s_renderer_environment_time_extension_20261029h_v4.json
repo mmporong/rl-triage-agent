@@ -1,0 +1,40 @@
+{
+  "actions": {
+    "gpu_execution_authorized": false,
+    "model_api": 0,
+    "new_resource_creations": 0,
+    "start_requests_authorized": 0
+  },
+  "extension": {
+    "absolute_deadline_utc": "2026-10-29T06:05:36.779993+00:00",
+    "additional_allocation_usd": "0",
+    "budget_reset": false,
+    "cost_origin_unchanged": true,
+    "execution_cutoff_utc": "2026-10-29T05:45:36.779993+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "intermediate_stop": false,
+    "max_lifecycle_s": 32400,
+    "program_cap_usd": "185",
+    "quoted_usd_per_h": "2.18064",
+    "resource_cap_usd": "20",
+    "stop_reserve_s": 1200,
+    "worst_case_compute_usd": "19.62576"
+  },
+  "original_creation": {
+    "anchor": "698b70c213dc1e17c824534fec3e949648503bbb",
+    "deadline_utc": "2026-10-29T00:57:14.675376+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "max_lifecycle_s": 14400,
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_20261029h.json",
+    "sha256_lf": "eba4abe714879690df8677976988f937fe946bba28e6fba236e08cca9e564aab"
+  },
+  "prediction": "같은 H 자원을 최초 Create부터 최대 9시간 안에서 재사용하고 Stop 1200초 여유와 기존 cap을 유지한다.",
+  "recording_target": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "registered_at_utc": "2026-10-29T04:15:28.104049+00:00",
+  "schema": "fresh_brev_l40s_renderer_environment_time_extension_v4",
+  "status": "registered_existing_resource_time_only_start_requires_separate_action"
+}
