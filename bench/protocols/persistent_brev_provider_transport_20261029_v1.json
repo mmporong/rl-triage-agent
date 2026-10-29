@@ -1,0 +1,52 @@
+{
+  "schema": "ri97_persistent_brev_transport_preregistration_v1",
+  "registered_at_utc": "2026-10-29T05:55:45.931795+00:00",
+  "purpose": "reuse_one_existing_linux_process_without_new_wsl_entry",
+  "endpoint": {
+    "host": "127.0.0.1",
+    "port": 42001
+  },
+  "original_argv_prefix": [
+    "wsl",
+    "-d",
+    "Ubuntu",
+    "--exec",
+    "<brev-executable>"
+  ],
+  "private_original_argv_prefix_sha256": "6c597aef0f14b0a23b75e13259d17da74432c6506c6eba768bdc0c05850f9fd7",
+  "allowed_brev_commands": [
+    "copy",
+    "exec",
+    "ls",
+    "start",
+    "stop"
+  ],
+  "max_timeout_s": 3600,
+  "token_sha256": "01e332ec695fbf56e5ffc68a6d2cbf797b2e984da45e3bc8ad69aee181b91215",
+  "sources_sha256": {
+    "bench/persistent_brev_bridge_v1.py": "5267db09e0eb5c73e3729d53ed7195729eceb4f196745d75bab19ae9cbf015c1",
+    "evals/persistent_provider_complete_v1.py": "6b40f10bd5f608a5d4a80d845deffb768434948b9a32c5a05b464bb98db2ebd9",
+    "tests/test_persistent_brev_bridge_v1.py": "e19a1498ac64c226fccb25efe03b759b5a27dedb86e3d846d38f5c408e40debd"
+  },
+  "provider": {
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "source_sha256": "a7fcbab0655386df9cd7f3e3c25114ad704d3fdf27cd4cc7ab5630e38f993fee",
+    "source_anchor": "d9f39284a3b1f047a45df043b4a3065518a23ad1",
+    "source_relative": "evals/run_agentic_development_v2.py",
+    "python_id": "rl-triage-registered-venv",
+    "max_calls": 2,
+    "timeout_s": 240,
+    "original_api_prefix_used": 9,
+    "original_api_cap": 12,
+    "additional_call_cap": 2
+  },
+  "security_boundary": {
+    "shell": false,
+    "loopback_only": true,
+    "nonce_reuse_rejected": true,
+    "token_value_recorded": false,
+    "os_authority_replacement": false,
+    "brev_credentials_cross_to_windows": false
+  },
+  "status": "registered_cpu_only_not_execution_authority"
+}
