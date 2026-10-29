@@ -758,3 +758,10 @@
 - 관찰: F2 녹화 controller는 먼저 이전 time5의 고정 lifecycle 값 때문에 CPU에서 거부됐다. 새 time 판의 전체 값을 소비하도록 고친 뒤에는 warm 입장 후 첫 원격 작업 전에 비용·시간 여유 검사로 거부됐다. 실제 녹화·학습·모델 호출은 0이었다.
 - 확인: constructor 통과만으로 각 원격 단계 timeout과 회수·종료 reserve의 합이 실행 창에 들어간다고 볼 수 없다. `--check-plan`이 만든 빈 output 폴더도 실행 출력과 분리해 보존했다.
 - 다음 조건: 원래 비용 기산점과 누적 사용량을 유지한 새 실행 창을 등록하고, 실제 `budget()`으로 단계별 timeout·회수·종료 여유를 유료 실행 전에 확인한다. 기존 실패 원문과 Stop 기록은 보존한다.
+
+### OPS-106: Main과 별도 IO의 Host·Parent 선택 불일치
+
+- 관찰: fresh 응답용 Main을 선택해도 별도 IO는 옛 Service를 생성했다. Host의 증거 검증과 원격 CLI에도 이전 Parent 선택이 남아 있었다. 생성자·source closure 통과만으로 실제 요청·응답 경로의 판 일치를 보장할 수 없었다.
+- 확인: Host5의 상속된 증거 검증은 옛 Parent schema를 읽었고, Service의 host-intent 재검증은 Host1을 생성했다. 원격 전송의 Parent 선택과 import 시 계산한 provider packet schema도 함께 바꿔야 했다.
+- 수정: [Host6](../evals/agentic_brev_runtime_host_v6.py)·[Service9](../evals/agentic_brev_mailbox_service_v9.py)·[Remote8](../bench/agentic_brev_probe_transport_remote_v8.py)·[Parent8](../bench/run_agentic_brev_probe_parent_v8.py)을 같은 계약으로 연결했다. 등록 prefix 밖의 검증된 후속 검사 요청은 예외 대신 HOLD를 반환하며, 변조·미등록 요청은 계속 거부한다. 기존 판과 결과는 보존했다.
+- 검증 범위: CPU 회귀는 Host 선택, Parent/provider schema 일치, CLI 실행, 원래 비용 기산점과 Stop reserve 검사를 다룬다. 새 GPU 검사·회복 결과는 아직 없다. 유료 실행 전에는 최종 등록의 실제 참조로 Main과 IO가 같은 소스를 소비하는지 확인한다.
