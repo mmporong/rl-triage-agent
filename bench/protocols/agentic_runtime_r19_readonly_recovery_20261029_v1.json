@@ -1,0 +1,96 @@
+{
+  "schema": "agentic_runtime_r19_readonly_recovery_v1",
+  "purpose": "R19 인프라 HOLD 뒤 기존 원격 로그를 읽어 실패 원인을 판별하고 자원을 다시 STOPPED로 봉인한다.",
+  "result_rerun": false,
+  "target": {
+    "resource_id": "oky8zxbnx",
+    "resource_name": "rl-triage-l40s-headless-20261029g",
+    "instance_type": "g6e.4xlarge",
+    "provider": "aws"
+  },
+  "source": {
+    "remote_repo": "<remote-home>/workspace/rl-triage-fresh-source-headless-g-20261029",
+    "namespaces": [
+      ".triage-runtime/agentic-text-s2221-20261029-v19",
+      ".triage-runtime/agentic-text-s2221-20261029-v19-transport",
+      ".triage-runtime/agentic-text-s2221-20261029-v19-registration"
+    ],
+    "expected_prior_parent_pid": 65349,
+    "prior_parent_pid_required_for_success": false,
+    "immutable": true
+  },
+  "time4": {
+    "elapsed_origin_utc": "2026-10-28T17:41:10.061936+00:00",
+    "maximum_elapsed_s": 39600,
+    "stop_cutoff_utc": "2026-10-29T04:21:10.061936+00:00",
+    "deadline_utc": "2026-10-29T04:41:10.061936+00:00",
+    "operation_budget_s": 2700,
+    "stop_reserve_s": 1200,
+    "consumption_reset": false
+  },
+  "budget": {
+    "quoted_usd_per_h": "3.605088",
+    "time4_wall_upper_usd": "39.655968",
+    "resource_cap_usd": "40",
+    "overall_program_cap_usd": "185",
+    "billing_claim": false
+  },
+  "execution_source_sha256": {
+    "private_plan": "54ecba0e7588787fd79d39551109e82e99ff0b2a39ee7c9707b60fd1a50387fe",
+    "remote_collector": "f05f62f33cd39738b857dd15117cf488b8d5df001d39b1b5656e8eaec94ce532",
+    "recovery_common": "8e32cc323ec59ecaddc6ca9fdf96364663346c26130b0bcefa17f406fcbfaf20",
+    "recovery_guardian": "0f0cbc7787ccb4af040846eb5ed617267af2e6513e6d6dc3cc607f6fc049d709",
+    "recovery_executor": "04ec51776474a92417bd4053e863913f184748d709ee874daaf3a486d065a627",
+    "registration_preparer": "945e891a41d86ae04144179116f2dd71c32c63cab8d7ff6aea612489c782c9d0",
+    "cpu_test": "5af858396607116186679c48d96a5790f85eda7cfa11c6b2c2180cee3059a6b4"
+  },
+  "transport_helper_sha256": "dbe83d996901de4eafe514a47776bd241c1f5740d2eb18887520a708cec191f4",
+  "requests": {
+    "maximum_start": 1,
+    "maximum_create": 0,
+    "maximum_remote_exec": 1,
+    "maximum_stop": 1,
+    "automatic_retry": false
+  },
+  "remote_operation": {
+    "mode": "read_only_archive",
+    "allowed": [
+      "read the three registered namespace trees without following symlinks",
+      "read metadata and bytes of regular files under those trees",
+      "read /proc/65349 identity files when present",
+      "query nvidia-smi compute-process metadata",
+      "stream one deterministic gzip tar archive to the host"
+    ],
+    "forbidden": [
+      "install",
+      "checkout",
+      "repository mutation",
+      "runtime execution",
+      "training",
+      "calibration",
+      "model API request",
+      "GPU workload launch",
+      "remote result rewrite"
+    ],
+    "maximum_regular_file_bytes": 67108864,
+    "maximum_archive_source_bytes": 268435456
+  },
+  "archive": {
+    "tag": "r19-readonly-recovery-time4-v1",
+    "host_c_and_d_are_byte_identical_copies": true,
+    "required_evidence": [
+      "raw transport stdout and stderr",
+      "remote inventory with per-file byte count and sha256",
+      "archive byte count and sha256",
+      "C/D byte equality and sha256 equality",
+      "fresh provider inventories before Start, at READY, and after Stop",
+      "prior parent PID and GPU process observations"
+    ]
+  },
+  "failure_policy": {
+    "retry": false,
+    "stop_claim_is_write_once": true,
+    "observe_stopped_after_failure": true,
+    "guardian_required_before_start": true
+  }
+}
