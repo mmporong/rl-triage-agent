@@ -164,7 +164,8 @@ def prepare(repo: Path, protocol_path: Path, output: Path, public_protocol: Path
 
 def assess(prepared_path: Path, content: str) -> dict:
     prepared = read(prepared_path)
-    repo = _source_repo(); sys.path[:0] = [str(repo / "evals"), str(repo / "src")]
+    repo = _source_repo()
+    sys.path[:0] = [str(repo / "evals"), str(repo / "src")]
     import agentic_investigation_contract_v2 as contract
     review = contract.assess(content, prepared["context"])
     if review["status"] != "valid":
@@ -205,14 +206,18 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("prepare")
-    p.add_argument("--repo", type=Path, required=True); p.add_argument("--protocol", type=Path, required=True)
+    p.add_argument("--repo", type=Path, required=True)
+    p.add_argument("--protocol", type=Path, required=True)
     p.add_argument("--public-protocol", type=Path)
     p.add_argument("--out", type=Path, required=True)
     a = sub.add_parser("assess")
-    a.add_argument("--prepared", type=Path, required=True); a.add_argument("--content", required=True)
+    a.add_argument("--prepared", type=Path, required=True)
+    a.add_argument("--content", required=True)
     c = sub.add_parser("call")
-    c.add_argument("--prepared", type=Path, required=True); c.add_argument("--journal", type=Path, required=True)
-    c.add_argument("--api-root", type=Path, required=True); c.add_argument("--source-anchor", required=True)
+    c.add_argument("--prepared", type=Path, required=True)
+    c.add_argument("--journal", type=Path, required=True)
+    c.add_argument("--api-root", type=Path, required=True)
+    c.add_argument("--source-anchor", required=True)
     args = parser.parse_args()
     if args.command == "prepare":
         value = prepare(args.repo.resolve(strict=True), args.protocol.resolve(strict=True), args.out.resolve(),
