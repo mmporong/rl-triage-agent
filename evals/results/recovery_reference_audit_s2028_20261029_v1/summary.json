@@ -1,0 +1,371 @@
+{
+  "schema": "public_recovery_reference_audit_v1",
+  "scope": "posthoc_seen_results_numeric_sensitivity_only",
+  "new_training_runs": 0,
+  "new_model_calls": 0,
+  "used_for_decision": false,
+  "existing_results_modified": false,
+  "sources": {
+    "evals/results/reset_interventions_v2_20261015/seeds/seed_2028.json": {
+      "sha256": "abc0186f0690ac68261ce9b456dbd6d3a9663543a88df8a2203763fc83b755d0",
+      "bytes": 4028
+    },
+    "evals/results/reward_v4_s2028_20261013/result.json": {
+      "sha256": "01891d12d30c679835c9532f29531b839a2ffd0eda5740525d06d057336ef761",
+      "bytes": 9607
+    },
+    "evals/results/reward_v4_s2028_20261013/reports/clean_resume_reference.json": {
+      "sha256": "6ace377f3a89020ebdf1e11808f168f1fae39afd504aee61af47ed5a234a5608",
+      "bytes": 10629
+    },
+    "evals/results/reward_v4_s2028_20261013/original_reports/clean_reference.json": {
+      "sha256": "40617eb003b5316b3bf86fc7767ca9b6a9aaeee96cc5671ba6cb8b6e4587bdcc",
+      "bytes": 10585
+    },
+    "evals/results/selection_comparison_s2171_20261023/costs.json": {
+      "sha256": "e6ff59108da374f1a0c870e67ddd15e14d0d02996831d58ba2a00c306506fd9f",
+      "bytes": 2372
+    },
+    "evals/results/selection_comparison_s2171_20261023/policies.json": {
+      "sha256": "1189d71ed239c26581ee58954ac0d21d4bc56039c9f4f24c820c27cc54d32842",
+      "bytes": 3338
+    }
+  },
+  "actor_reset_seed": 2028,
+  "saved_actor_reset_label": "not_recovered",
+  "actor_reset_behavior": {
+    "survival_s": 20.0,
+    "horizon_s": 20.0,
+    "fall_frac": 0.0,
+    "err_xy": 0.15465310778868374,
+    "err_yaw": 0.2975389434665974
+  },
+  "reference_behaviors": {
+    "registered_clean_resume_598": {
+      "survival_s": 19.26876953125,
+      "horizon_s": 20.0,
+      "fall_frac": 0.03846153989434242,
+      "err_xy": 0.13270022049957778,
+      "err_yaw": 0.22444473535065898
+    },
+    "sensitivity_original_none_299": {
+      "survival_s": 20.0,
+      "horizon_s": 20.0,
+      "fall_frac": 0.0,
+      "err_xy": 0.14057849406437406,
+      "err_yaw": 0.2789465567904676
+    }
+  },
+  "bands_unchanged": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1513,
+    "err_yaw_ratio_max": 1.1719,
+    "fall_frac_max": 0.05
+  },
+  "reference_sensitivity": {
+    "registered_clean_resume_598": {
+      "schema": "recovery_diagnostics_v1",
+      "used_for_decision": false,
+      "comparison": {
+        "survival_ratio": 1.0379489965648347,
+        "fall_frac": 0.0,
+        "err_xy_ratio": 1.1654321839591504,
+        "err_yaw_ratio": 1.32566684178063,
+        "horizon_ratio": 1.0
+      },
+      "registered_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "margins": {
+        "survival_ratio": {
+          "observed": 1.0379489965648347,
+          "bound": 0.9,
+          "direction": "minimum",
+          "signed_margin": 0.13794899656483472,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        },
+        "fall_frac": {
+          "observed": 0.0,
+          "bound": 0.05,
+          "direction": "maximum",
+          "signed_margin": 0.05,
+          "applies_to_verdict": true,
+          "unit": "fraction_points"
+        },
+        "err_xy_ratio": {
+          "observed": 1.1654321839591504,
+          "bound": 1.1513,
+          "direction": "maximum",
+          "signed_margin": -0.01413218395915039,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        },
+        "err_yaw_ratio": {
+          "observed": 1.32566684178063,
+          "bound": 1.1719,
+          "direction": "maximum",
+          "signed_margin": -0.15376684178063016,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        }
+      },
+      "condition_warnings": {
+        "status": "unavailable",
+        "reason": "condition_rows_not_provided",
+        "conditions_checked": null,
+        "all_fell": null
+      }
+    },
+    "sensitivity_original_none_299": {
+      "schema": "recovery_diagnostics_v1",
+      "used_for_decision": false,
+      "comparison": {
+        "survival_ratio": 1.0,
+        "fall_frac": 0.0,
+        "err_xy_ratio": 1.1001192523649073,
+        "err_yaw_ratio": 1.0666521461675385,
+        "horizon_ratio": 1.0
+      },
+      "registered_verdict": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "margins": {
+        "survival_ratio": {
+          "observed": 1.0,
+          "bound": 0.9,
+          "direction": "minimum",
+          "signed_margin": 0.09999999999999998,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        },
+        "fall_frac": {
+          "observed": 0.0,
+          "bound": 0.05,
+          "direction": "maximum",
+          "signed_margin": 0.05,
+          "applies_to_verdict": true,
+          "unit": "fraction_points"
+        },
+        "err_xy_ratio": {
+          "observed": 1.1001192523649073,
+          "bound": 1.1513,
+          "direction": "maximum",
+          "signed_margin": 0.05118074763509273,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        },
+        "err_yaw_ratio": {
+          "observed": 1.0666521461675385,
+          "bound": 1.1719,
+          "direction": "maximum",
+          "signed_margin": 0.10524785383246149,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        }
+      },
+      "condition_warnings": {
+        "status": "unavailable",
+        "reason": "condition_rows_not_provided",
+        "conditions_checked": null,
+        "all_fell": null
+      }
+    }
+  },
+  "reference_condition_checks": {
+    "registered_clean_resume_598": {
+      "schema": "recovery_diagnostics_v1",
+      "used_for_decision": false,
+      "comparison": {
+        "survival_ratio": 1.0,
+        "fall_frac": 0.03846153989434242,
+        "err_xy_ratio": 1.0,
+        "err_yaw_ratio": 1.0,
+        "horizon_ratio": 1.0
+      },
+      "registered_verdict": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "margins": {
+        "survival_ratio": {
+          "observed": 1.0,
+          "bound": 0.9,
+          "direction": "minimum",
+          "signed_margin": 0.09999999999999998,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        },
+        "fall_frac": {
+          "observed": 0.03846153989434242,
+          "bound": 0.05,
+          "direction": "maximum",
+          "signed_margin": 0.01153846010565758,
+          "applies_to_verdict": true,
+          "unit": "fraction_points"
+        },
+        "err_xy_ratio": {
+          "observed": 1.0,
+          "bound": 1.1513,
+          "direction": "maximum",
+          "signed_margin": 0.1513,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        },
+        "err_yaw_ratio": {
+          "observed": 1.0,
+          "bound": 1.1719,
+          "direction": "maximum",
+          "signed_margin": 0.17189999999999994,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        }
+      },
+      "condition_warnings": {
+        "status": "available",
+        "conditions_checked": 26,
+        "all_fell": [
+          {
+            "condition_index": 8,
+            "command": [
+              -1.0,
+              1.0,
+              1.0
+            ],
+            "fall_count": 40,
+            "num_envs": 40
+          }
+        ]
+      }
+    },
+    "sensitivity_original_none_299": {
+      "schema": "recovery_diagnostics_v1",
+      "used_for_decision": false,
+      "comparison": {
+        "survival_ratio": 1.0,
+        "fall_frac": 0.0,
+        "err_xy_ratio": 1.0,
+        "err_yaw_ratio": 1.0,
+        "horizon_ratio": 1.0
+      },
+      "registered_verdict": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "margins": {
+        "survival_ratio": {
+          "observed": 1.0,
+          "bound": 0.9,
+          "direction": "minimum",
+          "signed_margin": 0.09999999999999998,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        },
+        "fall_frac": {
+          "observed": 0.0,
+          "bound": 0.05,
+          "direction": "maximum",
+          "signed_margin": 0.05,
+          "applies_to_verdict": true,
+          "unit": "fraction_points"
+        },
+        "err_xy_ratio": {
+          "observed": 1.0,
+          "bound": 1.1513,
+          "direction": "maximum",
+          "signed_margin": 0.1513,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        },
+        "err_yaw_ratio": {
+          "observed": 1.0,
+          "bound": 1.1719,
+          "direction": "maximum",
+          "signed_margin": 0.17189999999999994,
+          "applies_to_verdict": true,
+          "unit": "ratio"
+        }
+      },
+      "condition_warnings": {
+        "status": "available",
+        "conditions_checked": 26,
+        "all_fell": []
+      }
+    }
+  },
+  "selection_comparison_seed": 2171,
+  "measured_arm_costs": {
+    "fixed_eligible": {
+      "status": "recovered",
+      "probe_count": 9,
+      "probe_wall_s": 261.0010000000475,
+      "repair_wall_s": 1037.7169999998296,
+      "classified_wall_s": 1298.717999999877,
+      "recovered": true
+    },
+    "model_adaptive": {
+      "status": "recovered",
+      "probe_count": 8,
+      "probe_wall_s": 246.14299999992363,
+      "repair_wall_s": 1075.2959999998566,
+      "classified_wall_s": 1321.4389999997802,
+      "recovered": true
+    },
+    "model_first_then_rule": {
+      "status": "HOLD",
+      "probe_count": 1,
+      "probe_wall_s": 22.421999999904074,
+      "repair_wall_s": 531.1879999999655,
+      "classified_wall_s": 553.6099999998696,
+      "recovered": false
+    },
+    "registry_next": {
+      "status": "recovered",
+      "probe_count": 10,
+      "probe_wall_s": 264.7510000000475,
+      "repair_wall_s": 1080.5320000000065,
+      "classified_wall_s": 1345.283000000054,
+      "recovered": true
+    }
+  },
+  "cost_scope": "classified_probe_and_repair_wall_time_excludes_api_wait_and_shared_source",
+  "wording": {
+    "reference_sensitivity": "같은 actor 관측도 기준 598에서는 unhealthy, 기준 299에서는 healthy다. 이미 본 결과의 사후 민감도이며 회복 증거를 추가하지 않는다.",
+    "label_policy": "기존 seed 2028의 not_recovered 라벨을 유지한다. 기준 변경은 향후 새 사전등록에서만 다룬다.",
+    "reference_warning": "집계 healthy와 특정 조건 전원 낙상은 함께 성립할 수 있으므로 조건별 경고를 별도로 기록한다.",
+    "cost": "13.6%와 44%는 실행하지 않은 대안의 추정치이며 관측된 절감량이 아니다. 공개 시간은 GPU 커널 시간이 아닌 작업 벽시계다."
+  }
+}
