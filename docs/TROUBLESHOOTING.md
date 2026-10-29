@@ -738,3 +738,23 @@
 - 확인: 이전 녹화의 boot 계획은 phase 등록 커밋을 checkout하며, 녹화에 필요한 소스는 그 조상 커밋과 파일 결합으로 검사한다. 두 커밋의 역할을 구분해야 한다.
 - 수정: [관측 등록 v4](../bench/protocols/agentic_h_readiness_time5_20261029_v4.json)는 예상 원격 HEAD와 녹화 소스 기준을 분리하고, 유료 Start 전에 이전 boot 계획의 실제 checkout 값을 읽어 대조한다. 이전 실패 원문과 소비 기록은 보존한다.
 - 검증 범위: 이전 boot 계획을 소비하는 CPU 검사와 잘못된 예상 HEAD 거부를 확인했다. v4의 실제 metadata 수집과 후속 GPU 검사는 별도 실행 결과로 기록한다.
+
+
+### OPS-103: 생성자 논리 경로와 Linux 실행 경로의 혼재
+
+- 관찰: 실제 등록 소비 코드가 `path outside registered root map` 또는 `provider path projection`으로 거부했다. GPU와 새 API는 시작 전이었다.
+- 확인: Windows의 producer 논리 경로는 참조 키로 유지해야 하는 반면, host의 local root와 계층별 host 경로는 Linux 실제 경로여야 한다. 두 역할을 같은 방식으로 바꾸면 경로 투영이 깨진다.
+- 수정·검증: 새 등록 판에서 참조 키와 local root를 구분했다. 실제 `E.registration`, `T.registered`, repair contract 소비를 모두 통과했다. 이전 판은 보존했다.
+
+### OPS-104: 보관 이력과 새 모델 응답 참조의 고리 계약
+
+- 관찰: 실제 `Runtime.advance()`가 먼저 `fresh host-preloaded context differs`, 수정 뒤 `KeyError: capsule`로 멈췄다. prefix validation과 constructor만 확인했을 때는 발견되지 않았다.
+- 확인: Runtime은 이력을 별도 사본에 보관하므로 경로와 context digest가 달라진다. 새 모델 호출은 실제 응답·journal을 갖지만 기존 Runtime은 옛 CALL capsule을 요구한다.
+- 수정: [새 prefix 판](../evals/agentic_fresh_selection_prefix_v2.py)은 같은 초기 이력 bytes와 나머지 context의 일치를 확인한다. 실행 이력은 별도 ledger에 쌓는다. [새 Runtime 판](../evals/agentic_investigation_runtime_v2.py)은 실제 응답 참조를 CALL capsule과 구분한다.
+- 검증: [실제 상태 전이](../evals/results/fresh_frame_runtime_operation_dev_s2221_20261029_v2/summary.json)가 API10의 `P_reward` 선택으로 pending operation 한 건을 만들었다. 새 API·승인·dispatch는 0이다. producer·remote parent·Host의 같은 참조 계약은 후속 구현 대상이며 GPU 검사나 새 회복 결과로 계산하지 않는다.
+
+### OPS-105: 상속된 시간 판과 첫 원격 단계의 여유 검사
+
+- 관찰: F2 녹화 controller는 먼저 이전 time5의 고정 lifecycle 값 때문에 CPU에서 거부됐다. 새 time 판의 전체 값을 소비하도록 고친 뒤에는 warm 입장 후 첫 원격 작업 전에 비용·시간 여유 검사로 거부됐다. 실제 녹화·학습·모델 호출은 0이었다.
+- 확인: constructor 통과만으로 각 원격 단계 timeout과 회수·종료 reserve의 합이 실행 창에 들어간다고 볼 수 없다. `--check-plan`이 만든 빈 output 폴더도 실행 출력과 분리해 보존했다.
+- 다음 조건: 원래 비용 기산점과 누적 사용량을 유지한 새 실행 창을 등록하고, 실제 `budget()`으로 단계별 timeout·회수·종료 여유를 유료 실행 전에 확인한다. 기존 실패 원문과 Stop 기록은 보존한다.
