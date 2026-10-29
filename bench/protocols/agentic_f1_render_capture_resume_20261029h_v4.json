@@ -1,0 +1,60 @@
+{
+  "authority": {
+    "gpu_execution_authorized": false,
+    "model_api": 0,
+    "new_resource_creations": 0,
+    "start_authorized": true
+  },
+  "budget": {
+    "absolute_deadline_utc": "2026-10-29T05:05:36.779993+00:00",
+    "additional_allocation_usd": "0",
+    "budget_reset": false,
+    "cost_origin_unchanged": true,
+    "execution_cutoff_utc": "2026-10-29T04:45:36.779993+00:00",
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "intermediate_stop": false,
+    "max_lifecycle_s": 28800,
+    "program_cap_usd": "185",
+    "quoted_usd_per_h": "2.18064",
+    "resource_cap_usd": "20",
+    "stop_reserve_s": 1200,
+    "worst_case_compute_usd": "17.44512"
+  },
+  "capture_phase": {
+    "path": "bench/protocols/agentic_f1_render_capture_phase_20261029h_v8.json",
+    "sha256_lf": "284e956b2ee43ed97758ae4ec341fe5bf1f415418934d1031427f0e3c05eae7b"
+  },
+  "controller": {
+    "generated_heredoc_cpu_fixture": true,
+    "id": "ri96_start_watch_v1",
+    "python": "sys.executable",
+    "sha256": "039800d5c15d9332bf4df0470a143354ef1ead787beb474116e7cfc20a0608c0"
+  },
+  "prior_stopped": {
+    "observed_at_utc": "2026-10-29T01:55:51.344417+00:00",
+    "sha256": "7081bb90c02d075c25989fbce0756bff08cfc6ef5bbef997818a3b42ae800617",
+    "status": "STOPPED"
+  },
+  "private_plan": {
+    "host_sha256": "df0e445b1b0e4207f129de3c58074180fc67637e57b567061d7e87c957a09848",
+    "namespace": "workspace/rl-triage-agentic-f1-render-capture-20261029-h6-recovery-96",
+    "sha256": "24cdb7fc62b71493d478113f73fa01db03c8c06f30dbf446c55c1217ef8f7fbb"
+  },
+  "registered_at_utc": "2026-10-29T02:44:34.093581+00:00",
+  "retry": {
+    "allowed_create_requests": 0,
+    "allowed_start_requests": 1,
+    "cumulative_start_requests_after_success": 3
+  },
+  "schema": "agentic_f1_render_capture_resume_20261029h_v4",
+  "status": "registered_existing_stopped_resource_single_start",
+  "target": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "time_extension": {
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_time_extension_20261029h_v3.json",
+    "sha256_lf": "335cdd56c186028f962978305929d7f0d43192ca85db82d468813922c2efc5a4"
+  }
+}
