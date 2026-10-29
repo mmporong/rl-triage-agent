@@ -1,0 +1,27 @@
+{
+  "schema": "fresh_frame_decision_public_preregistration_v1",
+  "status": "preregistered_not_executed",
+  "split": "development",
+  "seed": 2221,
+  "model_id": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "api": {"cap": 12, "completed_before_run": 9, "pending_before_run": 0, "maximum_new_requests_including_infrastructure_retries": 2},
+  "input_sha256": {
+    "ri111_receipt": "5d6f4a2540e6a2d29937c5d685f5fc6768f39f1f4cf5ee7e90ffb2b72e01176f",
+    "frame_refs": "f682804c50f7ae36bb4c52e9c94309a59e832c59809bfbb4dcc43cb4bb9daf58",
+    "same_play_facts": "a0a9a507bac752a58061900c43cf4571601decef3d1643b4e375532fd9cbb72a",
+    "index_spec": "fa8dc524b3e70790d5eaa333502b3c68b7f93630f146e825b20815967ac78c58",
+    "capture_receipt": "3b6517283904fbfac89519a3317717ce240c10c1d5ad68571e0ae21c03d8cc29",
+    "training_receipt": "133860e69a8a465caa0a1d892e57a03fa668b0eca3e6c53bee6ddf3095d81dd7",
+    "root_delivery": "0a883691bc833f407396cb86799ed4bae27fc23d6f48d5b1fe0dbbd4a68a60d4",
+    "case_snapshot": "90b9ee5f203e5fd4051288131dc90d285c79719134c42a6a884c865dc7829288",
+    "case_bundle": "878a00c973d9a1e96f99c1f2fec27cd2a65546b3956fcdf47d10a2fdf204bc70",
+    "reference_bundle": "c0b9ecd5c645c55bca706396463ab471e14c5049f12c8f809c350271991577fc",
+    "provider_once_worker": "a7fcbab0655386df9cd7f3e3c25114ad704d3fdf27cd4cc7ab5630e38f993fee",
+    "api_baseline": "1edcba7b351b33d6a89de8ad61c5417269f1db0c559e4c31fab5690e85ff839e",
+    "api_registration": "9c207c944282b002311e7ed77d235600e767866b1a627cd0d453bf08e1f50000",
+    "additional_journal_manifests": ["ee912407811cf19bd2b1560694dc16d4b55da9aa873f0145827f9b6b6b3fdb58", "3ef2d1045bdc214dcb44a1d1d08700b0888fefa8e35f0cecfb6e7d80694b1828"]
+  },
+  "frame_input": {"count": 6, "case": 3, "reference": 3, "window": "window-01", "ids": ["f01", "f03", "f06"], "old_renderer_prefix_reused": false},
+  "decision_contract": {"first": "choose_one_registered_probe_or_hold", "second": "only_after_valid_probe_receipt", "invalid": "HOLD", "approval_granted": false},
+  "claims": {"llm_superiority": false, "generalization": false, "new_seed": false, "recovery_verdict": false}
+}

@@ -1,0 +1,812 @@
+{
+  "schema": "agentic_state_facts_v1",
+  "inputs": {
+    "raw_trace_sha256": "c2a585bc18b4cbd207f7bbc82fabe5b3825c2b39d4c91b786e7e1009638a66af",
+    "native_capture_manifest_sha256": "6a1039cc2b347fe37d1ccbb7c524d0e13dacc7603a3d341c314062e3bf546962",
+    "sidecar_manifest_sha256": "f47c2b0ce73774805d853e657ea83c73578489d01988d2e0e44eecfbd3075b0e",
+    "sidecar_records_sha256": "97349ec82b28f4fe29c27083621c15975daface0cbe5976153375f36b3c3e331",
+    "sidecar_source_sha256_lf": "7ae3cf6c9e8cf9e00a94742d9fca5b7492bda350796c58332a84fd95c1cc5ab0",
+    "video_sha256": "35ae4b9dee08f55a02f961dab9154f1b0372fceed3bd80da109f5c4aded0aa55"
+  },
+  "binding": {
+    "join_schema": "agentic_state_sidecar_join_v1",
+    "join_keys": [
+      "frame_index",
+      "capture_ordinal",
+      "simulation_step",
+      "simulation_time_s"
+    ],
+    "frame_count": 625,
+    "fps": 50,
+    "binding_digest": "11bd55b002550e3bce689a50e97252e8c757b625b1e82b1de9ed90f5ca2e0d5c"
+  },
+  "time_basis": {
+    "window_sample": "relative_actual_video_frame_pts_from_first_decoded_frame; 선언 sample 시각과 PTS 정확 일치",
+    "simulation": "trace·sidecar 공통 simulation_time_s(s)와 simulation_step"
+  },
+  "coordinate_frames": {
+    "command": "body",
+    "motion": "body",
+    "world_position_used": false,
+    "joints": "sidecar joint_names 순서"
+  },
+  "units": {
+    "linear_velocity": "m/s",
+    "joint_velocity": "rad/s",
+    "torque": "N*m",
+    "relative": "1"
+  },
+  "windows": [
+    {
+      "window_id": "w1",
+      "declared_sample_timestamps_s": [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        6.0
+      ],
+      "sample_count": 6,
+      "samples": [
+        {
+          "timestamp_s": 1.0,
+          "frame_index": 50,
+          "simulation_step": 50,
+          "simulation_time_s": 1.0099999774247408
+        },
+        {
+          "timestamp_s": 2.0,
+          "frame_index": 100,
+          "simulation_step": 100,
+          "simulation_time_s": 2.009999955072999
+        },
+        {
+          "timestamp_s": 3.0,
+          "frame_index": 150,
+          "simulation_step": 150,
+          "simulation_time_s": 3.009999932721257
+        },
+        {
+          "timestamp_s": 4.0,
+          "frame_index": 200,
+          "simulation_step": 200,
+          "simulation_time_s": 4.009999910369515
+        },
+        {
+          "timestamp_s": 5.0,
+          "frame_index": 250,
+          "simulation_step": 250,
+          "simulation_time_s": 5.009999888017774
+        },
+        {
+          "timestamp_s": 6.0,
+          "frame_index": 300,
+          "simulation_step": 300,
+          "simulation_time_s": 6.009999865666032
+        }
+      ]
+    },
+    {
+      "window_id": "w2",
+      "declared_sample_timestamps_s": [
+        7.0,
+        8.0,
+        9.0,
+        10.0,
+        11.0,
+        12.0
+      ],
+      "sample_count": 6,
+      "samples": [
+        {
+          "timestamp_s": 7.0,
+          "frame_index": 350,
+          "simulation_step": 350,
+          "simulation_time_s": 7.00999984331429
+        },
+        {
+          "timestamp_s": 8.0,
+          "frame_index": 400,
+          "simulation_step": 400,
+          "simulation_time_s": 8.009999820962548
+        },
+        {
+          "timestamp_s": 9.0,
+          "frame_index": 450,
+          "simulation_step": 450,
+          "simulation_time_s": 9.009999798610806
+        },
+        {
+          "timestamp_s": 10.0,
+          "frame_index": 500,
+          "simulation_step": 500,
+          "simulation_time_s": 10.009999776259065
+        },
+        {
+          "timestamp_s": 11.0,
+          "frame_index": 550,
+          "simulation_step": 550,
+          "simulation_time_s": 11.009999753907323
+        },
+        {
+          "timestamp_s": 12.0,
+          "frame_index": 600,
+          "simulation_step": 600,
+          "simulation_time_s": 12.009999731555581
+        }
+      ]
+    }
+  ],
+  "field_availability": {
+    "command": "available",
+    "motion": "available",
+    "joint_vel": "available",
+    "computed_torque": "available",
+    "applied_torque": "available",
+    "contact_net_force_w": "available; 요약하지 않음",
+    "contact_current_contact_time": "available; 요약하지 않음",
+    "contact_current_air_time": "available; 요약하지 않음"
+  },
+  "joint_names": [
+    "FL_hip_joint",
+    "FR_hip_joint",
+    "RL_hip_joint",
+    "RR_hip_joint",
+    "FL_thigh_joint",
+    "FR_thigh_joint",
+    "RL_thigh_joint",
+    "RR_thigh_joint",
+    "FL_calf_joint",
+    "FR_calf_joint",
+    "RL_calf_joint",
+    "RR_calf_joint"
+  ],
+  "facts": {
+    "w1.command_horizontal_norm": {
+      "unit": "m/s",
+      "frame": "body_xy",
+      "definition": "hypot(command.linear_x, command.linear_y)",
+      "per_sample": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean": 1.0,
+      "min": 1.0,
+      "max": 1.0
+    },
+    "w1.body_horizontal_speed_norm": {
+      "unit": "m/s",
+      "frame": "body_xy",
+      "definition": "hypot(motion.linear_x, motion.linear_y)",
+      "per_sample": [
+        1.068699535801195,
+        0.8862556000314178,
+        1.0698409601839374,
+        0.9549206251767332,
+        0.9746522411264175,
+        1.0071134556907848
+      ],
+      "mean": 0.9935804030017477,
+      "min": 0.8862556000314178,
+      "max": 1.0698409601839374
+    },
+    "w1.command_tracking_error_norm": {
+      "unit": "m/s",
+      "frame": "body_xy",
+      "definition": "hypot(command.linear_x - motion.linear_x, command.linear_y - motion.linear_y); 두 norm의 차가 아니다",
+      "per_sample": [
+        0.07153449088988728,
+        0.13670988621048294,
+        0.07599991298475628,
+        0.05130730272674464,
+        0.033228120962550144,
+        0.013194696103385428
+      ],
+      "mean": 0.06366240164630112,
+      "min": 0.013194696103385428,
+      "max": 0.13670988621048294
+    },
+    "w1.command_tracking_error_relative": {
+      "unit": "1",
+      "definition": "command_tracking_error_norm / command_horizontal_norm",
+      "per_sample": [
+        0.07153449088988728,
+        0.13670988621048294,
+        0.07599991298475628,
+        0.05130730272674464,
+        0.033228120962550144,
+        0.013194696103385428
+      ],
+      "mean": 0.06366240164630112,
+      "min": 0.013194696103385428,
+      "max": 0.13670988621048294
+    },
+    "w1.joint_abs_velocity": {
+      "unit": "rad/s",
+      "per_joint": {
+        "FL_hip_joint": {
+          "mean": 0.7426433712244034,
+          "max": 3.4278512001037598
+        },
+        "FR_hip_joint": {
+          "mean": 0.7506527279814085,
+          "max": 1.2731797695159912
+        },
+        "RL_hip_joint": {
+          "mean": 0.5542738102376461,
+          "max": 1.2535719871520996
+        },
+        "RR_hip_joint": {
+          "mean": 0.6764876944944263,
+          "max": 2.2170193195343018
+        },
+        "FL_thigh_joint": {
+          "mean": 4.640749891599019,
+          "max": 6.107369899749756
+        },
+        "FR_thigh_joint": {
+          "mean": 3.745977168281873,
+          "max": 4.675817012786865
+        },
+        "RL_thigh_joint": {
+          "mean": 0.5674171559512615,
+          "max": 2.1665797233581543
+        },
+        "RR_thigh_joint": {
+          "mean": 0.5709818005561829,
+          "max": 1.5406213998794556
+        },
+        "FL_calf_joint": {
+          "mean": 1.6940204401810963,
+          "max": 4.2943315505981445
+        },
+        "FR_calf_joint": {
+          "mean": 1.823859269420306,
+          "max": 3.2664060592651367
+        },
+        "RL_calf_joint": {
+          "mean": 4.999341535071532,
+          "max": 12.818467140197754
+        },
+        "RR_calf_joint": {
+          "mean": 5.062580744425456,
+          "max": 7.95908784866333
+        }
+      }
+    },
+    "w1.computed_torque": {
+      "unit": "N*m",
+      "source": "recorded",
+      "per_joint": {
+        "FL_hip_joint": {
+          "mean": -8.564537207285563,
+          "min": -10.847800254821777,
+          "max": -5.644495010375977
+        },
+        "FR_hip_joint": {
+          "mean": 10.728367646535238,
+          "min": 4.754753112792969,
+          "max": 13.275033950805664
+        },
+        "RL_hip_joint": {
+          "mean": -5.278281172116597,
+          "min": -8.790799140930176,
+          "max": -1.0550131797790527
+        },
+        "RR_hip_joint": {
+          "mean": 2.993605295817057,
+          "min": 2.166391134262085,
+          "max": 5.15118932723999
+        },
+        "FL_thigh_joint": {
+          "mean": 4.265763560930888,
+          "min": -3.2989916801452637,
+          "max": 7.576712608337402
+        },
+        "FR_thigh_joint": {
+          "mean": 3.7948124408721924,
+          "min": -5.25280237197876,
+          "max": 8.966320991516113
+        },
+        "RL_thigh_joint": {
+          "mean": -5.86915796995163,
+          "min": -8.869986534118652,
+          "max": -0.887886643409729
+        },
+        "RR_thigh_joint": {
+          "mean": -7.140553077061971,
+          "min": -9.778718948364258,
+          "max": -4.297167778015137
+        },
+        "FL_calf_joint": {
+          "mean": 7.119740009307861,
+          "min": 2.803598403930664,
+          "max": 9.237417221069336
+        },
+        "FR_calf_joint": {
+          "mean": 9.940899769465128,
+          "min": 3.578263759613037,
+          "max": 13.74724292755127
+        },
+        "RL_calf_joint": {
+          "mean": 0.7028360366821289,
+          "min": -4.472743511199951,
+          "max": 5.639283657073975
+        },
+        "RR_calf_joint": {
+          "mean": -3.1760651667912803,
+          "min": -5.197874546051025,
+          "max": -0.5199055671691895
+        }
+      }
+    },
+    "w1.applied_torque": {
+      "unit": "N*m",
+      "source": "recorded",
+      "per_joint": {
+        "FL_hip_joint": {
+          "mean": -8.564537207285563,
+          "min": -10.847800254821777,
+          "max": -5.644495010375977
+        },
+        "FR_hip_joint": {
+          "mean": 10.728367646535238,
+          "min": 4.754753112792969,
+          "max": 13.275033950805664
+        },
+        "RL_hip_joint": {
+          "mean": -5.278281172116597,
+          "min": -8.790799140930176,
+          "max": -1.0550131797790527
+        },
+        "RR_hip_joint": {
+          "mean": 2.993605295817057,
+          "min": 2.166391134262085,
+          "max": 5.15118932723999
+        },
+        "FL_thigh_joint": {
+          "mean": 4.265763560930888,
+          "min": -3.2989916801452637,
+          "max": 7.576712608337402
+        },
+        "FR_thigh_joint": {
+          "mean": 3.7948124408721924,
+          "min": -5.25280237197876,
+          "max": 8.966320991516113
+        },
+        "RL_thigh_joint": {
+          "mean": -5.86915796995163,
+          "min": -8.869986534118652,
+          "max": -0.887886643409729
+        },
+        "RR_thigh_joint": {
+          "mean": -7.140553077061971,
+          "min": -9.778718948364258,
+          "max": -4.297167778015137
+        },
+        "FL_calf_joint": {
+          "mean": 7.119740009307861,
+          "min": 2.803598403930664,
+          "max": 9.237417221069336
+        },
+        "FR_calf_joint": {
+          "mean": 9.940899769465128,
+          "min": 3.578263759613037,
+          "max": 13.74724292755127
+        },
+        "RL_calf_joint": {
+          "mean": 0.7028360366821289,
+          "min": -4.472743511199951,
+          "max": 5.639283657073975
+        },
+        "RR_calf_joint": {
+          "mean": -3.1760651667912803,
+          "min": -5.197874546051025,
+          "max": -0.5199055671691895
+        }
+      }
+    },
+    "w1.torque_clip_abs_difference": {
+      "unit": "N*m",
+      "definition": "|computed_torque - applied_torque| (둘 다 기록값)",
+      "per_joint": {
+        "FL_hip_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "FR_hip_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RL_hip_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RR_hip_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "FL_thigh_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "FR_thigh_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RL_thigh_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RR_thigh_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "FL_calf_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "FR_calf_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RL_calf_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RR_calf_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        }
+      }
+    },
+    "w2.command_horizontal_norm": {
+      "unit": "m/s",
+      "frame": "body_xy",
+      "definition": "hypot(command.linear_x, command.linear_y)",
+      "per_sample": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean": 1.0,
+      "min": 1.0,
+      "max": 1.0
+    },
+    "w2.body_horizontal_speed_norm": {
+      "unit": "m/s",
+      "frame": "body_xy",
+      "definition": "hypot(motion.linear_x, motion.linear_y)",
+      "per_sample": [
+        0.8467893536356843,
+        1.0429851972828166,
+        0.8117755432330592,
+        1.0728948205509332,
+        0.8733348474164868,
+        1.0684119710940656
+      ],
+      "mean": 0.9526986222021744,
+      "min": 0.8117755432330592,
+      "max": 1.0728948205509332
+    },
+    "w2.command_tracking_error_norm": {
+      "unit": "m/s",
+      "frame": "body_xy",
+      "definition": "hypot(command.linear_x - motion.linear_x, command.linear_y - motion.linear_y); 두 norm의 차가 아니다",
+      "per_sample": [
+        0.15356887804152386,
+        0.043178806001285965,
+        0.18946129816476553,
+        0.0744883548276913,
+        0.1413554033259489,
+        0.07508803656077971
+      ],
+      "mean": 0.11285679615366588,
+      "min": 0.043178806001285965,
+      "max": 0.18946129816476553
+    },
+    "w2.command_tracking_error_relative": {
+      "unit": "1",
+      "definition": "command_tracking_error_norm / command_horizontal_norm",
+      "per_sample": [
+        0.15356887804152386,
+        0.043178806001285965,
+        0.18946129816476553,
+        0.0744883548276913,
+        0.1413554033259489,
+        0.07508803656077971
+      ],
+      "mean": 0.11285679615366588,
+      "min": 0.043178806001285965,
+      "max": 0.18946129816476553
+    },
+    "w2.joint_abs_velocity": {
+      "unit": "rad/s",
+      "per_joint": {
+        "FL_hip_joint": {
+          "mean": 1.2916339089473088,
+          "max": 3.2660646438598633
+        },
+        "FR_hip_joint": {
+          "mean": 1.1055637300014496,
+          "max": 2.3794283866882324
+        },
+        "RL_hip_joint": {
+          "mean": 0.7841071486473083,
+          "max": 1.417161464691162
+        },
+        "RR_hip_joint": {
+          "mean": 1.1118703335523605,
+          "max": 2.3176584243774414
+        },
+        "FL_thigh_joint": {
+          "mean": 7.228052377700806,
+          "max": 12.929742813110352
+        },
+        "FR_thigh_joint": {
+          "mean": 6.733712911605835,
+          "max": 12.674851417541504
+        },
+        "RL_thigh_joint": {
+          "mean": 0.7190948526064554,
+          "max": 1.5192749500274658
+        },
+        "RR_thigh_joint": {
+          "mean": 0.6882073407371839,
+          "max": 1.30525803565979
+        },
+        "FL_calf_joint": {
+          "mean": 2.178008198738098,
+          "max": 5.93838357925415
+        },
+        "FR_calf_joint": {
+          "mean": 1.6389116992553074,
+          "max": 3.784855365753174
+        },
+        "RL_calf_joint": {
+          "mean": 3.6757132907708487,
+          "max": 5.500502586364746
+        },
+        "RR_calf_joint": {
+          "mean": 2.837362309296926,
+          "max": 5.9145188331604
+        }
+      }
+    },
+    "w2.computed_torque": {
+      "unit": "N*m",
+      "source": "recorded",
+      "per_joint": {
+        "FL_hip_joint": {
+          "mean": -7.927613099416097,
+          "min": -10.22677993774414,
+          "max": -5.674673557281494
+        },
+        "FR_hip_joint": {
+          "mean": 9.362175703048706,
+          "min": 5.137775421142578,
+          "max": 12.954381942749023
+        },
+        "RL_hip_joint": {
+          "mean": -4.016960382461548,
+          "min": -6.6666741371154785,
+          "max": -1.260995864868164
+        },
+        "RR_hip_joint": {
+          "mean": 2.775978684425354,
+          "min": 2.0728814601898193,
+          "max": 4.886083602905273
+        },
+        "FL_thigh_joint": {
+          "mean": 1.6736017068227131,
+          "min": -8.899270057678223,
+          "max": 7.472716331481934
+        },
+        "FR_thigh_joint": {
+          "mean": 1.704551140467326,
+          "min": -6.564043998718262,
+          "max": 5.687434196472168
+        },
+        "RL_thigh_joint": {
+          "mean": -4.200053542852402,
+          "min": -8.913166046142578,
+          "max": 0.9307185411453247
+        },
+        "RR_thigh_joint": {
+          "mean": -5.816906253496806,
+          "min": -9.635339736938477,
+          "max": -1.82343327999115
+        },
+        "FL_calf_joint": {
+          "mean": 4.703752676645915,
+          "min": -0.7919814586639404,
+          "max": 9.233367919921875
+        },
+        "FR_calf_joint": {
+          "mean": 7.180506199598312,
+          "min": -1.4039567708969116,
+          "max": 13.677766799926758
+        },
+        "RL_calf_joint": {
+          "mean": 0.0021170576413472495,
+          "min": -4.432702541351318,
+          "max": 5.338111877441406
+        },
+        "RR_calf_joint": {
+          "mean": -2.9962253173192344,
+          "min": -5.837460041046143,
+          "max": -0.6031479835510254
+        }
+      }
+    },
+    "w2.applied_torque": {
+      "unit": "N*m",
+      "source": "recorded",
+      "per_joint": {
+        "FL_hip_joint": {
+          "mean": -7.927613099416097,
+          "min": -10.22677993774414,
+          "max": -5.674673557281494
+        },
+        "FR_hip_joint": {
+          "mean": 9.362175703048706,
+          "min": 5.137775421142578,
+          "max": 12.954381942749023
+        },
+        "RL_hip_joint": {
+          "mean": -4.016960382461548,
+          "min": -6.6666741371154785,
+          "max": -1.260995864868164
+        },
+        "RR_hip_joint": {
+          "mean": 2.775978684425354,
+          "min": 2.0728814601898193,
+          "max": 4.886083602905273
+        },
+        "FL_thigh_joint": {
+          "mean": 1.6736017068227131,
+          "min": -8.899270057678223,
+          "max": 7.472716331481934
+        },
+        "FR_thigh_joint": {
+          "mean": 1.704551140467326,
+          "min": -6.564043998718262,
+          "max": 5.687434196472168
+        },
+        "RL_thigh_joint": {
+          "mean": -4.200053542852402,
+          "min": -8.913166046142578,
+          "max": 0.9307185411453247
+        },
+        "RR_thigh_joint": {
+          "mean": -5.816906253496806,
+          "min": -9.635339736938477,
+          "max": -1.82343327999115
+        },
+        "FL_calf_joint": {
+          "mean": 4.703752676645915,
+          "min": -0.7919814586639404,
+          "max": 9.233367919921875
+        },
+        "FR_calf_joint": {
+          "mean": 7.180506199598312,
+          "min": -1.4039567708969116,
+          "max": 13.677766799926758
+        },
+        "RL_calf_joint": {
+          "mean": 0.0021170576413472495,
+          "min": -4.432702541351318,
+          "max": 5.338111877441406
+        },
+        "RR_calf_joint": {
+          "mean": -2.9962253173192344,
+          "min": -5.837460041046143,
+          "max": -0.6031479835510254
+        }
+      }
+    },
+    "w2.torque_clip_abs_difference": {
+      "unit": "N*m",
+      "definition": "|computed_torque - applied_torque| (둘 다 기록값)",
+      "per_joint": {
+        "FL_hip_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "FR_hip_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RL_hip_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RR_hip_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "FL_thigh_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "FR_thigh_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RL_thigh_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RR_thigh_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "FL_calf_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "FR_calf_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RL_calf_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        },
+        "RR_calf_joint": {
+          "mean": 0.0,
+          "max": 0.0
+        }
+      }
+    }
+  },
+  "unsupported_claims": [
+    {
+      "claim": "gait_or_walking_state",
+      "reason": "접촉 값은 요약하지 않고 lazy 갱신 frame은 비어 있어 보행 여부를 단정할 근거가 아니다"
+    },
+    {
+      "claim": "forward_progress_judgement",
+      "reason": "전진 판정 임계값을 만들지 않는다"
+    },
+    {
+      "claim": "acceleration_judgement",
+      "reason": "가속 판정 임계값을 만들지 않는다"
+    },
+    {
+      "claim": "fall_judgement",
+      "reason": "넘어짐 판정 임계값을 만들지 않는다"
+    },
+    {
+      "claim": "fault_cause_or_location",
+      "reason": "관측 수치는 원인·위치를 판정하지 않는다"
+    },
+    {
+      "claim": "single_leg_fault_localization",
+      "reason": "등록 모터 변경은 12관절 전체 함수라 한쪽 다리로 해석하지 않는다"
+    },
+    {
+      "claim": "recovery_or_behavior_label",
+      "reason": "행동 정답·회복 라벨을 만들지 않는다"
+    },
+    {
+      "claim": "world_frame_displacement",
+      "reason": "몸체 좌표 속도와 월드 좌표 위치를 섞지 않으며 이 fact는 월드 이동량을 다루지 않는다"
+    },
+    {
+      "claim": "torque_estimation",
+      "reason": "기록된 computed·applied torque만 요약하고 추정값을 만들지 않는다"
+    }
+  ],
+  "thresholds_created": 0,
+  "behavior_label": null,
+  "used_for_decision": false
+}
