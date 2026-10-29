@@ -20,6 +20,8 @@ New experiment versions use **Nemotron 3.5 Super VL** for diagnosis, correction 
 
 [Presentation replay](https://mmporong.github.io/rl-triage-agent/replay/) · [Interactive architecture diagram](https://mmporong.github.io/rl-triage-agent/?view=single-dark) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [한국어 요약](#한국어-요약)
 
+The [English judge replay](submission/nebius-global-20261030/README.md) runs on the CPU without credentials. It lets reviewers inspect the recorded R1 diagnosis, registered inspections, correction approval and fixed behavioral evaluation, alongside a separate residual-diagnosis case. The bundle includes a [2:50 demo](submission/nebius-global-20261030/RL_Triage_Agent_Nebius_Demo.mp4), setup instructions, source hashes and a verifier. Recorded evidence replay does not launch training or make a model request.
+
 ## What the agent does
 
 1. **Notice.** A tracking alarm and a fixed behavior evaluation show that the policy does not follow commands.

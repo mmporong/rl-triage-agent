@@ -1,0 +1,43 @@
+{
+  "schema": "public_novel_u1_scope_confirmation_summary_v1",
+  "status": "complete",
+  "measurement_kind": "post_result_development_confirmation",
+  "outcome": "recovered",
+  "source_training_seed": 2062,
+  "none_control_training_seed": 2062,
+  "corrected_u1_restart_training_seed": 3062,
+  "training_protocol": {
+    "max_iterations": 300,
+    "num_envs": 4096,
+    "num_steps_per_env": 24
+  },
+  "fixed_evaluation_protocol": {
+    "condition_count": 26,
+    "environments_per_condition": 40,
+    "horizon_steps": 1000,
+    "action_scale": 0.25
+  },
+  "source_failure": {
+    "outcome": "failure_present",
+    "none_walks": true,
+    "u1_label": "unhealthy"
+  },
+  "none_control": {
+    "label": "healthy",
+    "healthy": true,
+    "walks": true
+  },
+  "corrected_u1_restart": {
+    "label": "healthy",
+    "recovery_label": "recovered"
+  },
+  "scope": {
+    "measured_probe_terms": 2,
+    "source_registered_terms": 4,
+    "restored_terms": 4
+  },
+  "design_limit": "기존 U1 결과를 본 뒤 넓힌 함수군 교정을 처음 쓰는 seed에서 확인한 개발 측정이다. API 호출은 0회이고 모델 판단 고리는 비활성이다.",
+  "claim_limit": "이 결과만으로 다른 seed, 결함, 로봇에 대한 일반화나 원인 규명, 비용 절감, 모델 우월성을 주장하지 않는다.",
+  "source_commit_sha": "d392fae74f2ccf2e7d3f06c01c62771c50722e23",
+  "protocol_sha256_lf": "e3680a6006ecf0fff60ef312df4c9fbadc2a847bd69649c9847964897ed73e5d"
+}

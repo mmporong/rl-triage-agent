@@ -1,0 +1,183 @@
+{
+  "schema": "public_r1_repair_probe_and_correction_v1",
+  "probe_count": 6,
+  "normal_probe_count": 5,
+  "abnormal_probe_count": 1,
+  "probes": [
+    {
+      "order": 1,
+      "probe": "P_reward",
+      "selection_source": "model_selected",
+      "approval_events": [
+        "proposed",
+        "approved",
+        "consumed",
+        "receipt"
+      ],
+      "outcome": "normal",
+      "measurement": {
+        "track_ang_vel_z_exp_rel_error": 1.67952905716362e-08,
+        "track_lin_vel_xy_exp_rel_error": 1.7907426901331293e-08
+      },
+      "gpu_s": 19.125,
+      "exit_code": 0,
+      "over_budget": false,
+      "request_id": "c8ff45863788"
+    },
+    {
+      "order": 2,
+      "probe": "P_value",
+      "selection_source": "registered_next",
+      "approval_events": [
+        "proposed",
+        "approved",
+        "consumed",
+        "receipt"
+      ],
+      "outcome": "normal",
+      "measurement": {
+        "actor_change": 1.0155786547023864,
+        "critic_change": 1.0147030882674641,
+        "from": "model_0.pt"
+      },
+      "gpu_s": 11.702999999979511,
+      "exit_code": 0,
+      "over_budget": false,
+      "request_id": "d604a00c29c1"
+    },
+    {
+      "order": 3,
+      "probe": "P_physics",
+      "selection_source": "registered_next",
+      "approval_events": [
+        "proposed",
+        "approved",
+        "consumed",
+        "receipt"
+      ],
+      "outcome": "normal",
+      "measurement": {
+        "dynamic_friction_mean": 0.6000000238418579,
+        "mass_delta_max": 2.9164342880249023,
+        "mass_delta_min": -0.9239606857299805,
+        "mismatch_count": 0,
+        "mismatches": [],
+        "physics_dt": 0.005,
+        "static_friction_mean": 0.8000000715255737
+      },
+      "gpu_s": 11.203000000212342,
+      "exit_code": 0,
+      "over_budget": false,
+      "request_id": "c4f5d808aaa2"
+    },
+    {
+      "order": 4,
+      "probe": "P_episode",
+      "selection_source": "registered_next",
+      "approval_events": [
+        "proposed",
+        "approved",
+        "consumed",
+        "receipt"
+      ],
+      "outcome": "normal",
+      "measurement": {
+        "median_timeout_step": 1000.0,
+        "timeout_count": 64,
+        "timeout_ratio": 1.0
+      },
+      "gpu_s": 47.10900000017136,
+      "exit_code": 0,
+      "over_budget": false,
+      "request_id": "6a28af135653"
+    },
+    {
+      "order": 5,
+      "probe": "P_noise",
+      "selection_source": "registered_next",
+      "approval_events": [
+        "proposed",
+        "approved",
+        "consumed",
+        "receipt"
+      ],
+      "outcome": "normal",
+      "measurement": {
+        "logged_std_mean": 0.5475016832351685,
+        "noise_ratio": 1.000099778175354
+      },
+      "gpu_s": 19.45299999997951,
+      "exit_code": 0,
+      "over_budget": false,
+      "request_id": "a2c3b6529052"
+    },
+    {
+      "order": 6,
+      "probe": "P_optimizer_updates",
+      "selection_source": "registered_new_probe",
+      "approval_events": [
+        "proposed",
+        "approved",
+        "consumed",
+        "receipt"
+      ],
+      "outcome": "abnormal",
+      "measurement": {
+        "case": {
+          "minibatches": [
+            4,
+            4,
+            4
+          ],
+          "optimizer_steps": [
+            4,
+            4,
+            4
+          ],
+          "status": "abnormal"
+        },
+        "checkpoint_loaded": false,
+        "control": {
+          "minibatches": [
+            20,
+            20,
+            20
+          ],
+          "optimizer_steps": [
+            20,
+            20,
+            20
+          ],
+          "status": "normal"
+        },
+        "execution_evidence_sha256": "8c9af3b77f4e51743ab0ceebc0847a03b8ebbf9419f58f0d77f7d89858255411",
+        "source_checkpoint_sha256": "7a1fe7dc00b0f48a6c19d54dc7bdd3553a116896ff7622ca699a7569f8240eb1"
+      },
+      "gpu_s": 54.85900000017136,
+      "exit_code": 0,
+      "over_budget": false,
+      "request_id": "fd31b1685480"
+    }
+  ],
+  "correction": {
+    "request_id": "7cc57a672f5c",
+    "correction_id": "restore_configured_ppo_epochs",
+    "recovery_mode": "restart",
+    "confirmed_mechanism": "optimizer",
+    "effect_key": "794e8b8c67cf7138",
+    "approval_events": [
+      "proposed",
+      "approved",
+      "consumed",
+      "receipt"
+    ],
+    "verdict": "recovered",
+    "exit_code": 0,
+    "over_budget": false
+  },
+  "source_artifact_sha256": {
+    "probe_raw": "8c9af3b77f4e51743ab0ceebc0847a03b8ebbf9419f58f0d77f7d89858255411",
+    "probe_ledger": "7d1ec12fcd1e7455563358c36609d256c91a185060ce422ec8cdd325ea406124",
+    "correction_ledger": "60ea23fec144c739a09eb661eb0df061915d59a79b1246e5d4ab50cd54253b33"
+  }
+}

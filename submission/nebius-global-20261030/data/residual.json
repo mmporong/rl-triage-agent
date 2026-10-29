@@ -1,0 +1,174 @@
+{
+  "schema": "residual_success_public_summary_v2",
+  "status": "complete",
+  "demo_success": true,
+  "seeds": [
+    2120,
+    2121
+  ],
+  "successful_cases": 2,
+  "cases": [
+    {
+      "seed": 2120,
+      "outcome": "recovered",
+      "demo_success": true,
+      "correction_order": [
+        "restore_body_frame_reward",
+        "restore_configured_ppo_epochs"
+      ],
+      "repair_verdicts": [
+        "not_recovered",
+        "recovered"
+      ],
+      "selection_origin": [
+        "model",
+        "model"
+      ],
+      "final_matches_none": {
+        "checkpoint_sha256_equal": true,
+        "metrics_equal": true,
+        "checkpoint_sha256": "5ac560b46511f92fa31b213c8dbf005bda9380eb53481c8ab061089548ecc53e"
+      },
+      "metrics": {
+        "NONE": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.1413488764312903,
+          "yaw_rate_rmse_radps": 0.2590012885737307
+        },
+        "COMPOUND": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.178033591450496,
+          "yaw_rate_rmse_radps": 0.8177592186776991
+        },
+        "FIRST": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.1756278917032683,
+          "yaw_rate_rmse_radps": 0.823046315921255
+        },
+        "BOTH": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.1413488764312903,
+          "yaw_rate_rmse_radps": 0.2590012885737307
+        }
+      },
+      "evaluation_outcomes": {
+        "NONE": "recovered",
+        "COMPOUND": "not_recovered",
+        "FIRST": "not_recovered",
+        "BOTH": "recovered"
+      }
+    },
+    {
+      "seed": 2121,
+      "outcome": "recovered",
+      "demo_success": true,
+      "correction_order": [
+        "restore_configured_ppo_epochs",
+        "restore_body_frame_reward"
+      ],
+      "repair_verdicts": [
+        "not_recovered",
+        "recovered"
+      ],
+      "selection_origin": [
+        "model",
+        "model"
+      ],
+      "final_matches_none": {
+        "checkpoint_sha256_equal": true,
+        "metrics_equal": true,
+        "checkpoint_sha256": "92f122d2ac485dfe8ebe989ad59f94b16b7a224df3ff0c4324e774792e13f77b"
+      },
+      "metrics": {
+        "NONE": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.152546997694259,
+          "yaw_rate_rmse_radps": 0.22318739865358692
+        },
+        "COMPOUND": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.2042154102073717,
+          "yaw_rate_rmse_radps": 0.46785177956536506
+        },
+        "FIRST": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.1743278772503671,
+          "yaw_rate_rmse_radps": 0.7001848206738244
+        },
+        "BOTH": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.152546997694259,
+          "yaw_rate_rmse_radps": 0.22318739865358692
+        }
+      },
+      "evaluation_outcomes": {
+        "NONE": "recovered",
+        "COMPOUND": "not_recovered",
+        "FIRST": "not_recovered",
+        "BOTH": "recovered"
+      }
+    }
+  ],
+  "decision_metrics": {
+    "diagnosis_opportunities": 4,
+    "completed_diagnoses": 4,
+    "infrastructure_or_call_errors": 0,
+    "model_validity": {
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "format_validity": {
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "semantic_validity_given_format": {
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "first_pass_validity": {
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "rule_transition": {
+      "numerator": 0,
+      "denominator": 4,
+      "rate": 0.0
+    },
+    "rule_transition_given_invalid": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+    }
+  },
+  "model_validity": {
+    "numerator": 4,
+    "denominator": 4,
+    "rate": 1.0
+  },
+  "rule_transition": {
+    "numerator": 0,
+    "denominator": 4,
+    "rate": 0.0
+  },
+  "end_to_end_recovery": {
+    "numerator": 2,
+    "denominator": 2,
+    "rate": 1.0
+  },
+  "interpretation": "모델 선택 유효율, 등록 규칙 전환율, 두 교정 뒤 회복률을 서로 다른 지표로 보고한다.",
+  "rule_transition_effect_claimed": false,
+  "design_coupling": "설계자가 F1·R1 수리와 작업29 두 seed의 epoch2 모델 계약 위반을 본 뒤 만든 개발 측정이다. 새 seed는 이 결합을 없애지 않는다.",
+  "wording": "두 개발 seed에서 두 고리와 두 교정 뒤 회복했다."
+}

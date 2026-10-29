@@ -1,0 +1,137 @@
+1
+00:00:00,000 --> 00:00:06,506
+RL Triage Agent investigates robot learning failures. It
+connects model hypotheses to inspections,
+
+2
+00:00:06,506 --> 00:00:09,008
+registered repairs, and behavioral tests.
+
+3
+00:00:10,000 --> 00:00:16,704
+First, a freshly captured normal policy in Isaac Lab. This
+is a simulated Go two robot, following a
+
+4
+00:00:16,704 --> 00:00:19,683
+motion command on Nebius L forty S compute.
+
+5
+00:00:22,500 --> 00:00:28,416
+With the known F one reward defect, the robot barely follows
+that command. These are normal and
+
+6
+00:00:28,416 --> 00:00:31,548
+faulty captures, not a before and after repair video.
+
+7
+00:00:35,000 --> 00:00:41,053
+Now the application replays a separate, completed P P O
+epoch failure. The public source files are
+
+8
+00:00:41,053 --> 00:00:46,394
+hash verified. Both policies survive twenty seconds, but
+linear tracking error rises from zero point
+
+9
+00:00:46,394 --> 00:00:50,666
+one four six to one point one six nine meters per second.
+
+10
+00:00:53,000 --> 00:00:59,035
+The recorded Nemotron response first selects the reward
+inspection. It returns normal. The following
+
+11
+00:00:59,035 --> 00:01:05,069
+inspections use the registered sequence, rather than more
+model choices. This matters: a plausible
+
+12
+00:01:05,069 --> 00:01:08,086
+first hypothesis is not a confirmed mechanism.
+
+13
+00:01:11,000 --> 00:01:16,901
+A short optimizer inspection finds the discrepancy. Five
+epochs and four minibatches should produce
+
+14
+00:01:16,901 --> 00:01:22,801
+twenty optimizer steps per update. The faulty configuration
+produces only four. These are fresh
+
+15
+00:01:22,801 --> 00:01:27,016
+three update inspections, not measurements loaded from the
+trained checkpoint.
+
+16
+00:01:29,000 --> 00:01:34,346
+The registered correction restores the configured epoch
+count. The recorded approval chain is
+
+17
+00:01:34,346 --> 00:01:39,691
+proposed, approved, consumed, then receipt. Training
+restarts with a different seed. This replay
+
+18
+00:01:39,691 --> 00:01:45,037
+reads those artifacts; it does not issue a new approval or
+run training.
+
+19
+00:01:47,000 --> 00:01:51,954
+Recovery is tested separately across twenty six fixed
+conditions. The corrected policy's linear
+
+20
+00:01:51,954 --> 00:01:58,052
+tracking error is zero point one four eight meters per
+second, near the normal control. Its
+
+21
+00:01:58,052 --> 00:02:01,481
+checkpoint hash and evaluation metrics match the recorded
+summary.
+
+22
+00:02:05,000 --> 00:02:11,349
+A separate compound defect needs another loop. In two
+development seeds, the first correction is
+
+23
+00:02:11,349 --> 00:02:17,275
+insufficient. Both pass after the second correction, in
+opposite orders. These are known defect
+
+24
+00:02:17,275 --> 00:02:21,931
+development results, not evidence of unseen fault
+generalization or model superiority.
+
+25
+00:02:23,000 --> 00:02:29,238
+Simulation uses Brev provisioned Nebius L forty S compute.
+Nemotron inference uses NVIDIA's hosted
+
+26
+00:02:29,238 --> 00:02:35,475
+endpoint. Token Factory calls are not yet demonstrated.
+Issued promotional credits are not a
+
+27
+00:02:35,475 --> 00:02:36,812
+verified redeemed balance.
+
+28
+00:02:38,000 --> 00:02:45,212
+The open source package includes an English replay, source
+hashes, and a C P U verifier. Inspect the
+
+29
+00:02:45,212 --> 00:02:48,418
+evidence, test the mechanism, and evaluate the repair.

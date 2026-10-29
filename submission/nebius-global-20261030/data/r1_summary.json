@@ -1,0 +1,107 @@
+{
+  "schema": "public_r1_repair_summary_v2",
+  "status": "complete",
+  "tag": "r1_repair_s2071_20261016",
+  "outcome": "recovered",
+  "demo_success": true,
+  "source_training_seed": 2071,
+  "corrected_restart_seed": 3071,
+  "completion_conditions": {
+    "committed_source_and_protocol": true,
+    "fresh_seeds": true,
+    "launch_paths_checked": true,
+    "source_failure_present": true,
+    "accepted_fresh_diagnosis": true,
+    "first_probe_from_model": true,
+    "approved_probe_receipts": true,
+    "optimizer_update_count_confirmed": true,
+    "accepted_fresh_correction": true,
+    "restored_update_count": true,
+    "approved_correction_consumed_once": true,
+    "corrected_fixed_eval_healthy": true,
+    "costs_recorded": true
+  },
+  "source_failure": {
+    "none_walks": true,
+    "r1_label": "unhealthy",
+    "failed_checks": [
+      "err_xy_ratio",
+      "err_yaw_ratio"
+    ]
+  },
+  "recovery": {
+    "corrected_label": "healthy",
+    "failed_checks": [],
+    "checkpoint_sha256": "9c4a1e12a8443ab6e825faaab946001729b92878a822a51bef1a9160f7b09991"
+  },
+  "fixed_evaluation_metrics": {
+    "NONE": {
+      "fall_rate": 0.0,
+      "mean_survival_s": 20.0,
+      "lin_vel_rmse_mps": 0.14635629776820577,
+      "yaw_rate_rmse_radps": 0.27787513599658403
+    },
+    "R1": {
+      "fall_rate": 0.0,
+      "mean_survival_s": 20.0,
+      "lin_vel_rmse_mps": 1.1691575140582355,
+      "yaw_rate_rmse_radps": 0.7925568812321317
+    },
+    "CORRECTED": {
+      "fall_rate": 0.0,
+      "mean_survival_s": 20.0,
+      "lin_vel_rmse_mps": 0.14817000429733868,
+      "yaw_rate_rmse_radps": 0.2694647471995376
+    }
+  },
+  "diagnostic_sequence": [
+    {
+      "stage": "model",
+      "raw_ranking_first": "reward",
+      "raw_optimizer_rank": 4,
+      "selected_probe": "P_reward"
+    },
+    {
+      "stage": "registered_probe_loop",
+      "normal_probes": [
+        "P_reward",
+        "P_value",
+        "P_physics",
+        "P_episode",
+        "P_noise"
+      ],
+      "abnormal_probe": "P_optimizer_updates"
+    },
+    {
+      "stage": "correction",
+      "id": "restore_configured_ppo_epochs",
+      "mode": "restart",
+      "epoch_transition": [
+        5,
+        1,
+        5
+      ],
+      "first_three_optimizer_steps": [
+        20,
+        20,
+        20
+      ]
+    }
+  ],
+  "model_accounting": {
+    "api_requests": 2,
+    "input_tokens": 5381,
+    "output_tokens": 410,
+    "total_tokens": 5791,
+    "model_wall_s": 12.883780444273725
+  },
+  "interpretation": "새 seed 단일 R1의 등록 종단 경로 확인. 정상 계측은 갱신 횟수 계약만 뜻하며 회복은 별도 고정 평가로만 판정한다",
+  "design_coupling": "R1 seed 2042·2060 및 기존 23회 계측 결과를 본 뒤 검사·교정 연결을 설계했다. 결함 유형은 이미 알고 있으며 새 seed의 개발 시연이다.",
+  "inspection_provenance": {
+    "mode": "fresh_three_update_inspection",
+    "checkpoint_loaded": false,
+    "meaning": "학습 checkpoint를 불러 관측한 값이 아니라 같은 arm 설정으로 새로 실행한 3 update 계측이다."
+  },
+  "source_commit_sha": "cb60b1cd1597daf2ef8005f9d9a25dea053f68da",
+  "protocol_sha256_lf": "b125f62107724bfc896c50f24c8124d571d3e8595916b07e9fac67c6af50ff61"
+}
