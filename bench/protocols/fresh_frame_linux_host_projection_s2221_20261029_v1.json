@@ -1,0 +1,53 @@
+{
+  "allowed_changes": [
+    "context.snapshot.inputs.ledger_path",
+    "context.context_digest"
+  ],
+  "api": {
+    "cap": 12,
+    "maximum_new_requests_in_original_decision_protocol": 2,
+    "pending_before_execution": 0,
+    "preserved_completed": 9,
+    "reset": false
+  },
+  "authority": {
+    "model_execution_requires_original_preregistration_and_journal": true,
+    "new_gpu_actions": 0,
+    "new_resource_creations": 0,
+    "os_authority_replaced": false
+  },
+  "decision_protocol": {
+    "path": "bench/protocols/fresh_frame_decision_public_s2221_20261029_v1.json",
+    "sha256": "652ac0545409e67def122c4f8b106a77c6f4923a3acc6b7ac53b45615f536fc1"
+  },
+  "execution_surface": "same_existing_linux_session_local_provider_bridge",
+  "invariants": {
+    "historical_results_modified": false,
+    "original_prepared_preserved": true,
+    "same_images": true,
+    "same_model_messages": true,
+    "same_model_view": true,
+    "same_numeric_facts": true,
+    "same_prior_history": true
+  },
+  "messages_sha256": "b56238e766e9c6529ebbaef59169bda2094c5c882c4f83f5134a4b3a869f4883",
+  "params_sha256": "25412fe9bcd63773e43a42ddafe157fccbb0c1c8a21c881f47399c2d40ae6bae",
+  "private_projection_source_sha256": "c7bf6a088700475f82a3aa1322c625c2d7e0daf32e8ad117cac8bcd41f851e9e",
+  "projected_prepared_sha256": "a522009bfbd05f194fe2376901d1b4518fd081f5703eff90d1d2a3c29e03ceb1",
+  "registered_at_utc": "2026-10-29T06:28:33.346919+00:00",
+  "schema": "fresh_frame_linux_host_projection_preregistration_v1",
+  "source_prepared_sha256": "7599c0716641f055d2317ceb60702cef37cded09a969386be2871e1160e87e78",
+  "source_sha256": {
+    "bench/fresh_frame_decision_v1.py": "70e0fd381e8738e36525c758e7d0ebad6b9c6908248eb5097d02790d286df67d",
+    "bench/persistent_brev_bridge_v1.py": "5267db09e0eb5c73e3729d53ed7195729eceb4f196745d75bab19ae9cbf015c1",
+    "evals/model_decision_journal_v1.py": "255b8ed9c0de88a26aadc2f1b4a90b0b01f57b2417aab05ac295031061d23ac2",
+    "evals/persistent_provider_complete_v1.py": "6b40f10bd5f608a5d4a80d845deffb768434948b9a32c5a05b464bb98db2ebd9",
+    "evals/run_agentic_development_v2.py": "a7fcbab0655386df9cd7f3e3c25114ad704d3fdf27cd4cc7ab5630e38f993fee"
+  },
+  "status": "registered_before_model_request",
+  "transport": {
+    "path": "bench/protocols/persistent_brev_provider_transport_20261029_v1.json",
+    "sha256": "9295ac4998fc82fd0825a9d11d957347e8aea159703ace0625e17565d55458cc",
+    "windows_loopback_required": false
+  }
+}
