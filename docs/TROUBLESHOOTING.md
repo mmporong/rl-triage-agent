@@ -670,3 +670,45 @@
 - V7과 V8은 종료 계약과 실행 시점의 cache·환경 조건이 다르므로 153.330초와 10.174초를 속도 개선 수치로 비교하지 않는다. driver 하나를 원인으로 확정하지도 않는다.
 
 결과: [등록·실행 경계 원문 요약](../evals/results/agentic_runtime_infrastructure_failures_20261029_v1/summary.json), [카메라 startup·종료 수용](../evals/results/isaac_camera_startup_h_v8_20261029_v2/summary.json).
+
+### OPS-95: leaf lease의 source map과 commit blob 불일치
+
+- 관찰: R18 원격 pair는 HOLD였고, 같은 오류를 실제 JOB4 CPU 소비자에서 재현했다. 등록 source map 372개 중 14개 파일의 blob이 leaf lease가 가리킨 commit에 없었다.
+- 확인 원인: leaf lease의 source_commit이 새 파일들을 포함하지 않았다. Parent의 공개 anchor와 Runtime source는 서로 다른 역할이므로 모든 anchor를 같은 SHA로 합치는 방식으로 고치지 않는다.
+- 남은 판정: lease16의 소비 통과 이후 원격 검사 결과는 R19 원문 회수 범위에서 판정한다.
+- 수정·검증: 후속 ENV16/lease16은 source map 376개를 결합했고 같은 실제 CPU leaf가 통과했다. R18 읽기 전용 회수 자료는 8파일이며 당시 parent PID 부재와 GPU process 빈 관측을 기록했다.
+- 다음 조건: 각 anchor의 역할을 유지한 등록에서 source map의 실제 blob과 production leaf 소비를 확인한다.
+
+근거: `r18-diagnosis` SHA256 `b4bf0b4c696d5acd7f8a72caae0ea9b11745b4b1998d641fe64aeec68db813cb`; `r18-raw-01` SHA256 `a1f749f2fd5a4f3fa237993f609e0000a8ad69a230545fdcde1e72b5a73124f5`; `r19-lease-leaf` SHA256 `7bc222db9a9839fe79f4e549c512b1409dbcb2e1f469604a349f26f5cb2dc4e4`.
+
+### OPS-96: 원격 pending 뒤 Windows WSL 제어 연결 실패
+
+- 관찰: R19 마지막 원격 응답의 pair 상태는 pending이었다. 이후 Windows의 새 WSL 진입은 `Wsl/Service/0x80072747`로 실패했고, Main은 failed/stop_required로 종료됐다.
+- 확인 원인: 원문은 WSL 소켓·버퍼 오류와 inventory/handoff 제어 실패를 기록한다. 어떤 자원 고갈이 이를 만들었는지는 확정되지 않았다.
+- 남은 판정: 원격 검사 완료, 학습, 회복과 새 모델 호출 수는 원문 회수 전 미확정이다. pending을 최종 검사 결과로 바꾸지 않는다.
+- 정리·대조: 별도 watchdog의 결합 inventory에서 g STOPPED를 확인했다. Main 실패 영수증과 watchdog 종료 영수증은 별개이며, 로컬 제어 실패만으로 원격 실행이 어디까지 진행됐는지 판정하지 않는다.
+- 다음 조건: 기존 결과를 보존한 채 원격 pair/worker/lease 원문을 읽기 전용으로 회수해 판정한다.
+
+근거: `r19-last-status-stdout` SHA256 `b841694d1418a915c788eba01633b45c7d5bce9c818f273426e673b099051b07`; `r19-failed-inventory-stdout` SHA256 `7fe0cfd01899795edc4ae8d690c4eb5a717d1ed6034218e0ee349f811526ed6a`; `r19-main-result` SHA256 `200f1f2b7e4f2762b4f18ab9c4dfb1e6b8f48ed9860b0646582dfedbab94c627`; `r19-watchdog-finished` SHA256 `120c3c38c95674f92ab9fd967aba3b729e26a0183d2ca901908d5b2edf8ea40a`.
+
+### OPS-97: library ready 뒤 renderer 생성 본문의 의존 함수 누락
+
+- 관찰: H5 library checker는 ready였고 네 library의 ldd 종료 코드는 모두 0이었다. 이어 실행한 renderer heredoc에서 `NameError: name 'require' is not defined`가 발생했다.
+- 확인 원인: 생성 Python이 validator의 `require` 의존 함수를 포함하지 않았다. 실패는 GPU child 전 단계였으며 library ready는 renderer 초기화 통과를 뜻하지 않는다.
+- 남은 판정: H6 전체 생성 본문의 CPU fixture 통과와 실제 GPU 영상 측정은 서로 다른 범위다. H6의 실제 영상 결과는 이 기록에 없다.
+- 수정·검증: H6는 `require`와 validator를 같은 본문에 포함한다. 동결 기록은 Windows 6 passed, Python 3.12 WSL 선택 회귀 5 passed/1 deselected를 담고 있으며, source·test·등록 초안 5개 SHA를 원문과 대조했다. H5 회수 기록은 사본 5파일 해시 일치와 STOPPED를 기록한다.
+- 다음 조건: 의존 함수가 포함된 동결 본문을 등록하고 실제 renderer·영상 원문을 별도 측정한다.
+
+근거: `h5-renderer-stderr` SHA256 `1aa63f0d2e2b8c16076b8f972695956691ec8e92a336dccbf3be40a68e0f42d4`; `h5-checker-report` SHA256 `70f35f352b4d5e95472d9301bf947bb85d6b1d92f070a9369db8a10abec32c83`; `h6-freeze` SHA256 `fde9dd3b556d1975dce7c64d0dcbe171aac139f5b976475451e4cd39552ff10f`; `h5-stopped` SHA256 `7081bb90c02d075c25989fbce0756bff08cfc6ef5bbef997818a3b42ae800617`.
+
+### OPS-98: 같은 VM의 interop host 관찰과 영구 셸 복구
+
+- 관찰: Windows 스냅샷의 wslhost 335개는 모두 같은 VM ID를 사용했다. 이 중 Windows 부모가 끝난 것은 331개였지만, 부모 소멸만으로 host를 정리하지 않았다.
+- 확인 범위: 복구 영수증에는 불필요해진 자체 H watchdog이 정상 종료한 뒤 영구 Bash 연결이 열렸다고 기록돼 있다. WSL 재시작·UNC 접근·타 프로젝트 프로세스 종료는 수행하지 않았으며, 결합 inventory는 두 소유 자원 STOPPED를 기록한다.
+- 남은 가설: same-VM interop host 누적과 커널 자원 압박의 기여 가능성은 남아 있다. 단일 자원 고갈을 원인으로 확정하지 않는다.
+- 검증: 복구 영수증의 inventory·g watchdog 종료·Main R19 결과 SHA를 실제 읽은 원문과 대조했다. 이 복구는 로컬 제어 연결의 상태를 기록한다.
+- 다음 조건: 열린 제어 연결에서 R19 원문을 회수하고 원격 검사·학습·회복 판정을 이어간다.
+
+근거: `wsl-diagnosis` SHA256 `feeb62771d16286a9aef6087d22e56449de3a448c61a4e507e500dd592060709`; `wsl-recovery` SHA256 `98b2eb0a352fd2b5efacf55908be96511ab6e3a24a7f5fd4f79760a115570421`; `wsl-recovery-inventory` SHA256 `109e913392a04de797f4bbd42b7cb4ede85a4fb38bbd3bed4e324e7084178728`.
+
+[실행 인프라 결과와 artifact 목록](../evals/results/agentic_execution_infrastructure_20261029_v2/summary.json).

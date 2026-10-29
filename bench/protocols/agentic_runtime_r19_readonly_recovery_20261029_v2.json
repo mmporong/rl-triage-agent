@@ -1,0 +1,131 @@
+{
+  "schema": "agentic_runtime_r19_readonly_recovery_v2",
+  "purpose": "R19 recovery v1의 Bash 해석 실패 뒤, Python collector를 Bash heredoc으로 감싸 기존 원격 로그를 읽고 자원을 다시 STOPPED로 봉인한다.",
+  "result_rerun": false,
+  "target": {
+    "resource_id": "oky8zxbnx",
+    "resource_name": "rl-triage-l40s-headless-20261029g",
+    "instance_type": "g6e.4xlarge",
+    "provider": "aws"
+  },
+  "source": {
+    "remote_repo": "<remote-home>/workspace/rl-triage-fresh-source-headless-g-20261029",
+    "namespaces": [
+      ".triage-runtime/agentic-text-s2221-20261029-v19",
+      ".triage-runtime/agentic-text-s2221-20261029-v19-transport",
+      ".triage-runtime/agentic-text-s2221-20261029-v19-registration"
+    ],
+    "expected_prior_parent_pid": 65349,
+    "prior_parent_pid_required_for_success": false,
+    "immutable": true
+  },
+  "time4": {
+    "elapsed_origin_utc": "2026-10-28T17:41:10.061936+00:00",
+    "maximum_elapsed_s": 39600,
+    "stop_cutoff_utc": "2026-10-29T04:21:10.061936+00:00",
+    "deadline_utc": "2026-10-29T04:41:10.061936+00:00",
+    "operation_budget_s": 2700,
+    "stop_reserve_s": 1200,
+    "consumption_reset": false
+  },
+  "budget": {
+    "quoted_usd_per_h": "3.605088",
+    "time4_wall_upper_usd": "39.655968",
+    "resource_cap_usd": "40",
+    "overall_program_cap_usd": "185",
+    "billing_claim": false
+  },
+  "execution_source_sha256": {
+    "private_plan": "09d66f4b27c8eaced4ec3a170690634eba54ec5d71a7db0ae8063409f52754d8",
+    "remote_collector": "f05f62f33cd39738b857dd15117cf488b8d5df001d39b1b5656e8eaec94ce532",
+    "bash_wrapper": "740ce5111a56ec70379fc5dc3f621f67ca20a82ef143420bb9f6b68ab3c554f4",
+    "recovery_common": "39d73c740a6b349f22bc9fd8b875d29a1122ee9424ae3e375bae176d6632fc1c",
+    "recovery_guardian": "fca74ea3b2fd0455f2ddd4f9029ab8d0eeee6a4d03d0f8da86d32ce0f77e018d",
+    "recovery_executor": "26e0a109ed5147a00c397902526e1fc286a99b8c2e5fd70f4b6d43dad5d2c427",
+    "registration_preparer": "e73afa50025bceff3be86d92d2eafca57cce581a063609a49823cb758132dac4",
+    "cpu_test": "cde3936ad392281fb4d5c9008721010e9093beff569d6a9259736c9357623f37"
+  },
+  "transport_helper_sha256": "dbe83d996901de4eafe514a47776bd241c1f5740d2eb18887520a708cec191f4",
+  "requests": {
+    "maximum_start": 1,
+    "maximum_create": 0,
+    "maximum_remote_exec": 1,
+    "maximum_stop": 1,
+    "automatic_retry": false
+  },
+  "remote_operation": {
+    "mode": "read_only_archive",
+    "allowed": [
+      "read the three registered namespace trees without following symlinks",
+      "read metadata and bytes of regular files under those trees",
+      "read /proc/65349 identity files when present",
+      "query nvidia-smi compute-process metadata",
+      "stream one deterministic gzip tar archive to the host"
+    ],
+    "forbidden": [
+      "install",
+      "checkout",
+      "repository mutation",
+      "runtime execution",
+      "training",
+      "calibration",
+      "model API request",
+      "GPU workload launch",
+      "remote result rewrite"
+    ],
+    "maximum_regular_file_bytes": 67108864,
+    "maximum_archive_source_bytes": 268435456
+  },
+  "archive": {
+    "tag": "r19-readonly-recovery-time4-v2",
+    "host_c_and_d_are_byte_identical_copies": true,
+    "storage_contract": {
+      "c_logical_id": "registered_c_run_raw",
+      "d_logical_id": "registered_external_d_artifact_root",
+      "distinct_device_required": true,
+      "artifacts": [
+        "archive",
+        "archive_inventory",
+        "remote_inventory",
+        "observations"
+      ],
+      "private_paths_in_public_protocol": 0
+    },
+    "required_evidence": [
+      "raw transport stdout and stderr",
+      "remote inventory with per-file byte count and sha256",
+      "archive byte count and sha256",
+      "C/D byte equality and sha256 equality",
+      "fresh provider inventories before Start, at READY, and after Stop",
+      "prior parent PID and GPU process observations"
+    ]
+  },
+  "failure_policy": {
+    "retry": false,
+    "stop_claim_is_write_once": true,
+    "observe_stopped_after_failure": true,
+    "guardian_required_before_start": true
+  },
+  "prior_recovery_attempt": {
+    "tag": "r19-readonly-recovery-time4-v1",
+    "start_requests": 1,
+    "ready_observed_at_utc": "2026-10-29T02:56:40.747845+00:00",
+    "remote_exec_requests": 1,
+    "remote_source_files_read": 0,
+    "archive_bytes_recovered": 0,
+    "stop_requests": 1,
+    "stopped_observation_at_v2_preparation": "2026-10-29T03:03:34.404198+00:00",
+    "v1_result_sha256": "eb52484b1f44d7f2294881eb63e0237b0c9cece21f8e3ae0d2e220a790d72ba7",
+    "v1_stopped_sha256": "d59af1e25cd459ced2005f7f28e2601f7ccf32f06ee95c2268f157ca3646a999",
+    "v1_guardian_finished_sha256": "2b9f79b74af7ba8fdfa01d46f486983206d669779f904d447a6e68ae36000bbe",
+    "failure_class": "Brev @file Bash-interpreted Python source",
+    "archive_stderr_sha256": "cb6b5c180d880e0fcc238efa7f78684d57d3ed2b1f99c22326348baa1a78cc02",
+    "result_rerun": false
+  },
+  "cumulative_recovery_request_ceiling": {
+    "Start": 2,
+    "Create": 0,
+    "remote_exec": 2,
+    "Stop": 2
+  }
+}

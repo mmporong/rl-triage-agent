@@ -1,0 +1,495 @@
+{
+  "schema": "agentic_execution_infrastructure_results_v2",
+  "status": "candidate_for_main_review",
+  "result_domain": "execution_infrastructure",
+  "source_review_head": "070372882c7517639a813f97a0d200650f108017",
+  "evidence_snapshot_at_utc": "2026-10-29T02:53:16.596374+00:00",
+  "scientific_result": null,
+  "cases": [
+    {
+      "case_id": "R18",
+      "ops_section": "OPS-95",
+      "status": "lease_source_binding_rejected",
+      "observation": "원격 pair HOLD와 CPU leaf 진단이 같은 source-blob 누락을 기록했다.",
+      "confirmed_cause": "leaf lease source_commit에 새 source map의 파일 14개가 없었다.",
+      "binding_roles": {
+        "leaf_lease_source_commit": "6b9d971ab2e5924706644e62ffae1b99f1719395",
+        "parent_public_anchor": "separate_role",
+        "runtime_source": "separate_role"
+      },
+      "source_map_files": 372,
+      "missing_source_blobs": 14,
+      "readback": {
+        "files": 8,
+        "parent_pid_exists": false,
+        "gpu_process_rows": 0,
+        "mutations": 0
+      },
+      "followup_cpu_leaf": {
+        "environment_revision": "ENV16",
+        "lease_revision": "lease16",
+        "status": "passed",
+        "source_commit": "de2213ca4f0aac671d435d97be50ed9abc11f1f6",
+        "source_files": 376,
+        "consumer": "agentic_play_job_v4.validate_protocol"
+      },
+      "unresolved": "lease16 통과 이후의 원격 검사 결과는 R19 원문 회수 범위에서 판정한다.",
+      "next_condition": "각 anchor의 역할을 유지하며 완전한 source map과 실제 blob을 결합하고 leaf 소비를 확인한다.",
+      "evidence": [
+        {
+          "artifact_id": "r18-diagnosis",
+          "sha256": "b4bf0b4c696d5acd7f8a72caae0ea9b11745b4b1998d641fe64aeec68db813cb"
+        },
+        {
+          "artifact_id": "r18-readback-inventory",
+          "sha256": "75d7754a0b89cb700e3772f2893227954697d6c30491e1802af060be559005f3"
+        },
+        {
+          "artifact_id": "r18-raw-01",
+          "sha256": "a1f749f2fd5a4f3fa237993f609e0000a8ad69a230545fdcde1e72b5a73124f5"
+        },
+        {
+          "artifact_id": "r18-raw-03",
+          "sha256": "4ed9463df88cfeb28f28869a6f4affb8ca99f92b568b9266f59cc8e44db5e1c0"
+        },
+        {
+          "artifact_id": "r19-lease-leaf",
+          "sha256": "7bc222db9a9839fe79f4e549c512b1409dbcb2e1f469604a349f26f5cb2dc4e4"
+        }
+      ]
+    },
+    {
+      "case_id": "R19",
+      "ops_section": "OPS-96",
+      "status": "control_transport_failed_remote_outcome_unresolved",
+      "observation": "마지막 원격 pair 응답은 pending이며 이후 Windows WSL 진입이 0x80072747로 실패했다.",
+      "confirmed_boundary": {
+        "last_remote_pair_status": "pending",
+        "last_remote_arm": "NONE",
+        "runtime_status": "blocked_host",
+        "main_status": "failed",
+        "settlement_status": "stop_required",
+        "wsl_error": "Wsl/Service/0x80072747"
+      },
+      "cleanup": {
+        "status": "STOPPED",
+        "confirmed_at_utc": "2026-10-29T02:22:59.731569+00:00",
+        "basis": "separate_watchdog_inventory"
+      },
+      "remote_probe_outcome": null,
+      "remote_training_outcome": null,
+      "remote_recovery_outcome": null,
+      "new_model_api_calls": null,
+      "unresolved": "pending 관측 이후 원격 실행의 최종 상태와 회복 판정은 읽기 전용 원문 회수 전 미확정이다.",
+      "next_condition": "현재 기록을 보존하고 원격 pair/worker/lease 종료 원문을 읽기 전용으로 회수해 별도 판정한다.",
+      "evidence": [
+        {
+          "artifact_id": "r19-last-status-stdout",
+          "sha256": "b841694d1418a915c788eba01633b45c7d5bce9c818f273426e673b099051b07"
+        },
+        {
+          "artifact_id": "r19-last-status-receipt",
+          "sha256": "3136b40bf8952aa9c0d9a153b4aaddcf181222b5b30c09313b255291301f6c85"
+        },
+        {
+          "artifact_id": "r19-failed-inventory-stdout",
+          "sha256": "7fe0cfd01899795edc4ae8d690c4eb5a717d1ed6034218e0ee349f811526ed6a"
+        },
+        {
+          "artifact_id": "r19-failed-inventory-receipt",
+          "sha256": "bdebc9bbed5279d5afc71f652ce783c39c7b0968701cf832f8d99d5ce97bec16"
+        },
+        {
+          "artifact_id": "r19-main-result",
+          "sha256": "200f1f2b7e4f2762b4f18ab9c4dfb1e6b8f48ed9860b0646582dfedbab94c627"
+        },
+        {
+          "artifact_id": "r19-main-traceback",
+          "sha256": "c740e0342c0fe2ed989095cd80ddbf4dbfecd8aa10e8bcc42f9f889e23dcb9c0"
+        },
+        {
+          "artifact_id": "r19-main-progress",
+          "sha256": "475ef9a799def3984a7bbd52f8612553ea25500ad81111361fe9a58ffb136cf4"
+        },
+        {
+          "artifact_id": "r19-main-ledger-trace",
+          "sha256": "1ccbada2b15fd3a91eb25a737d4646dac17ae1a1305be6bbc96ca0dfa5ceed2f"
+        },
+        {
+          "artifact_id": "r19-host-event",
+          "sha256": "443ab67496b2398e0d2040117d47eaa8c988a7c42b7c66bfe4713e9587b126ea"
+        },
+        {
+          "artifact_id": "r19-mailbox-response",
+          "sha256": "60363d37e90013fadfc44316ea1a01033733a0a9bfa1e0d0b5ce696515040e63"
+        },
+        {
+          "artifact_id": "r19-runtime-result",
+          "sha256": "5adf145248d9e12550d67f53a3995bf525c2188b49688b14615dfdad6c0c92d7"
+        },
+        {
+          "artifact_id": "r19-watchdog-finished",
+          "sha256": "120c3c38c95674f92ab9fd967aba3b729e26a0183d2ca901908d5b2edf8ea40a"
+        },
+        {
+          "artifact_id": "r19-watchdog-final-inventory",
+          "sha256": "109e913392a04de797f4bbd42b7cb4ede85a4fb38bbd3bed4e324e7084178728"
+        }
+      ]
+    },
+    {
+      "case_id": "H5",
+      "ops_section": "OPS-97",
+      "status": "generated_validator_failed_before_gpu_child",
+      "observation": "library checker는 ready였지만 renderer heredoc이 require를 포함하지 않아 NameError로 종료됐다.",
+      "confirmed_cause": "생성 Python에 validate_renderer_capability의 require 의존 함수가 없었다.",
+      "library_check": {
+        "ready": 4,
+        "ldd_exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "renderer_initialized": false,
+        "model_use_ready": false
+      },
+      "gpu_children_started": 0,
+      "collection": {
+        "archive_raw_sha256": "46ad9d16f01904cc67f926beaaf6e60c0ffe7a5e02bca86fa091ff1826f39b51",
+        "copy_verified_files": 5,
+        "copy_all_match_recorded": true
+      },
+      "cleanup": {
+        "status": "STOPPED",
+        "confirmed_at_utc": "2026-10-29T01:55:51.344417+00:00"
+      },
+      "h6_recorded_cpu_validation": {
+        "basis": "frozen_source_report",
+        "windows_passed": 6,
+        "wsl_python": "3.12",
+        "wsl_passed": 5,
+        "wsl_deselected": 1,
+        "generated_body_fixture_passed": true,
+        "source_files_hash_matched": 5
+      },
+      "h6_actual_gpu_video": null,
+      "unresolved": "H6 전체 생성 본문의 CPU fixture 결과와 실제 renderer/GPU 영상 결과는 별도 측정 범위다.",
+      "next_condition": "의존 함수를 포함한 생성 본문과 동결 source를 등록한 뒤 실제 renderer와 영상 원문을 판정한다.",
+      "evidence": [
+        {
+          "artifact_id": "h5-renderer-stderr",
+          "sha256": "1aa63f0d2e2b8c16076b8f972695956691ec8e92a336dccbf3be40a68e0f42d4"
+        },
+        {
+          "artifact_id": "h5-renderer-exit",
+          "sha256": "b4a08ed290cbcdaf72ba33c458b7c05c9c0267b33ffccbdf034211ae024c01c6"
+        },
+        {
+          "artifact_id": "h5-checker-report",
+          "sha256": "70f35f352b4d5e95472d9301bf947bb85d6b1d92f070a9369db8a10abec32c83"
+        },
+        {
+          "artifact_id": "h5-failure",
+          "sha256": "31251d03dcc3e2d00c420e634d5eaae7cd53aa23228becf4f598f77c30ee1d57"
+        },
+        {
+          "artifact_id": "h5-collection",
+          "sha256": "5543adca4546b55222dc6f801165fe602eaebd7cc720b8f59434c83f1438f65f"
+        },
+        {
+          "artifact_id": "h5-archive",
+          "sha256": "46ad9d16f01904cc67f926beaaf6e60c0ffe7a5e02bca86fa091ff1826f39b51"
+        },
+        {
+          "artifact_id": "h5-stopped",
+          "sha256": "7081bb90c02d075c25989fbce0756bff08cfc6ef5bbef997818a3b42ae800617"
+        },
+        {
+          "artifact_id": "h6-result",
+          "sha256": "e81d5db01384b1c740d2e1bb7345ef27acf7866ce61b3af4fdcef20c8178b61f"
+        },
+        {
+          "artifact_id": "h6-freeze",
+          "sha256": "fde9dd3b556d1975dce7c64d0dcbe171aac139f5b976475451e4cd39552ff10f"
+        },
+        {
+          "artifact_id": "h6-frozen-01",
+          "sha256": "83adc445d3fc2fe68fb27eb7da8248839752b8d97c40bc7f5f5a5d0e0198204c"
+        },
+        {
+          "artifact_id": "h6-frozen-03",
+          "sha256": "4740bbb37ee05a232189d0881710c84bffe63100abdc1904a441520710683597"
+        }
+      ]
+    },
+    {
+      "case_id": "WSL-control",
+      "ops_section": "OPS-98",
+      "status": "persistent_local_control_recovered",
+      "observation": "wslhost 335개가 같은 VM ID를 사용했으며 부모 종료만으로 정리하지 않았다.",
+      "host_snapshot": {
+        "wslhost_count": 335,
+        "distinct_vm_ids": 1,
+        "windows_parent_ended": 331
+      },
+      "recovery_record": {
+        "persistent_bash_opened_at_utc": "2026-10-29T02:23:54+00:00",
+        "preceded_by": "unneeded_owned_H_watchdog_normal_exit",
+        "wsl_restart_or_shutdown": false,
+        "unc_access": false,
+        "other_project_processes_terminated": false,
+        "both_owned_resources_stopped": true
+      },
+      "confirmed_scope": "복구 영수증과 inventory가 로컬 영구 셸 진입 및 두 소유 자원 STOPPED를 기록했다.",
+      "hypothesis": "같은 VM interop host 누적과 커널 자원 압박의 기여 가능성은 남아 있다.",
+      "single_resource_exhaustion_cause": null,
+      "next_condition": "복구된 제어 연결로 R19 원문을 회수하고 제어 복구와 원격 실험 결과를 별도로 기록한다.",
+      "evidence": [
+        {
+          "artifact_id": "wsl-diagnosis",
+          "sha256": "feeb62771d16286a9aef6087d22e56449de3a448c61a4e507e500dd592060709"
+        },
+        {
+          "artifact_id": "wsl-recovery",
+          "sha256": "98b2eb0a352fd2b5efacf55908be96511ab6e3a24a7f5fd4f79760a115570421"
+        },
+        {
+          "artifact_id": "wsl-recovery-inventory",
+          "sha256": "109e913392a04de797f4bbd42b7cb4ede85a4fb38bbd3bed4e324e7084178728"
+        },
+        {
+          "artifact_id": "r19-watchdog-finished",
+          "sha256": "120c3c38c95674f92ab9fd967aba3b729e26a0183d2ca901908d5b2edf8ea40a"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "h5-archive",
+      "sha256": "46ad9d16f01904cc67f926beaaf6e60c0ffe7a5e02bca86fa091ff1826f39b51",
+      "bytes": 3643
+    },
+    {
+      "artifact_id": "h5-checker-report",
+      "sha256": "70f35f352b4d5e95472d9301bf947bb85d6b1d92f070a9369db8a10abec32c83",
+      "bytes": 20985
+    },
+    {
+      "artifact_id": "h5-checker-stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "artifact_id": "h5-collection",
+      "sha256": "5543adca4546b55222dc6f801165fe602eaebd7cc720b8f59434c83f1438f65f",
+      "bytes": 928
+    },
+    {
+      "artifact_id": "h5-failure",
+      "sha256": "31251d03dcc3e2d00c420e634d5eaae7cd53aa23228becf4f598f77c30ee1d57",
+      "bytes": 165
+    },
+    {
+      "artifact_id": "h5-renderer-exit",
+      "sha256": "b4a08ed290cbcdaf72ba33c458b7c05c9c0267b33ffccbdf034211ae024c01c6",
+      "bytes": 131
+    },
+    {
+      "artifact_id": "h5-renderer-stderr",
+      "sha256": "1aa63f0d2e2b8c16076b8f972695956691ec8e92a336dccbf3be40a68e0f42d4",
+      "bytes": 173
+    },
+    {
+      "artifact_id": "h5-result",
+      "sha256": "0019c3293a5992059059679f58daf17e050fc7ff4cfb99fa39b204d4d3989e3b",
+      "bytes": 144
+    },
+    {
+      "artifact_id": "h5-stopped",
+      "sha256": "7081bb90c02d075c25989fbce0756bff08cfc6ef5bbef997818a3b42ae800617",
+      "bytes": 281
+    },
+    {
+      "artifact_id": "h6-freeze",
+      "sha256": "fde9dd3b556d1975dce7c64d0dcbe171aac139f5b976475451e4cd39552ff10f",
+      "bytes": 1643
+    },
+    {
+      "artifact_id": "h6-frozen-01",
+      "sha256": "83adc445d3fc2fe68fb27eb7da8248839752b8d97c40bc7f5f5a5d0e0198204c",
+      "bytes": 13388
+    },
+    {
+      "artifact_id": "h6-frozen-02",
+      "sha256": "7dfdadc59460b533b1e03482eb4bc407b6a6eef6af21060a2fc2713fda2f1e2d",
+      "bytes": 7619
+    },
+    {
+      "artifact_id": "h6-frozen-03",
+      "sha256": "4740bbb37ee05a232189d0881710c84bffe63100abdc1904a441520710683597",
+      "bytes": 5653
+    },
+    {
+      "artifact_id": "h6-frozen-04",
+      "sha256": "065440060385b31ac5ed14d9e52d682b2b9b55f3fdc34d608504275d3036820b",
+      "bytes": 36507
+    },
+    {
+      "artifact_id": "h6-frozen-05",
+      "sha256": "5360acc10168702a269076363eee7e868c3df88b477913da7af7547a7cf68836",
+      "bytes": 10501
+    },
+    {
+      "artifact_id": "h6-result",
+      "sha256": "e81d5db01384b1c740d2e1bb7345ef27acf7866ce61b3af4fdcef20c8178b61f",
+      "bytes": 979
+    },
+    {
+      "artifact_id": "r18-diagnosis",
+      "sha256": "b4bf0b4c696d5acd7f8a72caae0ea9b11745b4b1998d641fe64aeec68db813cb",
+      "bytes": 1663
+    },
+    {
+      "artifact_id": "r18-raw-01",
+      "sha256": "a1f749f2fd5a4f3fa237993f609e0000a8ad69a230545fdcde1e72b5a73124f5",
+      "bytes": 314
+    },
+    {
+      "artifact_id": "r18-raw-02",
+      "sha256": "0c6f7302b256b47c96a89125c3c7fefbd0f876f375fd71d0256f6b08bc2bb0a4",
+      "bytes": 1423
+    },
+    {
+      "artifact_id": "r18-raw-03",
+      "sha256": "4ed9463df88cfeb28f28869a6f4affb8ca99f92b568b9266f59cc8e44db5e1c0",
+      "bytes": 331
+    },
+    {
+      "artifact_id": "r18-raw-04",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "artifact_id": "r18-raw-05",
+      "sha256": "59c2716430dcafc39f987e237b5f0cd32cd57128cab74f6f8b9737ad11badff7",
+      "bytes": 1225
+    },
+    {
+      "artifact_id": "r18-raw-06",
+      "sha256": "4eebc896d4fbef2b705993ce4264779a8ec705d31dd298ffc2b12e24cd8d0cdb",
+      "bytes": 197
+    },
+    {
+      "artifact_id": "r18-raw-07",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "artifact_id": "r18-raw-08",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "artifact_id": "r18-readback-inventory",
+      "sha256": "75d7754a0b89cb700e3772f2893227954697d6c30491e1802af060be559005f3",
+      "bytes": 1857
+    },
+    {
+      "artifact_id": "r19-failed-inventory-receipt",
+      "sha256": "bdebc9bbed5279d5afc71f652ce783c39c7b0968701cf832f8d99d5ce97bec16",
+      "bytes": 746
+    },
+    {
+      "artifact_id": "r19-failed-inventory-stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "artifact_id": "r19-failed-inventory-stdout",
+      "sha256": "7fe0cfd01899795edc4ae8d690c4eb5a717d1ed6034218e0ee349f811526ed6a",
+      "bytes": 148
+    },
+    {
+      "artifact_id": "r19-host-event",
+      "sha256": "443ab67496b2398e0d2040117d47eaa8c988a7c42b7c66bfe4713e9587b126ea",
+      "bytes": 211
+    },
+    {
+      "artifact_id": "r19-last-status-receipt",
+      "sha256": "3136b40bf8952aa9c0d9a153b4aaddcf181222b5b30c09313b255291301f6c85",
+      "bytes": 739
+    },
+    {
+      "artifact_id": "r19-last-status-stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "artifact_id": "r19-last-status-stdout",
+      "sha256": "b841694d1418a915c788eba01633b45c7d5bce9c818f273426e673b099051b07",
+      "bytes": 577
+    },
+    {
+      "artifact_id": "r19-lease-leaf",
+      "sha256": "7bc222db9a9839fe79f4e549c512b1409dbcb2e1f469604a349f26f5cb2dc4e4",
+      "bytes": 446
+    },
+    {
+      "artifact_id": "r19-mailbox-response",
+      "sha256": "60363d37e90013fadfc44316ea1a01033733a0a9bfa1e0d0b5ce696515040e63",
+      "bytes": 356
+    },
+    {
+      "artifact_id": "r19-main-ledger-trace",
+      "sha256": "1ccbada2b15fd3a91eb25a737d4646dac17ae1a1305be6bbc96ca0dfa5ceed2f",
+      "bytes": 54385
+    },
+    {
+      "artifact_id": "r19-main-progress",
+      "sha256": "475ef9a799def3984a7bbd52f8612553ea25500ad81111361fe9a58ffb136cf4",
+      "bytes": 1601
+    },
+    {
+      "artifact_id": "r19-main-result",
+      "sha256": "200f1f2b7e4f2762b4f18ab9c4dfb1e6b8f48ed9860b0646582dfedbab94c627",
+      "bytes": 752
+    },
+    {
+      "artifact_id": "r19-main-traceback",
+      "sha256": "c740e0342c0fe2ed989095cd80ddbf4dbfecd8aa10e8bcc42f9f889e23dcb9c0",
+      "bytes": 3295
+    },
+    {
+      "artifact_id": "r19-runtime-result",
+      "sha256": "5adf145248d9e12550d67f53a3995bf525c2188b49688b14615dfdad6c0c92d7",
+      "bytes": 1086
+    },
+    {
+      "artifact_id": "r19-watchdog-final-inventory",
+      "sha256": "109e913392a04de797f4bbd42b7cb4ede85a4fb38bbd3bed4e324e7084178728",
+      "bytes": 2492
+    },
+    {
+      "artifact_id": "r19-watchdog-finished",
+      "sha256": "120c3c38c95674f92ab9fd967aba3b729e26a0183d2ca901908d5b2edf8ea40a",
+      "bytes": 998
+    },
+    {
+      "artifact_id": "wsl-diagnosis",
+      "sha256": "feeb62771d16286a9aef6087d22e56449de3a448c61a4e507e500dd592060709",
+      "bytes": 12677
+    },
+    {
+      "artifact_id": "wsl-recovery",
+      "sha256": "98b2eb0a352fd2b5efacf55908be96511ab6e3a24a7f5fd4f79760a115570421",
+      "bytes": 1258
+    },
+    {
+      "artifact_id": "wsl-recovery-inventory",
+      "sha256": "109e913392a04de797f4bbd42b7cb4ede85a4fb38bbd3bed4e324e7084178728",
+      "bytes": 2492
+    }
+  ]
+}
