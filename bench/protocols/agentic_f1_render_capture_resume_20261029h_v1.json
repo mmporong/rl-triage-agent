@@ -1,0 +1,59 @@
+{
+  "schema": "agentic_f1_render_capture_resume_20261029h_v1",
+  "status": "registered_existing_stopped_resource_single_start",
+  "registered_at_utc": "2026-10-29T00:09:39.307063+00:00",
+  "target": {
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h",
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "provider": "nebius"
+  },
+  "condition_change": {
+    "reason": "H3는 GPU·입력 복사 전에 Ubuntu 패키지 이름 admission에서 종료되고 같은 H가 STOPPED로 관측됐다. H4는 등록된 renderer 4개 raw SHA와 같은 loader 환경의 ldd missing 0 capability를 사용한다.",
+    "model_or_recording_change": false
+  },
+  "prior_stopped": {
+    "resource_id": "d3cxwsmgd",
+    "status": "STOPPED",
+    "observed_at_utc": "2026-10-28T23:49:32.005199+00:00",
+    "sha256": "bda3134f174ea0ead7da4f9f7106d2738942661cbd65f046abc2b2f35c934ac5"
+  },
+  "retry": {
+    "allowed_start_requests": 1,
+    "allowed_create_requests": 0,
+    "start_controller_binding": {
+      "controller_sha256": "8f6a943681899f85ca12014810417254fbe7d68a342f4b133517451a7bd7f576",
+      "budget_helper_sha256": "d383a009fd6ef7e24d3c41bef4f7917a0ad0113f4f439c86d47c49c307fc87a0",
+      "watchdog_source_sha256": "5eb847faa32b137611632ba6d7c4d1ba17ec2c73d13c51e09de44afd75a5d270"
+    }
+  },
+  "budget": {
+    "first_create_request_utc": "2026-10-28T21:05:36.779993+00:00",
+    "max_lifecycle_s": 21600,
+    "deadline_utc": "2026-10-29T02:57:14.675376+00:00",
+    "execution_cutoff_utc": "2026-10-29T02:37:14.675376+00:00",
+    "stop_reserve_s": 1200,
+    "resource_cap_usd": "20",
+    "program_cap_usd": "185",
+    "quoted_usd_per_h": "2.18064",
+    "additional_allocation_usd": "0",
+    "budget_reset": false
+  },
+  "time_extension": {
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_time_extension_20261029h_v2.json",
+    "anchor": "42de1ec0b9b4ae7e44e61dcd754524ca29530376",
+    "sha256_lf": "0f48fc35324673b256e2013031318470bd0cb4e241a6bb5a9bc5e0e2d29d268c"
+  },
+  "capture_phase": {
+    "path": "bench/protocols/agentic_f1_render_capture_phase_20261029h_v5.json",
+    "anchor": "42de1ec0b9b4ae7e44e61dcd754524ca29530376",
+    "sha256_lf": "b79559665bc16d7d9ca761d3c1506bafaa01b46f4326e563759a4e3657f2843b"
+  },
+  "authority": {
+    "start_authorized": true,
+    "new_resource_creations": 0,
+    "additional_allocation_usd": "0",
+    "gpu_execution_authorized": false,
+    "model_api": 0
+  }
+}
