@@ -712,3 +712,22 @@
 근거: `wsl-diagnosis` SHA256 `feeb62771d16286a9aef6087d22e56449de3a448c61a4e507e500dd592060709`; `wsl-recovery` SHA256 `98b2eb0a352fd2b5efacf55908be96511ab6e3a24a7f5fd4f79760a115570421`; `wsl-recovery-inventory` SHA256 `109e913392a04de797f4bbd42b7cb4ede85a4fb38bbd3bed4e324e7084178728`.
 
 [실행 인프라 결과와 artifact 목록](../evals/results/agentic_execution_infrastructure_20261029_v2/summary.json).
+
+### OPS-99: 업로드 캐시와 추출 캐시의 namespace 불일치
+
+- 관찰: 업로드와 SHA 검증 뒤 추출 단계에서 `cache source가 일반 단일 링크 파일이 아니다`로 끝났다. 업로드는 새 namespace의 `input-cache/registered-inputs.tar`를 썼지만 추출 설정은 이전 캐시 경로를 읽었다. 이 오류 문구만으로 이전 경로의 파일 상태를 단정하지 않는다.
+- 확인·수정: [이전 phase](../bench/protocols/agentic_f1_render_capture_phase_20261029h_v9.json)와 [수정 phase](../bench/protocols/agentic_f1_render_capture_phase_20261029h_v10.json)의 namespace·cache 필드를 비교했다. 업로드·추출이 같은 경로를 소비하도록 묶고 실제 두 함수가 생성한 Bash 본문으로 이전 경로 거부와 새 경로 추출을 확인했다. 기존 실패 결과는 보존했다.
+- 결과: 정상·F1 각 625프레임, sidecar·render-sync 결합, C/D 3,959파일 일치와 CPU 입력 준비를 완료했다. 이는 이미 본 seed 2221의 녹화·입력 결합 결과다. [기술 결과](../evals/results/agentic_f1_fresh_render_dev_20261029h_v1/summary.json)
+
+### OPS-100: 운영체제에 따른 이력 경로 표현과 snapshot 결합
+
+- 관찰: Windows에서 준비한 context를 Linux의 기존 검증기에 넣으면 `변조 또는 오래된 snapshot`으로 거부됐다. 유료 모델 요청 전에 발견했다.
+- 확인: snapshot 생성기가 이력 경로에 `Path.resolve()`를 적용한다. 같은 파일의 Windows 표현과 POSIX 표현 때문에 host context가 달라졌으며, 모델 view·입력 수치·이력·이미지는 같았다.
+- 수정: 원본 prepared 파일은 보존하고 같은 파일을 가리키는 Linux 경로와 context digest만 새 산출물에 결합했다. 메시지·params·model view·이력의 동일성을 검사하고 [별도 사전등록](../bench/protocols/fresh_frame_linux_host_projection_s2221_20261029_v1.json)에 변경 범위를 고정했다. 검증기의 기존 판정 규칙은 바꾸지 않았다.
+- 결과: 기존 caller·provider parser·host 선택 변환을 모두 통과했다. 이후 새 프레임 여섯 장을 사용한 첫 실제 호출은 유효한 `P_reward` 선택을 반환했다. 인용 근거는 telemetry 여섯 개로, 이미지의 선택 기여나 새 회복을 뜻하지 않는다. [모델 결과](../evals/results/fresh_frame_probe_choice_dev_s2221_20261029_v1/summary.json)
+
+### OPS-101: Windows loopback 연결과 기존 Linux 세션의 전송 범위
+
+- 관찰: Windows에서 WSL의 loopback 연결을 시도하면 `WinError 10054`가 발생했다. 원인은 확정하지 않았다. Linux 안의 같은 서버에 접속한 Brev 조회는 통과했다.
+- 처리: Windows forwarding을 완료 근거로 쓰지 않고, 기존 Linux 세션 안의 client·server 경로로 첫 모델 호출을 실행했다. API 키는 Linux에 유지했고 새 WSL 진입과 GPU 작업은 추가하지 않았다. Windows loopback은 계속 미확인 상태다.
+- 결과: 원래 요청 9건을 보존하고 새 요청 한 건을 정산해 10/12, pending 0이 됐다. 이 전송은 GPU 승인이나 새 자원 생성 권한을 대신하지 않는다. [전송 등록](../bench/protocols/persistent_brev_provider_transport_20261029_v1.json)

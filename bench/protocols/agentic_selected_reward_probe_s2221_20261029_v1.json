@@ -1,0 +1,60 @@
+{
+  "api_boundary": {
+    "global_cap": 12,
+    "observed_reserved": 10,
+    "pending": 0,
+    "second_call_after": "valid_sealed_probe_receipt"
+  },
+  "case": {
+    "arm": "F1",
+    "checkpoint_sha256": "1d73d523c97c5c89c988febfbd3d5e533e90681cd0e6132d6ffe13888fa95731",
+    "probe": "P_reward",
+    "seed": 2221,
+    "side": "case",
+    "telemetry_sha256": "07ad9b4b3981eafd3a4ed84aba4a3ef04f54b94ddbc7be5b0b189d55b2e8ff6e"
+  },
+  "decision_basis": {
+    "actual_call_result_sha256": "7b51c34167795144e447025ccd2eab6a95c01bc3b0c9932cdf48b234005d6651",
+    "choice": "P_reward",
+    "fact_count": 6,
+    "fact_kind": "telemetry",
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "prepared_linux_sha256": "a522009bfbd05f194fe2376901d1b4518fd081f5703eff90d1d2a3c29e03ceb1",
+    "split": "development"
+  },
+  "expected_outcome": "abnormal",
+  "frozen_probe": {
+    "metric": "track_lin_vel_xy_exp_rel_error",
+    "rule": "above",
+    "threshold": 0.05
+  },
+  "normal_or_unknown": "HOLD_no_cause_confirmation_no_correction",
+  "reference_policy": "reuse_historical_unsealed_result_without_gpu_rerun",
+  "resource": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "provider": "nebius",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "schema": "selected_reward_probe_preregistration_v1",
+  "second_model_call": "only_after_valid_sealed_probe_receipt",
+  "single_probe_execution": {
+    "new_training": 0,
+    "reference_gpu_rerun": 0,
+    "registered_cost_gpu_s": 60,
+    "request_wall_bound_s": 1200,
+    "unit": "bench/run_agentic_brev_probe_unit_v1.py"
+  },
+  "sources_lf": {
+    "bench/prepare_selected_reward_probe_v1.py": "4d8a78c1fcf8af73fc9d94cfe4327c28ad23e043c036e6060aa2afef7e6567a3",
+    "tests/test_prepare_selected_reward_probe_v1.py": "8ff1c3018b73e9fb18dc8d977a812690d2d9bd30f3bc52554f2e8820e7297142"
+  },
+  "time5": {
+    "absolute_deadline_utc": "2026-10-29T09:05:36.779993+00:00",
+    "execution_cutoff_utc": "2026-10-29T08:45:36.779993+00:00",
+    "path": "bench/protocols/fresh_brev_l40s_renderer_environment_time_extension_20261029h_v5.json",
+    "program_cap_usd": "195",
+    "resource_cap_usd": "30",
+    "sha256_lf": "9e6701f0a0ced9f8f6bfe7be9f7cac82bb604e1b2fc857b8f8438ba5cefa4b84"
+  }
+}
