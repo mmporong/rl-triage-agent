@@ -61,7 +61,7 @@ Who decides what differs by run, so results are not pooled as model choices. In 
 | Question | Answer |
 | --- | --- |
 | Category | Community Recipe |
-| Contributor or provenance | Team Mollet (Korea Agentic AI Hackathon 2026) |
+| Contributor or provenance | Mollet (Korea Agentic AI Hackathon 2026) |
 | Use this when | An Isaac Lab RSL-RL training run fails, with or without a known healthy reference |
 | You will get | Ranked hypotheses with telemetry evidence and one next measurement or experiment. Reference-based workflows can register an experiment and obtain a verification verdict; single-run assessments are saved under `preregistrations/assessments/<case>.json`. |
 | Runs on | Linux or Windows 11 + WSL2 (Ubuntu 24.04) with Docker; Isaac Lab on a Windows or Linux RTX host for retraining |

@@ -68,7 +68,7 @@ def score(tag, seeds, task_key="correct"):
 
 def main():
     page("01_title", """
-      <div class='kicker'>Korea Agentic AI Hackathon 2026 · Team Mollet</div>
+      <div class='kicker'>Korea Agentic AI Hackathon 2026 · Mollet</div>
       <h1>로봇 학습이 무너졌다.<br>무엇을 바꿔서 그런가?</h1>
       <p class='sub'>Isaac Lab 강화학습 실패 원인 추적 에이전트<br>
       Nemotron 3 Super · NeMo Agent Toolkit · OpenShell · Isaac Lab</p><div class='bar'></div>""")

@@ -1,6 +1,6 @@
 # AGENTS.md — rl-triage-agent
 
-이 저장소는 NVIDIA Korea Agentic AI Hackathon 2026(팀 Mollet) 제출작이다. 작업을 시작하기 전에 `docs/HANDOFF.md`를 먼저 읽는다.
+이 저장소는 NVIDIA Korea Agentic AI Hackathon 2026(Mollet) 제출작이다. 작업을 시작하기 전에 `docs/HANDOFF.md`를 먼저 읽는다.
 
 ## 작업 규칙
 
@@ -25,3 +25,4 @@
 - 대표 README는 현재 약 200줄 수준의 짧은 개요를 유지한다. 한 줄 설명, 실제 시뮬레이션, 동작 흐름, 핵심 결과와 실행 방법을 앞에 두고 상세 실험·날짜별 기록은 별도 문서로 연결한다.
 - 기존 영어 본문과 짧은 한국어 요약 형식을 유지한다. 내부 인계·실행 로그·전략 문서를 README에 추가하지 않는다.
 - 새 결과마다 표와 문단을 덧붙이지 않고 기존 핵심 설명을 갱신한다. GitHub About은 짧은 영어 한 문장으로 유지한다.
+- 프로젝트 소개와 공개 문구에서 이름은 `Mollet`으로 통일하며 `Team Mollet`을 새로 쓰지 않는다. 보존용 과거 기록과 기존 제출 원본은 유지한다.
