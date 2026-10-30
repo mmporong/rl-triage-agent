@@ -771,3 +771,10 @@
 - 관찰: 새 실행 입력을 준비하던 중 repair layout이 참조한 기존 lease basis의 기한이 바깥 실행 창보다 먼저 끝난 상태임을 확인했다. GPU 실행 전 발견했으며, 이 불일치로 학습이 실패한 결과를 추가하지 않는다.
 - 수정: [새 lease basis](../bench/protocols/agentic_runtime_text_s2221_20261029_v31_lease_basis.json)는 같은 H 자원과 source 체크포인트를 유지하고, Time9의 기한·예산·현재 소스 결합을 사용한다. repair transport·lifecycle·Runtime도 같은 기한과 소스 해시로 다시 생성했다. 최초 생성 시각과 기존 소비는 초기화하지 않는다.
 - 검증: 기존 Linux 셸의 실제 `agentic_play_job_v4.validate_protocol`이 공개 등록 파일의 419개 소스 결합과 유효 기한을 통과했다. 회복 기준·교정·학습량은 바꾸지 않았고, 실제 GPU 입장과 실행 결과는 별도로 확인한다.
+
+### OPS-108: 압축 해제 위치와 worker 입력 경로의 불일치
+
+- 관찰: Runtime43·Parent12의 정상 대조 검사는 worker가 1.57초 만에 exit 1로 끝나 `InvalidExecutionEvidence`가 됐다. 시간 초과는 없었고, 자식 정리와 실행 전후 소스 일치는 통과했다. worker stderr는 `ValueError`만 남겼다.
+- 확인: 회수한 `job.json`을 기존 worker 검증 함수에 넣어 `입력 경로가 허용된 workspace를 벗어났다`를 재현했다. 입력 archive는 현재 저장소의 등록 폴더에 풀렸지만 source root-map의 local 값이 과거 workspace를 가리켜, checkpoint와 학습 manifest가 worker의 허용 root 밖 경로로 전달됐다.
+- 수정: [Runtime44](../bench/protocols/agentic_runtime_text_s2221_20261030_v44.json)·[Parent13](../bench/protocols/agentic_runtime_text_s2221_pair_fresh_20261030_v13.json)은 source의 논리 경로·SHA·원문을 유지하면서 local 배치를 등록된 압축 해제 위치와 맞춘다. 새 실제 경로도 같은 원문으로 해석하도록 evidence root-map을 결합한다. 교정 단계의 lease basis는 현재 Time10 판으로 연결한다. worker의 경로 검증, 검사 크기와 판정 기준은 바꾸지 않는다.
+- 검증: 기존 job 거부와 수정 배치 후 worker 통과를 CPU에서 확인했다. 새 graph의 두 정책 checkpoint·manifest 네 개의 SHA와 두 `E._source` 검증도 통과했다. 이 확인은 새 GPU 검사나 회복 결과를 뜻하지 않는다. 이전 실패 기록은 보존하며, 실패 원문은 같은 실행 수명에서 회수하도록 준비했다.
