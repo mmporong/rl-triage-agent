@@ -1,0 +1,196 @@
+{
+  "schema": "nemotron_vl_aux_s2080_observations_evidence_v1",
+  "aggregate": {
+    "seed": 2080,
+    "restart_seed": 3080,
+    "outcome": "recovered",
+    "observations": 3,
+    "valid": 3,
+    "fixed_eval_correspondence": 3,
+    "used_for_decision": false,
+    "observer_requests": 3,
+    "observer_measured_wall_s": 4.82403386104852
+  },
+  "rows": [
+    {
+      "clip": "clip1",
+      "arm": "none",
+      "fixed_evaluation_label": "healthy",
+      "walking": "yes",
+      "in_place": "no",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "used_for_decision": false,
+      "checkpoint_sha256": "c47b4fbe18698a97eebdd83b1a644718d712164e2d4a83e135555b92fddeba7f",
+      "fixed_evaluation_sha256": "8201eb95e1810f8b9e4d546b1446ef5be8a15b3be56d76b6f265740721975fdb",
+      "frames": [
+        {
+          "path": "frames/clip1/frame_01.jpg",
+          "timestamp_s": 0.498333,
+          "sha256": "e701960a42ded334e42fd1ff645c2db449b343c567a07419a75c943d2a6a9158",
+          "bytes": 39382
+        },
+        {
+          "path": "frames/clip1/frame_02.jpg",
+          "timestamp_s": 1.495,
+          "sha256": "d3de5b846a22a600fed53cab166d61e56e16ba80e4e0011db6e7dea1a95cea75",
+          "bytes": 38676
+        },
+        {
+          "path": "frames/clip1/frame_03.jpg",
+          "timestamp_s": 2.491667,
+          "sha256": "da0b715e7b35181f34ce0d05e2d7622af272aae8a906f1309e5d9c4a3119ca3e",
+          "bytes": 40279
+        },
+        {
+          "path": "frames/clip1/frame_04.jpg",
+          "timestamp_s": 3.488333,
+          "sha256": "81f15e51e61e0bc9ddd05f648b0c1035116fa033b82eeaf49e7426b8f95254a9",
+          "bytes": 39767
+        },
+        {
+          "path": "frames/clip1/frame_05.jpg",
+          "timestamp_s": 4.485,
+          "sha256": "8e9d86b037a0a13bc09aa8a9bb6577104bcb2b4771250b816e0a2ea13669ff76",
+          "bytes": 38190
+        },
+        {
+          "path": "frames/clip1/frame_06.jpg",
+          "timestamp_s": 5.481667,
+          "sha256": "86ddee896c89a00183cf0320a90920106986659e9292cb8998edcfade799f860",
+          "bytes": 38212
+        }
+      ],
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+      "tokens": {
+        "input": 1860,
+        "output": 23,
+        "total": 1883
+      },
+      "model_wall_s": 1.0834327440243214,
+      "measured_wall_s": 1.7163504478521645
+    },
+    {
+      "clip": "clip2",
+      "arm": "fault",
+      "fixed_evaluation_label": "unhealthy",
+      "walking": "no",
+      "in_place": "yes",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "used_for_decision": false,
+      "checkpoint_sha256": "863afc0bd6cbc1f725c8f3b71d8412d98f7f6390cdaf60305101cf65bd322abe",
+      "fixed_evaluation_sha256": "00c04ad93b9f7569103fc21e038b70dbff3fc5a7b9d4063485f3d7356c5dddc8",
+      "frames": [
+        {
+          "path": "frames/clip2/frame_01.jpg",
+          "timestamp_s": 0.498333,
+          "sha256": "38471bbda4b3069832622f57c917c075fc57ddb986db42c055b4517159eeb0d8",
+          "bytes": 40644
+        },
+        {
+          "path": "frames/clip2/frame_02.jpg",
+          "timestamp_s": 1.495,
+          "sha256": "225b8355fc2fdf73274469fcb30192aa1caaf130ff1308d6a448d6f0cf15f97b",
+          "bytes": 41450
+        },
+        {
+          "path": "frames/clip2/frame_03.jpg",
+          "timestamp_s": 2.491667,
+          "sha256": "efa1e6a87fb34013fb2f40c50b11f61326c9e63ebf248dc3699f6e6d4c34bbd3",
+          "bytes": 41630
+        },
+        {
+          "path": "frames/clip2/frame_04.jpg",
+          "timestamp_s": 3.488333,
+          "sha256": "a4d6f8e5ecb2a48c2d6fd12f41ddef47a56e21d3616bfd3dceafb2cf38b52edc",
+          "bytes": 41915
+        },
+        {
+          "path": "frames/clip2/frame_05.jpg",
+          "timestamp_s": 4.485,
+          "sha256": "b9cbb02844a9d573bec77a496d314f143e839d47f3aa2f0fd192c25f458992d6",
+          "bytes": 41725
+        },
+        {
+          "path": "frames/clip2/frame_06.jpg",
+          "timestamp_s": 5.481667,
+          "sha256": "4ed8a6ccc524e0b9c04736a87df69cbd130b0fd4b94329897ff4e6fc51a89be3",
+          "bytes": 41711
+        }
+      ],
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+      "tokens": {
+        "input": 1860,
+        "output": 23,
+        "total": 1883
+      },
+      "model_wall_s": 1.0635929061099887,
+      "measured_wall_s": 1.635402724146843
+    },
+    {
+      "clip": "clip3",
+      "arm": "corrected",
+      "fixed_evaluation_label": "healthy",
+      "walking": "yes",
+      "in_place": "no",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "used_for_decision": false,
+      "checkpoint_sha256": "58e7d36a2d4cbcba61b07ab2c4d4204f34c62e297fdb42c2e439a43ada373ee4",
+      "fixed_evaluation_sha256": "daec4d19432cac48af362ad5f5346a21a1454332a934cd5b44b2860f12b313b6",
+      "frames": [
+        {
+          "path": "frames/clip3/frame_01.jpg",
+          "timestamp_s": 0.498333,
+          "sha256": "d21de9d627b887a4c02f9441692a9f79138b1e5865017c6b98fe5f06d3dc9541",
+          "bytes": 39530
+        },
+        {
+          "path": "frames/clip3/frame_02.jpg",
+          "timestamp_s": 1.495,
+          "sha256": "f9ae2d7a5bfe8cc3dac71f62f8f330135356ffb6f97d2d9000e8f94db3ec04a7",
+          "bytes": 38683
+        },
+        {
+          "path": "frames/clip3/frame_03.jpg",
+          "timestamp_s": 2.491667,
+          "sha256": "7c2b1990b1b1c971c5aa4dd802f280abdd5f1649a3eb0b49d4d9f89cb07cd77d",
+          "bytes": 40060
+        },
+        {
+          "path": "frames/clip3/frame_04.jpg",
+          "timestamp_s": 3.488333,
+          "sha256": "0dad3247110badd7da6f53bb2a703735238dddc616f033ccccf50d76cc8c7f5f",
+          "bytes": 40087
+        },
+        {
+          "path": "frames/clip3/frame_05.jpg",
+          "timestamp_s": 4.485,
+          "sha256": "4876dd41316bd838c2475e091c85b0be30c51ccfcb59b94d1e531537c4a49d90",
+          "bytes": 37972
+        },
+        {
+          "path": "frames/clip3/frame_06.jpg",
+          "timestamp_s": 5.481667,
+          "sha256": "b185a52a4462d893801079888046815cdab4e9140593de6cd916234180b8087b",
+          "bytes": 37822
+        }
+      ],
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+      "tokens": {
+        "input": 1860,
+        "output": 23,
+        "total": 1883
+      },
+      "model_wall_s": 0.9455113408621401,
+      "measured_wall_s": 1.4722806890495121
+    }
+  ]
+}

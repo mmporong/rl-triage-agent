@@ -1,0 +1,1090 @@
+{
+  "schema": "nemotron_vl_b4_observations_evidence_v1",
+  "aggregate": {
+    "observations": 18,
+    "valid": 18,
+    "fixed_eval_correspondence": 17,
+    "fixed_eval_correspondence_rate": 0.9444444444444444,
+    "normal": 7,
+    "failure": 11,
+    "walking_yes": 8,
+    "in_place_yes": 4,
+    "falling_yes": 5,
+    "requests_including_preflight_and_graphs": 21,
+    "tokens": {
+      "input": 36519,
+      "output": 475,
+      "total": 36994
+    },
+    "wall_s": {
+      "total": 15.523356293793768,
+      "mean": 0.739207442561608
+    },
+    "auxiliary_only": true,
+    "official_alias_mapping_confirmed": false
+  },
+  "rows": [
+    {
+      "id": "motor_before",
+      "fixed_eval_group": "failure",
+      "walking": "yes",
+      "in_place": "no",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": false,
+      "standstill_ratio": 0.9066,
+      "fall_rate": 0.0385,
+      "clip_logical_id": "docs/media/go2-correction-motor_resume_dev_20261013/before_original.mp4",
+      "clip_sha256": "3e424cb64760d71ec7cf0536d3dd426bedfbd61afb8e998f82e2b9c82d9983cd",
+      "report_logical_id": "evals/results/motor_resume_dev_20261013/original_reports/fault.json",
+      "report_sha256": "66e32c00f0e2d3254e62e5b3d2760df5b1a5a0d3b1e929325c2d27bb362b4854",
+      "checkpoint_sha256": "70ab48fb4d073b2ccd7e28fe8a69863393bfc67f26074790eaa2cab94a03e45a",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "8d27aff9ab3fbd5ec8c954d77f6903671d2a692f7fa4456383ae96503adab6dd",
+          "bytes": 33466
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "2425bffc05a3040fe5acce8b8363c96881ad3711c55c6ed23ebc61d02345e6aa",
+          "bytes": 34377
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "710e04a2caa78fb761a51a478e070c58a4fe7deb4c5466e16394fbed7b83aa4d",
+          "bytes": 34618
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "4314ab32460b99a22388eeb00ff9ef2f6c821e650343b4f3c949a989c013b05f",
+          "bytes": 34659
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "bec4879103798ddbf89a44c1b86e5ef13e431b0d063d62b9b63c88ba7fdefe9a",
+          "bytes": 34725
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "4c061642d6dd0b0f944dc5a1ee719754a37f857663a81b39ef8338cec90064e5",
+          "bytes": 34923
+        }
+      ],
+      "messages_sha256": "6619904810b832bec109327512574ef5e510280e422d44ae5134996b7c820444",
+      "request_sequence": 145,
+      "request_sha256": "04c86045de9cc9f24fb10005c810d65b581434486e3590a6975c1f48259a4151",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.5938735068775713
+    },
+    {
+      "id": "motor_corrected",
+      "fixed_eval_group": "normal",
+      "walking": "yes",
+      "in_place": "no",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.1601,
+      "fall_rate": 0.0,
+      "clip_logical_id": "docs/media/go2-correction-motor_resume_dev_20261013/after_corrected.mp4",
+      "clip_sha256": "06f7952cd400af44271f5f35df52e002cec8b37b611a6824c705feede1fbf401",
+      "report_logical_id": "evals/results/motor_resume_dev_20261013/reports/corrected.json",
+      "report_sha256": "53b5fa7d56442dd9f6e67d6e260738838c726bd904e34e30b1c730225ec8c597",
+      "checkpoint_sha256": "6cc5b4610e98b772e011e398621dc501bdc94141d61bd4455820ba0e84344dd6",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "85b6485a36fbe3800089c472fff001ce748adb67fcf9189879df9271fdccb8fc",
+          "bytes": 33447
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "1f958c12afdb192d754a77dd8cc218d21bbf9567a6b4a6b5d4b984c048f2dc5a",
+          "bytes": 34107
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "cecc2dbdae80cd42827fdee7baf4e7148946dc0032be7f83bec66134de279f89",
+          "bytes": 34278
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "c8a11760d90cb67e1b7a5b051c3b627fabf82d7d7939f4c8d97e29c8c3d5b9e9",
+          "bytes": 34449
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "58771c215fe4ca3afd8e5657e64c258c24ddab982b63b2ff6235f81353143050",
+          "bytes": 34468
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "5502a39b45f728cd864a34a6209774c3380e098462b5ee29e58a5ff35559fd5e",
+          "bytes": 34721
+        }
+      ],
+      "messages_sha256": "e763cd10870cf07b87c114b3570781c616effaeb2847a23ff0ccc118e0db7eb7",
+      "request_sequence": 146,
+      "request_sha256": "51fe274d19d1533f60c1769d20687a75117e8f9dca7a0b664fdaa1098c99e3a2",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.8045005218591541
+    },
+    {
+      "id": "reward_dev_before",
+      "fixed_eval_group": "failure",
+      "walking": "no",
+      "in_place": "yes",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 1.0122,
+      "fall_rate": 0.0692,
+      "clip_logical_id": "docs/media/go2-correction-reward_resume_dev3_20261013/before_original.mp4",
+      "clip_sha256": "e417e9093b37d896d7e80c576de6945479a9b584266df10faf3e8b297f70eccf",
+      "report_logical_id": "evals/results/p0c_fixed_eval_20261009/runs/h02_s2027.json",
+      "report_sha256": "7668039f7f21f55500a41b27336d92e0c3eaaa2e11c099e0c3d43afbfdb1481c",
+      "checkpoint_sha256": "3814f73d8104c72f92a4ed368af459af9ee7f26353c2c00cc91f123384578f14",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "a0c80c8057471ae98c8119234508f867452479997469980dde414757623edcd4",
+          "bytes": 33753
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "9b1257e04992d7a011cce50fb54e89058605203080086b66d395ad8fbe224342",
+          "bytes": 34347
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "a93d73712ce6d80dcacabe272f6c41115835e82d2164d7886e6a78bc2dace0e4",
+          "bytes": 34830
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "a9ccac9b7d793821128e01a8ab25879dc6834ef9c66b95a916bc933f11dff77f",
+          "bytes": 34925
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "ead442557ae40b14b246ce6e66347db946f8447f3fa84eb10c93ec1ab698661c",
+          "bytes": 34974
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "58aa5ef735e0bcf50b2b67e4852509fb3655c824d773e4732ba183beafd08af6",
+          "bytes": 35226
+        }
+      ],
+      "messages_sha256": "18c48f3720925ae6590cfeaf9e59484c254c28d61d63d0f42e2924bfd61d3d5d",
+      "request_sequence": 147,
+      "request_sha256": "d2e8ef1a3d469901b7699baeb81b8f212f422dd45f01075dfd30ea9653e4136b",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 1.2477151490747929
+    },
+    {
+      "id": "reward_dev_corrected",
+      "fixed_eval_group": "failure",
+      "walking": "no",
+      "in_place": "no",
+      "falling": "yes",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.9866,
+      "fall_rate": 0.0,
+      "clip_logical_id": "docs/media/go2-correction-reward_resume_dev3_20261013/after_corrected.mp4",
+      "clip_sha256": "0ec50b01311313cef0721d462839aacaade9e8709f3f8d674ead088b0c9fe1e6",
+      "report_logical_id": "evals/results/reward_resume_dev3_20261013/reports/corrected.json",
+      "report_sha256": "3c3af3990f883fb9ecb98104426742d3d26b0067069093b153d1a6838123300e",
+      "checkpoint_sha256": "eb33ebec393f0c62f7511d05fd794610a0cfc560b61f6d3ea9e0870b87954020",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "8d3eabcddcefc0e9d264badc8492ecd252e7f6f38723a3e3c5a1609030642d31",
+          "bytes": 33541
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "a46bc0bc882fea2ec4fcce2e1635390cdd18be1057ee086dc48209f37f0a56ea",
+          "bytes": 34273
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "481d74f8958fe79a02d7375f99a93eb78a4b82e0cf8ec7e7a9c6c56d3b066da5",
+          "bytes": 34734
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "a92306e9a527090d4cbf08c9eec94f9cf1e4e0f0a99f605ee282e50deaadee0c",
+          "bytes": 34875
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "56da881fd602150aa32399100e7df31de1b3fc64f4434fb43195d0feab15ef52",
+          "bytes": 34937
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "aad7c8f4f45f30bceb4d260998f745a7d31940fb0b97c76b73b8d07c5fe787da",
+          "bytes": 35230
+        }
+      ],
+      "messages_sha256": "862507f0c58507621acf7217b430756023712c8ab7420d1ba1ff0bf4ef54d1bf",
+      "request_sequence": 148,
+      "request_sha256": "359122ab863c5abec498f1465aa9971b3067377aa2f345b663d6788243d6718c",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.8132266181055456
+    },
+    {
+      "id": "reward_dev_sham",
+      "fixed_eval_group": "failure",
+      "walking": "no",
+      "in_place": "no",
+      "falling": "yes",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 1.0201,
+      "fall_rate": 0.0,
+      "clip_logical_id": "docs/media/go2-correction-reward_resume_dev3_20261013/after_sham.mp4",
+      "clip_sha256": "3574d5d474a86b5879168244ed0bb038a6d5aa05643ff6aa167438af5bf2efff",
+      "report_logical_id": "evals/results/reward_resume_dev3_20261013/reports/fault_sham.json",
+      "report_sha256": "d3a71f0d167fe3851b3113781b2f7d91a92f81f02d6f26651e0f35d901330d00",
+      "checkpoint_sha256": "ef08b538466392c90b40604c56f744f3ea53693191528983c48763bd68f4493a",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "4b2d445a0e52acf25b06f7bf1ba815d1f3d7998eec5e1559d15b707df9201c21",
+          "bytes": 33572
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "4d01a53ab6659ef59e4e6828a6093eabb2c20df54596f4b9bdeeaece25e77259",
+          "bytes": 34480
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "13fb3b4cf118d6f92a66c8626681ddad3897a223ff9d4e1f4519ea023889ab5b",
+          "bytes": 34849
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "378bd8f846306b3a040cdfe58411e9138f402815ea0420f8862648deca8c92c3",
+          "bytes": 34953
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "ca1f0576b14c0e95a4036dd5d28a27fad210483d215de304d79dd0d30cba84c3",
+          "bytes": 35041
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "a5ca67afaa63e9dabda983a82564984f432f332f9135d20e6d1513ab6b91c175",
+          "bytes": 35322
+        }
+      ],
+      "messages_sha256": "8de26c4c0e0ab6e5739bcafeef9a3bbf19cbed100ec17aa605e07944c5dee624",
+      "request_sequence": 149,
+      "request_sha256": "7445281c72ff78609f5e627a3a76ca38c65b922420ac5326b08e05b8e62e6d8b",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.5807011062279344
+    },
+    {
+      "id": "reward_2026_before",
+      "fixed_eval_group": "failure",
+      "walking": "no",
+      "in_place": "no",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.9967,
+      "fall_rate": 0.0,
+      "clip_logical_id": "docs/media/go2-correction-reward_v4_s2026_20261013/before_original.mp4",
+      "clip_sha256": "d2e7c4689ed1ee15a6723a20dbc2c990e1a2b2a9ca4790f28c774f79434484e5",
+      "report_logical_id": "evals/results/p0c_fixed_eval_20261009/runs/h02_s2026.json",
+      "report_sha256": "f7e2ebab9a78488e7ef37e8a90e415b93ee095242b92163edade06a5cb283827",
+      "checkpoint_sha256": "d1621a289b31d883f2d0da825689ecd10998ee2d3a53c8c4cf2d887fb866546c",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "f327001b273cb5f1c453c468ce76932ed66e2d3a9340664f26c12f0472682660",
+          "bytes": 33555
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "f5293018151d82b76ad15bf7f6cdc39945636726ef9952586b589e6c868be437",
+          "bytes": 34431
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "799e11753a89400f60a8c70dbac678c1398d282f2a27ccaa2d319ca06658ef4a",
+          "bytes": 34748
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "f45cacf38780c397cd4a302d8f959e6b1e7c3d43e0a07790e087bd1c2b96f81a",
+          "bytes": 34870
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "b347d464d707c4d10448f005960c716fa136f4e311df8c68b4d6d2b6044c086a",
+          "bytes": 34935
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "31fb149658133da4b767ad0fe293abce072d119ea878cc14e3e6b6f60c9c772e",
+          "bytes": 35234
+        }
+      ],
+      "messages_sha256": "6390fe5e5f3dd6ad791664a2697dcefc5b07a5cdefe97cc5e4835c69598e2e30",
+      "request_sequence": 150,
+      "request_sha256": "8b46c8aab52182ff17641ae040141d3eb1e5c1842d9be36cc143bf601fb718ed",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.554716195911169
+    },
+    {
+      "id": "reward_2026_resume",
+      "fixed_eval_group": "failure",
+      "walking": "no",
+      "in_place": "no",
+      "falling": "yes",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.9823,
+      "fall_rate": 0.0,
+      "clip_logical_id": "docs/media/go2-correction-reward_v4_s2026_20261013/after_resume_corrected.mp4",
+      "clip_sha256": "bc89df09d359179be988b8929446c33178f033611223197a365f6b0076fbddf0",
+      "report_logical_id": "evals/results/reward_v4_s2026_20261013/reports/resume_corrected.json",
+      "report_sha256": "e542905533ed616a9b22b2d249329367cf3bcce791f9b61ee2f46b79161af1cf",
+      "checkpoint_sha256": "37ff93769014b9abd0008729e92ae10f4fa950bc1e8b24155ab9376385fb6ec4",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "e463a714aa021d973c73086fd4f04cc0df579fd9f61437b238a49e5b233c28f8",
+          "bytes": 33642
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "2ac1af3e0d8b38a4d79d0f0252c8d799a8b57447a83e2d47fbb1974c74eacb67",
+          "bytes": 34380
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "d01bab16ed46ca6166a41717a9db109eb81747215dcee5140550f2a8a0da7f53",
+          "bytes": 34729
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "ed5966303bc90799a8f3d2c8b77087ccbe22f1173498456b72f32138855cc0b1",
+          "bytes": 34836
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "6f2cf265a89c4aed8d7f92809057f8e88d622b93d90e52d48bc647894c30cae0",
+          "bytes": 34963
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "e21843418281015534920bd4e8fea1acc5cd2602417c75fc3b513929f3315d1b",
+          "bytes": 35253
+        }
+      ],
+      "messages_sha256": "d85b3bb87a4c58ce2d2f556f06dc653758be520f778b4ea16e0b78dd34663744",
+      "request_sequence": 151,
+      "request_sha256": "87b499d280c346b6e73c8fb722cf058b833831ada04386f1dd7f1c426be3dce7",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.6689043850637972
+    },
+    {
+      "id": "reward_2026_std",
+      "fixed_eval_group": "failure",
+      "walking": "no",
+      "in_place": "no",
+      "falling": "yes",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.9477,
+      "fall_rate": 0.001,
+      "clip_logical_id": "docs/media/go2-correction-reward_v4_s2026_20261013/after_std_reset.mp4",
+      "clip_sha256": "b59187d83f3323a9a60489e9f4928e205d05647a818beb091cf89445e38fb34f",
+      "report_logical_id": "evals/results/reward_v4_s2026_20261013/reports/resume_corrected_std_reset.json",
+      "report_sha256": "b7fae39c7651a44e7de0cf1a59e1c70d928ca8d66ca3468f947dcb604cfba07d",
+      "checkpoint_sha256": "17f9cac434193a0b14647e352ac1276ff3098699f86ecdc4c7cd4c728981bf92",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "935bf0232ba2e33c40b9a99b4e02de94efb170b1707048b4ee4ce23854743e10",
+          "bytes": 33582
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "81bf2ff85245cb586646533d107f75bf79cbbe5ee461aac35e859c66cff505a6",
+          "bytes": 34487
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "3e7d84ee49ec0f0efd988b3d047297ce2ae2e0a93b710654e8909159bb791eb2",
+          "bytes": 34777
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "b24fc96e5f91dafe9ce9a8d4e1986a6b1c8c5031f9bb6af6113d7801cbd35492",
+          "bytes": 34938
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "bb81443deddcfbc1cd30b737c0ffb5608ac1117644a1c210e5dc647274854896",
+          "bytes": 34986
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "29741185fd366170e49bedf652238d703272e5ad63b8c2edf07b525993419464",
+          "bytes": 35284
+        }
+      ],
+      "messages_sha256": "daaca67c9019584806ce6aef3225ceb8fcc5486d89c6fd3cb3ef8d6b4be173a4",
+      "request_sequence": 152,
+      "request_sha256": "ed92dbdcd72c223f834d4577be905be2c93b3035970dbc5fed023ca0212f2fcb",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.8159843408502638
+    },
+    {
+      "id": "reward_2026_none",
+      "fixed_eval_group": "normal",
+      "walking": "yes",
+      "in_place": "no",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.1256,
+      "fall_rate": 0.0,
+      "clip_logical_id": "docs/media/go2-correction-reward_v4_s2026_20261013/reference_original_none.mp4",
+      "clip_sha256": "65f01dcdc100799b86431e8370c941996456def5969c6301d788fa0a682036f7",
+      "report_logical_id": "evals/results/motor_w1_s2026_20261013/original_reports/clean_reference.json",
+      "report_sha256": "c8855549b0541fe12a7d612f3e04eea5a285dee12d0ce69fbdb4b43ee4b884cf",
+      "checkpoint_sha256": "2e1e84cdbe5b348d1b6c3fe99c4894c95029ab5a18d3ebde69cd1e1743e80b2f",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "381012dc8f9e1a480910890769aeab9d8c010a6e2c50e23d5c53a487a577d540",
+          "bytes": 33350
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "67db11744a59901720cd5e62086d8bf48684dc9faab8cea0db268a128192f40f",
+          "bytes": 33944
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "8f915ff935e1fbc09e89e0ac563b38fc585b106d5e4784292d81fd7b93037cc8",
+          "bytes": 34214
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "f2c9e85df9e65a39de4db0bb850909e8ce36f9d139f01d69b442ed05a563a5d1",
+          "bytes": 34382
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "5768e5398671f57b309429464190bf020b342022993105b9183299d5ab013c18",
+          "bytes": 34448
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "2d01ac8f162e54547c863e6a21da7dd37283e95e01efce9ea65608b01e73ae59",
+          "bytes": 34783
+        }
+      ],
+      "messages_sha256": "d8e94430e29a92e45fecb3fb972914a2f93bb7f12e62bd6c66da54593ae4b46d",
+      "request_sequence": 153,
+      "request_sha256": "b1e03e761277dd92ef2ef5ee95963ac474616804d3e40185b70e942798d8bffb",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.768985363887623
+    },
+    {
+      "id": "reward_2026_clean_resume",
+      "fixed_eval_group": "normal",
+      "walking": "yes",
+      "in_place": "no",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.1218,
+      "fall_rate": 0.0385,
+      "clip_logical_id": "docs/media/go2-correction-reward_v4_s2026_20261013/reference_clean_resume.mp4",
+      "clip_sha256": "07df564b84a855967cb5a8e18677abcd3b1b33d0aa8c62a5e90ff295edf85a3b",
+      "report_logical_id": "evals/results/motor_w1_s2026_20261013/reports/clean_resume_reference.json",
+      "report_sha256": "b92b4334e26a17950ec302a4b9defe11e285e6a0f8c0f65ff7cc6d71a42789d3",
+      "checkpoint_sha256": "08f037318cfc0ee0c41a87a62ecf870b5633f53bbb7b480cbfe66b78bbe0695f",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "44c01927dd1d4aa4a09ea9a7033ba6ae10600c8808a0d0345c7e9b1ea115c3a3",
+          "bytes": 33410
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "930f0f5e706d359cfc9b434ad5fa6884f3dcc611451e0dd089108c5a9e654125",
+          "bytes": 33992
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "7231856ca0cadf6c738325435d5a30a62f365bf1605eda185dd13a1777b1c600",
+          "bytes": 34378
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "9065d55cad4de3a8926efd40ce8387c9a30c147f2d1937ae851ab3cf29f33c69",
+          "bytes": 34430
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "5774f94bf2fea27ba1dd938505debebbee8c26b3799185751f2ef8672a3cd508",
+          "bytes": 34492
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "c4beb8ef6ffade36228873ed65db33ffadca954adb325ea3a48fefb615f687d1",
+          "bytes": 34791
+        }
+      ],
+      "messages_sha256": "eb6249d62a4a6e2ccfe79682e771ff6487c281ceff621fab9bfb2db1f3787a00",
+      "request_sequence": 154,
+      "request_sha256": "7c6dff3d10f3d62f4e1f404d6051c74e0aa34c1a7ab3773930b4b9ea8ef1e4d0",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.8555813531856984
+    },
+    {
+      "id": "reward_2028_before",
+      "fixed_eval_group": "failure",
+      "walking": "no",
+      "in_place": "yes",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.9889,
+      "fall_rate": 0.0,
+      "clip_logical_id": "docs/media/go2-correction-reward_v4_s2028_20261013/before_original.mp4",
+      "clip_sha256": "602adc020d5ad7d37db7c1a40122814a79cdd36135419df89a6b95f112420dab",
+      "report_logical_id": "evals/results/p0c_fixed_eval_20261009/runs/h02_s2028.json",
+      "report_sha256": "9a70f99717c5107245787812bfb4ff6276a345c7a94635ecd3a90cb43d38e5e3",
+      "checkpoint_sha256": "e63f4b0cddb0213e1f124ee6f0349218237511af0bdf0e75e12386b9d1856b2e",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "7c7a7a3fe5cc210ae9009fd81576135d2e78e994074e72f021797d6f26c7c829",
+          "bytes": 33604
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "69310ce433bf06663e62bcef9dfb27796884350aa9907512b89b69c1ff63dbf9",
+          "bytes": 34406
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "313d98e813faf1f209992ff422e124bd75c402904b1b0a5064a1670df2f458d4",
+          "bytes": 34645
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "9b8f3d8e0583ad59151ea905afb569cf24cf3777e6a0f5a7c4f1807de9742205",
+          "bytes": 34857
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "74621b7fe3fd8d04aa681440b4a5969c404b29db77b22731dffeb24d9fcd03f6",
+          "bytes": 34933
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "5d811bb2df76ea3135ac5eb778e8c1f79f3e15660de24687952fe8942527a090",
+          "bytes": 35220
+        }
+      ],
+      "messages_sha256": "d29ed7608be1593dafc42197353cf532c415872fffb1bce98087b85bd70e1352",
+      "request_sequence": 155,
+      "request_sha256": "47450759ce2f87644c2a07cd2d3ac3a7ada0e1b431e46af98e419d8e279ea933",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.5661649981047958
+    },
+    {
+      "id": "reward_2028_resume",
+      "fixed_eval_group": "failure",
+      "walking": "no",
+      "in_place": "yes",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.9664,
+      "fall_rate": 0.0,
+      "clip_logical_id": "docs/media/go2-correction-reward_v4_s2028_20261013/after_resume_corrected.mp4",
+      "clip_sha256": "aaafaf5890028bb4d05453111892678c324f2aef39eab688fce2b590f88713ef",
+      "report_logical_id": "evals/results/reward_v4_s2028_20261013/reports/resume_corrected.json",
+      "report_sha256": "1d28a2d262b7a892e55065fb85a5f9bf69b8157a6983db075827690627b899f8",
+      "checkpoint_sha256": "3c5908e677cd489a1a2cd36cb85690e5a67bbe8d4269e35c3c9183baa2bea6a4",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "5fbf081cbc952fd317ea6593d7ae5e0fe5940bfea9d17b389bf754f7f9cb9196",
+          "bytes": 33581
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "dcb749130de79c8b9fb994afa8a1deaf21a87ce1bf2a59b537f9cf26e693e38f",
+          "bytes": 34236
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "6ac481464bc2b4c30cc0367774fceb0bd2eaaf2118ca6a15b10216666ca1febb",
+          "bytes": 34581
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "7e782f8c539521cc36d0ae6c954682ad2d4ce9fc7e63ce573a441164a07811c3",
+          "bytes": 34743
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "1ee2399461ce1c0ea6f708e3180f039198dae1bdb792955fe98c60f67aec38b2",
+          "bytes": 34813
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "c62d4c9ab23a838eac492dc3569d15d3a9bcbc6b9353c2b2a31f975ce785c5e0",
+          "bytes": 35099
+        }
+      ],
+      "messages_sha256": "e1f25f4e82388bbdc0f2c770f21adc57c87b4e7b9fc257d07755cd13895fb63e",
+      "request_sequence": 156,
+      "request_sha256": "e48fabfa91965ebd4864053735c62a1ac49a5e607f3bab06b9ebb658067d531f",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.5557747008278966
+    },
+    {
+      "id": "reward_2028_std",
+      "fixed_eval_group": "failure",
+      "walking": "no",
+      "in_place": "no",
+      "falling": "yes",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.9814,
+      "fall_rate": 0.0,
+      "clip_logical_id": "docs/media/go2-correction-reward_v4_s2028_20261013/after_std_reset.mp4",
+      "clip_sha256": "ffc5637bc6c1879dedbaec7030deec79f9a852e457883cc03c98ba78ff1b7ec3",
+      "report_logical_id": "evals/results/reward_v4_s2028_20261013/reports/resume_corrected_std_reset.json",
+      "report_sha256": "bc4141149ccda7c50fab3fcaf990d8c1cc6391e51d7d4062fbba7f2ee92f75ac",
+      "checkpoint_sha256": "155e7ddc9c01030516c8aef419a95ad8c7bf495490d90f171b4a5b4f97210672",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "62c3419033eb8931876dc29523f967d8e4813e3bb757d2bd0e578ef4466d2713",
+          "bytes": 33684
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "2545627d499444f3509a616d9a66c4986b553b201b83575371471954a2c817a5",
+          "bytes": 34385
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "120653506feda12a4e682351161100a6452de3918182de91c2affdb5615677f0",
+          "bytes": 34669
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "777fff6d4d2f8e968070b4c9988260050eadf9c4e8a7ec070b0e625e86c8bddb",
+          "bytes": 34806
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "433d30decb9b9a20ada4bff0d65dfb0fe8ca9ec53bdfa8a06e52759fbcd449e0",
+          "bytes": 34883
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "c62809b6f0aad66da3f6f3ebffe3453ad917bf29c862c0c398991569a1fd2f16",
+          "bytes": 35193
+        }
+      ],
+      "messages_sha256": "cb61362048316f6bb547f4745a8184fad76b8f19e315421a5c31e92bf672d3c3",
+      "request_sequence": 157,
+      "request_sha256": "33a9c75119369824a6b0f52ec5b6317fe889c68cd5df1554b73f4a99faadfcc7",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.5495181698352098
+    },
+    {
+      "id": "reward_2028_none",
+      "fixed_eval_group": "normal",
+      "walking": "yes",
+      "in_place": "no",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.1195,
+      "fall_rate": 0.0,
+      "clip_logical_id": "docs/media/go2-correction-reward_v4_s2028_20261013/reference_original_none.mp4",
+      "clip_sha256": "dba0c5549370f78a62459d42c325bb5c2dd50f4abbfc564a3fa12ca0306c6e0c",
+      "report_logical_id": "evals/results/motor_w1_s2028_20261013/original_reports/clean_reference.json",
+      "report_sha256": "40617eb003b5316b3bf86fc7767ca9b6a9aaeee96cc5671ba6cb8b6e4587bdcc",
+      "checkpoint_sha256": "d8c67eec0b8108b7e7092a80a3efcdc0338285c06c87ca8b9f7b8c65641024e3",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "65f5c7e89740d44cf462af1d156c97cd7382e5fa07c89f6ff1e698d8367a40a4",
+          "bytes": 33482
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "58eb8fd9df72ae92b407e63b3d1bd54ef773875709b899318c94ee95fc326428",
+          "bytes": 34021
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "dbde50ea71cf9335754ac07b50d508795b23bb0d2971da153eb1c4ad76315469",
+          "bytes": 34290
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "5cb8acab9ad5d515f696b51963dbdf0b2b082219b7c2cd7d63c96790fae7d1c3",
+          "bytes": 34371
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "aec375cbbeb8f731a72a4679c776cdda8f100d00895f74098a3e19358c664e69",
+          "bytes": 34513
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "ab8a953cebeebc49101bd24f19eb99e0bfbae213ab3fccc1152d078e38320d02",
+          "bytes": 34776
+        }
+      ],
+      "messages_sha256": "8ad967b8439a46877c2cf85ef1347074ff96a8205c25d6e5416aeb10779718b2",
+      "request_sequence": 158,
+      "request_sha256": "938028dd97e202cd877da118955478beb8d1fe00b672b5c3c8cc306b89fa7cde",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.5418812111020088
+    },
+    {
+      "id": "reward_2028_clean_resume",
+      "fixed_eval_group": "normal",
+      "walking": "yes",
+      "in_place": "no",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.1128,
+      "fall_rate": 0.0385,
+      "clip_logical_id": "docs/media/go2-correction-reward_v4_s2028_20261013/reference_clean_resume.mp4",
+      "clip_sha256": "615b4ab8f8f071fbf0636d55a38fc14be3bb7e0f539962f816ca849baf77356a",
+      "report_logical_id": "evals/results/motor_w1_s2028_20261013/reports/clean_resume_reference.json",
+      "report_sha256": "83e4352f8d177ad41d358776ca104e36d304e69544b19df39933e8eeff99ceb1",
+      "checkpoint_sha256": "f0aacea12b8cd64b6ff5d69657580e8ed40987270cb5bcdbbbcf9e1c0be92c77",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "6fa8230d31bfd48d608f1f99bd80717e45d463a1aa8b577a97eb8f807248aa84",
+          "bytes": 33301
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "d427f96978ab068a5b0a4e26158ad5b0d3c80ee9839b3182ef089f69cef1e811",
+          "bytes": 34001
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "074604903bc319030af083fd6227697b46b6307ac8aec04fd2320183f34ea795",
+          "bytes": 34257
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "3483af0ccf6d0c34092e2f4a1ce970324406448a742bb5cf33bbea3790a5436e",
+          "bytes": 34454
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "2bff06c4cdd875fc8fbf43421373e275f5df43aa1c8acc30e0dd8affe84c1b53",
+          "bytes": 34511
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "63f8e010b93aa2ac7e21f376781e16d5698d8b90fd6521700be958ccd519eb53",
+          "bytes": 34774
+        }
+      ],
+      "messages_sha256": "ffa04e8526aee8d62cc34ad775b629c7d662f408263edcbddd97b400b180c9b9",
+      "request_sequence": 159,
+      "request_sha256": "f048ec9a15040447790c2f9c3fa0c0e8e400ddda8fc5e248c8801e8cc1739dc7",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.5772089508827776
+    },
+    {
+      "id": "demo_2030_fault",
+      "fixed_eval_group": "failure",
+      "walking": "no",
+      "in_place": "yes",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 1.0176,
+      "fall_rate": 0.0231,
+      "clip_logical_id": "docs/media/go2-e2e-e2e_reward_s2030_20261013/before_fault.mp4",
+      "clip_sha256": "c87ebe2ca6084781f82d41aa491ca4ce5e2bfb748979155d13faefbc812c4e27",
+      "report_logical_id": "evals/results/e2e_reward_s2030_20261013/runs/h02_s2030.json",
+      "report_sha256": "a0771acdcd80da76d1e723042d190e90d877338a268998f779a3048b9ed2f5dc",
+      "checkpoint_sha256": "6133080cf77710da55c157ba05109c818787cf3c906778b320b2073947dddc39",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "2a44113d2e0321cc09a52ca3fda155e033ec610b0507df55936ab4d6c3e0b5a7",
+          "bytes": 33720
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "14e899dacada91dab0ecb099cb092a7b2e29780b467d16fa7e727cc127b3ef2b",
+          "bytes": 34456
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "578166613cc615cf9c6fdc54974970aff847357eb8d04ac52104e5da49cb39a6",
+          "bytes": 34735
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "450b30f7a70b8781dab2b3d90aa59c17265a1233988afdfa4147ed93d28c6412",
+          "bytes": 34785
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "e51abaeaf1baf6315d398a046a4670800920a3271a1ef5f2e6aae97cb7571db0",
+          "bytes": 34888
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "a9c95cde187538cb3931986c7159862dce69dcf830ea427530182080e63a74b7",
+          "bytes": 35208
+        }
+      ],
+      "messages_sha256": "eee33a357aa1a9681d1b409c7aea6abb67452c00377bea7733210fe4419aee2e",
+      "request_sequence": 160,
+      "request_sha256": "d5ac7e6f072912fd380c10c4832aa113efe7f00617a4b5a06acb32de9c7f5135",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.5995530129875988
+    },
+    {
+      "id": "demo_2030_none",
+      "fixed_eval_group": "normal",
+      "walking": "yes",
+      "in_place": "no",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.1247,
+      "fall_rate": 0.0,
+      "clip_logical_id": "docs/media/go2-e2e-e2e_reward_s2030_20261013/reference_clean.mp4",
+      "clip_sha256": "7c72ecc10763fbad6c86f59b5b14488867973bbb5a8f6740fb341b0bfc6d63d9",
+      "report_logical_id": "evals/results/e2e_reward_s2030_20261013/runs/baseline_p0c_s2030.json",
+      "report_sha256": "3328f38043d99b9c80f1c12b41c2485cb2fffeb0f8ca073c88af57f619548716",
+      "checkpoint_sha256": "2feae4b805a9e5ed37ab29e99b8ba1b348e05837eeccb1ddd42d6cfeb1b1d7a1",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "9748990fbae7cecbbb7beccacd0d8d57daf20cdbef9a58b3fa32870838ce23fc",
+          "bytes": 33442
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "d1e2d8f88fe0783bcb444b0928e35f3a94439278780fce49b6782c94abb549c7",
+          "bytes": 34057
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "8dd0eb863f2ee3eeb03079a8f45eb9e474ee0a4e9aefbe2f52009546ce1f903d",
+          "bytes": 34382
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "39c3329d3e3ae02b72e24369638c4d182f36bbe47614f1d38eaf2b1245c91d7c",
+          "bytes": 34432
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "30e43ceb1b3aafa777000bc47228001540aa8368e5524159963397423c9f3766",
+          "bytes": 34496
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "b840d682b209cd3435d06b4d2ba647ed31ca725f4c98a714c334f89c9a6d10f8",
+          "bytes": 34693
+        }
+      ],
+      "messages_sha256": "2d15030e8d72161150a45a1d062f1ec28db19661e33b1697b48a4d4ed284e700",
+      "request_sequence": 161,
+      "request_sha256": "f6b6718b729d91ec1770d9ba0ca361ac515427aefa1cfac5ecac5eab5c938172",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.5892511489801109
+    },
+    {
+      "id": "demo_2030_restart",
+      "fixed_eval_group": "normal",
+      "walking": "yes",
+      "in_place": "no",
+      "falling": "no",
+      "valid": true,
+      "fixed_eval_correspondence": true,
+      "standstill_ratio": 0.12544545755336192,
+      "fall_rate": null,
+      "clip_logical_id": "docs/media/go2-e2e-e2e_reward_s2030_20261013/after_restart_fix.mp4",
+      "clip_sha256": "3edf9e248bed4abf9934ba8902383ec6f10eec9639f263dc032adf658196d759",
+      "report_logical_id": "evals/results/e2e_reward_s2030_20261013/demo_result.json",
+      "report_sha256": "fd1a72b73928ad85e3b12b5ee9053957c03529b8e9550fb406016d5a5497b351",
+      "checkpoint_sha256": "e1b06d6d320023473bc130a6fd7fa5730395e16b595e2f512855b37a33c63b4b",
+      "frames": [
+        {
+          "timestamp_s": 0.498333,
+          "sha256": "58986dbe726f5f843d46025811f9a756112eee3eda6cb1e13b2eb08afdf9262d",
+          "bytes": 33369
+        },
+        {
+          "timestamp_s": 1.495,
+          "sha256": "2e3b46fcf586ee8f5261e7be2fa12eb7c2817c3a6f13443c82bea755476a293f",
+          "bytes": 34091
+        },
+        {
+          "timestamp_s": 2.491667,
+          "sha256": "9c93b82e8000c515f8ba4db2d62eafb7d39d12c9b9796b1721653ad8f68220f1",
+          "bytes": 34347
+        },
+        {
+          "timestamp_s": 3.488333,
+          "sha256": "0c5a096ea355a21ba7488751389e975e2b20e84c8759d2c4ff1f5dc026a4936a",
+          "bytes": 34437
+        },
+        {
+          "timestamp_s": 4.485,
+          "sha256": "55079a49a1010830aaf616635e157cc3a5c7c66589d7cdb77281386ce3a2f237",
+          "bytes": 34537
+        },
+        {
+          "timestamp_s": 5.481667,
+          "sha256": "7e9a4d4a336022569f4067bda200f8a3f2cc2c079f367865aa0545cf6b860740",
+          "bytes": 34770
+        }
+      ],
+      "messages_sha256": "5bf136e0574db726e92b145f7dd25caf8b704e85e6a07992c1eda27e7bd6162b",
+      "request_sequence": 162,
+      "request_sha256": "0b7092fca79b2b0d4351252c51a0d7499984236fc6a23256f22aabb49728bd1d",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "tokens": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 0.5887140799313784
+    }
+  ]
+}

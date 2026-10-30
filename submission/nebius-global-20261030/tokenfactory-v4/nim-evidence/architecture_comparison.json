@@ -1,0 +1,24 @@
+{
+  "revision": "rev2",
+  "retrieved_at_utc": "2026-10-30T09:00:01Z",
+  "model_ids": {"old": "nvidia/nemotron-3-super-120b-a12b", "new": "nvidia/nemotron-3.5-super-vl-120b-a12b"},
+  "official_comparison": [
+    {"field":"total/active parameters", "old":"120B / 12B", "new":"120B / 12B", "conclusion":"동일한 비교 가능 모델-카드 수치; 규모 감소가 모델 요청 wall-time 단축의 근거는 아님."},
+    {"field":"MoE routed experts", "old":"512 total experts/layer; top-k 22 (NVIDIA 3 Super technical report)", "new":"512 routed experts/layer (NVIDIA 3.5 card/API reference); top-k은 이번 공식 3.5 자료에서 미확인", "conclusion":"공식 확인된 total-expert 수는 동일. top-k 변화는 미확인."},
+    {"field":"backbone", "old":"LatentMoE, Mamba-2, MoE, select Attention, MTP", "new":"Mamba-2, MoE, Attention, MTP; 3 Super Base에서 초기화", "conclusion":"hybrid sparse 계열과 MTP는 공통이다."},
+    {"field":"context", "old":"weights 최대 1M; HF 기본 256K", "new":"weights 최대 1M; hosted Build 표기 262K", "conclusion":"가중치 최대 context와 endpoint 배포 한도는 별도로 기록해야 한다."},
+    {"field":"vision", "old":"text-only", "new":"C-RADIO encoder + VL connector, text/image/video", "conclusion":"명백한 기능 추가. connector projector 내부나 visual-token 압축률은 공식 자료에서 미확인."},
+    {"field":"MTP/serving", "old":"MTP와 NVFP4가 이미 존재", "new":"recursive shared MTP warm-up/boosting, BF16/NVFP4 QAT, cache/kernel/drafter recipes", "conclusion":"MTP/NVFP4 자체의 도입이 아니라 3.5의 강화가 공식 효율 후보."},
+    {"field":"reasoning_effort API", "old":"none/low/high; none은 reasoning tokens 비활성", "new":"none/low/high", "conclusion":"두 endpoint 모두 none 지원이 공식 API 문서에서 확인됨."}
+  ],
+  "project_measurement": {
+    "scope":"모델 요청 구간 wall-time; 프로젝트 전체 E2E 시간 아님.",
+    "paired_request_control":"57 paired request에서 request_without_model_sha 일치. temperature=0, max_tokens=16384, stream=false, reasoning_effort=none이 고정·기록됨 (Root 검증 제공).",
+    "usage_tokens":"B1 old=5828/new=8147; B2 old=17925/new=18274 (Root 검증 제공).",
+    "latency":[{"batch":"B1","n":33,"old_s":4.48794656,"new_s":2.70807414,"change":"-39.66%"},{"batch":"B2","n":24,"old_s":15.06543961,"new_s":6.5621327,"change":"-56.44%"}],
+    "quality":"일관된 개선 아님: B1 invalid 4→5; B2 citation 6→2, valid top1 15→18, raw top1 21→20.",
+    "unmeasured":"TTFT, server load/queue, GPU, precision/checkpoint revision, MTP/speculative activation, 별도 reasoning-token 계측.",
+    "causal_limit":"요청 설정과 일부 usage는 통제·기록됐지만, 미측정 서빙 변수가 남아 있다. 공식 효율 메커니즘을 관측 wall-time 단축의 원인으로 단정할 수 없다."
+  },
+  "parameter_count_note":"Build의 Parameters=124B와 weight card/API의 120B total/12B active 간 표기 차이의 공식 원인은 이번 자료에서 확인하지 못했다. encoder 포함 여부 등으로 추론하지 않는다. nominal class/active 12B 공통과 endpoint 표시 124B를 병기한다."
+}
