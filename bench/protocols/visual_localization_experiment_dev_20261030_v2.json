@@ -1,0 +1,98 @@
+{
+  "budget": {
+    "automatic_retries": 0,
+    "cases": 4,
+    "request_cap": 8,
+    "timestamps_s": [
+      3,
+      6
+    ]
+  },
+  "catalog_sha256": "e779df8752c5487b97fa88706949477efbee5f1d5fe988bf6e24e3efc2cd323d",
+  "combined_V1_V2_request_cap": 16,
+  "design_after_V1_failure": true,
+  "host_thresholds_px": {
+    "absent_with_expected_root_inside_frame": "inconsistent",
+    "case_gate": "두 시각 모두 일치이면 기존 승인 경로의 후속 소비 허용, 둘 다 불일치이면 격리, 나머지 HOLD",
+    "far_min_exclusive": 60,
+    "forwarded_images": "검사한 3초·6초 프레임 두 장만 소비자에 전달하며 기존 승인 권한을 만들지 않는다.",
+    "middle_or_unclear": "HOLD",
+    "near_max_inclusive": 30
+  },
+  "image_detail": null,
+  "labels_sha256": "298179ebb9e71042fce931c7e6cdc35bcbbf87f2a5f9ed342f77aecf48768c7f",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "official_capability_note": "PNG/image_url은 문서화돼 있다. detail의 효과·6장 처리 보장·bbox 전용 API는 미확인이다. V2는 단일 이미지의 텍스트 bbox 관찰이며 품질 보장을 전제하지 않는다.",
+  "official_sources": [
+    "https://docs.nvidia.com/nim/large-language-models/latest/advanced-use-cases/multimodal-input.html",
+    "https://build.nvidia.com/nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3_5-super-vl-120b-a12b"
+  ],
+  "prediction": "원하는 위치를 받지 않은 모델의 bbox 관찰과 호스트의 기하 비교를 결합하면 알려진 렌더 오류 두 녹화의 네 프레임을 격리하고 수정된 두 녹화의 네 프레임을 일치로 판정할 것으로 예측한다.",
+  "primary_criterion": {
+    "fresh_host_consistent": 4,
+    "stale_host_quarantined": 4,
+    "valid_localizations": 8
+  },
+  "prior_V1": {
+    "fresh_consistent": 4,
+    "preserved": true,
+    "protocol": "bench/protocols/visual_integrity_experiment_dev_20261030_v1.json",
+    "protocol_sha256": "82aa29a23e1d71e82a12fee1cb3954c883c970cf0c4104d2aaf8353424a801e9",
+    "registration_commit": "0d2d9c8565c1603a316ad13eb0398693dc02556b",
+    "requests_used": 8,
+    "score_sha256": "c3d72a52806d31f4f0287dd5387592d68de94e06ec11ef9ef213416ef0f2875b",
+    "source_commit": "4fa7c128e74f7759548171ad2da636cfebd01e8a",
+    "stale_quarantined": 0,
+    "valid_calls": 8
+  },
+  "provider": {
+    "base_url": "https://integrate.api.nvidia.com/v1",
+    "max_retries": 0,
+    "new_WSL_GPU_Brev": false,
+    "timeout_s": 300
+  },
+  "request_params": {
+    "extra_body": {
+      "reasoning_effort": "none"
+    },
+    "max_tokens": 2048,
+    "stream": false,
+    "temperature": 0
+  },
+  "result_wording": {
+    "intervention_bundle": "수치 좌표 비공개, 단일 이미지, detail 필드 미사용을 함께 바꾸었으므로 개별 수정 효과를 분리하지 않는다.",
+    "limitations": "원인 진단·회복·새 seed 일반성·LLM 우위를 뜻하지 않는다.",
+    "otherwise": "이 개발 측정에서 블라인드 위치 추출과 호스트 검사의 전체 확인 기준을 충족하지 못했다.",
+    "pass": "이미 본 네 녹화의 개발 측정에서 블라인드 위치 추출과 호스트의 프레임 정합성 검사 기능을 확인했다."
+  },
+  "sample_scope": {
+    "audited_timestamps_s": [
+      3,
+      6
+    ],
+    "checkpoint_lineages": 3,
+    "frame_calls": 8,
+    "frames_per_request": 1,
+    "full_video_integrity_claim": false,
+    "new_seed_evaluation": false,
+    "recordings": 4
+  },
+  "schema": "visual_localization_experiment_protocol_v2",
+  "scope": "development_blind_visual_localization_only",
+  "second_attempts_or_new_variants_after_V2": 0,
+  "source_anchor": "6748115e079e107339713cf4bee967086e607be0",
+  "source_sha256_lf": {
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/nemotron_bottleneck_ledger_v2.py": "94ce9e8b008a9d2ffc405f6dd9adfef4cb86d70d6dd10cd8bfa2f7b541bd20c2",
+    "evals/nemotron_bottleneck_vision_v2.py": "a312cf004a9f2060511d7630a942e30db051c1bc76a983ba9a891a317746f742",
+    "evals/nemotron_endpoint_ledger_v3.py": "1392f20918c013ee108eeef80bfc91fbfacf0547e95b7db59f0e7a7371e65124",
+    "evals/visual_integrity_experiment_v1.py": "38c0f9d15a17f3741d2cb41d1cbe874661c557605f6476809a4c1a8dfc521d36",
+    "evals/visual_localization_experiment_v2.py": "2845b0efae976fffb3dfb7e14cb9da3fe4cee4037f2141a28e42e6afd3960143",
+    "evals/vl_aux_observer_v1.py": "75f6ae7ac15ffa19507e45a70eac464480978f71a833106b3faf1ce413ea8b21",
+    "evals/vl_aux_worker_v1.py": "297bcdbcf37bb9b57cf8596207d78323f251f971c9f78f00c0835b52a51f9aab",
+    "tests/test_visual_integrity_experiment_v1.py": "395a97d9608e26b4da7f26177f0186a49657f63acd17fe804781e63c5c124fc1",
+    "tests/test_visual_localization_experiment_v2.py": "e7dbde621e42c2e5943de97acd34b07780777d9e96f41b76249b59dca14e3b0b"
+  },
+  "status": "registered"
+}
