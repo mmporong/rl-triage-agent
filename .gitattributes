@@ -2,6 +2,8 @@
 *.ps1 text eol=crlf
 # Isaac Lab이 쓴 params 원본(CRLF)을 바이트 그대로 보존한다. manifest의 SHA256이 원본과 같아야 한다.
 bench/reference/params/** -text
+# 결과 manifest에 결합한 CSV 원문 바이트를 보존한다.
+evals/results/local_same_seed_none_control_s3221_20261030_v1/conditions.csv -text
 # 제출 묶음은 재생기가 검증하는 SHA256과 원문 바이트를 보존한다.
 submission/nebius-global-20261030/** -text
 *.png binary
