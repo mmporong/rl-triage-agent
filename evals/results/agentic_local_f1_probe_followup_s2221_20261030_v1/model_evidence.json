@@ -1,0 +1,50 @@
+{
+  "infrastructure_attempt": {
+    "api_index": 11,
+    "error_type": "ConnectionResetError",
+    "interpretation": "infrastructure_failure_not_model_misdiagnosis",
+    "semantic_decision_produced": false,
+    "status": "terminal_hold"
+  },
+  "registered_followup": {
+    "api_index": 12,
+    "approval_granted": false,
+    "decision": {
+      "action": "propose_correction",
+      "fact_ids": [
+        "observation:0:P_reward:outcome",
+        "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+        "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+        "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+        "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+      ],
+      "target": "restore_body_frame_reward"
+    },
+    "journal_normalized_model_alias": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "model_status": "valid",
+    "request_model_alias": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "response_model_raw_alias": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "status": "choice_ready"
+  },
+  "schema": "agentic_local_f1_model_evidence_v1",
+  "selection_before_probe": {
+    "api_index": 10,
+    "approval_granted": false,
+    "citation_counts": {
+      "frame": 0,
+      "same_play": 0,
+      "telemetry": 6
+    },
+    "fact_ids": [
+      "telemetry:case:Train/mean_reward",
+      "telemetry:reference:Train/mean_reward",
+      "telemetry:case:Metrics/base_velocity/error_vel_xy",
+      "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+      "telemetry:case:Episode_Termination/time_out",
+      "telemetry:reference:Episode_Termination/time_out"
+    ],
+    "model_alias": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "selected_by": "model",
+    "selected_probe": "P_reward"
+  }
+}

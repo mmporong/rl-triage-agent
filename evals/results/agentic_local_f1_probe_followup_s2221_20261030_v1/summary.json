@@ -1,0 +1,43 @@
+{
+  "already_seen_seed": 2221,
+  "completion_scope": {
+    "approval_granted": false,
+    "correction_executed": false,
+    "correction_proposed": true,
+    "image_selection_benefit_established": false,
+    "llm_superiority_established": false,
+    "recovery_claimed": false,
+    "recovery_evaluated": false,
+    "training_started": false
+  },
+  "fault": "F1_reward_frame",
+  "flow": [
+    "model_selected_P_reward",
+    "local_probe_confirmed",
+    "model_proposed_registered_correction"
+  ],
+  "followup": {
+    "action": "propose_correction",
+    "api_index": 12,
+    "cited_probe_outcome": "observation:0:P_reward:outcome",
+    "model_status": "valid",
+    "target": "restore_body_frame_reward"
+  },
+  "probe_confirmation": {
+    "F1": {
+      "classification": "abnormal",
+      "track_lin_vel_xy_exp_rel_error": 0.30962626162916423
+    },
+    "NONE": {
+      "classification": "normal",
+      "track_lin_vel_xy_exp_rel_error": 1.6901418784520673e-08
+    },
+    "cutoff": 0.05,
+    "num_envs": 256,
+    "rollout_steps": 200
+  },
+  "robot": "Unitree Go2",
+  "schema": "agentic_local_f1_probe_followup_summary_v1",
+  "split": "development",
+  "status": "correction_proposal_ready_not_approved"
+}

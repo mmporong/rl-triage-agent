@@ -1,0 +1,26 @@
+{
+  "arm": "F1",
+  "backend": "windows_local",
+  "checkpoint_sha256": "1d73d523c97c5c89c988febfbd3d5e533e90681cd0e6132d6ffe13888fa95731",
+  "classification": "abnormal",
+  "classification_rule": {
+    "cutoff": 0.05,
+    "metric": "max(track_lin_vel_xy_exp_rel_error, track_ang_vel_z_exp_rel_error)",
+    "operator": "above"
+  },
+  "fault": "F1",
+  "measurement": {
+    "track_ang_vel_z_exp_rel_error": 1.67276700802077e-08,
+    "track_lin_vel_xy_exp_rel_error": 0.30962626162916423
+  },
+  "natural_exit_before_close_return": true,
+  "num_envs": 256,
+  "probe": "P_reward",
+  "process_exit": 0,
+  "rollout_steps": 200,
+  "schema": "agentic_local_reward_probe_arm_v1",
+  "seed": 2221,
+  "source_jobs_sha256": "da05f405139fa744e3474192e48934c9bed1ec8368f3a7922821cecfbf6acb70",
+  "source_report_sha256": "0a6152d215565e9ff11708b2abb87d45c8be249c2f4aa5b057f502d08e3d903d",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0"
+}

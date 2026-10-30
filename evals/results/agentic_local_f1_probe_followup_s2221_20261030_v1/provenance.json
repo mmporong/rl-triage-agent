@@ -1,0 +1,66 @@
+{
+  "anchors": {
+    "host_private_runtime_source": "763e5181f53c29796d7499d96bee59d0b7ee8db3",
+    "public_scientific_repository": "20101743be05e4642e4d6c513821da8c792781de",
+    "selection_result_source": "6431fb69e32d1712d974e33048d397c08c0df12a"
+  },
+  "claims_scope": "seen_seed_development_correction_proposal_only",
+  "registered_protocol": {
+    "sha256": "0f644c87dd0f93b0cb9fdce7571004506d48808cc0e2f25cdcb83af4d6ce53d9",
+    "sources_lf": {
+      "bridge": "5267db09e0eb5c73e3729d53ed7195729eceb4f196745d75bab19ae9cbf015c1",
+      "call1": "8b3dd3783217948044fa29225e58937384b0b1b8e403bed20f6afc1dae514fb5",
+      "call2": "1c79512b0766a17cc51a0d39370c895200da0910f12bdf50119717e91503d5ec",
+      "contract2": "3b24ae4437f896871ac8a91fbe99eb3707a0d177e45b7cc5af2fe3d6d3586077",
+      "journal": "255b8ed9c0de88a26aadc2f1b4a90b0b01f57b2417aab05ac295031061d23ac2",
+      "mailbox": "4f4c888258a2a44c92a017ebef219f7eb1bfc49fcca63d100d677a18fd98ef07",
+      "observer": "112373db86887fc540edf8d74c60177377088c0d7938f4ec7868b7205abb25a1",
+      "provider": "6b40f10bd5f608a5d4a80d845deffb768434948b9a32c5a05b464bb98db2ebd9"
+    },
+    "status_at_registration": "registered_not_run"
+  },
+  "runtime": {
+    "gymnasium": "1.2.0",
+    "isaaclab": "0.41.3",
+    "isaaclab_rl": "0.1.8",
+    "python": "3.10.15",
+    "rsl_rl": "2.3.3",
+    "torch": "2.7.0+cu128"
+  },
+  "schema": "agentic_local_f1_probe_followup_provenance_v1",
+  "source_artifacts": {
+    "api10_public_summary": {
+      "path": "evals/results/fresh_frame_probe_choice_dev_s2221_20261029_v1/summary.json",
+      "sha256": "42bed16dbf8b725d17d0aa73c42dfb59b9a79143b5c0d600d088b5e178b039bd"
+    },
+    "ri196_f1_report_sha256": "0a6152d215565e9ff11708b2abb87d45c8be249c2f4aa5b057f502d08e3d903d",
+    "ri196_none_report_sha256": "afc9829a541c297852ef225da5a165a189c5f93d7b85718f1f61ebedcdfa2b6c",
+    "ri196_pair_result_sha256": "7a2a252b8951ed21b9f76047c3ee60830a900d6b05d290b275af295bf0cecea8",
+    "ri204_capsule_sha256": "0dbd270663db36e8699386720e5eb6390b276502f80691a06f1fe13da324932d",
+    "ri204_request_sha256": "7de1b3112bf03bf5d1f9d09bcbdd5256f8f4f9deef92a4d539541e35dbb777d4",
+    "ri204_response_sha256": "fab2bf6297b2a821c41b7bb6a235ec3e8d96913bba3ce13019070029cdfbe3ab",
+    "ri204_result_sha256": "fb239ae2717e07bcf16fca50d709a79912690d6d4715bc4cfd6517344feffff8"
+  },
+  "verified_json_pointers": [
+    {
+      "pointer": "/completed/0/measurement/track_lin_vel_xy_exp_rel_error",
+      "source": "ri196_pair_result",
+      "value": 1.6901418784520673e-08
+    },
+    {
+      "pointer": "/completed/1/measurement/track_lin_vel_xy_exp_rel_error",
+      "source": "ri196_pair_result",
+      "value": 0.30962626162916423
+    },
+    {
+      "pointer": "/call/journal/engine_result/review/status",
+      "source": "ri204_result",
+      "value": "valid"
+    },
+    {
+      "pointer": "/call/journal/engine_result/selection/target",
+      "source": "ri204_result",
+      "value": "restore_body_frame_reward"
+    }
+  ]
+}
