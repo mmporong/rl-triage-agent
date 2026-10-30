@@ -1,0 +1,154 @@
+{
+  "schema": "nemotron35_value_compare_call_protocol_v1",
+  "status": "DRAFT_not_executed",
+  "executed": false,
+  "approval_granted": false,
+  "project": "Mollet",
+  "baseline_commit": "bb3ed48d03be74d9a8f689e4fd3fba6a447404db",
+  "purpose": "P5의 같은 수치 capsule로 A(3 Super)와 B(Nemotron 3.5)를 실제 호출할 실행 고리와 P5 판정 연결을 결과 전에 고정한다.",
+  "scope": {
+    "lineages": 4,
+    "phase": "development_already_seen",
+    "logical_calls": 8,
+    "confirmation_new_seed": "새 독립 seed 2개 이상의 확인 실험은 별도 사전등록이며 이 코드가 실행하거나 결과를 만들지 않는다."
+  },
+  "p5": {
+    "protocol": "bench/protocols/nemotron35_value_cases_20261030_v1.json",
+    "protocol_digest": "d1df986cf57a7df27d24bd1f05b5c1dbd0e987398eae097590b5232c58a5b499",
+    "manifest_digest": "1bd0c8888af2305f6782175b0ed17f178289df243cf530318160c56278e1b57c"
+  },
+  "p5_files_sha256_lf": {
+    "evals/nemotron35_value_cases_v1.py": "53f491c020bd4871a77f5b963df582f5f0d97ff3a9ad26e1c8335d03a473c86b",
+    "tests/test_nemotron35_value_cases_v1.py": "88c1c982220efb6ba1d00213127e7ea49a6112daa160dbc7ea20dfd8611f28f5",
+    "bench/protocols/nemotron35_value_cases_20261030_v1.json": "71f9c51ed0b7832a87f273476edddd68b1139183ed0f68293321f67d4bd16c6c",
+    "docs/NEMOTRON35-VALUE-CASES.md": "200c76fe39b02dc140774cddf105bc1a4b3bd477c4acc0a053270d25de0a891f"
+  },
+  "arms": {
+    "A": {
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "accepted_provider_models": [
+        "nvidia/nemotron-3-super-120b-a12b"
+      ]
+    },
+    "B": {
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "accepted_provider_models": [
+        "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "private/nvidia/nemotron-3.5-super-120b-a12b"
+      ]
+    }
+  },
+  "blocked_arms": {
+    "C": "blocked_new_collection_required"
+  },
+  "provider": {
+    "kind": "nvidia_hosted_api",
+    "client": "openai_sdk_with_raw_response",
+    "base_url": "https://integrate.api.nvidia.com/v1",
+    "key_env": "NVIDIA_API_KEY",
+    "timeout_s": 300,
+    "max_retries": 0
+  },
+  "request_params": {
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "tool_contract": {
+    "name": "selection_three_field_v1",
+    "fields": [
+      "action",
+      "probe",
+      "fact_ids"
+    ],
+    "validator": "residual_selection_v2.format_review 뒤 selection_comparison_view_v1.select와 같은 S_FACT_UNKNOWN·S_PROBE_INELIGIBLE 검사",
+    "invalid": "semantic_invalid로 HOLD하며 등록 규칙 선택으로 바꾸지 않는다"
+  },
+  "budget": {
+    "logical_calls": 8,
+    "request_cap": 24,
+    "max_requests_per_slot": 1,
+    "retries_registered": false
+  },
+  "order": {
+    "rule": "P5 manifest 계보 순서가 짝수면 A→B, 홀수면 B→A",
+    "a_first": 2,
+    "b_first": 2
+  },
+  "pair_identity": "같은 계보의 A·B는 provider, request params, messages bytes, capsule SHA, 도구 계약, 예산이 같고 model ID만 다르다. telemetry·config fact를 숨기거나 capsule을 다시 만들지 않는다.",
+  "status_mapping": {
+    "valid": "HTTP 200, 등록된 반환 모델, finish_reason=stop, 세 필드·근거·eligible 검사 통과",
+    "semantic_invalid": "HTTP 200 응답이 세 필드 계약을 위반한다. HOLD",
+    "infrastructure_failed": "전송 오류, 404·410 외 HTTP 오류, 원문 형식 위반, usage 계약 위반, 등록 밖 반환 모델, 빈 응답·잘림, stop 외 종료. HOLD",
+    "model_unavailable": "HTTP 404 또는 410. A가 이 상태면 A-B는 inconclusive",
+    "unknown_pending": "intent만 있고 응답 기록이 없다. 자동 재전송하지 않고 실행 전체를 HOLD한다"
+  },
+  "records_per_request": [
+    "logical call ID(slot_id)와 attempt",
+    "model, capsule SHA, params SHA, request digest",
+    "protocol SHA, source SHA(P6·P5), plan digest, 실행 등록 SHA, provider 종류",
+    "시작·종료 시각과 epoch, latency",
+    "HTTP 상태, 오류 종류 이름, provider 원문 SHA·크기",
+    "usage(입력·출력·합계 토큰), 반환 모델, response ID, finish_reason",
+    "원문 재생으로 다시 계산한 상태와 코드"
+  ],
+  "never_recorded": [
+    "API 키 값",
+    "요청 헤더",
+    "nonce",
+    "예외 문자열"
+  ],
+  "execution_registration": {
+    "schema": "nemotron35_value_compare_registration_v1",
+    "provided_by": "메인 PC",
+    "fields": {
+      "kind": "registered_real_run",
+      "protocol_sha256": "이 사전등록 파일의 LF SHA256",
+      "plan_digest": "--prepare 출력",
+      "p5_manifest_digest": "--prepare 출력",
+      "source_commit": "실행 소스 commit 40자",
+      "approval_granted": true,
+      "approver": "승인 주체",
+      "request_cap": 24,
+      "logical_calls": 8,
+      "host": {
+        "key_env": "NVIDIA_API_KEY",
+        "platform": "실행 호스트의 sys.platform"
+      }
+    },
+    "missing_behavior": "등록이나 호스트 키가 없으면 호출 전에 HOLD한다",
+    "ledger": "새 실행 폴더의 journal과 원문만 쓴다",
+    "not_read_or_reset": [
+      "기존 API10/12 원장",
+      "provider 1/2 상태",
+      "TokenFactory 작업"
+    ]
+  },
+  "scoring": {
+    "via": "evals/nemotron35_value_cases_v1.py score()",
+    "choices_schema": "nemotron35_value_cases_choices_v1",
+    "correct": "등록 확인 검사를 골랐고 같은 checkpoint의 실제 receipt가 abnormal인 경우만",
+    "selection_change_alone": "개선으로 세지 않는다",
+    "wording": "P5 사전등록 outcome_wording"
+  },
+  "expected_without_calls": {
+    "A": "pending_api",
+    "B": "pending_api",
+    "outcome": "inconclusive"
+  },
+  "synthetic_policy": "테스트 callback은 receipt에 synthetic으로 표시하고 실제 측정과 같은 상태로 승격하지 않는다.",
+  "claims": {
+    "model_superiority": false,
+    "image_contribution": false,
+    "cost_saving": false,
+    "new_recovery": false,
+    "generalization": false
+  },
+  "source_sha256_lf": {
+    "evals/nemotron35_value_compare_call_v1.py": "214baf0c7a723e850b34f74de8c0eed09a782b746011fadcdfcf5d40c9fca8a6",
+    "tests/test_nemotron35_value_compare_call_v1.py": "8d1f0adc911e3ed3b032a84971d9f936649452ce262ec9c6186ff74cb9502877"
+  }
+}
