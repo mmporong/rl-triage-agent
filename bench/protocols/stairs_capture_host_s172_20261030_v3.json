@@ -1,0 +1,127 @@
+{
+  "budget": {
+    "budget_origin": "2026-10-28T21:05:36.779993+00:00",
+    "compute_cap_usd": "85",
+    "deadline_utc": "2026-10-30T08:05:36.779993+00:00",
+    "lease_batch_budget_usd": "55",
+    "program_cap_usd": "250",
+    "reset": false,
+    "stop_cutoff_utc": "2026-10-30T07:45:36.779993+00:00"
+  },
+  "checkpoint_receipt": {
+    "private_path_published": false,
+    "sha256": "65945a275b6d24fe9ccae1c4ae279710087c1166eef5704a628a67a13d4fc6b7"
+  },
+  "clip_acceptance": {
+    "app_close_entered_marker": "shutdown/03-app-close-entered.json",
+    "app_close_marker": "shutdown/04-app-close-returned.json",
+    "app_startup_marker": "shutdown/01-app-startup.json",
+    "fps": 50,
+    "manifest": "manifest.json",
+    "result_ready_marker": "shutdown/02-result-ready.json",
+    "trace": "state-trace.jsonl",
+    "trace_rows": 626,
+    "video_frames": 625,
+    "video_glob": "video/*.mp4"
+  },
+  "clips": [
+    {
+      "clip_id": "biped-stairs-up",
+      "direction": "up",
+      "play_task": "Isaac-Velocity-Rough-H1-Play-v0",
+      "robot_role": "biped",
+      "training_task": "Isaac-Velocity-Rough-H1-v0"
+    },
+    {
+      "clip_id": "biped-stairs-down",
+      "direction": "down",
+      "play_task": "Isaac-Velocity-Rough-H1-Play-v0",
+      "robot_role": "biped",
+      "training_task": "Isaac-Velocity-Rough-H1-v0"
+    },
+    {
+      "clip_id": "quadruped-stairs-up",
+      "direction": "up",
+      "play_task": "Isaac-Velocity-Rough-Unitree-Go2-Play-v0",
+      "robot_role": "quadruped",
+      "training_task": "Isaac-Velocity-Rough-Unitree-Go2-v0"
+    },
+    {
+      "clip_id": "quadruped-stairs-down",
+      "direction": "down",
+      "play_task": "Isaac-Velocity-Rough-Unitree-Go2-Play-v0",
+      "robot_role": "quadruped",
+      "training_task": "Isaac-Velocity-Rough-Unitree-Go2-v0"
+    }
+  ],
+  "environment": {
+    "anchor": "c215474b69489e58ac9cbeeb2facf983df797574",
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261030_v51_environment.json",
+    "sha256": "afa47b40637305de1091998d9b6f300ae3ac3597a4d9cdb4afbef94554220a6d"
+  },
+  "execution": {
+    "automatic_retry": false,
+    "install": 0,
+    "maximum_stop_requests": 1,
+    "model_api": 0,
+    "new_training": 0,
+    "new_vm": 0
+  },
+  "lease_basis": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261030_v51_lease_basis.json",
+    "sha256": "2bbf46fb85ca68f59df2e47ae9b8187a349d700898950d72e5b035262703b12c"
+  },
+  "lifecycle": {
+    "path": "bench/protocols/agentic_runtime_text_s2221_20261030_v51_lifecycle.json",
+    "sha256": "6fcc2f19f51f4bb48aef20441a5acf07d5e80db55f60b2e76f9c2a601ab6cabf"
+  },
+  "purpose": "H1·Go2 계단 up/down 네 클립 독립 시연; RL Triage 성능 수치에 합치지 않는다.",
+  "resource": {
+    "instance_type": "gpu-l40s-d.1gpu-16vcpu-96gb",
+    "resource_id": "d3cxwsmgd",
+    "resource_name": "rl-triage-l40s-renderer-20261029h"
+  },
+  "runner_contract": {
+    "common_files_lf": {
+      "source/isaaclab/isaaclab/terrains/config/rough.py": "4ae6c727d1ff5c1b483b7321a284fd9c241cfe26417c66d74ccbb33c3405fabc",
+      "source/isaaclab/isaaclab/terrains/trimesh/mesh_terrains.py": "586070f00af21420bd86e8610174bfa628d6b87ce5c86931011cc97f67358323",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+    },
+    "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "role_files_lf": {
+      "biped": {
+        "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/h1/rough_env_cfg.py": "08031934a26aec873eba9c8fbf80e3de1588bae832d60e6dafdf23b79cb2c2fd"
+      },
+      "quadruped": {
+        "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0"
+      }
+    },
+    "runner_sha256_lf": "6858d73783ce02fecee6f901033660fd115c17f139d2937e07728fc25c075b5a"
+  },
+  "schema": "stairs_capture_host_registration_v3",
+  "smoke": {
+    "clip_id": "biped-stairs-up",
+    "mode": "first_full_clip",
+    "tag": "stairs-s172-host184-biped-up-v3"
+  },
+  "source_anchor": "7cccefde0d4714a9b93c53523714a273b8d8fd8f",
+  "sources": {
+    "driver": {
+      "private_path_published": false,
+      "sha256": "a3d5c45b40a2a8cb58aab1156af84f331e50b4e1bdb822565dd255ad4e92c718"
+    },
+    "host": {
+      "path": "bench/stairs_capture_host_v3.py",
+      "sha256_lf": "30803b5293edfb19fe4a6fbcd0e98afdb9359ca1c1642920be0ebcc77293410a"
+    },
+    "lifecycle_adapter": {
+      "private_path_published": false,
+      "sha256": "7aa7b5cbd010f24dc8948675ef1da19f6db219bbf4becaff0eb52f6da16b52a1"
+    },
+    "runner": {
+      "path": "bench/run_stairs_playback_v2.py",
+      "sha256_lf": "6858d73783ce02fecee6f901033660fd115c17f139d2937e07728fc25c075b5a"
+    }
+  },
+  "status": "registered_executable"
+}
