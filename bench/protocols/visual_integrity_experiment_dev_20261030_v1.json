@@ -1,0 +1,80 @@
+{
+  "baseline_policy": {
+    "geometric_mask": "기존 minRGB>170/channel_range<25/상단40행제외 mask와 projection 방법은 라벨과 공유하므로 독립 정확도 우위의 비교 대상으로 쓰지 않는다.",
+    "numeric_binding_checks": "네 입력의 구조·파일·시각·카메라결합은 통과한다. 이 검사는 픽셀 위치 일치를 판정하지 않는다."
+  },
+  "budget": {
+    "automatic_retries": 0,
+    "cases": 4,
+    "repeats": 2,
+    "request_cap": 8
+  },
+  "catalog_sha256": "e779df8752c5487b97fa88706949477efbee5f1d5fe988bf6e24e3efc2cd323d",
+  "design_after_reviewing_prior_render_audits": true,
+  "host_gate": {
+    "consistent": "reviewed_consistent_not_an_approval",
+    "inconsistent": "quarantine_visual_evidence",
+    "original_approval_flags_unchanged": true,
+    "stale_frames_allowed_only_for_integrity_audit": true,
+    "unclear_or_invalid_or_transport_error": "HOLD_visual_evidence",
+    "used_for_behavior_or_recovery_decision": false
+  },
+  "infrastructure": {
+    "existing_POSIX_only": true,
+    "max_retries": 0,
+    "new_WSL_or_GPU_or_Brev": false,
+    "provider_base_url": "https://integrate.api.nvidia.com/v1",
+    "timeout_s": 300
+  },
+  "labels_sha256": "298179ebb9e71042fce931c7e6cdc35bcbbf87f2a5f9ed342f77aecf48768c7f",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "prediction": "수치/카메라 결합 검사를 통과한 렌더 오류 두 건을 이미지 관찰이 격리하고, 기하 일치 두 건에는 오류 경고를 내지 않을 것으로 예측한다.",
+  "previous_journals": "기존 API12/provider2/RI214 원장은 보존하고 이 실험의 독립 신규8요청 원장을 사용한다.",
+  "primary_criterion": {
+    "fresh_calls_consistent": 4,
+    "stale_calls_quarantined": 4,
+    "valid_calls": 8
+  },
+  "registered_utc": "2026-10-30T12:00:12.839974+00:00",
+  "request_params": {
+    "extra_body": {
+      "reasoning_effort": "none"
+    },
+    "max_tokens": 2048,
+    "stream": false,
+    "temperature": 0
+  },
+  "result_wording": {
+    "limitations": "원인 진단·교정·회복 결과나 새 seed 일반성·LLM 우위를 뜻하지 않는다.",
+    "otherwise": "이 개발 측정에서 전체 기능 확인 기준을 충족하지 못했다.",
+    "pass": "이미 본 네 녹화의 개발 측정에서 VL 정합성 검사 기능을 확인했다."
+  },
+  "sample_scope": {
+    "frames_per_recording": 6,
+    "new_seed_evaluation": false,
+    "recordings": 4,
+    "timestamps_s": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "unique_checkpoint_lineages": 3
+  },
+  "schema": "visual_integrity_experiment_protocol_v1",
+  "scope": "development_render_integrity_only",
+  "source_anchor": "4fa7c128e74f7759548171ad2da636cfebd01e8a",
+  "source_sha256_lf": {
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/nemotron_bottleneck_ledger_v2.py": "94ce9e8b008a9d2ffc405f6dd9adfef4cb86d70d6dd10cd8bfa2f7b541bd20c2",
+    "evals/nemotron_bottleneck_vision_v2.py": "a312cf004a9f2060511d7630a942e30db051c1bc76a983ba9a891a317746f742",
+    "evals/nemotron_endpoint_ledger_v3.py": "1392f20918c013ee108eeef80bfc91fbfacf0547e95b7db59f0e7a7371e65124",
+    "evals/visual_integrity_experiment_v1.py": "38c0f9d15a17f3741d2cb41d1cbe874661c557605f6476809a4c1a8dfc521d36",
+    "evals/vl_aux_observer_v1.py": "75f6ae7ac15ffa19507e45a70eac464480978f71a833106b3faf1ce413ea8b21",
+    "evals/vl_aux_worker_v1.py": "297bcdbcf37bb9b57cf8596207d78323f251f971c9f78f00c0835b52a51f9aab",
+    "tests/test_visual_integrity_experiment_v1.py": "395a97d9608e26b4da7f26177f0186a49657f63acd17fe804781e63c5c124fc1"
+  },
+  "status": "registered"
+}
