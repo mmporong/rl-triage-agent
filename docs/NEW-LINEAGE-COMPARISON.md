@@ -22,6 +22,8 @@
 
 Windows PowerShell과 설치된 Isaac Lab을 사용한다. 공용 lease는 자식 실행 전후에 소유자·PID·heartbeat·배타 lock을 확인한다. 각 자식은 기존 Windows Job 실행기로 관리하며 실패하면 다음 학습을 시작하지 않는다.
 
+등록 v2는 Windows 가상환경 Python 중계 프로세스를 실제 부모 계층으로 확인한다. GPU 표시 앱에는 경로가 확인된 Windows 설정 창 두 개와 Codex 표시 도우미를 추가했으며 계산 작업·엔진·메모리 차단 기준은 유지한다. v1은 CPU 입장 확인 뒤 학습·모델 호출 없이 보존했다.
+
 ```powershell
 cd "$HOME/rl-triage-agent"
 $anchor = git rev-parse HEAD

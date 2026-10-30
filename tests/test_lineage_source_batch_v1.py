@@ -231,18 +231,39 @@ def test_existing_output_and_checkpoint_byte_tamper_are_rejected(batch: dict) ->
 
 
 def test_validate_lease_accepts_7_digit_timestamp_and_rejects_external_pid() -> None:
-    caller, wrapper = 40201, 40200
+    caller, child, wrapper = 40202, 40201, 40200
     metadata = {"owner": B.OWNER, "state": "running", "childPid": caller,
                 "wrapperPid": wrapper, "completedUtc": None,
                 "acquiredUtc": "2026-10-30T12:00:00.1234567Z",
                 "heartbeatUtc": "2026-10-30T12:00:30.7654321Z",
                 "leaseId": "11111111-1111-1111-1111-111111111111"}
-    ancestors = [{"pid": caller, "parent": wrapper, "name": "python.exe"},
+    metadata["childPid"] = child
+    ancestors = [{"pid": caller, "parent": child, "name": "python.exe"},
+                 {"pid": child, "parent": wrapper, "name": "python.exe"},
                  {"pid": wrapper, "parent": 1, "name": "pwsh.exe"}]
     now = datetime(2026, 10, 30, 12, 0, 31, tzinfo=timezone.utc)
     assert B.validate_lease(metadata, ancestors, caller, now) is metadata
     with pytest.raises(ValueError, match="신원"):
         B.validate_lease(metadata, ancestors, caller + 1, now)
+
+
+@pytest.mark.parametrize("shape", ["other_branch", "cycle"])
+def test_validate_lease_rejects_other_branch_and_cycle(shape: str) -> None:
+    caller, relay, child, wrapper = 50203, 50202, 50201, 50200
+    metadata = {"owner": B.OWNER, "state": "running", "childPid": child,
+                "wrapperPid": wrapper, "completedUtc": None,
+                "acquiredUtc": "2026-10-30T12:00:00.0000000Z",
+                "heartbeatUtc": "2026-10-30T12:00:30.0000000Z",
+                "leaseId": "11111111-1111-1111-1111-111111111111"}
+    caller_parent = 59999 if shape == "other_branch" else relay
+    relay_parent = relay if shape == "cycle" else child
+    ancestors = [{"pid": caller, "parent": caller_parent, "name": "python.exe"},
+                 {"pid": relay, "parent": relay_parent, "name": "python.exe"},
+                 {"pid": child, "parent": wrapper, "name": "python.exe"},
+                 {"pid": wrapper, "parent": 1, "name": "pwsh.exe"}]
+    with pytest.raises(ValueError, match="자식 계층"):
+        B.validate_lease(metadata, ancestors, caller,
+                         datetime(2026, 10, 30, 12, 0, 31, tzinfo=timezone.utc))
 
 
 def test_all_can_reuse_accepted_smoke_reference_without_rerun(batch: dict) -> None:

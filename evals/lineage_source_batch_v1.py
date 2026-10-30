@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import ctypes
 import hashlib
 import json
 import os
@@ -10,6 +11,7 @@ import subprocess
 import sys
 import time
 from collections.abc import Callable
+from ctypes import wintypes
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -20,12 +22,13 @@ import lineage_source_training_v1 as CHILD
 from lease_timestamps import parse_lease_timestamp
 
 SCHEMA = "lineage_source_collection_protocol_v1"
-PROTOCOL = "bench/protocols/lineage_source_collection_20261030_v1.json"
+PROTOCOL = "bench/protocols/lineage_source_collection_20261030_v2.json"
 OWNER = "rl-triage-lineage-sources-v1"
 SOURCE_FILES = (
     "evals/lineage_source_batch_v1.py", "tests/test_lineage_source_batch_v1.py",
     "bench/run_lineage_source_batch_v1.ps1", "evals/preregistered_seed_guard.py",
     "evals/lease_timestamps.py",
+    "evals/lineage_gpu_admission_v1.py", "tests/test_lineage_gpu_admission_v1.py",
 )
 RUNTIME_FILES = (
     "scripts/reinforcement_learning/rsl_rl/train.py",
@@ -76,6 +79,7 @@ def jobs() -> tuple[list[dict], list[dict], dict]:
 
 
 def protocol_value(lab: Path) -> dict:
+    import lineage_gpu_admission_v1 as GPU
     cases, training, smoke = jobs()
     return {
         "schema": SCHEMA, "phase": "source_collection_only", "cases": cases,
@@ -83,6 +87,10 @@ def protocol_value(lab: Path) -> dict:
         "source_sha256_lf": {p: digest(ROOT / p, lf=True) for p in source_files()},
         "runtime_source_sha256_lf": {p: digest(lab / p, lf=True) for p in RUNTIME_FILES},
         "lease_helper_sha256_lf": digest(Path.home() / "CodexSignals/Use-GpuLease.ps1", lf=True),
+        "gpu_admission": GPU.policy(),
+        "supersedes": {"protocol": "bench/protocols/lineage_source_collection_20261030_v1.json",
+                       "prior_training_runs": 0, "prior_model_calls": 0,
+                       "reason": "CPU 입장에서 Python 중계 PID와 Windows·Codex 표시 앱을 확인해 실행 경계를 보완했다"},
         "budget": {"smoke_updates": 1, "source_training_runs": 18,
                    "source_updates": 5400, "model_api_requests": 0,
                    "per_job_parent_wall_s": 1800, "total_parent_wall_s": 21600,
@@ -152,12 +160,19 @@ def fresh(lab: Path, *, include_smoke: bool = True) -> dict:
 def validate_lease(metadata: dict, ancestors: list[dict], caller: int, now: datetime) -> dict:
     by_pid = {row["pid"]: row for row in ancestors}
     wrapper = metadata.get("wrapperPid")
+    child = metadata.get("childPid")
     if (metadata.get("owner") != OWNER or metadata.get("state") != "running"
-            or metadata.get("childPid") != caller or metadata.get("completedUtc") is not None
-            or caller not in by_pid or wrapper not in by_pid
-            or by_pid[caller]["parent"] != wrapper
+            or metadata.get("completedUtc") is not None or caller not in by_pid
+            or child not in by_pid or wrapper not in by_pid
+            or by_pid[child]["parent"] != wrapper
             or by_pid[wrapper]["name"].lower() not in {"powershell.exe", "pwsh.exe"}):
         raise ValueError("현재 controller와 공용 GPU lease 소유자·부모 신원이 다르다")
+    cursor, seen = caller, set()
+    while cursor != child:
+        if cursor in seen or cursor not in by_pid or cursor == wrapper:
+            raise ValueError("현재 controller가 lease 자식 계층에 속하지 않는다")
+        seen.add(cursor)
+        cursor = by_pid[cursor]["parent"]
     acquired = parse_lease_timestamp(metadata["acquiredUtc"])
     heartbeat = parse_lease_timestamp(metadata["heartbeatUtc"])
     if (acquired > heartbeat or not 0 <= (now - heartbeat).total_seconds() <= 60
@@ -173,11 +188,11 @@ def lease_context() -> dict:
     # wrapper의 childPid 게시가 Popen 반환 뒤인 짧은 구간만 기다린다.
     for attempt in range(20):
         metadata = read(signals / "gpu-lease.json")
-        if metadata.get("childPid") == os.getpid() and metadata.get("state") == "running":
+        if type(metadata.get("childPid")) is int and metadata.get("state") == "running":
             break
         if attempt != 19:
             time.sleep(.1)
-    command = (f"$nodeId={os.getpid()}; $chain=@(); for($i=0;$i -lt 4 -and $nodeId -gt 0;$i++){{"
+    command = (f"$nodeId={os.getpid()}; $chain=@(); for($i=0;$i -lt 16 -and $nodeId -gt 0;$i++){{"
                "$p=Get-CimInstance Win32_Process -Filter ('ProcessId='+$nodeId);"
                "if($null -eq $p){break};$chain+=@{pid=[int]$p.ProcessId;"
                "parent=[int]$p.ParentProcessId;name=$p.Name};$nodeId=[int]$p.ParentProcessId};"
@@ -186,9 +201,24 @@ def lease_context() -> dict:
                               check=True, capture_output=True, encoding="utf-8", errors="strict", timeout=30,
                               creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     result = validate_lease(metadata, json.loads(response.stdout), os.getpid(), datetime.now(timezone.utc))
-    from ppo_gradient_check_v5 import assert_exclusive_lock
     assert_exclusive_lock(signals / "gpu-lease.lock")
     return result
+
+
+def assert_exclusive_lock(path: Path) -> None:
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.CreateFileW.argtypes = [wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD,
+                                  wintypes.LPVOID, wintypes.DWORD, wintypes.DWORD, wintypes.HANDLE]
+    kernel.CreateFileW.restype = wintypes.HANDLE
+    kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+    kernel.CloseHandle.restype = wintypes.BOOL
+    handle = kernel.CreateFileW(str(path), 0x80000000, 7, None, 3, 0, None)
+    if handle == ctypes.c_void_p(-1).value:
+        if ctypes.get_last_error() == 32:
+            return
+        raise ValueError("공용 GPU lock의 배타 보유를 확인할 수 없다")
+    kernel.CloseHandle(handle)
+    raise ValueError("공용 GPU lock이 열려 있다")
 
 
 def completed(stage: Path, fixed: dict, execution: dict) -> dict:
@@ -343,11 +373,11 @@ def main() -> int:
             parser.error("--smoke-result는 all 모드에서만 쓴다")
         smoke_reference = verify_smoke(args.smoke_result.resolve(), value, args.anchor)
     freshness = fresh(args.lab, include_smoke=smoke_reference is None)
-    import ppo_ratio_repair_execution_v3 as GPU
+    import lineage_gpu_admission_v1 as GPU
     import run_runtime_readback_smoke as OWNED
     result = run_sequence(args.output.resolve(), value, args.anchor, args.lab.resolve(),
                           args.isaac_python.resolve(), mode=args.mode, runner=OWNED.run_owned,
-                          check_gpu=lambda stage: GPU.snapshot(stage, "before"),
+                          check_gpu=lambda stage: GPU.snapshot(stage),
                           smoke_reference=smoke_reference, seed_freshness=freshness)
     print(json.dumps({"status": result["status"], "sources": result["source_jobs_completed"]}))
     return 0
