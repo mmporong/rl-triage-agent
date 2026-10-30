@@ -1,0 +1,62 @@
+{
+  "schema": "local_f1_restart_preregistration_v2",
+  "status": "registered",
+  "case": "registered_F1_reward_fault",
+  "fresh_seed": 3221,
+  "training": {
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+    "recovery_mode": "restart",
+    "correction_id": "restore_body_frame_reward",
+    "num_envs": 4096,
+    "num_steps_per_env": 24,
+    "max_iterations": 300,
+    "action_scale": 0.25
+  },
+  "prediction": "recovered",
+  "success": {
+    "lin_vel_rmse_ratio_max": 1.1513,
+    "yaw_rate_rmse_ratio_max": 1.1719,
+    "survival_ratio_min": 0.9,
+    "fall_rate_max": 0.05
+  },
+  "approval": {
+    "model_may_propose": true,
+    "model_may_approve": false,
+    "approver": "main:user-delegated",
+    "ledger_consume_once": true
+  },
+  "automatic_retry": 0,
+  "api_calls": 0,
+  "timeouts_s": {
+    "train": 6000,
+    "evaluate": 900,
+    "total": 7200,
+    "cleanup": 30
+  },
+  "registration_anchor": "f8656740a901a1c2c547aedfaac4fefb5b87f57f",
+  "source_sha256_lf": {
+    "bench/local_f1_restart_base_v2.py": "383ddceb7d2bbd1ba804d00fd35d3d2dde1989e9181e082dc44cbb48595b0dc5",
+    "bench/local_f1_restart_prepare_v2.py": "b8f165a4ef39cb25a00f6c0da0b97cbde79de982f098b8ac8a4b92b614771ddb",
+    "bench/local_f1_restart_terminal_v2.py": "cbce1243be8650fc19cbaef24b721d585e25769615e92474ff75a496df531975",
+    "bench/local_f1_restart_child_v2.py": "d1ed2fca3caa1e6cdf80528aadae36fa6d223108eb176dbfc050e191da0c074b",
+    "bench/local_f1_restart_worker_v2.py": "0f0ec15b5726b2720c8002e3959f52f9124160e5e9958725372cb3cbef469ed8",
+    "bench/finalize_local_f1_restart_v2.py": "e23ca2d553355c23fe55d60ad12266226fa26f32bb211812c40be33bc62c3a1c",
+    "bench/brev_recovery_worker_v2.py": "607b087234d500b136e3557f0f1db610e6b6926a30dc9ab23c2de7f0d413ad27",
+    "bench/brev_recovery_worker_v3.py": "e550aba0f46c5b6a864fa74bc0c85a8c3a965239820115482354c190c8421676",
+    "bench/residual_training_v1.py": "13e9d5733a9b49908e136e54dd0ac8b7dae387b40fa4115f254536c9d6692517",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/r1_repair_training.py": "0b1b9aca9d17a4c8fce0a2f1aa451393bea701df66f4769156c2ff9d1f958ae6",
+    "bench/residual_faults_v1.py": "fae165b431588cb01e5140bd75481e907a0b3b71571df2beb6ba11278527ec25",
+    "bench/residual_probe_v1.py": "4d57ed44e9ecaf063d66746a200d28195cce4c322e5ca4f7de449a9106f40d1d",
+    "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e"
+  }
+}
