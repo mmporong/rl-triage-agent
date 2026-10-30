@@ -819,3 +819,10 @@
 - 관찰: 새 실행 입력을 준비할 때 상속한 projection receipt와 새 receipt의 이름이 같아 `FileExistsError`가 발생했다. 이후 CPU 소비에서는 이전 public protocol 파일명 잔존과 wrapper의 `write` 인터페이스 누락도 발견됐다. 유료 실행 전 발견한 오류이며 모델 진단 실패로 계산하지 않는다.
 - 수정: 새 입력 사본에서 상속 영수증을 provenance 이름으로 보존하고 새 영수증은 배타 생성한다. protocol 파일명을 명시적으로 결합하고, preflight의 scoped writer가 실제 함수의 namespace에 전달되도록 맞춘다. 원본 입력과 실패한 부분 출력은 덮어쓰지 않는다.
 - 재발 방지: import·도움말·생성자 통과와 최종 입력의 실제 소비를 구분한다. 유료 Start 전에는 같은 최종 등록으로 finalize·operator·repair·preflight·시간 및 비용 예약까지 실행한다. 이미 통과한 CPU 단계는 원문 SHA를 대조한 뒤 재사용하며, 새 실행 창이 필요한 경우 원래 비용 원점과 소비를 보존한 별도 등록을 사용한다.
+
+### OPS-115: 정상 대조군과 교정 전용 종료 검증의 arm 불일치
+
+- 관찰: 정상 NONE 대조군 후보가 CORRECTED만 허용하는 종료 검증기를 재사용하고 있었다. 등록 생성기에서도 CLI 상대경로와 고정 절대경로를 다르게 비교했다. 두 문제는 GPU 실행 전 발견했다.
+- 수정: [NONE 종료 검증](../bench/local_same_seed_none_terminal_v1.py)을 새로 두고, manifest의 NONE·seed·학습량·재개하지 않은 설정·결함 없음과 완료 영수증을 확인한다. [등록 생성기](../bench/finalize_local_same_seed_none_control_v1.py)는 경로를 resolve한 뒤 비교한다. 기존 교정 전용 계약은 바꾸지 않았다.
+- 재발 방지: 같은 seed 독립 학습과 이전 교정 산출물의 바이트 일치는 복사의 증거로 쓰지 않는다. 별도 실행의 실제 learn 반환과 no-resume manifest를 확인하고 바이트 일치는 따로 보고한다. 이 정책은 실행 전에 등록했다.
+- 검증: 관련 Python 3.10 테스트 15개와 Ruff가 통과했다. 실제 source 결합 검사 뒤 NONE 300회 학습·26조건 평가가 exit 0으로 끝났다. [정상 대조 결과](SAME-SEED-RECOVERY-CONTROL.md)는 기존 교정 정책과 같은 checkpoint와 지표를 재현했으며, 기존 미회복 판정을 덮어쓰지 않는다.
