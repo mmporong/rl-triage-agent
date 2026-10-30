@@ -1,0 +1,136 @@
+{
+  "schema": "rough_play_state_contract_v1",
+  "status": "unexecuted_preregistration_candidate",
+  "status_reason": "실제 H1·Go2 계단 trace가 아직 없다. synthetic_cpu fixture로 결합·가용성·적용성 경계만 CPU에서 검사했다. 실행·결과·성공 주장은 없다.",
+  "registered_on": "2026-10-30",
+  "base_commit": "600f58c17802fdd4a78e56e21ee08ba76055d1c3",
+  "adapter": "evals/rough_play_state_adapter_v1.py",
+  "recorder_interface": {
+    "name": "run_stairs_playback_v2.py",
+    "location": "원래 PC가 전달한 녹화기 interface. 저장소에 복사하거나 다시 구현하지 않는다.",
+    "sha256": "6858d73783ce02fecee6f901033660fd115c17f139d2937e07728fc25c075b5a",
+    "sha256_lf": "6858d73783ce02fecee6f901033660fd115c17f139d2937e07728fc25c075b5a",
+    "binding": "spec·manifest의 source.runner_sha256_lf가 sha256_lf와 같아야 한다",
+    "spec_schema": "stairs_playback_spec_v2",
+    "manifest_schema": "stairs_playback_manifest_v2",
+    "shutdown_marker_schema": "stairs_playback_shutdown_marker_v1",
+    "frames": 625,
+    "fps": 50,
+    "capture": {
+      "frames": 625,
+      "fps": 50,
+      "step_height_m": 0.1,
+      "step_width_m": 0.3,
+      "command_x_m_s": 0.25,
+      "camera": "asset_root_three_quarter"
+    },
+    "robot_tasks": {
+      "biped": {"training_task": "Isaac-Velocity-Rough-H1-v0", "play_task": "Isaac-Velocity-Rough-H1-Play-v0"},
+      "quadruped": {"training_task": "Isaac-Velocity-Rough-Unitree-Go2-v0", "play_task": "Isaac-Velocity-Rough-Unitree-Go2-Play-v0"}
+    },
+    "terrain_for_direction": {"up": "pyramid_stairs_inv", "down": "pyramid_stairs"},
+    "direction_geometry": {"up": "center_low_to_outer_up", "down": "center_high_to_outer_down"},
+    "terrain_fixed": {"spawn": "terrain_origin_center", "heading_rad": 0.0},
+    "configured_command": {"lin_vel_x": 0.25, "lin_vel_y": 0.0, "ang_vel_z": 0.0},
+    "common_isaaclab_sources": [
+      "source/isaaclab/isaaclab/terrains/config/rough.py",
+      "source/isaaclab/isaaclab/terrains/trimesh/mesh_terrains.py",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py"
+    ],
+    "role_isaaclab_source": {
+      "biped": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/h1/rough_env_cfg.py",
+      "quadruped": "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py"
+    },
+    "camera": {"origin_type": "asset_root", "asset_name": "robot", "env_index": 0, "eye": [6.0, 6.0, 3.0], "lookat": [0.0, 0.0, 0.5]},
+    "render_sync_method": "simulation_context_forward_before_env_render",
+    "spec_fields": ["schema", "clip_id", "robot_role", "direction", "training_task", "play_task", "seed", "checkpoint", "source", "capture"],
+    "intent_fields": ["spec_sha256", "checkpoint_sha256", "new_training", "model_api", "diagnosis_or_recovery_claim"],
+    "manifest_fields": ["schema", "clip_id", "robot_role", "direction", "training_task", "play_task", "checkpoint_sha256", "source", "terrain", "isaaclab_source", "assessment", "video", "record_video_contract", "state_trace", "render_sync", "camera"],
+    "assessment_fields": ["outcome", "root_dx_m", "root_dz_m", "height_condition_pass", "progress_condition_pass", "termination_seen", "trace_rows"],
+    "trace_path": "state-trace.jsonl",
+    "trace_row_fields": ["frame", "sim_time_s", "root_pos_w", "root_quat_w", "root_lin_vel_w", "terrain_origin_w", "terminated"],
+    "shutdown_events": ["app-startup", "result-ready", "app-close-entered", "app-close-returned"],
+    "recorder_label_rule": {
+      "owner": "run_stairs_playback_v2.assess_trace",
+      "outcomes": ["fall", "completed", "failed"],
+      "constants": {"MIN_PROGRESS_M": 1.5, "MIN_HEIGHT_CHANGE_M": 0.3},
+      "adapter_use": "녹화기 라벨을 옮기기만 하고 다시 계산하거나 결정에 쓰지 않는다. 이 상수는 어댑터 임계값이 아니다."
+    },
+    "record_video_contract_note": "녹화기는 record_video_contract를 실행 step이 아니라 고정값(625 step, 625 frame)으로 계산한다. done이 있으면 실제 영상 frame 수와 다를 수 있다(미확인)."
+  },
+  "clips": [
+    {"robot_role": "biped", "direction": "up"},
+    {"robot_role": "biped", "direction": "down"},
+    {"robot_role": "quadruped", "direction": "up"},
+    {"robot_role": "quadruped", "direction": "down"}
+  ],
+  "registered_checkpoints": {"biped": null, "quadruped": null},
+  "registered_checkpoints_reason": "공식 rough checkpoint SHA는 원래 PC가 녹화 전에 등록한다. 이 PC에는 checkpoint가 없어 비워 둔다. null이면 clip 안 결합과 clip 묶음의 robot별 일관성만 검사한다.",
+  "coordinate_frames": {
+    "root_pos_w": "world",
+    "root_lin_vel_w": "world",
+    "terrain_origin_w": "world",
+    "root_quat_w": "world; 성분 순서가 기록에 선언되지 않아 사실로 쓰지 않는다",
+    "command": null
+  },
+  "field_availability": {
+    "root_pos_w": "available",
+    "root_lin_vel_w": "available",
+    "terrain_origin_w": "available",
+    "terminated": "available",
+    "command_configured": "available",
+    "root_quat_w": "recorded_not_used: 성분 순서가 기록에 선언되지 않는다",
+    "command_frame": "unavailable: manifest가 명령 설정값만 기록하고 명령 좌표계를 기록하지 않는다",
+    "command_per_frame": "unavailable: trace에 frame별 명령이 기록되지 않는다",
+    "termination_cause": "unavailable: trace에 종료 항(termination term)이 기록되지 않는다",
+    "joint_state": "unavailable: 녹화기 trace에 joint_pos·joint_vel·torque가 없다",
+    "contact": "unavailable: 녹화기 trace에 접촉 센서 값이 없다",
+    "training_telemetry": "unavailable: 공식 checkpoint 재생(new_training=0)이라 학습 로그가 입력에 없다",
+    "video_content": "unavailable: CPU 어댑터는 영상을 디코딩하지 않고 SHA만 대조한다"
+  },
+  "fact_ids": [
+    "root.world_displacement",
+    "root.world_xy_path_length",
+    "root.height_above_terrain_origin",
+    "root.world_horizontal_speed",
+    "root.world_vertical_velocity",
+    "command.configured",
+    "command.tracking_error",
+    "episode.done",
+    "trace.coverage"
+  ],
+  "done_row_policy": "done 행은 이동·높이·속도 사실에서 뺀다. Isaac Lab은 종료 env를 같은 step 안에서 reset하므로 그 행의 root 상태가 reset 뒤 값일 수 있다(이 PC에서 Isaac Lab v2.1.1 소스로 확인하지 않음). 녹화기 assessment의 root_dx_m·root_dz_m은 이 행을 포함한다.",
+  "unsupported_claims": [
+    {"claim": "fall_from_done", "reason": "done은 종료 항을 기록하지 않아 넘어짐으로 단정하지 않는다"},
+    {"claim": "stair_success_from_height", "reason": "root 높이 변화나 이동량만으로 계단 상행·하행 성공을 단정하지 않는다"},
+    {"claim": "correction_success", "reason": "이 녹화는 교정 전후 비교가 아니며 교정 성공 판정 입력이 아니다"},
+    {"claim": "command_tracking_error", "reason": "명령 좌표계·frame별 명령·quaternion 성분 순서가 기록에 없어 추종 오차를 추정하지 않는다"},
+    {"claim": "gait_or_contact_state", "reason": "관절·접촉 값이 trace에 없다"},
+    {"claim": "fault_cause_or_location", "reason": "관측 사실은 원인·위치를 판정하지 않는다"},
+    {"claim": "training_regression", "reason": "공식 checkpoint 재생이라 학습 telemetry가 없다"},
+    {"claim": "recorder_label_as_judgement", "reason": "녹화기 outcome은 녹화기 고정 상수 규칙의 라벨이며 진단·성공 판정에 쓰지 않는다"},
+    {"claim": "model_interpretation_as_fact", "reason": "영상 모델 해석은 simulator fact가 아니며 이 어댑터는 모델 해석을 받지 않는다"}
+  ],
+  "applicability": {
+    "diagnosis_readiness": {
+      "status": "observation_only",
+      "reason": "rough 계단 task에 등록된 정상 기준·가설 집합·판정 규칙이 없어 사실을 관측 맥락으로만 낸다"
+    },
+    "probe_reason": "등록 probe(rl_triage.probe_loop.PROBES)는 flat task 고리에서 정의·검증됐고 rough 계단 task 등록이 없다",
+    "correction_reason": "등록 교정(rl_triage.correction_registry.REGISTRY)은 flat task 결함 범주용이고 rough 계단 task 등록이 없다. 등록 밖 교정은 HOLD다"
+  },
+  "thresholds": {
+    "created": 0,
+    "stair_success": null,
+    "fall": null,
+    "command_tracking_error": null,
+    "reason": "실제 trace와 정상 정책 기준 분포가 없어 정할 근거가 없다. 결과를 본 뒤 임계값을 만들지 않는다."
+  },
+  "validation": {
+    "fixture": "synthetic_cpu",
+    "tests": "tests/test_rough_play_state_adapter_v1.py",
+    "real_trace": "pending",
+    "model_api_calls": 0,
+    "gpu_runs": 0
+  }
+}

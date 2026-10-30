@@ -10,7 +10,7 @@
 
 **A robot policy can train "fine" and still fail its task. This agent finds out why with short, approved experiments, applies a registered fix, and checks recovery with the same fixed evaluation.**
 
-[Presentation replay](https://mmporong.github.io/rl-triage-agent/replay/) · [Interactive architecture diagram](https://mmporong.github.io/rl-triage-agent/?view=single-dark) · [English judge replay](submission/nebius-global-20261030/README.md) · [한국어 요약](#한국어-요약)
+[Presentation replay](https://mmporong.github.io/rl-triage-agent/replay/) · [Evidence story replay](docs/replay/agentic-story-v1.html) · [Interactive architecture diagram](https://mmporong.github.io/rl-triage-agent/?view=single-dark) · [English judge replay](submission/nebius-global-20261030/README.md) · [한국어 요약](#한국어-요약)
 
 ## The problem
 
@@ -75,47 +75,38 @@ Who decides what differs by run, so results are not pooled as model choices. In 
 
 ## Quickstart
 
-The YAML workflows below retain the frozen 3 Super configuration. New 3.5 experiments use separately registered versions; see [multi-step investigation](docs/AGENTIC-INVESTIGATION.md).
+The Nemotron 3.5 entry starts with a CPU-only preparation pass for one training run. It checks the telemetry, task context, dependencies and registered configuration, then writes a new evidence packet. This step does not call the model, run Isaac, approve a probe, apply a correction or claim recovery.
 
 ```bash
 git clone https://github.com/mmporong/rl-triage-agent.git "$HOME/rl-triage-agent"
 cd "$HOME/rl-triage-agent"
 uv sync
-uv run pytest -q tests                                   # unit + app-level security tests
-uv run python bench/build_workspace.py 42                # benchmark telemetry + public reference params -> workspace/seed42
-export TRIAGE_WORKSPACE=$PWD/workspace/seed42            # tools read this workspace
-export NVIDIA_API_KEY=nvapi-...                          # build.nvidia.com
-uv run nat run --config_file configs/triage_workflow.yml \
-  --input "Triage failed training case_id=c01. Find the root-cause change and register the next experiment."
+export RUN_DIR="$HOME/isaaclab/logs/rsl_rl/<run>"
+uv run python bench/extract_tb.py "$RUN_DIR" "$RUN_DIR/telemetry.json"
+cat > /tmp/triage-task.json <<'JSON'
+{"schema":"nemotron35_task_context_v1","task":"Isaac-Velocity-Rough-Go2-v0","observed_problem":"The trained policy does not follow velocity commands."}
+JSON
+uv run python -m rl_triage.nemotron35_entry_v1 \
+  --run-dir "$RUN_DIR" \
+  --task-context /tmp/triage-task.json \
+  --out "$PWD/workspace/nemotron35-prepare" \
+  --prepare-only
 ```
 
-Inside OpenShell (WSL2/Linux with Docker):
+The command reports `ready_for_execute` but still performs no model call. To request the registered Nemotron 3.5 assessment, load the NVIDIA key from your existing local secret store and choose `--execute` explicitly. Use a new output directory because entry outputs are write-once.
 
 ```bash
-openshell provider profile import -f policies/providers/nvidia.yaml --global
-docker build -f docker/Dockerfile.sandbox -t rl-triage-sandbox:0.1 .
-bash scripts/sandbox_up.sh 42                            # provider + workspace image + sandbox with policies/triage_agent.yaml
-openshell sandbox exec -n rl-triage --env HOME=/tmp -- bash -c 'cd /sandbox/app && nat run --config_file configs/triage_workflow.yml --input "Triage failed training case_id=c03."'
+. "$HOME/.config/nvidia/env"
+uv run python -m rl_triage.nemotron35_entry_v1 \
+  --run-dir "$RUN_DIR" \
+  --task-context /tmp/triage-task.json \
+  --out "$PWD/workspace/nemotron35-execute" \
+  --execute
 ```
 
-Human-approved retraining (Isaac Lab host):
+`--execute` may save model hypotheses and one registered next-check proposal. It does not approve or run that check, change a training configuration, retrain a policy or establish recovery. Probe approval, execution and correction remain separate recorded operations. The current fresh 3.5 path has not yet produced a new recovery result, and the first seed-2221 call cited telemetry rather than video frames.
 
-```bash
-uv run python -m rl_triage.eval_bridge serve             # agent side can only submit
-uv run python -m rl_triage.eval_bridge list              # human
-uv run python -m rl_triage.eval_bridge approve <id>      # human: retrain with one variable changed -> verdict
-```
-
-**One run without a healthy reference.** Put `reference/telemetry.json` (exactly `{"reference_status":"absent","summary":{},"series":{}}`) and `cases/<case_id>/telemetry.json` in a workspace, following [the configuration evidence format](docs/SINGLE-RUN-CONTEXT.md), then:
-
-```bash
-export TRIAGE_WORKSPACE="$PWD/workspace/single_run"
-export TRIAGE_ANALYSIS_SANDBOX=required
-uv run nat run --config_file configs/triage_single_run.yml \
-  --input "Assess failed run case_id=<case_id>. Task context: <task and observed failure>."
-```
-
-The assessment is saved once to `preregistrations/assessments/<case_id>.json` as `hypotheses_only`; one run alone cannot establish a confirmed cause or recovery. It calls the model API but does not start Isaac or retrain.
+For the frozen 3 Super benchmark workflow and OpenShell setup, see [multi-step investigation](docs/AGENTIC-INVESTIGATION.md) and [grounded single-run workflow](docs/GROUNDED-SINGLE-RUN.md). The [pipeline preflight](docs/PIPELINE-PREFLIGHT.md) checks the registered CPU-side inputs before a separately approved GPU operation.
 
 ## Safety boundary
 
@@ -183,7 +174,7 @@ The correction replay reports `"status": "pass"` when all six loop records match
 - **Main results:** [end-to-end demonstration](docs/E2E-REWARD-DEMO.md) · [two diagnosis rounds](docs/RESIDUAL-DIAGNOSIS-RESULT.md) · [optimizer inspection and R1 repair](docs/OPTIMIZER-OBSERVABILITY.md) · [ANYmal-C port](docs/ANYMAL-C-PORT.md) · [U1 scope extension](docs/U1-SCOPE-EXTENSION.md) · [external faults](docs/T1-EXTERNAL-FAULTS.md) · [healthy inputs](docs/T2-NO-INTERVENTION.md)
 - **Further checks:** [recovery modes and partial resets](docs/TRAINING-CORRECTION.md) · [probe-selection comparison](docs/SELECTION-COMPARISON.md) · [PPO gradient check](docs/PPO-GRADIENT-CHECK.md) · [cross-robot applicability contract](docs/COMBINATION-APPLICABILITY.md) · [model repeatability](docs/N2-PASS-K.md) · [multi-change search](docs/D3-MULTI-CHANGE.md) · [Nemotron endpoint comparison](docs/NEMOTRON-ENDPOINT-COMPARISON-V3.md)
 - **Benchmarks:** [first benchmark and baselines](evals/results/p0a2_holdout_20261008/) · [hidden-fault set](evals/results/replay_p0c_20261009/) · [probe loop on 18 runs](evals/results/p1a_loop_compare_20261009/) (14 confirmed with 2.1 probes on average, no wrong confirmation)
-- **Video and compute:** [video evidence contract](docs/VISION-EVIDENCE-CONTRACT.md) · [Brev data collection](docs/VISION-BREV-DATA.md) · [Brev environment](docs/VISION-BREV-ENVIRONMENT.md) · [multi-step investigation](docs/AGENTIC-INVESTIGATION.md) · [Brev compute pilot](docs/BREV-COMPUTE-PILOT.md) · [troubleshooting](docs/TROUBLESHOOTING.md)
+- **Video and compute:** [evidence story replay](docs/AGENTIC-STORY-REPLAY.md) · [video evidence contract](docs/VISION-EVIDENCE-CONTRACT.md) · [Brev data collection](docs/VISION-BREV-DATA.md) · [Brev environment](docs/VISION-BREV-ENVIRONMENT.md) · [multi-step investigation](docs/AGENTIC-INVESTIGATION.md) · [Brev compute pilot](docs/BREV-COMPUTE-PILOT.md) · [troubleshooting](docs/TROUBLESHOOTING.md)
 - **Earlier development:** [Brev registered-F1 run](docs/BREV-RECOVERY.md) · [grounded single-run workflow](docs/GROUNDED-SINGLE-RUN.md) · [active diagnosis](docs/ACTIVE-DIAGNOSIS.md) · [resumable diagnosis](docs/RESUMABLE-DIAGNOSIS.md) · [live approval-loop records](docs/LIVE-LOOP-EVIDENCE.md) · [callback correction feasibility](docs/RECOVERY-FEASIBILITY.md)
 
 ## 한국어 요약
