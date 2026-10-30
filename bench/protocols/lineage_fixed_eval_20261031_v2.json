@@ -1,0 +1,159 @@
+{
+  "adapter": {
+    "base": "lineage_fixed_eval_batch_v1",
+    "global_patch": "RLock_reentrant_finally_restored",
+    "prepare_before_lease_execute_inside_lease": true,
+    "worker_job_manifest_report_gate_schemas": "reused_without_change"
+  },
+  "bands": {
+    "path": "evals/results/p0c_fixed_eval_20261009/summary.json",
+    "sha256": "7589a132d4e1a55e159527389a8b635a1766472ecde558da0a1a704c286f3f23"
+  },
+  "budget": {
+    "admission_wait_max_s": 600,
+    "automatic_retries": 0,
+    "basis": "기존 동일 fixed_eval 보고서 약 13초×18보다 큰 단일 owned 상한",
+    "evaluation_jobs": 18,
+    "gpu_budget_increase": 0,
+    "model_api_requests": 0,
+    "owned_timeout_rule": "min(v1_3600, remaining_whole_controller_s - safety_margin_s)",
+    "owned_timeout_safety_margin_s": 5,
+    "owned_workers": 1,
+    "training_updates": 0,
+    "whole_controller_wall_s": 3600
+  },
+  "claims": {
+    "diagnosis": false,
+    "generalization": false,
+    "heldout": false,
+    "recovery": false,
+    "training": false
+  },
+  "fixed_eval": {
+    "conditions": 26,
+    "eval_seed": 2026,
+    "path": "bench/protocols/fixed_eval_v1.json",
+    "sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46"
+  },
+  "gpu_admission_profile": "desktop_shared_lineage_sources_v1",
+  "gpu_wait": {
+    "admission": {
+      "active_engine_min_percent": 1,
+      "allowed_active_engine_types": [
+        "3D",
+        "Copy",
+        "VideoDecode",
+        "VideoEncode"
+      ],
+      "allowed_display_process_names": [
+        "antigravity.exe",
+        "applicationframehost.exe",
+        "asus_framework.exe",
+        "chatgpt.exe",
+        "chrome.exe",
+        "claude.exe",
+        "codex-computer-use-swift.exe",
+        "codex-computer-use.exe",
+        "crossdeviceresume.exe",
+        "cursor.exe",
+        "discord.exe",
+        "dwm.exe",
+        "explorer.exe",
+        "lghub_system_tray.exe",
+        "microsoft.cmdpal.ui.exe",
+        "msedge.exe",
+        "msedgewebview2.exe",
+        "nvidia overlay.exe",
+        "phoneexperiencehost.exe",
+        "powertoys.colorpickerui.exe",
+        "powertoys.exe",
+        "powertoys.fancyzones.exe",
+        "powertoys.peek.ui.exe",
+        "powertoys.quickaccess.exe",
+        "remoting_desktop.exe",
+        "searchhost.exe",
+        "shellexperiencehost.exe",
+        "shellhost.exe",
+        "slack.exe",
+        "startmenuexperiencehost.exe",
+        "system",
+        "systemsettings.exe",
+        "tabtip.exe",
+        "textinputhost.exe",
+        "video.ui.exe",
+        "windowsterminal.exe"
+      ],
+      "allowed_process_types": [
+        "C+G",
+        "G"
+      ],
+      "gpu_exclusive": false,
+      "gpu_index": 0,
+      "guard_phases": [
+        "before_clip",
+        "after_clip"
+      ],
+      "memory_used_limit_mib": 4096,
+      "performance_measurement": false,
+      "policy": "desktop_shared_lineage_sources_v1",
+      "protected_cim_name_only_process_names": [
+        "dwm.exe",
+        "remoting_desktop.exe",
+        "system",
+        "tabtip.exe"
+      ],
+      "unclassified_activity": "block"
+    },
+    "consecutive_clear": 2,
+    "included_in_whole_controller_wall_s": true,
+    "interval_s": 2,
+    "max_wait_s": 600,
+    "sdk_jobs_started_while_waiting": 0,
+    "terminate_other_processes": false,
+    "training_retry": false
+  },
+  "phase": "eval_only",
+  "python_package_source_sha256_lf": {
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d"
+  },
+  "runtime_source_sha256_lf": {
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0"
+  },
+  "schema": "lineage_fixed_eval_protocol_v2",
+  "source_collection_protocol": {
+    "path": "bench/protocols/lineage_source_collection_20261030_v2.json",
+    "sha256_lf": "872b31d4e810a9162ca2cf11204aca89ad20cd33f76dc28f546cf97ddfe7cca8",
+    "source_tree_sha256": "96ac42c23796c633d55e7af3c57e5968e17d64ce169c1d2094749bc95f834a1b"
+  },
+  "source_next_stage_was_registered": false,
+  "source_sha256_lf": {
+    "bench/brev_recovery_worker_v2.py": "607b087234d500b136e3557f0f1db610e6b6926a30dc9ab23c2de7f0d413ad27",
+    "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "bench/run_lineage_fixed_eval_v1.ps1": "f26933bd79f525f9503c2db11dea4436cd83fff91aac5b741a7e2859c145d466",
+    "bench/run_lineage_fixed_eval_v2.ps1": "f4f30e839e9fe4bb7de8c438abb7b63ad164508fddb535d8a0096b5c4f2abbd9",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/lineage_evaluation_gate_v1.py": "33f5b8275033045e867a16cce6e91519a5db82f858caf25e6a1b2b47315d410b",
+    "evals/lineage_fixed_eval_batch_v1.py": "e57b46fe743d4180b1ce66f40573a417d9eee4c43b25d29f828bf2c2b028c340",
+    "evals/lineage_fixed_eval_batch_v2.py": "4745d916bcedfef77c3e8b82611bfbafdc34b8a4481565c11fb8fffb0d3292a1",
+    "evals/lineage_gpu_admission_v1.py": "e71e99fe308e11a754233a3b799d547b255ff9af74f20d0d1e1ab9c93630e029",
+    "evals/lineage_gpu_wait_v1.py": "7a6f55f048568d056ea9a8f04b43d87c30408adae9067b3757d484b6ed43feac",
+    "evals/lineage_source_batch_v1.py": "cf0ee2c9fb19c2ecc39916a2d88d40a8c81d9bc15bb9235aafd3219db54adf38",
+    "evals/results/p0c_fixed_eval_20261009/summary.json": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "tests/test_lineage_evaluation_gate_v1.py": "0a2c353666bc0cfbfa1f111c8b77b49f3883fadc72c7276b0b89b28667a87b88",
+    "tests/test_lineage_fixed_eval_batch_v1.py": "9dfdc4439c5c870e3563b5b8501361bab1e9b930a3e486676afb4bf824179569",
+    "tests/test_lineage_fixed_eval_batch_v2.py": "674c535f84464179450e7d3a416bd1a4dd5e998b399baae49ec94b9baec3a0a5",
+    "tests/test_lineage_fixed_eval_launcher_v1.py": "c9fe14d04a990d1f809b60ecdc16e5cf11262de97325757695e5617337127e54",
+    "tests/test_lineage_gpu_wait_v1.py": "341544d729a43e9b1f4093c38c91f9ee3bb57e43af8810cecfd1dfaf9720b0bd"
+  },
+  "source_tree_sha256": "cd887598b7bc08f2c786fbe0907622d698ad2184612fe4d1449133fe23951d02",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0"
+}

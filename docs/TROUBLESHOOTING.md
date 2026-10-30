@@ -839,6 +839,7 @@
 - 관찰: 등록 source 13개 완료 뒤 다음 학습의 GPU 입장 검사에서 실행 경로를 확인할 수 없는 프로세스가 나타났다. 해당 stage에는 GPU 관측만 남았고 학습 자식은 시작되지 않았다. 이후 해당 프로세스가 사라졌으며 같은 입장 규칙으로 다시 확인한 두 관측은 통과했다. 프로세스의 생성·종료 원인은 미확정이다.
 - 처리: 완료 source를 재학습하지 않고 [새 재개 등록](../bench/protocols/lineage_source_continuation_20261031_v1.json)과 [재개 실행기](../evals/lineage_source_continuation_v1.py)로 남은 원래 job만 실행한다. 기존 실패 원문과 완료 증거는 보존하며 GPU 입장 기준은 바꾸지 않는다.
 - 재발 방지: 학습 전 입장 거부와 학습 실패를 구분한다. 완료 prefix의 체크포인트·accepted·종료 증거를 검증하고, 새 출력 경로와 별도 실행 anchor에서 남은 작업만 허용한다. CPU fixture 통과와 실제 재개 완료는 따로 기록한다.
+- 후속 관찰: 재개 실행에서 3개 source를 더 완료한 뒤 사진 앱의 GPU 문맥이 허용목록에 없어 다음 학습 시작 전에 다시 멈췄다. 완료 16개를 묶는 [재개 v2](../evals/lineage_source_continuation_v2.py)와 [입장 대기](../evals/lineage_gpu_wait_v1.py)를 추가했다. 허용목록·메모리·compute 차단 기준은 바꾸지 않고, 제한 시간 안에 연속 clear 관측을 기다린다. 이 대기는 학습 재시도가 아니다. 고정 평가도 [v2 실행기](../evals/lineage_fixed_eval_batch_v2.py)에서 같은 경계를 쓴다.
 
 ### OPS-118: 확인 검사의 보조 입력과 모델 송신 중복 경계
 

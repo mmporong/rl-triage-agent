@@ -53,20 +53,20 @@ $evidence = Join-Path $HOME 'rl-triage-source-evidence-v1'
 
 ## 완료 source 재사용
 
-[재개 실행기](../evals/lineage_source_continuation_v1.py)는 완료된 13개 source를 검증해 재사용하고 원래 순서의 나머지 5개만 실행한다. 적용 대상은 [재개 등록](../bench/protocols/lineage_source_continuation_20261031_v1.json)에 묶인 실행이다. 중단 stage에 GPU 입장 기록만 있고 학습 자식이 시작되지 않았는지 확인한다. 기존 실패 결과·accepted·체크포인트·TensorBoard 원문은 읽기만 한다.
+[재개 실행기](../evals/lineage_source_continuation_v2.py)는 두 실행에서 완료한 16개 source를 검증해 재사용하고 마지막 정상·탐색 결함 정책만 학습한다. 적용 대상은 [재개 등록 v2](../bench/protocols/lineage_source_continuation_20261031_v2.json)에 묶인 실행이다. 각 중단 stage에 GPU 입장 기록만 있고 학습 자식이 시작되지 않았는지 확인한다. 기존 실패 결과·accepted·체크포인트·TensorBoard 원문은 읽기만 한다.
 
-새 실행에는 새 출력 폴더와 등록 anchor가 필요하다. 원래 source anchor와 재개 실행기의 anchor를 나눠 기록하며, 결과에도 두 실행의 provenance를 남긴다. GPU 입장 규칙은 유지한다. 이미 끝난 학습의 반복과 자동 재시도는 허용하지 않는다.
+새 실행에는 새 출력 폴더와 등록 anchor가 필요하다. 원래 source anchor와 재개 실행기의 anchor를 나눠 기록하며, 결과에 모든 실행의 provenance를 남긴다. [GPU 입장 대기](../evals/lineage_gpu_wait_v1.py)는 기존 기준으로 연속된 clear 관측 두 번을 확인한다. 일시적인 busy에는 최대 600초 기다리고, 기준을 통과하지 못하면 학습을 시작하지 않는다. 이미 끝난 학습의 반복과 자동 재시도는 허용하지 않는다.
 
 ```powershell
 cd "$HOME/rl-triage-agent"
-& ./bench/run_lineage_source_continuation_v1.ps1 -ExecutionAnchor $anchor -Protocol ./bench/protocols/lineage_source_continuation_20261031_v1.json -PriorRoot "$evidence/sources" -Output "$evidence/continuation" -Execute
+& ./bench/run_lineage_source_continuation_v2.ps1 -ExecutionAnchor $anchor -Protocol ./bench/protocols/lineage_source_continuation_20261031_v2.json -OriginRoot "$evidence/sources" -ContinuationRoot "$evidence/continuation" -Output "$evidence/final-two" -Execute
 ```
 
-`PriorRoot`는 등록한 13개 완료 원문과 실패 기록이 있는 폴더여야 한다. 임의의 다른 중단 배치에는 이 등록을 적용할 수 없다. 새 실행은 학습별 1800초와 나머지 배치 9000초 상한을 둔다.
+`OriginRoot`는 첫 13개, `ContinuationRoot`는 다음 3개 완료 원문과 실패 기록이 있는 폴더여야 한다. 임의의 다른 중단 배치에는 이 등록을 적용할 수 없다. 새 실행은 학습별 1800초와 대기를 포함한 전체 5400초 상한을 둔다.
 
 ## 고정 평가와 세 정책의 비교
 
-[고정 평가 실행기](../evals/lineage_fixed_eval_batch_v1.py)는 완료 source 18개의 체크포인트를 하나의 owned worker에서 평가한다. 평가 seed 2026, 명령 26조건, 원래 밴드를 유지한다. source의 학습 결함은 fixed 환경에 재주입하지 않고 같은 seed 정상 정책과 행동을 비교한다. [PowerShell 실행기](../bench/run_lineage_fixed_eval_v1.ps1)가 입력 검증 뒤 공용 lease 취득·해제를 처리한다. 정상 참조 실패와 source 실패 부재는 후속 진단에서 제외하되 계획된 사례 수에 남긴다.
+[고정 평가 실행기 v2](../evals/lineage_fixed_eval_batch_v2.py)는 완료 source 18개의 체크포인트를 하나의 owned worker에서 평가한다. 평가 seed 2026, 명령 26조건, 원래 밴드를 유지한다. source의 학습 결함은 fixed 환경에 재주입하지 않고 같은 seed 정상 정책과 행동을 비교한다. [PowerShell 실행기](../bench/run_lineage_fixed_eval_v2.ps1)가 입력 검증 뒤 공용 lease 취득·해제를 처리한다. GPU 대기도 원래 전체 3600초 안에 포함하고 자식 실행 한도를 남은 시간에 맞춘다. 정상 참조 실패와 source 실패 부재는 후속 진단에서 제외하되 계획된 사례 수에 남긴다.
 
 [진단 비교 실행기](../evals/lineage_comparison_batch_v1.py)는 `registry_next`, `fixed_eligible`, Nemotron 3.5의 `model_adaptive`를 같은 공개 수치·검사·예산으로 비교한다. 사례마다 정책 순서를 순환하고, 정책별 검사 한도는 3회다. 정상 source는 호스트 anomaly gate로 개입을 막으므로 이 결과를 모델만의 정상 판별 성능으로 쓰지 않는다.
 
