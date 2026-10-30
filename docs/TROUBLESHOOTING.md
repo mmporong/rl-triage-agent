@@ -792,3 +792,10 @@
 - 확인: 실제 source snapshot에는 CUDA 가용성·장치 수가 있지만 기대값에는 두 항목이 없었다. Python의 `base_prefix`도 등록된 시스템 경로와 실측 uv 경로가 달랐다. 전체 snapshot 일치를 요구하는 production 조건이 이 입력을 거부함을 재계산했다. Parent outcome 본문은 회수하지 못했으므로 유일한 최종 원인이라고 단정하지 않는다.
 - 수정: [Runtime46](../bench/protocols/agentic_runtime_text_s2221_20261030_v46.json)·[Parent15](../bench/protocols/agentic_runtime_text_s2221_pair_fresh_20261030_v15.json)에 실측 메타데이터 세 항목만 다시 결합한다. 검사와 교정·평가의 기대 snapshot을 함께 맞추고, 다른 버전·패키지·소스·체크포인트 변경은 거부한다. 실행 시에는 별도의 fresh GPU proof가 필요하다.
 - 검증: 원문 재계산·부정 변형 검사 3건이 통과했다. 새 검사 기대값, 새 회복 기대값, 실제 실행 전후 snapshot이 같은지도 확인했다. 검증 조건을 완화하거나 이 환경 서명 후보를 실행 권한으로 쓰지 않는다.
+
+### OPS-111: 검사 뒤 GPU 관측 영수증의 root-map 누락
+
+- 관찰: Runtime46의 정상 대조 검사는 exit 0으로 끝났지만 Parent outcome은 `path outside registered root-map`으로 HOLD가 됐다. 결함 검사·후속 모델 판단·교정은 시작하지 않았다.
+- 확인: Parent는 각 operation의 `gpu-observations` 폴더에 실행 전후 영수증과 GPU/process CSV를 쓴다. 생성된 검증 plan에는 형제 `raw` 폴더만 등록돼 있어, 전체 source snapshot 일치를 통과한 뒤 영수증 경로를 해석하지 못했다.
+- 수정: [Runtime47](../bench/protocols/agentic_runtime_text_s2221_20261030_v47.json)·[Parent16](../bench/protocols/agentic_runtime_text_s2221_pair_fresh_20261030_v16.json)은 operation별 observation 폴더를 parent와 host의 evidence map에 함께 등록한다. 전체 execution root를 허용하거나 기존 경로·SHA·GPU admission 검증을 완화하지 않는다.
+- 검증: 실제 이전 binding으로 parent plan의 54개 논리 경로를 재계산했다. 빠진 12개 경로는 observation 영수증과 CSV였으며, 정확한 두 root를 추가한 뒤 누락·중복 mapping은 0이었다. 미회수 영수증의 내용·SHA나 새 고리 실행 완료까지 검증한 결과로 해석하지 않는다. 이전 HOLD와 Stop 기록은 보존한다.
