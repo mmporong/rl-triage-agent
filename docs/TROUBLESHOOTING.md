@@ -827,3 +827,9 @@
 - 수정: [NONE 종료 검증](../bench/local_same_seed_none_terminal_v1.py)을 새로 두고, manifest의 NONE·seed·학습량·재개하지 않은 설정·결함 없음과 완료 영수증을 확인한다. [등록 생성기](../bench/finalize_local_same_seed_none_control_v1.py)는 경로를 resolve한 뒤 비교한다. 기존 교정 전용 계약은 바꾸지 않았다.
 - 재발 방지: 같은 seed 독립 학습과 이전 교정 산출물의 바이트 일치는 복사의 증거로 쓰지 않는다. 별도 실행의 실제 learn 반환과 no-resume manifest를 확인하고 바이트 일치는 따로 보고한다. 이 정책은 실행 전에 등록했다.
 - 검증: 관련 Python 3.10 테스트 15개와 Ruff가 통과했다. 실제 source 결합 검사 뒤 NONE 300회 학습·26조건 평가가 exit 0으로 끝났다. [정상 대조 결과](SAME-SEED-RECOVERY-CONTROL.md)는 기존 교정 정책과 같은 checkpoint와 지표를 재현했으며, 기존 미회복 판정을 덮어쓰지 않는다.
+
+### OPS-116: Windows 줄바꿈과 공개 파일 SHA의 차이
+
+- 관찰: 원문 labels·결합 JSON에 CRLF가 들어 있었고 Git의 텍스트 정규화가 이를 LF로 저장하려 했다. 작업 폴더 검사는 통과했지만, 커밋 전 staging blob 대조에서 사전등록된 labels SHA와 달라짐을 찾았다.
+- 수정: 해당 결과 폴더와 그림의 결합 JSON만 `.gitattributes`의 `-text`로 지정해 원문 바이트를 보존했다. 실험 수치·사전등록 SHA·모델 원문은 바꾸지 않았다.
+- 재발 방지: 공개 manifest는 작업 폴더뿐 아니라 staging/commit blob의 크기와 SHA도 대조한다. [V1](../evals/results/visual_integrity_dev_20261030_v1/manifest.json)·[V2](../evals/results/visual_localization_dev_20261030_v2/manifest.json)의 119개 항목이 일치한 뒤 push했다. CSV를 새로 만들 때는 줄 끝을 LF로 고정한다.
