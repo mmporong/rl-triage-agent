@@ -799,3 +799,10 @@
 - 확인: Parent는 각 operation의 `gpu-observations` 폴더에 실행 전후 영수증과 GPU/process CSV를 쓴다. 생성된 검증 plan에는 형제 `raw` 폴더만 등록돼 있어, 전체 source snapshot 일치를 통과한 뒤 영수증 경로를 해석하지 못했다.
 - 수정: [Runtime47](../bench/protocols/agentic_runtime_text_s2221_20261030_v47.json)·[Parent16](../bench/protocols/agentic_runtime_text_s2221_pair_fresh_20261030_v16.json)은 operation별 observation 폴더를 parent와 host의 evidence map에 함께 등록한다. 전체 execution root를 허용하거나 기존 경로·SHA·GPU admission 검증을 완화하지 않는다.
 - 검증: 실제 이전 binding으로 parent plan의 54개 논리 경로를 재계산했다. 빠진 12개 경로는 observation 영수증과 CSV였으며, 정확한 두 root를 추가한 뒤 누락·중복 mapping은 0이었다. 미회수 영수증의 내용·SHA나 새 고리 실행 완료까지 검증한 결과로 해석하지 않는다. 이전 HOLD와 Stop 기록은 보존한다.
+
+### OPS-112: IO 서비스의 공개 lifecycle 참조 형식
+
+- 관찰: Runtime47의 유료 실행 전 CPU 확인에서 Main·Host·bootstrap은 통과했지만, IO 서비스의 budget 소비가 `public lifecycle repo-relative path required`로 거부됐다. 새 GPU 검사·모델 호출은 없었다.
+- 확인: 새 기한을 결합하면서 IO contract에 절대 파일 경로를 넣었다. 이 필드는 공개 등록 파일의 저장소 상대 경로와 SHA를 요구하며, 실제 서비스가 native 경로로 변환한 뒤 등록 커밋의 blob을 검증한다.
+- 수정: [Runtime48](../bench/protocols/agentic_runtime_text_s2221_20261030_v48.json)·[Parent17](../bench/protocols/agentic_runtime_text_s2221_pair_fresh_20261030_v17.json)은 같은 lifecycle 파일을 상대 참조로 결합한다. 원래 파일·기한·소스 검증 조건은 유지한다. Runtime47은 미실행 판으로 보존한다.
+- 검증: 실제 `_native_lifecycle_reference` 함수로 절대 참조 거부, 등록된 상대 참조 통과, 잘못된 SHA 거부를 확인했다. 전체 실제 소비 확인과 원격 실행은 별도 결과로 남긴다.
