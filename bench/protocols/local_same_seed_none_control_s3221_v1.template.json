@@ -1,0 +1,60 @@
+{
+  "schema": "local_same_seed_none_control_preregistration_v1",
+  "status": "prepared_not_registered",
+  "development_control_after_observing_seed3221": true,
+  "training": {"seed": 3221, "num_envs": 4096, "iterations": 300, "num_steps_per_env": 24, "action_scale": 0.25},
+  "old_checkpoint_sha256": [
+    "1d73d523c97c5c89c988febfbd3d5e533e90681cd0e6132d6ffe13888fa95731",
+    "b346a0c3e3ad6410ce93dcf73e6165ed69e2d6ab95b2c5398943b3a8874cf54d",
+    "d370e76c2184b86b108c80318081c5d5b6bf3c59c7846e6c2c48b2a1a46bab5a"
+  ],
+  "ri213_inputs": {
+    "result": {"relative": "result.json", "sha256": "b261218c367b8cc396cf33c031fd60cca0717e203c4b1719f3fdb7ec19f6ed65"},
+    "evaluate_worker": {"relative": "evaluate-worker.json", "sha256": "06e417e5931d7ba3c2bfe8e1cb84ed9f51bf2f779e60c6a5f6eca4c3fdb929f3"},
+    "train_job": {"relative": "train-job.json", "sha256": "3988b66a3de945ff91778dc70f01aaa332bf8c10d97a850ad9017a0a4e1d1b84"},
+    "none_report": {"relative": "fixed-eval/NONE.json", "sha256": "bfd6ef748046b1e5df069879198d28282589408677c2c33235c849a834541ead"},
+    "corrected_report": {"relative": "fixed-eval/CORRECTED.json", "sha256": "2bc36b595c266d38d664c45a1811ad7fced9e22dce8bd5806a36aecc15fd8ff7"},
+    "corrected_worker": {"relative": "train/worker.json", "sha256": "084ca75a1dedb4ead14f8d80671e38af460b49618048a23d01c6ba5012e3214f"}
+  },
+  "original_result": {"err_xy_ratio": 0.9735695380954659, "err_yaw_ratio": 1.6198497491510468, "survival_ratio": 0.99946826171875, "fall_frac": 0.000961538462433964},
+  "fixed_eval": {"relative": "bench/protocols/fixed_eval_v1.json", "sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46", "eval_seed": 2026, "conditions": 26},
+  "runtime": {
+    "isaaclab_head": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "source_sha256_lf": {
+      "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+      "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290"
+    }
+  },
+  "python_package": {
+    "distribution": "rsl-rl-lib", "version": "2.3.3",
+    "source_sha256_lf": {
+      "algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+      "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+      "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2"
+    }
+  },
+  "decision_rule": {
+    "healthy_old_fail_and_corrected_healthy_pass": "seed_or_command_coverage_consistent",
+    "healthy_old_pass_and_corrected_healthy_fail": "correction_path_influence_possible",
+    "otherwise": "inconclusive",
+    "causal_claim": false
+  },
+  "checkpoint_equality_policy": {
+    "reject_historical_faulty_or_old_reference_bytes": true,
+    "allow_independently_trained_same_seed_control_to_equal_prior_corrected": true,
+    "require_none_manifest_no_resume_and_observed_300_update_learn_return": true,
+    "report_byte_equality_separately": true
+  },
+  "prediction_and_wording": {
+    "primary_prediction": "같은 seed의 정상 학습에서도 제자리 회전 약점이 나타날 수 있다. 실행 전에는 확인된 사실로 취급하지 않는다.",
+    "seed_or_command_coverage_consistent": "같은 seed의 정상 대조도 기존 참조에서 벗어나고 교정 정책은 새 정상 대조와의 비교를 통과했다. seed 또는 명령 커버리지 차이와 일치하지만 원인 확정은 아니다.",
+    "correction_path_influence_possible": "같은 seed의 정상 대조는 기존 참조를 통과하고 교정 정책은 새 정상 대조와의 비교에 실패했다. 교정 실행 경로의 영향이 후보로 남는다.",
+    "inconclusive": "등록한 두 비교로 가설을 분리하지 못했다. 추가 회복 성공으로 세지 않는다.",
+    "original_result": "RI213은 not_recovered를 유지한다. 이 대조군으로 기존 참조나 수용 기준을 바꾸지 않는다."
+  },
+  "timeouts_s": {"train": 6000, "evaluate": 900, "total": 7200, "cleanup": 30},
+  "automatic_retry": 0,
+  "api_calls": 0
+}
