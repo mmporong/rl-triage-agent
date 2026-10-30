@@ -806,3 +806,16 @@
 - 확인: 새 기한을 결합하면서 IO contract에 절대 파일 경로를 넣었다. 이 필드는 공개 등록 파일의 저장소 상대 경로와 SHA를 요구하며, 실제 서비스가 native 경로로 변환한 뒤 등록 커밋의 blob을 검증한다.
 - 수정: [Runtime48](../bench/protocols/agentic_runtime_text_s2221_20261030_v48.json)·[Parent17](../bench/protocols/agentic_runtime_text_s2221_pair_fresh_20261030_v17.json)은 같은 lifecycle 파일을 상대 참조로 결합한다. 원래 파일·기한·소스 검증 조건은 유지한다. Runtime47은 미실행 판으로 보존한다.
 - 검증: 실제 `_native_lifecycle_reference` 함수로 절대 참조 거부, 등록된 상대 참조 통과, 잘못된 SHA 거부를 확인했다. 전체 실제 소비 확인과 원격 실행은 별도 결과로 남긴다.
+
+### OPS-113: 준비 단계의 root 해석과 실행 폴더의 배타 생성 충돌
+
+- 관찰: Runtime48은 원격 준비 단계의 `Resolver`가 아직 없는 execution 경로를 해석하다 `FileNotFoundError`로 중단됐다. 새 검사·모델 요청·학습 전 실패이며 이전 원문과 Stop 기록은 보존했다.
+- 확인: 관측 경로를 root-map에 등록하는 것만으로 충분하지 않았다. 준비 단계는 root가 존재해야 하지만, 자식 실행기는 같은 operation 폴더를 배타 생성한다. 임시로 폴더를 만들었다 지우면 후속 plan 조회에서 다시 실패한다.
+- 수정: [Parent10](../bench/run_agentic_brev_probe_parent_v10.py)은 관측 원문을 등록 폴더 안의 영속 observation root에 보관한다. 논리 참조는 operation별 경로를 유지하고, [Remote10](../bench/agentic_brev_probe_transport_remote_v10.py)과 [Service11](../evals/agentic_brev_mailbox_service_v11.py)이 반출·해석 경로를 같은 mapping으로 연결한다. 실행 폴더의 배타 생성, 영수증 SHA, GPU 입장 검사는 유지한다.
+- 검증: 실제 backend와 Resolver의 관측 영수증 소비, prepare 뒤 unit 생성·후속 조회, CSV 변경 거부를 CPU에서 확인했다. 공개 회귀의 비공개 binding 의존도 synthetic fixture로 제거해 비공개 폴더 없는 사본에서 관련 7개 검사가 통과했다. 이 확인은 새 GPU 고리 완료나 회복 결과를 뜻하지 않는다.
+
+### OPS-114: 재사용 입력의 영수증 이름과 생성기 인터페이스 불일치
+
+- 관찰: 새 실행 입력을 준비할 때 상속한 projection receipt와 새 receipt의 이름이 같아 `FileExistsError`가 발생했다. 이후 CPU 소비에서는 이전 public protocol 파일명 잔존과 wrapper의 `write` 인터페이스 누락도 발견됐다. 유료 실행 전 발견한 오류이며 모델 진단 실패로 계산하지 않는다.
+- 수정: 새 입력 사본에서 상속 영수증을 provenance 이름으로 보존하고 새 영수증은 배타 생성한다. protocol 파일명을 명시적으로 결합하고, preflight의 scoped writer가 실제 함수의 namespace에 전달되도록 맞춘다. 원본 입력과 실패한 부분 출력은 덮어쓰지 않는다.
+- 재발 방지: import·도움말·생성자 통과와 최종 입력의 실제 소비를 구분한다. 유료 Start 전에는 같은 최종 등록으로 finalize·operator·repair·preflight·시간 및 비용 예약까지 실행한다. 이미 통과한 CPU 단계는 원문 SHA를 대조한 뒤 재사용하며, 새 실행 창이 필요한 경우 원래 비용 원점과 소비를 보존한 별도 등록을 사용한다.
