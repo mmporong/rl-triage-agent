@@ -1,0 +1,77 @@
+{
+  "schema": "local_f1_restart_preregistration_v3",
+  "status": "registered",
+  "fresh_seed": 3221,
+  "source_fault_checkpoint_sha256": "1d73d523c97c5c89c988febfbd3d5e533e90681cd0e6132d6ffe13888fa95731",
+  "reference_checkpoint_sha256": "b346a0c3e3ad6410ce93dcf73e6165ed69e2d6ab95b2c5398943b3a8874cf54d",
+  "training": {
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+    "recovery_mode": "restart",
+    "correction_id": "restore_body_frame_reward",
+    "num_envs": 4096,
+    "num_steps_per_env": 24,
+    "max_iterations": 300,
+    "action_scale": 0.25
+  },
+  "prediction": "recovered",
+  "success": {
+    "lin_vel_rmse_ratio_max": 1.1513,
+    "yaw_rate_rmse_ratio_max": 1.1719,
+    "survival_ratio_min": 0.9,
+    "fall_rate_max": 0.05
+  },
+  "timeouts_s": {
+    "train": 6000,
+    "evaluate": 900,
+    "total": 7200,
+    "cleanup": 30
+  },
+  "runtime": {
+    "isaaclab_head": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "source_sha256_lf": {
+      "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+      "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290"
+    }
+  },
+  "python_package": {
+    "distribution": "rsl-rl-lib",
+    "version": "2.3.3",
+    "source_sha256_lf": {
+      "algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+      "runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+      "modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2"
+    }
+  },
+  "automatic_retry": 0,
+  "api_calls": 0,
+  "registration_anchor": "cb329b1113c4d01a70d854c45937e8396d6f579d",
+  "source_sha256_lf": {
+    "bench/local_f1_restart_base_v2.py": "383ddceb7d2bbd1ba804d00fd35d3d2dde1989e9181e082dc44cbb48595b0dc5",
+    "bench/local_f1_restart_prepare_v2.py": "b8f165a4ef39cb25a00f6c0da0b97cbde79de982f098b8ac8a4b92b614771ddb",
+    "bench/local_f1_restart_terminal_v2.py": "cbce1243be8650fc19cbaef24b721d585e25769615e92474ff75a496df531975",
+    "bench/local_f1_restart_child_v2.py": "d1ed2fca3caa1e6cdf80528aadae36fa6d223108eb176dbfc050e191da0c074b",
+    "bench/local_f1_restart_worker_v2.py": "0f0ec15b5726b2720c8002e3959f52f9124160e5e9958725372cb3cbef469ed8",
+    "bench/local_f1_restart_base_v3.py": "eea826cfe10e88a9feb68fec8378dacccfbd16d746950b017c2e816699fb8b0b",
+    "bench/local_f1_restart_worker_v3.py": "daa9bbff0bf3a9cc3aa2cacf176f9568ca5841c9f24cf49ddf0e5198ba510f86",
+    "bench/finalize_local_f1_restart_v3.py": "8c8680e5c4748f6a0ac17cabac99394343b956c9acc9320bcc5b7eecf6331e81",
+    "bench/brev_recovery_worker_v2.py": "607b087234d500b136e3557f0f1db610e6b6926a30dc9ab23c2de7f0d413ad27",
+    "bench/brev_recovery_worker_v3.py": "e550aba0f46c5b6a864fa74bc0c85a8c3a965239820115482354c190c8421676",
+    "bench/residual_training_v1.py": "13e9d5733a9b49908e136e54dd0ac8b7dae387b40fa4115f254536c9d6692517",
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/r1_repair_training.py": "0b1b9aca9d17a4c8fce0a2f1aa451393bea701df66f4769156c2ff9d1f958ae6",
+    "bench/residual_faults_v1.py": "fae165b431588cb01e5140bd75481e907a0b3b71571df2beb6ba11278527ec25",
+    "bench/residual_probe_v1.py": "4d57ed44e9ecaf063d66746a200d28195cce4c322e5ca4f7de449a9106f40d1d",
+    "bench/extract_tb.py": "9810a1fa54cf09f852592f8a8a55be3fb4ad80e0a3500e55b4be36627c3c647c",
+    "evals/fixed_eval.py": "020a6ce8d81ceb06e594f168c99834e5894267e8bb72eeb430f342342bf2b998",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e"
+  }
+}
