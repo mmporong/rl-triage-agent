@@ -4,6 +4,9 @@
 bench/reference/params/** -text
 # 결과 manifest에 결합한 CSV 원문 바이트를 보존한다.
 evals/results/local_same_seed_none_control_s3221_20261030_v1/conditions.csv -text
+evals/results/visual_integrity_dev_20261030_v1/** -text
+evals/results/visual_localization_dev_20261030_v2/** -text
+docs/media/visual_integrity_dev_20261030_v2/*.json -text
 # 제출 묶음은 재생기가 검증하는 SHA256과 원문 바이트를 보존한다.
 submission/nebius-global-20261030/** -text
 *.png binary

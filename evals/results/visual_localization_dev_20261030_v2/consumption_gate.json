@@ -1,0 +1,40 @@
+{
+  "schema": "visual_localization_consumption_gate_v2",
+  "execution": "actual_VL_records_with_CPU_downstream_consumer",
+  "cases": [
+    {
+      "case_id": "clip-01",
+      "consumer_calls": 0,
+      "result": null,
+      "original_media_approval_unchanged": true
+    },
+    {
+      "case_id": "clip-02",
+      "consumer_calls": 1,
+      "result": {
+        "received_reviewed_frames": 2,
+        "approval_granted": false,
+        "new_API": 0
+      },
+      "original_media_approval_unchanged": true
+    },
+    {
+      "case_id": "clip-03",
+      "consumer_calls": 0,
+      "result": null,
+      "original_media_approval_unchanged": true
+    },
+    {
+      "case_id": "clip-04",
+      "consumer_calls": 1,
+      "result": {
+        "received_reviewed_frames": 2,
+        "approval_granted": false,
+        "new_API": 0
+      },
+      "original_media_approval_unchanged": true
+    }
+  ],
+  "new_API_calls": 0,
+  "behavior_or_recovery_decision": false
+}

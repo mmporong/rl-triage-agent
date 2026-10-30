@@ -1,0 +1,109 @@
+{
+  "coverage": {
+    "checkpoint_lineages": 3,
+    "repeated_calls": 8,
+    "scope": "development_render_integrity_only",
+    "unique_cases": 4
+  },
+  "execution_kind": "live_provider",
+  "live_evidence": true,
+  "llm_superiority_claimed": false,
+  "numeric_baseline": {
+    "independent_accuracy_advantage": false,
+    "note": "Mask geometry shares the label method and is not an independent accuracy baseline.",
+    "predicts_visual_integrity": false,
+    "structure_and_camera_binding_passed": true
+  },
+  "outcome": "partial_or_not_confirmed",
+  "primary_criterion": {
+    "fresh_calls_consistent": {
+      "required": 4,
+      "value": 4
+    },
+    "stale_calls_quarantined": {
+      "required": 4,
+      "value": 0
+    },
+    "valid_calls": {
+      "required": 8,
+      "value": 8
+    }
+  },
+  "rows": [
+    {
+      "case_id": "clip-01",
+      "expected_status": "inconsistent",
+      "gate": "reviewed_consistent",
+      "observed_status": "consistent",
+      "repeat": 1,
+      "slot_id": "clip-01-r1",
+      "valid": true
+    },
+    {
+      "case_id": "clip-01",
+      "expected_status": "inconsistent",
+      "gate": "reviewed_consistent",
+      "observed_status": "consistent",
+      "repeat": 2,
+      "slot_id": "clip-01-r2",
+      "valid": true
+    },
+    {
+      "case_id": "clip-02",
+      "expected_status": "consistent",
+      "gate": "reviewed_consistent",
+      "observed_status": "consistent",
+      "repeat": 1,
+      "slot_id": "clip-02-r1",
+      "valid": true
+    },
+    {
+      "case_id": "clip-02",
+      "expected_status": "consistent",
+      "gate": "reviewed_consistent",
+      "observed_status": "consistent",
+      "repeat": 2,
+      "slot_id": "clip-02-r2",
+      "valid": true
+    },
+    {
+      "case_id": "clip-03",
+      "expected_status": "inconsistent",
+      "gate": "reviewed_consistent",
+      "observed_status": "consistent",
+      "repeat": 1,
+      "slot_id": "clip-03-r1",
+      "valid": true
+    },
+    {
+      "case_id": "clip-03",
+      "expected_status": "inconsistent",
+      "gate": "reviewed_consistent",
+      "observed_status": "consistent",
+      "repeat": 2,
+      "slot_id": "clip-03-r2",
+      "valid": true
+    },
+    {
+      "case_id": "clip-04",
+      "expected_status": "consistent",
+      "gate": "reviewed_consistent",
+      "observed_status": "consistent",
+      "repeat": 1,
+      "slot_id": "clip-04-r1",
+      "valid": true
+    },
+    {
+      "case_id": "clip-04",
+      "expected_status": "consistent",
+      "gate": "reviewed_consistent",
+      "observed_status": "consistent",
+      "repeat": 2,
+      "slot_id": "clip-04-r2",
+      "valid": true
+    }
+  ],
+  "schema": "visual_integrity_score_v1",
+  "scored_at": "2026-10-30T12:02:13.492311+00:00",
+  "used_for_behavior_or_recovery_decision": false
+}

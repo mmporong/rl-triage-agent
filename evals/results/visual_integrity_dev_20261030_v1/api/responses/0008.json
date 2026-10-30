@@ -1,0 +1,20 @@
+{
+  "schema": "vl_aux_response_v1",
+  "sequence": 8,
+  "reservation_sha256": "a3c030481aaa6bd9980169a11e718e30704f2b9e4f803c6df66f3deb0b2ec01d",
+  "transport_status": "ok",
+  "result": {
+    "response_id": "chatcmpl-617c91a0-8c87-4789-8103-45dd88269b79",
+    "provider_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "provider_identity_registered": true,
+    "identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+    "content": "{\n  \"status\": \"consistent\",\n  \"frame_ids\": [\"f01\", \"f02\", \"f03\", \"f04\", \"f05\", \"f06\"],\n  \"reason_code\": \"robot_matches_projection\",\n  \"explanation\": \"The white quadruped body remains visible near the expected root pixel in all six frames, with only minor shape/centroid offsets consistent with articulation.\"\n}",
+    "finish_reason": "stop",
+    "input_tokens": 3187,
+    "output_tokens": 93,
+    "total_tokens": 3280,
+    "wall_s": 1.4396525959891733
+  },
+  "finished_at": "2026-10-30T12:01:43.155529+00:00"
+}

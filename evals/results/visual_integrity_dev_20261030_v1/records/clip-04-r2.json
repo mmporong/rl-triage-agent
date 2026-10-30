@@ -1,0 +1,45 @@
+{
+  "approval_granted": false,
+  "case_id": "clip-04",
+  "execution_kind": "live_provider",
+  "gate": "reviewed_consistent",
+  "messages_sha256": "c674f5d997208af372fb8b3b2f40745e64002da6141916f957dc1b42441b05fc",
+  "packet_sha256": "0528ec73c1f109b08bd5ee427d2e0e8d6b41abfe4473f85df8e5288506a677c8",
+  "provider": {
+    "content": "{\n  \"status\": \"consistent\",\n  \"frame_ids\": [\"f01\", \"f02\", \"f03\", \"f04\", \"f05\", \"f06\"],\n  \"reason_code\": \"robot_matches_projection\",\n  \"explanation\": \"The white quadruped body remains visible near the expected root pixel in all six frames, with only minor shape/centroid offsets consistent with articulation.\"\n}",
+    "finish_reason": "stop",
+    "identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+    "input_tokens": 3187,
+    "output_tokens": 93,
+    "provider_identity_registered": true,
+    "provider_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "response_id": "chatcmpl-617c91a0-8c87-4789-8103-45dd88269b79",
+    "total_tokens": 3280,
+    "wall_s": 1.4396525959891733
+  },
+  "record_sha256": "6d56025f4ed44d8bd5f7244abf7385b44264437062831730d01dd98eb6cafc6f",
+  "repeat": 2,
+  "schema": "visual_integrity_record_v1",
+  "slot_id": "clip-04-r2",
+  "transport_ok": true,
+  "used_for_behavior_or_recovery_decision": false,
+  "validator": {
+    "decision": {
+      "explanation": "The white quadruped body remains visible near the expected root pixel in all six frames, with only minor shape/centroid offsets consistent with articulation.",
+      "frame_ids": [
+        "f01",
+        "f02",
+        "f03",
+        "f04",
+        "f05",
+        "f06"
+      ],
+      "reason_code": "robot_matches_projection",
+      "status": "consistent"
+    },
+    "format_reasons": [],
+    "semantic_reasons": [],
+    "valid": true
+  }
+}

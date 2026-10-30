@@ -1,0 +1,57 @@
+{
+  "approval_granted": false,
+  "case_id": "clip-01",
+  "derived_host_decision": {
+    "center_error_px": 210.00968711308192,
+    "decision_maker": "deterministic_host_geometry_v2",
+    "frame_id": "f03",
+    "gate": "quarantine_visual_evidence",
+    "host_category": "mismatch",
+    "schema": "visual_localization_host_decision_v2",
+    "status": "inconsistent",
+    "thresholds_px": {
+      "far_min_exclusive": 60,
+      "near_max_inclusive": 30
+    },
+    "visibility": "visible"
+  },
+  "execution_kind": "live_provider",
+  "frame_id": "f03",
+  "gate": "quarantine_visual_evidence",
+  "localization_validator": {
+    "format_reasons": [],
+    "localization": {
+      "bbox_1000": [
+        756,
+        381,
+        858,
+        471
+      ],
+      "frame_id": "f03",
+      "visibility": "visible"
+    },
+    "semantic_reasons": [],
+    "valid": true
+  },
+  "messages_sha256": "daf39d4ae1e66be3f619adfc0d26130de6813c0a64450f177aa7f69f80c2c99e",
+  "packet_sha256": "f60ce08e4b66d1d7d099be93a0b4ba2a08b0c40deafba0ef6e929a611c8337d7",
+  "provider": {
+    "content": "{\n  \"frame_id\": \"f03\",\n  \"visibility\": \"visible\",\n  \"bbox_1000\": [756, 381, 858, 471]\n}",
+    "finish_reason": "stop",
+    "identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+    "input_tokens": 495,
+    "output_tokens": 49,
+    "provider_identity_registered": true,
+    "provider_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "response_id": "chatcmpl-22e2128f-1a05-4682-b68c-c9060cf3a893",
+    "total_tokens": 544,
+    "wall_s": 1.021535150008276
+  },
+  "record_sha256": "94cdc31affa5272adcaf893b0860b19741cb13a08445151c8a0b0a8944fb61e3",
+  "schema": "visual_localization_record_v2",
+  "slot_id": "clip-01-f03",
+  "timestamp_s": 3,
+  "transport_ok": true,
+  "used_for_behavior_or_recovery_decision": false
+}

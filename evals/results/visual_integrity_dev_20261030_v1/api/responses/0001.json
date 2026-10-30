@@ -1,0 +1,20 @@
+{
+  "schema": "vl_aux_response_v1",
+  "sequence": 1,
+  "reservation_sha256": "c848dcda3bd0613eb22032d555cae835d98922d3884f9817554ef9646ca31164",
+  "transport_status": "ok",
+  "result": {
+    "response_id": "chatcmpl-ab2440fa-cfc6-4621-85de-94835d60d27a",
+    "provider_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "provider_identity_registered": true,
+    "identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+    "content": "{\"status\":\"consistent\",\"frame_ids\":[\"f01\",\"f02\",\"f03\",\"f04\",\"f05\",\"f06\"],\"reason_code\":\"robot_matches_projection\",\"explanation\":\"The white quadruped remains visible in every frame and stays near the fixed expected root pixel around (320, 278.64) as the camera tracks the root, with only minor shape/centroid shifts.\"}",
+    "finish_reason": "stop",
+    "input_tokens": 3187,
+    "output_tokens": 96,
+    "total_tokens": 3283,
+    "wall_s": 1.7306650239916053
+  },
+  "finished_at": "2026-10-30T12:01:30.595904+00:00"
+}

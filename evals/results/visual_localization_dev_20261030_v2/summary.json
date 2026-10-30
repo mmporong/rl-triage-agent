@@ -1,0 +1,127 @@
+{
+  "case_gates": {
+    "clip-01": "quarantine_visual_evidence",
+    "clip-02": "reviewed_consistent",
+    "clip-03": "quarantine_visual_evidence",
+    "clip-04": "reviewed_consistent"
+  },
+  "coverage": {
+    "checkpoint_lineages": 3,
+    "scope": "development_blind_visual_localization_only",
+    "timestamp_calls": 8,
+    "unique_cases": 4
+  },
+  "decision_role": "deterministic_host_geometry_v2",
+  "execution_kind": "live_provider",
+  "intervention_bundle": {
+    "changes": [
+      "state_coordinates_hidden",
+      "single_image_request",
+      "image_detail_omitted"
+    ],
+    "individual_causal_attribution": false
+  },
+  "live_evidence": true,
+  "llm_superiority_claimed": false,
+  "model_role": "bbox_localization_only",
+  "outcome": "feature_confirmed_development_only",
+  "primary_criterion": {
+    "fresh_host_consistent": {
+      "required": 4,
+      "value": 4
+    },
+    "stale_host_quarantined": {
+      "required": 4,
+      "value": 4
+    },
+    "valid_localizations": {
+      "required": 8,
+      "value": 8
+    }
+  },
+  "rows": [
+    {
+      "case_id": "clip-01",
+      "expected_status": "inconsistent",
+      "frame_id": "f03",
+      "gate": "quarantine_visual_evidence",
+      "host_status": "inconsistent",
+      "slot_id": "clip-01-f03",
+      "timestamp_s": 3,
+      "valid_localization": true
+    },
+    {
+      "case_id": "clip-01",
+      "expected_status": "inconsistent",
+      "frame_id": "f06",
+      "gate": "quarantine_visual_evidence",
+      "host_status": "inconsistent",
+      "slot_id": "clip-01-f06",
+      "timestamp_s": 6,
+      "valid_localization": true
+    },
+    {
+      "case_id": "clip-02",
+      "expected_status": "consistent",
+      "frame_id": "f03",
+      "gate": "reviewed_consistent",
+      "host_status": "consistent",
+      "slot_id": "clip-02-f03",
+      "timestamp_s": 3,
+      "valid_localization": true
+    },
+    {
+      "case_id": "clip-02",
+      "expected_status": "consistent",
+      "frame_id": "f06",
+      "gate": "reviewed_consistent",
+      "host_status": "consistent",
+      "slot_id": "clip-02-f06",
+      "timestamp_s": 6,
+      "valid_localization": true
+    },
+    {
+      "case_id": "clip-03",
+      "expected_status": "inconsistent",
+      "frame_id": "f03",
+      "gate": "quarantine_visual_evidence",
+      "host_status": "inconsistent",
+      "slot_id": "clip-03-f03",
+      "timestamp_s": 3,
+      "valid_localization": true
+    },
+    {
+      "case_id": "clip-03",
+      "expected_status": "inconsistent",
+      "frame_id": "f06",
+      "gate": "quarantine_visual_evidence",
+      "host_status": "inconsistent",
+      "slot_id": "clip-03-f06",
+      "timestamp_s": 6,
+      "valid_localization": true
+    },
+    {
+      "case_id": "clip-04",
+      "expected_status": "consistent",
+      "frame_id": "f03",
+      "gate": "reviewed_consistent",
+      "host_status": "consistent",
+      "slot_id": "clip-04-f03",
+      "timestamp_s": 3,
+      "valid_localization": true
+    },
+    {
+      "case_id": "clip-04",
+      "expected_status": "consistent",
+      "frame_id": "f06",
+      "gate": "reviewed_consistent",
+      "host_status": "consistent",
+      "slot_id": "clip-04-f06",
+      "timestamp_s": 6,
+      "valid_localization": true
+    }
+  ],
+  "schema": "visual_localization_score_v2",
+  "scored_at": "2026-10-30T12:14:47.098647+00:00",
+  "used_for_behavior_or_recovery_decision": false
+}
