@@ -1,0 +1,313 @@
+{
+  "schema": "lineage_evaluation_gate_v1",
+  "status": "complete",
+  "planned_cases": 10,
+  "valid_pairs": 10,
+  "independent_valid_pairs": 10,
+  "excluded_total": 0,
+  "excluded": [],
+  "cases": [
+    {
+      "case_id": "case-01",
+      "seed": 2301,
+      "arm": "NONE",
+      "source_job": "none-s2301",
+      "reference_job": "none-s2301",
+      "label": "eligible",
+      "reason": "self_reference_normal_control",
+      "baseline_walks": true,
+      "fixed_verdict": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "expected_correction_interventions": 0,
+      "diagnosis_eligible": false,
+      "diagnosis_claimed": false,
+      "expected_action": "no_intervention"
+    },
+    {
+      "case_id": "case-02",
+      "seed": 2302,
+      "arm": "NONE",
+      "source_job": "none-s2302",
+      "reference_job": "none-s2302",
+      "label": "eligible",
+      "reason": "self_reference_normal_control",
+      "baseline_walks": true,
+      "fixed_verdict": {
+        "label": "healthy",
+        "failed": [],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": true,
+          "err_yaw_ratio": true
+        }
+      },
+      "expected_correction_interventions": 0,
+      "diagnosis_eligible": false,
+      "diagnosis_claimed": false,
+      "expected_action": "no_intervention"
+    },
+    {
+      "case_id": "case-03",
+      "seed": 2303,
+      "arm": "F1",
+      "source_job": "f1-s2303",
+      "reference_job": "none-s2303",
+      "label": "eligible",
+      "reason": "registered_failure_present",
+      "baseline_walks": true,
+      "fixed_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "expected_correction_interventions": 1,
+      "diagnosis_eligible": true,
+      "diagnosis_claimed": false,
+      "expected_action": "eligible_for_registered_loop"
+    },
+    {
+      "case_id": "case-04",
+      "seed": 2304,
+      "arm": "F1",
+      "source_job": "f1-s2304",
+      "reference_job": "none-s2304",
+      "label": "eligible",
+      "reason": "registered_failure_present",
+      "baseline_walks": true,
+      "fixed_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "expected_correction_interventions": 1,
+      "diagnosis_eligible": true,
+      "diagnosis_claimed": false,
+      "expected_action": "eligible_for_registered_loop"
+    },
+    {
+      "case_id": "case-05",
+      "seed": 2305,
+      "arm": "F2",
+      "source_job": "f2-s2305",
+      "reference_job": "none-s2305",
+      "label": "eligible",
+      "reason": "registered_failure_present",
+      "baseline_walks": true,
+      "fixed_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "expected_correction_interventions": 1,
+      "diagnosis_eligible": true,
+      "diagnosis_claimed": false,
+      "expected_action": "eligible_for_registered_loop"
+    },
+    {
+      "case_id": "case-06",
+      "seed": 2306,
+      "arm": "F2",
+      "source_job": "f2-s2306",
+      "reference_job": "none-s2306",
+      "label": "eligible",
+      "reason": "registered_failure_present",
+      "baseline_walks": true,
+      "fixed_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "expected_correction_interventions": 1,
+      "diagnosis_eligible": true,
+      "diagnosis_claimed": false,
+      "expected_action": "eligible_for_registered_loop"
+    },
+    {
+      "case_id": "case-07",
+      "seed": 2307,
+      "arm": "COMPOUND",
+      "source_job": "compound-s2307",
+      "reference_job": "none-s2307",
+      "label": "eligible",
+      "reason": "registered_failure_present",
+      "baseline_walks": true,
+      "fixed_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "expected_correction_interventions": 1,
+      "diagnosis_eligible": true,
+      "diagnosis_claimed": false,
+      "expected_action": "eligible_for_registered_loop"
+    },
+    {
+      "case_id": "case-08",
+      "seed": 2308,
+      "arm": "COMPOUND",
+      "source_job": "compound-s2308",
+      "reference_job": "none-s2308",
+      "label": "eligible",
+      "reason": "registered_failure_present",
+      "baseline_walks": true,
+      "fixed_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "expected_correction_interventions": 1,
+      "diagnosis_eligible": true,
+      "diagnosis_claimed": false,
+      "expected_action": "eligible_for_registered_loop"
+    },
+    {
+      "case_id": "case-09",
+      "seed": 2309,
+      "arm": "F5",
+      "source_job": "f5-s2309",
+      "reference_job": "none-s2309",
+      "label": "out_of_support",
+      "reason": "failure_present_but_no_registered_correction",
+      "baseline_walks": true,
+      "fixed_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": true,
+          "fall_frac": true,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "expected_correction_interventions": 0,
+      "diagnosis_eligible": true,
+      "diagnosis_claimed": false,
+      "expected_action": "HOLD"
+    },
+    {
+      "case_id": "case-10",
+      "seed": 2310,
+      "arm": "F3",
+      "source_job": "f3-s2310",
+      "reference_job": "none-s2310",
+      "label": "out_of_support",
+      "reason": "failure_present_but_no_registered_correction",
+      "baseline_walks": true,
+      "fixed_verdict": {
+        "label": "unhealthy",
+        "failed": [
+          "survival_ratio",
+          "fall_frac",
+          "err_xy_ratio",
+          "err_yaw_ratio"
+        ],
+        "short_horizon": false,
+        "checks": {
+          "survival_ratio": false,
+          "fall_frac": false,
+          "err_xy_ratio": false,
+          "err_yaw_ratio": false
+        }
+      },
+      "expected_correction_interventions": 0,
+      "diagnosis_eligible": true,
+      "diagnosis_claimed": false,
+      "expected_action": "HOLD"
+    }
+  ],
+  "label_counts": {
+    "baseline_invalid": 0,
+    "source_failure_absent": 0,
+    "measurement_unknown": 0,
+    "eligible": 8,
+    "out_of_support": 2
+  },
+  "duplicate_checkpoint_groups": [],
+  "independent_case_count": 10,
+  "cause_scope": {
+    "source_arm_is_preregistered_metadata": true,
+    "diagnosis_performed": false,
+    "f3_f5_expected_action": "HOLD_out_of_registered_correction_support"
+  },
+  "development_coupling": {
+    "scope": "label_development_after_source_collection",
+    "heldout_claim": false,
+    "generalization_claim": false,
+    "source_protocol_next_stage_registered": false,
+    "report_index_is_post_collection_input": true
+  },
+  "fixed_evaluation": {
+    "conditions": 26,
+    "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "bands_sha256": "7589a132d4e1a55e159527389a8b635a1766472ecde558da0a1a704c286f3f23"
+  }
+}
