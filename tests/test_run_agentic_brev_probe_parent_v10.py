@@ -15,8 +15,6 @@ ROOT = next(path for path in HERE.parents if (path / "AGENTS.md").is_file())
 sys.path[:0] = [str(CANDIDATE / "bench"), str(CANDIDATE / "evals"),
                 str(ROOT / "evals"), str(ROOT / "bench"), str(ROOT / "src")]
 M = importlib.import_module("run_agentic_brev_probe_parent_v10")
-ACTUAL = (ROOT / "bench/private/claude_reward_track_20261013/codex_main_20261025/vision_goal"
-          / "ri_native_relative_lifecycle_retry_170/posix-parent-v17-r1/final-graph-v1/producer-inputs/binding.json")
 
 
 def sha(path: Path) -> str:
@@ -29,13 +27,37 @@ def write(path: Path, value: str) -> None:
 
 
 def projection(tmp_path: Path) -> tuple[dict, dict, Path]:
-    binding = json.loads(ACTUAL.read_text(encoding="utf-8"))
     home, repo = tmp_path / "home", tmp_path / "home/repo"
     repo.mkdir(parents=True)
-    protocol = {"layout": {"repo": "repo", "isaaclab": "lab", "python": "python"},
-                "execution_root": ".triage-runtime/fresh-pair-ri170-h-v1/execution"}
+    remote_pair = "/remote/repo/.triage-runtime/fresh-pair-fixture"
     registration = tmp_path / "registration"
     registration.mkdir()
+    operations = {}
+    roots = [{"remote": remote_pair + "/registration", "local": str(registration)}]
+    for index, arm in enumerate(M.V1.ORDER, start=1):
+        operation_id = f"{index:064x}"
+        remote_operation = f"{remote_pair}/execution/operations/{operation_id}"
+        operations[arm] = {
+            "operation_id": operation_id,
+            "remote_stage": remote_operation + "/raw",
+            "host_stage": str(tmp_path / "archive/execution/operations" / operation_id / "raw"),
+            "source_roots": [],
+        }
+        roots.append({
+            "remote": remote_operation + "/gpu-observations",
+            "local": str(registration / "gpu-observations" / operation_id),
+        })
+    binding = {
+        "roots": roots,
+        "expected_request": {
+            "execution": {
+                "pair_id": "f" * 64,
+                "operations": operations,
+            },
+        },
+    }
+    protocol = {"layout": {"repo": "repo", "isaaclab": "lab", "python": "python"},
+                "execution_root": ".triage-runtime/fresh-pair-fixture/execution"}
     registration_rows = [row for row in binding["roots"] if row["remote"].endswith("/registration")]
     assert len(registration_rows) == 1
     registration_rows[0]["local"] = str(registration)
