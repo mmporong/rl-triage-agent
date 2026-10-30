@@ -1,0 +1,242 @@
+{
+  "acceptance": {
+    "behavior": {
+      "accepted": 2,
+      "total": 2
+    },
+    "down": {
+      "root_dx_m": 2.826895236968994,
+      "root_dz_m": -0.6734259128570557
+    },
+    "technical": {
+      "accepted": 2,
+      "total": 2
+    },
+    "up": {
+      "root_dx_m": 2.976639986038208,
+      "root_dz_m": 0.5790612101554871
+    }
+  },
+  "claims": {
+    "go2_included": false,
+    "model_api": 0,
+    "new_training": 0,
+    "rl_triage_recovery": false,
+    "rl_triage_transfer": false
+  },
+  "clips": [
+    {
+      "assessment": {
+        "height_condition_pass": true,
+        "outcome": "completed",
+        "progress_condition_pass": true,
+        "root_dx_m": 2.976639986038208,
+        "root_dz_m": 0.5790612101554871,
+        "termination_seen": false,
+        "trace_rows": 626
+      },
+      "clip_id": "biped-stairs-up",
+      "exact_frames_sha256": "da80560fb45edcae16634fbcbfa865941e643f4c74db6b4cac5fe2c5510c9742",
+      "manifest_sha256": "78040636212a19853a71b2384d7a53d934bc5ee6280cc2fb8c725a837c08af3f",
+      "shutdown": {
+        "child_pid": 75964,
+        "natural_exit_before_close_return": true,
+        "shutdown_policy_sha256": "87cf1085d35f7bf9e02af4258cbec469650b8613681df78e90c6da26859e8733",
+        "terminal_evidence_sha256": "21de9a70013a1c49b431ee872d0f702515bf743e777a0e6fab3d4b358d984853"
+      },
+      "spec_sha256": "e6c1ca26213ab9f77d7317b3cf78839091fa8d215a623c4852218d5725237acf",
+      "trace_sha256": "ef305c390f11842ed04dd0d8a835af5159e02c93a9a51763008591d2f6831e07",
+      "video_probe": {
+        "duration": "12.500000",
+        "nb_read_frames": "625",
+        "r_frame_rate": "50/1"
+      },
+      "video_sha256": "82107853548545c0977b8488acd45931689c1de737db29d931d1735505367f10"
+    },
+    {
+      "assessment": {
+        "height_condition_pass": true,
+        "outcome": "completed",
+        "progress_condition_pass": true,
+        "root_dx_m": 2.826895236968994,
+        "root_dz_m": -0.6734259128570557,
+        "termination_seen": false,
+        "trace_rows": 626
+      },
+      "clip_id": "biped-stairs-down",
+      "exact_frames_sha256": "29b623979d50c69528653e930ea23bb45b45ca0960fedc5ebe6a991df37083b4",
+      "manifest_sha256": "5ca9568a1eb08f1212f3c8af371e386934f5557fa1fc50eecfeb445a88fc7b51",
+      "shutdown": {
+        "child_pid": 149400,
+        "natural_exit_before_close_return": true,
+        "shutdown_policy_sha256": "77807dd343141c90270effc444cd1621cfe014d1d4f66735129784624cdbc123",
+        "terminal_evidence_sha256": "9cf6113ce9dbab2ab2d3d639c370cd22f8457d7aeaae0c1f35a030469bb60323"
+      },
+      "spec_sha256": "3a55e8c93d36b51f3aaca081f655829e618faaa63e13bd2c29b5153c8076e597",
+      "trace_sha256": "79461bec8584b79d1bff15ff5c60f7c16b46141fc8fb6b29148d76ca6c011300",
+      "video_probe": {
+        "duration": "12.500000",
+        "nb_read_frames": "625",
+        "r_frame_rate": "50/1"
+      },
+      "video_sha256": "51e79c53a2011ed493773edf3728587faf11334601146cba57ffdb782010f573"
+    }
+  ],
+  "condition": {
+    "command_x_m_s": 0.25,
+    "duration_s": 12.5,
+    "fps": 50,
+    "frames": 625,
+    "seed": 172,
+    "step_height_m": 0.1,
+    "step_width_m": 0.3
+  },
+  "copied_files": [
+    {
+      "bytes": 258,
+      "path": "biped-stairs-up/intent.json",
+      "sha256": "d4ddd076ec2f87028d4e703d630395f92d1da4bbe8c4678878d4c85d00449d8a"
+    },
+    {
+      "bytes": 3442,
+      "path": "biped-stairs-up/manifest.json",
+      "sha256": "78040636212a19853a71b2384d7a53d934bc5ee6280cc2fb8c725a837c08af3f"
+    },
+    {
+      "bytes": 221021,
+      "path": "biped-stairs-up/state-trace.jsonl",
+      "sha256": "ef305c390f11842ed04dd0d8a835af5159e02c93a9a51763008591d2f6831e07"
+    },
+    {
+      "bytes": 1332566,
+      "path": "biped-stairs-up/video/rl-video-step-0.mp4",
+      "sha256": "82107853548545c0977b8488acd45931689c1de737db29d931d1735505367f10"
+    },
+    {
+      "bytes": 72695,
+      "path": "biped-stairs-up/video/rl-video-step-0.mp4.exact-frames.json",
+      "sha256": "da80560fb45edcae16634fbcbfa865941e643f4c74db6b4cac5fe2c5510c9742"
+    },
+    {
+      "bytes": 193,
+      "path": "biped-stairs-up/shutdown/01-app-startup.json",
+      "sha256": "8ebb6d3c66d93e706549e79bd787bc9b96e5ce8f32bf4cb4f553fad73f36aa33"
+    },
+    {
+      "bytes": 237,
+      "path": "biped-stairs-up/shutdown/02-result-ready.json",
+      "sha256": "70607a73d334aaa2df5a2f526296b8b1bf124ecea6be4e1efa740cfb6b42351a"
+    },
+    {
+      "bytes": 153,
+      "path": "biped-stairs-up/shutdown/03-app-close-entered.json",
+      "sha256": "546aa912283fd80a84134dbadb58fe7daea7f5925a59f070f3f44c01bdfd2a41"
+    },
+    {
+      "bytes": 215,
+      "path": "biped-stairs-up/terminal-shutdown/01-app-startup.json",
+      "sha256": "10ea66602d36f6bdeb7acbe7104d9a65c9bb97b05c9dccf88c5ebf382bdd291a"
+    },
+    {
+      "bytes": 1801,
+      "path": "biped-stairs-up/terminal-shutdown/02-terminal-evidence.json",
+      "sha256": "21de9a70013a1c49b431ee872d0f702515bf743e777a0e6fab3d4b358d984853"
+    },
+    {
+      "bytes": 352,
+      "path": "biped-stairs-up/terminal-shutdown/03-shutdown-policy.json",
+      "sha256": "87cf1085d35f7bf9e02af4258cbec469650b8613681df78e90c6da26859e8733"
+    },
+    {
+      "bytes": 272,
+      "path": "biped-stairs-up/terminal-shutdown/04-sdk-close-entered.json",
+      "sha256": "e0344caa69021fa2699a8da589279c34940a8d65d278c759602f711703f4d82e"
+    },
+    {
+      "bytes": 258,
+      "path": "biped-stairs-down/intent.json",
+      "sha256": "acac15a4bde8cbc27ee8a3f20087efe7191c1de7c79035ce2a09d6668e5e8fa1"
+    },
+    {
+      "bytes": 3446,
+      "path": "biped-stairs-down/manifest.json",
+      "sha256": "5ca9568a1eb08f1212f3c8af371e386934f5557fa1fc50eecfeb445a88fc7b51"
+    },
+    {
+      "bytes": 220954,
+      "path": "biped-stairs-down/state-trace.jsonl",
+      "sha256": "79461bec8584b79d1bff15ff5c60f7c16b46141fc8fb6b29148d76ca6c011300"
+    },
+    {
+      "bytes": 1192164,
+      "path": "biped-stairs-down/video/rl-video-step-0.mp4",
+      "sha256": "51e79c53a2011ed493773edf3728587faf11334601146cba57ffdb782010f573"
+    },
+    {
+      "bytes": 72695,
+      "path": "biped-stairs-down/video/rl-video-step-0.mp4.exact-frames.json",
+      "sha256": "29b623979d50c69528653e930ea23bb45b45ca0960fedc5ebe6a991df37083b4"
+    },
+    {
+      "bytes": 194,
+      "path": "biped-stairs-down/shutdown/01-app-startup.json",
+      "sha256": "8ff99e336d8e5c844e3ec4d7aa4e98c89a95277d51ada31f28388dd2cd37f538"
+    },
+    {
+      "bytes": 238,
+      "path": "biped-stairs-down/shutdown/02-result-ready.json",
+      "sha256": "88e2bd8458afefdfa4f17e9b5aaa5dc510afc49dd3644cc6b8b0cf2600ad930b"
+    },
+    {
+      "bytes": 154,
+      "path": "biped-stairs-down/shutdown/03-app-close-entered.json",
+      "sha256": "eaaef2a1e8255894e41f1db000f3c4b681de612b98f98ac7ebbece184f8006f1"
+    },
+    {
+      "bytes": 216,
+      "path": "biped-stairs-down/terminal-shutdown/01-app-startup.json",
+      "sha256": "b0120d9f502d603a978d6c27d17bcf52efc3448363d9586debf1851bf1901d34"
+    },
+    {
+      "bytes": 1805,
+      "path": "biped-stairs-down/terminal-shutdown/02-terminal-evidence.json",
+      "sha256": "9cf6113ce9dbab2ab2d3d639c370cd22f8457d7aeaae0c1f35a030469bb60323"
+    },
+    {
+      "bytes": 353,
+      "path": "biped-stairs-down/terminal-shutdown/03-shutdown-policy.json",
+      "sha256": "77807dd343141c90270effc444cd1621cfe014d1d4f66735129784624cdbc123"
+    },
+    {
+      "bytes": 273,
+      "path": "biped-stairs-down/terminal-shutdown/04-sdk-close-entered.json",
+      "sha256": "e46f640165952d90285b7c95321c17727c391bdcf0b93c5282551e7fdc46a905"
+    }
+  ],
+  "excluded_private_spec": {
+    "down_spec_sha256": "3a55e8c93d36b51f3aaca081f655829e618faaa63e13bd2c29b5153c8076e597",
+    "reason": "checkpoint absolute path",
+    "up_spec_sha256": "e6c1ca26213ab9f77d7317b3cf78839091fa8d215a623c4852218d5725237acf"
+  },
+  "official_pretrained_checkpoint": {
+    "bytes": 7150946,
+    "sha256": "15710657f43b714ddfe249d1a56db1d27682fb7801101f88dbe5a6bf17898a88",
+    "task_id": "Isaac-Velocity-Rough-H1-v0",
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/IsaacLab/PretrainedCheckpoints/rsl_rl/Isaac-Velocity-Rough-H1-v0/checkpoint.pt"
+  },
+  "runtime": {
+    "gymnasium": "1.2.0",
+    "isaaclab": "0.41.3",
+    "isaaclab_rl": "0.1.8",
+    "python": "3.10.15",
+    "rsl_rl": "2.3.3",
+    "torch": "2.7.0+cu128"
+  },
+  "schema": "stairs_h1_public_source_manifest_v1",
+  "scope": "h1_only",
+  "sources": {
+    "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "native_wrapper_sha256_lf": "90c25252f171f6a85f247828df35c2cc23502511cb4b13b117780b90bfdb67fc",
+    "runner_sha256_lf": "6858d73783ce02fecee6f901033660fd115c17f139d2937e07728fc25c075b5a"
+  }
+}

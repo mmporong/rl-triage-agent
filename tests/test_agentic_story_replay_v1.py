@@ -58,6 +58,12 @@ def _git(repo: Path, *args: str) -> None:
                     "-c", "core.autocrlf=false", *args], check=True, capture_output=True)
 
 
+def _rendered_videos(html: str) -> dict[str, str]:
+    return {src: sha for sha, src in re.findall(
+        r'<video[^>]* data-sha256="([0-9a-f]{64})" src="([^"]+)"', html
+    )}
+
+
 @pytest.fixture
 def mirror(tmp_path, built):
     """화면이 읽은 공개 파일만 복사해 커밋한 임시 저장소."""
@@ -138,12 +144,39 @@ def test_html_references_no_external_resource_and_binds_existing_videos(built):
     assert not re.search(r"https?:", html, re.IGNORECASE) and not re.search(
         r"(?:src|href)\s*=\s*[\"']?//", html
     )
-    sources = re.findall(r'<video[^>]* data-sha256="([0-9a-f]{64})" src="([^"]+)"', html)
-    assert [src for _, src in sources] == ["../media/agentic_f1_fresh_render_dev_20261029h_v1/reference.mp4",
-                                           "../media/agentic_f1_fresh_render_dev_20261029h_v1/case.mp4"]
-    assert [sha for sha, _ in sources] == [_sha(ROOT / REFERENCE_VIDEO), _sha(ROOT / CASE_VIDEO)]
-    assert all(slot["status"] == "waiting" and slot["video"] is None for slot in data["stairs"])
-    assert "교정 영상 아님" in html and html.count("<video") == 2
+    sources = _rendered_videos(html)
+    assert sources["../media/agentic_f1_fresh_render_dev_20261029h_v1/reference.mp4"] == _sha(ROOT / REFERENCE_VIDEO)
+    assert sources["../media/agentic_f1_fresh_render_dev_20261029h_v1/case.mp4"] == _sha(ROOT / CASE_VIDEO)
+    ready_stairs = [slot for slot in data["stairs"] if slot["status"] == "ready"]
+    for slot in ready_stairs:
+        relative = "../" + Path(slot["video"]["path"]).relative_to("docs").as_posix()
+        assert sources[relative] == slot["video"]["sha256"]
+    assert len(sources) == 2 + len(ready_stairs)
+    assert "교정 영상 아님" in html and html.count("<video") == len(sources)
+
+
+def test_repository_stairs_snapshot_requires_commit_and_matching_sha(built):
+    data, _ = built
+    for slot in data["stairs"]:
+        manifest = slot["manifest"]
+        if manifest is None:
+            assert (slot["status"], slot["reason"]) == ("waiting", "public_manifest_missing")
+            continue
+        tracked = subprocess.run(
+            ["git", "-C", str(ROOT), "ls-files", "--error-unmatch", manifest["path"]],
+            check=False, capture_output=True,
+        ).returncode == 0
+        if not tracked:
+            assert (slot["status"], slot["reason"]) == ("waiting", "manifest_not_committed")
+            continue
+        assert manifest["sha256"] == _sha(ROOT / manifest["path"])
+        if slot["status"] == "ready":
+            video = slot["video"]
+            assert video is not None and video["sha256"] == video["expected_sha256"] == _sha(ROOT / video["path"])
+            assert subprocess.run(
+                ["git", "-C", str(ROOT), "ls-files", "--error-unmatch", video["path"]],
+                check=False, capture_output=True,
+            ).returncode == 0
 
 
 def test_selector_or_model_mixing_is_rejected(built):
@@ -175,7 +208,10 @@ def test_missing_changed_or_stale_video_is_not_ready(mirror):
     videos = {video["path"]: video for video in _lane(data, "fresh35")["videos"]}
     assert (videos[CASE_VIDEO]["status"], videos[CASE_VIDEO]["reason"]) == ("waiting", "missing")
     assert (videos[REFERENCE_VIDEO]["status"], videos[REFERENCE_VIDEO]["reason"]) == ("mismatch", "modified_since_commit")
-    assert "<video" not in S.render(data, mirror)
+    rendered = _rendered_videos(S.render(data, mirror))
+    assert "../media/agentic_f1_fresh_render_dev_20261029h_v1/case.mp4" not in rendered
+    assert "../media/agentic_f1_fresh_render_dev_20261029h_v1/reference.mp4" not in rendered
+    assert len(rendered) == sum(slot["status"] == "ready" for slot in data["stairs"])
 
     story = S.Story(ROOT)
     story.stale_videos = {_sha(ROOT / CASE_VIDEO)}
@@ -199,6 +235,13 @@ def _stairs_fixture(root: Path, folder: str, role: str, direction: str, tasks: t
 
 
 def test_stairs_slot_is_ready_only_with_committed_manifest_and_matching_video(mirror):
+    for manifest in mirror.glob("docs/media/**/manifest.json"):
+        if json.loads(manifest.read_text(encoding="utf-8")).get("schema") == S.STAIRS_SCHEMA:
+            shutil.rmtree(manifest.parent)
+    if subprocess.run(["git", "-C", str(mirror), "status", "--porcelain"], check=False,
+                      capture_output=True, text=True).stdout:
+        _git(mirror, "add", "-A")
+        _git(mirror, "commit", "-q", "-m", "remove inherited stairs")
     base = _stairs_fixture(mirror, "stairs_synthetic_cpu_go2_up", "quadruped", "up", S.STAIRS_TASKS["quadruped"])
     _stairs_fixture(mirror, "stairs_synthetic_cpu_h1_down", "biped", "down", S.STAIRS_TASKS["quadruped"])
     slots = {slot["id"]: slot for slot in S.build(mirror)["stairs"]}

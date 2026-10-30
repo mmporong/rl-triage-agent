@@ -432,12 +432,15 @@ def build(root: Path = ROOT) -> dict:
     audit, _ = story.doc(RENDER_AUDIT, None)
     story.stale_videos = {row["video_sha256"] for row in audit["native_source_hashes"].values()}
     lanes = [lane_r1(story), lane_residual_v1(story), lane_residual_v2(story), lane_u1(story), lane_fresh(story)]
+    stairs = stairs_slots(story)
     sources = {}
     for path, row in story.sources.rows.items():
+        if row["kind"] == "stairs_manifest" and row["status"] != "ready":
+            continue
         sources[path] = {"sid": story.ids.get(path), "path": row["path"], "kind": row["kind"], "sha256": row["sha256"],
                          "status": row["status"], "reason": row["reason"],
                          "model": story.models.get(path) if path in story.ids else None}
-    data = {"schema": SCHEMA, "scope": SCOPE, "lanes": lanes, "stairs": stairs_slots(story), "sources": sources}
+    data = {"schema": SCHEMA, "scope": SCOPE, "lanes": lanes, "stairs": stairs, "sources": sources}
     check_story(data, story.root)
     return data
 

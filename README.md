@@ -22,6 +22,8 @@ In the reward-frame fault below, episodes last almost to the time limit and the 
 
 Newer same-Play recordings for seed 2221 show a healthy policy and an F1 (reward-frame) fault policy, 625 frames at 50 fps each: [healthy](docs/media/agentic_f1_fresh_render_dev_20261029h_v1/reference.mp4) · [fault](docs/media/agentic_f1_fresh_render_dev_20261029h_v1/case.mp4) · [provenance](docs/media/agentic_f1_fresh_render_dev_20261029h_v1/source_manifest.json). They compare a healthy and a faulty policy; they are not a recovery video.
 
+Official pretrained H1 playback on stairs: [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) · [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4) · [source and measurements](docs/media/stairs_h1_s172_20261030_v1/README.md). These clips show policy playback; they do not establish RL Triage diagnosis or recovery on stairs.
+
 ## How it works
 
 1. **Notice.** A tracking alarm and a fixed evaluation over 26 velocity commands show that the policy does not follow commands.

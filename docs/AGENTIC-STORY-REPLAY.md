@@ -21,7 +21,7 @@ PYTHONUTF8=1 PYTHONPATH=src python -m pytest -q -p no:cacheprovider tests/test_a
 | F1+R1 복합 결함 v2, seed 2120·2121 | `evals/results/residual_success_public_20261017/{summary,model_audit}.json` | 두 고리 모두 model 선택, 첫 교정 not_recovered → 두 번째 교정 뒤 recovered. 최종 체크포인트가 같은 seed 정상과 같음 |
 | U1 함수군 교정, seed 2051·2062 | `evals/results/{u1_scope_extension_s2051_20261015,novel_u1_scope_confirmation_s2062_20261016}/` | 모델 호출 0회, 검사 선택 주체 host, recovered |
 | 새 3.5 fresh-frame, seed 2221 | `evals/results/fresh_frame_probe_choice_dev_s2221_20261029_v1/`, `fresh_frame_runtime_{prefix,operation}_*`, `agentic_f1_fresh_render_dev_20261029h_v1/summary.json`, `fresh_brev_render_creation_20261029f_v1/summary.json`, `docs/media/agentic_f1_fresh_render_dev_20261029h_v1/` | `P_reward` 선택과 telemetry 인용 6·frame 인용 0까지. 검사·판단·교정·회복은 pending. 이전 렌더 환경 생성은 실행 실패로 표시 |
-| H1·Go2 계단 슬롯 4개 | `docs/media/**/manifest.json` 중 `stairs_playback_manifest_v2` | 현재 공개 manifest가 없어 4개 모두 대기 |
+| H1·Go2 계단 슬롯 4개 | `docs/media/**/manifest.json` 중 `stairs_playback_manifest_v2` | 커밋된 manifest와 같은 SHA의 영상만 ready로 계산하며 나머지는 대기 또는 불일치 |
 | 원문 결합 | 위 파일 전체 | 경로·sha256·커밋 상태·모델 실행 |
 
 칸마다 `S번호#JSON pointer`를 붙인다. 테스트는 모든 칸의 pointer 값을 원문에서 다시 읽어 화면 값과 비교한다.
@@ -41,4 +41,4 @@ PYTHONUTF8=1 PYTHONPATH=src python -m pytest -q -p no:cacheprovider tests/test_a
 - CPU: `tests/test_agentic_story_replay_v1.py` 9개 통과. 기존 `test_build_transferred_vision_replay_v1.py`와 `test_replay_page.py`의 Sources 판정 테스트 8개 통과. `--check` current.
 - 브라우저: 이 PC의 Chrome 확장은 localhost 서버에 연결하지 못했다(`ERR_CONNECTION_REFUSED`). 대신 headless Edge를 1920×1080으로 띄워 CDP로 확인했다. 8개 화면 모두 overflow 0, 잘린 칸 0. 외부 요청 0. 영상 2개 모두 metadata 로드(12.5초, 640×480), 3초 seek, 재생 중 시간 증가를 확인했다. Range 요청을 지원하지 않는 `python -m http.server`에서는 seek가 0초로 돌아가므로 Range를 지원하는 정적 서버로 확인했다.
 
-이 화면은 이미 본 seed의 개발 기록을 다시 보여 줄 뿐 새 실험 결과가 아니다. 3.5 경로의 검사·교정·회복과 영상의 검사 선택 기여는 아직 측정하지 않았다. H1·Go2 계단 영상도 공개 전이며, manifest와 영상이 커밋되면 HTML을 다시 생성한다.
+이 화면은 이미 본 seed의 개발 기록을 다시 보여 줄 뿐 새 실험 결과가 아니다. 3.5 경로의 검사·교정·회복과 영상의 검사 선택 기여는 아직 측정하지 않았다. H1·Go2 계단 슬롯의 ready 수는 HTML을 생성한 시점에 커밋된 manifest와 영상 SHA를 기준으로 계산한다. 새 계단 자료를 커밋한 뒤에는 HTML을 다시 생성해야 한다.
