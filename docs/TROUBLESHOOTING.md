@@ -778,3 +778,10 @@
 - 확인: 회수한 `job.json`을 기존 worker 검증 함수에 넣어 `입력 경로가 허용된 workspace를 벗어났다`를 재현했다. 입력 archive는 현재 저장소의 등록 폴더에 풀렸지만 source root-map의 local 값이 과거 workspace를 가리켜, checkpoint와 학습 manifest가 worker의 허용 root 밖 경로로 전달됐다.
 - 수정: [Runtime44](../bench/protocols/agentic_runtime_text_s2221_20261030_v44.json)·[Parent13](../bench/protocols/agentic_runtime_text_s2221_pair_fresh_20261030_v13.json)은 source의 논리 경로·SHA·원문을 유지하면서 local 배치를 등록된 압축 해제 위치와 맞춘다. 새 실제 경로도 같은 원문으로 해석하도록 evidence root-map을 결합한다. 교정 단계의 lease basis는 현재 Time10 판으로 연결한다. worker의 경로 검증, 검사 크기와 판정 기준은 바꾸지 않는다.
 - 검증: 기존 job 거부와 수정 배치 후 worker 통과를 CPU에서 확인했다. 새 graph의 두 정책 checkpoint·manifest 네 개의 SHA와 두 `E._source` 검증도 통과했다. 이 확인은 새 GPU 검사나 회복 결과를 뜻하지 않는다. 이전 실패 기록은 보존하며, 실패 원문은 같은 실행 수명에서 회수하도록 준비했다.
+
+### OPS-109: 입력 배치 변경과 실제 업로더의 계약 결합
+
+- 관찰: Parent13은 원격 환경 확인 뒤 `registered historical source namespace changed`로 중단됐다. 검사·학습·새 모델 호출 전 실패였으며 이전 원문은 보존했다.
+- 확인: Main에 주입된 업로더가 과거 source root의 local·remote 경로가 같아야 한다고 검사했다. 생성자·Host 검증과 worker 입력 검증만으로는 이 업로드 함수의 조건을 확인할 수 없었다.
+- 수정: [Runtime45](../bench/protocols/agentic_runtime_text_s2221_20261030_v45.json)·[Parent14](../bench/protocols/agentic_runtime_text_s2221_pair_fresh_20261030_v14.json)은 현재 저장소 안의 등록 입력 배치를 업로더와 함께 결합한다. source archive는 그 위치 한 곳에 설치하고, 논리 참조·원문 SHA·경로와 링크 검증을 유지한다.
+- 검증: 실제 등록 파일과 operator의 참조 읽기·archive 생성·복사 경로 함수를 사용해 업로더 전체의 script 3건·copy 2건을 CPU에서 확인했다. 전송을 수행하지 않는 driver로 생성 Python 본문까지 검사했다. GPU 실행 전 같은 준비 함수가 실제로 소비되는지 확인하며, 이 계획 검증을 원격 실행 성공으로 계산하지 않는다.
