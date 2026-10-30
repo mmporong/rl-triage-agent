@@ -785,3 +785,10 @@
 - 확인: Main에 주입된 업로더가 과거 source root의 local·remote 경로가 같아야 한다고 검사했다. 생성자·Host 검증과 worker 입력 검증만으로는 이 업로드 함수의 조건을 확인할 수 없었다.
 - 수정: [Runtime45](../bench/protocols/agentic_runtime_text_s2221_20261030_v45.json)·[Parent14](../bench/protocols/agentic_runtime_text_s2221_pair_fresh_20261030_v14.json)은 현재 저장소 안의 등록 입력 배치를 업로더와 함께 결합한다. source archive는 그 위치 한 곳에 설치하고, 논리 참조·원문 SHA·경로와 링크 검증을 유지한다.
 - 검증: 실제 등록 파일과 operator의 참조 읽기·archive 생성·복사 경로 함수를 사용해 업로더 전체의 script 3건·copy 2건을 CPU에서 확인했다. 전송을 수행하지 않는 driver로 생성 Python 본문까지 검사했다. GPU 실행 전 같은 준비 함수가 실제로 소비되는지 확인하며, 이 계획 검증을 원격 실행 성공으로 계산하지 않는다.
+
+### OPS-110: 실제 실행 환경 서명과 등록 기대값의 불일치
+
+- 관찰: Runtime45의 정상 대조 `P_reward` worker는 31.97초·exit 0으로 완료됐고, source 전후 일치와 자식 정리도 통과했다. 상위 고리는 완료 증거를 봉인하지 못해 후속 교정을 시작하지 않았다.
+- 확인: 실제 source snapshot에는 CUDA 가용성·장치 수가 있지만 기대값에는 두 항목이 없었다. Python의 `base_prefix`도 등록된 시스템 경로와 실측 uv 경로가 달랐다. 전체 snapshot 일치를 요구하는 production 조건이 이 입력을 거부함을 재계산했다. Parent outcome 본문은 회수하지 못했으므로 유일한 최종 원인이라고 단정하지 않는다.
+- 수정: [Runtime46](../bench/protocols/agentic_runtime_text_s2221_20261030_v46.json)·[Parent15](../bench/protocols/agentic_runtime_text_s2221_pair_fresh_20261030_v15.json)에 실측 메타데이터 세 항목만 다시 결합한다. 검사와 교정·평가의 기대 snapshot을 함께 맞추고, 다른 버전·패키지·소스·체크포인트 변경은 거부한다. 실행 시에는 별도의 fresh GPU proof가 필요하다.
+- 검증: 원문 재계산·부정 변형 검사 3건이 통과했다. 새 검사 기대값, 새 회복 기대값, 실제 실행 전후 snapshot이 같은지도 확인했다. 검증 조건을 완화하거나 이 환경 서명 후보를 실행 권한으로 쓰지 않는다.
