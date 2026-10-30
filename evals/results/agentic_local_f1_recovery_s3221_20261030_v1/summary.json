@@ -1,0 +1,126 @@
+{
+  "diagnosis_seed": 2221,
+  "fault": "F1_reward_frame",
+  "fixed_evaluation": {
+    "CORRECTED": {
+      "arm": "CORRECTED",
+      "condition_count": 26,
+      "elapsed_s": 34.4,
+      "horizon_steps": 1000,
+      "metrics": {
+        "fall_rate": 0.000961538462433964,
+        "lin_vel_rmse_mps": 0.14470329226290674,
+        "mean_survival_s": 19.989365234375,
+        "yaw_rate_rmse_radps": 0.2879330116031444
+      },
+      "num_envs": 1040,
+      "protocol": "fixed_eval_v1",
+      "source_report": {
+        "bytes": 9799,
+        "logical_ref": "CORRECTED.json",
+        "sha256": "2bc36b595c266d38d664c45a1811ad7fced9e22dce8bd5806a36aecc15fd8ff7"
+      },
+      "standstill": {
+        "lin_vel_rmse_mps": 1.1766968108291043,
+        "yaw_rate_rmse_radps": 0.8320502943378437
+      },
+      "step_dt": 0.02
+    },
+    "NONE": {
+      "arm": "NONE",
+      "condition_count": 26,
+      "elapsed_s": 34.7,
+      "horizon_steps": 1000,
+      "metrics": {
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.14863169665926573,
+        "mean_survival_s": 20.0,
+        "yaw_rate_rmse_radps": 0.17775291304273638
+      },
+      "num_envs": 1040,
+      "protocol": "fixed_eval_v1",
+      "source_report": {
+        "bytes": 9747,
+        "logical_ref": "NONE.json",
+        "sha256": "bfd6ef748046b1e5df069879198d28282589408677c2c33235c849a834541ead"
+      },
+      "standstill": {
+        "lin_vel_rmse_mps": 1.1766968108291043,
+        "yaw_rate_rmse_radps": 0.8320502943378437
+      },
+      "step_dt": 0.02
+    },
+    "criterion_pass": {
+      "fall_rate": true,
+      "linear_velocity_ratio": true,
+      "survival_ratio": true,
+      "yaw_rate_ratio": false
+    },
+    "ratios": {
+      "err_xy_ratio": 0.9735695380954659,
+      "err_yaw_ratio": 1.6198497491510468,
+      "fall_frac": 0.000961538462433964,
+      "survival_ratio": 0.99946826171875
+    },
+    "registered_criteria": {
+      "fall_rate_max": 0.05,
+      "lin_vel_rmse_ratio_max": 1.1513,
+      "survival_ratio_min": 0.9,
+      "yaw_rate_rmse_ratio_max": 1.1719
+    }
+  },
+  "flow": [
+    "model_selected_P_reward",
+    "local_probe_confirmed",
+    "model_proposed_restore_body_frame_reward",
+    "approved_correction_applied",
+    "fresh_restart_300",
+    "fixed_evaluation_26_conditions"
+  ],
+  "fresh_restart_seed": 3221,
+  "model": {
+    "correction_action": "propose_correction",
+    "correction_target": "restore_body_frame_reward",
+    "global_api_calls_completed": 12,
+    "provider_calls_completed": 2,
+    "registered_endpoint_alias": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "returned_raw_alias": "private/nvidia/nemotron-3.5-super-120b-a12b"
+  },
+  "outcome": "not_recovered",
+  "post_hoc_condition_description": {
+    "focus_commands": [
+      [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "focus_fraction": 0.9403946612086459,
+    "focus_yaw_sse_increase": 50137.94189453125,
+    "interpretation": "post_hoc_description_only",
+    "total_yaw_sse_increase": 53315.85127258301
+  },
+  "robot": "Unitree Go2",
+  "schema": "agentic_local_f1_recovery_summary_v1",
+  "scope": {
+    "fresh_restart_seed": true,
+    "image_selection_benefit_established": false,
+    "llm_superiority_established": false,
+    "prior_infrastructure_attempts_counted_as_model_or_training_failures": false,
+    "seen_diagnosis_seed": true
+  },
+  "split": "development",
+  "status": "complete",
+  "training": {
+    "checkpoint_sha256": "d370e76c2184b86b108c80318081c5d5b6bf3c59c7846e6c2c48b2a1a46bab5a",
+    "iterations": 300,
+    "learn_wall_s": 454.0789825999818,
+    "num_envs": 4096,
+    "wall_s": 471.04615720000584
+  }
+}

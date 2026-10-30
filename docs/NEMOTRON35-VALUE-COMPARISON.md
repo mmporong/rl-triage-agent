@@ -1,8 +1,17 @@
 # Nemotron 3.5 동일 수치 A/B 비교 실행 고리
 
-[P5 사례 입력](NEMOTRON35-VALUE-CASES.md)의 같은 수치 capsule로 A(3 Super)와 B(Nemotron 3.5)를 호출하고, 검증된 응답을 P5 `score()`로 판정하는 실행기다. 이 문서 시점에는 실제 API 호출이 없다. A·B 결과는 `pending_api`, 전체 판정은 `inconclusive`다. 영상 조건 C는 계속 `blocked_new_collection_required`이며 이 실행기가 다루지 않는다.
+[P5 사례 입력](NEMOTRON35-VALUE-CASES.md)의 같은 수치 capsule로 A(3 Super)와 B(Nemotron 3.5)를 호출하고, 검증된 응답을 P5 `score()`로 판정하는 실행기다. 등록 실행에서 A는 4/4 HTTP 404로 `model_unavailable`, B는 4/4 형식 검증을 통과했다. A 응답이 없어 모델 변경 축은 `inconclusive`다. 영상 조건 C는 계속 `blocked_new_collection_required`이며 영상 기여 축도 `inconclusive`다. [실행 결과](NEMOTRON35-SAME-INPUT-RESULT.md)와 [공개 요약](../evals/results/nemotron35_same_input_dev_20261030_v1/summary.json)을 함께 본다.
 
-대상은 이미 본 개발 계보 4개(F2 s2033·s2046, F1 s2034·s2080)뿐이다. 논리 호출 8개, 등록 요청 상한 24이며 slot 재시도는 등록하지 않았다. 새 독립 seed 2개 이상의 확인 실험은 별도 사전등록으로 남긴다. 일반 모델 우위, 영상 기여, 비용 절감, 새 회복을 주장하지 않는다.
+대상은 이미 본 개발 계보 4개(F2 s2033·s2046, F1 s2034·s2080)뿐이다. 논리 호출 8개, 등록 요청 상한 24이며 slot 재시도는 없었다. B는 네 계보 모두 `P_episode`를 골랐고 등록 확인 검사(F2 `P_torque`, F1 `P_reward`)를 고른 횟수는 0이다. 형식 유효와 좋은 검사 선택을 구분한다. 새 독립 seed 2개 이상의 확인 실험은 별도 사전등록으로 남긴다. 일반 모델 우위, 영상 기여, 비용 절감, 새 회복을 주장하지 않는다.
+
+## 실제 개발 실행 요약
+
+| arm | 상태 | 선택·사용량 |
+|---|---|---|
+| A · 3 Super | 4/4 HTTP 404, `model_unavailable` | 응답·usage 없음 |
+| B · Nemotron 3.5 | 4/4 `valid` | `P_episode` 4/4, 입력 10,738·출력 260·합계 10,998 tokens |
+
+B의 반환 모델 별칭은 `private/nvidia/nemotron-3.5-super-120b-a12b`였다. catalog에 A와 B model ID가 모두 있다는 사실은 inference 성공을 뜻하지 않는다. A의 과거 응답을 이번 비교에 넣지 않았고, A 404를 모델 품질 실패로 해석하지 않았다. 실제 요청은 8회였고 기존 API10/12 원장과 별개다.
 
 ## 구성
 

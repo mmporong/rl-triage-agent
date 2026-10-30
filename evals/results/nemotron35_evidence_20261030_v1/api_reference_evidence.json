@@ -1,0 +1,60 @@
+{
+  "schema": "nemotron35_api_contract_reference_v1",
+  "retrieved_at_utc": "2026-10-30T09:06:59.919522+00:00",
+  "official_references": [
+    {
+      "model": "3 Super",
+      "url": "https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-super-120b-a12b-infer",
+      "successful_root_web_open": true,
+      "reasoning_effort": [
+        "none",
+        "low",
+        "high"
+      ],
+      "reasoning_default": "high",
+      "max_output_tokens": 32768
+    },
+    {
+      "model": "3.5 Super VL",
+      "url": "https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3_5-super-vl-120b-a12b-infer",
+      "successful_root_web_open": true,
+      "reasoning_effort": [
+        "none",
+        "low",
+        "high"
+      ],
+      "reasoning_default": "high",
+      "max_output_tokens": 131072,
+      "multimodal_message_parts": true,
+      "structured_output_and_tools_documented": true
+    }
+  ],
+  "project_B1_B2_common_params": {
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "source_of_actual_params": [
+    "evals/nemotron_upgrade_compare_v1.py",
+    "evals/d3_model_call.py"
+  ],
+  "identity_check": "Every one of 57 paired request_without_model_sha256 values matched. Each pair differs only in model identifier.",
+  "known_measurements": [
+    "request wall-clock",
+    "input/output/total token usage",
+    "request bytes digest",
+    "output contract validity"
+  ],
+  "not_measured": [
+    "time to first token",
+    "server queue/load",
+    "serving GPU and precision",
+    "weight revision",
+    "MTP/drafter activation",
+    "KV or hybrid-state cache reuse"
+  ],
+  "interpretation": "A difference in explicitly requested reasoning effort is not the explanation: both request paths were sent none. Internal serving behavior remains unobserved."
+}

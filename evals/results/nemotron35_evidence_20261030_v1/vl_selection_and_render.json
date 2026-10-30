@@ -1,0 +1,115 @@
+{
+  "transferred_24_input_comparison": {
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "requests": 24,
+    "valid": 24,
+    "provider_wall_s_sum": 27.791678284993395,
+    "token_sum": 115824,
+    "views": {
+      "text_only": 8,
+      "video_only": 8,
+      "text_and_video": 8
+    },
+    "different_probe_or_hold_video_only_vs_text_only": 0,
+    "different_probe_or_hold_text_and_video_vs_video_only": 0,
+    "selection_outcome": "observation_only",
+    "frame_input_calls_later_covered_by_render_audit": 16,
+    "historical_responses_preserved": true,
+    "visual_effect_established": false
+  },
+  "fresh_s2221_selection": {
+    "available_frames": 6,
+    "case_frames": 3,
+    "reference_frames": 3,
+    "citation_counts": {
+      "frame": 0,
+      "same_play": 0,
+      "telemetry": 6
+    },
+    "selected_probe": "P_reward",
+    "selected_by": "model",
+    "probe_executed_in_this_record": false,
+    "approval_granted": false,
+    "image_selection_benefit_established": false,
+    "cause_confirmed": false,
+    "new_recovery_result": false
+  },
+  "fresh_capture": {
+    "reference": {
+      "checkpoint_sha256": "b346a0c3e3ad6410ce93dcf73e6165ed69e2d6ab95b2c5398943b3a8874cf54d",
+      "frames": 625,
+      "fps": 50,
+      "video_duration_s": 12.5,
+      "record_wall_s": 131.72819274000005,
+      "native_sidecar_joined": true,
+      "render_sync_calls": 625,
+      "video": {
+        "path": "docs/media/agentic_f1_fresh_render_dev_20261029h_v1/reference.mp4",
+        "sha256": "35ae4b9dee08f55a02f961dab9154f1b0372fceed3bd80da109f5c4aded0aa55",
+        "bytes": 1533033
+      },
+      "source_receipts_sha256": {
+        "unit_result": "b9a2b93d9a5eff6a9245141a945ae393b7db32c0f4c4d6cefc9448ddb4b2a0fa",
+        "agentic_final": "73d7fe26c5527d1c70549911533b450648776724eeedc451b49ee8ebcb60d8dd",
+        "native_capture_manifest": "6a1039cc2b347fe37d1ccbb7c524d0e13dacc7603a3d341c314062e3bf546962",
+        "raw_trace": "c2a585bc18b4cbd207f7bbc82fabe5b3825c2b39d4c91b786e7e1009638a66af"
+      },
+      "state_facts": {
+        "path": "evals/results/agentic_f1_fresh_render_dev_20261029h_v1/reference_state_facts.json",
+        "sha256": "1ff792b37fac4b5138c979f563e082cda49fed66801418a4d52e791832b4c437"
+      },
+      "body_motion": {
+        "w1.command_horizontal_norm": 1.0,
+        "w1.body_horizontal_speed_norm": 0.9935804030017477,
+        "w1.command_tracking_error_norm": 0.06366240164630112,
+        "w2.command_horizontal_norm": 1.0,
+        "w2.body_horizontal_speed_norm": 0.9526986222021744,
+        "w2.command_tracking_error_norm": 0.11285679615366588
+      }
+    },
+    "case": {
+      "checkpoint_sha256": "1d73d523c97c5c89c988febfbd3d5e533e90681cd0e6132d6ffe13888fa95731",
+      "frames": 625,
+      "fps": 50,
+      "video_duration_s": 12.5,
+      "record_wall_s": 115.50486927599991,
+      "native_sidecar_joined": true,
+      "render_sync_calls": 625,
+      "video": {
+        "path": "docs/media/agentic_f1_fresh_render_dev_20261029h_v1/case.mp4",
+        "sha256": "465958c907bd512a9a32128f37a8103cc41afcb022a8b086b09512110638890c",
+        "bytes": 727082
+      },
+      "source_receipts_sha256": {
+        "unit_result": "cfc6c138ede01d42a03e3a85c149c0e587f5f5139a798a1c4b41cae597335589",
+        "agentic_final": "5c9a9869d68c7fde5de219195783480d87e4074f343b7fdb29178ca1487b2382",
+        "native_capture_manifest": "829e2e15e0a81c5d19f8e1bb77565ffe3f630ed64778585edc13c5b4c03baf17",
+        "raw_trace": "bf8b0756216bd8b62d9017cc6f0d21ee464ad5984d1b227f397e50fa6792edcf"
+      },
+      "state_facts": {
+        "path": "evals/results/agentic_f1_fresh_render_dev_20261029h_v1/case_state_facts.json",
+        "sha256": "530df2c8512446db1d64dc5165c97370b84ddb36c0e8678eea036f0d08069c60"
+      },
+      "body_motion": {
+        "w1.command_horizontal_norm": 1.0,
+        "w1.body_horizontal_speed_norm": 0.013878202635470365,
+        "w1.command_tracking_error_norm": 0.995898683977919,
+        "w2.command_horizontal_norm": 1.0,
+        "w2.body_horizontal_speed_norm": 0.003038884318890685,
+        "w2.command_tracking_error_norm": 1.0018175515919745
+      }
+    },
+    "prepared_frames": 24,
+    "model_requests_in_capture_stage": 0
+  },
+  "byte_and_lineage_overlap_checks": {
+    "b4_video_sha_count": 18,
+    "audited_video_sha_count": 6,
+    "b4_video_sha_overlap_with_six_audited_videos": [],
+    "fresh_video_sha_overlap_with_six_audited_videos": [],
+    "b4_sampled_frame_sha_count": 108,
+    "s2080_sampled_frame_sha_count": 18,
+    "b4_sampled_frame_overlap_with_s2080": [],
+    "interpretation": "No byte-identical video overlap was found between B4 or the fresh s2221 capture and the six videos listed by the render audit. This does not prove that B4 rendering was correct; B4 was not among those six audited videos."
+  }
+}

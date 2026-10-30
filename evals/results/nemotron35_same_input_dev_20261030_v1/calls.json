@@ -1,0 +1,217 @@
+{
+  "calls": [
+    {
+      "arm": "A",
+      "capsule_sha256": "6c091ef34c2a29dd14fae2690cf8a476aad6b5d3cec9883995f1aaddae6583c6",
+      "confirming_probe": "P_torque",
+      "confirming_probe_selected": false,
+      "fact_ids": null,
+      "http_status": 404,
+      "latency_s": 1.7248803499969654,
+      "lineage_id": "go2-flat-f2-s2033",
+      "params_sha256": "c2bec9fec05b1d43071fc6fa62b6b71900c87bcd9c2e383885939e169157887f",
+      "raw_sha256": "bb9e704dbc54a0241a9c1658344e2dda9ad57fcb621c6870c93940f54fc12f47",
+      "receipt_sha256": "6af3f1dc3f70e1d809cd8ab4462db2e1a2696ad50eeb54d64959d18face836d5",
+      "requested_model": "nvidia/nemotron-3-super-120b-a12b",
+      "returned_model": null,
+      "rule_fallback_used": false,
+      "selected_probe": null,
+      "slot_id": "01-go2-flat-f2-s2033-A",
+      "status": "model_unavailable",
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      }
+    },
+    {
+      "arm": "B",
+      "capsule_sha256": "6c091ef34c2a29dd14fae2690cf8a476aad6b5d3cec9883995f1aaddae6583c6",
+      "confirming_probe": "P_torque",
+      "confirming_probe_selected": false,
+      "fact_ids": [
+        "telemetry:case:Train/mean_episode_length",
+        "telemetry:reference:Train/mean_episode_length",
+        "telemetry:case:Episode_Termination/time_out",
+        "telemetry:reference:Episode_Termination/time_out"
+      ],
+      "http_status": 200,
+      "latency_s": 0.67712589900475,
+      "lineage_id": "go2-flat-f2-s2033",
+      "params_sha256": "c2bec9fec05b1d43071fc6fa62b6b71900c87bcd9c2e383885939e169157887f",
+      "raw_sha256": "c3804a05ee3de963bf1ebaa8ff855fd1564524efaa80d3c97f1e27bab07273c1",
+      "receipt_sha256": "de0357b48fbc6fe71fb23d9c5459e1385ef5cba916eda93f4a41be2d7c93b48a",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "returned_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "rule_fallback_used": false,
+      "selected_probe": "P_episode",
+      "slot_id": "02-go2-flat-f2-s2033-B",
+      "status": "valid",
+      "usage": {
+        "input_tokens": 2685,
+        "output_tokens": 65,
+        "total_tokens": 2750
+      }
+    },
+    {
+      "arm": "B",
+      "capsule_sha256": "9604d679b61b5652cbded3da4d36878293c0fefabb15d4b8d2c847c4458045cf",
+      "confirming_probe": "P_torque",
+      "confirming_probe_selected": false,
+      "fact_ids": [
+        "telemetry:case:Train/mean_episode_length",
+        "telemetry:reference:Train/mean_episode_length",
+        "telemetry:case:Episode_Termination/time_out",
+        "telemetry:reference:Episode_Termination/time_out"
+      ],
+      "http_status": 200,
+      "latency_s": 0.6351009960053489,
+      "lineage_id": "go2-flat-f2-s2046",
+      "params_sha256": "c2bec9fec05b1d43071fc6fa62b6b71900c87bcd9c2e383885939e169157887f",
+      "raw_sha256": "50cbe12cee9d34aa4caba1d0cce7a9c198344a826a832a957090077f8a773e26",
+      "receipt_sha256": "8ac17080dfd9eb3af94cb0895ebc98a4d6ea318fac8837d93dd1e5783c671e6c",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "returned_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "rule_fallback_used": false,
+      "selected_probe": "P_episode",
+      "slot_id": "03-go2-flat-f2-s2046-B",
+      "status": "valid",
+      "usage": {
+        "input_tokens": 2677,
+        "output_tokens": 65,
+        "total_tokens": 2742
+      }
+    },
+    {
+      "arm": "A",
+      "capsule_sha256": "9604d679b61b5652cbded3da4d36878293c0fefabb15d4b8d2c847c4458045cf",
+      "confirming_probe": "P_torque",
+      "confirming_probe_selected": false,
+      "fact_ids": null,
+      "http_status": 404,
+      "latency_s": 0.17082504800055176,
+      "lineage_id": "go2-flat-f2-s2046",
+      "params_sha256": "c2bec9fec05b1d43071fc6fa62b6b71900c87bcd9c2e383885939e169157887f",
+      "raw_sha256": "bb9e704dbc54a0241a9c1658344e2dda9ad57fcb621c6870c93940f54fc12f47",
+      "receipt_sha256": "d0b4d3c9761724509ba0b8c0836e5674b36c96a03452b412e91009859d56da5a",
+      "requested_model": "nvidia/nemotron-3-super-120b-a12b",
+      "returned_model": null,
+      "rule_fallback_used": false,
+      "selected_probe": null,
+      "slot_id": "04-go2-flat-f2-s2046-A",
+      "status": "model_unavailable",
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      }
+    },
+    {
+      "arm": "A",
+      "capsule_sha256": "ff478efb67848bc14a181fd365004d77c18aba30a0477798c4fad335470e6bc8",
+      "confirming_probe": "P_reward",
+      "confirming_probe_selected": false,
+      "fact_ids": null,
+      "http_status": 404,
+      "latency_s": 0.152431313006673,
+      "lineage_id": "go2-flat-f1-s2034",
+      "params_sha256": "c2bec9fec05b1d43071fc6fa62b6b71900c87bcd9c2e383885939e169157887f",
+      "raw_sha256": "bb9e704dbc54a0241a9c1658344e2dda9ad57fcb621c6870c93940f54fc12f47",
+      "receipt_sha256": "8c940d259012faed169980604ee1cb5d6e75d09b0f03c25197cf48b8bea9f61a",
+      "requested_model": "nvidia/nemotron-3-super-120b-a12b",
+      "returned_model": null,
+      "rule_fallback_used": false,
+      "selected_probe": null,
+      "slot_id": "05-go2-flat-f1-s2034-A",
+      "status": "model_unavailable",
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      }
+    },
+    {
+      "arm": "B",
+      "capsule_sha256": "ff478efb67848bc14a181fd365004d77c18aba30a0477798c4fad335470e6bc8",
+      "confirming_probe": "P_reward",
+      "confirming_probe_selected": false,
+      "fact_ids": [
+        "telemetry:case:Train/mean_episode_length",
+        "telemetry:reference:Train/mean_episode_length",
+        "telemetry:case:Episode_Termination/time_out",
+        "telemetry:reference:Episode_Termination/time_out"
+      ],
+      "http_status": 200,
+      "latency_s": 0.6423069770098664,
+      "lineage_id": "go2-flat-f1-s2034",
+      "params_sha256": "c2bec9fec05b1d43071fc6fa62b6b71900c87bcd9c2e383885939e169157887f",
+      "raw_sha256": "4113de24831cad6678d08bf64b6ba6a03d05c2aa64408d0606eda768b0d80142",
+      "receipt_sha256": "80a7b649b8d78226099148b4c7ea45eb8685d2e80361133671babe3315404959",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "returned_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "rule_fallback_used": false,
+      "selected_probe": "P_episode",
+      "slot_id": "06-go2-flat-f1-s2034-B",
+      "status": "valid",
+      "usage": {
+        "input_tokens": 2688,
+        "output_tokens": 65,
+        "total_tokens": 2753
+      }
+    },
+    {
+      "arm": "B",
+      "capsule_sha256": "44b8f185b07bc28d9ad28efbd452d26b2c087660b3f75505ab092003f79fa5f0",
+      "confirming_probe": "P_reward",
+      "confirming_probe_selected": false,
+      "fact_ids": [
+        "telemetry:case:Train/mean_episode_length",
+        "telemetry:reference:Train/mean_episode_length",
+        "telemetry:case:Episode_Termination/time_out",
+        "telemetry:reference:Episode_Termination/time_out"
+      ],
+      "http_status": 200,
+      "latency_s": 0.6856331680028234,
+      "lineage_id": "go2-flat-f1-s2080",
+      "params_sha256": "c2bec9fec05b1d43071fc6fa62b6b71900c87bcd9c2e383885939e169157887f",
+      "raw_sha256": "1ce7f8b061b59d6eb4c65a4449047c2864c162def34ac952edcfa2c32910f69e",
+      "receipt_sha256": "5b9b4a80a5a48220cd053f0c7a740e18fbe2dec75d67cf491f2a620bf33000cf",
+      "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "returned_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "rule_fallback_used": false,
+      "selected_probe": "P_episode",
+      "slot_id": "07-go2-flat-f1-s2080-B",
+      "status": "valid",
+      "usage": {
+        "input_tokens": 2688,
+        "output_tokens": 65,
+        "total_tokens": 2753
+      }
+    },
+    {
+      "arm": "A",
+      "capsule_sha256": "44b8f185b07bc28d9ad28efbd452d26b2c087660b3f75505ab092003f79fa5f0",
+      "confirming_probe": "P_reward",
+      "confirming_probe_selected": false,
+      "fact_ids": null,
+      "http_status": 404,
+      "latency_s": 0.14954916900023818,
+      "lineage_id": "go2-flat-f1-s2080",
+      "params_sha256": "c2bec9fec05b1d43071fc6fa62b6b71900c87bcd9c2e383885939e169157887f",
+      "raw_sha256": "bb9e704dbc54a0241a9c1658344e2dda9ad57fcb621c6870c93940f54fc12f47",
+      "receipt_sha256": "99be4dccd8776f8eea9b05ce82f00e3aa332f2205d4ba7087a0e24c89a3c0f95",
+      "requested_model": "nvidia/nemotron-3-super-120b-a12b",
+      "returned_model": null,
+      "rule_fallback_used": false,
+      "selected_probe": null,
+      "slot_id": "08-go2-flat-f1-s2080-A",
+      "status": "model_unavailable",
+      "usage": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "total_tokens": null
+      }
+    }
+  ],
+  "schema": "nemotron35_same_input_dev_calls_v1"
+}

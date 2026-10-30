@@ -1,0 +1,124 @@
+{
+  "schema": "nemotron35_latency_reanalysis_v1",
+  "phase": "posthoc_descriptive_reanalysis_of_preregistered_development_measurements",
+  "measurement_date": "2026-10-16",
+  "new_inference_requests": 0,
+  "all_requests_identical_except_model": true,
+  "unit_warning": "11 or 8 existing inputs repeated three times; repetitions are not independent new cases",
+  "boundary": "provider call wall-clock only; excludes validation, file processing, GPU probes and training",
+  "causal_scope": "Observed request-path wait difference; no universal model latency, diagnosis speed or GPU cost claim",
+  "stats": {
+    "B1": {
+      "all_matched_requests": {
+        "paired_requests": 33,
+        "unique_inputs": 11,
+        "old_mean_wall_s": 4.4879465598584805,
+        "new_mean_wall_s": 2.708074142556694,
+        "old_median_wall_s": 3.8570457089226693,
+        "new_median_wall_s": 1.434760294854641,
+        "mean_wait_reduction_percent": 39.65894855392199,
+        "pairs_new_shorter": 27,
+        "pairs_new_longer": 6,
+        "old_total_wall_s": 148.10223647532985,
+        "new_total_wall_s": 89.3664467043709
+      },
+      "both_contract_valid": {
+        "paired_requests": 26,
+        "unique_inputs": 11,
+        "old_mean_wall_s": 4.6806350871114635,
+        "new_mean_wall_s": 2.81270044878161,
+        "old_median_wall_s": 3.8815251394407824,
+        "new_median_wall_s": 1.3612559580942616,
+        "mean_wait_reduction_percent": 39.9077177256004,
+        "pairs_new_shorter": 21,
+        "pairs_new_longer": 5,
+        "old_total_wall_s": 121.69651226489805,
+        "new_total_wall_s": 73.13021166832186
+      }
+    },
+    "B2": {
+      "all_matched_requests": {
+        "paired_requests": 24,
+        "unique_inputs": 8,
+        "old_mean_wall_s": 15.06543960540633,
+        "new_mean_wall_s": 6.562132696155459,
+        "old_median_wall_s": 13.064694885048084,
+        "new_median_wall_s": 3.533380115055479,
+        "mean_wait_reduction_percent": 56.44247451099539,
+        "pairs_new_shorter": 21,
+        "pairs_new_longer": 3,
+        "old_total_wall_s": 361.5705505297519,
+        "new_total_wall_s": 157.491184707731
+      },
+      "both_contract_valid": {
+        "paired_requests": 15,
+        "unique_inputs": 6,
+        "old_mean_wall_s": 14.642022600816563,
+        "new_mean_wall_s": 7.051026474668955,
+        "old_median_wall_s": 12.003191953990608,
+        "new_median_wall_s": 3.5174878400284797,
+        "mean_wait_reduction_percent": 51.84390389975406,
+        "pairs_new_shorter": 13,
+        "pairs_new_longer": 2,
+        "old_total_wall_s": 219.63033901224844,
+        "new_total_wall_s": 105.76539712003432
+      }
+    }
+  },
+  "quality": [
+    {
+      "stage": "B1",
+      "model_arm": "old",
+      "requests": 33,
+      "contract_valid": 29,
+      "contract_invalid": 4,
+      "true_cause_top1_ignoring_contract": null,
+      "contract_valid_true_cause_top1": null,
+      "evidence_citation_error": null
+    },
+    {
+      "stage": "B1",
+      "model_arm": "new",
+      "requests": 33,
+      "contract_valid": 28,
+      "contract_invalid": 5,
+      "true_cause_top1_ignoring_contract": null,
+      "contract_valid_true_cause_top1": null,
+      "evidence_citation_error": null
+    },
+    {
+      "stage": "B2",
+      "model_arm": "old",
+      "requests": 24,
+      "contract_valid": 18,
+      "contract_invalid": 6,
+      "true_cause_top1_ignoring_contract": 21,
+      "contract_valid_true_cause_top1": 15,
+      "evidence_citation_error": 6
+    },
+    {
+      "stage": "B2",
+      "model_arm": "new",
+      "requests": 24,
+      "contract_valid": 19,
+      "contract_invalid": 5,
+      "true_cause_top1_ignoring_contract": 20,
+      "contract_valid_true_cause_top1": 18,
+      "evidence_citation_error": 2
+    }
+  ],
+  "sources": [
+    {
+      "path": "evals/results/nemotron_endpoint_bottlenecks_20261016_v3/summary.json",
+      "sha256": "776a045697f0f2b74717672eab2dddec72b4d6bbeafe1511b30c065179bb0881"
+    },
+    {
+      "path": "evals/results/nemotron_endpoint_bottlenecks_20261016_v3/requests.json",
+      "sha256": "3890d6e4ae2ed1f8d7a5c4610f0aefc218af6c39e218a54979c05465533ac606"
+    },
+    {
+      "path": "evals/results/nemotron_endpoint_bottlenecks_20261016_v3/decisions.json",
+      "sha256": "10969f73dbe5c63ed01e8b06f7af12c13d7f8dfdcf7c55ee798b7a9cbd9cab39"
+    }
+  ]
+}

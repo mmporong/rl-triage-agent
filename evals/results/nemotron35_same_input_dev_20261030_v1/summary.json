@@ -1,0 +1,59 @@
+{
+  "arm_A": {
+    "latency_s": 2.1976858800044283,
+    "requested_model": "nvidia/nemotron-3-super-120b-a12b",
+    "status_counts": {
+      "model_unavailable_http_404": 4
+    },
+    "usage": {
+      "input_tokens": null,
+      "output_tokens": null,
+      "status": "unavailable",
+      "total_tokens": null
+    }
+  },
+  "arm_B": {
+    "confirming_probe_selected": 0,
+    "latency_s": 2.6401670400227886,
+    "requested_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "returned_model_alias": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "selected_probe": {
+      "P_episode": 4
+    },
+    "status_counts": {
+      "valid_format": 4
+    },
+    "usage": {
+      "input_tokens": 10738,
+      "output_tokens": 260,
+      "total_tokens": 10998
+    }
+  },
+  "axes": {
+    "image_contribution": "inconclusive",
+    "model_change": "inconclusive"
+  },
+  "blocked_arm_C": "blocked_new_collection_required",
+  "catalog_note": "catalog presence for both IDs is not inference success evidence",
+  "claims": {
+    "cost_saving": false,
+    "generalization": false,
+    "image_selection_benefit": false,
+    "model_superiority": false,
+    "new_recovery": false
+  },
+  "journal_head_sha256": "5940c672fb9be4acae298e3f6109d7aa686b442d5b3bfa1eaeb8a1d8ddcb578e",
+  "p5_manifest_digest": "1bd0c8888af2305f6782175b0ed17f178289df243cf530318160c56278e1b57c",
+  "phase": "development_already_seen_four_lineages",
+  "plan_digest": "be20997514c7ae05f0bfeb2d108600b4f2c29f466fd8ed514dfab9e5184f89af",
+  "protocol_sha256": "6a0c545676947b1dee9850377d1a3f16989fae0b159fa08dfa50156ec13c466d",
+  "registration_commit": "287d994b803dfb7f2961a1193356e2975fa6ef19",
+  "requests": {
+    "cap": 24,
+    "retries": 0,
+    "used": 8
+  },
+  "schema": "nemotron35_same_input_dev_result_v1",
+  "source_commit": "15b597fdd8bf9d3008472ba977406e3af91a3aa1",
+  "status": "actual_completed_comparison_inconclusive"
+}

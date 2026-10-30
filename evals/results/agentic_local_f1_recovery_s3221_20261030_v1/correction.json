@@ -1,0 +1,46 @@
+{
+  "approval_and_execution": {
+    "correction_id": "restore_body_frame_reward",
+    "ledger_receipt": {
+      "at": "2026-10-30T08:32:46+00:00",
+      "event": "receipt",
+      "exit_code": 0,
+      "gpu_s": null,
+      "over_budget": false,
+      "request_id": "1f0e44e0424d",
+      "result_sha": "b261218c367b8cc396cf33c031fd60cca0717e203c4b1719f3fdb7ec19f6ed65",
+      "tag": "local-f1-restart-s3221-public-v3",
+      "verdict": "not_recovered"
+    },
+    "recovery_mode": "restart",
+    "seed": 3221
+  },
+  "model_decision": {
+    "action": "propose_correction",
+    "fact_ids": [
+      "observation:0:P_reward:outcome",
+      "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+      "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+      "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+      "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+    ],
+    "target": "restore_body_frame_reward"
+  },
+  "readback": {
+    "applied_corrections": [
+      "restore_body_frame_reward"
+    ],
+    "original_faults": [
+      "F1"
+    ],
+    "remaining_faults": [],
+    "reward": {
+      "after_code_sha256": "3e0af4362ac90e86b06a51bf4f02ee8d73adeada8d6740bd8c5f118cbad5c245",
+      "after_fault_code_sha256": "4bbc8bc4cb7a433846c6a49e31fd05a335f41f6d9f576c437a7b18e695e8e744",
+      "before_code_sha256": "3e0af4362ac90e86b06a51bf4f02ee8d73adeada8d6740bd8c5f118cbad5c245",
+      "fault_present_after": false,
+      "target": "isaaclab.envs.mdp.rewards.track_lin_vel_xy_exp"
+    }
+  },
+  "schema": "agentic_local_f1_recovery_correction_v1"
+}

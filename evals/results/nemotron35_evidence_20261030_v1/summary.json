@@ -1,0 +1,84 @@
+{
+  "schema": "nemotron35_consolidated_evidence_summary_v1",
+  "created_on": "2026-10-30",
+  "scope": "Existing development evidence and official primary-source research; no new model/GPU measurement for this compilation",
+  "headline": {
+    "api_wait_observation_B1_percent_shorter": 39.65894855392199,
+    "api_wait_observation_B2_percent_shorter": 56.44247451099539,
+    "paired_request_rows": 57,
+    "independent_input_count_B1": 11,
+    "independent_input_count_B2": 8,
+    "repeats_per_input": 3,
+    "VL_valid_observations": 18,
+    "VL_fixed_eval_class_correspondence": {
+      "matched": 17,
+      "total": 18,
+      "normal": {
+        "matched": 7,
+        "total": 7
+      },
+      "failed": {
+        "matched": 10,
+        "total": 11
+      }
+    },
+    "VL_s2080_aux_observations": {
+      "matched": 3,
+      "total": 3,
+      "used_for_decision": false
+    },
+    "same_input_quality_change": {
+      "B1_contract_invalid_old_new": [
+        4,
+        5
+      ],
+      "B2_citation_errors_old_new": [
+        6,
+        2
+      ],
+      "B2_valid_true_cause_top1_old_new": [
+        15,
+        18
+      ],
+      "B2_parsed_true_cause_top1_old_new": [
+        21,
+        20
+      ]
+    },
+    "fresh_multimodal_diagnosis": {
+      "seed": 2221,
+      "available_frames": 6,
+      "cited_frames": 0,
+      "cited_telemetry_facts": 6,
+      "selected_probe": "P_reward",
+      "actual_probe_confirmed": true,
+      "actual_correction_proposal": "restore_body_frame_reward",
+      "fresh_restart_seed": 3221,
+      "fixed_eval_outcome": "not_recovered"
+    },
+    "latest_same_input_model_comparison": {
+      "old_HTTP404": 4,
+      "new_contract_valid": 4,
+      "new_confirming_probe_first_choice": 0,
+      "requests": 8,
+      "model_change_outcome": "inconclusive"
+    }
+  },
+  "claims": {
+    "shorter_API_wait_in_existing_development_run": true,
+    "VL_aux_observation_implemented": true,
+    "actual_probe_and_correction_connected": true,
+    "parameter_reduction_caused_speedup": false,
+    "speed_cause_isolated": false,
+    "overall_diagnosis_time_reduced": false,
+    "model_accuracy_generally_improved": false,
+    "image_caused_better_probe_choice": false,
+    "new_3_5_recovery_demonstrated": false
+  },
+  "core_feature_attribution": {
+    "R1_new_detection": "optimizer update-count instrumentation; not a 3.5-only model effect",
+    "PPO_math_new_detection": "gradient invariant instrumentation; not a 3.5-only model effect",
+    "U1_extended_repair": "host registered correction scope; no model call"
+  },
+  "next_direction": "Keep the experiment-confirmation agent core; present observed API responsiveness and VL observation separately; prioritize one acceptance-bound visual-state experiment over another generic model upgrade claim."
+}

@@ -1,0 +1,204 @@
+{
+  "synthetic_identity_preflight": {
+    "purpose": "image_attribute_capability_preflight",
+    "expected": [
+      {
+        "shape": "square",
+        "color": "orange",
+        "region": "upper_left"
+      },
+      {
+        "shape": "triangle",
+        "color": "purple",
+        "region": "upper_right"
+      },
+      {
+        "shape": "circle",
+        "color": "green",
+        "region": "lower_left"
+      }
+    ],
+    "parsed": [
+      {
+        "shape": "square",
+        "color": "orange",
+        "region": "upper_left"
+      },
+      {
+        "shape": "triangle",
+        "color": "purple",
+        "region": "upper_right"
+      },
+      {
+        "shape": "circle",
+        "color": "green",
+        "region": "lower_left"
+      }
+    ],
+    "matches_three_objects": true,
+    "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "official_alias_mapping_confirmed": false,
+    "usage": {
+      "input_tokens": 353,
+      "output_tokens": 48,
+      "total_tokens": 401
+    },
+    "measured_wall_s": 2.376418486936018,
+    "image": {
+      "file": "synthetic_identity_preflight.png",
+      "sha256": "3f928a2609004cc3981bdabbe88845ad3470c42f788451c54e68546ac51a825a",
+      "bytes": 553
+    }
+  },
+  "video_feasibility_preflight": {
+    "purpose": "non_evaluation_video_input_feasibility",
+    "id": "preflight_non_eval",
+    "valid": true,
+    "walking": "yes",
+    "in_place": "no",
+    "falling": "no",
+    "fixed_eval_correspondence": null,
+    "source": {
+      "logical_id": "docs/media/go2-policy-20261012_t1_v3/simulation.mp4",
+      "sha256": "dabc1f5d2cebf4ac7e9c0f71c515c0d6ca93630fc045e9ed602c42e29495fe06"
+    },
+    "frames": [
+      {
+        "timestamp_s": 0.498333,
+        "sha256": "870cc180b637d37677a0da79a698784f9b691e2c078bc06158476a0e9d266adb",
+        "bytes": 33435
+      },
+      {
+        "timestamp_s": 1.495,
+        "sha256": "25b953143d591f42f4b20fc3c843094fd6a7be0ad971f6020f9a83c6d5144222",
+        "bytes": 34116
+      },
+      {
+        "timestamp_s": 2.491667,
+        "sha256": "d9c13bb94177cfd3f14f93207c4393c77c9b784662847f337e6b17cf7bce436a",
+        "bytes": 34441
+      },
+      {
+        "timestamp_s": 3.488333,
+        "sha256": "31af6f7008cd738e2a0c7ab19adc37c75193ab32f319d06ecdd0a7937f53759b",
+        "bytes": 34480
+      },
+      {
+        "timestamp_s": 4.485,
+        "sha256": "f92d2d38d49c117477fc41a8d55bae7c04c8b20d9544333b7ddfcaaad3079977",
+        "bytes": 34505
+      },
+      {
+        "timestamp_s": 5.481667,
+        "sha256": "9aaa26ea006338b36ffd7ef151f8c9126bd5c1c4e583715fe4b3be83750261d5",
+        "bytes": 34739
+      }
+    ],
+    "request": {
+      "sequence": 144,
+      "stage": "B4",
+      "label": "preflight_non_eval_r1_new_a1",
+      "request_sha256": "8e53e15efe3c162cd303e2fdd54e360993a29252971f979c149d5b260dae31be",
+      "request_without_model_sha256": "f45cc8277e88896afacb33a8e0490de6f26edb7daa66e5f47860bc3d1816d06c",
+      "model_requested": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "provider_identity_registered": true,
+      "identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+      "status": "ok",
+      "status_code": null,
+      "finish_reason": "stop",
+      "usage": {
+        "input_tokens": 1860,
+        "output_tokens": 23,
+        "total_tokens": 1883
+      },
+      "measured_wall_s": 1.7880763390567154
+    }
+  },
+  "graph_questions": [
+    {
+      "id": "graph_endpoint_order",
+      "purpose": "graph_reading_capability_check",
+      "question": "Blue is the normal run and orange is the reward-fault run. The upper panel is tracking reward and the lower panel is velocity error. Which color ends higher in the upper panel and lower in the lower panel? Return top_higher and bottom_lower.",
+      "valid": true,
+      "answer": {
+        "top_higher": "blue",
+        "bottom_lower": "blue"
+      },
+      "graph_sha256": "8e35a40dc6d5ad13c091f63c4675a5567fc060dd3f5ac6f330e3ec3a4969eb32",
+      "telemetry": [
+        {
+          "logical_id": "bench/runs_p0c/baseline_p0c_s2026.telemetry.json",
+          "sha256": "01841ca7b3bc8b7fb03b2ccffe763720f7dbc28a3d26bd1fca57cd1f49f48ee9"
+        },
+        {
+          "logical_id": "bench/runs_p0c/h02_s2026.telemetry.json",
+          "sha256": "1eb3b4d09ad204b2b8c79aaf3c8950eb02dfe32c9c6c2464c0c3be168b31d250"
+        }
+      ],
+      "messages_sha256": "167fee73434cebb8445ddf4f1c65d000f23ef65441d222e8b361a4bc6133d4b0",
+      "request": {
+        "sequence": 163,
+        "stage": "B4",
+        "label": "graph_endpoint_order_r1_new_a1",
+        "request_sha256": "177b1f0da32b336eaed133054c4310d0c7194dcf3a5be905ceaa0d6ce0443638",
+        "request_without_model_sha256": "b1a7395498b379eae620bab003b61bbd4da6df80f3a58342a74ea2989c4a12e4",
+        "model_requested": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "provider_identity_registered": true,
+        "identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+        "status": "ok",
+        "status_code": null,
+        "finish_reason": "stop",
+        "usage": {
+          "input_tokens": 592,
+          "output_tokens": 16,
+          "total_tokens": 608
+        },
+        "measured_wall_s": 0.7974379879888147
+      }
+    },
+    {
+      "id": "graph_fault_trend",
+      "purpose": "graph_reading_capability_check",
+      "question": "Blue is the normal run and orange is the reward-fault run. Does the orange tracking reward visibly improve over training, and does its velocity error visibly decrease? Return orange_tracking_improves and orange_error_decreases.",
+      "valid": true,
+      "answer": {
+        "orange_tracking_improves": "no",
+        "orange_error_decreases": "no"
+      },
+      "graph_sha256": "8e35a40dc6d5ad13c091f63c4675a5567fc060dd3f5ac6f330e3ec3a4969eb32",
+      "telemetry": [
+        {
+          "logical_id": "bench/runs_p0c/baseline_p0c_s2026.telemetry.json",
+          "sha256": "01841ca7b3bc8b7fb03b2ccffe763720f7dbc28a3d26bd1fca57cd1f49f48ee9"
+        },
+        {
+          "logical_id": "bench/runs_p0c/h02_s2026.telemetry.json",
+          "sha256": "1eb3b4d09ad204b2b8c79aaf3c8950eb02dfe32c9c6c2464c0c3be168b31d250"
+        }
+      ],
+      "messages_sha256": "4ca6a6d083a95065535b83828bc70394eda9b2c0cc050ba26fa9204cea8feba0",
+      "request": {
+        "sequence": 164,
+        "stage": "B4",
+        "label": "graph_fault_trend_r1_new_a1",
+        "request_sha256": "90235f5cceb6229832b582549169da526fc8e25571c25b4fb3c7ba47128fbf86",
+        "request_without_model_sha256": "9c7047cd2da9f7d0eb0ae85faac5018b5564fe4a8d5a6b38930c0f98f76751db",
+        "model_requested": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "provider_model_raw": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "provider_identity_registered": true,
+        "identity_policy": "registered_endpoint_alias_v3_not_weights_attestation",
+        "status": "ok",
+        "status_code": null,
+        "finish_reason": "stop",
+        "usage": {
+          "input_tokens": 587,
+          "output_tokens": 22,
+          "total_tokens": 609
+        },
+        "measured_wall_s": 0.6655871530529112
+      }
+    }
+  ]
+}
