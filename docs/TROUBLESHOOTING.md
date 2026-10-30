@@ -833,3 +833,15 @@
 - 관찰: 원문 labels·결합 JSON에 CRLF가 들어 있었고 Git의 텍스트 정규화가 이를 LF로 저장하려 했다. 작업 폴더 검사는 통과했지만, 커밋 전 staging blob 대조에서 사전등록된 labels SHA와 달라짐을 찾았다.
 - 수정: 해당 결과 폴더와 그림의 결합 JSON만 `.gitattributes`의 `-text`로 지정해 원문 바이트를 보존했다. 실험 수치·사전등록 SHA·모델 원문은 바꾸지 않았다.
 - 재발 방지: 공개 manifest는 작업 폴더뿐 아니라 staging/commit blob의 크기와 SHA도 대조한다. [V1](../evals/results/visual_integrity_dev_20261030_v1/manifest.json)·[V2](../evals/results/visual_localization_dev_20261030_v2/manifest.json)의 119개 항목이 일치한 뒤 push했다. CSV를 새로 만들 때는 줄 끝을 LF로 고정한다.
+
+### OPS-117: source 학습 사이 GPU 프로세스 신원 확인 실패
+
+- 관찰: 등록 source 13개 완료 뒤 다음 학습의 GPU 입장 검사에서 실행 경로를 확인할 수 없는 프로세스가 나타났다. 해당 stage에는 GPU 관측만 남았고 학습 자식은 시작되지 않았다. 이후 해당 프로세스가 사라졌으며 같은 입장 규칙으로 다시 확인한 두 관측은 통과했다. 프로세스의 생성·종료 원인은 미확정이다.
+- 처리: 완료 source를 재학습하지 않고 [새 재개 등록](../bench/protocols/lineage_source_continuation_20261031_v1.json)과 [재개 실행기](../evals/lineage_source_continuation_v1.py)로 남은 원래 job만 실행한다. 기존 실패 원문과 완료 증거는 보존하며 GPU 입장 기준은 바꾸지 않는다.
+- 재발 방지: 학습 전 입장 거부와 학습 실패를 구분한다. 완료 prefix의 체크포인트·accepted·종료 증거를 검증하고, 새 출력 경로와 별도 실행 anchor에서 남은 작업만 허용한다. CPU fixture 통과와 실제 재개 완료는 따로 기록한다.
+
+### OPS-118: 확인 검사의 보조 입력과 모델 송신 중복 경계
+
+- 관찰: 실행 전 consumer 대조에서 `P_value`가 최종 체크포인트 외에 형제 `model_0.pt`도 읽는 것을 확인했다. 새 backend가 최종 파일만 묶으면 보조 파일의 누락·교체를 놓칠 수 있었다. NIM queue에는 응답 파일 생성 전에 송신이 불명확하게 끝난 요청을 재송신하지 않는 영구 표식도 필요했다. 두 항목은 실제 새 검사·API 실행 전에 보완했다.
+- 수정: [paired backend](../evals/lineage_probe_backend_v1.py)는 보조 체크포인트의 경로·SHA·크기를 plan·claim·receipt에 기록하고 실행 전후 검증한다. [NIM transport](../evals/lineage_nim_transport_v1.py)는 provider 호출 전에 write-once dispatch claim을 만들고, claim·failure가 남은 요청의 재전송을 거부한다. 종료된 queue와 미확정 요청은 보존한다.
+- 검증: 보조 파일 삭제·실행 중 변조, 한 role의 중복 실행, 송신 예외 뒤 재호출, worker deadline·중복 worker·queue 종료를 CPU에서 확인했다. 이 확인은 새 source의 원인 확정이나 회복 결과가 아니다.

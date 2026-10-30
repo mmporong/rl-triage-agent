@@ -1,0 +1,165 @@
+{
+  "schema": "lineage_nim_transport_protocol_v1",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "accepted_provider_models": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "params": {
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "operator_approved": true,
+  "source_sha256_lf": {
+    "evals/lineage_nim_transport_v1.py": "9ebfeb6a6de6b076f77dc683ac18dd36327172b65353b4742318c1b45540ea7e",
+    "tests/test_lineage_nim_transport_v1.py": "dccc535828c8c5fa522e31a7b9363478a8d67420540bee12accc350678473589",
+    "evals/selection_comparison_call_v2.py": "46c5b97c993e6a66598d9ddd5eb15e62fe7bbf9282225fcb0c68c6b6c6291992",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "evals/selection_comparison_view_v1.py": "5180b96296251b3ae117edd612baba24676197dab93bab28f2e1cc0ef1d9e33d",
+    "evals/residual_model_call_v1.py": "b3afed7cbbe347acb1aaae9214e986bb18c5fac0fd81299cd95b6fb96e424797",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8"
+  },
+  "plan": {
+    "case_ids": [
+      "case-01",
+      "case-02",
+      "case-03",
+      "case-04",
+      "case-05",
+      "case-06",
+      "case-07",
+      "case-08",
+      "case-09",
+      "case-10"
+    ],
+    "logical_slots": [
+      {
+        "slot_id": "case-01.model.1",
+        "case_id": "case-01"
+      },
+      {
+        "slot_id": "case-01.model.2",
+        "case_id": "case-01"
+      },
+      {
+        "slot_id": "case-01.model.3",
+        "case_id": "case-01"
+      },
+      {
+        "slot_id": "case-02.model.1",
+        "case_id": "case-02"
+      },
+      {
+        "slot_id": "case-02.model.2",
+        "case_id": "case-02"
+      },
+      {
+        "slot_id": "case-02.model.3",
+        "case_id": "case-02"
+      },
+      {
+        "slot_id": "case-03.model.1",
+        "case_id": "case-03"
+      },
+      {
+        "slot_id": "case-03.model.2",
+        "case_id": "case-03"
+      },
+      {
+        "slot_id": "case-03.model.3",
+        "case_id": "case-03"
+      },
+      {
+        "slot_id": "case-04.model.1",
+        "case_id": "case-04"
+      },
+      {
+        "slot_id": "case-04.model.2",
+        "case_id": "case-04"
+      },
+      {
+        "slot_id": "case-04.model.3",
+        "case_id": "case-04"
+      },
+      {
+        "slot_id": "case-05.model.1",
+        "case_id": "case-05"
+      },
+      {
+        "slot_id": "case-05.model.2",
+        "case_id": "case-05"
+      },
+      {
+        "slot_id": "case-05.model.3",
+        "case_id": "case-05"
+      },
+      {
+        "slot_id": "case-06.model.1",
+        "case_id": "case-06"
+      },
+      {
+        "slot_id": "case-06.model.2",
+        "case_id": "case-06"
+      },
+      {
+        "slot_id": "case-06.model.3",
+        "case_id": "case-06"
+      },
+      {
+        "slot_id": "case-07.model.1",
+        "case_id": "case-07"
+      },
+      {
+        "slot_id": "case-07.model.2",
+        "case_id": "case-07"
+      },
+      {
+        "slot_id": "case-07.model.3",
+        "case_id": "case-07"
+      },
+      {
+        "slot_id": "case-08.model.1",
+        "case_id": "case-08"
+      },
+      {
+        "slot_id": "case-08.model.2",
+        "case_id": "case-08"
+      },
+      {
+        "slot_id": "case-08.model.3",
+        "case_id": "case-08"
+      },
+      {
+        "slot_id": "case-09.model.1",
+        "case_id": "case-09"
+      },
+      {
+        "slot_id": "case-09.model.2",
+        "case_id": "case-09"
+      },
+      {
+        "slot_id": "case-09.model.3",
+        "case_id": "case-09"
+      },
+      {
+        "slot_id": "case-10.model.1",
+        "case_id": "case-10"
+      },
+      {
+        "slot_id": "case-10.model.2",
+        "case_id": "case-10"
+      },
+      {
+        "slot_id": "case-10.model.3",
+        "case_id": "case-10"
+      }
+    ],
+    "global_request_cap": 90,
+    "per_slot_max": 3
+  }
+}

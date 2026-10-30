@@ -1,0 +1,374 @@
+{
+  "schema": "lineage_comparison_batch_protocol_v1",
+  "phase": "epoch1_diagnosis_confirmation_only",
+  "cases": [
+    {
+      "case_id": "case-01",
+      "seed": 2301,
+      "arm": "NONE",
+      "source_job": "none-s2301",
+      "reference_job": "none-s2301"
+    },
+    {
+      "case_id": "case-02",
+      "seed": 2302,
+      "arm": "NONE",
+      "source_job": "none-s2302",
+      "reference_job": "none-s2302"
+    },
+    {
+      "case_id": "case-03",
+      "seed": 2303,
+      "arm": "F1",
+      "source_job": "f1-s2303",
+      "reference_job": "none-s2303"
+    },
+    {
+      "case_id": "case-04",
+      "seed": 2304,
+      "arm": "F1",
+      "source_job": "f1-s2304",
+      "reference_job": "none-s2304"
+    },
+    {
+      "case_id": "case-05",
+      "seed": 2305,
+      "arm": "F2",
+      "source_job": "f2-s2305",
+      "reference_job": "none-s2305"
+    },
+    {
+      "case_id": "case-06",
+      "seed": 2306,
+      "arm": "F2",
+      "source_job": "f2-s2306",
+      "reference_job": "none-s2306"
+    },
+    {
+      "case_id": "case-07",
+      "seed": 2307,
+      "arm": "COMPOUND",
+      "source_job": "compound-s2307",
+      "reference_job": "none-s2307"
+    },
+    {
+      "case_id": "case-08",
+      "seed": 2308,
+      "arm": "COMPOUND",
+      "source_job": "compound-s2308",
+      "reference_job": "none-s2308"
+    },
+    {
+      "case_id": "case-09",
+      "seed": 2309,
+      "arm": "F5",
+      "source_job": "f5-s2309",
+      "reference_job": "none-s2309"
+    },
+    {
+      "case_id": "case-10",
+      "seed": 2310,
+      "arm": "F3",
+      "source_job": "f3-s2310",
+      "reference_job": "none-s2310"
+    }
+  ],
+  "policies": [
+    "registry_next",
+    "fixed_eligible",
+    "model_adaptive"
+  ],
+  "latin_execution_plan": [
+    {
+      "order": 1,
+      "case_index": 1,
+      "policy_index": 1,
+      "case_id": "case-01",
+      "policy": "registry_next"
+    },
+    {
+      "order": 2,
+      "case_index": 1,
+      "policy_index": 2,
+      "case_id": "case-01",
+      "policy": "fixed_eligible"
+    },
+    {
+      "order": 3,
+      "case_index": 1,
+      "policy_index": 3,
+      "case_id": "case-01",
+      "policy": "model_adaptive"
+    },
+    {
+      "order": 4,
+      "case_index": 2,
+      "policy_index": 1,
+      "case_id": "case-02",
+      "policy": "fixed_eligible"
+    },
+    {
+      "order": 5,
+      "case_index": 2,
+      "policy_index": 2,
+      "case_id": "case-02",
+      "policy": "model_adaptive"
+    },
+    {
+      "order": 6,
+      "case_index": 2,
+      "policy_index": 3,
+      "case_id": "case-02",
+      "policy": "registry_next"
+    },
+    {
+      "order": 7,
+      "case_index": 3,
+      "policy_index": 1,
+      "case_id": "case-03",
+      "policy": "model_adaptive"
+    },
+    {
+      "order": 8,
+      "case_index": 3,
+      "policy_index": 2,
+      "case_id": "case-03",
+      "policy": "registry_next"
+    },
+    {
+      "order": 9,
+      "case_index": 3,
+      "policy_index": 3,
+      "case_id": "case-03",
+      "policy": "fixed_eligible"
+    },
+    {
+      "order": 10,
+      "case_index": 4,
+      "policy_index": 1,
+      "case_id": "case-04",
+      "policy": "registry_next"
+    },
+    {
+      "order": 11,
+      "case_index": 4,
+      "policy_index": 2,
+      "case_id": "case-04",
+      "policy": "fixed_eligible"
+    },
+    {
+      "order": 12,
+      "case_index": 4,
+      "policy_index": 3,
+      "case_id": "case-04",
+      "policy": "model_adaptive"
+    },
+    {
+      "order": 13,
+      "case_index": 5,
+      "policy_index": 1,
+      "case_id": "case-05",
+      "policy": "fixed_eligible"
+    },
+    {
+      "order": 14,
+      "case_index": 5,
+      "policy_index": 2,
+      "case_id": "case-05",
+      "policy": "model_adaptive"
+    },
+    {
+      "order": 15,
+      "case_index": 5,
+      "policy_index": 3,
+      "case_id": "case-05",
+      "policy": "registry_next"
+    },
+    {
+      "order": 16,
+      "case_index": 6,
+      "policy_index": 1,
+      "case_id": "case-06",
+      "policy": "model_adaptive"
+    },
+    {
+      "order": 17,
+      "case_index": 6,
+      "policy_index": 2,
+      "case_id": "case-06",
+      "policy": "registry_next"
+    },
+    {
+      "order": 18,
+      "case_index": 6,
+      "policy_index": 3,
+      "case_id": "case-06",
+      "policy": "fixed_eligible"
+    },
+    {
+      "order": 19,
+      "case_index": 7,
+      "policy_index": 1,
+      "case_id": "case-07",
+      "policy": "registry_next"
+    },
+    {
+      "order": 20,
+      "case_index": 7,
+      "policy_index": 2,
+      "case_id": "case-07",
+      "policy": "fixed_eligible"
+    },
+    {
+      "order": 21,
+      "case_index": 7,
+      "policy_index": 3,
+      "case_id": "case-07",
+      "policy": "model_adaptive"
+    },
+    {
+      "order": 22,
+      "case_index": 8,
+      "policy_index": 1,
+      "case_id": "case-08",
+      "policy": "fixed_eligible"
+    },
+    {
+      "order": 23,
+      "case_index": 8,
+      "policy_index": 2,
+      "case_id": "case-08",
+      "policy": "model_adaptive"
+    },
+    {
+      "order": 24,
+      "case_index": 8,
+      "policy_index": 3,
+      "case_id": "case-08",
+      "policy": "registry_next"
+    },
+    {
+      "order": 25,
+      "case_index": 9,
+      "policy_index": 1,
+      "case_id": "case-09",
+      "policy": "model_adaptive"
+    },
+    {
+      "order": 26,
+      "case_index": 9,
+      "policy_index": 2,
+      "case_id": "case-09",
+      "policy": "registry_next"
+    },
+    {
+      "order": 27,
+      "case_index": 9,
+      "policy_index": 3,
+      "case_id": "case-09",
+      "policy": "fixed_eligible"
+    },
+    {
+      "order": 28,
+      "case_index": 10,
+      "policy_index": 1,
+      "case_id": "case-10",
+      "policy": "registry_next"
+    },
+    {
+      "order": 29,
+      "case_index": 10,
+      "policy_index": 2,
+      "case_id": "case-10",
+      "policy": "fixed_eligible"
+    },
+    {
+      "order": 30,
+      "case_index": 10,
+      "policy_index": 3,
+      "case_id": "case-10",
+      "policy": "model_adaptive"
+    }
+  ],
+  "budget": {
+    "max_decisions_per_policy_case": 3,
+    "execution_request_budget_s": 1200,
+    "paired_probe_watchdogs_s": {
+      "legacy": 480,
+      "optimizer": 480
+    },
+    "paired_roles_per_logical_request": 2,
+    "model_logical_slots_per_case": 3,
+    "model_logical_slots_total": 30,
+    "model_post_cap_per_slot": 3,
+    "model_post_cap_total": 90,
+    "api_cap_scope": "new_independent_batch_not_combined_with_prior_72_or_120_drafts",
+    "replacement_seeds": 0,
+    "selective_retries": 0
+  },
+  "component_protocols": {
+    "source_collection": {
+      "path": "bench/protocols/lineage_source_collection_20261030_v2.json",
+      "sha256_lf": "872b31d4e810a9162ca2cf11204aca89ad20cd33f76dc28f546cf97ddfe7cca8"
+    },
+    "nim_transport": {
+      "path": "bench/protocols/lineage_nim_transport_20261031_v1.json",
+      "sha256_lf": "636b40999e01019f57b5f87df08aff2aa0da81045e4270275a5a44bababa7ca9"
+    },
+    "paired_probe": {
+      "path": "bench/protocols/lineage_paired_probes_20261031_v1.json",
+      "sha256_lf": "cb02badd6bb6d66155eb5c008d4cfc85d3b9c6c05c10be2d975ee1413fcc51de"
+    },
+    "selection_view": {
+      "path": "bench/protocols/selection_comparison_view_v1.json",
+      "sha256_lf": "81be94f3b359ea397179bd365d10d3694e5f7854675e909c495920c8d1129781"
+    },
+    "selection_controller": {
+      "path": "bench/protocols/selection_comparison_controller_v1.json",
+      "sha256_lf": "d446a9c7d2e97f333c03dc53459012d3e6d6357382636fd31d0f7adc7b1be9b9"
+    }
+  },
+  "runtime_source_sha256_lf": {
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d"
+  },
+  "source_sha256_lf": {
+    "evals/lineage_comparison_batch_v1.py": "780f16f2ea2dfc6e1479d71fdb62a6c656c294326b1c5c3938e18ea5e57f3e38",
+    "tests/test_lineage_comparison_batch_v1.py": "1bcda132fcfad140f9f9e76860cc7a78e6f37931464d29fa83feff0254bd9b8f",
+    "evals/lineage_diagnosis_epoch_v1.py": "f08fd79fa042e69da6913711a5776c5aaf26b81446f99a8be47b02a3f98385c9",
+    "evals/lineage_evaluation_gate_v1.py": "33f5b8275033045e867a16cce6e91519a5db82f858caf25e6a1b2b47315d410b",
+    "evals/lineage_selection_inputs_v1.py": "02f156f49d29c7a852b541a95164fca33cabfea4a4bd572f7804418a657eadca",
+    "evals/lineage_source_batch_v1.py": "cf0ee2c9fb19c2ecc39916a2d88d40a8c81d9bc15bb9235aafd3219db54adf38"
+  },
+  "transport_dag": "batch -> transport protocol; transport protocol does not hash batch protocol",
+  "error_rules": {
+    "model_invalid_unknown_hold_rule_fallback": false,
+    "pending_auto_resend": false,
+    "resume_supported": false,
+    "output": "fresh_write_once_fail_closed"
+  },
+  "aggregation": {
+    "denominator_cases_per_policy": 10,
+    "excluded_cases_remain_in_denominator": true,
+    "compound_confirmation": "first_registered_component_is_partial_not_full_cause"
+  },
+  "claims": {
+    "correction": false,
+    "training": false,
+    "epoch2": false,
+    "causality": false,
+    "generalization": false
+  },
+  "outcome_wording": {
+    "complete": "고정 10 case의 epoch1 진단·확인 결과를 세 정책의 같은 입력 짝으로 보존했다.",
+    "invalid": "입력·계보·pending 또는 실행 계약이 불완전해 자동 재전송 없이 중단했다.",
+    "excluded": "고정 분모 10에는 남기되 gate 사유와 함께 진단 실행에서 제외했다."
+  }
+}

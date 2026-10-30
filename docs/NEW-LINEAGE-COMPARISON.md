@@ -1,6 +1,6 @@
-# 새 정책 계보 비교를 위한 source 수집
+# 새 정책 수집과 진단 비교
 
-이 실행기는 Go2 평지 과제에서 새 seed의 정책 10개와 같은 seed의 정상 참조를 수집한다. 진단 비교에 앞서 학습 입력을 고정하는 단계다. 모델 호출·검사 선택·교정·회복 판정은 실행하지 않는다.
+Go2 평지 과제에서 새 seed의 정책 10개와 같은 seed의 정상 참조를 수집한 뒤, 고정 평가와 세 검사 선택 방식을 비교한다. 수집·행동 평가·모델 제안·검사 확정은 별도 단계이며, source 수집 완료를 진단이나 회복 성공으로 집계하지 않는다.
 
 ## 등록 범위
 
@@ -51,6 +51,31 @@ $evidence = Join-Path $HOME 'rl-triage-source-evidence-v1'
 
 그다음 등록 순서·고정 실행 가능 순서·Nemotron 3.5 수치 입력을 같은 검사·판단 예산에서 비교하는 별도 판을 등록한다. 영상으로 더 나은 검사를 골랐다는 개발 근거가 아직 없어 시각 진단 arm은 보류한다. [VL 렌더 무결성 검사](VISUAL-INTEGRITY-OBSERVER.md)의 결과는 영상 입력을 가리는 기능의 근거이며 진단 선택 이득의 근거로 합산하지 않는다.
 
-후속 API 예산은 아직 배정하지 않았다. 이전 초안의 72회는 사례 10개·모델 arm 하나·판단 2회·판단당 최대 3요청일 때만 상한 60회를 덮는다. 판단을 8회까지 허용하면 상한은 240회여서 별도 배정이 필요하다. 이 수집 판이 해당 요청을 허용하지 않는다.
+## 완료 source 재사용
 
-현재 학습 수집 구현과 CPU 검증은 완료됐으며 실제 source 수집과 후속 평가 결과는 실행별 원문으로 확인한다. 수집기의 완료를 검출률·회복률·모델 우위로 읽지 않는다.
+[재개 실행기](../evals/lineage_source_continuation_v1.py)는 완료된 13개 source를 검증해 재사용하고 원래 순서의 나머지 5개만 실행한다. 적용 대상은 [재개 등록](../bench/protocols/lineage_source_continuation_20261031_v1.json)에 묶인 실행이다. 중단 stage에 GPU 입장 기록만 있고 학습 자식이 시작되지 않았는지 확인한다. 기존 실패 결과·accepted·체크포인트·TensorBoard 원문은 읽기만 한다.
+
+새 실행에는 새 출력 폴더와 등록 anchor가 필요하다. 원래 source anchor와 재개 실행기의 anchor를 나눠 기록하며, 결과에도 두 실행의 provenance를 남긴다. GPU 입장 규칙은 유지한다. 이미 끝난 학습의 반복과 자동 재시도는 허용하지 않는다.
+
+```powershell
+cd "$HOME/rl-triage-agent"
+& ./bench/run_lineage_source_continuation_v1.ps1 -ExecutionAnchor $anchor -Protocol ./bench/protocols/lineage_source_continuation_20261031_v1.json -PriorRoot "$evidence/sources" -Output "$evidence/continuation" -Execute
+```
+
+`PriorRoot`는 등록한 13개 완료 원문과 실패 기록이 있는 폴더여야 한다. 임의의 다른 중단 배치에는 이 등록을 적용할 수 없다. 새 실행은 학습별 1800초와 나머지 배치 9000초 상한을 둔다.
+
+## 고정 평가와 세 정책의 비교
+
+[고정 평가 실행기](../evals/lineage_fixed_eval_batch_v1.py)는 완료 source 18개의 체크포인트를 하나의 owned worker에서 평가한다. 평가 seed 2026, 명령 26조건, 원래 밴드를 유지한다. source의 학습 결함은 fixed 환경에 재주입하지 않고 같은 seed 정상 정책과 행동을 비교한다. [PowerShell 실행기](../bench/run_lineage_fixed_eval_v1.ps1)가 입력 검증 뒤 공용 lease 취득·해제를 처리한다. 정상 참조 실패와 source 실패 부재는 후속 진단에서 제외하되 계획된 사례 수에 남긴다.
+
+[진단 비교 실행기](../evals/lineage_comparison_batch_v1.py)는 `registry_next`, `fixed_eligible`, Nemotron 3.5의 `model_adaptive`를 같은 공개 수치·검사·예산으로 비교한다. 사례마다 정책 순서를 순환하고, 정책별 검사 한도는 3회다. 정상 source는 호스트 anomaly gate로 개입을 막으므로 이 결과를 모델만의 정상 판별 성능으로 쓰지 않는다.
+
+- [비교 등록](../bench/protocols/lineage_comparison_20261031_v1.json): 계획 10사례와 정책 3개의 전 결과를 보존한다. 복합 결함의 첫 구성요소 확정은 부분 진단이며 전체 원인 확정으로 집계하지 않는다.
+- [paired 검사 등록](../bench/protocols/lineage_paired_probes_20261031_v1.json): reference와 case를 각각 측정하고 부모가 하나의 논리 검사 영수증으로 정산한다. `P_value`의 `model_0.pt`도 별도 SHA로 묶는다.
+- [NIM 호출 등록](../bench/protocols/lineage_nim_transport_20261031_v1.json): 모델 판단 slot 30개, slot당 피드백·인프라 요청을 포함한 최대 3회, 전체 최대 90요청이다. 이전 72회 초안이나 120회 원장을 늘린 판이 아니다.
+
+NIM worker는 요청별 영구 dispatch claim을 남겨 불명확한 송신을 다시 보내지 않는다. 닫힌 queue에는 새 요청을 넣지 않으며, 부모는 실제 probe 영수증이 없으면 확정하지 않는다. 무효 모델 응답을 규칙 선택으로 바꾸지 않는다. TokenFactory의 별도 비교 응답은 이 NIM 고리에 치환하지 않는다.
+
+주지표는 같은 예산 내 올바른 구성요소 확정 수다. 오확정·HOLD·정상 개입·모델 계약 유효율과 실제 검사 시도·성공·unknown을 나눠 보고한다. API 지연, owned child 시간, 부모 벽시계도 구분하며 비용이 미확정이면 알려진 소계만 남긴다. 이 비교 판은 첫 진단 epoch까지이며 교정·재학습·두 번째 epoch는 별도 등록이 필요하다.
+
+구현과 CPU 회귀는 실제 검사·모델 비교 결과를 대신하지 않는다. 실행별 완료/HOLD/무효 기록으로 측정 상태를 확인하며, 결과가 나오기 전에 모델 우위나 회복 효과를 주장하지 않는다.
