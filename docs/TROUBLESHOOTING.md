@@ -860,3 +860,10 @@
 - 원인: `run_owned`는 호출자가 만든 폴더에 launch를 배타 생성한다. 첫 교정 부모가 학습·평가의 owned 폴더를 만들지 않은 채 이 함수를 호출했다.
 - 수정: [v2 어댑터](../evals/lineage_recovery_execution_v2.py)는 호출 직전 폴더를 배타 생성하고 기존 실행기를 재사용한다. 원래 v1 소스·등록·실패 기록은 보존하며, 새 source와 protocol에 결합한 새 출력 경로로 확인한다.
 - 검증: 실제 `run_owned`에서 v1의 폴더 누락을 재현하고, Windows Job·spawn만 대체한 CPU 회귀로 launch·stdout·stderr 생성과 학습·평가 폴더의 재사용 거부를 확인했다. CPU 확인과 실제 3회 갱신 완료는 별도 상태다.
+
+### OPS-121: 학습 완료 뒤 임대 메타데이터 읽기에서 평가 중단
+
+- 관찰: v2는 실제 3회 갱신 사전 실행과 300회 교정 학습을 완료했다. 이후 고정 평가 입장에서 `gpu-lease.json`을 읽는 중 `PermissionError`가 발생했다. 오류 파일명과 호출 경로를 확보했으며 평가 자식은 시작되지 않았다. 메타데이터의 원자 교체와 겹쳤을 가능성은 있으나 파일 접근 거부의 세부 원인은 확정하지 않았다.
+- 수정: [lease reader v2](../evals/lineage_lease_context_v2.py)는 canonical 메타데이터 파일의 `EACCES`와 같은 파일명에만 2초·최대 20회 안에서 새 읽기를 시도한다. 다른 파일, JSON 오류, 잘못된 소유자·기간·lock은 재시도하지 않는다. 원래 PID 계층·heartbeat·배타 lock 검증을 그대로 수행하며 과거 메타데이터를 캐시해 수용하지 않는다.
+- 재개: [평가 전용 실행기](../evals/lineage_recovery_continuation_v3.py)는 완료된 학습·체크포인트·텔레메트리와 consumed 원장을 검증해 재사용한다. 원래 실패와 원장은 보존하고, 새 원장 사본에 평가 결과를 추가한다. 새 학습·새 모델 호출·새 교정 승인은 없다.
+- 재발 진단: [probe 예외 기록](../evals/lineage_probe_failure_evidence_v3.py)은 원래 판정을 바꾸지 않고 message·traceback·errno·winerror·filename을 별도 파일에 남긴다. 과거 상세 정보가 없는 오류를 같은 원인으로 소급 확정하지 않는다.

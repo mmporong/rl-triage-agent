@@ -1,0 +1,24 @@
+{
+  "schema": "lineage_probe_failure_evidence_protocol_v3",
+  "phase": "preserve_probe_backend_exception_without_retry",
+  "component_admission_protocol": {
+    "path": "bench/protocols/lineage_probe_admission_20261031_v2.json",
+    "sha256_lf": "593015c3064dd064ea73ea030b382742dacfbe2ba83d49b0982cd33575bcd428"
+  },
+  "source_sha256_lf": {
+    "evals/lineage_probe_failure_evidence_v3.py": "5fc5c946aaa20363816bcc76d0ea5808715d015092e1eca434fd48895e22db45",
+    "tests/test_lineage_probe_failure_evidence_v3.py": "e2251f3286bf206c49b922f1b0e3c48aca80346d5a91680a1c0e9723b7deeaf7"
+  },
+  "failure_contract": {
+    "sidecar": "backend-exception-detail.json",
+    "write_once": true,
+    "retry": false,
+    "original_exception_reraised": true,
+    "original_probe_receipt_unchanged": true
+  },
+  "claims": {
+    "measurement": false,
+    "correction": false,
+    "recovery": false
+  }
+}
