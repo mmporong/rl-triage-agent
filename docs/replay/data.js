@@ -10534,6 +10534,190 @@ window.REPLAY_DATA = {
    "number": 16
   },
   {
+   "id": "reasoning_followup",
+   "title": "Reasoning 선택을 실제 진단까지 이어 본 후속 개발",
+   "lead": "같은 두 seed의 결함 6행에서 기록된 첫 선택을 이어 검사하고, 제안 형식과 실제 원인 확정을 나눠 본다.",
+   "blocks": [
+    {
+     "type": "table",
+     "title": "실제 진단 결과(각 결함 6행)",
+     "columns": [
+      "요청 mode",
+      "원인 확정",
+      "HOLD",
+      "복합 부분",
+      "오확정",
+      "새 API",
+      "새 SDK role"
+     ],
+     "rows": [
+      [
+       "reasoning 없음",
+       {
+        "value": "2/6",
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "4/6",
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 4,
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "reasoning low",
+       {
+        "value": "5/6",
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "1/6",
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 6,
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "digits": null
+       }
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "title": "대표 c07 · R1",
+     "columns": [
+      "요청 mode",
+      "관측 경로",
+      "최종 판정",
+      "새 SDK role"
+     ],
+     "rows": [
+      [
+       "reasoning 없음",
+       {
+        "value": "P_reward → normal",
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/legacy_none/step-02.json",
+        "digits": null
+       },
+       {
+        "value": "모델 HOLD",
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c07-legacy_none.json",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c07-legacy_none.json",
+        "digits": 0
+       }
+      ],
+      [
+       "reasoning low",
+       {
+        "value": "count 읽기 → recorded count abnormal",
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c07-enabled_low.json",
+        "digits": null
+       },
+       {
+        "value": "optimizer_update_count 확정",
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c07-enabled_low.json",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c07-enabled_low.json",
+        "digits": 0
+       }
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "wide": true,
+     "title": "별도 operator coverage 감사(c02)",
+     "columns": [
+      "선택 주체",
+      "검사",
+      "관측",
+      "SDK role",
+      "primary 집계"
+     ],
+     "rows": [
+      [
+       {
+        "value": "operator_registry_coverage_audit",
+        "source": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "P_reward",
+        "source": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "abnormal",
+        "source": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "모델 결과 5/6 유지",
+        "source": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
+        "digits": null
+       }
+      ]
+     ]
+    }
+   ],
+   "notes": [
+    "원 응답 32회와 후속 새 API 8회는 분리했다. reasoning 없음은 새 API 2회·SDK role 4회, reasoning low는 새 API 6회·SDK role 2회다.",
+    "두 seed와 이미 공개된 결함을 쓴 노출 후 개발이다. 기본 mode는 바꾸지 않았고 새 교정·회복은 없다.",
+    "별도 operator 감사는 c02의 P_reward abnormal 관측 범위만 보완한다. 모델의 5/6을 6/6으로 바꾸지 않는다.",
+    "모델 3 대 3.5 또는 VL 구성의 이득, 일반화, 속도·GPU 절감의 근거가 아니다."
+   ],
+   "number": 17
+  },
+  {
    "id": "cost",
    "title": "비용과 재현",
    "dense": true,
@@ -10740,7 +10924,7 @@ window.REPLAY_DATA = {
     "parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
     "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."
    ],
-   "number": 17
+   "number": 18
   }
  ],
  "sources": {
@@ -12477,6 +12661,422 @@ window.REPLAY_DATA = {
    "path": "evals/results/diagnostic_option_study_development_20261101_v2/summary.json",
    "kind": "diagnostic_option_study_file",
    "sha256": "e0756f6802948f494027ca388759fa8f8c7c46fa6d2249e3198d9b0b6e437827",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/artifact_manifest.json",
+   "kind": "reasoning_diagnosis_study",
+   "sha256": "602e47b4e863b7a9b4d29d492ec6ad0c3853ff9e902c571a6ccf8d4a3662faf8",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c01-enabled_low.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c01-enabled_low.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c01-enabled_low.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "86c018a70d92756cd50ac88e6d4bd461ab0e4272bef160c3183ee9f29c53fab2",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c01-legacy_none.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c01-legacy_none.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c01-legacy_none.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "5071f26169b170c191663b3038e8a8702090458fa7f0596483d1dec9db53a431",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c02-enabled_low.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c02-enabled_low.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c02-enabled_low.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "bd31f0718eadd0e79f33cc2d03c30cc281a847a0ce4c7ff6ab41d3e67ade34de",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c02-legacy_none.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c02-legacy_none.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c02-legacy_none.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "72d24e7dd6262e0d4615801967c6aa01b5f520c67652f6e1bb24287dbb76e900",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c03-enabled_low.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c03-enabled_low.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c03-enabled_low.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "60c2ab7d54f518875006c63b861e939a916129fd02c64b02c3b3baea33ea4dac",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c03-legacy_none.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c03-legacy_none.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c03-legacy_none.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "ce2d4516db6e811b4af1cc951654fc403481d8d553b13d43e4e31ea87a880216",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c04-enabled_low.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c04-enabled_low.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c04-enabled_low.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "23379b65b7f31d9330ce5845fcc024ed715a4ec04f3e4381b8345b2ec84d6f0b",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c04-legacy_none.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c04-legacy_none.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c04-legacy_none.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "d5edf5d8154c7fb6ea429f254f773c5a79ccef6c11f1585a4f4be1aa972942c6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c05-enabled_low.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c05-enabled_low.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c05-enabled_low.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "5b5d7cfff27859930481d53e82d24dfc00c1c91cc81b9b2bbb829a1bfd34c2e9",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c05-legacy_none.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c05-legacy_none.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c05-legacy_none.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "7bd594383237ce49fe0a357e6a1f1d0c7ad0c7585772fe2155df4ff8db1f9a0a",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c06-enabled_low.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c06-enabled_low.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c06-enabled_low.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "5a48b2c25a01451a50f6dc97eccf70564bc33aa374294c58a69365af8ab4530c",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c06-legacy_none.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c06-legacy_none.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c06-legacy_none.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "e1dafd2c49375a7d540c095dde6b3f82da1720d12c7f52d0396a97bb300cf2f3",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c07-enabled_low.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c07-enabled_low.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c07-enabled_low.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "a10659ba282c5275257e7420d9ba846ef0b60bf77d3810f0ea46a958079752d7",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c07-legacy_none.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c07-legacy_none.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c07-legacy_none.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "287efa104a0337e254f77d147d4e29c1d65b13d98de3358882385b5c06f0dda2",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c08-enabled_low.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c08-enabled_low.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c08-enabled_low.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "e11ec1571b231ab10ea6e3a3cee92b5e7833594f23be611e9d6d3b9609b6c0da",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c08-legacy_none.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c08-legacy_none.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/cases/c08-legacy_none.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "49b9dbe71a569191c383a43e8605d2197cf72efe934e8f7ccf1586259ddea4d3",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/enabled_low/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/enabled_low/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/enabled_low/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "5151425e56562383cdf59d14a8fce75841ad0e6a798b8fb762aefd50b006aad9",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/enabled_low/step-02.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/enabled_low/step-02.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/enabled_low/step-02.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "1a434ba02baa8681d3ff1ea2500bf7d9d2b2e529220bdab191bb24f537d9d87f",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/enabled_low/step-03.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/enabled_low/step-03.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/enabled_low/step-03.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "fe6d6343869f218dc264e841ddfc899d0e82d3ebeb702970332798fffe0076b2",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/legacy_none/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/legacy_none/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c02/legacy_none/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "7ab450d14b86592cc3e8b229af3d7e024df52fc4335ed924d12d94d582638b55",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/enabled_low/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/enabled_low/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/enabled_low/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "a44b9d68e67245d895bc3bb945806354d9d0ccda32786c0fe2fb1763facdb5c2",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/enabled_low/step-02.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/enabled_low/step-02.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/enabled_low/step-02.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "a6a396e1b4a577bd721e80131501120fce863bd17193066e029c69d435a58c34",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/legacy_none/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/legacy_none/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/legacy_none/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "c4ff1a191f519a6d92bf3c20e644f6e5607a07cf24482a27857e01c85ec6489d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/legacy_none/step-02.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/legacy_none/step-02.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c03/legacy_none/step-02.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "55cc18e420ce43fa2179ec3b65064b6df4803b50d49317d716d098be39cca014",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c04/enabled_low/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c04/enabled_low/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c04/enabled_low/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "e41bfc554b5d84304d4dfab9c077c1c90643607002e3694b6eefa5c2ef806115",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c04/enabled_low/step-02.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c04/enabled_low/step-02.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c04/enabled_low/step-02.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "9d8b01a6b5eca309c5a44b1791e83f5603d2bd7aad6c1d6ef66f13464cc9b517",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c04/legacy_none/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c04/legacy_none/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c04/legacy_none/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "a28b55dca678ea23e5c18d7a88061402e4283752c6f89b0fdc3a2d9a08f824f2",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c06/enabled_low/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c06/enabled_low/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c06/enabled_low/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "b508b11d77c124ad8cd00978947dd79e1e5967b6c56c76f882dc8a3139c9b42a",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c06/legacy_none/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c06/legacy_none/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c06/legacy_none/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "52f6f6adf951784922b780775bb806b486de70d7e77393c4b0717896403007e6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/enabled_low/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/enabled_low/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/enabled_low/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "71320173d189645b4f1959d06f4033e62488a75e8e800b066c02ed6832737d36",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/enabled_low/step-02.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/enabled_low/step-02.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/enabled_low/step-02.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "51f27d20b956689644a3692af0f4338515abeb5ec6f3e4a84105bcd6a04830a7",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/legacy_none/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/legacy_none/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/legacy_none/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "bf42ebc4d295b64bde22d9b776546a804bb8423c2fffeb4f85b714e4ada97b78",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/legacy_none/step-02.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/legacy_none/step-02.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c07/legacy_none/step-02.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "bc6aad908da054d472329dc5f112d34670a7abcda3d862328205e73ad2331a80",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c08/enabled_low/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c08/enabled_low/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c08/enabled_low/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "77132f1c76c05fd80081f4f6938305adff60f8ef41f02240a6c4113a89940884",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c08/enabled_low/step-02.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c08/enabled_low/step-02.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c08/enabled_low/step-02.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "9fe6cd824ca50af48775b55636e5d310b62eb2602c3ce1cb937291303b8189da",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c08/legacy_none/step-01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c08/legacy_none/step-01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/dialogues/c08/legacy_none/step-01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "8f7570900969122a0d772e983b50db677759c942e01bf6e270fdf94db1d66362",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c01.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c01.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c01.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "92fb0f39cb040d3a76b6fc8a00382c154a92c164ad38cc116794350463d645e0",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c02.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c02.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c02.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "c847e0a815643fa08dd55bfc4b8cea3a5adb92c7be1f6a79dbeffb45920e2a80",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c03.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c03.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c03.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "4bdf05a333dbe0baf2566cfa6e5439fd22e341b0fd87deb38857a6f10be44924",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c04.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c04.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c04.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "da010afd1d12d3d59470ce45f20162dcd2ca14b599033bf6664ed9a10953daec",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c05.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c05.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c05.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "ab0ee1a4e2ec7bd0b6cdc887f726dface53c02f61b868f1c5447fa52d1c3d0e4",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c06.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c06.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c06.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "0a0e2afde10bab45829d89ee1d4834b6a4e68c0ba86fcdcfdda8a50ade9a8ca2",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c07.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c07.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c07.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "65b4046a7c3660c682c966f731537e01ec1107aa9eb4d8cb26ae08b46f4f9784",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c08.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c08.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/messages/c08.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "f4af294b5650536e7e3e7cb0922a1ff9642a34d056c7a4e277efb2603faa6385",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/source_provenance.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/source_provenance.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/source_provenance.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "91552b0b891b090fcebd24a5ee3c53f115050e9dbef4f1b48da82405b9457bf8",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/reasoning_diagnosis_study_development_20261101_v1/summary.json": {
+   "id": "evals/results/reasoning_diagnosis_study_development_20261101_v1/summary.json",
+   "path": "evals/results/reasoning_diagnosis_study_development_20261101_v1/summary.json",
+   "kind": "reasoning_diagnosis_study_file",
+   "sha256": "247def469a18a2784f5b95ea93898c98675966d5e91049303867ae444cd8982a",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_coverage_audit_c02_20261101_v1": {
+   "id": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
+   "path": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/artifact_manifest.json",
+   "kind": "diagnostic_coverage_audit",
+   "sha256": "af35402b977f9f86d10bd354cff436b9dd03b852cba95c467c303040a0cf7e64",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/case.json": {
+   "id": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/case.json",
+   "path": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/case.json",
+   "kind": "diagnostic_coverage_audit_file",
+   "sha256": "6209481cc84da66e717d0edf16982a6d9fce93151d538434906990eb8a755e9e",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/reference.json": {
+   "id": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/reference.json",
+   "path": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/reference.json",
+   "kind": "diagnostic_coverage_audit_file",
+   "sha256": "16ac5af139693f4df2d771bbb5d5681e7d6a2841f2351d8085933701352f5516",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_coverage_audit_c02_20261101_v1/source_provenance.json": {
+   "id": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/source_provenance.json",
+   "path": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/source_provenance.json",
+   "kind": "diagnostic_coverage_audit_file",
+   "sha256": "e08ff72813aa8e39ea1190ecb33d386043247735ec4e1efb71c60634453b0e00",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_coverage_audit_c02_20261101_v1/summary.json": {
+   "id": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/summary.json",
+   "path": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/summary.json",
+   "kind": "diagnostic_coverage_audit_file",
+   "sha256": "91df2b847e96568b67b867ec18f6d02c9534a44806584aadfedd927134a3a1e0",
    "status": "ready",
    "reason": null
   },
