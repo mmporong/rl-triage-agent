@@ -1,0 +1,63 @@
+{
+  "already_inspected_results": true,
+  "claims": {
+    "gpu_savings": false,
+    "model_version_superiority": false,
+    "new_heldout_measurement": false,
+    "overall_policy_superiority": false,
+    "video_gain": false
+  },
+  "external_effects": {
+    "brev_start": 0,
+    "new_api": 0,
+    "new_gpu": 0,
+    "new_source_training": 0,
+    "tokenfactory": 0
+  },
+  "inputs": {
+    "batch_protocol": {
+      "path": "bench/protocols/lineage_comparison_20261031_v1.json",
+      "sha256": "6433379538b2d3ee304c91ca8d0d5657884545a717dae8e75c32f97f95ab0a5a"
+    },
+    "comparison_export": {
+      "manifest_sha256": "09b2c5f94cca6bfde0d1d67882c536a9ebdcd8cf2ea6b613e5b3b0c8d96985fe",
+      "path": "evals/results/lineage_diagnosis_dev_20261031_v1"
+    },
+    "source_summary": {
+      "path": "evals/results/lineage_source_fixed_dev_20261031_v1/summary.json",
+      "sha256": "7da5965b03e95b4ec1f8e298367816621305d00efabfcabf143aaeac1a260a5b"
+    }
+  },
+  "measurement_kind": "retrospective_analysis_of_existing_development_results",
+  "original_dataset_commit": "2a1537118c57d40f85241fe3ebec651354a5e004",
+  "prospective_registration": false,
+  "report_code_freeze_before_final_export": true,
+  "rules": {
+    "api_probe_training_eval_costs_separate": true,
+    "complete_case": "all_paired_measurements_complete_or_noninfra_model_failure_known_zero",
+    "correction_support_annotation_is_not_confirmed_diagnosis": true,
+    "exact_sign_test": "two_sided_sign_probability_reference_only_not_generalization_inference",
+    "first_compound_component_is_not_full_cause": true,
+    "intention_to_diagnose_denominator": 10,
+    "keep_original_30_rows": true,
+    "matched_cost_subset": "same_successful_subtype_and_technical_completion_only",
+    "normal_control": "host_gate_not_llm_classification",
+    "unknown_bounds": "possible_binary_outcomes_identification_range_not_confidence_interval",
+    "unresolved_observation": "unknown_not_zero_measurement"
+  },
+  "schema": "lineage_matched_analysis_spec_v1",
+  "source_sha256_lf": {
+    "evals/lineage_comparison_batch_v1.py": "780f16f2ea2dfc6e1479d71fdb62a6c656c294326b1c5c3938e18ea5e57f3e38",
+    "evals/lineage_matched_analysis_v1.py": "aa06b26bf08693206804908b81524ee8c9d44382129a06167b1bf129d9331d68",
+    "evals/residual_contract_v1.py": "0ad37bcc9399885a1d0c1e6e59b64053706fe1a1bd25b5253ac59b30068c5a90",
+    "evals/residual_selection_v2.py": "d1a0028afbe00d2697246e4fe30640ec780e3c4b15486dd4f1ed7e722aec6bc8",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "src/rl_triage/mechanism_registry.py": "0bc3c47e52bdb6eb511cad5f6b76d047edfdfd1ca3c09d52fd637c47909d75d0",
+    "tests/test_lineage_matched_analysis_v1.py": "221015a7921e32dec8ab304e8fe30d29cef6038e82847700bdf63ebd46c27004"
+  },
+  "wording": {
+    "conditional_probe_difference": "two registered reward cases only; posthoc; all cases and failures remain visible",
+    "default": "inconclusive_for_overall_superiority",
+    "no_measurement_replacement": true
+  }
+}
