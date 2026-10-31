@@ -1,0 +1,440 @@
+{
+  "adoption": {
+    "action_candidate": true,
+    "actual_probe_confirmation_performed": false,
+    "checks": {
+      "actual_probe_confirmation_before_diagnosis_benefit": true,
+      "complete_calls": true,
+      "distinct_fault_cases_with_valid_read_or_probe_at_least_2": true,
+      "enabled_low_fault_read_or_probe_above_legacy": true,
+      "enabled_low_fault_valid_at_least_10_of_12": true,
+      "enabled_low_fault_valid_not_below_legacy": true,
+      "enabled_low_incomplete_not_above_legacy": true,
+      "normal_valid_probe_proposals_not_above_legacy": true,
+      "reasoning_surface_or_positive_reported_reasoning_tokens_required": true
+    },
+    "diagnosis_benefit": false,
+    "registered_rule": {
+      "actual_probe_confirmation_before_diagnosis_benefit": true,
+      "complete_calls": 32,
+      "distinct_fault_cases_with_valid_read_or_probe_at_least": 2,
+      "enabled_low_fault_read_or_probe_above_legacy": true,
+      "enabled_low_fault_valid_at_least": "10/12",
+      "enabled_low_fault_valid_not_below_legacy": true,
+      "enabled_low_incomplete_not_above_legacy": true,
+      "normal_valid_probe_proposals_not_above_legacy": true,
+      "reasoning_surface_or_positive_reported_reasoning_tokens_required": true,
+      "scope": "development_action_candidate_only_not_default"
+    },
+    "scope": "development_action_candidate_only_not_default"
+  },
+  "calls": 32,
+  "case_mode": [
+    {
+      "actions": {
+        "hold": 2,
+        "read_evidence": 0,
+        "run_probe": 0
+      },
+      "calls": 2,
+      "case_id": "c01",
+      "input_tokens": 9246,
+      "mean_parent_wall_s": 11.43703859049856,
+      "mode": "legacy_none",
+      "output_tokens": 28,
+      "total_tokens": 9274,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 0,
+        "read_evidence": 2,
+        "run_probe": 0
+      },
+      "calls": 2,
+      "case_id": "c01",
+      "input_tokens": 9246,
+      "mean_parent_wall_s": 9.931034478999209,
+      "mode": "enabled_low",
+      "output_tokens": 3533,
+      "total_tokens": 12779,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 2,
+        "read_evidence": 0,
+        "run_probe": 0
+      },
+      "calls": 2,
+      "case_id": "c02",
+      "input_tokens": 9252,
+      "mean_parent_wall_s": 0.36106782800197834,
+      "mode": "legacy_none",
+      "output_tokens": 28,
+      "total_tokens": 9280,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 0,
+        "read_evidence": 1,
+        "run_probe": 1
+      },
+      "calls": 2,
+      "case_id": "c02",
+      "input_tokens": 9252,
+      "mean_parent_wall_s": 40.87198473150056,
+      "mode": "enabled_low",
+      "output_tokens": 14748,
+      "total_tokens": 24000,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 1,
+        "read_evidence": 1,
+        "run_probe": 0
+      },
+      "calls": 2,
+      "case_id": "c03",
+      "input_tokens": 9224,
+      "mean_parent_wall_s": 10.836915395004326,
+      "mode": "legacy_none",
+      "output_tokens": 31,
+      "total_tokens": 9255,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 0,
+        "read_evidence": 2,
+        "run_probe": 0
+      },
+      "calls": 2,
+      "case_id": "c03",
+      "input_tokens": 9224,
+      "mean_parent_wall_s": 12.523782504002156,
+      "mode": "enabled_low",
+      "output_tokens": 1996,
+      "total_tokens": 11220,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 2,
+        "read_evidence": 0,
+        "run_probe": 0
+      },
+      "calls": 2,
+      "case_id": "c04",
+      "input_tokens": 9248,
+      "mean_parent_wall_s": 0.9278713889943901,
+      "mode": "legacy_none",
+      "output_tokens": 28,
+      "total_tokens": 9276,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 1,
+        "read_evidence": 1,
+        "run_probe": 0
+      },
+      "calls": 2,
+      "case_id": "c04",
+      "input_tokens": 9248,
+      "mean_parent_wall_s": 6.993628828502551,
+      "mode": "enabled_low",
+      "output_tokens": 2578,
+      "total_tokens": 11826,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 2,
+        "read_evidence": 0,
+        "run_probe": 0
+      },
+      "calls": 2,
+      "case_id": "c05",
+      "input_tokens": 9230,
+      "mean_parent_wall_s": 0.4332703589971061,
+      "mode": "legacy_none",
+      "output_tokens": 28,
+      "total_tokens": 9258,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 1,
+        "read_evidence": 1,
+        "run_probe": 0
+      },
+      "calls": 2,
+      "case_id": "c05",
+      "input_tokens": 9230,
+      "mean_parent_wall_s": 11.265860947503825,
+      "mode": "enabled_low",
+      "output_tokens": 3905,
+      "total_tokens": 13135,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 1,
+        "read_evidence": 0,
+        "run_probe": 1
+      },
+      "calls": 2,
+      "case_id": "c06",
+      "input_tokens": 9236,
+      "mean_parent_wall_s": 0.5238195914935204,
+      "mode": "legacy_none",
+      "output_tokens": 109,
+      "total_tokens": 9345,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 0,
+        "read_evidence": 1,
+        "run_probe": 1
+      },
+      "calls": 2,
+      "case_id": "c06",
+      "input_tokens": 9236,
+      "mean_parent_wall_s": 52.04210665950086,
+      "mode": "enabled_low",
+      "output_tokens": 7116,
+      "total_tokens": 16352,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 0,
+        "read_evidence": 1,
+        "run_probe": 1
+      },
+      "calls": 2,
+      "case_id": "c07",
+      "input_tokens": 9242,
+      "mean_parent_wall_s": 4.448323087497556,
+      "mode": "legacy_none",
+      "output_tokens": 112,
+      "total_tokens": 9354,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 0,
+        "read_evidence": 2,
+        "run_probe": 0
+      },
+      "calls": 2,
+      "case_id": "c07",
+      "input_tokens": 9242,
+      "mean_parent_wall_s": 15.192185355997935,
+      "mode": "enabled_low",
+      "output_tokens": 4272,
+      "total_tokens": 13514,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 1,
+        "read_evidence": 0,
+        "run_probe": 1
+      },
+      "calls": 2,
+      "case_id": "c08",
+      "input_tokens": 9172,
+      "mean_parent_wall_s": 0.5017430209991289,
+      "mode": "legacy_none",
+      "output_tokens": 109,
+      "total_tokens": 9281,
+      "valid": 2
+    },
+    {
+      "actions": {
+        "hold": 0,
+        "read_evidence": 2,
+        "run_probe": 0
+      },
+      "calls": 2,
+      "case_id": "c08",
+      "input_tokens": 9172,
+      "mean_parent_wall_s": 10.764193887000147,
+      "mode": "enabled_low",
+      "output_tokens": 4142,
+      "total_tokens": 13314,
+      "valid": 2
+    }
+  ],
+  "claims": {
+    "correction": false,
+    "deeper_rl_success": false,
+    "default_adoption": false,
+    "first_action_proposals_only": true,
+    "model_version_comparison": false,
+    "post_exposure_development": true,
+    "probe_confirmation": false,
+    "recovery": false,
+    "same_model_different_request_mode": true,
+    "speed_improvement": false,
+    "throughput_improvement": false,
+    "two_seed_repeated_conditions_correlated": true
+  },
+  "fault_paired_action_changes": [
+    {
+      "action_changed": true,
+      "both_valid": true,
+      "case_id": "c02",
+      "enabled_low_action": "read_evidence",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "hold",
+      "replicate": 1
+    },
+    {
+      "action_changed": true,
+      "both_valid": true,
+      "case_id": "c02",
+      "enabled_low_action": "run_probe",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "hold",
+      "replicate": 2
+    },
+    {
+      "action_changed": false,
+      "both_valid": true,
+      "case_id": "c03",
+      "enabled_low_action": "read_evidence",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "read_evidence",
+      "replicate": 1
+    },
+    {
+      "action_changed": true,
+      "both_valid": true,
+      "case_id": "c03",
+      "enabled_low_action": "read_evidence",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "hold",
+      "replicate": 2
+    },
+    {
+      "action_changed": true,
+      "both_valid": true,
+      "case_id": "c04",
+      "enabled_low_action": "read_evidence",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "hold",
+      "replicate": 1
+    },
+    {
+      "action_changed": false,
+      "both_valid": true,
+      "case_id": "c04",
+      "enabled_low_action": "hold",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "hold",
+      "replicate": 2
+    },
+    {
+      "action_changed": false,
+      "both_valid": true,
+      "case_id": "c06",
+      "enabled_low_action": "run_probe",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "run_probe",
+      "replicate": 1
+    },
+    {
+      "action_changed": true,
+      "both_valid": true,
+      "case_id": "c06",
+      "enabled_low_action": "read_evidence",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "hold",
+      "replicate": 2
+    },
+    {
+      "action_changed": true,
+      "both_valid": true,
+      "case_id": "c07",
+      "enabled_low_action": "read_evidence",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "run_probe",
+      "replicate": 1
+    },
+    {
+      "action_changed": false,
+      "both_valid": true,
+      "case_id": "c07",
+      "enabled_low_action": "read_evidence",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "read_evidence",
+      "replicate": 2
+    },
+    {
+      "action_changed": true,
+      "both_valid": true,
+      "case_id": "c08",
+      "enabled_low_action": "read_evidence",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "hold",
+      "replicate": 1
+    },
+    {
+      "action_changed": true,
+      "both_valid": true,
+      "case_id": "c08",
+      "enabled_low_action": "read_evidence",
+      "evaluation_role": "fault_development",
+      "legacy_none_action": "run_probe",
+      "replicate": 2
+    }
+  ],
+  "modes": {
+    "enabled_low": {
+      "calls": 16,
+      "fault_calls": 12,
+      "fault_read_or_probe": 11,
+      "fault_valid": 12,
+      "incomplete": 0,
+      "input_tokens": 73850,
+      "mean_parent_wall_s": 19.948097174125905,
+      "normal_calls": 4,
+      "normal_hold": 1,
+      "normal_read": 3,
+      "normal_valid_probe": 0,
+      "output_tokens": 42290,
+      "reported_positive_reasoning_tokens": 16,
+      "reported_zero_reasoning_tokens": 0,
+      "total_tokens": 116140,
+      "valid": 16
+    },
+    "legacy_none": {
+      "calls": 16,
+      "fault_calls": 12,
+      "fault_read_or_probe": 5,
+      "fault_valid": 12,
+      "incomplete": 0,
+      "input_tokens": 73850,
+      "mean_parent_wall_s": 3.6837561576858207,
+      "normal_calls": 4,
+      "normal_hold": 4,
+      "normal_read": 0,
+      "normal_valid_probe": 0,
+      "output_tokens": 473,
+      "reported_positive_reasoning_tokens": 0,
+      "reported_zero_reasoning_tokens": 16,
+      "total_tokens": 74323,
+      "valid": 16
+    }
+  },
+  "normal_host_gate_model_calls_in_primary_study": 0,
+  "normal_model_only_counterfactual": true,
+  "schema": "nemotron_reasoning_options_public_summary_v1",
+  "status": "complete"
+}

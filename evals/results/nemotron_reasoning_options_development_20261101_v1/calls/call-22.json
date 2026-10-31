@@ -1,0 +1,118 @@
+{
+  "actual_system_gate_executed": false,
+  "approval": false,
+  "model_action": "run_probe",
+  "normal_model_probe_proposed": false,
+  "planned": {
+    "abba_position": 2,
+    "call_index": 22,
+    "case_id": "c06",
+    "evaluation_role": "fault_development",
+    "messages_digest": "5e8d80c2e9afa47cdb2aafed4dcd6f54cb549ffbd47dd2219015f67900c4fd50",
+    "messages_file_sha256": "0a0e2afde10bab45829d89ee1d4834b6a4e68c0ba86fcdcfdda8a50ade9a8ca2",
+    "mode": "enabled_low",
+    "replicate": 1
+  },
+  "public_projection": "reasoning_trace_removed",
+  "recovery": false,
+  "repair": false,
+  "request_sha256": "f641c05fe844d88b0f8168b3312417737a9fa7bf511763d481224eb6a1755a57",
+  "response": {
+    "content": "{\n  \"option_id\": \"probe:P_reward\",\n  \"fact_ids\": [\n    \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\",\n    \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\"\n  ]\n}",
+    "finish_reason": "stop",
+    "input_tokens": 4618,
+    "message_field_names": [
+      "content",
+      "role"
+    ],
+    "output_tokens": 5156,
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "reasoning_content_presence": "present",
+    "reasoning_presence": "absent_or_unexposed",
+    "reasoning_tokens": 5090,
+    "reasoning_tokens_status": "reported",
+    "response_field_names": [
+      "choices",
+      "created",
+      "id",
+      "model",
+      "object",
+      "service_tier",
+      "system_fingerprint",
+      "usage"
+    ],
+    "response_id": "chatcmpl-30bc6643-f66f-475c-9c4e-216a0d1c4aeb",
+    "total_tokens": 9774,
+    "wall_s": 87.73768879000272
+  },
+  "response_field_names": [
+    "content",
+    "finish_reason",
+    "input_tokens",
+    "message_field_names",
+    "output_tokens",
+    "provider_model",
+    "reasoning",
+    "reasoning_content",
+    "reasoning_tokens",
+    "reasoning_tokens_status",
+    "response_field_names",
+    "response_id",
+    "total_tokens",
+    "wall_s"
+  ],
+  "review": {
+    "action": {
+      "action": "run_probe",
+      "fact_ids": [
+        "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+        "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp"
+      ],
+      "target": "P_reward"
+    },
+    "base_review": {
+      "action": {
+        "action": "run_probe",
+        "fact_ids": [
+          "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+          "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp"
+        ],
+        "target": "P_reward"
+      },
+      "base_review": {
+        "action": {
+          "action": "run_probe",
+          "fact_ids": [
+            "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+            "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp"
+          ],
+          "target": "P_reward"
+        },
+        "codes": [],
+        "format_status": "valid",
+        "reasons": [],
+        "semantic_status": "valid",
+        "status": "valid"
+      },
+      "codes": [],
+      "context_digest": "5213fd40c061f96f4ac107ea75d9808b77a809fa7c7d69b202a97357558f2837",
+      "format_status": "valid",
+      "response_text": "{\n  \"option_id\": \"probe:P_reward\",\n  \"fact_ids\": [\n    \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\",\n    \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\"\n  ]\n}",
+      "schema": "registry_action_options_review_v1",
+      "selected_option_id": "probe:P_reward",
+      "semantic_status": "valid",
+      "state_digest": "4f65aa4aafd44491e39f0d458c1f8aed4f527db543a728bc3c56659f1466c3fd",
+      "status": "valid"
+    },
+    "codes": [],
+    "context_digest": "cb484c1965e868831a3c91f2f62ea7f4b3b798261caba516c85d13ca6c134f2c",
+    "format_status": "valid",
+    "response_text": "{\n  \"option_id\": \"probe:P_reward\",\n  \"fact_ids\": [\n    \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\",\n    \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\"\n  ]\n}",
+    "schema": "registry_action_options_review_v2",
+    "selected_option_id": "probe:P_reward",
+    "semantic_status": "valid",
+    "state_digest": "4f65aa4aafd44491e39f0d458c1f8aed4f527db543a728bc3c56659f1466c3fd",
+    "status": "valid"
+  },
+  "schema": "nemotron_reasoning_options_call_v2"
+}

@@ -1,0 +1,109 @@
+{
+  "actual_system_gate_executed": false,
+  "approval": false,
+  "model_action": "read_evidence",
+  "normal_model_probe_proposed": false,
+  "planned": {
+    "abba_position": 2,
+    "call_index": 6,
+    "case_id": "c02",
+    "evaluation_role": "fault_development",
+    "messages_digest": "cc548b3af4970532b32dfd8789be2408bfec6aa66c527bcfbc9ee76377685d67",
+    "messages_file_sha256": "c847e0a815643fa08dd55bfc4b8cea3a5adb92c7be1f6a79dbeffb45920e2a80",
+    "mode": "enabled_low",
+    "replicate": 1
+  },
+  "public_projection": "reasoning_trace_removed",
+  "recovery": false,
+  "repair": false,
+  "request_sha256": "2187467f66b90bbf70720b9bfbbbb9eaa8390e5d8dc05568b4b9b7b5f527be47",
+  "response": {
+    "content": "{\"option_id\": \"read_optimizer_counts\", \"fact_ids\": []}",
+    "finish_reason": "stop",
+    "input_tokens": 4626,
+    "message_field_names": [
+      "content",
+      "role"
+    ],
+    "output_tokens": 10905,
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "reasoning_content_presence": "present",
+    "reasoning_presence": "absent_or_unexposed",
+    "reasoning_tokens": 10887,
+    "reasoning_tokens_status": "reported",
+    "response_field_names": [
+      "choices",
+      "created",
+      "id",
+      "model",
+      "object",
+      "service_tier",
+      "system_fingerprint",
+      "usage"
+    ],
+    "response_id": "chatcmpl-ef8264be-64ad-449c-85ac-c61beeb6d174",
+    "total_tokens": 15531,
+    "wall_s": 60.33825979100948
+  },
+  "response_field_names": [
+    "content",
+    "finish_reason",
+    "input_tokens",
+    "message_field_names",
+    "output_tokens",
+    "provider_model",
+    "reasoning",
+    "reasoning_content",
+    "reasoning_tokens",
+    "reasoning_tokens_status",
+    "response_field_names",
+    "response_id",
+    "total_tokens",
+    "wall_s"
+  ],
+  "review": {
+    "action": {
+      "action": "read_evidence",
+      "fact_ids": [],
+      "target": "evidence:optimizer-counts"
+    },
+    "base_review": {
+      "action": {
+        "action": "read_evidence",
+        "fact_ids": [],
+        "target": "evidence:optimizer-counts"
+      },
+      "base_review": {
+        "action": {
+          "action": "read_evidence",
+          "fact_ids": [],
+          "target": "evidence:optimizer-counts"
+        },
+        "codes": [],
+        "format_status": "valid",
+        "reasons": [],
+        "semantic_status": "valid",
+        "status": "valid"
+      },
+      "codes": [],
+      "context_digest": "bf8a2a32c161c9a49d4bc2ebd43e16d1781172c7221b9b317cd0b6111d17f7e8",
+      "format_status": "valid",
+      "response_text": "{\"option_id\": \"read_optimizer_counts\", \"fact_ids\": []}",
+      "schema": "registry_action_options_review_v1",
+      "selected_option_id": "read_optimizer_counts",
+      "semantic_status": "valid",
+      "state_digest": "96a8a21ec6f3901b13c05a644515faa9d23ea57a55ad0e69e3ba89c18c6f038e",
+      "status": "valid"
+    },
+    "codes": [],
+    "context_digest": "7343a9221ef7113c7db533e57e68661b0652735bbaa7fc22b976dda6dfd9e10d",
+    "format_status": "valid",
+    "response_text": "{\"option_id\": \"read_optimizer_counts\", \"fact_ids\": []}",
+    "schema": "registry_action_options_review_v2",
+    "selected_option_id": "read_optimizer_counts",
+    "semantic_status": "valid",
+    "state_digest": "96a8a21ec6f3901b13c05a644515faa9d23ea57a55ad0e69e3ba89c18c6f038e",
+    "status": "valid"
+  },
+  "schema": "nemotron_reasoning_options_call_v2"
+}

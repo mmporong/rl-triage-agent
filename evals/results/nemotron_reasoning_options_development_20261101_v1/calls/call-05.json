@@ -1,0 +1,109 @@
+{
+  "actual_system_gate_executed": false,
+  "approval": false,
+  "model_action": "hold",
+  "normal_model_probe_proposed": false,
+  "planned": {
+    "abba_position": 1,
+    "call_index": 5,
+    "case_id": "c02",
+    "evaluation_role": "fault_development",
+    "messages_digest": "cc548b3af4970532b32dfd8789be2408bfec6aa66c527bcfbc9ee76377685d67",
+    "messages_file_sha256": "c847e0a815643fa08dd55bfc4b8cea3a5adb92c7be1f6a79dbeffb45920e2a80",
+    "mode": "legacy_none",
+    "replicate": 1
+  },
+  "public_projection": "reasoning_trace_removed",
+  "recovery": false,
+  "repair": false,
+  "request_sha256": "4e3a2e4ae1dc8ce46e1d419b2c5e4406db3040aa878404bb5e029ea71c81beab",
+  "response": {
+    "content": "{\"option_id\": \"hold\", \"fact_ids\": []}",
+    "finish_reason": "stop",
+    "input_tokens": 4626,
+    "message_field_names": [
+      "content",
+      "role"
+    ],
+    "output_tokens": 14,
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "reasoning_content_presence": "absent_or_unexposed",
+    "reasoning_presence": "absent_or_unexposed",
+    "reasoning_tokens": 0,
+    "reasoning_tokens_status": "reported",
+    "response_field_names": [
+      "choices",
+      "created",
+      "id",
+      "model",
+      "object",
+      "service_tier",
+      "system_fingerprint",
+      "usage"
+    ],
+    "response_id": "chatcmpl-b0c2aaa2-bcea-493a-a552-cb55587419ea",
+    "total_tokens": 4640,
+    "wall_s": 0.3808591980050551
+  },
+  "response_field_names": [
+    "content",
+    "finish_reason",
+    "input_tokens",
+    "message_field_names",
+    "output_tokens",
+    "provider_model",
+    "reasoning",
+    "reasoning_content",
+    "reasoning_tokens",
+    "reasoning_tokens_status",
+    "response_field_names",
+    "response_id",
+    "total_tokens",
+    "wall_s"
+  ],
+  "review": {
+    "action": {
+      "action": "hold",
+      "fact_ids": [],
+      "target": null
+    },
+    "base_review": {
+      "action": {
+        "action": "hold",
+        "fact_ids": [],
+        "target": null
+      },
+      "base_review": {
+        "action": {
+          "action": "hold",
+          "fact_ids": [],
+          "target": null
+        },
+        "codes": [],
+        "format_status": "valid",
+        "reasons": [],
+        "semantic_status": "valid",
+        "status": "valid"
+      },
+      "codes": [],
+      "context_digest": "bf8a2a32c161c9a49d4bc2ebd43e16d1781172c7221b9b317cd0b6111d17f7e8",
+      "format_status": "valid",
+      "response_text": "{\"option_id\": \"hold\", \"fact_ids\": []}",
+      "schema": "registry_action_options_review_v1",
+      "selected_option_id": "hold",
+      "semantic_status": "valid",
+      "state_digest": "96a8a21ec6f3901b13c05a644515faa9d23ea57a55ad0e69e3ba89c18c6f038e",
+      "status": "valid"
+    },
+    "codes": [],
+    "context_digest": "7343a9221ef7113c7db533e57e68661b0652735bbaa7fc22b976dda6dfd9e10d",
+    "format_status": "valid",
+    "response_text": "{\"option_id\": \"hold\", \"fact_ids\": []}",
+    "schema": "registry_action_options_review_v2",
+    "selected_option_id": "hold",
+    "semantic_status": "valid",
+    "state_digest": "96a8a21ec6f3901b13c05a644515faa9d23ea57a55ad0e69e3ba89c18c6f038e",
+    "status": "valid"
+  },
+  "schema": "nemotron_reasoning_options_call_v2"
+}

@@ -1,0 +1,124 @@
+{
+  "actual_system_gate_executed": false,
+  "approval": false,
+  "model_action": "run_probe",
+  "normal_model_probe_proposed": false,
+  "planned": {
+    "abba_position": 4,
+    "call_index": 32,
+    "case_id": "c08",
+    "evaluation_role": "fault_development",
+    "messages_digest": "b45054d65a2ca5a2d2e96e83a6c8f1f4156815a2c75c910f063ee4e3411f7c7d",
+    "messages_file_sha256": "f4af294b5650536e7e3e7cb0922a1ff9642a34d056c7a4e277efb2603faa6385",
+    "mode": "legacy_none",
+    "replicate": 2
+  },
+  "public_projection": "reasoning_trace_removed",
+  "recovery": false,
+  "repair": false,
+  "request_sha256": "70a2f9f8e1b96497a43995c04985fc8688be77f1b4a9a2905c65fc504a19babe",
+  "response": {
+    "content": "{\"option_id\": \"probe:P_reward\", \"fact_ids\": [\"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\"]}",
+    "finish_reason": "stop",
+    "input_tokens": 4586,
+    "message_field_names": [
+      "content",
+      "role"
+    ],
+    "output_tokens": 95,
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "reasoning_content_presence": "absent_or_unexposed",
+    "reasoning_presence": "absent_or_unexposed",
+    "reasoning_tokens": 0,
+    "reasoning_tokens_status": "reported",
+    "response_field_names": [
+      "choices",
+      "created",
+      "id",
+      "model",
+      "object",
+      "service_tier",
+      "system_fingerprint",
+      "usage"
+    ],
+    "response_id": "chatcmpl-26ebc065-a664-4354-b943-b3b1e99cb33c",
+    "total_tokens": 4681,
+    "wall_s": 0.6277555999986362
+  },
+  "response_field_names": [
+    "content",
+    "finish_reason",
+    "input_tokens",
+    "message_field_names",
+    "output_tokens",
+    "provider_model",
+    "reasoning",
+    "reasoning_content",
+    "reasoning_tokens",
+    "reasoning_tokens_status",
+    "response_field_names",
+    "response_id",
+    "total_tokens",
+    "wall_s"
+  ],
+  "review": {
+    "action": {
+      "action": "run_probe",
+      "fact_ids": [
+        "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+        "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+        "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+        "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+      ],
+      "target": "P_reward"
+    },
+    "base_review": {
+      "action": {
+        "action": "run_probe",
+        "fact_ids": [
+          "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+          "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+          "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+          "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+        ],
+        "target": "P_reward"
+      },
+      "base_review": {
+        "action": {
+          "action": "run_probe",
+          "fact_ids": [
+            "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+            "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+            "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+            "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+          ],
+          "target": "P_reward"
+        },
+        "codes": [],
+        "format_status": "valid",
+        "reasons": [],
+        "semantic_status": "valid",
+        "status": "valid"
+      },
+      "codes": [],
+      "context_digest": "62b373411264d07a2bd95931ee2020e1fefdc242a205034f2d985ea6fe63c7b6",
+      "format_status": "valid",
+      "response_text": "{\"option_id\": \"probe:P_reward\", \"fact_ids\": [\"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\"]}",
+      "schema": "registry_action_options_review_v1",
+      "selected_option_id": "probe:P_reward",
+      "semantic_status": "valid",
+      "state_digest": "552cb6b4f4cd9e41bab76f2e93154f761b64a0f8a5cc72a579fc66b3fbe9d513",
+      "status": "valid"
+    },
+    "codes": [],
+    "context_digest": "83299e243ccebf45317dc51c2aabc37e77fff5fdec87a30b151a9c9adb0567d2",
+    "format_status": "valid",
+    "response_text": "{\"option_id\": \"probe:P_reward\", \"fact_ids\": [\"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\"]}",
+    "schema": "registry_action_options_review_v2",
+    "selected_option_id": "probe:P_reward",
+    "semantic_status": "valid",
+    "state_digest": "552cb6b4f4cd9e41bab76f2e93154f761b64a0f8a5cc72a579fc66b3fbe9d513",
+    "status": "valid"
+  },
+  "schema": "nemotron_reasoning_options_call_v2"
+}

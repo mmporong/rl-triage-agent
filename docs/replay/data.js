@@ -10191,6 +10191,349 @@ window.REPLAY_DATA = {
    "number": 15
   },
   {
+   "id": "registered_partitions",
+   "title": "등록 partition 설명을 노출한 후속 개발",
+   "dense": true,
+   "lead": "같은 관측 원자료·도구·예산에서 registry 예측 메타데이터와 설명을 보강한 사후 개발 결과를 기존 근거 유도 계약과 나눠 본다.",
+   "blocks": [
+    {
+     "type": "table",
+     "wide": true,
+     "title": "근거 유도 계약 비교(결함 6행)",
+     "columns": [
+      "계약",
+      "첫 유효",
+      "원인 확정",
+      "HOLD",
+      "복합 부분",
+      "read_evidence",
+      "paired",
+      "API",
+      "대화 파일",
+      "구분"
+     ],
+     "rows": [
+      [
+       "O1 · 기존 근거 유도",
+       {
+        "value": "6/6",
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 6,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 6,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "-",
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "기존 관측",
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "O2 · 설명 메타데이터 추가",
+       {
+        "value": "6/6",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 4,
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 1,
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 3,
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 7,
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 7,
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "후속 개발",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       }
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "wide": true,
+     "title": "O2 공개 사례별 판정",
+     "columns": [
+      "case",
+      "예상 family",
+      "첫 행동",
+      "최종 결과",
+      "확정 family",
+      "확정 범위",
+      "paired / API"
+     ],
+     "rows": [
+      [
+       "c02",
+       {
+        "value": "reward",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "hold",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "HOLD",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "-",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "확정 없음",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "0 / 1",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       }
+      ],
+      [
+       "c03",
+       {
+        "value": "optimizer_update_count",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "run_probe",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "HOLD",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "-",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "확정 없음",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "1 / 2",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       }
+      ],
+      [
+       "c04",
+       {
+        "value": "optimizer_update_count + reward",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "hold",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "HOLD",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "-",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "확정 없음",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "0 / 1",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       }
+      ],
+      [
+       "c06",
+       {
+        "value": "reward",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "run_probe",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "confirmed",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "reward",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "단일 결함 확정",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "1 / 1",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       }
+      ],
+      [
+       "c07",
+       {
+        "value": "optimizer_update_count",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "hold",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "HOLD",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "-",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "확정 없음",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "0 / 1",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       }
+      ],
+      [
+       "c08",
+       {
+        "value": "optimizer_update_count + reward",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "run_probe",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "confirmed",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "reward",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "복합 부분 확정",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "1 / 1",
+        "source": "evals/results/diagnostic_option_study_development_20261101_v2",
+        "digits": null
+       }
+      ]
+     ]
+    }
+   ],
+   "notes": [
+    "O2는 O1 결과 공개 뒤 만든 후속 개발이며, 같은 관측 원자료·도구·예산에 registry 예측 메타데이터를 새로 노출했다.",
+    "원인 확정은 단일 결함과 복합의 부분 확정 합계이며 둘 다 seed2321에서 나왔다. 독립된 두 계보의 성공이나 두 실패의 전체 해결이 아니다.",
+    "새 교정·회복과 새 seed 평가는 없으며, 모델 3→3.5 효과·기본 채택·규칙 우위를 입증하지 않는다."
+   ],
+   "number": 16
+  },
+  {
    "id": "cost",
    "title": "비용과 재현",
    "dense": true,
@@ -10397,7 +10740,7 @@ window.REPLAY_DATA = {
     "parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
     "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."
    ],
-   "number": 16
+   "number": 17
   }
  ],
  "sources": {
@@ -11926,6 +12269,214 @@ window.REPLAY_DATA = {
    "path": "evals/results/registry_action_recovery_s3332_20261101_v1/summary.json",
    "kind": "registry_action_recovery_file",
    "sha256": "6abae176a311d07e6746a3cc97d9685c7e014ac6ecd2e1363f6b5f5b90ab4a5c",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/artifact_manifest.json",
+   "kind": "diagnostic_option_study",
+   "sha256": "9a9857871d12549475d9fd841a4c0d4e02f6d41b46c569a46037ef5c403ecdca",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/cases/c01.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c01.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c01.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "779553e51f0f3aa45e20cb576cba8fe5b486afed12feeea2568d6c7ad645b165",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/cases/c02.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c02.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c02.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "5edffb6a51791423e003c8a8161de5c3c575b0c2d6aca9b94c9c25d64a0665f9",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/cases/c03.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c03.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c03.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "4063b60bc7307a7ca3084b3f5348f74ac33a0303040b4cf3626a2a0df27d4777",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/cases/c04.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c04.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c04.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "c7cb9606572b1ad2d61b6de8fa2ae893cf81f7509a4ee9809346380f9b7f4f49",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/cases/c05.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c05.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c05.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "22025de049f16233ebfae0f6f494505537b4d5045b9d523f3f82ba0d9af96d6b",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/cases/c06.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c06.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c06.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "f3da537827ad4bd1898e6a0bc0c4a6b5b353da0f4f0bc2933cb70467d54b5412",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/cases/c07.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c07.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c07.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "73e32bb40e3edc0a2ae266b86d0d047ab377be95bb86a526109ffb89b60d37ff",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/cases/c08.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c08.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/cases/c08.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "ee5770b84d076f469ccb4553f8c2638156abf20e59d0d314b20d6ec594fb33d4",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c02/dialogue-01.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c02/dialogue-01.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c02/dialogue-01.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "4b9421f2976a33913409ce794bd8e7adfe32355cea92b6ed220e2d0f85f0de0e",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c03/dialogue-01.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c03/dialogue-01.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c03/dialogue-01.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "364a6386af5bc9bfb67a72ad899ffbfb4c5a498904e2f2dec377ce10fb76248b",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c03/dialogue-02.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c03/dialogue-02.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c03/dialogue-02.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "26e7560c974f931b155d071dd5054103675e6d33b381ae8df0f652d2d6e90e78",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c04/dialogue-01.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c04/dialogue-01.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c04/dialogue-01.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "f99aea0b8005a1f41cbeaeb7456f121949a31a8863e81ad4eaef768828e10db5",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c06/dialogue-01.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c06/dialogue-01.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c06/dialogue-01.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "1ea4bb5f69945ba940a81c44ed55d0ba1fe0e97336b6cdd292ebf35e306f8559",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c07/dialogue-01.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c07/dialogue-01.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c07/dialogue-01.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "e60d2410814b4cc71fe7856bf75b5511d3c3f75e02cea6dc76696e5ecd3f9882",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c08/dialogue-01.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c08/dialogue-01.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/dialogues/c08/dialogue-01.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "25ab8807ccb24d19abb89da588b514d13fec8d606f9bae6971fc421b06444d01",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/source/c01.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/source/c01.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/source/c01.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "bcbd9e960498cc826784aa8a591f0dcb30a536819854bc12ff82839810093450",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/source/c02.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/source/c02.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/source/c02.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "cda17b3a7b50aeaef05913902eb8be51ddf81a116db300f9e74c206e0f7f05aa",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/source/c03.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/source/c03.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/source/c03.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "01f3bb5f823361dcbff0a5bb2f5385a078c4bd3642d74845162e244475ceb29d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/source/c04.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/source/c04.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/source/c04.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "54e8d737afd7e2d309b5896ce414d1db2b763b3623f06440d4490bcbed5df258",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/source/c05.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/source/c05.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/source/c05.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "38a82993bc6cd50add6b2e437424e73b28ed9a45f690473fcc260b154e2cb0b7",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/source/c06.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/source/c06.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/source/c06.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "eea26f23b5bcd5e81146f03e13b25bfc773e5ae7a9d65be92a0dbea9f1cb9a09",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/source/c07.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/source/c07.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/source/c07.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "0871cc340e8c7e74f08633163bdfa00f60eed88f6189c74656b494a563170a38",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/source/c08.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/source/c08.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/source/c08.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "61ef001889ab48e460c50817751ee5c29d9bcbb654e1133febe68304edbc1b63",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/source_provenance.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/source_provenance.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/source_provenance.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "50d37c109d513e9dfc1339e7dd2147993d090778d9f5d71dd7334e773b3147e8",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/diagnostic_option_study_development_20261101_v2/summary.json": {
+   "id": "evals/results/diagnostic_option_study_development_20261101_v2/summary.json",
+   "path": "evals/results/diagnostic_option_study_development_20261101_v2/summary.json",
+   "kind": "diagnostic_option_study_file",
+   "sha256": "e0756f6802948f494027ca388759fa8f8c7c46fa6d2249e3198d9b0b6e437827",
    "status": "ready",
    "reason": null
   },
