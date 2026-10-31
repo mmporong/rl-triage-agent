@@ -93,3 +93,16 @@ V1(seed 2070)은 학습 전 실행 폴더 생성 누락으로 invalid였으며, 
 부모 시간에는 원문·소스 검증, 준비와 자식 대기가 포함된다. SDK 자식 합계는 GPU 커널 시간이 아니다. 이 결과는 보관된 계측이 있을 때 같은 횟수 이상을 추가 SDK 실행 없이 확인하는 도구 후보를 뒷받침한다. 계측을 미리 저장하는 비용, 전체 진단 시간, 조기 탐지, 모델의 선택 개선이나 회복은 이 audit에서 측정하지 않았다. 모델 호출과 교정은 모두0회다.
 
 [공개 요약](../evals/results/recorded_optimizer_probe_audit_20261101_v2/summary.json)과 [seed2320](../evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2320.json)·[seed2321](../evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2321.json)에 판정·실측 시간·순서를 보존했다. 계측이 없거나 결합이 맞지 않으면 이 검사는 `unknown`으로 남기며, count가 정상이더라도 PPO 계산 전체가 정상이라는 뜻은 아니다.
+
+## 저장된 PPO 계산 검사 기록의 CPU 소비
+
+[별도 소비기](../evals/recorded_ppo_gradient_probe_v1.py)는 기존 [계산 검사 v5의 원문](../evals/results/ppo_gradient_v5_20261017/runs/)을 다시 계산해 `P_ppo_gradient` 영수증을 만든다. `manifest.json`, `records.jsonl`, `training_evidence.json`, `close_ready.json`의 SHA와 실행 결합을 확인하고, optimizer·미니배치 횟수와 clipped-surrogate gradient 결과를 별도 필드로 보존한다.
+
+| 보관된 개발 기록 | 횟수 | gradient | 관측 update 수 |
+|---|---|---|---:|
+|`none_s2144_on`|`normal`|`normal`|3|
+|`inverse_ratio_s2144_on`|`normal`|`abnormal`|3|
+
+이는 과거 검사 기록의 재계산이다. 새 정책 관측·학습·GPU 실행·교정·회복으로 세지 않는다. 출력은 `development_fixture`이며, 불완결 기록은 `unknown`, 원문 변조나 다른 실행의 완료 증거는 거부한다. 횟수 정상만으로 계산 오류 가설을 제거하지 않는 후속 고리에 사용할 증거 형식이며, 현재 진단 선택기에 검사를 추가한 결과는 아니다.
+
+CPU API는 `prepare(evidence_dir, request_id=..., out=...)`, `execute(plan_path, out=...)`, `checked_receipt(plan_path, receipt_path)`다. 계획·영수증은 새 파일로만 생성한다. [관련 회귀](../tests/test_recorded_ppo_gradient_probe_v1.py)는 정상·오류 기록 재계산, 불완결·비유한 값·교차 실행·SHA·영수증 변조를 확인한다.
