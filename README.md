@@ -28,7 +28,7 @@ Official pretrained H1 playback on stairs: [up](docs/media/stairs_h1_s172_202610
 
 1. **Notice.** A tracking alarm and a fixed evaluation over 26 velocity commands show that the policy does not follow commands.
 2. **Rank.** Nemotron reads the training telemetry and ranks likely causes (reward, actuator, exploration and others).
-3. **Probe.** It selects a registered check. After approval, checks inspect bound training records on CPU or run in Isaac Lab. The measured outcome narrows the registered causes until one remains, or the agent stops.
+3. **Probe.** It selects a [registered check](docs/EVIDENCE-GUIDED-DIAGNOSIS.md). After approval, checks inspect [bound training records on CPU](docs/OPTIMIZER-OBSERVABILITY.md#보관된-학습-계측을-재사용하는-검사) or run in Isaac Lab. The measured outcome narrows the registered causes until one remains, or the agent stops.
 4. **Correct.** The confirmed cause maps to one registered code correction and a recovery mode (continue training or retrain).
 5. **Verify.** After approval the policy is retrained, and the same fixed evaluation decides whether it recovered.
 
@@ -56,7 +56,7 @@ Who decides what differs by run, so results are not pooled as model choices. In 
 
 **Scope of the evidence.** Faults, probes and corrections were written by the same team, on two flat-terrain locomotion tasks (mostly Go2, two reward-fault runs on ANYmal-C) with a few seeds. The registered corrections cover three mechanisms; other faults end at HOLD or trigger a scope warning. These results show that the loop works end to end. They do not show diagnosis accuracy, generalization, an advantage over rules or GPU savings. On the first benchmark, simple deterministic rules solved every held-out case; on the 18-run hidden-fault set the agent ranked the true cause first 8 times against 2 to 6 for baselines, a small sample. Approvals were operator approvals delegated by the user; approver strings are recorded, not authenticated.
 
-**Nemotron 3.5.** [Matched-input API measurements](docs/NEMOTRON35-EVIDENCE-REPORT.md) recorded shorter response times, and a [VL render/state check](docs/VISUAL-INTEGRITY-OBSERVER.md) quarantined two broken renders and retained two aligned recordings. In a [10-case diagnosis comparison](docs/LINEAGE-MATCHED-COMPARISON.md), 3.5 and fixed order each confirmed two causes; the model used one fewer probe on two reward cases, while execution failures limited the comparison. Registered loops recovered reward-fault seed 2303 and [compound seed 2311](docs/NEW-LINEAGE-COMPARISON.md#갱신-계측을-연결한-새-복합-사례); earlier compound seed 2307 remains at HOLD. Model-version diagnosis accuracy and video-driven selection gains remain unproven.
+**Nemotron 3.5.** [Matched API measurements](docs/NEMOTRON35-EVIDENCE-REPORT.md) and a [VL render/state check](docs/VISUAL-INTEGRITY-OBSERVER.md) report response times and visual input integrity separately. An [action-ID development study](docs/EVIDENCE-GUIDED-DIAGNOSIS.md) made 12/12 first decisions valid (previously 0/12): the eager mode confirmed two single causes and two compound partial causes, while guided mode held all six faults. One preselected R1 case then recovered after registered epoch restoration and fresh training (seed 3332). These are same-model, post-exposure results; model-version diagnosis accuracy, an advantage over rules and image-driven selection gains remain unproven.
 
 **Current visual workflow.** Given fresh seed-2221 frames and telemetry, 3.5 chose `P_reward` and cited six telemetry facts. The [actual probe and followup](docs/AGENTIC-LOCAL-F1-FOLLOWUP.md) confirmed the reward fault and produced a registered correction proposal. The [full loop](docs/AGENTIC-LOCAL-F1-RECOVERY.md) retrained seed 3221 for 300 updates but ended `not_recovered`: yaw error exceeded the fixed limit. An independent [same-seed healthy control](docs/SAME-SEED-RECOVERY-CONTROL.md) reproduced its checkpoint and evaluation metrics; the original verdict is retained. A [same-input comparison](docs/NEMOTRON35-SAME-INPUT-RESULT.md) was inconclusive because 3 Super returned HTTP 404. Image-driven probe improvement remains unproved. Earlier frames marked stale by the [render audit](evals/results/vision_render_integrity_audit_20261028_v1/summary.json) remain deferred; simulation metrics and fixed evaluation results are unaffected.
 
@@ -185,13 +185,13 @@ The correction replay reports `"status": "pass"` when all six loop records match
 
 ## 한국어 요약
 
-Isaac Lab 로봇 강화학습이 겉으로는 잘 끝났는데 실제 과제에 실패할 때 원인을 찾아 고치는 에이전트입니다. 학습 기록을 읽고 원인 후보에 순위를 매긴 뒤(Nemotron), 20초 남짓 걸리는 짧은 검사로 원인을 좁힙니다. 원인이 확정되면 미리 등록한 수정과 재학습을 승인받아 실행하고, 처음과 같은 고정 평가(26개 속도 명령)로 회복을 판정합니다.
+Isaac Lab 로봇 강화학습이 겉으로는 잘 끝났는데 실제 과제에 실패할 때 원인을 찾아 고치는 에이전트입니다. 학습 기록을 읽고 원인 후보에 순위를 매긴 뒤(Nemotron), 승인된 검사로 가설을 좁힙니다. 원인이 확정되면 미리 등록한 수정과 재학습을 승인받아 실행하고, 처음과 같은 고정 평가(26개 속도 명령)로 회복을 판정합니다.
 
 - **흐름:** 이상 감지 → 원인 순위 → 승인된 검사 → 등록 교정 → 재학습과 고정 평가. 검사와 재학습은 승인이 기록돼야 돌고, 승인은 한 번만 쓰입니다. 현재 3.5 경로는 근거가 없거나 모델 응답이 계속 무효면 HOLD로 멈추며, 등록된 다른 판의 규칙 전환은 선택 주체와 함께 기록합니다.
 - **회복:** 새 seed의 보상·모터 결함 네 건(2030·2033·2034·2046)이 사전등록 기준으로 회복했습니다. 모터 결함에서는 첫 판단이 보상을 의심했지만 검사 세 번으로 바로잡았습니다.
 - **두 번째 교정:** 기존 복합 사례 2120·2121과 새 3.5 고리의 seed 2311은 첫 교정 뒤 미회복을 확인하고 두 번째 교정에서 회복했습니다. 2311은 모델이 고른 갱신 검사로 예상 20회·실제 4회를 확인해 epoch를 복원했고, 추종 오차는 1.219→1.163→0.142m/s였습니다. 이전 2307의 세 검사 HOLD는 유지합니다. [입력·검사·회복 근거](docs/NEW-LINEAGE-COMPARISON.md#갱신-계측을-연결한-새-복합-사례)를 구분해 기록했습니다.
 - **이식:** ANYmal-C의 새 seed 2047 보상 결함을 검사 한 번으로 확정하고 재학습으로 회복했습니다. 다른 프레임워크에서 옮긴 U1 버그는 범위 경고가 났고, 그 결과를 본 뒤 넓힌 교정으로 2051·2062가 회복했습니다(모델 고리 밖).
 - **멈춤:** 외부에서 가져온 결함 한 종의 세 실행은 원인 없음으로 끝났고 틀린 확정은 없었습니다. 정상 입력에는 고리를 열지 않았고, 출력 형식을 두 번 어긴 모델 응답은 규칙으로 대신 채우지 않고 멈췄습니다.
-- **3.5와 영상:** 같은 입력의 API 개발 비교에서 평균 응답 시간은 4.49→2.71초(각33회), 15.07→6.56초(각24회)였습니다. [10사례 진단 비교](docs/LINEAGE-MATCHED-COMPARISON.md)는 모델·고정 순서 모두 2건 확정이었고, 두 보상 사례에서 모델이 검사를 하나 덜 썼습니다. 실행 미확정을 포함한 전체 우위는 판정하지 않았습니다. [VL 위치 관찰과 호스트 검사](docs/VISUAL-INTEGRITY-OBSERVER.md)는 렌더 오류 2건을 격리하고 일치하는 2건을 유지했습니다. 영상에 따른 검사 선택 이득은 별도 검증이 필요합니다.
+- **3.5와 영상:** [행동 ID 계약의 개발 비교](docs/EVIDENCE-GUIDED-DIAGNOSIS.md)에서 첫 응답 유효성은0/12→12/12였고, 사전 고정한 R1 사례는 교정 재학습 후 추종 오차0.152m/s로 회복했습니다(seed3332). 근거 조회 방식6건의 HOLD는 유지합니다. [VL 위치 관찰과 호스트 검사](docs/VISUAL-INTEGRITY-OBSERVER.md)는 렌더 오류2건을 격리하고 일치하는2건을 유지했습니다. 모델 버전 효과나 영상에 따른 검사 선택 이득은 확인하지 못했습니다.
 
 결함·검사·교정을 같은 팀이 만들었고, 평지 보행 과제 두 개와 적은 seed로 얻은 결과입니다. 진단 정확도·일반화·규칙 대비 우위·GPU 비용 절감은 주장하지 않습니다.

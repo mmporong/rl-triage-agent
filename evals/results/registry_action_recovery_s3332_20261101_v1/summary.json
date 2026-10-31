@@ -1,0 +1,100 @@
+{
+  "claims": {
+    "default_adoption": false,
+    "early_detection": false,
+    "general_recovery": false,
+    "gpu_kernel_savings": false,
+    "measured_single_case_recovered": true,
+    "model_version_advantage": false,
+    "post_exposure_development": true,
+    "single_case": true
+  },
+  "outcome": "recovered",
+  "recovery": {
+    "outcome": "recovered",
+    "verdict": {
+      "checks": {
+        "err_xy_ratio": true,
+        "err_yaw_ratio": true,
+        "fall_frac": true,
+        "survival_ratio": true
+      },
+      "failed": [],
+      "label": "healthy",
+      "short_horizon": false
+    }
+  },
+  "repair": {
+    "checkpoint_loaded": false,
+    "correction_id": "restore_configured_ppo_epochs",
+    "independent_recovery_seed": true,
+    "mode": "fresh_restart",
+    "recovery_seed": 3332,
+    "selected_by": "registered_host_rule",
+    "source_checkpoint_provenance_only": true
+  },
+  "reports": {
+    "corrected_s3332": {
+      "checkpoint_sha256": "7f5d8034db6c26cb105589dac6fb90b8fc22246fa3424a96036f132b3f6288b6",
+      "metrics": {
+        "fall_rate": 0.03846153989434242,
+        "lin_vel_rmse_mps": 0.15196157471176708,
+        "mean_survival_s": 19.276807861328127,
+        "yaw_rate_rmse_radps": 0.26966576743938697
+      },
+      "name": "corrected_s3332",
+      "raw_sha256": "ab7ae6f4db29f114ccc298e094c21ffd6fe1b36ca8dc26c997b71da9e254444c",
+      "schema": "registry_action_recovery_public_source_v1"
+    },
+    "reference_none_s2320": {
+      "checkpoint_sha256": "2f23108ff01f8b6fee6151d0cf6f6dde0e896df307f23a1d880acf1399c16028",
+      "metrics": {
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.14510434172136638,
+        "mean_survival_s": 20.0,
+        "yaw_rate_rmse_radps": 0.29808503052947555
+      },
+      "name": "reference_none_s2320",
+      "raw_sha256": "bc29c5c365d2c763269fef964cf00269d5dc01ffc64efd8490d0ce1fa2482f99",
+      "schema": "registry_action_recovery_public_source_v1"
+    },
+    "source_r1_s2320": {
+      "checkpoint_sha256": "7d2e00d8bd1f79b548debab19cef113ab7c15bcf7d323ba1ef21613f38c7a89c",
+      "metrics": {
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 1.1812763251545104,
+        "mean_survival_s": 20.0,
+        "yaw_rate_rmse_radps": 0.7807919494616451
+      },
+      "name": "source_r1_s2320",
+      "raw_sha256": "6aef15aa31d34549206d4702b03196cd4d22fb1c03c1fe5538805f42ad594823",
+      "schema": "registry_action_recovery_public_source_v1"
+    }
+  },
+  "runtime_first3": {
+    "expected_minibatches": 20,
+    "expected_steps": 20,
+    "observed_minibatches": 20,
+    "observed_steps": 20,
+    "updates": 3
+  },
+  "schema": "registry_action_recovery_public_summary_v1",
+  "selection": {
+    "case_id": "c03",
+    "component": "optimizer_update_count",
+    "option_id": "probe:P_recorded_optimizer_updates",
+    "policy": "eager_model",
+    "selected_by": "model_option_id",
+    "source_seed": 2320
+  },
+  "status": "complete",
+  "study_separation": {
+    "healthy_reference_counted_as_new_recovery": false,
+    "recovery_api_requests": 0,
+    "selection_study_nim_requests": 14
+  },
+  "timing": {
+    "parent_wall_s": 651.9060000000172,
+    "scope": "registered recovery parent interval; not CUDA kernel time"
+  }
+}

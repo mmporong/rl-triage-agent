@@ -78,3 +78,18 @@ R1은 첫 update부터 설정된 `learning_epochs=5`, `mini_batches=4`의 기대
 이 판은 기존 top-3 가설·검사 예산 4 대신 모든 범주를 내부 7가설로 펼치고 최대 7검사를 허용한다. 기존 여섯 검사의 임계값과 가설 갱신·확정 함수는 유지했다. 교정 정책의 비교 기준은 시연 v4와 같은 원 seed 2071의 NONE 정책이며, R1에서 이어 학습과 재학습을 비교한 실행은 아니다.
 
 V1(seed 2070)은 학습 전 실행 폴더 생성 누락으로 invalid였으며, 해당 기록을 보존하고 새 판·새 seed로 실행했다.
+
+## 보관된 학습 계측을 재사용하는 검사
+
+`P_recorded_optimizer_updates`는 원 학습에 저장된 첫 세 update의 횟수를 CPU에서 재검증한다. checkpoint·학습 manifest·원문 계측·정상 참조의 결합을 확인하고, 별도 승인과 일회 소비 영수증을 남긴다. 새로 PPO를 실행한 관측과 구분해 `actual_training_reuse`로 기록한다.
+
+[사전등록 audit v2](../bench/protocols/recorded_optimizer_probe_audit_20261101_v2.json)는 seed2320·2321의 R1_ONLY를 같은 seed의 NONE과 비교했다. 한 seed는 기록 재사용 검사를 먼저, 다른 seed는 새 3-update 검사를 먼저 실행했다. 두 방법 모두 결함의 step·미니배치를 update마다 기대20회 대비 관측4회로, 정상 참조를20/20으로 판정했다. 이 두 쌍은 알려진 결함의 새 seed이며 미지의 결함군 평가는 아니다.
+
+| seed | 기록 재사용 부모 시간(s) | 새 3-update 부모 시간(s) | 새 검사의 SDK 자식 합계(s) | 추가 SDK 실행(재사용 / 새 검사) |
+|---|---:|---:|---:|---:|
+|2320|39.6066|205.2337|55.8120|0 / 2|
+|2321|40.2755|203.0406|55.5300|0 / 2|
+
+부모 시간에는 원문·소스 검증, 준비와 자식 대기가 포함된다. SDK 자식 합계는 GPU 커널 시간이 아니다. 이 결과는 보관된 계측이 있을 때 같은 횟수 이상을 추가 SDK 실행 없이 확인하는 도구 후보를 뒷받침한다. 계측을 미리 저장하는 비용, 전체 진단 시간, 조기 탐지, 모델의 선택 개선이나 회복은 이 audit에서 측정하지 않았다. 모델 호출과 교정은 모두0회다.
+
+[공개 요약](../evals/results/recorded_optimizer_probe_audit_20261101_v2/summary.json)과 [seed2320](../evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2320.json)·[seed2321](../evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2321.json)에 판정·실측 시간·순서를 보존했다. 계측이 없거나 결합이 맞지 않으면 이 검사는 `unknown`으로 남기며, count가 정상이더라도 PPO 계산 전체가 정상이라는 뜻은 아니다.

@@ -1,0 +1,87 @@
+{
+  "agreement": true,
+  "counterbalanced_order": [
+    "P_optimizer_updates",
+    "P_recorded_optimizer_updates"
+  ],
+  "methods": {
+    "P_optimizer_updates": {
+      "measurements": {
+        "case": {
+          "expected_minibatches": 20,
+          "expected_optimizer_steps": 20,
+          "minibatches": [
+            4,
+            4
+          ],
+          "optimizer_steps": [
+            4,
+            4
+          ],
+          "outcome": "abnormal",
+          "records": 3,
+          "role": "case"
+        },
+        "reference": {
+          "expected_minibatches": 20,
+          "expected_optimizer_steps": 20,
+          "minibatches": [
+            20,
+            20
+          ],
+          "optimizer_steps": [
+            20,
+            20
+          ],
+          "outcome": "normal",
+          "records": 3,
+          "role": "reference"
+        }
+      },
+      "owned_child_wall_s": 55.529999999911524,
+      "paired_outcome": "abnormal",
+      "parent_wall_s": 203.04061530000763,
+      "sdk_launches": 2
+    },
+    "P_recorded_optimizer_updates": {
+      "measurements": {
+        "case": {
+          "expected_minibatches": 20,
+          "expected_optimizer_steps": 20,
+          "minibatches": [
+            4,
+            4
+          ],
+          "optimizer_steps": [
+            4,
+            4
+          ],
+          "outcome": "abnormal",
+          "records": 3,
+          "role": "case"
+        },
+        "reference": {
+          "expected_minibatches": 20,
+          "expected_optimizer_steps": 20,
+          "minibatches": [
+            20,
+            20
+          ],
+          "optimizer_steps": [
+            20,
+            20
+          ],
+          "outcome": "normal",
+          "records": 3,
+          "role": "reference"
+        }
+      },
+      "owned_child_wall_s": 0.0,
+      "paired_outcome": "abnormal",
+      "parent_wall_s": 40.275491500040516,
+      "sdk_launches": 0
+    }
+  },
+  "recorded_parent_wall_lower": true,
+  "seed_id": "s2321"
+}

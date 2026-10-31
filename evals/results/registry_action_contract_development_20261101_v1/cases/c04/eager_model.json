@@ -1,0 +1,48 @@
+{
+  "case_id": "c04",
+  "checkpoint_sha256": "8df0518da88f8bef8a35eaf2f29bb6a9d0e2ce29b8fa7f290d6fd023e11bdd2f",
+  "compound_complete": false,
+  "compound_partial": true,
+  "confirmed_family": "optimizer_update_count",
+  "correct_complete_family": false,
+  "correct_confirmed_family": true,
+  "decision_outcome": "confirmed",
+  "expected_family": [
+    "optimizer_update_count",
+    "reward"
+  ],
+  "feedback_actions": 0,
+  "final_status": "confirmed",
+  "first_action": "run_probe",
+  "first_decision_invalid_codes": [],
+  "first_decision_valid": true,
+  "first_response_valid": true,
+  "gate": {
+    "reason": null,
+    "run": true,
+    "source_outcome": "not_recovered"
+  },
+  "hold": false,
+  "hold_actions": 0,
+  "host_eager_read_actions": 1,
+  "model_actions": 1,
+  "model_requests": 1,
+  "normal_gate_model_success": false,
+  "owned_child_wall_s": 0.0,
+  "paired_probes": 1,
+  "parent_probe_wall_s": 28.591231200029142,
+  "policy": "eager_model",
+  "post_feedback_first_decision_valid": true,
+  "post_feedback_valid": true,
+  "probe_actions": 1,
+  "raw_epoch_present": true,
+  "read_actions": 0,
+  "reference_checkpoint_sha256": "2f23108ff01f8b6fee6151d0cf6f6dde0e896df307f23a1d880acf1399c16028",
+  "schema": "registry_action_contract_public_case_v1",
+  "source": {
+    "logical_source": "study/c04/eager_model",
+    "raw_result_sha256": "a3801d39770e8cf218e4d273e7bbd0ca32f3ec3c270619eac5f68d4472729943"
+  },
+  "status": "complete",
+  "valid_hold": false
+}

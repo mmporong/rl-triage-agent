@@ -9,13 +9,13 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from pathlib import Path
 import re
 import statistics
 import subprocess
 import sys
-from typing import Any, Callable
-
+from collections.abc import Callable
+from pathlib import Path, PurePosixPath
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 for directory in (ROOT / "src", ROOT / "bench", ROOT / "evals"):
@@ -132,6 +132,58 @@ class Sources:
 
     def ready(self, key: str) -> bool:
         return self.rows[key]["status"] == "ready"
+
+
+def manifest_result(sources: Sources, relative: str, *, manifest_name: str,
+                    manifest_schema: str, summary_schema: str, kind: str) -> tuple[dict, dict | None]:
+    """manifest가 선언한 공개 파일 전체가 커밋·SHA 일치할 때만 summary를 반환한다."""
+    if relative in sources.replays:
+        return sources.rows[relative], sources.replays[relative]
+    sources.replays[relative] = None
+    manifest_relative = f"{relative}/{manifest_name}"
+    row = {"id": relative, "path": manifest_relative, "kind": kind, "sha256": None,
+           "status": "waiting", "reason": "missing"}
+    sources.rows[relative] = row
+    manifest_path = sources.root / manifest_relative
+    if not manifest_path.is_file():
+        return row, None
+    row["sha256"] = _sha(manifest_path)
+    if not _git(sources.root, "ls-files", "--", relative).stdout.strip():
+        row["reason"] = "not_committed"
+        return row, None
+    if _git(sources.root, "status", "--porcelain", "--", relative).stdout.strip():
+        row["status"], row["reason"] = "mismatch", "modified_since_commit"
+        return row, None
+    try:
+        manifest = _read(manifest_path)
+        if manifest.get("schema") != manifest_schema or not isinstance(manifest.get("files"), dict):
+            raise ValueError("public manifest schema/files 불일치")
+        declared = manifest["files"]
+        expected_files = {manifest_name, *declared}
+        actual_files = {path.relative_to(sources.root / relative).as_posix()
+                        for path in (sources.root / relative).rglob("*") if path.is_file()}
+        if actual_files != expected_files:
+            raise ValueError("public manifest inventory 불일치")
+        for name, entry in declared.items():
+            pure = PurePosixPath(name)
+            if pure.is_absolute() or ".." in pure.parts or pure.as_posix() != name:
+                raise ValueError("public manifest 상대 경로 불일치")
+            expected = entry if isinstance(entry, str) else entry.get("sha256") if isinstance(entry, dict) else None
+            if not isinstance(expected, str) or len(expected) != 64:
+                raise ValueError("public manifest SHA 형식 불일치")
+            source_row = sources.file(f"{relative}/{name}", kind=f"{kind}_file",
+                                      expected_sha256=expected)
+            if source_row["status"] != "ready":
+                raise ValueError("public manifest 파일 승인 불일치")
+        summary = _read(sources.root / relative / "summary.json")
+        if summary.get("schema") != summary_schema:
+            raise ValueError("public summary schema 불일치")
+    except (OSError, ValueError, TypeError, KeyError) as error:
+        row["status"], row["reason"] = "mismatch", f"manifest_failed:{type(error).__name__}"
+        return row, None
+    row["status"], row["reason"] = "ready", None
+    sources.replays[relative] = summary
+    return row, summary
 
 
 def cell(sources: Sources, value: Any, source: str, digits: int | None = 3) -> dict:
@@ -701,6 +753,134 @@ def scene_nvidia(sources: Sources, slots: dict) -> dict:
     }
 
 
+def _policy_comparison(summary: dict | None, policy: str, *, option_contract: bool = False) -> list[Any]:
+    if summary is None:
+        return [None] * 7
+    rows = [row for row in summary.get("rows", []) if row.get("policy") == policy]
+    fault_rows = [row for row in rows if row.get("gate", {}).get("run") is True]
+    missing_entries = summary.get("missing_rows", summary.get("missing_policy_rows", []))
+    missing = sum((entry.get("policy") if isinstance(entry, dict) else str(entry).split("/")[-1]) == policy
+                  for entry in missing_entries)
+    invalid = sum(row.get("status") == "invalid" for row in rows)
+    coverage = f"{len(rows)}/8 · 무효 {invalid} · 미완료 {missing}"
+    if policy == "strong_registered_rule":
+        validity = "-"
+        subject = "등록 규칙"
+    elif option_contract:
+        validity = f"{sum(row.get('first_response_valid') is True for row in fault_rows)}/{len(fault_rows)}"
+        subject = "모델 option"
+    else:
+        first = sum(row.get("first_pass_valid_actions", 0) for row in fault_rows)
+        validity = f"{first}/{len(fault_rows)}"
+        subject = "모델"
+    return [subject, coverage, validity,
+            sum(row.get("correct_confirmed_family") is True for row in fault_rows),
+            sum(row.get("decision_outcome") == "HOLD" for row in fault_rows),
+            sum(row.get("compound_partial") is True for row in fault_rows),
+            (f"{sum(row.get('paired_probes', 0) for row in fault_rows)} · "
+             f"{sum(row.get('model_requests', 0) for row in fault_rows)}")]
+
+
+def scene_prospective_comparison(sources: Sources, slots: dict) -> dict:
+    comparison_path = slots["prospective_agentic_comparison"]
+    audit_path = slots["recorded_optimizer_probe_audit"]
+    option_path = slots["registry_action_contract"]
+    recovery_path = slots["registry_action_recovery"]
+    comparison_row, comparison = manifest_result(
+        sources, comparison_path, manifest_name="artifact_manifest.json",
+        manifest_schema="prospective_agentic_public_manifest_v1",
+        summary_schema="prospective_agentic_public_summary_v1", kind="prospective_agentic_comparison")
+    _audit_row, audit = manifest_result(
+        sources, audit_path, manifest_name="manifest.json",
+        manifest_schema="recorded_optimizer_probe_audit_public_manifest_v1",
+        summary_schema="recorded_optimizer_probe_audit_public_v1", kind="recorded_optimizer_probe_audit")
+    option_row, option = manifest_result(
+        sources, option_path, manifest_name="artifact_manifest.json",
+        manifest_schema="registry_action_contract_public_manifest_v1",
+        summary_schema="registry_action_contract_public_summary_v1", kind="registry_action_contract")
+    recovery_row, recovery = manifest_result(
+        sources, recovery_path, manifest_name="artifact_manifest.json",
+        manifest_schema="registry_action_recovery_public_manifest_v1",
+        summary_schema="registry_action_recovery_public_summary_v1", kind="registry_action_recovery")
+    policy_rows = []
+    old_labels = {"eager_model": "기존 · 즉시 선택", "evidence_guided_model": "기존 · 근거 조회",
+                  "strong_registered_rule": "기존 · 등록 규칙"}
+    for policy in ("eager_model", "evidence_guided_model", "strong_registered_rule"):
+        values = _policy_comparison(comparison, policy)
+        policy_rows.append([old_labels[policy],
+                            *[cell(sources, value, comparison_row["id"], None) for value in values]])
+    option_labels = {"eager_model": "새 option · 즉시 선택",
+                     "evidence_guided_model": "새 option · 근거 조회"}
+    for policy in ("eager_model", "evidence_guided_model"):
+        values = _policy_comparison(option, policy, option_contract=True)
+        policy_rows.append([option_labels[policy],
+                            *[cell(sources, value, option_row["id"], None) for value in values]])
+
+    audit_rows = []
+    for seed in ("s2320", "s2321"):
+        seed_relative = f"{audit_path}/seeds/{seed}.json"
+        seed_source = sources.file(seed_relative, kind="recorded_optimizer_probe_audit_file")
+        value = (_read(sources.root / seed_relative)
+                 if audit is not None and seed_source["status"] == "ready" else None)
+        recorded = value and value["methods"]["P_recorded_optimizer_updates"]
+        fresh = value and value["methods"]["P_optimizer_updates"]
+        audit_rows.append([
+            seed,
+            cell(sources, recorded and recorded["parent_wall_s"], seed_source["id"], 2),
+            cell(sources, fresh and fresh["parent_wall_s"], seed_source["id"], 2),
+            cell(sources, recorded and recorded["sdk_launches"], seed_source["id"], 0),
+            cell(sources, fresh and fresh["sdk_launches"], seed_source["id"], 0),
+            cell(sources, "일치" if value and value.get("agreement") else None, seed_source["id"], None),
+        ])
+    source_metrics = recovery and recovery["reports"]["source_r1_s2320"]["metrics"]
+    corrected_metrics = recovery and recovery["reports"]["corrected_s3332"]["metrics"]
+    checks = recovery and recovery["recovery"]["verdict"]["checks"]
+    runtime = recovery and recovery["runtime_first3"]
+    recovery_rows = [
+        ["결과", cell(sources, recovery and
+         f"{recovery['outcome']} · {sum(value is True for value in checks.values())}/{len(checks)} 기준 PASS",
+         recovery_row["id"], None)],
+        ["선택 → 교정", cell(sources, recovery and
+         f"{recovery['selection']['option_id']} → {recovery['repair']['correction_id']} · fresh restart",
+         recovery_row["id"], None)],
+        ["범위", cell(sources, recovery and
+         f"source seed {recovery['selection']['source_seed']} R1 → fresh seed {recovery['repair']['recovery_seed']} · 1 case",
+         recovery_row["id"], None)],
+        ["XY RMSE", cell(sources, recovery and
+         f"{source_metrics['lin_vel_rmse_mps']:.4f} → {corrected_metrics['lin_vel_rmse_mps']:.4f} m/s",
+         recovery_row["id"], None)],
+        ["Yaw RMSE", cell(sources, recovery and
+         f"{source_metrics['yaw_rate_rmse_radps']:.4f} → {corrected_metrics['yaw_rate_rmse_radps']:.4f} rad/s",
+         recovery_row["id"], None)],
+        ["교정 정책 평가", cell(sources, recovery and
+         (f"생존 {corrected_metrics['mean_survival_s']:.4f}s · 낙상 "
+          f"{round(corrected_metrics['fall_rate'] * 26)}/26 ({corrected_metrics['fall_rate'] * 100:.2f}%) · "
+          f"first-3 {runtime['observed_steps']}/{runtime['expected_steps']} step · "
+          f"API {recovery['study_separation']['recovery_api_requests']}"), recovery_row["id"], None)],
+    ]
+    return {
+        "id": "prospective_comparison", "title": "새 source 진단 비교와 기록 재사용 검사", "dense": True,
+        "lead": "같은 8개 source에서 기존 세 정책과 노출 후 개발한 option 계약 두 정책을 나눠 보고, 보관된 첫 3 update 기록 재사용 검사도 함께 본다.",
+        "blocks": [
+            {"type": "table", "wide": True, "title": "정책별 실제 판정(각 정책 8행, 결함 판정 분모 6행)",
+             "columns": ["판 · 정책", "선택 주체", "행 / 무효 / 미완료", "첫 유효", "원인 확정", "HOLD", "복합 부분", "검사 · API"],
+             "rows": policy_rows},
+            {"type": "table", "title": "Recorded 검사 감사(조건: 보관된 첫 3 update)",
+             "columns": ["seed", "recorded parent(s)", "fresh parent(s)", "recorded SDK", "fresh SDK", "판정"],
+             "rows": audit_rows},
+            {"type": "table", "title": "사전 고정 R1 후속 평가", "columns": ["항목", "공개 기록"],
+             "rows": recovery_rows},
+        ],
+        "notes": [
+            "새 option 계약은 첫 결정 형식을 12/12 유효하게 만들었지만 진단 성공과 같지 않다. 근거 조회 6건은 모두 HOLD이고, 즉시 선택은 단일 R1 2건 확정·복합 2건 부분 확정·F1 2건 HOLD였다.",
+            "두 판은 메시지 계약이 다르고 option 계약은 결과 노출 후 개발했다. 각 모델 정책의 정상 host gate 2행은 모델 호출 0이며 모델 성공으로 세지 않는다.",
+            "Recorded 검사는 API 0회·SDK 0회로 같은 count와 판정을 2/2 재현했다. parent wall은 GPU 커널 시간이 아니다.",
+            "R1 후속은 결과 노출 후 개발한 1 case 측정이다. 모델이 검사를 골랐고 host 등록 규칙이 교정했으며, 정상 참조 seed 2320은 새 회복으로 세지 않는다. 교정 정책의 낙상은 0이 아니다.",
+            "기본 모드를 채택하지 않았다. 이 장면은 모델 우월, 조기 탐지, 일반 회복 또는 다른 실행의 비용 절감을 입증하지 않는다.",
+        ],
+    }
+
+
 def scene_cost(sources: Sources, slots: dict) -> dict:
     import publish_training_correction as Q3
     import publish_training_correction_v4 as Q4
@@ -750,7 +930,8 @@ def build(root: Path = ROOT) -> dict:
               scene_probe(sources), scene_correction(sources, slots), scene_demo(sources, slots),
               scene_nat_demo(sources, slots), scene_recovery(sources, slots),
               scene_motor(sources, slots), scene_hold(sources), scene_upstream(sources), scene_upstream_demo(sources, slots),
-              replay_d3.scene_d3(sources, slots), scene_nvidia(sources, slots), scene_cost(sources, slots)]
+              replay_d3.scene_d3(sources, slots), scene_nvidia(sources, slots),
+              scene_prospective_comparison(sources, slots), scene_cost(sources, slots)]
     for index, scene in enumerate(scenes, start=1):
         scene["number"] = index
     data = {"schema": SCHEMA,

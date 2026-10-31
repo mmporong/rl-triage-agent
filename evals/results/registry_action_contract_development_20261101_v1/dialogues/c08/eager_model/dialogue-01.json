@@ -1,0 +1,120 @@
+{
+  "action": {
+    "action": "run_probe",
+    "fact_ids": [
+      "runtime:case:expected_optimizer_steps",
+      "runtime:case:optimizer_steps_min",
+      "runtime:case:optimizer_steps_max"
+    ],
+    "target": "P_recorded_optimizer_updates"
+  },
+  "calls": [
+    {
+      "attempt": 1,
+      "messages": [
+        {
+          "content": "Select exactly one option_id from the current action_options. Return one JSON object with exactly option_id and fact_ids, matching output_schema. Do not invent an action, target, argument, diagnosis, repair, probability, or explanation. fact_ids must be exact currently visible non-null IDs. Reading evidence and holding require fact_ids=[]. A probe requires at least one supporting fact ID. For recorded counts, cite at least one complete listed count_evidence_group; if a group is touched, cite all three IDs. The host maps your option to a registered action, verifies evidence, and requires approval before execution. The options are possibilities, not recommendations. Choose hold if no available evidence supports a useful probe.",
+          "role": "system"
+        },
+        {
+          "content": "{\"action_options\": [{\"action\": \"hold\", \"citation_rule\": \"empty\", \"description\": \"Stop without a probe or repair.\", \"option_id\": \"hold\", \"target\": null}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"시간 제한 종료 스텝 / (episode_length_s / step_dt)\", \"option_id\": \"probe:P_episode\", \"registered_gpu_cost_s\": 60, \"target\": \"P_episode\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"학습 경로 act() 샘플의 실제 표준편차 / 기록된 action_std\", \"option_id\": \"probe:P_noise\", \"registered_gpu_cost_s\": 60, \"target\": \"P_noise\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"같은 실행 설정으로 새로 시작한 PPO 3 update의 optimizer.step 및 미니배치 횟수. 정책 체크포인트 관측이 아님\", \"option_id\": \"probe:P_optimizer_updates\", \"registered_gpu_cost_s\": 60, \"target\": \"P_optimizer_updates\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"시뮬레이터에서 읽은 재질 마찰·질량·물리 dt와 설정·무작위화 범위의 불일치 수\", \"option_id\": \"probe:P_physics\", \"registered_gpu_cost_s\": 30, \"target\": \"P_physics\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"상태에서 문서 정의대로 다시 계산한 추종 보상 항(track_lin_vel_xy_exp, track_ang_vel_z_exp)과 보상 관리자 기록값의 상대 오차\", \"option_id\": \"probe:P_reward\", \"registered_gpu_cost_s\": 60, \"target\": \"P_reward\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"낮은 관절 속도에서 토크 포화 비율\", \"option_id\": \"probe:P_torque\", \"registered_gpu_cost_s\": 60, \"target\": \"P_torque\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"첫 체크포인트 대비 마지막 체크포인트의 critic 파라미터 상대 변화(critic이 학습되는가)\", \"option_id\": \"probe:P_value\", \"registered_gpu_cost_s\": 5, \"target\": \"P_value\"}, {\"action\": \"run_probe\", \"citation_rule\": \"complete_count_group\", \"description\": \"verified configured and observed optimizer/minibatch counts\", \"option_id\": \"probe:P_recorded_optimizer_updates\", \"registered_gpu_cost_s\": 0, \"target\": \"P_recorded_optimizer_updates\"}], \"budget_left\": 3, \"contract\": {\"approval_granted\": false, \"host_generated_action_target\": true, \"host_generated_fact_citations\": false, \"old_response_reinterpretation\": false, \"recovery_authority\": false}, \"count_evidence_groups\": [[\"runtime:case:expected_optimizer_steps\", \"runtime:case:optimizer_steps_min\", \"runtime:case:optimizer_steps_max\"], [\"runtime:case:expected_minibatches\", \"runtime:case:minibatches_min\", \"runtime:case:minibatches_max\"], [\"runtime:reference:expected_optimizer_steps\", \"runtime:reference:optimizer_steps_min\", \"runtime:reference:optimizer_steps_max\"], [\"runtime:reference:expected_minibatches\", \"runtime:reference:minibatches_min\", \"runtime:reference:minibatches_max\"]], \"evidence_facts\": {\"derived:case:minibatch_count_matches_config\": false, \"derived:case:step_count_matches_config\": false, \"derived:reference:minibatch_count_matches_config\": true, \"derived:reference:step_count_matches_config\": true, \"runtime:case:available\": true, \"runtime:case:expected_minibatches\": 20, \"runtime:case:expected_optimizer_steps\": 20, \"runtime:case:minibatches_max\": 4, \"runtime:case:minibatches_min\": 4, \"runtime:case:optimizer_steps_max\": 4, \"runtime:case:optimizer_steps_min\": 4, \"runtime:case:updates_observed\": 3, \"runtime:reference:available\": true, \"runtime:reference:expected_minibatches\": 20, \"runtime:reference:expected_optimizer_steps\": 20, \"runtime:reference:minibatches_max\": 20, \"runtime:reference:minibatches_min\": 20, \"runtime:reference:optimizer_steps_max\": 20, \"runtime:reference:optimizer_steps_min\": 20, \"runtime:reference:updates_observed\": 3, \"telemetry:case:Episode_Reward/action_rate_l2\": -0.07944080742696921, \"telemetry:case:Episode_Reward/ang_vel_xy_l2\": -0.08761658929288388, \"telemetry:case:Episode_Reward/dof_acc_l2\": -0.06631906293332576, \"telemetry:case:Episode_Reward/dof_pos_limits\": 0.0, \"telemetry:case:Episode_Reward/dof_torques_l2\": -0.06105992545684179, \"telemetry:case:Episode_Reward/feet_air_time\": -0.03264710682754715, \"telemetry:case:Episode_Reward/flat_orientation_l2\": -0.022722364713748295, \"telemetry:case:Episode_Reward/lin_vel_z_l2\": -0.02933573747674624, \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\": 0.6262316664059957, \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\": 0.3141298095385234, \"telemetry:case:Episode_Termination/base_contact\": 0.0, \"telemetry:case:Episode_Termination/time_out\": 4.284027890364329, \"telemetry:case:Loss/entropy\": 9.600997002919515, \"telemetry:case:Loss/learning_rate\": 0.0012120103618750969, \"telemetry:case:Loss/surrogate\": 0.003487269493052736, \"telemetry:case:Loss/value_function\": 0.01255836592366298, \"telemetry:case:Metrics/base_velocity/error_vel_xy\": 1.5167949795722961, \"telemetry:case:Metrics/base_velocity/error_vel_yaw\": 0.3744110097487768, \"telemetry:case:Perf/collection time\": 1.3072185754776, \"telemetry:case:Perf/learning_time\": 0.035292871793111164, \"telemetry:case:Perf/total_fps\": 73258.91666666667, \"telemetry:case:Policy/mean_noise_std\": 0.5549706141153972, \"telemetry:case:Train/mean_episode_length\": 1000.0, \"telemetry:case:Train/mean_reward\": 11.288840834299723, \"telemetry:reference:Episode_Reward/action_rate_l2\": -0.06872355459878841, \"telemetry:reference:Episode_Reward/ang_vel_xy_l2\": -0.0717853436867396, \"telemetry:reference:Episode_Reward/dof_acc_l2\": -0.06319165136665106, \"telemetry:reference:Episode_Reward/dof_pos_limits\": 0.0, \"telemetry:reference:Episode_Reward/dof_torques_l2\": -0.09815940658251444, \"telemetry:reference:Episode_Reward/feet_air_time\": -0.028438657304892936, \"telemetry:reference:Episode_Reward/flat_orientation_l2\": -0.008136506999532382, \"telemetry:reference:Episode_Reward/lin_vel_z_l2\": -0.028389276284724475, \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\": 0.6281652758518855, \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\": 1.4119945863882701, \"telemetry:reference:Episode_Termination/base_contact\": 0.019444444899757704, \"telemetry:reference:Episode_Termination/time_out\": 4.267361239592234, \"telemetry:reference:Loss/entropy\": 5.254339154561361, \"telemetry:reference:Loss/learning_rate\": 0.00047580822962724293, \"telemetry:reference:Loss/surrogate\": -0.004771021144309392, \"telemetry:reference:Loss/value_function\": 0.003229960876827439, \"telemetry:reference:Metrics/base_velocity/error_vel_xy\": 0.20094659800330797, \"telemetry:reference:Metrics/base_velocity/error_vel_yaw\": 0.36454601436853407, \"telemetry:reference:Perf/collection time\": 1.2800231456756592, \"telemetry:reference:Perf/learning_time\": 0.1521585464477539, \"telemetry:reference:Perf/total_fps\": 68695.36666666667, \"telemetry:reference:Policy/mean_noise_std\": 0.384823252260685, \"telemetry:reference:Train/mean_episode_length\": 996.796499633789, \"telemetry:reference:Train/mean_reward\": 33.48266836802165}, \"format_example\": {\"fact_ids\": [], \"option_id\": \"hold\"}, \"observations\": [], \"output_schema\": {\"additionalProperties\": false, \"properties\": {\"fact_ids\": {\"items\": {\"enum\": [\"derived:case:minibatch_count_matches_config\", \"derived:case:step_count_matches_config\", \"derived:reference:minibatch_count_matches_config\", \"derived:reference:step_count_matches_config\", \"runtime:case:available\", \"runtime:case:expected_minibatches\", \"runtime:case:expected_optimizer_steps\", \"runtime:case:minibatches_max\", \"runtime:case:minibatches_min\", \"runtime:case:optimizer_steps_max\", \"runtime:case:optimizer_steps_min\", \"runtime:case:updates_observed\", \"runtime:reference:available\", \"runtime:reference:expected_minibatches\", \"runtime:reference:expected_optimizer_steps\", \"runtime:reference:minibatches_max\", \"runtime:reference:minibatches_min\", \"runtime:reference:optimizer_steps_max\", \"runtime:reference:optimizer_steps_min\", \"runtime:reference:updates_observed\", \"telemetry:case:Episode_Reward/action_rate_l2\", \"telemetry:case:Episode_Reward/ang_vel_xy_l2\", \"telemetry:case:Episode_Reward/dof_acc_l2\", \"telemetry:case:Episode_Reward/dof_pos_limits\", \"telemetry:case:Episode_Reward/dof_torques_l2\", \"telemetry:case:Episode_Reward/feet_air_time\", \"telemetry:case:Episode_Reward/flat_orientation_l2\", \"telemetry:case:Episode_Reward/lin_vel_z_l2\", \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"telemetry:case:Episode_Termination/base_contact\", \"telemetry:case:Episode_Termination/time_out\", \"telemetry:case:Loss/entropy\", \"telemetry:case:Loss/learning_rate\", \"telemetry:case:Loss/surrogate\", \"telemetry:case:Loss/value_function\", \"telemetry:case:Metrics/base_velocity/error_vel_xy\", \"telemetry:case:Metrics/base_velocity/error_vel_yaw\", \"telemetry:case:Perf/collection time\", \"telemetry:case:Perf/learning_time\", \"telemetry:case:Perf/total_fps\", \"telemetry:case:Policy/mean_noise_std\", \"telemetry:case:Train/mean_episode_length\", \"telemetry:case:Train/mean_reward\", \"telemetry:reference:Episode_Reward/action_rate_l2\", \"telemetry:reference:Episode_Reward/ang_vel_xy_l2\", \"telemetry:reference:Episode_Reward/dof_acc_l2\", \"telemetry:reference:Episode_Reward/dof_pos_limits\", \"telemetry:reference:Episode_Reward/dof_torques_l2\", \"telemetry:reference:Episode_Reward/feet_air_time\", \"telemetry:reference:Episode_Reward/flat_orientation_l2\", \"telemetry:reference:Episode_Reward/lin_vel_z_l2\", \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\", \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"telemetry:reference:Episode_Termination/base_contact\", \"telemetry:reference:Episode_Termination/time_out\", \"telemetry:reference:Loss/entropy\", \"telemetry:reference:Loss/learning_rate\", \"telemetry:reference:Loss/surrogate\", \"telemetry:reference:Loss/value_function\", \"telemetry:reference:Metrics/base_velocity/error_vel_xy\", \"telemetry:reference:Metrics/base_velocity/error_vel_yaw\", \"telemetry:reference:Perf/collection time\", \"telemetry:reference:Perf/learning_time\", \"telemetry:reference:Perf/total_fps\", \"telemetry:reference:Policy/mean_noise_std\", \"telemetry:reference:Train/mean_episode_length\", \"telemetry:reference:Train/mean_reward\"], \"type\": \"string\"}, \"type\": \"array\", \"uniqueItems\": true}, \"option_id\": {\"enum\": [\"hold\", \"probe:P_episode\", \"probe:P_noise\", \"probe:P_optimizer_updates\", \"probe:P_physics\", \"probe:P_reward\", \"probe:P_torque\", \"probe:P_value\", \"probe:P_recorded_optimizer_updates\"], \"type\": \"string\"}}, \"required\": [\"option_id\", \"fact_ids\"], \"type\": \"object\"}, \"remaining_candidates\": [\"reward\", \"actuator\", \"exploration\", \"optimizer_value\", \"physics\", \"termination\", \"optimizer_update_count\"], \"schema\": \"registry_action_options_context_v1\", \"state_digest\": \"9515b52cd30e6d357fda94c3227702200dc52b04911d6fae814e91a0502d59ad\", \"status\": \"open\"}",
+          "role": "user"
+        }
+      ],
+      "messages_sha256": "e8b847bfc03bbd90449fb9fa6e870eb1ba513f32c6d883e18d1338e95c881144",
+      "result": {
+        "content": "{\"option_id\": \"probe:P_recorded_optimizer_updates\", \"fact_ids\": [\"runtime:case:expected_optimizer_steps\", \"runtime:case:optimizer_steps_min\", \"runtime:case:optimizer_steps_max\"]}",
+        "finish_reason": "stop",
+        "input_tokens": 4110,
+        "output_tokens": 49,
+        "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "reasoning_content": null,
+        "response_id": "chatcmpl-ea0d246c-012e-40db-a11f-5380cf1fcffb",
+        "total_tokens": 4159,
+        "wall_s": 0.7594360520015471
+      },
+      "review": {
+        "action": {
+          "action": "run_probe",
+          "fact_ids": [
+            "runtime:case:expected_optimizer_steps",
+            "runtime:case:optimizer_steps_min",
+            "runtime:case:optimizer_steps_max"
+          ],
+          "target": "P_recorded_optimizer_updates"
+        },
+        "base_review": {
+          "action": {
+            "action": "run_probe",
+            "fact_ids": [
+              "runtime:case:expected_optimizer_steps",
+              "runtime:case:optimizer_steps_min",
+              "runtime:case:optimizer_steps_max"
+            ],
+            "target": "P_recorded_optimizer_updates"
+          },
+          "codes": [],
+          "format_status": "valid",
+          "reasons": [],
+          "semantic_status": "valid",
+          "status": "valid"
+        },
+        "codes": [],
+        "context_digest": "2496c8dd406368292f173f3a6ad80b8c3299480a5e7d7fd80cb9e2cded1d11e8",
+        "format_status": "valid",
+        "response_text": "{\"option_id\": \"probe:P_recorded_optimizer_updates\", \"fact_ids\": [\"runtime:case:expected_optimizer_steps\", \"runtime:case:optimizer_steps_min\", \"runtime:case:optimizer_steps_max\"]}",
+        "schema": "registry_action_options_review_v1",
+        "selected_option_id": "probe:P_recorded_optimizer_updates",
+        "semantic_status": "valid",
+        "state_digest": "9515b52cd30e6d357fda94c3227702200dc52b04911d6fae814e91a0502d59ad",
+        "status": "valid"
+      }
+    }
+  ],
+  "claims": {
+    "diagnosis_improvement": false,
+    "recovery": false
+  },
+  "context_digest": "2496c8dd406368292f173f3a6ad80b8c3299480a5e7d7fd80cb9e2cded1d11e8",
+  "final_review": {
+    "action": {
+      "action": "run_probe",
+      "fact_ids": [
+        "runtime:case:expected_optimizer_steps",
+        "runtime:case:optimizer_steps_min",
+        "runtime:case:optimizer_steps_max"
+      ],
+      "target": "P_recorded_optimizer_updates"
+    },
+    "base_review": {
+      "action": {
+        "action": "run_probe",
+        "fact_ids": [
+          "runtime:case:expected_optimizer_steps",
+          "runtime:case:optimizer_steps_min",
+          "runtime:case:optimizer_steps_max"
+        ],
+        "target": "P_recorded_optimizer_updates"
+      },
+      "codes": [],
+      "format_status": "valid",
+      "reasons": [],
+      "semantic_status": "valid",
+      "status": "valid"
+    },
+    "codes": [],
+    "context_digest": "2496c8dd406368292f173f3a6ad80b8c3299480a5e7d7fd80cb9e2cded1d11e8",
+    "format_status": "valid",
+    "response_text": "{\"option_id\": \"probe:P_recorded_optimizer_updates\", \"fact_ids\": [\"runtime:case:expected_optimizer_steps\", \"runtime:case:optimizer_steps_min\", \"runtime:case:optimizer_steps_max\"]}",
+    "schema": "registry_action_options_review_v1",
+    "selected_option_id": "probe:P_recorded_optimizer_updates",
+    "semantic_status": "valid",
+    "state_digest": "9515b52cd30e6d357fda94c3227702200dc52b04911d6fae814e91a0502d59ad",
+    "status": "valid"
+  },
+  "host_mapping": "new_option_contract_only_no_old_response_reinterpretation",
+  "model_valid": true,
+  "schema": "registry_action_options_dialogue_v1",
+  "semantic_feedback_used": false,
+  "state_digest": "9515b52cd30e6d357fda94c3227702200dc52b04911d6fae814e91a0502d59ad"
+}

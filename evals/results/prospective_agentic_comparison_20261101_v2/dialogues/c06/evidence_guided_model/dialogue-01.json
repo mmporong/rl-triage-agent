@@ -1,0 +1,106 @@
+{
+  "action": {
+    "action": "read_evidence",
+    "fact_ids": [],
+    "target": "evidence:optimizer-counts"
+  },
+  "calls": [
+    {
+      "attempt": 1,
+      "messages": [
+        {
+          "content": "Choose one registered action from the supplied context. Return one JSON object with exactly action, target, fact_ids. Do not provide hidden reasoning, causes, request arguments, repairs, probabilities, or posterior claims. Use only exact currently visible non-null fact IDs. A run_probe action requires at least one fact ID. For P_recorded_optimizer_updates, every cited role/count group must include all three IDs: expected_optimizer_steps, optimizer_steps_min, optimizer_steps_max; or expected_minibatches, minibatches_min, minibatches_max. A read_evidence action requires fact_ids=[]; a hold action requires target=null. Observations may change the next action.",
+          "role": "system"
+        },
+        {
+          "content": "{\"action_contract\": {\"P_recorded_optimizer_updates\": \"for each cited role/count group include expected plus observed min and max IDs\", \"fact_ids\": \"exact currently visible non-null IDs only\", \"hold\": {\"target\": null}, \"minibatch_triplet\": [\"expected_minibatches\", \"minibatches_min\", \"minibatches_max\"], \"optimizer_triplet\": [\"expected_optimizer_steps\", \"optimizer_steps_min\", \"optimizer_steps_max\"], \"read_evidence\": {\"fact_ids\": []}, \"run_probe\": \"at least one fact ID is required\"}, \"available_evidence\": [{\"description\": \"verified optimizer step and minibatch expected/observed facts\", \"target\": \"evidence:optimizer-counts\"}], \"budget_left\": 3, \"eligible_probes\": [\"P_episode\", \"P_noise\", \"P_optimizer_updates\", \"P_physics\", \"P_reward\", \"P_torque\", \"P_value\", \"P_recorded_optimizer_updates\"], \"evidence_facts\": {\"telemetry:case:Episode_Reward/action_rate_l2\": -0.06897755675017833, \"telemetry:case:Episode_Reward/ang_vel_xy_l2\": -0.08990645768741766, \"telemetry:case:Episode_Reward/dof_acc_l2\": -0.040439465828239915, \"telemetry:case:Episode_Reward/dof_pos_limits\": 0.0, \"telemetry:case:Episode_Reward/dof_torques_l2\": -0.0683420634518067, \"telemetry:case:Episode_Reward/feet_air_time\": -0.023660760869582496, \"telemetry:case:Episode_Reward/flat_orientation_l2\": -0.012977357938264806, \"telemetry:case:Episode_Reward/lin_vel_z_l2\": -0.01790438046058019, \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\": 0.6193002074956894, \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\": 0.31543459941943486, \"telemetry:case:Episode_Termination/base_contact\": 0.006944444589316845, \"telemetry:case:Episode_Termination/time_out\": 4.3125000913937885, \"telemetry:case:Loss/entropy\": 8.715042463938396, \"telemetry:case:Loss/learning_rate\": 0.0007521888590417802, \"telemetry:case:Loss/surrogate\": -0.003704723607127865, \"telemetry:case:Loss/value_function\": 0.010579183115623891, \"telemetry:case:Metrics/base_velocity/error_vel_xy\": 1.514843608935674, \"telemetry:case:Metrics/base_velocity/error_vel_yaw\": 0.38376025011142095, \"telemetry:case:Perf/collection time\": 1.2994127313296, \"telemetry:case:Perf/learning_time\": 0.15608706871668498, \"telemetry:case:Perf/total_fps\": 67609.06666666667, \"telemetry:case:Policy/mean_noise_std\": 0.5154043843348821, \"telemetry:case:Train/mean_episode_length\": 998.4716654459636, \"telemetry:case:Train/mean_reward\": 12.221261898676554, \"telemetry:reference:Episode_Reward/action_rate_l2\": -0.06872355459878841, \"telemetry:reference:Episode_Reward/ang_vel_xy_l2\": -0.0717853436867396, \"telemetry:reference:Episode_Reward/dof_acc_l2\": -0.06319165136665106, \"telemetry:reference:Episode_Reward/dof_pos_limits\": 0.0, \"telemetry:reference:Episode_Reward/dof_torques_l2\": -0.09815940658251444, \"telemetry:reference:Episode_Reward/feet_air_time\": -0.028438657304892936, \"telemetry:reference:Episode_Reward/flat_orientation_l2\": -0.008136506999532382, \"telemetry:reference:Episode_Reward/lin_vel_z_l2\": -0.028389276284724475, \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\": 0.6281652758518855, \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\": 1.4119945863882701, \"telemetry:reference:Episode_Termination/base_contact\": 0.019444444899757704, \"telemetry:reference:Episode_Termination/time_out\": 4.267361239592234, \"telemetry:reference:Loss/entropy\": 5.254339154561361, \"telemetry:reference:Loss/learning_rate\": 0.00047580822962724293, \"telemetry:reference:Loss/surrogate\": -0.004771021144309392, \"telemetry:reference:Loss/value_function\": 0.003229960876827439, \"telemetry:reference:Metrics/base_velocity/error_vel_xy\": 0.20094659800330797, \"telemetry:reference:Metrics/base_velocity/error_vel_yaw\": 0.36454601436853407, \"telemetry:reference:Perf/collection time\": 1.2800231456756592, \"telemetry:reference:Perf/learning_time\": 0.1521585464477539, \"telemetry:reference:Perf/total_fps\": 68695.36666666667, \"telemetry:reference:Policy/mean_noise_std\": 0.384823252260685, \"telemetry:reference:Train/mean_episode_length\": 996.796499633789, \"telemetry:reference:Train/mean_reward\": 33.48266836802165}, \"observations\": [], \"probe_catalog\": [{\"cost_gpu_s\": 60, \"measures\": \"시간 제한 종료 스텝 / (episode_length_s / step_dt)\", \"registry_order\": 0, \"target\": \"P_episode\"}, {\"cost_gpu_s\": 60, \"measures\": \"학습 경로 act() 샘플의 실제 표준편차 / 기록된 action_std\", \"registry_order\": 1, \"target\": \"P_noise\"}, {\"cost_gpu_s\": 60, \"measures\": \"같은 실행 설정으로 새로 시작한 PPO 3 update의 optimizer.step 및 미니배치 횟수. 정책 체크포인트 관측이 아님\", \"registry_order\": 2, \"target\": \"P_optimizer_updates\"}, {\"cost_gpu_s\": 30, \"measures\": \"시뮬레이터에서 읽은 재질 마찰·질량·물리 dt와 설정·무작위화 범위의 불일치 수\", \"registry_order\": 3, \"target\": \"P_physics\"}, {\"cost_gpu_s\": 60, \"measures\": \"상태에서 문서 정의대로 다시 계산한 추종 보상 항(track_lin_vel_xy_exp, track_ang_vel_z_exp)과 보상 관리자 기록값의 상대 오차\", \"registry_order\": 4, \"target\": \"P_reward\"}, {\"cost_gpu_s\": 60, \"measures\": \"낮은 관절 속도에서 토크 포화 비율\", \"registry_order\": 5, \"target\": \"P_torque\"}, {\"cost_gpu_s\": 5, \"measures\": \"첫 체크포인트 대비 마지막 체크포인트의 critic 파라미터 상대 변화(critic이 학습되는가)\", \"registry_order\": 6, \"target\": \"P_value\"}, {\"cost_gpu_s\": 0, \"measures\": \"verified configured and observed optimizer/minibatch counts\", \"outcome_contract\": \"normal iff both role-bound recorded counts match config; else abnormal/unknown\", \"registry_order\": 7, \"target\": \"P_recorded_optimizer_updates\"}], \"remaining_candidates\": [\"reward\", \"actuator\", \"exploration\", \"optimizer_value\", \"physics\", \"termination\", \"optimizer_update_count\"], \"schema\": \"evidence_guided_selector_context_v1\", \"status\": \"open\", \"tie_break\": \"equal registered choices use ascending registry_order\"}",
+          "role": "user"
+        }
+      ],
+      "messages_sha256": "ba44492a8c7e3357020c790be45ce35c99d31eb29564dcdb0f2ffd6140ca27f9",
+      "result": {
+        "content": "{\"action\": \"P_recorded_optimizer_updates\", \"target\": \"evidence:optimizer-counts\", \"fact_ids\": [\"expected_optimizer_steps\", \"optimizer_steps_min\", \"optimizer_steps_max\", \"expected_minibatches\", \"minibatches_min\", \"minibatches_max\"]}",
+        "finish_reason": "stop",
+        "input_tokens": 2592,
+        "output_tokens": 63,
+        "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "reasoning_content": null,
+        "response_id": "chatcmpl-f37292fd-94d4-4026-abff-f1a918a315cd",
+        "total_tokens": 2655,
+        "wall_s": 0.7245316619955702
+      },
+      "review": {
+        "codes": [
+          "F_ACTION"
+        ],
+        "format_status": "invalid",
+        "reasons": [
+          "등록 action이 아니다"
+        ],
+        "semantic_status": "not_run",
+        "status": "invalid"
+      }
+    },
+    {
+      "attempt": 2,
+      "messages": [
+        {
+          "content": "Choose one registered action from the supplied context. Return one JSON object with exactly action, target, fact_ids. Do not provide hidden reasoning, causes, request arguments, repairs, probabilities, or posterior claims. Use only exact currently visible non-null fact IDs. A run_probe action requires at least one fact ID. For P_recorded_optimizer_updates, every cited role/count group must include all three IDs: expected_optimizer_steps, optimizer_steps_min, optimizer_steps_max; or expected_minibatches, minibatches_min, minibatches_max. A read_evidence action requires fact_ids=[]; a hold action requires target=null. Observations may change the next action.",
+          "role": "system"
+        },
+        {
+          "content": "{\"action_contract\": {\"P_recorded_optimizer_updates\": \"for each cited role/count group include expected plus observed min and max IDs\", \"fact_ids\": \"exact currently visible non-null IDs only\", \"hold\": {\"target\": null}, \"minibatch_triplet\": [\"expected_minibatches\", \"minibatches_min\", \"minibatches_max\"], \"optimizer_triplet\": [\"expected_optimizer_steps\", \"optimizer_steps_min\", \"optimizer_steps_max\"], \"read_evidence\": {\"fact_ids\": []}, \"run_probe\": \"at least one fact ID is required\"}, \"available_evidence\": [{\"description\": \"verified optimizer step and minibatch expected/observed facts\", \"target\": \"evidence:optimizer-counts\"}], \"budget_left\": 3, \"eligible_probes\": [\"P_episode\", \"P_noise\", \"P_optimizer_updates\", \"P_physics\", \"P_reward\", \"P_torque\", \"P_value\", \"P_recorded_optimizer_updates\"], \"evidence_facts\": {\"telemetry:case:Episode_Reward/action_rate_l2\": -0.06897755675017833, \"telemetry:case:Episode_Reward/ang_vel_xy_l2\": -0.08990645768741766, \"telemetry:case:Episode_Reward/dof_acc_l2\": -0.040439465828239915, \"telemetry:case:Episode_Reward/dof_pos_limits\": 0.0, \"telemetry:case:Episode_Reward/dof_torques_l2\": -0.0683420634518067, \"telemetry:case:Episode_Reward/feet_air_time\": -0.023660760869582496, \"telemetry:case:Episode_Reward/flat_orientation_l2\": -0.012977357938264806, \"telemetry:case:Episode_Reward/lin_vel_z_l2\": -0.01790438046058019, \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\": 0.6193002074956894, \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\": 0.31543459941943486, \"telemetry:case:Episode_Termination/base_contact\": 0.006944444589316845, \"telemetry:case:Episode_Termination/time_out\": 4.3125000913937885, \"telemetry:case:Loss/entropy\": 8.715042463938396, \"telemetry:case:Loss/learning_rate\": 0.0007521888590417802, \"telemetry:case:Loss/surrogate\": -0.003704723607127865, \"telemetry:case:Loss/value_function\": 0.010579183115623891, \"telemetry:case:Metrics/base_velocity/error_vel_xy\": 1.514843608935674, \"telemetry:case:Metrics/base_velocity/error_vel_yaw\": 0.38376025011142095, \"telemetry:case:Perf/collection time\": 1.2994127313296, \"telemetry:case:Perf/learning_time\": 0.15608706871668498, \"telemetry:case:Perf/total_fps\": 67609.06666666667, \"telemetry:case:Policy/mean_noise_std\": 0.5154043843348821, \"telemetry:case:Train/mean_episode_length\": 998.4716654459636, \"telemetry:case:Train/mean_reward\": 12.221261898676554, \"telemetry:reference:Episode_Reward/action_rate_l2\": -0.06872355459878841, \"telemetry:reference:Episode_Reward/ang_vel_xy_l2\": -0.0717853436867396, \"telemetry:reference:Episode_Reward/dof_acc_l2\": -0.06319165136665106, \"telemetry:reference:Episode_Reward/dof_pos_limits\": 0.0, \"telemetry:reference:Episode_Reward/dof_torques_l2\": -0.09815940658251444, \"telemetry:reference:Episode_Reward/feet_air_time\": -0.028438657304892936, \"telemetry:reference:Episode_Reward/flat_orientation_l2\": -0.008136506999532382, \"telemetry:reference:Episode_Reward/lin_vel_z_l2\": -0.028389276284724475, \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\": 0.6281652758518855, \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\": 1.4119945863882701, \"telemetry:reference:Episode_Termination/base_contact\": 0.019444444899757704, \"telemetry:reference:Episode_Termination/time_out\": 4.267361239592234, \"telemetry:reference:Loss/entropy\": 5.254339154561361, \"telemetry:reference:Loss/learning_rate\": 0.00047580822962724293, \"telemetry:reference:Loss/surrogate\": -0.004771021144309392, \"telemetry:reference:Loss/value_function\": 0.003229960876827439, \"telemetry:reference:Metrics/base_velocity/error_vel_xy\": 0.20094659800330797, \"telemetry:reference:Metrics/base_velocity/error_vel_yaw\": 0.36454601436853407, \"telemetry:reference:Perf/collection time\": 1.2800231456756592, \"telemetry:reference:Perf/learning_time\": 0.1521585464477539, \"telemetry:reference:Perf/total_fps\": 68695.36666666667, \"telemetry:reference:Policy/mean_noise_std\": 0.384823252260685, \"telemetry:reference:Train/mean_episode_length\": 996.796499633789, \"telemetry:reference:Train/mean_reward\": 33.48266836802165}, \"observations\": [], \"probe_catalog\": [{\"cost_gpu_s\": 60, \"measures\": \"시간 제한 종료 스텝 / (episode_length_s / step_dt)\", \"registry_order\": 0, \"target\": \"P_episode\"}, {\"cost_gpu_s\": 60, \"measures\": \"학습 경로 act() 샘플의 실제 표준편차 / 기록된 action_std\", \"registry_order\": 1, \"target\": \"P_noise\"}, {\"cost_gpu_s\": 60, \"measures\": \"같은 실행 설정으로 새로 시작한 PPO 3 update의 optimizer.step 및 미니배치 횟수. 정책 체크포인트 관측이 아님\", \"registry_order\": 2, \"target\": \"P_optimizer_updates\"}, {\"cost_gpu_s\": 30, \"measures\": \"시뮬레이터에서 읽은 재질 마찰·질량·물리 dt와 설정·무작위화 범위의 불일치 수\", \"registry_order\": 3, \"target\": \"P_physics\"}, {\"cost_gpu_s\": 60, \"measures\": \"상태에서 문서 정의대로 다시 계산한 추종 보상 항(track_lin_vel_xy_exp, track_ang_vel_z_exp)과 보상 관리자 기록값의 상대 오차\", \"registry_order\": 4, \"target\": \"P_reward\"}, {\"cost_gpu_s\": 60, \"measures\": \"낮은 관절 속도에서 토크 포화 비율\", \"registry_order\": 5, \"target\": \"P_torque\"}, {\"cost_gpu_s\": 5, \"measures\": \"첫 체크포인트 대비 마지막 체크포인트의 critic 파라미터 상대 변화(critic이 학습되는가)\", \"registry_order\": 6, \"target\": \"P_value\"}, {\"cost_gpu_s\": 0, \"measures\": \"verified configured and observed optimizer/minibatch counts\", \"outcome_contract\": \"normal iff both role-bound recorded counts match config; else abnormal/unknown\", \"registry_order\": 7, \"target\": \"P_recorded_optimizer_updates\"}], \"remaining_candidates\": [\"reward\", \"actuator\", \"exploration\", \"optimizer_value\", \"physics\", \"termination\", \"optimizer_update_count\"], \"schema\": \"evidence_guided_selector_context_v1\", \"status\": \"open\", \"tie_break\": \"equal registered choices use ascending registry_order\"}",
+          "role": "user"
+        },
+        {
+          "content": "{\"action\": \"P_recorded_optimizer_updates\", \"target\": \"evidence:optimizer-counts\", \"fact_ids\": [\"expected_optimizer_steps\", \"optimizer_steps_min\", \"optimizer_steps_max\", \"expected_minibatches\", \"minibatches_min\", \"minibatches_max\"]}",
+          "role": "assistant"
+        },
+        {
+          "content": "{\"required\": \"Return one registered action,target,fact_ids JSON object; cite only currently visible non-null facts.\", \"validation_errors\": [\"F_ACTION\"]}",
+          "role": "user"
+        }
+      ],
+      "messages_sha256": "cb619e091e2ba2ee9a7b76e66edf22d22a67a6f0f7e137801b9648aba78177e8",
+      "result": {
+        "content": "{\"action\": \"read_evidence\", \"target\": \"evidence:optimizer-counts\", \"fact_ids\": []}",
+        "finish_reason": "stop",
+        "input_tokens": 2700,
+        "output_tokens": 27,
+        "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "reasoning_content": null,
+        "response_id": "chatcmpl-ff8c3fc8-03c0-4539-8105-a7b380cce389",
+        "total_tokens": 2727,
+        "wall_s": 0.4951025269983802
+      },
+      "review": {
+        "action": {
+          "action": "read_evidence",
+          "fact_ids": [],
+          "target": "evidence:optimizer-counts"
+        },
+        "codes": [],
+        "format_status": "valid",
+        "reasons": [],
+        "semantic_status": "valid",
+        "status": "valid"
+      }
+    }
+  ],
+  "final_review": {
+    "action": {
+      "action": "read_evidence",
+      "fact_ids": [],
+      "target": "evidence:optimizer-counts"
+    },
+    "codes": [],
+    "format_status": "valid",
+    "reasons": [],
+    "semantic_status": "valid",
+    "status": "valid"
+  },
+  "model_valid": true,
+  "schema": "prospective_agentic_dialogue_v1",
+  "semantic_feedback_used": true,
+  "state_digest": "7ebca60abdb75502041ce0e13eb8d79ccd0463b0237629a727a4e6b12c9b6824"
+}

@@ -4,21 +4,20 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
-
 
 ROOT = Path(__file__).resolve().parents[1]
 for directory in (ROOT / "src", ROOT / "bench", ROOT / "evals"):
     sys.path.insert(0, str(directory))
 
-import build_replay_page as B  # noqa: E402
-import replay_d3  # noqa: E402
-import run_training_correction_motor as W  # noqa: E402
+import build_replay_page as B
+import replay_d3
+import run_training_correction_motor as W
 
 PAGE = ROOT / "docs/replay"
 
@@ -78,6 +77,105 @@ def test_bundle_requires_commit_and_publisher_replay(repo):
     assert B.Sources(repo).bundle("fresh", broken, kind="public_bundle_v4")[0]["reason"] == "not_committed"
     (repo / "bundle/extra.json").write_text("{}", encoding="utf-8")
     assert B.Sources(repo).bundle("bundle", broken, kind="public_bundle_v4")[0]["status"] == "mismatch"
+
+
+def _manifest_fixture(repo: Path, folder: str = "published") -> Path:
+    root = repo / folder
+    root.mkdir(parents=True)
+    summary = {"schema": "known_summary_v1", "rows": []}
+    (root / "summary.json").write_text(json.dumps(summary), encoding="utf-8")
+    digest = hashlib.sha256((root / "summary.json").read_bytes()).hexdigest()
+    manifest = {"schema": "known_manifest_v1", "files": {"summary.json": digest}}
+    (root / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    return root
+
+
+def test_manifest_result_accepts_only_known_committed_schema(repo):
+    _manifest_fixture(repo)
+    _git(repo, "add", "published/manifest.json", "published/summary.json")
+    _git(repo, "commit", "-q", "-m", "published")
+    row, summary = B.manifest_result(B.Sources(repo), "published", manifest_name="manifest.json",
+                                     manifest_schema="known_manifest_v1", summary_schema="known_summary_v1",
+                                     kind="known")
+    assert row["status"] == "ready" and summary == {"schema": "known_summary_v1", "rows": []}
+    bad, value = B.manifest_result(B.Sources(repo), "published", manifest_name="manifest.json",
+                                   manifest_schema="other_manifest_v1", summary_schema="known_summary_v1",
+                                   kind="known")
+    assert bad["status"] == "mismatch" and value is None
+
+
+def test_manifest_result_keeps_untracked_folder_unready(repo):
+    _manifest_fixture(repo)
+    row, summary = B.manifest_result(B.Sources(repo), "published", manifest_name="manifest.json",
+                                     manifest_schema="known_manifest_v1", summary_schema="known_summary_v1",
+                                     kind="known")
+    assert (row["status"], row["reason"], summary) == ("waiting", "not_committed", None)
+
+
+def test_manifest_result_accepts_committed_recovery_schema(repo):
+    root = repo / "recovery"
+    root.mkdir()
+    summary = {"schema": "registry_action_recovery_public_summary_v1", "status": "complete"}
+    (root / "summary.json").write_text(json.dumps(summary), encoding="utf-8")
+    digest = hashlib.sha256((root / "summary.json").read_bytes()).hexdigest()
+    (root / "artifact_manifest.json").write_text(json.dumps({
+        "schema": "registry_action_recovery_public_manifest_v1", "files": {"summary.json": digest}}),
+        encoding="utf-8")
+    _git(repo, "add", "recovery/artifact_manifest.json", "recovery/summary.json")
+    _git(repo, "commit", "-q", "-m", "recovery")
+    row, value = B.manifest_result(
+        B.Sources(repo), "recovery", manifest_name="artifact_manifest.json",
+        manifest_schema="registry_action_recovery_public_manifest_v1",
+        summary_schema="registry_action_recovery_public_summary_v1", kind="registry_action_recovery")
+    assert row["status"] == "ready" and value == summary
+
+
+def test_prospective_scene_keeps_missing_comparison_unknown(repo):
+    audit = _manifest_fixture(repo, "audit")
+    (audit / "summary.json").write_text(json.dumps({
+        "schema": "recorded_optimizer_probe_audit_public_v1", "status": "complete"}), encoding="utf-8")
+    digest = hashlib.sha256((audit / "summary.json").read_bytes()).hexdigest()
+    (audit / "manifest.json").write_text(json.dumps({
+        "schema": "recorded_optimizer_probe_audit_public_manifest_v1", "files": {"summary.json": digest}}),
+        encoding="utf-8")
+    _git(repo, "add", "audit/manifest.json", "audit/summary.json")
+    _git(repo, "commit", "-q", "-m", "audit")
+    scene = B.scene_prospective_comparison(B.Sources(repo), {
+        "prospective_agentic_comparison": "missing-comparison",
+        "recorded_optimizer_probe_audit": "audit",
+        "registry_action_contract": "missing-option-contract",
+        "registry_action_recovery": "missing-recovery",
+    })
+    comparison = scene["blocks"][0]
+    assert all(cell["value"] is None for row in comparison["rows"] for cell in row[1:])
+    recovery = scene["blocks"][2]
+    assert all(row[1]["value"] is None for row in recovery["rows"])
+
+
+def test_policy_comparison_separates_valid_option_actions_from_diagnostic_outcomes():
+    rows = []
+    for index in range(6):
+        rows.append({
+            "policy": "eager_model", "gate": {"run": True}, "status": "complete",
+            "first_response_valid": True, "correct_confirmed_family": index < 4,
+            "decision_outcome": "HOLD" if index >= 4 else "confirmed",
+            "compound_partial": index in (2, 3), "paired_probes": 1,
+            "model_requests": 2 if index < 2 else 1,
+        })
+    rows.extend({
+        "policy": "eager_model", "gate": {"run": False}, "status": "complete",
+        "first_response_valid": None, "correct_confirmed_family": False,
+        "decision_outcome": "HOLD", "compound_partial": False, "paired_probes": 0,
+        "model_requests": 0,
+    } for _ in range(2))
+    assert B._policy_comparison({"rows": rows, "missing_rows": []}, "eager_model", option_contract=True) == [
+        "모델 option", "8/8 · 무효 0 · 미완료 0", "6/6", 4, 2, 2, "6 · 8"]
+    guided = [{**row, "policy": "evidence_guided_model", "correct_confirmed_family": False,
+               "decision_outcome": "HOLD", "compound_partial": False, "paired_probes": 0,
+               "model_requests": 1} for row in rows]
+    assert B._policy_comparison({"rows": guided, "missing_rows": []}, "evidence_guided_model",
+                                option_contract=True) == [
+        "모델 option", "8/8 · 무효 0 · 미완료 0", "6/6", 0, 6, 0, "0 · 6"]
 
 
 def test_media_video_is_ready_only_when_bound_to_its_committed_manifest(repo):
@@ -149,10 +247,10 @@ def test_path_checker_rejects_private_or_network_references(text):
 
 def test_build_from_repository_is_publishable_and_never_mismatched(built):
     data = built
-    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 16))
+    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 17))
     assert [scene["id"] for scene in data["scenes"]] == [
         "failure", "curves", "warning", "probe", "correction", "demo", "nat_demo", "recovery", "motor", "hold", "upstream",
-        "upstream_demo", "d3", "nvidia", "cost"]
+        "upstream_demo", "d3", "nvidia", "prospective_comparison", "cost"]
     statuses = {key: row["status"] for key, row in data["sources"].items()}
     assert "mismatch" not in statuses.values()
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
@@ -249,10 +347,11 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
                                    check=True, capture_output=True, text=True, encoding="utf-8")
         outputs[name] = json.loads(completed.stdout)
     clean = outputs["clean"]
-    assert len(clean) == 15 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
+    assert len(clean) == 16 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
     assert "<svg" in clean[1] and "polyline" in clean[1]
     dense = [scene["id"] for scene, html in zip(data["scenes"], clean, strict=True) if 'class="blocks dense"' in html]
-    assert dense == ["correction", "demo", "nat_demo", "recovery", "upstream", "upstream_demo", "d3", "nvidia", "cost"]
+    assert dense == ["correction", "demo", "nat_demo", "recovery", "upstream", "upstream_demo", "d3", "nvidia",
+                     "prospective_comparison", "cost"]
     for scene, html in zip(data["scenes"], clean):
         statuses = {data["sources"][source]["status"] for source in _scene_sources(scene)}
         assert ("waiting" in statuses) == ("대기" in html), scene["id"]

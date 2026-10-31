@@ -1,0 +1,100 @@
+{
+  "action": {
+    "action": "hold",
+    "fact_ids": [],
+    "target": null
+  },
+  "calls": [
+    {
+      "attempt": 1,
+      "messages": [
+        {
+          "content": "Select exactly one option_id from the current action_options. Return one JSON object with exactly option_id and fact_ids, matching output_schema. Do not invent an action, target, argument, diagnosis, repair, probability, or explanation. fact_ids must be exact currently visible non-null IDs. Reading evidence and holding require fact_ids=[]. A probe requires at least one supporting fact ID. For recorded counts, cite at least one complete listed count_evidence_group; if a group is touched, cite all three IDs. The host maps your option to a registered action, verifies evidence, and requires approval before execution. The options are possibilities, not recommendations. Choose hold if no available evidence supports a useful probe.",
+          "role": "system"
+        },
+        {
+          "content": "{\"action_options\": [{\"action\": \"hold\", \"citation_rule\": \"empty\", \"description\": \"Stop without a probe or repair.\", \"option_id\": \"hold\", \"target\": null}, {\"action\": \"read_evidence\", \"citation_rule\": \"empty\", \"description\": \"verified optimizer step and minibatch expected/observed facts\", \"option_id\": \"read_optimizer_counts\", \"target\": \"evidence:optimizer-counts\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"시간 제한 종료 스텝 / (episode_length_s / step_dt)\", \"option_id\": \"probe:P_episode\", \"registered_gpu_cost_s\": 60, \"target\": \"P_episode\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"학습 경로 act() 샘플의 실제 표준편차 / 기록된 action_std\", \"option_id\": \"probe:P_noise\", \"registered_gpu_cost_s\": 60, \"target\": \"P_noise\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"같은 실행 설정으로 새로 시작한 PPO 3 update의 optimizer.step 및 미니배치 횟수. 정책 체크포인트 관측이 아님\", \"option_id\": \"probe:P_optimizer_updates\", \"registered_gpu_cost_s\": 60, \"target\": \"P_optimizer_updates\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"시뮬레이터에서 읽은 재질 마찰·질량·물리 dt와 설정·무작위화 범위의 불일치 수\", \"option_id\": \"probe:P_physics\", \"registered_gpu_cost_s\": 30, \"target\": \"P_physics\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"상태에서 문서 정의대로 다시 계산한 추종 보상 항(track_lin_vel_xy_exp, track_ang_vel_z_exp)과 보상 관리자 기록값의 상대 오차\", \"option_id\": \"probe:P_reward\", \"registered_gpu_cost_s\": 60, \"target\": \"P_reward\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"낮은 관절 속도에서 토크 포화 비율\", \"option_id\": \"probe:P_torque\", \"registered_gpu_cost_s\": 60, \"target\": \"P_torque\"}, {\"action\": \"run_probe\", \"citation_rule\": \"at_least_one_visible_fact\", \"description\": \"첫 체크포인트 대비 마지막 체크포인트의 critic 파라미터 상대 변화(critic이 학습되는가)\", \"option_id\": \"probe:P_value\", \"registered_gpu_cost_s\": 5, \"target\": \"P_value\"}], \"budget_left\": 3, \"contract\": {\"approval_granted\": false, \"host_generated_action_target\": true, \"host_generated_fact_citations\": false, \"old_response_reinterpretation\": false, \"recovery_authority\": false}, \"count_evidence_groups\": [], \"evidence_facts\": {\"telemetry:case:Episode_Reward/action_rate_l2\": -0.08384582797686259, \"telemetry:case:Episode_Reward/ang_vel_xy_l2\": -0.08071721034745376, \"telemetry:case:Episode_Reward/dof_acc_l2\": -0.0774407435208559, \"telemetry:case:Episode_Reward/dof_pos_limits\": 0.0, \"telemetry:case:Episode_Reward/dof_torques_l2\": -0.06321872615565856, \"telemetry:case:Episode_Reward/feet_air_time\": -0.03254051714514693, \"telemetry:case:Episode_Reward/flat_orientation_l2\": -0.016213355989505848, \"telemetry:case:Episode_Reward/lin_vel_z_l2\": -0.027366156813999017, \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\": 0.6266311784585317, \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\": 0.3318892401953538, \"telemetry:case:Episode_Termination/base_contact\": 0.0006944444651405016, \"telemetry:case:Episode_Termination/time_out\": 4.240277906258901, \"telemetry:case:Loss/entropy\": 9.740535974502563, \"telemetry:case:Loss/learning_rate\": 0.0011437280879666408, \"telemetry:case:Loss/surrogate\": 0.0036132697210026284, \"telemetry:case:Loss/value_function\": 0.012495533120818436, \"telemetry:case:Metrics/base_velocity/error_vel_xy\": 1.4785658876101175, \"telemetry:case:Metrics/base_velocity/error_vel_yaw\": 0.3732469732562701, \"telemetry:case:Perf/collection time\": 1.3430383563041688, \"telemetry:case:Perf/learning_time\": 0.03592248360315959, \"telemetry:case:Perf/total_fps\": 71365.8, \"telemetry:case:Policy/mean_noise_std\": 0.5641274084647496, \"telemetry:case:Train/mean_episode_length\": 999.8386657714843, \"telemetry:case:Train/mean_reward\": 11.39701345761617, \"telemetry:reference:Episode_Reward/action_rate_l2\": -0.07238569979866345, \"telemetry:reference:Episode_Reward/ang_vel_xy_l2\": -0.07058845895032088, \"telemetry:reference:Episode_Reward/dof_acc_l2\": -0.06668356657028199, \"telemetry:reference:Episode_Reward/dof_pos_limits\": 0.0, \"telemetry:reference:Episode_Reward/dof_torques_l2\": -0.10104551029702027, \"telemetry:reference:Episode_Reward/feet_air_time\": -0.027385308127850293, \"telemetry:reference:Episode_Reward/flat_orientation_l2\": -0.007343727722764015, \"telemetry:reference:Episode_Reward/lin_vel_z_l2\": -0.03180840071290732, \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\": 0.6284165928761164, \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\": 1.4076158265272776, \"telemetry:reference:Episode_Termination/base_contact\": 0.007638889116545518, \"telemetry:reference:Episode_Termination/time_out\": 4.276389014720917, \"telemetry:reference:Loss/entropy\": 4.900568707784017, \"telemetry:reference:Loss/learning_rate\": 0.0004703890013236863, \"telemetry:reference:Loss/surrogate\": -0.004574030335061252, \"telemetry:reference:Loss/value_function\": 0.0028898976335767655, \"telemetry:reference:Metrics/base_velocity/error_vel_xy\": 0.21262618054946264, \"telemetry:reference:Metrics/base_velocity/error_vel_yaw\": 0.36696119358142215, \"telemetry:reference:Perf/collection time\": 1.373931618531545, \"telemetry:reference:Perf/learning_time\": 0.16463361183802286, \"telemetry:reference:Perf/total_fps\": 64088.01666666667, \"telemetry:reference:Policy/mean_noise_std\": 0.37377514243125914, \"telemetry:reference:Train/mean_episode_length\": 998.0149993896484, \"telemetry:reference:Train/mean_reward\": 33.15290482838949}, \"format_example\": {\"fact_ids\": [], \"option_id\": \"hold\"}, \"observations\": [], \"output_schema\": {\"additionalProperties\": false, \"properties\": {\"fact_ids\": {\"items\": {\"enum\": [\"telemetry:case:Episode_Reward/action_rate_l2\", \"telemetry:case:Episode_Reward/ang_vel_xy_l2\", \"telemetry:case:Episode_Reward/dof_acc_l2\", \"telemetry:case:Episode_Reward/dof_pos_limits\", \"telemetry:case:Episode_Reward/dof_torques_l2\", \"telemetry:case:Episode_Reward/feet_air_time\", \"telemetry:case:Episode_Reward/flat_orientation_l2\", \"telemetry:case:Episode_Reward/lin_vel_z_l2\", \"telemetry:case:Episode_Reward/track_ang_vel_z_exp\", \"telemetry:case:Episode_Reward/track_lin_vel_xy_exp\", \"telemetry:case:Episode_Termination/base_contact\", \"telemetry:case:Episode_Termination/time_out\", \"telemetry:case:Loss/entropy\", \"telemetry:case:Loss/learning_rate\", \"telemetry:case:Loss/surrogate\", \"telemetry:case:Loss/value_function\", \"telemetry:case:Metrics/base_velocity/error_vel_xy\", \"telemetry:case:Metrics/base_velocity/error_vel_yaw\", \"telemetry:case:Perf/collection time\", \"telemetry:case:Perf/learning_time\", \"telemetry:case:Perf/total_fps\", \"telemetry:case:Policy/mean_noise_std\", \"telemetry:case:Train/mean_episode_length\", \"telemetry:case:Train/mean_reward\", \"telemetry:reference:Episode_Reward/action_rate_l2\", \"telemetry:reference:Episode_Reward/ang_vel_xy_l2\", \"telemetry:reference:Episode_Reward/dof_acc_l2\", \"telemetry:reference:Episode_Reward/dof_pos_limits\", \"telemetry:reference:Episode_Reward/dof_torques_l2\", \"telemetry:reference:Episode_Reward/feet_air_time\", \"telemetry:reference:Episode_Reward/flat_orientation_l2\", \"telemetry:reference:Episode_Reward/lin_vel_z_l2\", \"telemetry:reference:Episode_Reward/track_ang_vel_z_exp\", \"telemetry:reference:Episode_Reward/track_lin_vel_xy_exp\", \"telemetry:reference:Episode_Termination/base_contact\", \"telemetry:reference:Episode_Termination/time_out\", \"telemetry:reference:Loss/entropy\", \"telemetry:reference:Loss/learning_rate\", \"telemetry:reference:Loss/surrogate\", \"telemetry:reference:Loss/value_function\", \"telemetry:reference:Metrics/base_velocity/error_vel_xy\", \"telemetry:reference:Metrics/base_velocity/error_vel_yaw\", \"telemetry:reference:Perf/collection time\", \"telemetry:reference:Perf/learning_time\", \"telemetry:reference:Perf/total_fps\", \"telemetry:reference:Policy/mean_noise_std\", \"telemetry:reference:Train/mean_episode_length\", \"telemetry:reference:Train/mean_reward\"], \"type\": \"string\"}, \"type\": \"array\", \"uniqueItems\": true}, \"option_id\": {\"enum\": [\"hold\", \"read_optimizer_counts\", \"probe:P_episode\", \"probe:P_noise\", \"probe:P_optimizer_updates\", \"probe:P_physics\", \"probe:P_reward\", \"probe:P_torque\", \"probe:P_value\"], \"type\": \"string\"}}, \"required\": [\"option_id\", \"fact_ids\"], \"type\": \"object\"}, \"remaining_candidates\": [\"reward\", \"actuator\", \"exploration\", \"optimizer_value\", \"physics\", \"termination\", \"optimizer_update_count\"], \"schema\": \"registry_action_options_context_v1\", \"state_digest\": \"913735f85baaedac29bd9fa23eccc98f71462ccb42410d0f7ed17f3df289192d\", \"status\": \"open\"}",
+          "role": "user"
+        }
+      ],
+      "messages_sha256": "c6db6dd23eb987fd7b94f679f4bef61beb73c19fafe003c1b1bac9182eda3685",
+      "result": {
+        "content": "{\"option_id\": \"hold\", \"fact_ids\": []}",
+        "finish_reason": "stop",
+        "input_tokens": 3532,
+        "output_tokens": 14,
+        "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "reasoning_content": null,
+        "response_id": "chatcmpl-609d551e-216a-4e57-a742-a3fb9a8df5c0",
+        "total_tokens": 3546,
+        "wall_s": 0.5300193159928313
+      },
+      "review": {
+        "action": {
+          "action": "hold",
+          "fact_ids": [],
+          "target": null
+        },
+        "base_review": {
+          "action": {
+            "action": "hold",
+            "fact_ids": [],
+            "target": null
+          },
+          "codes": [],
+          "format_status": "valid",
+          "reasons": [],
+          "semantic_status": "valid",
+          "status": "valid"
+        },
+        "codes": [],
+        "context_digest": "81c56a1977e3e395e35fd3921a9ee3b36eaa084cf3e9f96103b8cdb23c130287",
+        "format_status": "valid",
+        "response_text": "{\"option_id\": \"hold\", \"fact_ids\": []}",
+        "schema": "registry_action_options_review_v1",
+        "selected_option_id": "hold",
+        "semantic_status": "valid",
+        "state_digest": "913735f85baaedac29bd9fa23eccc98f71462ccb42410d0f7ed17f3df289192d",
+        "status": "valid"
+      }
+    }
+  ],
+  "claims": {
+    "diagnosis_improvement": false,
+    "recovery": false
+  },
+  "context_digest": "81c56a1977e3e395e35fd3921a9ee3b36eaa084cf3e9f96103b8cdb23c130287",
+  "final_review": {
+    "action": {
+      "action": "hold",
+      "fact_ids": [],
+      "target": null
+    },
+    "base_review": {
+      "action": {
+        "action": "hold",
+        "fact_ids": [],
+        "target": null
+      },
+      "codes": [],
+      "format_status": "valid",
+      "reasons": [],
+      "semantic_status": "valid",
+      "status": "valid"
+    },
+    "codes": [],
+    "context_digest": "81c56a1977e3e395e35fd3921a9ee3b36eaa084cf3e9f96103b8cdb23c130287",
+    "format_status": "valid",
+    "response_text": "{\"option_id\": \"hold\", \"fact_ids\": []}",
+    "schema": "registry_action_options_review_v1",
+    "selected_option_id": "hold",
+    "semantic_status": "valid",
+    "state_digest": "913735f85baaedac29bd9fa23eccc98f71462ccb42410d0f7ed17f3df289192d",
+    "status": "valid"
+  },
+  "host_mapping": "new_option_contract_only_no_old_response_reinterpretation",
+  "model_valid": true,
+  "schema": "registry_action_options_dialogue_v1",
+  "semantic_feedback_used": false,
+  "state_digest": "913735f85baaedac29bd9fa23eccc98f71462ccb42410d0f7ed17f3df289192d"
+}
