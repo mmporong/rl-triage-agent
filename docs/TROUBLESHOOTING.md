@@ -867,3 +867,22 @@
 - 수정: [lease reader v2](../evals/lineage_lease_context_v2.py)는 canonical 메타데이터 파일의 `EACCES`와 같은 파일명에만 2초·최대 20회 안에서 새 읽기를 시도한다. 다른 파일, JSON 오류, 잘못된 소유자·기간·lock은 재시도하지 않는다. 원래 PID 계층·heartbeat·배타 lock 검증을 그대로 수행하며 과거 메타데이터를 캐시해 수용하지 않는다.
 - 재개: [평가 전용 실행기 v4](../evals/lineage_recovery_continuation_v4.py)는 완료된 학습·체크포인트·텔레메트리와 consumed 원장을 검증해 재사용한다. 원래 학습 anchor와 새 등록 anchor를 각각 검증하고 조상 관계를 확인한다. 원래 실패와 원장은 보존하고, 새 원장 사본에 평가 결과를 추가한다. 새 학습·새 모델 호출·새 교정 승인은 없다. 실제 26조건 평가가 exit0으로 완료돼 [회복 결과](../evals/results/lineage_first_recovery_s2303_20261031_v1/summary.json)를 남겼다.
 - 재발 진단: [probe 예외 기록](../evals/lineage_probe_failure_evidence_v3.py)은 원래 판정을 바꾸지 않고 message·traceback·errno·winerror·filename을 별도 파일에 남긴다. 과거 상세 정보가 없는 오류를 같은 원인으로 소급 확정하지 않는다.
+
+### OPS-122: 미회복 뒤 두 번째 진단의 출력 폴더와 부모 결합
+
+- 관찰: 복합 사례의 첫 교정은 300회 학습과 26조건 평가를 완료해 `not_recovered`를 남겼다. 두 번째 진단 v1은 preflight 증거가 진단 폴더를 먼저 만들어, 원래 실행기의 배타 폴더 생성과 충돌했다. v2는 그 기록을 형제 경로로 옮겨 이 지점을 통과했다. 두 시도 모두 모델 송신과 확인 검사 자식은 0회였다.
+- 추가 원인: 첫 epoch 실행기는 snapshot 생성 시 `parent`를 전달하지 않는다. epoch2 packet은 이전 교정 영수증과 새 체크포인트를 부모로 요구하므로, 첫 snapshot의 구조 검증에서 중단됐다. typed 관측의 파일·SHA 검사만으로는 이 호출 계약을 확인할 수 없었다.
+- 처리: 원래 학습·평가·HOLD와 실패 출력을 보존한다. 부모 결합은 검증된 미회복 영수증에서 만들고, 같은 packet·run·선택 방식일 때만 선택기와 후보 재검산에 전달한다. 선택기의 부모 검사·승인·검사 한도는 유지한다. 실제 자료의 snapshot 생성·재검산·메시지·요청 생성까지 CPU에서 확인한 뒤 새 등록으로 진행한다.
+
+### OPS-123: NIM 응답 완료 표식의 읽기와 쓰기 경합
+
+- 관찰: 미회복 뒤 첫 두 paired 검사를 마치고 세 번째 모델 응답을 기다리던 부모가 SHA 표식의 JSON 읽기에서 `JSONDecodeError`로 중단됐다. worker는 세 응답과 SHA 표식을 모두 봉인했고, 종료 뒤 재검증에서 세 쌍이 일치했다. 세 번째 검사는 시작되지 않았다. 오류 순간의 표식 바이트는 보존되지 않아 빈 값과 부분 쓰기를 구분할 수 없다.
+- 확인한 쓰기 경로: 기존 transport는 최종 파일을 배타 생성한 뒤 내용을 썼다. 소비자는 파일 존재만 확인하므로 완성 전 파일을 읽을 수 있었다. [원자 공개 v2](../evals/lineage_nim_transport_v2.py)는 같은 폴더의 임시 파일에 JSON을 모두 기록하고 flush·fsync한 뒤 기존 대상을 덮어쓰지 않는 원자 공개를 수행한다. 원래 transport와 이미 끝난 queue는 바꾸지 않는다.
+- 재개 원칙: 두 완료 검사와 세 실제 응답을 재사용하며 새 API 요청은 하지 않는다. 요청·응답·송신 claim·SHA와 snapshot의 메시지·인자를 대조한 뒤 남은 한 검사만 새 출력에 실행한다. 이전 원장과 실패 원문은 보존한다.
+
+### OPS-124: 세 검사 완료 뒤 예산 소진 상태의 종료 처리
+
+- 관찰: 재개한 세 번째 paired 검사의 양쪽 자식은 exit0·cleanup을 완료했고 원장은 12사건이 됐다. 세 검사 모두 normal이었으나 controller의 마지막 assertion은 상태 `open`을 요구해 종료 코드 1을 남겼다.
+- 원인: 동결 선택기는 검사 예산이 0이고 후보가 여럿이면 `unidentifiable`을 반환한다. 세 번째 normal 뒤에도 다음 검사가 가능한 상태여야 한다는 종료 조건이 잘못됐다. 측정값·후보 축소·HOLD 규칙의 오류는 아니다.
+- 처리: 원래 실패와 미작성 result를 보존하고 [CPU 집계기](../evals/lineage_post_diagnosis_finalize_v1.py)에서 두 prefix 검사·세 응답·새 검사·승인 원장·최종 snapshot을 검증했다. 세 검사 완료와 controller 종료 실패를 [공개 집계](../evals/results/lineage_compound_s2307_20261031_v1/followup/summary.json)에 나눠 기록했다. CPU 집계는 새 API·검사·교정·학습을 허용하지 않는다.
+- 회귀: 예산 0의 미확정 상태는 `decision_limit HOLD`, 미완료 예산은 집계 거부, unknown은 unknown 유지, 지원 밖 physics 확정은 수리 권한 없는 HOLD로 처리한다. 기존 재개 등록은 재실행하지 않는다.

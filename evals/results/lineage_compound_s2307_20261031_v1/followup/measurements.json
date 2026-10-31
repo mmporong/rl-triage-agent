@@ -1,0 +1,127 @@
+{
+  "logical_probes": 3,
+  "new_logical_probes_in_resume": 1,
+  "reused_logical_probes": 2,
+  "rows": [
+    {
+      "decision": 1,
+      "outcome": "normal",
+      "paired": {
+        "case": {
+          "measurement": {
+            "median_timeout_step": 1000.0,
+            "timeout_count": 64,
+            "timeout_ratio": 1.0
+          },
+          "owned": {
+            "cleanup_verified": true,
+            "exit_code": 0,
+            "natural_exit": true,
+            "wall_s": 49.95299999997951
+          },
+          "raw_receipt_sha256": "1e04e30f20f8fe60a05b1c672865e9e82bb45c021593764c35116434fd0ea1cd",
+          "status": "complete"
+        },
+        "reference": {
+          "measurement": {
+            "median_timeout_step": 1000.0,
+            "timeout_count": 64,
+            "timeout_ratio": 1.0
+          },
+          "owned": {
+            "cleanup_verified": true,
+            "exit_code": 0,
+            "natural_exit": true,
+            "wall_s": 53.21799999999348
+          },
+          "raw_receipt_sha256": "9d495303b9fe348a2b413422a71107b055bbf3266a0ab977afda23cce2383f44",
+          "status": "complete"
+        }
+      },
+      "probe": "P_episode",
+      "reused_completed_measurement": true
+    },
+    {
+      "decision": 2,
+      "outcome": "normal",
+      "paired": {
+        "case": {
+          "measurement": {
+            "logged_std_mean": 0.5502058267593384,
+            "noise_ratio": 1.000823736190796
+          },
+          "owned": {
+            "cleanup_verified": true,
+            "exit_code": 0,
+            "natural_exit": true,
+            "wall_s": 19.29700000002049
+          },
+          "raw_receipt_sha256": "b34c7d11c0f0af61fcb5dcbb2f55a6caaf796756f8c7a45e4fe967661bed90cb",
+          "status": "complete"
+        },
+        "reference": {
+          "measurement": {
+            "logged_std_mean": 0.3648996353149414,
+            "noise_ratio": 1.0003926753997803
+          },
+          "owned": {
+            "cleanup_verified": true,
+            "exit_code": 0,
+            "natural_exit": true,
+            "wall_s": 17.79700000002049
+          },
+          "raw_receipt_sha256": "8f044b89290043ab402337b60f66ecbe01a2322ce6c5f1888335932fe928c730",
+          "status": "complete"
+        }
+      },
+      "probe": "P_noise",
+      "reused_completed_measurement": true
+    },
+    {
+      "decision": 3,
+      "outcome": "normal",
+      "paired": {
+        "case": {
+          "measurement": {
+            "dynamic_friction_mean": 0.6000000238418579,
+            "mass_delta_max": 2.74676513671875,
+            "mass_delta_min": -0.9676189422607422,
+            "mismatch_count": 0,
+            "mismatches": [],
+            "physics_dt": 0.005,
+            "static_friction_mean": 0.8000000715255737
+          },
+          "owned": {
+            "cleanup_verified": true,
+            "exit_code": 0,
+            "natural_exit": true,
+            "wall_s": 10.625
+          },
+          "raw_receipt_sha256": "280b2ea6eab6edee973d410e409f8ea8e4e6a9e8159bb0f5d2636b48a9ba048c",
+          "status": "complete"
+        },
+        "reference": {
+          "measurement": {
+            "dynamic_friction_mean": 0.6000000238418579,
+            "mass_delta_max": 2.74676513671875,
+            "mass_delta_min": -0.9676189422607422,
+            "mismatch_count": 0,
+            "mismatches": [],
+            "physics_dt": 0.005,
+            "static_friction_mean": 0.8000000715255737
+          },
+          "owned": {
+            "cleanup_verified": true,
+            "exit_code": 0,
+            "natural_exit": true,
+            "wall_s": 10.672000000020489
+          },
+          "raw_receipt_sha256": "81946185d3318fc05ac529efa244de34382e1dd0eadd782f3096adaf87bf5d48",
+          "status": "complete"
+        }
+      },
+      "probe": "P_physics",
+      "reused_completed_measurement": false
+    }
+  ]
+}

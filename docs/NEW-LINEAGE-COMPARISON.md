@@ -135,3 +135,30 @@ NIM worker는 요청별 영구 dispatch claim을 남겨 불명확한 송신을 �
 학습의 소유 자식 벽시계는 488.516초, 평가는 44.578초였다. 학습 뒤 임대 파일 읽기 오류로 평가가 중단된 기록을 보존했고, [재개 등록 v4](../bench/protocols/lineage_recovery_continuation_20261031_v4.json)에서 완료 학습·체크포인트·consumed 원장을 검증해 평가만 이어갔다. 재개 시 추가 학습·새 모델 호출·새 교정 승인은 모두 0이다. [재개 실행기](../evals/lineage_recovery_continuation_v4.py)는 원래 학습 anchor와 새 등록 anchor를 나눠 검증한다.
 
 이번 고리의 모델 입력은 수치 자료이며, 기존 3 모델과의 비교나 영상의 검사 선택 이득을 측정한 결과는 아니다. 전체 10사례의 비교 결과와 기존 HOLD도 유지한다.
+
+## 복합 사례의 첫 교정
+
+[seed 2307의 별도 결과](../evals/results/lineage_compound_s2307_20261031_v1/first-correction/summary.json)는 보상 좌표계와 PPO 갱신 횟수 결함이 함께 있는 사례에서 첫 교정만으로 회복되지 않았음을 기록한다. 원래 비교는 GPU 입장에서 막혀 검사 자식이 시작되지 않았으므로, [별도 등록](../bench/protocols/lineage_compound_retry_20261031_v1.json)으로 같은 입력과 검사 한도를 다시 실행했다. 이미 본 인프라 실패 뒤의 개발 측정이며 원래 30행 결과는 유지한다.
+
+등록 순서는 `P_value → P_physics → P_episode` 세 검사가 모두 normal인 뒤 HOLD였다. Nemotron 3.5는 `P_episode normal → P_reward abnormal`로 보상 성분을 확정했다. 이 확정은 복합 결함 전체의 진단이 아니다. 호스트가 등록 교정 `restore_body_frame_reward`를 선택했고, [첫 교정 실행기](../evals/lineage_compound_first_recovery_v1.py)가 승인·소비 뒤 같은 seed로 새 초기화 학습을 수행했다.
+
+| 고정 평가 지표 | 복합 결함 정책 | 보상만 교정한 뒤 | 같은 seed 정상 참조 |
+|---|---:|---:|---:|
+| 수평 속도 추종 RMSE, m/s | 1.177695 | 1.172526 | 0.162601 |
+| yaw 각속도 추종 RMSE, rad/s | 0.790999 | 0.764480 | 0.295032 |
+| 낙상률 | 0% | 0% | 0% |
+| 평균 생존, 초 | 20 | 20 | 20 |
+
+첫 교정은 300회 학습과 동결 26조건 평가를 완료했지만 추종 오차 두 기준을 통과하지 못해 `not_recovered`였다. 낙상과 생존만 보면 이 실패를 놓칠 수 있다. 새 체크포인트·텔레메트리·미회복 영수증을 [후속 관측 계약](../evals/lineage_post_correction_inputs_v1.py)으로 묶어 두 번째 진단의 입력으로 사용한다. 이미 복원한 보상 성분은 적용 교정 영수증을 근거로 후보에서 제외하며, 숨은 결함 정답은 모델에 주지 않는다.
+
+## 미회복 뒤 두 번째 진단
+
+[후속 관측 집계](../evals/results/lineage_compound_s2307_20261031_v1/followup/summary.json)에서 세 paired 검사는 `P_episode normal → P_noise normal → P_physics normal`이었다. 모델은 세 검사 한도에서 `P_optimizer_updates`를 선택하지 않았다. 남은 후보는 모터·가치 갱신·갱신 횟수 세 가지였으며, 선택기의 최종 상태는 예산을 소진한 `unidentifiable`이었다. 진단은 HOLD이고 두 번째 교정·재학습은 수행하지 않았다.
+
+[모델 원문과 선택](../evals/results/lineage_compound_s2307_20261031_v1/followup/model.json)에는 실제 NIM 응답 세 건을 연결했다. 세 번째 선택은 앞선 두 검사 결과를 인용했지만, 남은 원인을 확정하는 검사로 이어지지 못했다. 관측을 인용했다는 사실과 올바른 검사 선택은 구분한다.
+
+첫 교정 학습의 [사후 계측](../evals/results/lineage_compound_s2307_20261031_v1/followup/optimizer-monitor.json)은 앞선 세 update 모두 예상 optimizer step 20회 대비 실제 4회를 기록했다. 이 계측은 모델 입력 fact에 포함되지 않았고, 진단 고리의 승인된 `P_optimizer_updates` 검사로 합산하지 않았다. 남은 실패의 다음 개발 대상은 이처럼 이미 측정된 학습 루프 관측을 진단 입력에 연결하는 것이다. 연결 뒤 검사 선택과 회복이 나아지는지는 새 등록으로 확인해야 한다.
+
+두 완료 검사와 세 모델 응답은 [재개 실행기](../evals/lineage_post_diagnosis_resume_v1.py)에서 검증해 재사용했고, 마지막 검사만 새로 실행했다. 추가 API·학습은 없었다. 다만 controller가 세 번째 normal 뒤에도 상태가 `open`이어야 한다고 검사해 종료 처리에서 실패했다. 실제 선택기 상태는 예산 소진을 나타내는 `unidentifiable`이었다. 원래 실패를 완료 결과로 바꾸지 않고, [CPU 집계기](../evals/lineage_post_diagnosis_finalize_v1.py)가 완료된 12사건 원장과 양쪽 실측을 재검산했다. 공개 결과의 `controller_status=invalid_finalization`과 `analysis_status=complete`는 이 차이를 보존한다.
+
+이번 실행은 보상 성분 교정 뒤에도 실패가 남는 것을 잡았고, 확정되지 않은 두 번째 수리를 막았다. 복합 사례 회복 성공이나 모델 버전 간 정확도 차이의 근거로 쓰지 않는다.

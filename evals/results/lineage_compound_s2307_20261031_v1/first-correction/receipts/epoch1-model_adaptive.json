@@ -1,0 +1,62 @@
+{
+  "arm": "COMPOUND",
+  "case_id": "case-07",
+  "component": "reward",
+  "correction": "restore_body_frame_reward",
+  "diagnosis": {
+    "candidate_sha256": "90d6e936e253e27d5a8beaa1d78f1f387b9311344d26bf876445dbf917fafeb5",
+    "confirmed_subtype": "reward",
+    "end_state": "confirmed",
+    "epoch_result_sha256": "e0ff510fe945200dc9b097dd8a28e48f470492aaa754134060cfc19400e91424"
+  },
+  "epoch": 1,
+  "evaluation": {
+    "conditions": 26,
+    "corrected_report": {
+      "path": "reports/case-07_model_adaptive-corrected.json",
+      "sha256": "2125efb095d0ca43cf311da48fb36afba2618d314245f4912758ddcabe70a88c"
+    },
+    "reference_checkpoint_sha256": "591e9d8846820969fff6b2e281d6ea34fc3a2e4bb110db7912804a82cbbbc6ea",
+    "same_seed_reference_report": {
+      "path": "reports/case-07_model_adaptive-same-seed-reference.json",
+      "sha256": "dd1e547d891a4d08194b3ce3f4ba10e1dffbfbcbb6205514eabab0b7e229af7e"
+    }
+  },
+  "followup_epoch_allowed": true,
+  "policy": "model_adaptive",
+  "recovery": {
+    "outcome": "not_recovered",
+    "verdict": {
+      "checks": {
+        "err_xy_ratio": false,
+        "err_yaw_ratio": false,
+        "fall_frac": true,
+        "survival_ratio": true
+      },
+      "failed": [
+        "err_xy_ratio",
+        "err_yaw_ratio"
+      ],
+      "label": "unhealthy",
+      "short_horizon": false
+    }
+  },
+  "schema": "lineage_compound_recovery_public_receipt_v1",
+  "scope": {
+    "first_registered_correction_only": true,
+    "model_vs_version_3_comparison": false,
+    "second_epoch": false,
+    "second_epoch_eligible": true,
+    "video_evidence": false
+  },
+  "seed": 2307,
+  "status": "not_recovered",
+  "training": {
+    "fresh_initialization": true,
+    "mode": "fresh_restart",
+    "new_checkpoint_sha256": "b8414a36aa8e5b6bc1a6eba3337dea757a3be93cd869f53a7349d41ae22ddfc2",
+    "seed_reused_for_pairing": true,
+    "source_checkpoint_provenance_sha256": "03254bf190fb972636feeb326df45d8b9375911807a5c30480b8f01644d7a4d4",
+    "updates": 300
+  }
+}

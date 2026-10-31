@@ -1,0 +1,42 @@
+{
+  "arm": "COMPOUND",
+  "case_id": "case-07",
+  "diagnosis_rows": 2,
+  "distinct_corrections": [
+    "restore_body_frame_reward"
+  ],
+  "epoch2_diagnosis_outcome": null,
+  "first_recovery_status": "not_recovered",
+  "max_distinct_corrections": 2,
+  "receipts": [
+    {
+      "epoch": 1,
+      "path": "receipts/epoch1-registry_next.json",
+      "policy": "registry_next",
+      "sha256": "d412641421a6840915735f90544e7d598c1dc8810cab9daeea9eea73d4820193",
+      "status": "HOLD"
+    },
+    {
+      "epoch": 1,
+      "path": "receipts/epoch1-model_adaptive.json",
+      "policy": "model_adaptive",
+      "sha256": "52b37296961bdbf30112fc0d157eaefd50ce3abe75656905a891f7e46b079bdc",
+      "status": "not_recovered"
+    }
+  ],
+  "schema": "lineage_compound_recovery_public_export_v1",
+  "scope": {
+    "development_after_observed_infrastructure_failure": true,
+    "generalization_claim": false,
+    "model_diagnosis_and_host_correction_separated": true,
+    "original_30_row_result_unchanged": true,
+    "same_seed_pairing": true,
+    "unknown_remains_hold": true
+  },
+  "second_recovery_status": null,
+  "second_stage_supplied": false,
+  "seed": 2307,
+  "source_anchor": "7fd6bec0a5a80f37e5dc6f27b2b9bb0b7e98bcc1",
+  "status": "complete",
+  "terminal_status": "not_recovered"
+}

@@ -1,0 +1,109 @@
+{
+  "actual_nim_responses": 3,
+  "decisions": [
+    {
+      "choice": {
+        "action": "continue",
+        "fact_ids": [
+          "telemetry:case:Train/mean_reward",
+          "telemetry:reference:Train/mean_reward"
+        ],
+        "probe": "P_episode"
+      },
+      "decision": 1,
+      "files": {
+        "dispatch": {
+          "path": "followup/model/decision1.dispatch.json",
+          "sha256": "e9f7a226f127ecebb5e431bbc8f8be6782e992cf0c8537445ce838ccd571d6f7"
+        },
+        "request": {
+          "path": "followup/model/decision1.request.json",
+          "sha256": "783c0c7699f9021e8e3364092659ab837c49bf5dce62f9c850a4c862ae8bdab3"
+        },
+        "response": {
+          "path": "followup/model/decision1.response.json",
+          "sha256": "5e3e42bfd63c40c7c4bcfb65cb371e5a7cd0b50efd89ae0c9300d22a250c4abd"
+        },
+        "response_sha": {
+          "path": "followup/model/decision1.response_sha.json",
+          "sha256": "2db93b2ba8977e0a52a1688e25622e482557d0e2a62b69d2443487143d9ea421"
+        }
+      },
+      "input_tokens": 2663,
+      "output_tokens": 39,
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "total_tokens": 2702,
+      "wall_s": 6.350499395997758
+    },
+    {
+      "choice": {
+        "action": "continue",
+        "fact_ids": [
+          "telemetry:case:Policy/mean_noise_std",
+          "telemetry:reference:Policy/mean_noise_std"
+        ],
+        "probe": "P_noise"
+      },
+      "decision": 2,
+      "files": {
+        "dispatch": {
+          "path": "followup/model/decision2.dispatch.json",
+          "sha256": "10ce8c04387f011a3cad786f0a0ff829bf9486969d52c5aa09b9a7276efcfaf8"
+        },
+        "request": {
+          "path": "followup/model/decision2.request.json",
+          "sha256": "5cec14d739cc7547dff6303a5231cd5643ef150538ae8444b18a5e748140f4a2"
+        },
+        "response": {
+          "path": "followup/model/decision2.response.json",
+          "sha256": "23caa8e9066b632189ba1193d0f88d0ddf9d56009418e06d045099fc0a30cdfd"
+        },
+        "response_sha": {
+          "path": "followup/model/decision2.response_sha.json",
+          "sha256": "65743d7164e2eacc2c361ec8406912f9e9e32f7f4f0e744aab3d0710682b4ac3"
+        }
+      },
+      "input_tokens": 2750,
+      "output_tokens": 41,
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "total_tokens": 2791,
+      "wall_s": 0.8780745429976378
+    },
+    {
+      "choice": {
+        "action": "continue",
+        "fact_ids": [
+          "observation:0:P_episode:outcome",
+          "observation:1:P_noise:outcome"
+        ],
+        "probe": "P_physics"
+      },
+      "decision": 3,
+      "files": {
+        "dispatch": {
+          "path": "followup/model/decision3.dispatch.json",
+          "sha256": "837be9a4256c55887699188ddfb5794d925decd4520dadfc70a55f474734967b"
+        },
+        "request": {
+          "path": "followup/model/decision3.request.json",
+          "sha256": "edeb72d024c45840c768945ca6bf9971de32c5b887c8524cab4169ebc2071bfd"
+        },
+        "response": {
+          "path": "followup/model/decision3.response.json",
+          "sha256": "608fd49d764cce4fa7f9d5be718fce521a2ea3133564722ddc0465fb5167de5a"
+        },
+        "response_sha": {
+          "path": "followup/model/decision3.response_sha.json",
+          "sha256": "ba65311e8509bd1c5836f9c481aba137b96a138388e4b3f08b04dda1809e9b01"
+        }
+      },
+      "input_tokens": 2832,
+      "output_tokens": 41,
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "total_tokens": 2873,
+      "wall_s": 5.993497942999966
+    }
+  ],
+  "fresh_requests_in_resume": 0,
+  "reused_after_interruption": 3
+}
