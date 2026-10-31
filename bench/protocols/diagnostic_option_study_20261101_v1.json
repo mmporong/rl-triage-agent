@@ -1,0 +1,125 @@
+{
+  "analysis": {
+    "compare_to_parent_evidence_guided_rows": true,
+    "confirmation_and_hold_separate": true,
+    "development_candidate_rule": {
+      "all_six_hold": "not_improved",
+      "correct_confirmed_family_strictly_above_parent_guided": "0/6",
+      "first_valid_at_least": "5/6",
+      "format_only_improvement": "not_adopted",
+      "normal_rows_api_and_probe_zero": true,
+      "positive_result": "not_new_seed_effect_or_default_adoption",
+      "wrong_family_confirmations": 0
+    },
+    "first_decision_valid_denominator": 6,
+    "post_exposure_development": true,
+    "prediction": "registered semantics may reduce pre-observation HOLD; improvement not guaranteed",
+    "reporting": {
+      "fault_denominator": 6,
+      "incomplete_or_infrastructure": "indeterminate_with_denominator_preserved",
+      "normal_host_gate_is_model_success": false,
+      "normal_host_gate_rows": 2,
+      "separate": [
+        "first_valid",
+        "read",
+        "probe",
+        "HOLD",
+        "correct_confirmed_family",
+        "compound_partial",
+        "wrong_family_confirmation"
+      ]
+    },
+    "research": {
+      "learning_to_acquire_information_uai2017": "https://proceedings.mlr.press/r15/pu17a.html",
+      "mediq_neurips2024": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/32b80425554e081204e5988ab1c97e9a-Abstract-Conference.html",
+      "paper_effect_sizes_borrowed": false
+    },
+    "symptom_and_confirmed_cause_separate": true
+  },
+  "bounds": {
+    "global_api_requests": 48,
+    "paired_probes": 18,
+    "sdk_role_executions": 36,
+    "total_wall_s": 7200
+  },
+  "claims": {
+    "cost_savings": false,
+    "default_mode_adoption": false,
+    "diagnosis_improvement": false,
+    "generalization": false,
+    "model_version_advantage": false,
+    "recovery": false
+  },
+  "design": {
+    "automatic_repair": false,
+    "fault_rows": 6,
+    "hold_always_allowed": true,
+    "model_action_budget_per_row": 4,
+    "normal_gate_is_not_model_success": true,
+    "normal_host_gate_rows": 2,
+    "opaque_cases": [
+      "c01",
+      "c02",
+      "c03",
+      "c04",
+      "c05",
+      "c06",
+      "c07",
+      "c08"
+    ],
+    "planned_rows": 8,
+    "policy": "evidence_guided_model",
+    "probability_or_eig": false,
+    "probe_budget_per_row": 3,
+    "registered_candidate_partitions": true,
+    "registry_prediction_metadata_newly_exposed": true,
+    "same_cases_as_parent": true,
+    "same_source_measurements_tools_and_budgets": true
+  },
+  "inherited_source_sha256_lf": {
+    "evals/core_seed_guard_v1.py": "a7755f67639a80f94452aba9d44b07ce97b582ee40f08c23a42f1201886e6fb1",
+    "evals/diagnostic_fact_ledger_v1.py": "36fc89b8b331bf32eb4f36c16638a29094cc1823a31015bd87840939c07fd62a",
+    "evals/evidence_guided_probe_host_v1.py": "5a9df3a326dc3d21fafb057ba13ede512274671f868629d3a797b143c5e536dd",
+    "evals/evidence_guided_selector_v1.py": "03d752ae62dc712fb8302426978c18b6c5830bb51aee393134c6520b72ad4594",
+    "evals/immutable_git_proof_cache_v1.py": "3ec442e9bc095e5d8e526724425da5f529dca7e827e59d036b4d9935501155f4",
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "evals/lineage_nim_transport_v1.py": "9ebfeb6a6de6b076f77dc683ac18dd36327172b65353b4742318c1b45540ea7e",
+    "evals/lineage_nim_transport_v2.py": "6c2e07012a455b2754e394dbbe6051077ae7d28469439ec900fcb6ee7b503027",
+    "evals/lineage_nim_transport_v3.py": "76969b83d67c63217187c7464f6c4eaaf37bb624a97182ffe97e4cd1f03c404b",
+    "evals/lineage_nim_transport_v4.py": "68d651bad943ca178c272ffd30d60a8abf223696d370328cf13a6be31066df35",
+    "evals/prospective_agentic_comparison_v1.py": "d1ad726e19cbe6ed9d2b9988814884570425093435cd054575f339c6313b02fd",
+    "evals/prospective_diagnosis_inputs_v1.py": "cc6ab9f3dda902dfaf2e8c8aab02e6976ee17f96367c2ffa929edd864472c0c5",
+    "evals/prospective_diagnosis_inputs_v2.py": "315d090de2d799252291c9dd47d1bbf8b7f44007ca9c3d0921dc817efbc05ff2",
+    "evals/recorded_optimizer_probe_v1.py": "c2790d53c70d2ece250018e93985c849bd044426480965397e7ca1756cbf65ae",
+    "evals/registry_action_loop_v1.py": "6ae854bd5bcf3dd8a30a59427ba7bca97fe3527c46fe2718d563133609097507",
+    "evals/registry_action_options_v1.py": "298d22267a2c71b2f6ba2d11fcf741d352146ed0772163bd34b77bbb3926b8b9",
+    "evals/run_prospective_agentic_comparison_v1.py": "5bec46b078ac3aaecd813d93c53c01ad52f81747bef8df797eae12bfc0a13419",
+    "evals/run_registry_action_study_v1.py": "51c2cb849c2c666868c7e4d9527e1050deed42ff2b25e83d40182cf4e2156870",
+    "evals/runtime_observation_probe_v1.py": "1f2a1aa0f18a3d42d41e2eb2a45f263673ca3744118060a5707b9f53fbdcf56f",
+    "evals/runtime_observation_view_v1.py": "bcfb11cc00a86b36b88f67b1ed89791e62f74584330e7445474e100a9c0ea0ba",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "tests/test_diagnostic_fact_ledger_v1.py": "95c3a6ea34c448bd13f0b0c956dce96de661461db50112e5251b78022ddf6016",
+    "tests/test_evidence_guided_selector_v1.py": "6bb44e8b3ba0a138e6e122df507c812aa7cd7e84d1ee7876fa0de2160b8fee5f",
+    "tests/test_prospective_agentic_comparison_v1.py": "420f0971620d005eefc29dad7ba5917cf174e2a25eaa78b6de8cf337d4cf71fc",
+    "tests/test_recorded_optimizer_probe_v1.py": "969c1b18f32271f84deb6d19132d2914a70e3cc10b46c3add1d41f363c2b4bb4",
+    "tests/test_registry_action_loop_v1.py": "7a41747f95e11617c16bd85daa445ddc8ba52f69bf84b1b148ce8e5600c9ddc0",
+    "tests/test_registry_action_options_v1.py": "107073a4e6a40f4a4ef9a22fcc3d39efbc217e2dfc974871ae1d56fa1fd5104b",
+    "tests/test_run_prospective_agentic_comparison_v1.py": "ed9f6a45f296bdcfedf2b0d330c29c1bf6ab58d452a3e0fd539355322f1acc53",
+    "tests/test_run_registry_action_study_v1.py": "d1d99b7a3c2c7b284aff6c7dfc48d2da6b1ece911ffaaa1152d0d79682c65898"
+  },
+  "parent_study_protocol": {
+    "path": "bench/protocols/registry_action_contract_development_20261101_v1.json",
+    "sha256_lf": "d50434dc5c0c4aaad958afa0c58a40c1ef39b25c45bfdf0575afacab03ae6dc6"
+  },
+  "prior_option_result_sha256": "a3801d39770e8cf218e4d273e7bbd0ca32f3ec3c270619eac5f68d4472729943",
+  "purpose": "post_exposure_registered_partition_guided_diagnosis_development_study",
+  "schema": "diagnostic_option_study_protocol_v1",
+  "source_sha256_lf": {
+    "evals/registry_action_loop_v2.py": "ef4e63a91b95bd49dd909b065e6236fb84ca8601132b4190387da54a872c1574",
+    "evals/registry_action_options_v2.py": "1aeb8bb3f0a51cb17e6d4dea43af17984e01c880de37e7998cb6777ef4c0e445",
+    "evals/run_diagnostic_option_study_v1.py": "60e13236fd4707cd01c9aa438c0231b2190a9a80b8ccb84ba394dea2409ddc77",
+    "tests/test_registry_action_loop_v2.py": "84a72388b74560a53f567fd8a35789b9a81f7bb329436baf7ca46f0765328ba5",
+    "tests/test_registry_action_options_v2.py": "95da13b8b38a8d2e7758b129199f7d6edb34db00bc37a747411b6bbc2050ad6e",
+    "tests/test_run_diagnostic_option_study_v1.py": "58e55193b88d590fe15e08bea37709191fde82f6a514918d6b4d4b76c1a8b8e3"
+  }
+}
