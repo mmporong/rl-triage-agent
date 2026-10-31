@@ -310,6 +310,8 @@ def _row(
     require((row.get("end_state"), row.get("hold_reason"), row.get("confirmed_subtype"))
             == expected_terminal, "row terminal state/confirmation이 registry 재생과 다르다")
     model_failure = _model_failure(row)
+    require(not (model_failure and expected_classification["confirmed"]),
+            "모델 무효 뒤 원인 확정은 등록된 중단 계약과 다르다")
     has_unknown = any(step.get("outcome") == "unknown" for step in row["steps"])
     if expected_classification["correct_confirmation"]:
         score_state = "success"

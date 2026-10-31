@@ -117,6 +117,14 @@ def test_model_invalid_is_known_zero_and_not_excluded(tmp_path: Path) -> None:
     assert "case-01" in pair["technical_complete_paired_subset"]["case_ids"]
 
 
+def test_invalid_selection_cannot_claim_later_confirmation(tmp_path: Path) -> None:
+    export = _copy_export(tmp_path)
+    _mutate_row(export, 7, lambda row: row.__setitem__("model_validity", ["invalid_json", "valid"]))
+
+    with pytest.raises(ValueError, match="모델 무효 뒤 원인 확정"):
+        A.analyze(export, SOURCE, PROTOCOL)
+
+
 def test_spoofed_compound_partial_without_valid_receipts_is_rejected(tmp_path: Path) -> None:
     export = _copy_export(tmp_path)
     order = 19
