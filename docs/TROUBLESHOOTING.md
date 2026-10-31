@@ -893,3 +893,16 @@
 - 원인: 초기화는 anchor·session SHA·component·source 결합을 binding 객체의 최상위에 기록하지만, 소비 검증은 이를 protocol 참조 안에서 찾았다. JSON 원자 공개와 별개의 필드 조회 오류다.
 - 수정: [transport v3](../evals/lineage_nim_transport_v3.py)는 최상위 필드와 session의 등록 anchor를 대조한다. 기존 v1/v2·끝난 queue를 바꾸지 않고, 원자 공개·송신 전 intent·중복 송신 거부·요청 상한을 유지한다.
 - 검증: 실제 queue 초기화·송신 준비·CPU 응답·SHA·종료 경로와 binding 변조 거부를 확인했다. 실제 모델 호출과 새 seed 회복 효과는 별도 실행으로 판단한다.
+
+### OPS-126: Windows queue 경로의 WSL 해석과 계획 기록 분류
+
+- 관찰: Windows에서 초기화한 queue를 WSL worker가 읽을 때 protocol 절대경로를 POSIX 상대경로로 해석해 중단됐다. 송신 intent 1개·provider dispatch 0개·응답 0개였으며 원래 queue를 닫아 보존했다.
+- 수정: [transport v4](../evals/lineage_nim_transport_v4.py)는 원래 binding 바이트를 바꾸지 않고, 기록된 값과 저장소 상대 protocol 경로의 exact alias를 별도 봉인한다. alias·원문 SHA·source anchor·session을 모두 검증하고 임의 경로 치환은 거부한다. Windows 초기화→WSL CPU 응답→Windows SHA 소비를 실환경에서 확인한 뒤 새 queue의 실제 응답 두 건을 수신했다.
+- 별도 실행 전 차단: 새 seed 확인은 GPU 학습 전에 CPU 사전 실행 기록의 `result.json`을 실행 기록으로 분류했다. 해당 JSON에는 SDK·모델·lease 실행이 모두 false였지만 protocol 이름에 seed가 들어 있었다. 계획 기록을 바이트 변화 없이 `plan.json`으로 분류하고, 기존 seed 검사와 실행 폴더 배타 생성 규칙을 유지한 새 출력에서 확인한다. 학습 로그나 실제 실행 기록을 제외한 것은 아니다.
+
+### OPS-127: 미회복 영수증에서 반복 소스 검증을 줄여 재개
+
+- 관찰: 새 계측 고리의 첫 paired 검사에서 SDK 자식의 합계는 94.673초였고, 부모가 기록한 검사 구간은 269.214초였다. 실행 기록에서 같은 commit blob의 반복 검증이 관찰됐다. 두 시간 차이 전체를 Git 비용으로 단정하지 않는다.
+- 변경: [불변 blob 캐시](../evals/immutable_git_proof_cache_v1.py)는 명시한 40자리 commit의 성공한 `git show <commit>:<path>`만 같은 실행 범위에서 재사용한다. 현재 파일·HEAD·index·체크포인트·원장·lease 읽기는 캐시하지 않는다. [별도 CPU 반복 검증](../evals/results/runtime_observation_compound_s2311_20261031_v1/proof-cache-cpu.json)에서 출력 digest가 같은 상태로 `git show` 336회가 168회로 줄었다. 이 수치는 모델 응답이나 전체 고리의 속도 개선 측정이 아니다.
+- 재개 경계: 첫 보상 교정의 300회 학습과 고정 26조건 평가는 유효한 `not_recovered` 영수증을 남겼다. 다음 모델 요청 전 queue를 닫아 원래 controller는 `invalid`로 종료됐으며 이 상태와 실패 원문은 보존한다. [새 등록](../bench/protocols/runtime_observation_continuation_s2311_20261031_v2.json)의 [실행기](../evals/runtime_observation_continuation_v1.py)는 첫 영수증·완료 원장·정상/복합 학습·원래 queue를 검증한 뒤 epoch2만 허용한다. 원래 source 학습과 첫 교정을 반복하지 않으며 전체 시간·API 상한을 이어 계산한다.
+- 실행 전 확인: 실제 첫 영수증을 재검산했고 원래 미송신 epoch2 snapshot과 재개 snapshot의 공개 view·모델 메시지가 같았다. 관련 CPU 검사 통과와 새 GPU 고리의 최종 결과는 구분한다.

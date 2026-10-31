@@ -1,0 +1,79 @@
+{
+  "case_id": "development-s2307",
+  "comparison": {
+    "changed_next_probe": true,
+    "runtime_choice_cited_expected_and_updates_only": true,
+    "runtime_choice_cited_observed_four": false,
+    "runtime_input_facts": {
+      "runtime:case:available": true,
+      "runtime:case:expected_minibatches": 20,
+      "runtime:case:expected_optimizer_steps": 20,
+      "runtime:case:minibatches_max": 4,
+      "runtime:case:minibatches_min": 4,
+      "runtime:case:optimizer_steps_max": 4,
+      "runtime:case:optimizer_steps_min": 4,
+      "runtime:case:updates_observed": 3,
+      "runtime:reference:available": false,
+      "runtime:reference:expected_minibatches": null,
+      "runtime:reference:expected_optimizer_steps": null,
+      "runtime:reference:minibatches_max": null,
+      "runtime:reference:minibatches_min": null,
+      "runtime:reference:optimizer_steps_max": null,
+      "runtime:reference:optimizer_steps_min": null,
+      "runtime:reference:updates_observed": null
+    },
+    "runtime_observation_used": true,
+    "telemetry_and_runtime_probe": "P_optimizer_updates",
+    "telemetry_only_probe": "P_episode"
+  },
+  "conditions": [
+    {
+      "api_wall_s": 0.8571155070021632,
+      "cited_fact_ids": [
+        "telemetry:case:Episode_Termination/time_out",
+        "telemetry:reference:Episode_Termination/time_out"
+      ],
+      "condition": "telemetry_only",
+      "input_tokens": 2663,
+      "output_tokens": 41,
+      "probe": "P_episode",
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "request_id": "telemetry_only-1-7f9760de97302a65",
+      "total_tokens": 2704
+    },
+    {
+      "api_wall_s": 0.9196788629997172,
+      "cited_fact_ids": [
+        "runtime:case:updates_observed",
+        "runtime:case:expected_optimizer_steps",
+        "runtime:case:expected_minibatches"
+      ],
+      "condition": "telemetry_and_runtime",
+      "input_tokens": 2833,
+      "output_tokens": 53,
+      "probe": "P_optimizer_updates",
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "request_id": "telemetry_and_runtime-1-0238cf72d4daa3d4",
+      "total_tokens": 2886
+    }
+  ],
+  "order": [
+    "telemetry_only",
+    "telemetry_and_runtime"
+  ],
+  "schema": "runtime_observation_development_export_v1",
+  "scope": {
+    "already_seen_seed": true,
+    "condition_order_fixed": true,
+    "development_pairs": 1,
+    "gpu_jobs": 0,
+    "new_seed_evaluation": false,
+    "posthoc_design": true,
+    "recovery_measured": false,
+    "version_superiority_claimed": false,
+    "video_improvement_claimed": false
+  },
+  "seed": 2307,
+  "status": "complete",
+  "wording": "이미 본 seed 2307 한 사례의 개발 비교에서 runtime 입력을 추가하자 다음 검사 선택이 P_episode에서 P_optimizer_updates로 바뀌었다. 회복·일반화·버전 우위·영상 개선의 근거는 아니다."
+}

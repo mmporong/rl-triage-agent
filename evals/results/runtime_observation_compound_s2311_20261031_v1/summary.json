@@ -1,0 +1,485 @@
+{
+  "anchors": {
+    "continuation_protocol_and_provider_queue": "f8836100fd0a83460348ddb7950d612e08d03438",
+    "origin_protocol": "b3e60b6704b94c4b6f9ff7e8d550ee1792082cfd",
+    "origin_provider_queue": "b3e60b6704b94c4b6f9ff7e8d550ee1792082cfd"
+  },
+  "continuation": {
+    "outcome": "recovered",
+    "reason": null,
+    "status": "complete"
+  },
+  "epochs": [
+    {
+      "end_state": "confirmed",
+      "epoch": 1,
+      "hold_reason": null,
+      "model_requests": 2,
+      "probes": [
+        {
+          "measurements": {
+            "case": {
+              "median_timeout_step": 1000.0,
+              "timeout_count": 64,
+              "timeout_ratio": 1.0
+            },
+            "reference": {
+              "median_timeout_step": 1000.0,
+              "timeout_count": 64,
+              "timeout_ratio": 1.0
+            }
+          },
+          "outcome": "normal",
+          "probe": "P_episode"
+        },
+        {
+          "measurements": {
+            "case": {
+              "track_ang_vel_z_exp_rel_error": 1.6658444059736153e-08,
+              "track_lin_vel_xy_exp_rel_error": 0.2741001821681857
+            },
+            "reference": {
+              "track_ang_vel_z_exp_rel_error": 1.6443055526060845e-08,
+              "track_lin_vel_xy_exp_rel_error": 1.6942167340161517e-08
+            }
+          },
+          "outcome": "abnormal",
+          "probe": "P_reward"
+        }
+      ],
+      "runtime_fact_citations": [
+        {
+          "count": 2,
+          "decision": 1,
+          "fact_ids": [
+            "runtime:case:updates_observed",
+            "runtime:reference:updates_observed"
+          ]
+        },
+        {
+          "count": 0,
+          "decision": 2,
+          "fact_ids": []
+        }
+      ]
+    },
+    {
+      "end_state": "confirmed",
+      "epoch": 2,
+      "hold_reason": null,
+      "model_requests": 2,
+      "probes": [
+        {
+          "measurements": {
+            "case": {
+              "median_timeout_step": 1000.0,
+              "timeout_count": 64,
+              "timeout_ratio": 1.0
+            },
+            "reference": {
+              "median_timeout_step": 1000.0,
+              "timeout_count": 64,
+              "timeout_ratio": 1.0
+            }
+          },
+          "outcome": "normal",
+          "probe": "P_episode"
+        },
+        {
+          "measurements": {
+            "case": {
+              "expected_minibatches": 20,
+              "expected_optimizer_steps": 20,
+              "records": 3,
+              "updates": [
+                {
+                  "expected_minibatches": 20,
+                  "expected_optimizer_steps": 20,
+                  "observed_minibatches": 4,
+                  "observed_optimizer_steps": 4,
+                  "update_index": 0
+                },
+                {
+                  "expected_minibatches": 20,
+                  "expected_optimizer_steps": 20,
+                  "observed_minibatches": 4,
+                  "observed_optimizer_steps": 4,
+                  "update_index": 1
+                },
+                {
+                  "expected_minibatches": 20,
+                  "expected_optimizer_steps": 20,
+                  "observed_minibatches": 4,
+                  "observed_optimizer_steps": 4,
+                  "update_index": 2
+                }
+              ]
+            },
+            "reference": {
+              "expected_minibatches": 20,
+              "expected_optimizer_steps": 20,
+              "records": 3,
+              "updates": [
+                {
+                  "expected_minibatches": 20,
+                  "expected_optimizer_steps": 20,
+                  "observed_minibatches": 20,
+                  "observed_optimizer_steps": 20,
+                  "update_index": 0
+                },
+                {
+                  "expected_minibatches": 20,
+                  "expected_optimizer_steps": 20,
+                  "observed_minibatches": 20,
+                  "observed_optimizer_steps": 20,
+                  "update_index": 1
+                },
+                {
+                  "expected_minibatches": 20,
+                  "expected_optimizer_steps": 20,
+                  "observed_minibatches": 20,
+                  "observed_optimizer_steps": 20,
+                  "update_index": 2
+                }
+              ]
+            }
+          },
+          "outcome": "abnormal",
+          "probe": "P_optimizer_updates"
+        }
+      ],
+      "runtime_fact_citations": [
+        {
+          "count": 2,
+          "decision": 1,
+          "fact_ids": [
+            "runtime:case:updates_observed",
+            "runtime:reference:updates_observed"
+          ]
+        },
+        {
+          "count": 3,
+          "decision": 2,
+          "fact_ids": [
+            "runtime:case:updates_observed",
+            "runtime:case:expected_optimizer_steps",
+            "runtime:case:expected_minibatches"
+          ]
+        }
+      ]
+    }
+  ],
+  "fixed26": {
+    "compound": {
+      "conditions": 26,
+      "metrics": {
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 1.2189843368212436,
+        "mean_survival_s": 20.0,
+        "yaw_rate_rmse_radps": 0.4435407292846025
+      },
+      "raw": {
+        "path": "raw/fixed/compound.json",
+        "sha256": "896dc4864cae63d59017a6a343a394dc48f0cceec384a7544a38690e6fafa666"
+      }
+    },
+    "none": {
+      "conditions": 26,
+      "metrics": {
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.1416063768291903,
+        "mean_survival_s": 20.0,
+        "yaw_rate_rmse_radps": 0.2921724432875412
+      },
+      "raw": {
+        "path": "raw/fixed/none.json",
+        "sha256": "b693caf3b2d376868afc3a41238d28222d84f9752782cc31b08e675da391c668"
+      }
+    },
+    "repair1": {
+      "conditions": 26,
+      "metrics": {
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 1.1633168334847432,
+        "mean_survival_s": 20.0,
+        "yaw_rate_rmse_radps": 0.646456830224484
+      },
+      "raw": {
+        "path": "raw/fixed/repair1.json",
+        "sha256": "7deadb455dcc108b384deada6dd1d286aea555f9c2b06c93ae663a90579a5d68"
+      }
+    },
+    "repair2": {
+      "conditions": 26,
+      "metrics": {
+        "fall_rate": 0.0,
+        "lin_vel_rmse_mps": 0.1416063768291903,
+        "mean_survival_s": 20.0,
+        "yaw_rate_rmse_radps": 0.2921724432875412
+      },
+      "raw": {
+        "path": "raw/fixed/repair2.json",
+        "sha256": "e1bc3e2f7feda4f3c0b35e6c83a820e9580264233e5d2fef7ff026eca72dd64c"
+      }
+    }
+  },
+  "normal_gate": {
+    "criteria": {
+      "err_xy_ratio": true,
+      "err_yaw_ratio": true,
+      "fall_frac": true,
+      "survival_ratio": true
+    },
+    "healthy": true,
+    "model_called": false
+  },
+  "origin_run": {
+    "first_outcome": "not_recovered",
+    "queue_closed": true,
+    "status": "invalid",
+    "valid_first_receipt": true
+  },
+  "protocols": {
+    "continuation": {
+      "anchor": "f8836100fd0a83460348ddb7950d612e08d03438",
+      "path": "bench/protocols/runtime_observation_continuation_s2311_20261031_v2.json",
+      "sha256_lf": "cdde775cbd5f494a82ec9d3be47fff24a9cffcbbf351094e6efbdfb69edd16ce"
+    },
+    "origin": {
+      "anchor": "b3e60b6704b94c4b6f9ff7e8d550ee1792082cfd",
+      "path": "bench/protocols/runtime_observation_recovery_s2311_20261031_v1.json",
+      "sha256_lf": "89ada9b7d0ee2266075d700109339c0d1307531bbe9b0b3da00bf106c60e95e2"
+    }
+  },
+  "provider_by_phase": {
+    "continuation_epoch2": [
+      {
+        "api_wall_s": 29.25699266399897,
+        "input_tokens": 2808,
+        "output_tokens": 61,
+        "phase": "continuation_epoch2",
+        "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "raw": {
+          "dispatch": "raw/api/epoch2.decision1-1-c80ae1622e512b37.dispatch.json",
+          "request": "raw/api/epoch2.decision1-1-c80ae1622e512b37.request.json",
+          "response": "raw/api/epoch2.decision1-1-c80ae1622e512b37.response.json",
+          "response_sha": "raw/api/epoch2.decision1-1-c80ae1622e512b37.sha256.json"
+        },
+        "request_id": "epoch2.decision1-1-c80ae1622e512b37",
+        "slot_id": "epoch2.decision1",
+        "total_tokens": 2869
+      },
+      {
+        "api_wall_s": 0.6633399790007388,
+        "input_tokens": 2895,
+        "output_tokens": 53,
+        "phase": "continuation_epoch2",
+        "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "raw": {
+          "dispatch": "raw/api/epoch2.decision2-1-6c0b81df90aa2b6a.dispatch.json",
+          "request": "raw/api/epoch2.decision2-1-6c0b81df90aa2b6a.request.json",
+          "response": "raw/api/epoch2.decision2-1-6c0b81df90aa2b6a.response.json",
+          "response_sha": "raw/api/epoch2.decision2-1-6c0b81df90aa2b6a.sha256.json"
+        },
+        "request_id": "epoch2.decision2-1-6c0b81df90aa2b6a",
+        "slot_id": "epoch2.decision2",
+        "total_tokens": 2948
+      }
+    ],
+    "origin_epoch1": [
+      {
+        "api_wall_s": 1.0344135719933547,
+        "input_tokens": 2808,
+        "output_tokens": 61,
+        "phase": "origin_epoch1",
+        "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "raw": {
+          "dispatch": "raw/api/epoch1.decision1-1-5875713f68c7af63.dispatch.json",
+          "request": "raw/api/epoch1.decision1-1-5875713f68c7af63.request.json",
+          "response": "raw/api/epoch1.decision1-1-5875713f68c7af63.response.json",
+          "response_sha": "raw/api/epoch1.decision1-1-5875713f68c7af63.sha256.json"
+        },
+        "request_id": "epoch1.decision1-1-5875713f68c7af63",
+        "slot_id": "epoch1.decision1",
+        "total_tokens": 2869
+      },
+      {
+        "api_wall_s": 0.5206628689993522,
+        "input_tokens": 2895,
+        "output_tokens": 55,
+        "phase": "origin_epoch1",
+        "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+        "raw": {
+          "dispatch": "raw/api/epoch1.decision2-1-8f88183739dfd9d3.dispatch.json",
+          "request": "raw/api/epoch1.decision2-1-8f88183739dfd9d3.request.json",
+          "response": "raw/api/epoch1.decision2-1-8f88183739dfd9d3.response.json",
+          "response_sha": "raw/api/epoch1.decision2-1-8f88183739dfd9d3.sha256.json"
+        },
+        "request_id": "epoch1.decision2-1-8f88183739dfd9d3",
+        "slot_id": "epoch1.decision2",
+        "total_tokens": 2950
+      }
+    ]
+  },
+  "provider_requests": [
+    {
+      "api_wall_s": 1.0344135719933547,
+      "input_tokens": 2808,
+      "output_tokens": 61,
+      "phase": "origin_epoch1",
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "raw": {
+        "dispatch": "raw/api/epoch1.decision1-1-5875713f68c7af63.dispatch.json",
+        "request": "raw/api/epoch1.decision1-1-5875713f68c7af63.request.json",
+        "response": "raw/api/epoch1.decision1-1-5875713f68c7af63.response.json",
+        "response_sha": "raw/api/epoch1.decision1-1-5875713f68c7af63.sha256.json"
+      },
+      "request_id": "epoch1.decision1-1-5875713f68c7af63",
+      "slot_id": "epoch1.decision1",
+      "total_tokens": 2869
+    },
+    {
+      "api_wall_s": 0.5206628689993522,
+      "input_tokens": 2895,
+      "output_tokens": 55,
+      "phase": "origin_epoch1",
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "raw": {
+        "dispatch": "raw/api/epoch1.decision2-1-8f88183739dfd9d3.dispatch.json",
+        "request": "raw/api/epoch1.decision2-1-8f88183739dfd9d3.request.json",
+        "response": "raw/api/epoch1.decision2-1-8f88183739dfd9d3.response.json",
+        "response_sha": "raw/api/epoch1.decision2-1-8f88183739dfd9d3.sha256.json"
+      },
+      "request_id": "epoch1.decision2-1-8f88183739dfd9d3",
+      "slot_id": "epoch1.decision2",
+      "total_tokens": 2950
+    },
+    {
+      "api_wall_s": 29.25699266399897,
+      "input_tokens": 2808,
+      "output_tokens": 61,
+      "phase": "continuation_epoch2",
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "raw": {
+        "dispatch": "raw/api/epoch2.decision1-1-c80ae1622e512b37.dispatch.json",
+        "request": "raw/api/epoch2.decision1-1-c80ae1622e512b37.request.json",
+        "response": "raw/api/epoch2.decision1-1-c80ae1622e512b37.response.json",
+        "response_sha": "raw/api/epoch2.decision1-1-c80ae1622e512b37.sha256.json"
+      },
+      "request_id": "epoch2.decision1-1-c80ae1622e512b37",
+      "slot_id": "epoch2.decision1",
+      "total_tokens": 2869
+    },
+    {
+      "api_wall_s": 0.6633399790007388,
+      "input_tokens": 2895,
+      "output_tokens": 53,
+      "phase": "continuation_epoch2",
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "raw": {
+        "dispatch": "raw/api/epoch2.decision2-1-6c0b81df90aa2b6a.dispatch.json",
+        "request": "raw/api/epoch2.decision2-1-6c0b81df90aa2b6a.request.json",
+        "response": "raw/api/epoch2.decision2-1-6c0b81df90aa2b6a.response.json",
+        "response_sha": "raw/api/epoch2.decision2-1-6c0b81df90aa2b6a.sha256.json"
+      },
+      "request_id": "epoch2.decision2-1-6c0b81df90aa2b6a",
+      "slot_id": "epoch2.decision2",
+      "total_tokens": 2948
+    }
+  ],
+  "provider_requests_scope": "origin_epoch1_and_continuation_epoch2",
+  "runtime_facts": {
+    "compound": {
+      "case": {
+        "path": "raw/runtime/compound-case.json",
+        "sha256": "b476fcb59792d4e51f0096c4e7dd1fbd56b0c0b5b5ed70f3aa03d84d3c015be0"
+      },
+      "reference": {
+        "path": "raw/runtime/compound-reference.json",
+        "sha256": "4b57312207a2bba79a32d441272500e84ffa6956543eb0367801d359f62497a6"
+      }
+    },
+    "none": {
+      "case": {
+        "path": "raw/runtime/none-case.json",
+        "sha256": "1b0d7349772b438abb8e2b0cc89ca05f9828b21f07a640fe22ff1e6f6b4cc9eb"
+      },
+      "reference": {
+        "path": "raw/runtime/none-reference.json",
+        "sha256": "4d3d27cbc955756916983def0127d44bf8c1baf2ec8eddbe021ce6354bb76254"
+      }
+    },
+    "repair1": {
+      "case": {
+        "path": "raw/runtime/repair1-case.json",
+        "sha256": "2eaae08a689993f819575e220826aff05e5109c78ac25528b8cb6204259de18c"
+      },
+      "reference": {
+        "path": "raw/runtime/repair1-reference.json",
+        "sha256": "5f816a59f732e88d8becea3c0e2eaeb33a060d7cfeafa6fb14587f4f889464b2"
+      }
+    },
+    "repair2": {
+      "case": {
+        "path": "raw/runtime/repair2-case.json",
+        "sha256": "ae36066c88020291f937d131a1d8e8dd358711d3d5af1856532ed55fc62a44f2"
+      },
+      "reference": {
+        "path": "raw/runtime/repair2-reference.json",
+        "sha256": "1646d8682f26985710ef99e53dcf1466b6675d6d90bfa3443bbf9350ed67ad97"
+      }
+    }
+  },
+  "schema": "runtime_observation_combined_export_v1",
+  "scope": {
+    "approval": false,
+    "execution_allowed": false,
+    "new_independent_seed": false,
+    "origin_invalid_preserved": true,
+    "recovery_count": 1
+  },
+  "seed": 2311,
+  "seed_scope": {
+    "continuation_same_seen_seed": true,
+    "new_independent_seed": false,
+    "origin_freshness_sha256": "ac5de07bf80e977610a5437f50abfa28b3cb28efc40e156c9e134cff94136ae0",
+    "origin_registered_fresh": true
+  },
+  "source_gate": {
+    "criteria": {
+      "err_xy_ratio": false,
+      "err_yaw_ratio": false,
+      "fall_frac": true,
+      "survival_ratio": true
+    },
+    "unhealthy": true
+  },
+  "status": "complete",
+  "total_provider_request_count": 4,
+  "trainings": [
+    {
+      "arm": "NONE",
+      "checkpoint_sha256": "33ab6431f2ba40044c7b2ae915e0c2d859cf804a7956dbc2395c418f13397545",
+      "stage": "none",
+      "updates": 300
+    },
+    {
+      "arm": "COMPOUND",
+      "checkpoint_sha256": "ef019870b660e34b9357d77fe501920c15a5214aec5fafdb8d9fc18c24130b8c",
+      "stage": "compound",
+      "updates": 300
+    },
+    {
+      "arm": "FIRST",
+      "checkpoint_sha256": "32c274db83d44feac1b3368ee3d34bdc9a6cab8d6070aa20735f448bf46e90a4",
+      "stage": "repair1",
+      "updates": 300
+    },
+    {
+      "arm": "BOTH",
+      "checkpoint_sha256": "33ab6431f2ba40044c7b2ae915e0c2d859cf804a7956dbc2395c418f13397545",
+      "stage": "repair2",
+      "updates": 300
+    }
+  ]
+}

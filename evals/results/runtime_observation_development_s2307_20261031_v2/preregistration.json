@@ -1,0 +1,106 @@
+{
+  "budget": {
+    "correction_jobs": 0,
+    "global_request_cap": 6,
+    "gpu_jobs": 0,
+    "logical_choices": 2,
+    "max_requests_each": 3
+  },
+  "components": {
+    "transport": {
+      "path": "bench/protocols/runtime_observation_dev_nim_20261031_v3.json",
+      "sha256_lf": "67402ebe4c364c18375060dc2ca3d6e698b4372359f46285590ae90fa254f6f3"
+    },
+    "view": {
+      "path": "bench/protocols/runtime_observation_view_v1.json",
+      "sha256_lf": "be2f41d0526f942ae0e3b8634840d1a7be31961c94d36d354f6c462f7c1a8a68"
+    }
+  },
+  "conditions": [
+    "telemetry_only",
+    "telemetry_and_runtime"
+  ],
+  "criteria": {
+    "changed_next_probe": "both choices valid and selected probe differs",
+    "runtime_observation_used": "valid P_optimizer_updates choice cites at least one runtime:case: fact",
+    "unchanged_or_invalid": "preserve actual result; no semantic retry"
+  },
+  "input_sha256": "8b44450a5e064638f2d8af13bfbe712290170cbb79c06a71cad03b49b9df95bf",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "order": [
+    "telemetry_only",
+    "telemetry_and_runtime"
+  ],
+  "params": {
+    "extra_body": {
+      "reasoning_effort": "none"
+    },
+    "max_tokens": 16384,
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "stream": false,
+    "temperature": 0
+  },
+  "predictions": {
+    "telemetry_and_runtime": "optimizer_probe_expected_with_runtime_fact_citation",
+    "telemetry_only": "optimizer_probe_may_be_missed"
+  },
+  "purpose": "posthoc_same_input_next_probe_development_comparison",
+  "schema": "runtime_observation_development_protocol_v1",
+  "scope": {
+    "approval": false,
+    "gpu_execution": false,
+    "new_seed": false,
+    "old_measurement_overwrite": false,
+    "posthoc_design": true
+  },
+  "source_sha256_lf": {
+    "bench/protocols/fixed_eval_v1.json": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+    "bench/protocols/selection_comparison_view_v1.json": "81be94f3b359ea397179bd365d10d3694e5f7854675e909c495920c8d1129781",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/residual_training_v1.py": "13e9d5733a9b49908e136e54dd0ac8b7dae387b40fa4115f254536c9d6692517",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/export_ppo_ratio_repair_v3.py": "ff339fd870f375dac729deaa8bc7a6ec163598531fc92c3783bdf741e351ee79",
+    "evals/lineage_nim_transport_v1.py": "9ebfeb6a6de6b076f77dc683ac18dd36327172b65353b4742318c1b45540ea7e",
+    "evals/lineage_nim_transport_v2.py": "6c2e07012a455b2754e394dbbe6051077ae7d28469439ec900fcb6ee7b503027",
+    "evals/lineage_nim_transport_v3.py": "76969b83d67c63217187c7464f6c4eaaf37bb624a97182ffe97e4cd1f03c404b",
+    "evals/lineage_post_correction_inputs_v1.py": "fb7f99b73ea59da9bd671fc430bacdefd095acfbfcbc041bffbfba03dc05cea3",
+    "evals/lineage_recovery_inputs_v1.py": "6aebe192a20ba6c15f647c1713f6ef59873d3f78bfef46270255a6c0e492cf17",
+    "evals/lineage_selection_inputs_v1.py": "02f156f49d29c7a852b541a95164fca33cabfea4a4bd572f7804418a657eadca",
+    "evals/optimizer_runtime_facts_v1.py": "6bbfe0d590fcd86ea9702b91d48c05684542eaaf03a09c9087e0637dc619a942",
+    "evals/ppo_ratio_repair_execution.py": "5139e7dfb2e402b45ac1844abc8f6105fa96bda5cebf3fe40b36a4ff01f30026",
+    "evals/ppo_ratio_repair_execution_v2.py": "26aa7283df00c83655bb98f71b653d320daa82af5981ea6637fae987020be357",
+    "evals/ppo_ratio_repair_execution_v3.py": "40bce19bb59eff05f761d4ddaaeee82b27fec233bff5db0c0dbc3790d77f207b",
+    "evals/r1_repair_contract.py": "eeefe5819928cc0c5f81b0c3f38ae9900b31277698b4936eb2a850e7ec72f159",
+    "evals/r1_repair_execution.py": "c76f508fb921c642a33a76de3c3ae65bf0ae2624283d4b206a744c715788c1eb",
+    "evals/residual_contract_v1.py": "0ad37bcc9399885a1d0c1e6e59b64053706fe1a1bd25b5253ac59b30068c5a90",
+    "evals/residual_demo_v1.py": "09a6bd9179219aff98774b57a836e6798e398ecde494278c17abedfe6a572e45",
+    "evals/residual_execution_v1.py": "a62522debd84a0d37986b418ddf75600b1825da28151eafb216d758d45a5277a",
+    "evals/residual_selection_v2.py": "d1a0028afbe00d2697246e4fe30640ec780e3c4b15486dd4f1ed7e722aec6bc8",
+    "evals/runtime_observation_development_v1.py": "90fa0d9797dbff3e3bdef404f2ef5628b9d15eb832ad02c2c380b92e4f69712d",
+    "evals/runtime_observation_view_v1.py": "bcfb11cc00a86b36b88f67b1ed89791e62f74584330e7445474e100a9c0ea0ba",
+    "evals/selection_comparison_call_v2.py": "46c5b97c993e6a66598d9ddd5eb15e62fe7bbf9282225fcb0c68c6b6c6291992",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "evals/selection_comparison_gpu_v1.py": "30fef05e8e68e02d825d271dea19ee7e3969dcc25e8a0f59ee91985932c40c60",
+    "evals/selection_comparison_view_v1.py": "5180b96296251b3ae117edd612baba24676197dab93bab28f2e1cc0ef1d9e33d",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/mechanism_registry.py": "0bc3c47e52bdb6eb511cad5f6b76d047edfdfd1ca3c09d52fd637c47909d75d0",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "tests/test_lineage_nim_transport_v3.py": "6c7529f88a982e42f3871a80c4eea2ec408a60f90e081b95cad0fc98ea110b53",
+    "tests/test_optimizer_runtime_facts_v1.py": "a4729fd0d7c65c3741aae68f6db75ce0397fbce86a5c356b2c3c25fc81b6b26f",
+    "tests/test_runtime_observation_development_v1.py": "8d070355b921bdb697c624928a2d600594f872a4558bd22f1df0941dbd486862",
+    "tests/test_runtime_observation_view_v1.py": "dfddd75d724836ee40ae918e3b6698feda24159fb6d576cbaa2ce57416a825c8",
+    "tests/test_selection_comparison_controller_v1.py": "4dd6a31fd31385c765586f11989beba7e95035af1f58c214fc22c8d3bee13e7b",
+    "tests/test_selection_comparison_gpu_v1.py": "04e54ff12b35bfdd5a94ed5a5257dadc7e182e682d680c0e0f9f160e130e5cef",
+    "tests/test_selection_comparison_view_v1.py": "9a6526ba9b774be2079be17ff387ce3d128314adaf9f90800d2ce63bf6047b89"
+  },
+  "wording": {
+    "negative": "이미 본 사례의 개발 비교에서 갱신 계측 추가가 기대한 검사 선택으로 이어지지 않았다.",
+    "scope": "입력 보강과 모델 선택의 개발 관찰이며 버전 우위·회복 효과·일반화 근거가 아니다.",
+    "success": "이미 본 사례의 개발 비교에서 갱신 계측 수치를 추가한 입력이 옵티마이저 검사를 선택했다."
+  }
+}

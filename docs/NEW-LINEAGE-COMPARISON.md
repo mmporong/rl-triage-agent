@@ -162,3 +162,37 @@ NIM worker는 요청별 영구 dispatch claim을 남겨 불명확한 송신을 �
 두 완료 검사와 세 모델 응답은 [재개 실행기](../evals/lineage_post_diagnosis_resume_v1.py)에서 검증해 재사용했고, 마지막 검사만 새로 실행했다. 추가 API·학습은 없었다. 다만 controller가 세 번째 normal 뒤에도 상태가 `open`이어야 한다고 검사해 종료 처리에서 실패했다. 실제 선택기 상태는 예산 소진을 나타내는 `unidentifiable`이었다. 원래 실패를 완료 결과로 바꾸지 않고, [CPU 집계기](../evals/lineage_post_diagnosis_finalize_v1.py)가 완료된 12사건 원장과 양쪽 실측을 재검산했다. 공개 결과의 `controller_status=invalid_finalization`과 `analysis_status=complete`는 이 차이를 보존한다.
 
 이번 실행은 보상 성분 교정 뒤에도 실패가 남는 것을 잡았고, 확정되지 않은 두 번째 수리를 막았다. 복합 사례 회복 성공이나 모델 버전 간 정확도 차이의 근거로 쓰지 않는다.
+
+## 갱신 계측을 제공한 개발 비교
+
+[같은 입력의 개발 결과](../evals/results/runtime_observation_development_s2307_20261031_v2/summary.json)는 위 미회복 사례의 다음 검사 제안을 비교한다. 기존 텔레메트리·후보·검사 목록·요청 인자는 유지하고, 두 번째 조건에 체크포인트와 결합한 학습 갱신 수치만 추가했다. [입력 계약](../evals/optimizer_runtime_facts_v1.py)은 학습 manifest·완료 guard·설정·observer 원문을 재검증하며, 계측이 없는 정상 참조의 수치는 `null`로 남긴다.
+
+| 조건 | 제안 검사 | 인용한 근거 | 유효 응답 | API 응답 시간, 초 | 입력/출력 토큰 |
+|---|---|---|---:|---:|---:|
+| 기존 텔레메트리 | `P_episode` | case/reference의 `Episode_Termination/time_out` | 1/1 | 0.857116 | 2,663 / 41 |
+| 텔레메트리 + 학습 갱신 계측 | `P_optimizer_updates` | 관측 update 수·예상 optimizer step·예상 minibatch | 1/1 | 0.919679 | 2,833 / 53 |
+
+추가 입력에는 앞선 세 update에서 예상 20회·관측 4회인 optimizer step과 minibatch의 최솟값·최댓값이 있었다. 모델이 인용한 세 ID는 update 수와 예상 횟수였으며, 관측 4회에 해당하는 ID를 인용한 것은 아니다. 입력 제공 뒤 검사 선택이 달라진 사실과 모델이 불일치를 설명했다는 주장은 구분한다.
+
+[사전등록 v1](../bench/protocols/runtime_observation_development_20261031_v1.json)의 예측·판정·입력·요청 인자를 고정한 뒤, 모델 송신 전에 발견한 Windows/WSL 경로 문제만 [v2](../bench/protocols/runtime_observation_development_20261031_v2.json)에서 보완했다. 실제 provider 요청은 두 번이며 GPU 검사·새 교정·학습은 0회다. 순서가 고정된 이미 본 한 사례의 사후 개발 비교이므로 정확도·버전 우위·회복 효과로 해석하지 않는다. 같은 결함 계열의 새 seed에서 확인 검사와 후속 평가까지 연결하는 [별도 등록](../bench/protocols/runtime_observation_recovery_s2311_20261031_v1.json)을 분리했다.
+
+## 갱신 계측을 연결한 새 복합 사례
+
+[새 결과](../evals/results/runtime_observation_compound_s2311_20261031_v1/summary.json)는 같은 등록 보상·PPO epoch 결함 계열의 seed 2311 한 사례다. 실행 전 seed 사용 여부와 [새 고리 등록](../bench/protocols/runtime_observation_recovery_s2311_20261031_v1.json)을 확인했다. 정상·복합 결함·첫 교정·두 번째 교정은 각각 300회 학습했으며, 같은 26조건 평가와 기존 회복 기준을 사용했다. 후속 단계는 같은 사례의 유효한 미회복 영수증에서 이어간 것으로, 독립 사례를 추가한 것은 아니다.
+
+| 정책 | 수평 속도 추종 RMSE, m/s | yaw 추종 RMSE, rad/s | 낙상률 | 평균 생존, 초 | 결과 |
+|---|---:|---:|---:|---:|---|
+| 정상 대조 | 0.141606 | 0.292172 | 0% | 20 | `healthy` |
+| 복합 결함 | 1.218984 | 0.443541 | 0% | 20 | `not_recovered` |
+| 첫 보상 교정 | 1.163317 | 0.646457 | 0% | 20 | `not_recovered` |
+| 두 번째 epoch 교정 | 0.141606 | 0.292172 | 0% | 20 | `recovered` |
+
+첫 진단에서 3.5는 `P_episode normal → P_reward abnormal` 순서로 보상 성분을 확정했다. 등록 교정 `restore_body_frame_reward` 뒤 새로 300회 학습했지만 추종 오차 두 기준을 통과하지 못했다. 두 번째 진단은 그 영수증과 새 체크포인트·텔레메트리·학습 갱신 계측을 입력으로 사용했다. `P_episode normal → P_optimizer_updates abnormal`을 거쳐 갱신 횟수 성분을 확정하고 `restore_configured_ppo_epochs`를 적용했다. 두 교정이 적용된 상태에서 새로 300회 학습한 정책은 고정 평가의 네 기준을 모두 통과했다.
+
+[승인된 갱신 검사 원문](../evals/results/runtime_observation_compound_s2311_20261031_v1/summary.json)의 세 update에서 정상 참조는 예상 optimizer step·minibatch 각각 20회, 실제 각각 20회였다. 사례는 예상 각각 20회, 실제 각각 4회였다. 교정 후 학습의 초기 세 update는 각각 20회로 복원됐다. 공개 결과에는 양쪽 검사 수치, 체크포인트와 결합한 학습 계측, 네 정책의 고정 평가 원문과 SHA를 연결했다.
+
+실제 NIM 요청은 첫 진단 2회·두 번째 진단 2회이며, 네 응답이 모두 계약을 통과했다. 각 진단의 두 검사는 모델이 선택했다. 두 번째 진단에서 `P_optimizer_updates`를 고른 응답은 관측 update 수와 예상 step·minibatch ID를 인용했고, 실제 4회에 해당하는 ID를 인용하지는 않았다. 검사 선택, 근거 인용의 충실도, 원인 확정은 구분한다. 원인은 등록 검사 결과로 확정했고, 교정·재학습 승인과 회복 판정은 호스트가 수행했다. 정상 대조는 호스트 gate에서 건강함을 확인해 모델·검사·교정 요청을 만들지 않았다.
+
+첫 교정 영수증 뒤 원래 queue를 종료했으므로 기존 controller의 전체 상태는 `invalid`로 보존했다. [재개 등록 v2](../bench/protocols/runtime_observation_continuation_s2311_20261031_v2.json)는 그 유효한 영수증·완료 원장·정상/복합 원문을 재검증하고 두 번째 진단만 허용했다. 원래 미송신 snapshot과 재개 snapshot의 공개 view·모델 메시지가 같은 것을 CPU에서 확인했고, 정상·복합·첫 교정 학습은 반복하지 않았다. 공개 결과는 원래 상태와 새 재개의 `complete/recovered`를 나눠 기록한다. 실행 경계는 [OPS-127](TROUBLESHOOTING.md#ops-127-미회복-영수증에서-반복-소스-검증을-줄여-재개)에 남겼다.
+
+이 결과는 갱신 계측이 포함된 3.5 고리에서 남은 등록 결함을 확인하고 회복까지 연결한 한 사례다. 이전 seed 2307의 미회복·세 검사 HOLD는 유지한다. 설계자는 그 실패를 본 뒤 입력 계약을 만들었으며, 같은 seed에서 계측 유무에 따른 종단 고리를 비교하지 않았다. 3.5와 3의 정확도 차이, 영상 기여, 규칙 대비 우위, 진단 최적성이나 비용 절감의 근거로 합산하지 않는다.
