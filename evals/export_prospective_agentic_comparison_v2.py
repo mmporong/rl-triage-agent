@@ -4,9 +4,14 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import sys
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, cast
+
+BOOTSTRAP_ROOT = Path(__file__).resolve().parents[1]
+if str(BOOTSTRAP_ROOT) not in sys.path:
+    sys.path.insert(0, str(BOOTSTRAP_ROOT))
 
 from evals import export_prospective_agentic_comparison_v1 as V1
 

@@ -762,13 +762,13 @@ def _policy_comparison(summary: dict | None, policy: str, *, option_contract: bo
     missing = sum((entry.get("policy") if isinstance(entry, dict) else str(entry).split("/")[-1]) == policy
                   for entry in missing_entries)
     invalid = sum(row.get("status") == "invalid" for row in rows)
-    coverage = f"{len(rows)}/8 · 무효 {invalid} · 미완료 {missing}"
+    coverage = f"{len(rows)}/8 · {invalid} · {missing}"
     if policy == "strong_registered_rule":
         validity = "-"
         subject = "등록 규칙"
     elif option_contract:
         validity = f"{sum(row.get('first_response_valid') is True for row in fault_rows)}/{len(fault_rows)}"
-        subject = "모델 option"
+        subject = "모델"
     else:
         first = sum(row.get("first_pass_valid_actions", 0) for row in fault_rows)
         validity = f"{first}/{len(fault_rows)}"
@@ -803,14 +803,13 @@ def scene_prospective_comparison(sources: Sources, slots: dict) -> dict:
         manifest_schema="registry_action_recovery_public_manifest_v1",
         summary_schema="registry_action_recovery_public_summary_v1", kind="registry_action_recovery")
     policy_rows = []
-    old_labels = {"eager_model": "기존 · 즉시 선택", "evidence_guided_model": "기존 · 근거 조회",
+    old_labels = {"eager_model": "기존 · 즉시", "evidence_guided_model": "기존 · 근거",
                   "strong_registered_rule": "기존 · 등록 규칙"}
     for policy in ("eager_model", "evidence_guided_model", "strong_registered_rule"):
         values = _policy_comparison(comparison, policy)
         policy_rows.append([old_labels[policy],
                             *[cell(sources, value, comparison_row["id"], None) for value in values]])
-    option_labels = {"eager_model": "새 option · 즉시 선택",
-                     "evidence_guided_model": "새 option · 근거 조회"}
+    option_labels = {"eager_model": "option · 즉시", "evidence_guided_model": "option · 근거"}
     for policy in ("eager_model", "evidence_guided_model"):
         values = _policy_comparison(option, policy, option_contract=True)
         policy_rows.append([option_labels[policy],
@@ -841,10 +840,10 @@ def scene_prospective_comparison(sources: Sources, slots: dict) -> dict:
          f"{recovery['outcome']} · {sum(value is True for value in checks.values())}/{len(checks)} 기준 PASS",
          recovery_row["id"], None)],
         ["선택 → 교정", cell(sources, recovery and
-         f"{recovery['selection']['option_id']} → {recovery['repair']['correction_id']} · fresh restart",
+         "recorded count 검사 → PPO epoch 복원 · restart",
          recovery_row["id"], None)],
         ["범위", cell(sources, recovery and
-         f"source seed {recovery['selection']['source_seed']} R1 → fresh seed {recovery['repair']['recovery_seed']} · 1 case",
+         f"s{recovery['selection']['source_seed']} R1 → s{recovery['repair']['recovery_seed']} restart · 1 case",
          recovery_row["id"], None)],
         ["XY RMSE", cell(sources, recovery and
          f"{source_metrics['lin_vel_rmse_mps']:.4f} → {corrected_metrics['lin_vel_rmse_mps']:.4f} m/s",
@@ -852,7 +851,7 @@ def scene_prospective_comparison(sources: Sources, slots: dict) -> dict:
         ["Yaw RMSE", cell(sources, recovery and
          f"{source_metrics['yaw_rate_rmse_radps']:.4f} → {corrected_metrics['yaw_rate_rmse_radps']:.4f} rad/s",
          recovery_row["id"], None)],
-        ["교정 정책 평가", cell(sources, recovery and
+        ["교정 평가", cell(sources, recovery and
          (f"생존 {corrected_metrics['mean_survival_s']:.4f}s · 낙상 "
           f"{round(corrected_metrics['fall_rate'] * 26)}/26 ({corrected_metrics['fall_rate'] * 100:.2f}%) · "
           f"first-3 {runtime['observed_steps']}/{runtime['expected_steps']} step · "
@@ -860,23 +859,21 @@ def scene_prospective_comparison(sources: Sources, slots: dict) -> dict:
     ]
     return {
         "id": "prospective_comparison", "title": "새 source 진단 비교와 기록 재사용 검사", "dense": True,
-        "lead": "같은 8개 source에서 기존 세 정책과 노출 후 개발한 option 계약 두 정책을 나눠 보고, 보관된 첫 3 update 기록 재사용 검사도 함께 본다.",
+        "lead": "같은 8개 source의 기존 3정책과 노출 후 개발한 option 2정책, 첫 3 update 기록 재사용 검사를 함께 본다.",
         "blocks": [
-            {"type": "table", "wide": True, "title": "정책별 실제 판정(각 정책 8행, 결함 판정 분모 6행)",
+            {"type": "table", "wide": True, "title": "정책별 판정(각 8행, 결함 분모 6행)",
              "columns": ["판 · 정책", "선택 주체", "행 / 무효 / 미완료", "첫 유효", "원인 확정", "HOLD", "복합 부분", "검사 · API"],
              "rows": policy_rows},
-            {"type": "table", "title": "Recorded 검사 감사(조건: 보관된 첫 3 update)",
+            {"type": "table", "title": "Recorded 검사 감사(첫 3 update)",
              "columns": ["seed", "recorded parent(s)", "fresh parent(s)", "recorded SDK", "fresh SDK", "판정"],
              "rows": audit_rows},
             {"type": "table", "title": "사전 고정 R1 후속 평가", "columns": ["항목", "공개 기록"],
              "rows": recovery_rows},
         ],
         "notes": [
-            "새 option 계약은 첫 결정 형식을 12/12 유효하게 만들었지만 진단 성공과 같지 않다. 근거 조회 6건은 모두 HOLD이고, 즉시 선택은 단일 R1 2건 확정·복합 2건 부분 확정·F1 2건 HOLD였다.",
-            "두 판은 메시지 계약이 다르고 option 계약은 결과 노출 후 개발했다. 각 모델 정책의 정상 host gate 2행은 모델 호출 0이며 모델 성공으로 세지 않는다.",
-            "Recorded 검사는 API 0회·SDK 0회로 같은 count와 판정을 2/2 재현했다. parent wall은 GPU 커널 시간이 아니다.",
-            "R1 후속은 결과 노출 후 개발한 1 case 측정이다. 모델이 검사를 골랐고 host 등록 규칙이 교정했으며, 정상 참조 seed 2320은 새 회복으로 세지 않는다. 교정 정책의 낙상은 0이 아니다.",
-            "기본 모드를 채택하지 않았다. 이 장면은 모델 우월, 조기 탐지, 일반 회복 또는 다른 실행의 비용 절감을 입증하지 않는다.",
+            "Option 계약은 첫 결정 12/12 유효지만 진단 성공과 다르다. 근거 6건은 HOLD, 즉시는 R1 2건 확정·복합 2건 부분 확정·F1 2건 HOLD였다.",
+            "계약은 서로 다르고 option은 결과 노출 후 개발했다. 정상 gate는 모델 호출 0이다. R1 후속 1 case는 모델 검사 선택→host 교정이며 참조 seed는 새 회복이 아니고 낙상은 1/26이다.",
+            "Recorded 검사는 API·SDK 0회로 2/2 판정을 재현했지만 parent wall은 커널 시간이 아니다. 기본 모드 채택, 모델 우월·조기 탐지·일반 회복·비용 절감 근거가 아니다.",
         ],
     }
 

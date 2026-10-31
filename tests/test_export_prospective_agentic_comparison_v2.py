@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -108,3 +110,13 @@ def test_cli_requires_fresh_output(tmp_path: Path, monkeypatch: pytest.MonkeyPat
                    "--protocol", str(tmp_path / "protocol.json"),
                    "--anchor", "a" * 40, "--out", str(tmp_path / "out")]) == 0
     assert called["anchor"] == "a" * 40
+
+
+def test_script_help_bootstraps_repository_package() -> None:
+    result = subprocess.run(
+        [sys.executable, "-B",
+         str(X.ROOT / "evals/export_prospective_agentic_comparison_v2.py"), "--help"],
+        cwd=X.ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
+        check=False)
+    assert result.returncode == 0, result.stderr
+    assert "--comparison" in result.stdout

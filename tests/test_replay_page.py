@@ -169,13 +169,13 @@ def test_policy_comparison_separates_valid_option_actions_from_diagnostic_outcom
         "model_requests": 0,
     } for _ in range(2))
     assert B._policy_comparison({"rows": rows, "missing_rows": []}, "eager_model", option_contract=True) == [
-        "모델 option", "8/8 · 무효 0 · 미완료 0", "6/6", 4, 2, 2, "6 · 8"]
+        "모델", "8/8 · 0 · 0", "6/6", 4, 2, 2, "6 · 8"]
     guided = [{**row, "policy": "evidence_guided_model", "correct_confirmed_family": False,
                "decision_outcome": "HOLD", "compound_partial": False, "paired_probes": 0,
                "model_requests": 1} for row in rows]
     assert B._policy_comparison({"rows": guided, "missing_rows": []}, "evidence_guided_model",
                                 option_contract=True) == [
-        "모델 option", "8/8 · 무효 0 · 미완료 0", "6/6", 0, 6, 0, "0 · 6"]
+        "모델", "8/8 · 0 · 0", "6/6", 0, 6, 0, "0 · 6"]
 
 
 def test_media_video_is_ready_only_when_bound_to_its_committed_manifest(repo):

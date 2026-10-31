@@ -9842,6 +9842,355 @@ window.REPLAY_DATA = {
    "number": 14
   },
   {
+   "id": "prospective_comparison",
+   "title": "새 source 진단 비교와 기록 재사용 검사",
+   "dense": true,
+   "lead": "같은 8개 source의 기존 3정책과 노출 후 개발한 option 2정책, 첫 3 update 기록 재사용 검사를 함께 본다.",
+   "blocks": [
+    {
+     "type": "table",
+     "wide": true,
+     "title": "정책별 판정(각 8행, 결함 분모 6행)",
+     "columns": [
+      "판 · 정책",
+      "선택 주체",
+      "행 / 무효 / 미완료",
+      "첫 유효",
+      "원인 확정",
+      "HOLD",
+      "복합 부분",
+      "검사 · API"
+     ],
+     "rows": [
+      [
+       "기존 · 즉시",
+       {
+        "value": "모델",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "8/8 · 0 · 0",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "0/6",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 6,
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "0 · 12",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       }
+      ],
+      [
+       "기존 · 근거",
+       {
+        "value": "모델",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "8/8 · 0 · 0",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "0/6",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 6,
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "0 · 20",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       }
+      ],
+      [
+       "기존 · 등록 규칙",
+       {
+        "value": "등록 규칙",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "8/8 · 0 · 0",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "-",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 4,
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       },
+       {
+        "value": "10 · 0",
+        "source": "evals/results/prospective_agentic_comparison_20261101_v2",
+        "digits": null
+       }
+      ],
+      [
+       "option · 즉시",
+       {
+        "value": "모델",
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "8/8 · 0 · 0",
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "6/6",
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 4,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "6 · 8",
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "option · 근거",
+       {
+        "value": "모델",
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "8/8 · 0 · 0",
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "6/6",
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 6,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "0 · 6",
+        "source": "evals/results/registry_action_contract_development_20261101_v1",
+        "digits": null
+       }
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "title": "Recorded 검사 감사(첫 3 update)",
+     "columns": [
+      "seed",
+      "recorded parent(s)",
+      "fresh parent(s)",
+      "recorded SDK",
+      "fresh SDK",
+      "판정"
+     ],
+     "rows": [
+      [
+       "s2320",
+       {
+        "value": 39.60657950001769,
+        "source": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2320.json",
+        "digits": 2
+       },
+       {
+        "value": 205.23371950001456,
+        "source": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2320.json",
+        "digits": 2
+       },
+       {
+        "value": 0,
+        "source": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2320.json",
+        "digits": 0
+       },
+       {
+        "value": 2,
+        "source": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2320.json",
+        "digits": 0
+       },
+       {
+        "value": "일치",
+        "source": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2320.json",
+        "digits": null
+       }
+      ],
+      [
+       "s2321",
+       {
+        "value": 40.275491500040516,
+        "source": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2321.json",
+        "digits": 2
+       },
+       {
+        "value": 203.04061530000763,
+        "source": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2321.json",
+        "digits": 2
+       },
+       {
+        "value": 0,
+        "source": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2321.json",
+        "digits": 0
+       },
+       {
+        "value": 2,
+        "source": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2321.json",
+        "digits": 0
+       },
+       {
+        "value": "일치",
+        "source": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2321.json",
+        "digits": null
+       }
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "title": "사전 고정 R1 후속 평가",
+     "columns": [
+      "항목",
+      "공개 기록"
+     ],
+     "rows": [
+      [
+       "결과",
+       {
+        "value": "recovered · 4/4 기준 PASS",
+        "source": "evals/results/registry_action_recovery_s3332_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "선택 → 교정",
+       {
+        "value": "recorded count 검사 → PPO epoch 복원 · restart",
+        "source": "evals/results/registry_action_recovery_s3332_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "범위",
+       {
+        "value": "s2320 R1 → s3332 restart · 1 case",
+        "source": "evals/results/registry_action_recovery_s3332_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "XY RMSE",
+       {
+        "value": "1.1813 → 0.1520 m/s",
+        "source": "evals/results/registry_action_recovery_s3332_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "Yaw RMSE",
+       {
+        "value": "0.7808 → 0.2697 rad/s",
+        "source": "evals/results/registry_action_recovery_s3332_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "교정 평가",
+       {
+        "value": "생존 19.2768s · 낙상 1/26 (3.85%) · first-3 20/20 step · API 0",
+        "source": "evals/results/registry_action_recovery_s3332_20261101_v1",
+        "digits": null
+       }
+      ]
+     ]
+    }
+   ],
+   "notes": [
+    "Option 계약은 첫 결정 12/12 유효지만 진단 성공과 다르다. 근거 6건은 HOLD, 즉시는 R1 2건 확정·복합 2건 부분 확정·F1 2건 HOLD였다.",
+    "계약은 서로 다르고 option은 결과 노출 후 개발했다. 정상 gate는 모델 호출 0이다. R1 후속 1 case는 모델 검사 선택→host 교정이며 참조 seed는 새 회복이 아니고 낙상은 1/26이다.",
+    "Recorded 검사는 API·SDK 0회로 2/2 판정을 재현했지만 parent wall은 커널 시간이 아니다. 기본 모드 채택, 모델 우월·조기 탐지·일반 회복·비용 절감 근거가 아니다."
+   ],
+   "number": 15
+  },
+  {
    "id": "cost",
    "title": "비용과 재현",
    "dense": true,
@@ -10048,7 +10397,7 @@ window.REPLAY_DATA = {
     "parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
     "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."
    ],
-   "number": 15
+   "number": 16
   }
  ],
  "sources": {
@@ -10753,6 +11102,830 @@ window.REPLAY_DATA = {
    "path": "configs/nat_hitl_ledger_example.yml",
    "kind": "file",
    "sha256": "85960a3ad1089cd77cabb12d4d4914c865a4ba113a9a3ef1f4dd55bf4aa2f876",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/artifact_manifest.json",
+   "kind": "prospective_agentic_comparison",
+   "sha256": "16d7870d53d78672af3260daf9e2e1bd94860bb2589572e0810ccd7495e553ef",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c01/eager_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c01/eager_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c01/eager_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "3b3b172ebad940bf98501838978a4b7ab45bf62e9cf0838c6ea9f2ad783cde3e",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c01/evidence_guided_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c01/evidence_guided_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c01/evidence_guided_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "697f6031bea9b78f48b3fa9b5cc16baa93b6e330eceb0f3873e409d8fa269e90",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c01/strong_registered_rule.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c01/strong_registered_rule.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c01/strong_registered_rule.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "975771d6709204c2be844ec4ba4c253952732e09c7c347239fd78fdc516aed56",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c02/eager_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c02/eager_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c02/eager_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "e2b083232bdbe4dec36274fcb1184807d7827398ecb4e0f79a18597016bff42f",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c02/evidence_guided_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c02/evidence_guided_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c02/evidence_guided_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "6cfda6f4c6f6470dd7efc0ec2f34a6fef5d71e7ef6bcc9cb5e266d27b952c8b3",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c02/strong_registered_rule.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c02/strong_registered_rule.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c02/strong_registered_rule.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "dd33ea056647474e5e8973b4a47767fa50fe024dce93ece5c53145e0503efa92",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c03/eager_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c03/eager_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c03/eager_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "4f369dc105139465b95e6582af91f7b7df688ceb2ecf3872f985d636aa7a2dd5",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c03/evidence_guided_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c03/evidence_guided_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c03/evidence_guided_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "1826fff2a05b9e57453834e1104e06714af80e2dcaaebf1ae5b37a403ca854a0",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c03/strong_registered_rule.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c03/strong_registered_rule.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c03/strong_registered_rule.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "c99021c25bcc97e2e4419703c1e71ba8cf6c3023cc89efa3e37611e7948a4aca",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c04/eager_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c04/eager_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c04/eager_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "e559c12ef9f80be1efe1bc4065c6ded4416fd4d105aa90aed7c5cdfd4a50ba78",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c04/evidence_guided_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c04/evidence_guided_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c04/evidence_guided_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "f6f6279c5f22d4df5966ebac5ad9a4630979b6d2ac364a0954cb40988770f034",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c04/strong_registered_rule.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c04/strong_registered_rule.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c04/strong_registered_rule.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "0b6716748a51f9b2b0563b1f5ebcc05b3959bac58dcd76fa100dcfd689f82ad6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c05/eager_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c05/eager_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c05/eager_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "1f8bcd47b2272ca16741f81abbb2f21cdad963ef7d6f0710af6f7e2321e93a6b",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c05/evidence_guided_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c05/evidence_guided_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c05/evidence_guided_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "1718855c088affb5e85220924014fe0834eb9db8b92ec8d187905969d1d0148c",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c05/strong_registered_rule.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c05/strong_registered_rule.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c05/strong_registered_rule.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "3dc471af8f2831fa13984134e8820f75a5f8347ad48473508290c72c828974b6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c06/eager_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c06/eager_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c06/eager_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "46f1c6699cc5c60e46f15ef967b9571180b29b6d68f86cfc987fe20cee8e51af",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c06/evidence_guided_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c06/evidence_guided_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c06/evidence_guided_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "47a7d496f712873f6f3f77f3e1c30d438223a06ef2f80010d0c00a2dd155f2b7",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c06/strong_registered_rule.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c06/strong_registered_rule.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c06/strong_registered_rule.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "659074dccb1f1aecb5c390c3f35cd06be520b87a9b5b870f80aa649e378b109f",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c07/eager_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c07/eager_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c07/eager_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "4c7a2580078637a5be88b094fec877a95257c717242dbab77c4114876d33cf55",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c07/evidence_guided_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c07/evidence_guided_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c07/evidence_guided_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "c56d6c1e8bcb0fe98196eaf2d8b7ba3535308c8e8116b119b837b6cdb4c44441",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c07/strong_registered_rule.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c07/strong_registered_rule.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c07/strong_registered_rule.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "8016f901873ebbb87917160ef3e5d8f33dbc08b58276ab6828f73d2df7eb2f97",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c08/eager_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c08/eager_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c08/eager_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "acc6cd0f96afee500e5695f4a0b4d361a6ab469f273e971db27252b6976ee1c4",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c08/evidence_guided_model.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c08/evidence_guided_model.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c08/evidence_guided_model.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "7fbeb342f6bf9ef31b7abdfaac1ceeea6173e45fc5ddb62de2415dbfc4b51a5f",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/cases/c08/strong_registered_rule.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c08/strong_registered_rule.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/cases/c08/strong_registered_rule.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "1d89ce26dae607e5a40412c26792d21dbddc9547889cc960870bf13cd3f3ab59",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c02/eager_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c02/eager_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c02/eager_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "9a576100a5717099777599e9407575640eace3e5eeb9217a51a9ff4c16e36717",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c02/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c02/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c02/evidence_guided_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "8464cde2df7042544e5bf4ed3942aff0510a8e72ea880f35686a345d0dfee048",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c03/eager_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c03/eager_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c03/eager_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "995d459a63474765dbb9bfd5beae10ec27c9b86bad90104ed7126f5d73ced16c",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c03/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c03/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c03/evidence_guided_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "09e24e214204a02361746661687bae259db0254186bc6f00910c32e845d7dfad",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c03/evidence_guided_model/dialogue-02.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c03/evidence_guided_model/dialogue-02.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c03/evidence_guided_model/dialogue-02.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "b3cfb564975a5f79825ecff5dc6a0721dd22b442048dd13b7a9dd226a97381eb",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c04/eager_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c04/eager_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c04/eager_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "fde633f73f5f8b82ac85ab7fb87f57e308f4f9cc1bdd4b9a5623ae722ff2202a",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c04/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c04/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c04/evidence_guided_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "90c52c475471c81d0131590ca83c6cf6091b6dbdb67025f52e83396df45cff15",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c06/eager_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c06/eager_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c06/eager_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "2bcc1ab9ff1b7ee165283c3984e7859fa4c9b6fbbfc7c50055872c4a4c927daf",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c06/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c06/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c06/evidence_guided_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "a3e88bec5b7c1bc92d2500c582d8d984dbafb008bd0235c82b7c079d5f6194c1",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c06/evidence_guided_model/dialogue-02.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c06/evidence_guided_model/dialogue-02.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c06/evidence_guided_model/dialogue-02.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "97d410321651a3f530049e5131e0222cdf7ff75b473af628135e8afb87a69aef",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c07/eager_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c07/eager_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c07/eager_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "c6581da9cb5c85f652d79f8625eb3b67c979c2be5e30805573c0d065d4b30834",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c07/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c07/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c07/evidence_guided_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "3a1bc431873bd8577407f81aca78edafa41428964190cb40bc06895537d7bbc8",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c07/evidence_guided_model/dialogue-02.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c07/evidence_guided_model/dialogue-02.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c07/evidence_guided_model/dialogue-02.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "84fb14b1229264302e46ba1a6bc126cc3f7c9ad29587dd1742d4212fbe809981",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c08/eager_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c08/eager_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c08/eager_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "3ab7f654e96ab76456628f217aaa56a6a8db08ea23840ce04f71c5857c2ba706",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c08/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c08/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c08/evidence_guided_model/dialogue-01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "7fc5b4877fad02fc27982a8a21c17c2b8d0afffab9d1df68a65d37441bd5b962",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c08/evidence_guided_model/dialogue-02.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c08/evidence_guided_model/dialogue-02.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/dialogues/c08/evidence_guided_model/dialogue-02.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "1bcd1ac325b0396133c718b240732b2a1a840661c07a21d7a2922b2558573296",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/export_provenance.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/export_provenance.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/export_provenance.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "67658c37e0db30dd1f7fef60f44916e664f1cc242247d513c805d6653d79b409",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/source/c01.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/source/c01.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/source/c01.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "00a09ded92421effd743aabcdcbb3ac2fa52c445f8c94f5fd44aac7a624bee0d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/source/c02.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/source/c02.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/source/c02.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "5c8c80fdb8aa188ff6ca4b49b19e6567c5fb0f0e375a32a8f77650212ffacce3",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/source/c03.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/source/c03.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/source/c03.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "84de031b49e90bec8c674e3c1714be833112f67b6ca1ac67114863d7583e2a12",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/source/c04.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/source/c04.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/source/c04.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "f0f2d751386c64b74e1508c37b094b0295cf7d367ad55d6efc9730ef437b8bee",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/source/c05.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/source/c05.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/source/c05.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "86bc9bad693b9c0dff3efbb7df9d112b420d5c2a682ccaad5513d217ddd92aab",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/source/c06.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/source/c06.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/source/c06.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "1d634dd3a383e931017b72923fa4f1b1e7582e8e51656259cdb0454e0e9958cb",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/source/c07.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/source/c07.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/source/c07.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "508ae9124278414d03dc99c657bc1a566334387b466b7c92688aadeaec5daf27",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/source/c08.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/source/c08.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/source/c08.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "22d09f633ccf00021c8439bb4b7a03da09003cdb5d45c855b359e20e821ca2a4",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_agentic_comparison_20261101_v2/summary.json": {
+   "id": "evals/results/prospective_agentic_comparison_20261101_v2/summary.json",
+   "path": "evals/results/prospective_agentic_comparison_20261101_v2/summary.json",
+   "kind": "prospective_agentic_comparison_file",
+   "sha256": "f4066617735bcec367bd766c569ffaf2918264fe9fcddb80396330f46008e7d5",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/recorded_optimizer_probe_audit_20261101_v2": {
+   "id": "evals/results/recorded_optimizer_probe_audit_20261101_v2",
+   "path": "evals/results/recorded_optimizer_probe_audit_20261101_v2/manifest.json",
+   "kind": "recorded_optimizer_probe_audit",
+   "sha256": "0784b336d84ba057f7488fcef15e095bb845688e9259e8b38ea34696ba1e01a3",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/recorded_optimizer_probe_audit_20261101_v2/protocol.json": {
+   "id": "evals/results/recorded_optimizer_probe_audit_20261101_v2/protocol.json",
+   "path": "evals/results/recorded_optimizer_probe_audit_20261101_v2/protocol.json",
+   "kind": "recorded_optimizer_probe_audit_file",
+   "sha256": "98cef76b6561580fbcb6601470c460fb25b54f86a6f0aa12a649b755348d6b15",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2320.json": {
+   "id": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2320.json",
+   "path": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2320.json",
+   "kind": "recorded_optimizer_probe_audit_file",
+   "sha256": "0fba0efdbbbfdac6d8be4787c4c31dbc9059e9f3a5b0d9e77831ab7f0a781c4b",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2321.json": {
+   "id": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2321.json",
+   "path": "evals/results/recorded_optimizer_probe_audit_20261101_v2/seeds/s2321.json",
+   "kind": "recorded_optimizer_probe_audit_file",
+   "sha256": "4060f7ff175b5828ccb6042d62665abae6c0d00388cc4b105e72912df63a1d86",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/recorded_optimizer_probe_audit_20261101_v2/summary.json": {
+   "id": "evals/results/recorded_optimizer_probe_audit_20261101_v2/summary.json",
+   "path": "evals/results/recorded_optimizer_probe_audit_20261101_v2/summary.json",
+   "kind": "recorded_optimizer_probe_audit_file",
+   "sha256": "14bb9db359c40926a8807e1c35cf1a0f13060b8e091958568222d6a33bef7e25",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/artifact_manifest.json",
+   "kind": "registry_action_contract",
+   "sha256": "a1a68bd8a4672eba03ba3e81fb65b485239806b12884819f4b679f161b946970",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c01/eager_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c01/eager_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c01/eager_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "6b6b2066bae00bb448402ec4cbd1ba629be627b7a543f1c34a4653f00877956d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c01/evidence_guided_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c01/evidence_guided_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c01/evidence_guided_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "ffea3e872cd16a77986f2c92a3186db9e24dcd0256b27c305a1a8c90bf8f1bef",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c02/eager_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c02/eager_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c02/eager_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "4be05dd31299c831b33a50c94ed11ffb582b1e9617e67810992fbbf792d1ab64",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c02/evidence_guided_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c02/evidence_guided_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c02/evidence_guided_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "1d9f0ae8803c2df4640e1a3a4212e8dd25a90084f94f6fc0da414c181577601d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c03/eager_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c03/eager_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c03/eager_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "0897260af0c8b85de063d787c5a889c25d411081a32a262a4190a776b30804be",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c03/evidence_guided_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c03/evidence_guided_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c03/evidence_guided_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "b1077e317309f6e6db3c784aa8f583357fb339985cd10d870663429e1962d005",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c04/eager_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c04/eager_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c04/eager_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "75991fb668d5801c2c828d2d2d6b722c37126ab1106025d7c77ff2064060b6b7",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c04/evidence_guided_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c04/evidence_guided_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c04/evidence_guided_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "d16dca7279ce34cae3b38c8e7d0a457bb7f6c11a2e7af3dfd291a44732dec90e",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c05/eager_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c05/eager_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c05/eager_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "cfa9eb0dd43987efc19b89534442095d0ea2efa41bc29145bc9fc52bf6e64cf3",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c05/evidence_guided_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c05/evidence_guided_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c05/evidence_guided_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "4780e24b34ea6009d71d530afb01a80a48a9a9705753f4d9ef0d98b17702a3bb",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c06/eager_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c06/eager_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c06/eager_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "bcdf5a6a081b3c53f0764ac570a33363f3b986cf61373c6ce618466367494848",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c06/evidence_guided_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c06/evidence_guided_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c06/evidence_guided_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "a3ae26caf64af6d7ce4724a842d495a515c1ea290972e8171213d6bb98d3a0b2",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c07/eager_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c07/eager_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c07/eager_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "36f65e3d44ecde59ad12a6082902cca226dd55090dcd02158610541f2abe4acc",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c07/evidence_guided_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c07/evidence_guided_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c07/evidence_guided_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "b38d7b8898aab660292e295fb72e162d9fad3e6e91637da6b3ad45249769615e",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c08/eager_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c08/eager_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c08/eager_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "40a095c1e58dabbdd57644446373814de3bfaaf945bd78db8f271c2646c0fc12",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/cases/c08/evidence_guided_model.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/cases/c08/evidence_guided_model.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/cases/c08/evidence_guided_model.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "f8ae01ceae1ac63543a979a0a0b79e713b0d7ba851fe8d8ca4fe994d23bcfcec",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c02/eager_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c02/eager_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c02/eager_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "1e1a64118d9b0c3996f1ca2d32c0c7f6014794cb682a518fd61a8234b90c7a74",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c02/eager_model/dialogue-02.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c02/eager_model/dialogue-02.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c02/eager_model/dialogue-02.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "af0ed1d5a539d2d3472894b04925a387c575c4e841f6827621f8b2688eabcecc",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c02/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c02/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c02/evidence_guided_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "a794b9d6545c1571251a5388eb6ebcdf68496c9e88e4df3fd6abb2a85e5b5258",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c03/eager_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c03/eager_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c03/eager_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "56f9be03f90dab05e0f86c2bb4263a16e9fd2e1706b222ea029c08262331ab86",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c03/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c03/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c03/evidence_guided_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "fd1c4d570309f3d12c617d258b0853d14a490a492cd782efa52261d956edc6a7",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c04/eager_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c04/eager_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c04/eager_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "271c80aa0e5c4e4fde1441890b914a065fc3dcbde96a4e48fe7c7fda7f198fce",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c04/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c04/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c04/evidence_guided_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "e786cff47f970bcf704e01f86050215d746e0470d30120380ce9ffc4368564fc",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c06/eager_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c06/eager_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c06/eager_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "edd73261482567f07ac9a4d6177a10417824d37f09e841da9bf8c1ba4eb05a5d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c06/eager_model/dialogue-02.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c06/eager_model/dialogue-02.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c06/eager_model/dialogue-02.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "f4a3b1eb6f97a3f2c2bdb82c4babe0ba885fe16081ad8ca7c155d8a2e8bcccc7",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c06/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c06/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c06/evidence_guided_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "71be97f2d1edf4e664599cc29be7cbbe6711fdf5ae33bb180612fb4830bae9e9",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c07/eager_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c07/eager_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c07/eager_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "3d8c72fd146fa79b5631e6a58ed62cf4bd8b940836e1336aed5fd141ad1b703a",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c07/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c07/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c07/evidence_guided_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "feee3f9f52c571d1fd663d6bd79899fc68e3837437184eee0ceae7882206474b",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c08/eager_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c08/eager_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c08/eager_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "e099894f3c6de3af317eb67403e54cebc8e62c7d3c95f63efd421759fe9bc7fb",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/dialogues/c08/evidence_guided_model/dialogue-01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c08/evidence_guided_model/dialogue-01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/dialogues/c08/evidence_guided_model/dialogue-01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "096bf26298719b0a3f915c5a717bec273b913220fd553af18948d6844e24332a",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/source/c01.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/source/c01.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/source/c01.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "ac785774289aab04b1344c7f9d3e9dfbacb14f75aa74124a342990c2c14fde71",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/source/c02.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/source/c02.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/source/c02.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "25cce48b8e7af3b4cbc0b0043a6211decacf768476ca372d899caaadee9a702d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/source/c03.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/source/c03.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/source/c03.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "1ab115693d510fe91aadb0cac67827162d6639c0781260f2c31f6fd9221edf20",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/source/c04.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/source/c04.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/source/c04.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "ec5bb2d8e7ec89bbe3c79dd693f8be117b4f1bddcb35eb73b405198724a7a086",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/source/c05.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/source/c05.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/source/c05.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "7569f0bb7ddb3a3dcfa50c7c77236010d3058ee14190619c588d256c8d4bea3b",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/source/c06.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/source/c06.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/source/c06.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "778efc67d96088fc2cfd907b1ca2012834a5510b3235dfc4e4b9b4bb6e3eedce",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/source/c07.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/source/c07.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/source/c07.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "726e1bbfc7f4fb2698528e600195f56fd636b816ce3d801acf990ce7d7c7a681",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/source/c08.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/source/c08.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/source/c08.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "5c351f118bbeca580908f932396dbecbc98f9d3a74cc9881d2db5bade524983f",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/source_provenance.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/source_provenance.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/source_provenance.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "fb5f369aba07c666e47d2b52c9f4469b43f6465917b086a2c52f9302c8678067",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_contract_development_20261101_v1/summary.json": {
+   "id": "evals/results/registry_action_contract_development_20261101_v1/summary.json",
+   "path": "evals/results/registry_action_contract_development_20261101_v1/summary.json",
+   "kind": "registry_action_contract_file",
+   "sha256": "a903519576d4ace3011c673fd70d3ae812cbcba259c8dffed4682e397f5a02b5",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_recovery_s3332_20261101_v1": {
+   "id": "evals/results/registry_action_recovery_s3332_20261101_v1",
+   "path": "evals/results/registry_action_recovery_s3332_20261101_v1/artifact_manifest.json",
+   "kind": "registry_action_recovery",
+   "sha256": "ed5ba66fea1aa9e99621bfb0e3ca1d18ae4c571785cd474313f41afb297dcb83",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_recovery_s3332_20261101_v1/reports/corrected_s3332.json": {
+   "id": "evals/results/registry_action_recovery_s3332_20261101_v1/reports/corrected_s3332.json",
+   "path": "evals/results/registry_action_recovery_s3332_20261101_v1/reports/corrected_s3332.json",
+   "kind": "registry_action_recovery_file",
+   "sha256": "6dee5865a6e0fde97cc7330371b5e066fa5db77cdb295223e7d2cfa49caafdcb",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_recovery_s3332_20261101_v1/reports/reference_none_s2320.json": {
+   "id": "evals/results/registry_action_recovery_s3332_20261101_v1/reports/reference_none_s2320.json",
+   "path": "evals/results/registry_action_recovery_s3332_20261101_v1/reports/reference_none_s2320.json",
+   "kind": "registry_action_recovery_file",
+   "sha256": "42aa607215414ac17e35a53abb55fdabdd86a3adcbbbff8c2f754a8e079e9615",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_recovery_s3332_20261101_v1/reports/source_r1_s2320.json": {
+   "id": "evals/results/registry_action_recovery_s3332_20261101_v1/reports/source_r1_s2320.json",
+   "path": "evals/results/registry_action_recovery_s3332_20261101_v1/reports/source_r1_s2320.json",
+   "kind": "registry_action_recovery_file",
+   "sha256": "02bf9d80f749ccaa5b38bb7e9d9926c829eb739a24fbd51700403c2733b76c54",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_recovery_s3332_20261101_v1/source_provenance.json": {
+   "id": "evals/results/registry_action_recovery_s3332_20261101_v1/source_provenance.json",
+   "path": "evals/results/registry_action_recovery_s3332_20261101_v1/source_provenance.json",
+   "kind": "registry_action_recovery_file",
+   "sha256": "9f4ad6caa3a1935288553bd49c67dce52aa79674cbc9b575ca6224633b4ba394",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/registry_action_recovery_s3332_20261101_v1/summary.json": {
+   "id": "evals/results/registry_action_recovery_s3332_20261101_v1/summary.json",
+   "path": "evals/results/registry_action_recovery_s3332_20261101_v1/summary.json",
+   "kind": "registry_action_recovery_file",
+   "sha256": "6abae176a311d07e6746a3cc97d9685c7e014ac6ecd2e1363f6b5f5b90ab4a5c",
    "status": "ready",
    "reason": null
   },
