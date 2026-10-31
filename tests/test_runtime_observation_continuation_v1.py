@@ -1,4 +1,3 @@
-# ruff: noqa: E402
 # pyright: reportMissingImports=false
 from __future__ import annotations
 
@@ -7,6 +6,7 @@ import sys
 from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
+from typing import ClassVar
 
 import pytest
 
@@ -80,7 +80,7 @@ def test_closed_origin_queue_rejects_any_epoch2_request(
 
 
 class FakeLedger:
-    instances: list[FakeLedger] = []
+    instances: ClassVar[list[FakeLedger]] = []
 
     def __init__(self, path: Path, _registry: dict):
         self.path = Path(path)

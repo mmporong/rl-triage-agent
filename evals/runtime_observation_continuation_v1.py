@@ -1,5 +1,4 @@
 """유효한 첫 미회복 receipt에서 두 번째 진단·교정만 재개한다."""
-# ruff: noqa: E402
 # pyright: reportMissingImports=false
 from __future__ import annotations
 
@@ -10,9 +9,10 @@ import math
 import shutil
 import sys
 import time
+from collections.abc import Callable
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Callable, cast
+from typing import Any, cast
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "bench"), str(ROOT / "evals"), str(ROOT / "src")]
@@ -24,6 +24,7 @@ import runtime_observation_probe_v1 as PROBE
 import runtime_observation_recovery_v1 as R
 import runtime_observation_training_v1 as TRAIN
 import runtime_observation_view_v1 as RV
+
 from rl_triage.correction_ledger import CorrectionLedger
 
 SCHEMA = "runtime_observation_continuation_protocol_v1"
