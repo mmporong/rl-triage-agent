@@ -1,0 +1,49 @@
+{
+  "actions": [
+    {
+      "action": "run_probe",
+      "fact_ids": [
+        "registry:P_optimizer_updates:metric",
+        "registry:P_optimizer_updates:normal_effect",
+        "registry:P_optimizer_updates:abnormal_effect"
+      ],
+      "target": "P_optimizer_updates"
+    },
+    {
+      "action": "run_probe",
+      "fact_ids": [
+        "registry:P_ppo_gradient:metric",
+        "registry:P_ppo_gradient:normal_effect",
+        "registry:P_ppo_gradient:abnormal_effect"
+      ],
+      "target": "P_ppo_gradient"
+    }
+  ],
+  "call_refs": [
+    "calls/g02.gradient_model.d1.json",
+    "calls/g02.gradient_model.d2.json"
+  ],
+  "case_id": "g02",
+  "correct_subtype": true,
+  "expected_subtype": "optimizer_surrogate",
+  "model": {
+    "all_model_calls_valid": true,
+    "confirmed_subtype": "optimizer_surrogate",
+    "decision_outcome": "confirmed",
+    "model_actions": 2,
+    "recorded_pair_consumptions": 2
+  },
+  "rules": {
+    "count_only": {
+      "confirmed_subtype": null,
+      "other_hypotheses_normal": false,
+      "outcome": "unresolved"
+    },
+    "count_plus_gradient": {
+      "confirmed_subtype": "optimizer_surrogate",
+      "outcome": "confirmed"
+    }
+  },
+  "schema": "gradient_model_study_public_case_v1",
+  "wrong_confirmation": false
+}

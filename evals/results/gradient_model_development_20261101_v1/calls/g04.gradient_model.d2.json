@@ -1,0 +1,54 @@
+{
+  "api_wall_s": 5.4016534719994524,
+  "automatic_retry": false,
+  "call_record_sha256": "6a28003093df50bd2008fe4e9bbf5447df42040bb261c9dba1afd793d0f7da6a",
+  "case_id": "g04",
+  "claim_sha256": "1d224945905201d9bdae40d5ef71ba7248d914af496a5835af29b23a9b17ce27",
+  "final_json": {
+    "fact_ids": [
+      "registry:P_ppo_gradient:metric",
+      "registry:P_ppo_gradient:normal_effect",
+      "registry:P_ppo_gradient:abnormal_effect"
+    ],
+    "option_id": "probe:P_ppo_gradient"
+  },
+  "finish_reason": "stop",
+  "intent_sha256": "9beee7c4fed29efcbb284a24e13e8e5654af8ad4024a0c368e8775c85bfe1b17",
+  "model_valid": true,
+  "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+  "reasoning_body_included": false,
+  "request_params": {
+    "extra_body": {
+      "chat_template_kwargs": {
+        "enable_thinking": true
+      },
+      "reasoning_effort": "low"
+    },
+    "max_tokens": 16384,
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "stream": false,
+    "temperature": 0
+  },
+  "request_sha256": "d54b42f17f1d24114f4a8b0ae563c786d352a3c3b417131c544b23b42db5d987",
+  "response_sha256": "59b5e2f662aab28d45ccb56c44f6f08c98d6f71bfacd0f5707e36a490e62d493",
+  "schema": "gradient_model_study_public_call_v1",
+  "selected_option_id": "probe:P_ppo_gradient",
+  "slot": "g04.gradient_model.d2",
+  "step": 2,
+  "usage": {
+    "reported_fields": [
+      "input_tokens",
+      "output_tokens",
+      "total_tokens",
+      "reasoning_tokens"
+    ],
+    "status": "complete",
+    "values": {
+      "input_tokens": 880,
+      "output_tokens": 1169,
+      "reasoning_tokens": 1104,
+      "total_tokens": 2049
+    }
+  },
+  "validation_codes": []
+}

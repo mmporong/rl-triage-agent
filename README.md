@@ -112,7 +112,7 @@ uv run python -m rl_triage.nemotron35_entry_v1 \
 
 For the frozen 3 Super benchmark workflow and OpenShell setup, see [multi-step investigation](docs/AGENTIC-INVESTIGATION.md) and [grounded single-run workflow](docs/GROUNDED-SINGLE-RUN.md). The [pipeline preflight](docs/PIPELINE-PREFLIGHT.md) checks the registered CPU-side inputs before a separately approved GPU operation.
 
-For existing RSL-style training, the optional [`observe_optimizer`](src/rl_triage/optimizer_trace.py) recorder exports step and minibatch counts without a fault label. Its output is a caller-instrumented trace for later inspection.
+For existing RSL-style training, the optional [`observe_optimizer`](src/rl_triage/optimizer_trace.py) recorder exports step and minibatch counts without a fault label. A separate [recorded PPO workflow](docs/OPTIMIZER-OBSERVABILITY.md#모델-선택에서-보관-검사-확정까지) keeps update-count and surrogate-gradient checks separate.
 
 ## Safety boundary
 

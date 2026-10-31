@@ -107,4 +107,21 @@ V1(seed 2070)은 학습 전 실행 폴더 생성 누락으로 invalid였으며, 
 
 CPU API는 `prepare(evidence_dir, request_id=..., out=...)`, `execute(plan_path, out=...)`, `checked_receipt(plan_path, receipt_path)`다. 계획·영수증은 새 파일로만 생성한다. [관련 회귀](../tests/test_recorded_ppo_gradient_probe_v1.py)는 정상·오류 기록 재계산, 불완결·비유한 값·교차 실행·SHA·영수증 변조를 확인한다.
 
-[독립 하위형 계약](../evals/gradient_hypothesis_contract_v1.py)은 공개 범주6개를 유지하면서 optimizer의 value·update-count·surrogate를 분리한 내부8가설을 사용한다. 저장 개발 기록의 실제 CPU 소비에서 count normal 뒤에도 surrogate 가설이 남았고, 정상 참조와 짝지은 gradient abnormal 뒤 해당 하위형을 확정했다. 알 수 없는 관측이나 비정상 참조는 HOLD이며 기존7가설 입력은 암묵적으로 바꾸지 않는다. 이 계약의 모델 선택·새 GPU 검사·교정 실행 연결은 아직 없고, 개발 fixture 재사용이라는 증거 범위를 유지한다.
+[독립 하위형 계약](../evals/gradient_hypothesis_contract_v1.py)은 공개 범주6개를 유지하면서 optimizer의 value·update-count·surrogate를 분리한 내부8가설을 사용한다. count normal은 update-count만 제거하며 surrogate 가설은 남긴다. 정상 참조와 짝지은 gradient abnormal 뒤에만 surrogate 하위형을 확정한다. 알 수 없는 관측이나 비정상 참조는 HOLD이며 기존7가설 입력은 암묵적으로 바꾸지 않는다.
+
+## 모델 선택에서 보관 검사 확정까지
+
+[PPO 원 논문](https://arxiv.org/pdf/1707.06347)의 반복 최적화와 clipped-surrogate 계산은 서로 다른 검사 대상이다. [구현 분석 연구](https://arxiv.org/pdf/2005.12729)도 구현 구성요소와 세부 동작을 구분해 관측한다. 이 근거를 따라 새 선택 고리는 횟수 검사와 계산 검사를 별도 행동으로 등록했다. 논문에서 이 프로젝트의 탐지율이나 임계값을 가져오지는 않았다.
+
+[사전등록](../bench/protocols/gradient_model_study_20261101_v1.json) 뒤 Nemotron 3.5의 `enabled_low` 요청으로 보관 기록4개를 처리했다. 정상2144·2145·2146과 계산 오류2144를 사용했으며 참조는 정상2144로 고정했다. 모두 이미 본 v5 개발 자료다. 모델에는 실행 이름·seed·결함 정답을 보내지 않았다.
+
+| 보관 기록 | 모델의 첫 선택·관측 | 다음 선택·관측 | 최종 상태 |
+|---|---|---|---|
+|정상2144|횟수 검사 normal|gradient 검사 normal|HOLD|
+|계산 오류2144|횟수 검사 normal|gradient 검사 abnormal|optimizer-surrogate 확정|
+|정상2145|횟수 검사 normal|gradient 검사 normal|HOLD|
+|정상2146|횟수 검사 normal|gradient 검사 normal|HOLD|
+
+[공개 결과](../evals/results/gradient_model_development_20261101_v1/summary.json)에서 모델 응답8개가 모두 유효했고, 정상 대조의 잘못된 확정은0건이었다. 각 선택 뒤 호스트가 별도 승인·일회 소비 기록을 만들고 원문 영수증과 상태 전이를 재검증했다. 두 검사 모두 정상이더라도 다른 가설까지 정상으로 판단하지 않고 HOLD한다.
+
+횟수만 보는 등록 규칙은4개 모두 미확정이었다. 횟수와 gradient를 함께 보는 등록 규칙은 모델 고리와 같은 결과를 냈다. 따라서 이 결과는 검사를 선택하고 계산 오류 하위형을 확정하는 기능의 연결 근거이며, LLM 우위의 근거는 아니다. 원문 계측은 이미 존재했고 CPU에서 재검산했다. 새 정책 관측·학습·GPU 검사·교정·회복은 실행하지 않았다.
