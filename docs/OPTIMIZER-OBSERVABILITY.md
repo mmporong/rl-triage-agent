@@ -106,3 +106,5 @@ V1(seed 2070)은 학습 전 실행 폴더 생성 누락으로 invalid였으며, 
 이는 과거 검사 기록의 재계산이다. 새 정책 관측·학습·GPU 실행·교정·회복으로 세지 않는다. 출력은 `development_fixture`이며, 불완결 기록은 `unknown`, 원문 변조나 다른 실행의 완료 증거는 거부한다. 횟수 정상만으로 계산 오류 가설을 제거하지 않는 후속 고리에 사용할 증거 형식이며, 현재 진단 선택기에 검사를 추가한 결과는 아니다.
 
 CPU API는 `prepare(evidence_dir, request_id=..., out=...)`, `execute(plan_path, out=...)`, `checked_receipt(plan_path, receipt_path)`다. 계획·영수증은 새 파일로만 생성한다. [관련 회귀](../tests/test_recorded_ppo_gradient_probe_v1.py)는 정상·오류 기록 재계산, 불완결·비유한 값·교차 실행·SHA·영수증 변조를 확인한다.
+
+[독립 하위형 계약](../evals/gradient_hypothesis_contract_v1.py)은 공개 범주6개를 유지하면서 optimizer의 value·update-count·surrogate를 분리한 내부8가설을 사용한다. 저장 개발 기록의 실제 CPU 소비에서 count normal 뒤에도 surrogate 가설이 남았고, 정상 참조와 짝지은 gradient abnormal 뒤 해당 하위형을 확정했다. 알 수 없는 관측이나 비정상 참조는 HOLD이며 기존7가설 입력은 암묵적으로 바꾸지 않는다. 이 계약의 모델 선택·새 GPU 검사·교정 실행 연결은 아직 없고, 개발 fixture 재사용이라는 증거 범위를 유지한다.
