@@ -1,0 +1,129 @@
+{
+  "claims": {
+    "api_requests": 0,
+    "generalization": false,
+    "new_independent_seed": false,
+    "overall_goal_complete": false
+  },
+  "component_protocols": {
+    "bands": {
+      "path": "evals/results/p0c_fixed_eval_20261009/summary.json",
+      "sha256": "7589a132d4e1a55e159527389a8b635a1766472ecde558da0a1a704c286f3f23"
+    },
+    "comparison_batch": {
+      "path": "bench/protocols/lineage_comparison_20261031_v1.json",
+      "sha256_lf": "6433379538b2d3ee304c91ca8d0d5657884545a717dae8e75c32f97f95ab0a5a"
+    },
+    "compound_retry": {
+      "path": "bench/protocols/lineage_compound_retry_20261031_v1.json",
+      "sha256_lf": "3bd6f50560e1c449ce317bc4730666edc9ac4d5338e181ef2f4ab3e002741da2"
+    },
+    "fixed_evaluation": {
+      "path": "bench/protocols/fixed_eval_v1.json",
+      "sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46"
+    },
+    "recovery_v2": {
+      "path": "bench/protocols/lineage_recovery_execution_20261031_v2.json",
+      "sha256_lf": "6bb10b0f28a2875b09f967d4fd638b2da0e8c6dda89a708ec22c30e8bd7517b4"
+    }
+  },
+  "evaluation": {
+    "conditions": 26,
+    "fixed_protocol": "fixed_eval_v1",
+    "same_seed_none_report_reused": true
+  },
+  "phase": "compound_case07_first_registered_correction_after_fresh_retry",
+  "predictions": {
+    "contrary_recovered": "preserve_recovered_and_stop_without_epoch2",
+    "single_component_correction": "not_recovered_due_to_remaining_fault",
+    "unknown": "HOLD_and_start_no_next_training"
+  },
+  "runtime_source_sha256_lf": {
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0"
+  },
+  "schema": "lineage_compound_first_recovery_protocol_v1",
+  "scope": {
+    "epoch": 1,
+    "first_correction_only": true,
+    "followup_requires": "valid_not_recovered_receipt_and_new_protocol",
+    "max_distinct_corrections": 2,
+    "second_epoch": false
+  },
+  "smoke": {
+    "arm": "NONE",
+    "corrections": 0,
+    "mode": "inspection",
+    "reuse_previous_smoke": false,
+    "same_seed": 2307,
+    "updates": 3
+  },
+  "source_sha256_lf": {
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+    "bench/lineage_recovery_training_v1.py": "afa9ffe7645a4ab1729830ea3ab1c32bfd623d6fed41c6a7a5d601c1a156011b",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/r1_repair_training.py": "0b1b9aca9d17a4c8fce0a2f1aa451393bea701df66f4769156c2ff9d1f958ae6",
+    "bench/residual_faults_v1.py": "fae165b431588cb01e5140bd75481e907a0b3b71571df2beb6ba11278527ec25",
+    "bench/residual_probe_v1.py": "4d57ed44e9ecaf063d66746a200d28195cce4c322e5ca4f7de449a9106f40d1d",
+    "bench/residual_training_v1.py": "13e9d5733a9b49908e136e54dd0ac8b7dae387b40fa4115f254536c9d6692517",
+    "bench/run_lineage_recovery_v1.ps1": "83de5362d2e66d36f19bb836835f2ff1314db05d5b09ea1006c6e85f0bf62ce0",
+    "evals/lineage_comparison_batch_v1.py": "780f16f2ea2dfc6e1479d71fdb62a6c656c294326b1c5c3938e18ea5e57f3e38",
+    "evals/lineage_compound_first_recovery_v1.py": "a25c63ba70b6c891bc31989a20e4071ace771898c89cd8810cb7e729e6e5ea74",
+    "evals/lineage_compound_retry_v1.py": "266348fae090293af920d698ec71cfd459cd9aab38a4ab07fa38ffbb935d339a",
+    "evals/lineage_gpu_wait_v1.py": "7a6f55f048568d056ea9a8f04b43d87c30408adae9067b3757d484b6ed43feac",
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "evals/lineage_recovery_candidate_v1.py": "2ee5463798a77f8c86981c3d8d37374acae063c23884acf8d0c13b6b1a6edefb",
+    "evals/lineage_recovery_execution_v1.py": "958744724c34c217cfd1ade7f3fb6977d38cd98fa8c2740c60959a995a9c3db7",
+    "evals/lineage_recovery_execution_v2.py": "1c4a46c071d5be9d29cab34d011626bd1a9d8c9362db801922229c54e989c930",
+    "evals/lineage_recovery_inputs_v1.py": "6aebe192a20ba6c15f647c1713f6ef59873d3f78bfef46270255a6c0e492cf17",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "evals/residual_contract_v1.py": "0ad37bcc9399885a1d0c1e6e59b64053706fe1a1bd25b5253ac59b30068c5a90",
+    "evals/residual_demo_v1.py": "09a6bd9179219aff98774b57a836e6798e398ecde494278c17abedfe6a572e45",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "tests/test_lineage_compound_first_recovery_v1.py": "4bf1e228b7a4de9d720ceb70ebe051e1bdc253f512c95c440d967d9090d18c70",
+    "tests/test_lineage_compound_retry_v1.py": "5ae71061336e5e86c8871fb32d00c2db542f1b13fc37db4ce78ceea6df822107",
+    "tests/test_lineage_lease_context_v2.py": "12045b2d012e5b8a1ab1644a47a2d59708f22e2823ae7dcfc75574ef36b7c6a9",
+    "tests/test_lineage_recovery_execution_v1.py": "d10ccdad2809bb3c9df2224930c78771c05330635104f0fd857f03a53f2fb7b8",
+    "tests/test_lineage_recovery_execution_v2.py": "603b44e8768b45bcfad5b581c986e82234f4578dee4b7b7ae9276e570ceb3e7a",
+    "tests/test_lineage_recovery_training_v1.py": "106e298bbffa1503c815cd73e5b5cc615de583279416de7fd5cc9422834999ea"
+  },
+  "stop_rules": {
+    "automatic_retry": false,
+    "failed_job": "preserve_outputs_and_stop_remaining_rows",
+    "unconfirmed_or_unsupported": "HOLD_zero_training",
+    "unknown": "HOLD_and_stop_remaining_rows"
+  },
+  "target": {
+    "arm": "COMPOUND",
+    "case_id": "case-07",
+    "policies": [
+      "registry_next",
+      "model_adaptive"
+    ],
+    "seed": 2307
+  },
+  "training": {
+    "arm": "FIRST",
+    "iterations": 300,
+    "mode": "fresh_restart",
+    "model_calls": 0,
+    "seed": 2307,
+    "source_checkpoint_role": "provenance_only_never_loaded"
+  },
+  "watchdogs_s": {
+    "eval": 600,
+    "gpu_wait": 600,
+    "smoke": 300,
+    "total": 21600,
+    "train": 1800
+  }
+}
