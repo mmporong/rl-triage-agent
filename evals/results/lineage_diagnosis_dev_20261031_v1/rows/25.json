@@ -1,0 +1,126 @@
+{
+  "arm": "F5",
+  "case_id": "case-09",
+  "classification": {
+    "compound_partial": false,
+    "confirmed": false,
+    "correct_confirmation": false,
+    "false_confirmation": false,
+    "full_cause_confirmed": false,
+    "none_intervention": false
+  },
+  "confirmed_subtype": null,
+  "decision_count": 1,
+  "end_state": "HOLD",
+  "gate_label": "out_of_support",
+  "hold_reason": "probe_outcome_unknown",
+  "model_observation_use": [
+    {
+      "cited_immediately_prior_receipt": null,
+      "decision": 1,
+      "immediately_prior_receipt_prefix": null,
+      "observation_fact_id_count": 0
+    }
+  ],
+  "model_validity": [
+    "valid"
+  ],
+  "order": 25,
+  "policy": "model_adaptive",
+  "probe_order": [
+    "P_reward"
+  ],
+  "provenance": {
+    "batch_row_sha256": "37a1b22866b57e2142a19f32791ad37e255d3fcbd2e76d1865818871defc9f79",
+    "epoch_result_sha256": "3e87b2826f879703e7e33d501821b4772a0b460ae33f7361da6fd48fb8dc8c27",
+    "probe_receipts": [
+      {
+        "decision": 1,
+        "raw_refs": {},
+        "receipt_missing": true,
+        "receipt_sha256": null,
+        "role": "case"
+      },
+      {
+        "decision": 1,
+        "raw_refs": {},
+        "receipt_missing": true,
+        "receipt_sha256": null,
+        "role": "reference"
+      }
+    ]
+  },
+  "remaining_candidates": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer_value",
+    "physics",
+    "termination",
+    "optimizer_update_count"
+  ],
+  "requests": 1,
+  "schema": "lineage_comparison_public_row_v1",
+  "seed": 2309,
+  "selected_by": [
+    "model"
+  ],
+  "source_binding": {
+    "case": {
+      "checkpoint_sha256": "601d94ee2b049396701fca31dd57be83bb7dd8ccde71053f7ea41ac1d0cddb53",
+      "job_id": "f5-s2309",
+      "seed": 2309,
+      "telemetry_sha256": "0f586633b04a95e97ea576dc88f8f5678514af6e3c2cc5806eed8d2d1bf843eb"
+    },
+    "reference": {
+      "checkpoint_sha256": "34744cf21fbd0c1eddb380fc9a7645821ea132f2f6715d29b861539bd18cc44a",
+      "job_id": "none-s2309",
+      "seed": 2309,
+      "telemetry_sha256": "c396e2bd36e26700ad46210253ee65a669842b59360892866026b5b40e29c011"
+    }
+  },
+  "steps": [
+    {
+      "decision": 1,
+      "observations": {
+        "case": {
+          "path": "observations/25-01-case.json",
+          "sha256": "1f969329d6f73b577d7d3dd4fc6ffee4399f9fcd71220ac2418d7fa5e063386d"
+        },
+        "reference": {
+          "path": "observations/25-01-reference.json",
+          "sha256": "48bf39c29086ff614c6810d48304f5dff278d0bd994934a8894fae4a4719794e"
+        }
+      },
+      "outcome": "unknown",
+      "probe": "P_reward"
+    }
+  ],
+  "tokens": {
+    "input_tokens": 2664,
+    "known_subtotal": {
+      "input_tokens": 2664,
+      "output_tokens": 39,
+      "total_tokens": 2703
+    },
+    "output_tokens": 39,
+    "total_tokens": 2703,
+    "unknown_cost_requests": {
+      "input_tokens": [],
+      "output_tokens": [],
+      "total_tokens": []
+    }
+  },
+  "view_digest": "739de15f065e76bb5ffb911143953dd600d1247557885c1b2e686560402e21a2",
+  "wall": {
+    "known_model_wall_subtotal_s": 0.48855846000014935,
+    "model_wall_s": 0.48855846000014935,
+    "probe_child_known_s": 0.0,
+    "probe_child_unknown_roles": [
+      "reference",
+      "case"
+    ],
+    "probe_parent_known_s": 24.65738049999345,
+    "unknown_model_cost_requests": []
+  }
+}

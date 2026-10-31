@@ -846,3 +846,17 @@
 - 관찰: 실행 전 consumer 대조에서 `P_value`가 최종 체크포인트 외에 형제 `model_0.pt`도 읽는 것을 확인했다. 새 backend가 최종 파일만 묶으면 보조 파일의 누락·교체를 놓칠 수 있었다. NIM queue에는 응답 파일 생성 전에 송신이 불명확하게 끝난 요청을 재송신하지 않는 영구 표식도 필요했다. 두 항목은 실제 새 검사·API 실행 전에 보완했다.
 - 수정: [paired backend](../evals/lineage_probe_backend_v1.py)는 보조 체크포인트의 경로·SHA·크기를 plan·claim·receipt에 기록하고 실행 전후 검증한다. [NIM transport](../evals/lineage_nim_transport_v1.py)는 provider 호출 전에 write-once dispatch claim을 만들고, claim·failure가 남은 요청의 재전송을 거부한다. 종료된 queue와 미확정 요청은 보존한다.
 - 검증: 보조 파일 삭제·실행 중 변조, 한 role의 중복 실행, 송신 예외 뒤 재호출, worker deadline·중복 worker·queue 종료를 CPU에서 확인했다. 이 확인은 새 source의 원인 확정이나 회복 결과가 아니다.
+
+### OPS-119: GPU 입장 차단이 반복된 비교와 오류 근거 누락
+
+- 관찰: 첫 30행 진단 비교에서 26역할이 같은 미등록 `svchost.exe`의 C+G 컨텍스트로 입장 차단됐다. 해당 역할의 Isaac 자식은 시작되지 않았다. 기존 실행기가 오류 형식만 남기고 다음 역할·행을 계속해 `unknown`이 누적됐다. 정확한 Windows 서비스 신원과 실제 compute 작업은 원문으로 확인하지 못했다.
+- 수정: [입장 어댑터](../evals/lineage_probe_admission_v2.py)는 plan 준비 전과 실행 claim 전에 기존 GPU 기준으로 연속 clear 두 번을 기다린다. 대기 한도를 넘으면 epoch·배치를 중단하고 오류 메시지·traceback·대기 영수증 SHA를 남긴다. 서비스 전체 허용이나 차단 기준 완화는 없다. 운영 사용에는 별도 공개 protocol과 source anchor가 필요하다.
+- 검증: CPU에서 busy→clear→clear 후 한 번 실행, 영구 busy의 claim·자식·후속 역할 0, lease 변경·source 변조 거부, scope 복원을 확인했다. 기존 실패 원문과 HOLD는 유지한다. 같은 비교에서 발생한 별도 `PermissionError` 한 건은 상세 예외가 없어 원인 미확정이다.
+- 공개 집계: [30행 결과](../evals/results/lineage_diagnosis_dev_20261031_v1/summary.json)는 영수증 없는 부모 예외 26건과 완전한 probe 영수증을 구분한다. [내보내기](../evals/lineage_comparison_export_v1.py)는 측정값 없는 기록을 `unknown`으로 보존하며 정상 측정으로 바꾸지 않는다.
+
+### OPS-120: 첫 교정 사전 실행의 owned 폴더 생성 계약
+
+- 관찰: 3회 갱신 사전 실행이 GPU clear 두 번을 통과한 뒤 `owned/launch.json` 생성에서 `FileNotFoundError`로 멈췄다. Isaac 학습 자식과 모델 호출은 0이며 임대는 실패 종료 후 해제됐다.
+- 원인: `run_owned`는 호출자가 만든 폴더에 launch를 배타 생성한다. 첫 교정 부모가 학습·평가의 owned 폴더를 만들지 않은 채 이 함수를 호출했다.
+- 수정: [v2 어댑터](../evals/lineage_recovery_execution_v2.py)는 호출 직전 폴더를 배타 생성하고 기존 실행기를 재사용한다. 원래 v1 소스·등록·실패 기록은 보존하며, 새 source와 protocol에 결합한 새 출력 경로로 확인한다.
+- 검증: 실제 `run_owned`에서 v1의 폴더 누락을 재현하고, Windows Job·spawn만 대체한 CPU 회귀로 launch·stdout·stderr 생성과 학습·평가 폴더의 재사용 거부를 확인했다. CPU 확인과 실제 3회 갱신 완료는 별도 상태다.

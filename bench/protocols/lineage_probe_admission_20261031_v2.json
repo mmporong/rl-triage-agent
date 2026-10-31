@@ -1,0 +1,101 @@
+{
+  "schema": "lineage_probe_admission_wrapper_protocol_v2",
+  "phase": "gpu_admission_before_probe_prepare_and_claim",
+  "component_probe_protocol": {
+    "path": "bench/protocols/lineage_paired_probes_20261031_v1.json",
+    "sha256_lf": "cb02badd6bb6d66155eb5c008d4cfc85d3b9c6c05c10be2d975ee1413fcc51de"
+  },
+  "admission": {
+    "admission": {
+      "policy": "desktop_shared_lineage_sources_v1",
+      "gpu_exclusive": false,
+      "performance_measurement": false,
+      "memory_used_limit_mib": 4096,
+      "gpu_index": 0,
+      "active_engine_min_percent": 1,
+      "protected_cim_name_only_process_names": [
+        "dwm.exe",
+        "remoting_desktop.exe",
+        "system",
+        "tabtip.exe"
+      ],
+      "guard_phases": [
+        "before_clip",
+        "after_clip"
+      ],
+      "allowed_process_types": [
+        "C+G",
+        "G"
+      ],
+      "allowed_display_process_names": [
+        "antigravity.exe",
+        "applicationframehost.exe",
+        "asus_framework.exe",
+        "chatgpt.exe",
+        "chrome.exe",
+        "claude.exe",
+        "codex-computer-use-swift.exe",
+        "codex-computer-use.exe",
+        "crossdeviceresume.exe",
+        "cursor.exe",
+        "discord.exe",
+        "dwm.exe",
+        "explorer.exe",
+        "lghub_system_tray.exe",
+        "microsoft.cmdpal.ui.exe",
+        "msedge.exe",
+        "msedgewebview2.exe",
+        "nvidia overlay.exe",
+        "phoneexperiencehost.exe",
+        "powertoys.colorpickerui.exe",
+        "powertoys.exe",
+        "powertoys.fancyzones.exe",
+        "powertoys.peek.ui.exe",
+        "powertoys.quickaccess.exe",
+        "remoting_desktop.exe",
+        "searchhost.exe",
+        "shellexperiencehost.exe",
+        "shellhost.exe",
+        "slack.exe",
+        "startmenuexperiencehost.exe",
+        "system",
+        "systemsettings.exe",
+        "tabtip.exe",
+        "textinputhost.exe",
+        "video.ui.exe",
+        "windowsterminal.exe"
+      ],
+      "allowed_active_engine_types": [
+        "3D",
+        "Copy",
+        "VideoDecode",
+        "VideoEncode"
+      ],
+      "unclassified_activity": "block"
+    },
+    "max_wait_s": 600,
+    "interval_s": 2,
+    "consecutive_clear": 2,
+    "training_retry": false,
+    "terminate_other_processes": false
+  },
+  "source_sha256_lf": {
+    "evals/lineage_probe_admission_v2.py": "fe9304d294da3813397ea89d81c45c99e708f5878f5cc361d0eeeae3a94624c8",
+    "tests/test_lineage_probe_admission_v2.py": "a345c3af21ac5f8889ae8efc732a4ca74661f69a8f1a5f0e562c9bee20c724e1",
+    "evals/lineage_gpu_wait_v1.py": "7a6f55f048568d056ea9a8f04b43d87c30408adae9067b3757d484b6ed43feac",
+    "evals/lineage_diagnosis_epoch_v1.py": "f08fd79fa042e69da6913711a5776c5aaf26b81446f99a8be47b02a3f98385c9",
+    "evals/lineage_probe_backend_v1.py": "91815d2a26b23a1cd2d41ae12f5a8cf6484a299a8af746e54d27b4aacbb0f4d9"
+  },
+  "failure_contract": {
+    "exception": "ProbeAdmissionBlocked(BaseException)",
+    "epoch_and_batch_stop": true,
+    "post_block_roles": 0,
+    "gpu_jobs_started": 0,
+    "write_once_private_receipts": true
+  },
+  "claims": {
+    "measurement": false,
+    "correction": false,
+    "recovery": false
+  }
+}

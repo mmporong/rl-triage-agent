@@ -1,0 +1,212 @@
+{
+  "arm": "F2",
+  "case_id": "case-05",
+  "classification": {
+    "compound_partial": false,
+    "confirmed": false,
+    "correct_confirmation": false,
+    "false_confirmation": false,
+    "full_cause_confirmed": false,
+    "none_intervention": false
+  },
+  "confirmed_subtype": null,
+  "decision_count": 2,
+  "end_state": "HOLD",
+  "gate_label": "eligible",
+  "hold_reason": "probe_outcome_unknown",
+  "model_observation_use": [
+    {
+      "cited_immediately_prior_receipt": null,
+      "decision": 1,
+      "immediately_prior_receipt_prefix": null,
+      "observation_fact_id_count": 0
+    },
+    {
+      "cited_immediately_prior_receipt": true,
+      "decision": 2,
+      "immediately_prior_receipt_prefix": "observation:0:P_reward:",
+      "observation_fact_id_count": 1
+    }
+  ],
+  "model_validity": [
+    "valid",
+    "valid"
+  ],
+  "order": 14,
+  "policy": "model_adaptive",
+  "probe_order": [
+    "P_reward",
+    "P_episode"
+  ],
+  "provenance": {
+    "batch_row_sha256": "42a60bdac2c66e32967d0225a61c55248737a2b57c850a023582e7244789de2f",
+    "epoch_result_sha256": "a394b1c1f6db82ea16ff1a7ce970bd260df5b631593dc9bf7de5f13d67bad0f1",
+    "probe_receipts": [
+      {
+        "decision": 1,
+        "raw_refs": {
+          "jobs": {
+            "basename": "jobs.json",
+            "raw_sha256": "444992b0da2eb658a679122cc70c4bc2e506ebbe8a6a3c89f66aad4d822f1e70"
+          },
+          "owned_result": {
+            "basename": "owned-result.json",
+            "raw_sha256": "11799d30508a3d198df6119efcbe092afc163c0aacfdb9510fdf0c9d42438851"
+          },
+          "report": {
+            "basename": "report.json",
+            "raw_sha256": "fad5aca79436b4baf5f572d686c98b08da0f5fdaf0a433d3d48a79e44ba1d2b9"
+          }
+        },
+        "receipt_missing": false,
+        "receipt_sha256": "90809a937db0cd486159fcd61f7ff5979135ebb79543cccce4c31b25c84ed9f4",
+        "role": "case"
+      },
+      {
+        "decision": 1,
+        "raw_refs": {
+          "jobs": {
+            "basename": "jobs.json",
+            "raw_sha256": "e13028389852bc7f764c8e9435edb659c3c6f7a6d2091a89352cc030ba4417a5"
+          },
+          "owned_result": {
+            "basename": "owned-result.json",
+            "raw_sha256": "05e480495a16f9e2a85e947a6b4027fbb2d465a0e08eac7e2860439094b22b68"
+          },
+          "report": {
+            "basename": "report.json",
+            "raw_sha256": "164d0266b035e4d67985c9347d99779e3b5db6ec3a0c9b7c759ba3dd2dd91428"
+          }
+        },
+        "receipt_missing": false,
+        "receipt_sha256": "44d3c8c04aea7f1323f894d527b0868539675bf297fbe260f6177262771f4c50",
+        "role": "reference"
+      },
+      {
+        "decision": 2,
+        "raw_refs": {
+          "jobs": {
+            "basename": "jobs.json",
+            "raw_sha256": "2c2bee02e01dcacca15525cf7448ee03e90cf66d43d5ba20889ea01baf819a16"
+          },
+          "owned_result": {
+            "basename": "owned-result.json",
+            "raw_sha256": "cb95987e6fcc541f031ef49ce40d0e6096261f69c297c0a2ea928a449130a1f1"
+          },
+          "report": {
+            "basename": "report.json",
+            "raw_sha256": "39f80d39c961bec94f75782b62796fdd52666331bfb8ab8ffede78e0b5dbe853"
+          }
+        },
+        "receipt_missing": false,
+        "receipt_sha256": "991c64a290ae78afdb8f3b346218c489234ef7fefb008bf7b7a1d43b6000298d",
+        "role": "case"
+      },
+      {
+        "decision": 2,
+        "raw_refs": {
+          "jobs": {
+            "basename": "jobs.json",
+            "raw_sha256": "31e1b108c24014b70c2ef759f55e637282d00b3dbbfc62c76d9bda270ff0636c"
+          },
+          "owned_result": {
+            "basename": "owned-result.json",
+            "raw_sha256": "a448d8efa12ba586eb94691a31ff7ba24d8911172b12dc0f37d9b1da4cf16327"
+          },
+          "report": {
+            "basename": "report.json",
+            "raw_sha256": "9205063238ce8c8fdb94aa30d4d36d5df5808116f4d522b7e0ec49985aa9fbca"
+          }
+        },
+        "receipt_missing": false,
+        "receipt_sha256": "a741d72fb0f9ab5754c018547b7f07bdcd9ae925a86cb1f12c6bb4246015b094",
+        "role": "reference"
+      }
+    ]
+  },
+  "remaining_candidates": [
+    "actuator",
+    "exploration",
+    "optimizer_value",
+    "physics",
+    "termination",
+    "optimizer_update_count"
+  ],
+  "requests": 2,
+  "schema": "lineage_comparison_public_row_v1",
+  "seed": 2305,
+  "selected_by": [
+    "model",
+    "model"
+  ],
+  "source_binding": {
+    "case": {
+      "checkpoint_sha256": "553a8cc9a9b581d62dffdd81b177117fcfb78488eab9abb4f36a8d2899822f86",
+      "job_id": "f2-s2305",
+      "seed": 2305,
+      "telemetry_sha256": "c5106cb79632ba6c6ea91d223645c094248fd2ed7a3c179b245be914b89c08f8"
+    },
+    "reference": {
+      "checkpoint_sha256": "178f5a21a35d5cc641cd449b79ff76facbb6bc43793311016f83e052201f3dff",
+      "job_id": "none-s2305",
+      "seed": 2305,
+      "telemetry_sha256": "3ba77eb17fd1ab629de81ee2ad254cb70a0cfaaa8ef7609a58a465fa33d2d9e8"
+    }
+  },
+  "steps": [
+    {
+      "decision": 1,
+      "observations": {
+        "case": {
+          "path": "observations/14-01-case.json",
+          "sha256": "d07e1a624d70d56d83e14dd8066b0ddea978af0ed1adbcaf8835e2239b6b0ce4"
+        },
+        "reference": {
+          "path": "observations/14-01-reference.json",
+          "sha256": "7b3b1172779f37f33aba3a20ad53923d024594e53b7ec3b6b4296abb0c1026cf"
+        }
+      },
+      "outcome": "normal",
+      "probe": "P_reward"
+    },
+    {
+      "decision": 2,
+      "observations": {
+        "case": {
+          "path": "observations/14-02-case.json",
+          "sha256": "cbcbbe6ed31c956be9aff6d6a9cb516a2801ace89d230ff29f388de7f20ad2a2"
+        },
+        "reference": {
+          "path": "observations/14-02-reference.json",
+          "sha256": "5a192cf9414a6970e0e56df2ae23d9a5d9851aa3e5e95e70af54e24d26d18f13"
+        }
+      },
+      "outcome": "unknown",
+      "probe": "P_episode"
+    }
+  ],
+  "tokens": {
+    "input_tokens": 5456,
+    "known_subtotal": {
+      "input_tokens": 5456,
+      "output_tokens": 68,
+      "total_tokens": 5524
+    },
+    "output_tokens": 68,
+    "total_tokens": 5524,
+    "unknown_cost_requests": {
+      "input_tokens": [],
+      "output_tokens": [],
+      "total_tokens": []
+    }
+  },
+  "view_digest": "5ada0b4caa2ef4d9a3416bd036f6fda801e638439a451060fa511c41b3adec1d",
+  "wall": {
+    "known_model_wall_subtotal_s": 49.249831476000054,
+    "model_wall_s": 49.249831476000054,
+    "probe_child_known_s": 152.60999999995693,
+    "probe_child_unknown_roles": [],
+    "probe_parent_known_s": 207.6220333999663,
+    "unknown_model_cost_requests": []
+  }
+}

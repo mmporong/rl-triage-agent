@@ -1,0 +1,119 @@
+{
+  "arm": "F5",
+  "case_id": "case-09",
+  "classification": {
+    "compound_partial": false,
+    "confirmed": false,
+    "correct_confirmation": false,
+    "false_confirmation": false,
+    "full_cause_confirmed": false,
+    "none_intervention": false
+  },
+  "confirmed_subtype": null,
+  "decision_count": 1,
+  "end_state": "HOLD",
+  "gate_label": "out_of_support",
+  "hold_reason": "probe_outcome_unknown",
+  "model_observation_use": [],
+  "model_validity": [
+    "not_used"
+  ],
+  "order": 26,
+  "policy": "registry_next",
+  "probe_order": [
+    "P_value"
+  ],
+  "provenance": {
+    "batch_row_sha256": "0af90b25ff494783edee6e95eaac52821ecc3e0700f6b9d65a9bb0aa0bce73ec",
+    "epoch_result_sha256": "ab6b5c41574445e6c53a42239695d81c8b98f0629fe483890098ff51bf17f752",
+    "probe_receipts": [
+      {
+        "decision": 1,
+        "raw_refs": {},
+        "receipt_missing": true,
+        "receipt_sha256": null,
+        "role": "case"
+      },
+      {
+        "decision": 1,
+        "raw_refs": {},
+        "receipt_missing": true,
+        "receipt_sha256": null,
+        "role": "reference"
+      }
+    ]
+  },
+  "remaining_candidates": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer_value",
+    "physics",
+    "termination",
+    "optimizer_update_count"
+  ],
+  "requests": 0,
+  "schema": "lineage_comparison_public_row_v1",
+  "seed": 2309,
+  "selected_by": [
+    "registered_rule"
+  ],
+  "source_binding": {
+    "case": {
+      "checkpoint_sha256": "601d94ee2b049396701fca31dd57be83bb7dd8ccde71053f7ea41ac1d0cddb53",
+      "job_id": "f5-s2309",
+      "seed": 2309,
+      "telemetry_sha256": "0f586633b04a95e97ea576dc88f8f5678514af6e3c2cc5806eed8d2d1bf843eb"
+    },
+    "reference": {
+      "checkpoint_sha256": "34744cf21fbd0c1eddb380fc9a7645821ea132f2f6715d29b861539bd18cc44a",
+      "job_id": "none-s2309",
+      "seed": 2309,
+      "telemetry_sha256": "c396e2bd36e26700ad46210253ee65a669842b59360892866026b5b40e29c011"
+    }
+  },
+  "steps": [
+    {
+      "decision": 1,
+      "observations": {
+        "case": {
+          "path": "observations/26-01-case.json",
+          "sha256": "7a3eed212da1873dcf007e64876022351a030e1abec20b0d25b2777f287e5393"
+        },
+        "reference": {
+          "path": "observations/26-01-reference.json",
+          "sha256": "6b58310d9b0eeb55b29fdc3a62a36c5b1060e8ef9e5a574c54dc32c21ead6404"
+        }
+      },
+      "outcome": "unknown",
+      "probe": "P_value"
+    }
+  ],
+  "tokens": {
+    "input_tokens": 0,
+    "known_subtotal": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0
+    },
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "unknown_cost_requests": {
+      "input_tokens": [],
+      "output_tokens": [],
+      "total_tokens": []
+    }
+  },
+  "view_digest": "739de15f065e76bb5ffb911143953dd600d1247557885c1b2e686560402e21a2",
+  "wall": {
+    "known_model_wall_subtotal_s": 0.0,
+    "model_wall_s": 0.0,
+    "probe_child_known_s": 0.0,
+    "probe_child_unknown_roles": [
+      "reference",
+      "case"
+    ],
+    "probe_parent_known_s": 23.784661300014704,
+    "unknown_model_cost_requests": []
+  }
+}

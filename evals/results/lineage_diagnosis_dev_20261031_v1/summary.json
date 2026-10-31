@@ -1,0 +1,132 @@
+{
+  "comparison": {
+    "by_policy": {
+      "fixed_eligible": {
+        "api_requests": 0,
+        "compound_partial": 0,
+        "confirmed": 2,
+        "correct_confirmations": 2,
+        "denominator_cases": 10,
+        "excluded": 0,
+        "excluded_reasons": {
+          "baseline_invalid": 0,
+          "measurement_unknown": 0,
+          "source_failure_absent": 0
+        },
+        "false_confirmations": 0,
+        "hold": 6,
+        "invalid": 0,
+        "logical_probes": 15,
+        "none_interventions": 0,
+        "paired_backend_attempts": 20,
+        "paired_backend_successes": 20,
+        "paired_backend_unknown": 10,
+        "paired_backend_unverified": 10,
+        "repair_unsupported": 2,
+        "unknown": 5
+      },
+      "model_adaptive": {
+        "api_requests": 13,
+        "compound_partial": 0,
+        "confirmed": 2,
+        "correct_confirmations": 2,
+        "denominator_cases": 10,
+        "excluded": 0,
+        "excluded_reasons": {
+          "baseline_invalid": 0,
+          "measurement_unknown": 0,
+          "source_failure_absent": 0
+        },
+        "false_confirmations": 0,
+        "hold": 6,
+        "invalid": 0,
+        "logical_probes": 13,
+        "none_interventions": 0,
+        "paired_backend_attempts": 18,
+        "paired_backend_successes": 17,
+        "paired_backend_unknown": 9,
+        "paired_backend_unverified": 8,
+        "repair_unsupported": 2,
+        "unknown": 5
+      },
+      "registry_next": {
+        "api_requests": 0,
+        "compound_partial": 0,
+        "confirmed": 0,
+        "correct_confirmations": 0,
+        "denominator_cases": 10,
+        "excluded": 0,
+        "excluded_reasons": {
+          "baseline_invalid": 0,
+          "measurement_unknown": 0,
+          "source_failure_absent": 0
+        },
+        "false_confirmations": 0,
+        "hold": 8,
+        "invalid": 0,
+        "logical_probes": 16,
+        "none_interventions": 0,
+        "paired_backend_attempts": 24,
+        "paired_backend_successes": 24,
+        "paired_backend_unknown": 8,
+        "paired_backend_unverified": 8,
+        "repair_unsupported": 2,
+        "unknown": 4
+      }
+    },
+    "costs": {
+      "api_requests": 13,
+      "model_wall_s": {
+        "known_subtotal": 91.75690537500027,
+        "total": 91.75690537500027,
+        "unknown_rows": 0
+      },
+      "owned_wall_s": {
+        "known_subtotal": 2106.1870000000345,
+        "total": null,
+        "unknown_roles": 26,
+        "unknown_rows": 0
+      },
+      "parent_wall_s": {
+        "known_subtotal": 3300.9921286998433,
+        "total": 3300.9921286998433,
+        "unknown_rows": 0
+      },
+      "tokens": {
+        "known_subtotal": 35986,
+        "total": 35986,
+        "unknown_rows": 0
+      }
+    },
+    "denominator_case_policy_pairs": 30,
+    "rows": 30
+  },
+  "schema": "lineage_comparison_public_summary_v1",
+  "scope": {
+    "correction_executed": false,
+    "dataset": "fixed_development_categories",
+    "forbidden_claims": [
+      "GPU savings",
+      "total diagnosis speed"
+    ],
+    "general_advantage_claim": false,
+    "generalization_claim": false,
+    "heldout": false,
+    "new_policy_lineage": true,
+    "recovery_claim": false,
+    "timing": "API wall, owned child wall, and probe parent wall remain separate; total diagnosis wall was not measured"
+  },
+  "source_gate": {
+    "label_counts": {
+      "baseline_invalid": 0,
+      "eligible": 8,
+      "measurement_unknown": 0,
+      "out_of_support": 2,
+      "source_failure_absent": 0
+    },
+    "normal_host_gate": true,
+    "planned_cases": 10,
+    "valid_pairs": 10
+  },
+  "status": "complete"
+}

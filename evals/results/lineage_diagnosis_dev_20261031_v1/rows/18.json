@@ -1,0 +1,176 @@
+{
+  "arm": "F2",
+  "case_id": "case-06",
+  "classification": {
+    "compound_partial": false,
+    "confirmed": false,
+    "correct_confirmation": false,
+    "false_confirmation": false,
+    "full_cause_confirmed": false,
+    "none_intervention": false
+  },
+  "confirmed_subtype": null,
+  "decision_count": 2,
+  "end_state": "HOLD",
+  "gate_label": "eligible",
+  "hold_reason": "probe_outcome_unknown",
+  "model_observation_use": [],
+  "model_validity": [
+    "not_used",
+    "not_used"
+  ],
+  "order": 18,
+  "policy": "fixed_eligible",
+  "probe_order": [
+    "P_episode",
+    "P_noise"
+  ],
+  "provenance": {
+    "batch_row_sha256": "57e0e802954f21e7b8a9908125c52bba753029f0e0b377cac33febe6fc3a4cce",
+    "epoch_result_sha256": "92664d38fab96119afd0395ba77127becb5e204d3a2a6e971d6e68e04e894ff1",
+    "probe_receipts": [
+      {
+        "decision": 1,
+        "raw_refs": {
+          "jobs": {
+            "basename": "jobs.json",
+            "raw_sha256": "92faf9ed72715b0ab53ef40908a32dad5bbb76bf724eccdc2a3e9db4dd95fcda"
+          },
+          "owned_result": {
+            "basename": "owned-result.json",
+            "raw_sha256": "ab92b278d538ba0dbd70d5966de8cbfcdca114154c6b67e85334fcdc27029a65"
+          },
+          "report": {
+            "basename": "report.json",
+            "raw_sha256": "f196cc6ab93f3efa775b3ae9ed96b62ef2cbea3dc4994468c579d82827625061"
+          }
+        },
+        "receipt_missing": false,
+        "receipt_sha256": "7d0aebf84947362a92b1843966e0592a2c799522cf8d93d6758f071e82b4ac54",
+        "role": "case"
+      },
+      {
+        "decision": 1,
+        "raw_refs": {
+          "jobs": {
+            "basename": "jobs.json",
+            "raw_sha256": "e783742a11d427db03ee6b57aa618401f967c215b7ea1e9a4a1385d01a934f6c"
+          },
+          "owned_result": {
+            "basename": "owned-result.json",
+            "raw_sha256": "2e776eb4756ef923508565598befec099b0cadd6d2baa69d0b6a9f5c89c14c2a"
+          },
+          "report": {
+            "basename": "report.json",
+            "raw_sha256": "7c3ddbac10f717c4559639ca15903cd114fa6abd562cc8208c4c805aa8d25539"
+          }
+        },
+        "receipt_missing": false,
+        "receipt_sha256": "aa326d7fc42b0db592ba2d9ee07e4fc11b029e1ce9030fb79ece7136513fe635",
+        "role": "reference"
+      },
+      {
+        "decision": 2,
+        "raw_refs": {},
+        "receipt_missing": true,
+        "receipt_sha256": null,
+        "role": "case"
+      },
+      {
+        "decision": 2,
+        "raw_refs": {},
+        "receipt_missing": true,
+        "receipt_sha256": null,
+        "role": "reference"
+      }
+    ]
+  },
+  "remaining_candidates": [
+    "reward",
+    "actuator",
+    "exploration",
+    "optimizer_value",
+    "physics",
+    "optimizer_update_count"
+  ],
+  "requests": 0,
+  "schema": "lineage_comparison_public_row_v1",
+  "seed": 2306,
+  "selected_by": [
+    "fixed_order",
+    "fixed_order"
+  ],
+  "source_binding": {
+    "case": {
+      "checkpoint_sha256": "1935403ed5e95f6ba8daea18e8ffd506c3bd49cdfb83d0b3132e6a11735254d6",
+      "job_id": "f2-s2306",
+      "seed": 2306,
+      "telemetry_sha256": "b7aae7608518f3ea66fbe385e0e410a48e06c06fc14fa797f0ce6ccc014704d5"
+    },
+    "reference": {
+      "checkpoint_sha256": "9a654c4e432b25620f344b48de18832c21de9a003c0252a9739093033f363d27",
+      "job_id": "none-s2306",
+      "seed": 2306,
+      "telemetry_sha256": "82a3cc54c517da42ff6e71d52946726b93e0d1b33d69183592fc91b8f1294965"
+    }
+  },
+  "steps": [
+    {
+      "decision": 1,
+      "observations": {
+        "case": {
+          "path": "observations/18-01-case.json",
+          "sha256": "298b8a86f302058fd36bf7bcb804f152a2962a8fcb741838bc6736957ef7bc2b"
+        },
+        "reference": {
+          "path": "observations/18-01-reference.json",
+          "sha256": "03da2b297b5219e0de2abc962018ce44b03dd3cb38f3431cbec4ad3fa31ca64d"
+        }
+      },
+      "outcome": "normal",
+      "probe": "P_episode"
+    },
+    {
+      "decision": 2,
+      "observations": {
+        "case": {
+          "path": "observations/18-02-case.json",
+          "sha256": "e20634371e7d92812587206b8bb4b4fd1ac363d9b85c6b58c87bce74c525e1c8"
+        },
+        "reference": {
+          "path": "observations/18-02-reference.json",
+          "sha256": "54c2ea05e8ae3aa006545e3ec24b9bcbdfb4e0d07c3d592616437c6ef07badfd"
+        }
+      },
+      "outcome": "unknown",
+      "probe": "P_noise"
+    }
+  ],
+  "tokens": {
+    "input_tokens": 0,
+    "known_subtotal": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0
+    },
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "unknown_cost_requests": {
+      "input_tokens": [],
+      "output_tokens": [],
+      "total_tokens": []
+    }
+  },
+  "view_digest": "ff2c254dcbf54bedbd58ee8dd88d147b01a63d2dc9d4c02cb87d0aecac618e16",
+  "wall": {
+    "known_model_wall_subtotal_s": 0.0,
+    "model_wall_s": 0.0,
+    "probe_child_known_s": 105.42200000002049,
+    "probe_child_unknown_roles": [
+      "reference",
+      "case"
+    ],
+    "probe_parent_known_s": 155.7931275999872,
+    "unknown_model_cost_requests": []
+  }
+}
