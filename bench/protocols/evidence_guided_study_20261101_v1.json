@@ -1,0 +1,48 @@
+{
+  "schema": "evidence_guided_study_v1",
+  "status": "registered_design_requires_bound_execution_sources",
+  "purpose": "prospective_system_comparison_on_registered_fault_families",
+  "seeds": [2320, 2321],
+  "categories": ["NONE", "F1", "R1_ONLY", "COMPOUND"],
+  "source_protocol": "bench/protocols/prospective_diagnosis_training_20261101_v1.json",
+  "source_collection": {"training_jobs": 8, "smoke_jobs": 1, "fixed_eval_jobs": 8, "owned_sdk_jobs": 17, "num_envs": 4096, "updates": 300, "wall_cap_s": 14400, "model_requests": 0},
+  "predictions": {
+    "normal": "Both seeds should pass the existing fixed26 healthy comparison; source failure absent or unhealthy normal is retained and excluded with a reason, without replacement seeds.",
+    "count_observation": "NONE and F1 should record 20 optimizer steps and 20 minibatches per update; R1_ONLY and COMPOUND should record 4 of each against configured 20 in the first three updates.",
+    "behavior": "F1 and COMPOUND are expected to fail the unchanged tracking band. R1_ONLY behavior failure is not guaranteed after 300 updates; diagnosis and source-failure presence are reported separately.",
+    "agentic": "Explicit fact retrieval and paired expected-observed citations may reduce unsupported selections; benefit over the eager model or strong rule is not assumed.",
+    "cpu_reuse": "A newly named, approved recorded-count check may confirm the same count invariant without another SDK launch; it is not a new independent training observation. Agreement and wall time are separate outcomes."
+  },
+  "comparison": {
+    "policies": ["eager_model", "evidence_guided_model", "strong_registered_rule"],
+    "information": "Same checkpoint, training telemetry, runtime counts, finite registry, and registered probes. Eager model receives verified numeric counts initially; guided model may retrieve them. Deterministic derived booleans expose no additional measurement.",
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "sampling": {"temperature": 0, "reasoning_effort": "none", "max_tokens": 16384},
+    "paired_probe_budget": 3,
+    "model_action_budget": 4,
+    "semantic_feedback_retries_per_action": 1,
+    "global_api_request_cap": 96,
+    "semantic_retries_are_reported": true,
+    "normal_gate": "Use the unchanged host fixed-evaluation healthy gate in every arm. Gate bypasses are not model normal-classification successes.",
+    "hypothesis_scope": "Known registered fault families; new seed does not mean unseen mechanism.",
+    "order": "Within each case rotate three policies by case index. Alternate the two model policies across paired seeds. Do not run a preferred arm first in every pair.",
+    "primary_endpoints": ["correct_confirmed_family_per_planned_case", "semantic_valid_actions_per_model_action", "unnecessary_probes_on_healthy_normal", "first_confirming_probe_count"],
+    "secondary_endpoints": ["fact_expected_and_observed_citation_completeness", "model_requests_and_tokens", "parent_wall_and_owned_child_wall_separately", "recorded_count_check_agreement_with_fresh_count_check"],
+    "missing": "Unknown, invalid, pending, source failure absent, and excluded rows remain in the planned-case inventory. Conditional complete-case rates show their denominators. No silent zero fill or replacement.",
+    "adoption": "Retain the guided mode as a candidate only if it does not reduce correct-family coverage, worsen semantic validity, or increase normal unnecessary probes, and improves a prespecified family or measured cost endpoint versus eager model. Compare with the strong rule even if the rule wins.",
+    "uncertainty": "Show every paired seed and exact sign comparison where applicable. Two seeds per family do not establish broad generalization or statistical superiority."
+  },
+  "repair_followup": {
+    "automatic_repair": false,
+    "requires_new_registered_candidate_and_approval": true,
+    "preselected_candidates": "The first seed in registered order with an abnormal optimizer count receipt may be used for a separately registered repair followup. Do not select the best-looking recovery after evaluation.",
+    "recovery_requires": "Actual corrected training receipt plus unchanged independent fixed26 evaluation, separate from diagnostic confirmation."
+  },
+  "prohibitions": ["tokenfactory_access", "new_brev_start", "unregistered_model_calls", "changing_thresholds_after_results", "reusing_historical_success_as_new_recovery", "fault_labels_or_evaluator_truth_in_selector_view"],
+  "papers": [
+    {"name": "ReAct", "url": "https://arxiv.org/abs/2210.03629", "application": "action-observation-replanning only"},
+    {"name": "Adaptive diagnosis in distributed systems", "url": "https://research.ibm.com/publications/adaptive-diagnosis-in-distributed-systems", "application": "informative registered probes and explicit tie handling"},
+    {"name": "SelectiveNet", "url": "https://proceedings.mlr.press/v97/geifman19a.html", "application": "coverage and error reported separately"}
+  ],
+  "claim_boundary": "This compares system contracts and evidence/tool access, not Nemotron version superiority, learned Bayesian optimality, unseen-family generalization, or guaranteed recovery."
+}

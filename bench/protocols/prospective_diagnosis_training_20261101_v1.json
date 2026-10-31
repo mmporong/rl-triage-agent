@@ -1,0 +1,113 @@
+{
+  "categories": [
+    "NONE",
+    "F1",
+    "R1_ONLY",
+    "COMPOUND"
+  ],
+  "category_contract": {
+    "COMPOUND": {
+      "arm": "COMPOUND",
+      "original_faults": [
+        "F1",
+        "R1"
+      ]
+    },
+    "F1": {
+      "arm": "F1",
+      "original_faults": [
+        "F1"
+      ]
+    },
+    "NONE": {
+      "arm": "NONE",
+      "original_faults": []
+    },
+    "R1_ONLY": {
+      "arm": "R1",
+      "original_faults": [
+        "R1"
+      ]
+    }
+  },
+  "evaluation": {
+    "fixed_conditions": 26,
+    "unchanged_existing_evaluator": true
+  },
+  "purpose": "prospective_registered_diagnosis_training",
+  "runtime_source_sha256_lf": {
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0"
+  },
+  "schema": "prospective_diagnosis_training_protocol_v1",
+  "scope": {
+    "fault_labels_in_model_view": false,
+    "model_calls": 0,
+    "physical_paths_in_model_view": false,
+    "registered_fault_families_only": true,
+    "source_checkpoint_provenance_only": true
+  },
+  "seeds": [
+    2320,
+    2321
+  ],
+  "source_sha256_lf": {
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+    "bench/lineage_recovery_training_v1.py": "afa9ffe7645a4ab1729830ea3ab1c32bfd623d6fed41c6a7a5d601c1a156011b",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/prospective_diagnosis_training_v1.py": "92bc4b69268f533a6316fd41f2dbdf755de548d3f9d1094956930fe7c922e7df",
+    "bench/r1_repair_training.py": "0b1b9aca9d17a4c8fce0a2f1aa451393bea701df66f4769156c2ff9d1f958ae6",
+    "bench/residual_faults_v1.py": "fae165b431588cb01e5140bd75481e907a0b3b71571df2beb6ba11278527ec25",
+    "bench/residual_probe_v1.py": "4d57ed44e9ecaf063d66746a200d28195cce4c322e5ca4f7de449a9106f40d1d",
+    "bench/residual_training_v1.py": "13e9d5733a9b49908e136e54dd0ac8b7dae387b40fa4115f254536c9d6692517",
+    "bench/run_lineage_recovery_v1.ps1": "83de5362d2e66d36f19bb836835f2ff1314db05d5b09ea1006c6e85f0bf62ce0",
+    "bench/run_prospective_diagnosis_training_v1.py": "657805ae115cb02bfabdae564b10c2d7d8fe52fb2251c7509e2c7f6cca715878",
+    "evals/lineage_comparison_batch_v1.py": "780f16f2ea2dfc6e1479d71fdb62a6c656c294326b1c5c3938e18ea5e57f3e38",
+    "evals/lineage_gpu_wait_v1.py": "7a6f55f048568d056ea9a8f04b43d87c30408adae9067b3757d484b6ed43feac",
+    "evals/lineage_recovery_candidate_v1.py": "2ee5463798a77f8c86981c3d8d37374acae063c23884acf8d0c13b6b1a6edefb",
+    "evals/lineage_recovery_execution_v1.py": "958744724c34c217cfd1ade7f3fb6977d38cd98fa8c2740c60959a995a9c3db7",
+    "evals/lineage_recovery_execution_v2.py": "1c4a46c071d5be9d29cab34d011626bd1a9d8c9362db801922229c54e989c930",
+    "evals/lineage_recovery_inputs_v1.py": "6aebe192a20ba6c15f647c1713f6ef59873d3f78bfef46270255a6c0e492cf17",
+    "evals/lineage_selection_inputs_v1.py": "02f156f49d29c7a852b541a95164fca33cabfea4a4bd572f7804418a657eadca",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "evals/optimizer_runtime_facts_v1.py": "6bbfe0d590fcd86ea9702b91d48c05684542eaaf03a09c9087e0637dc619a942",
+    "evals/prospective_diagnosis_inputs_v1.py": "cc6ab9f3dda902dfaf2e8c8aab02e6976ee17f96367c2ffa929edd864472c0c5",
+    "evals/residual_contract_v1.py": "0ad37bcc9399885a1d0c1e6e59b64053706fe1a1bd25b5253ac59b30068c5a90",
+    "evals/residual_demo_v1.py": "09a6bd9179219aff98774b57a836e6798e398ecde494278c17abedfe6a572e45",
+    "evals/residual_selection_v2.py": "d1a0028afbe00d2697246e4fe30640ec780e3c4b15486dd4f1ed7e722aec6bc8",
+    "evals/runtime_observation_training_v1.py": "c5d82f6cd7832301e63e72f556786c547b76cbb86be3af55b81694afa98b5462",
+    "evals/runtime_training_inputs_v1.py": "5aa11788c9e91b7f8a5125424c89d40933d573e0af379fd6f93e27122c030c12",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "tests/test_lineage_recovery_execution_v1.py": "d10ccdad2809bb3c9df2224930c78771c05330635104f0fd857f03a53f2fb7b8",
+    "tests/test_lineage_recovery_execution_v2.py": "603b44e8768b45bcfad5b581c986e82234f4578dee4b7b7ae9276e570ceb3e7a",
+    "tests/test_lineage_recovery_inputs_v1.py": "d600782281cca345fa1cf9c5f1a9854c049275ab59ac8247616df58f4e4705cc",
+    "tests/test_lineage_recovery_training_v1.py": "106e298bbffa1503c815cd73e5b5cc615de583279416de7fd5cc9422834999ea",
+    "tests/test_lineage_selection_inputs_v1.py": "ad87cbc5733feac05f979cdc7fa6d803d410365edfcd56b2e154abaa745644ad",
+    "tests/test_optimizer_runtime_facts_v1.py": "a4729fd0d7c65c3741aae68f6db75ce0397fbce86a5c356b2c3c25fc81b6b26f",
+    "tests/test_prospective_diagnosis_inputs_v1.py": "0f80df602407b4df0c2352f563e8ed75a0dc980cdd8ae5ef49076c90438835a7",
+    "tests/test_prospective_diagnosis_training_v1.py": "b550e22bb92305ef42c65ae34faf2d115fb992ad9e2b6f785c00b6b90218d55a",
+    "tests/test_residual_selection_v2.py": "95d0d34bacbf82116f0803cbc68fc1ea04259add5d29546cab2151bfb2f646e6",
+    "tests/test_run_prospective_diagnosis_training_v1.py": "cda0349ee0b296bf5c68d23fb7e9c3e9470ff074949f96b3d37fb3cc4c59fa91",
+    "tests/test_runtime_observation_training_v1.py": "80325e48b226b8bd3de9a4fb90521e3f67222b9cf369d8dc1a3be161f9fb0d02",
+    "tests/test_runtime_training_inputs_v1.py": "5ab6a99eafd1b724131593c79e0c05f890461310feefd7e1613a80c756c59ccc"
+  },
+  "training": {
+    "checkpoint_loaded": false,
+    "configured_learning_epochs": 5,
+    "configured_mini_batches": 4,
+    "fresh_initialization": true,
+    "num_envs": 4096,
+    "runtime_updates_to_observe": 3,
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+    "updates": 300
+  }
+}
