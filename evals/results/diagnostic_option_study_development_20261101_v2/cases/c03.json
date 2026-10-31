@@ -1,0 +1,50 @@
+{
+  "case_id": "c03",
+  "checkpoint_sha256": "7d2e00d8bd1f79b548debab19cef113ab7c15bcf7d323ba1ef21613f38c7a89c",
+  "compound_complete": false,
+  "compound_partial": false,
+  "confirmed_family": null,
+  "correct_complete_family": false,
+  "correct_confirmed_family": false,
+  "decision_outcome": "HOLD",
+  "expected_family": [
+    "optimizer_update_count"
+  ],
+  "feedback_actions": 0,
+  "final_status": "hold",
+  "first_action": "run_probe",
+  "first_decision_invalid_codes": [],
+  "first_decision_valid": true,
+  "first_response_valid": true,
+  "gate": {
+    "reason": null,
+    "run": true,
+    "source_outcome": "not_recovered"
+  },
+  "hold": true,
+  "hold_actions": 1,
+  "model_actions": 2,
+  "model_requests": 2,
+  "normal_gate_model_success": false,
+  "observed_actions": [
+    "run_probe",
+    "hold"
+  ],
+  "owned_child_wall_s": 38.90700000000652,
+  "paired_probes": 1,
+  "parent_probe_wall_s": 152.42273099999875,
+  "policy": "evidence_guided_model",
+  "post_feedback_first_decision_valid": true,
+  "post_feedback_valid": true,
+  "probe_actions": 1,
+  "raw_epoch_present": true,
+  "read_actions": 0,
+  "reference_checkpoint_sha256": "2f23108ff01f8b6fee6151d0cf6f6dde0e896df307f23a1d880acf1399c16028",
+  "schema": "diagnostic_option_study_public_case_v1",
+  "source": {
+    "logical_source": "study/c03/evidence_guided_model",
+    "raw_result_sha256": "05d54cafbb7ea5ab815b187c12765d2c8a75549324891b6d6ce3b5cc9c78c015"
+  },
+  "status": "complete",
+  "valid_hold": false
+}

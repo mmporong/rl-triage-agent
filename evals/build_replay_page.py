@@ -878,6 +878,85 @@ def scene_prospective_comparison(sources: Sources, slots: dict) -> dict:
     }
 
 
+def _guided_partition_values(summary: dict | None, *, diagnostic_v2: bool = False) -> list[Any]:
+    """근거 유도 정책의 결함 6행을 공개 summary에서 집계한다."""
+    if summary is None:
+        return [None] * 9
+    rows = [row for row in summary.get("rows", [])
+            if row.get("gate", {}).get("run")
+            and (diagnostic_v2 or row.get("policy") == "evidence_guided_model")]
+    if len(rows) != 6:
+        return [None] * 9
+    return [
+        f"{sum(row.get('first_response_valid') is True for row in rows)}/6",
+        sum(row.get("correct_confirmed_family") is True for row in rows),
+        sum(row.get("decision_outcome") == "HOLD" for row in rows),
+        sum(row.get("compound_partial") is True for row in rows),
+        sum("read_evidence" in row.get("observed_actions", []) for row in rows),
+        sum(row.get("paired_probes", 0) for row in rows),
+        sum(row.get("model_requests", 0) for row in rows),
+        summary.get("dialogue_files") if diagnostic_v2 else "-",
+        "후속 개발" if diagnostic_v2 else "기존 관측",
+    ]
+
+
+def _partition_case_values(row: dict | None) -> list[Any]:
+    if row is None:
+        return [None] * 6
+    expected = " + ".join(row.get("expected_family", [])) or "-"
+    confirmed = row.get("confirmed_family") or "-"
+    if row.get("correct_confirmed_family") is True:
+        extent = "복합 부분 확정" if row.get("compound_partial") is True else "단일 결함 확정"
+    else:
+        extent = "확정 없음"
+    return [expected, row.get("first_action"), row.get("decision_outcome"), confirmed, extent,
+            f"{row.get('paired_probes', 0)} / {row.get('model_requests', 0)}"]
+
+
+def scene_registered_partitions(sources: Sources, slots: dict) -> dict:
+    """등록 partition 공개 뒤 추가한 설명 메타데이터의 개발 결과를 별도 장면으로 둔다."""
+    option_path = slots["registry_action_contract"]
+    diagnostic_path = slots["diagnostic_option_study_v1"]
+    option_row, option = manifest_result(
+        sources, option_path, manifest_name="artifact_manifest.json",
+        manifest_schema="registry_action_contract_public_manifest_v1",
+        summary_schema="registry_action_contract_public_summary_v1", kind="registry_action_contract")
+    diagnostic_row, diagnostic = manifest_result(
+        sources, diagnostic_path, manifest_name="artifact_manifest.json",
+        manifest_schema="diagnostic_option_study_public_manifest_v1",
+        summary_schema="diagnostic_option_study_public_summary_v1", kind="diagnostic_option_study")
+    comparison = []
+    for label, values, source in (
+        ("O1 · 기존 근거 유도", _guided_partition_values(option), option_row["id"]),
+        ("O2 · 설명 메타데이터 추가", _guided_partition_values(diagnostic, diagnostic_v2=True),
+         diagnostic_row["id"]),
+    ):
+        comparison.append([label, *[cell(sources, value, source, None) for value in values]])
+    by_case = {row.get("case_id"): row for row in (diagnostic or {}).get("rows", [])
+               if row.get("gate", {}).get("run")}
+    cases = []
+    for case_id in ("c02", "c03", "c04", "c06", "c07", "c08"):
+        cases.append([case_id, *[cell(sources, value, diagnostic_row["id"], None)
+                                for value in _partition_case_values(by_case.get(case_id))]])
+    return {
+        "id": "registered_partitions", "title": "등록 partition 설명을 노출한 후속 개발", "dense": True,
+        "lead": "같은 관측 원자료·도구·예산에서 registry 예측 메타데이터와 설명을 보강한 사후 개발 결과를 기존 근거 유도 계약과 나눠 본다.",
+        "blocks": [
+            {"type": "table", "wide": True, "title": "근거 유도 계약 비교(결함 6행)",
+             "columns": ["계약", "첫 유효", "원인 확정", "HOLD", "복합 부분", "read_evidence", "paired", "API", "대화 파일", "구분"],
+             "rows": comparison},
+            {"type": "table", "wide": True, "title": "O2 공개 사례별 판정",
+             "columns": ["case", "예상 family", "첫 행동", "최종 결과", "확정 family", "확정 범위", "paired / API"],
+             "rows": cases},
+        ],
+        "notes": [
+            "O2는 O1 결과 공개 뒤 만든 후속 개발이며, 같은 관측 원자료·도구·예산에 registry 예측 메타데이터를 새로 노출했다.",
+            "원인 확정은 단일 결함과 복합의 부분 확정 합계이며 둘 다 seed2321에서 나왔다. 독립된 두 계보의 성공이나 두 실패의 전체 해결이 아니다.",
+            "새 교정·회복과 새 seed 평가는 없으며, 모델 3→3.5 효과·기본 채택·규칙 우위를 입증하지 않는다.",
+        ],
+    }
+
+
 def scene_cost(sources: Sources, slots: dict) -> dict:
     import publish_training_correction as Q3
     import publish_training_correction_v4 as Q4
@@ -928,7 +1007,8 @@ def build(root: Path = ROOT) -> dict:
               scene_nat_demo(sources, slots), scene_recovery(sources, slots),
               scene_motor(sources, slots), scene_hold(sources), scene_upstream(sources), scene_upstream_demo(sources, slots),
               replay_d3.scene_d3(sources, slots), scene_nvidia(sources, slots),
-              scene_prospective_comparison(sources, slots), scene_cost(sources, slots)]
+              scene_prospective_comparison(sources, slots), scene_registered_partitions(sources, slots),
+              scene_cost(sources, slots)]
     for index, scene in enumerate(scenes, start=1):
         scene["number"] = index
     data = {"schema": SCHEMA,

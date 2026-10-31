@@ -152,6 +152,65 @@ def test_prospective_scene_keeps_missing_comparison_unknown(repo):
     assert all(row[1]["value"] is None for row in recovery["rows"])
 
 
+def _diagnostic_summary() -> dict:
+    rows = []
+    for case_id in ("c01", "c05"):
+        rows.append({"case_id": case_id, "gate": {"run": False}, "model_requests": 0, "paired_probes": 0})
+    for case_id in ("c02", "c03", "c04", "c06", "c07", "c08"):
+        confirmed = case_id in ("c06", "c08")
+        rows.append({
+            "case_id": case_id, "gate": {"run": True}, "first_response_valid": True,
+            "first_action": "run_probe", "decision_outcome": "confirmed" if confirmed else "HOLD",
+            "expected_family": ["reward"] if case_id not in ("c04", "c08") else ["optimizer", "reward"],
+            "confirmed_family": "reward" if case_id == "c06" else "optimizer" if case_id == "c08" else None,
+            "correct_confirmed_family": confirmed, "compound_partial": case_id == "c08",
+            "paired_probes": 1 if case_id in ("c03", "c06", "c08") else 0,
+            "model_requests": 2 if case_id == "c06" else 1, "observed_actions": ["run_probe"],
+        })
+    return {"schema": "diagnostic_option_study_public_summary_v1", "status": "complete",
+            "dialogue_files": 6, "rows": rows}
+
+
+def _write_manifest_bundle(repo: Path, folder: str, summary: dict) -> None:
+    root = repo / folder
+    root.mkdir(parents=True)
+    (root / "summary.json").write_text(json.dumps(summary), encoding="utf-8")
+    digest = hashlib.sha256((root / "summary.json").read_bytes()).hexdigest()
+    (root / "artifact_manifest.json").write_text(json.dumps({
+        "schema": "diagnostic_option_study_public_manifest_v1", "files": {"summary.json": {"sha256": digest}}}),
+        encoding="utf-8")
+
+
+def test_registered_partition_scene_waits_for_committed_public_manifest(repo):
+    slots = {"registry_action_contract": "missing-option", "diagnostic_option_study_v1": "diagnostic"}
+    sources = B.Sources(repo)
+    scene = B.scene_registered_partitions(sources, slots)
+    assert sources.rows["diagnostic"]["status"] == "waiting"
+    assert all(cell["value"] is None for block in scene["blocks"] for row in block["rows"] for cell in row[1:])
+    _write_manifest_bundle(repo, "diagnostic", _diagnostic_summary())
+    sources = B.Sources(repo)
+    scene = B.scene_registered_partitions(sources, slots)
+    assert (sources.rows["diagnostic"]["status"], sources.rows["diagnostic"]["reason"]) == ("waiting", "not_committed")
+    assert all(cell["value"] is None for row in scene["blocks"][1]["rows"] for cell in row[1:])
+
+
+def test_registered_partition_scene_uses_only_verified_summary_values(repo):
+    _write_manifest_bundle(repo, "diagnostic", _diagnostic_summary())
+    _git(repo, "add", "diagnostic/artifact_manifest.json", "diagnostic/summary.json")
+    _git(repo, "commit", "-q", "-m", "diagnostic")
+    sources = B.Sources(repo)
+    scene = B.scene_registered_partitions(sources, {
+        "registry_action_contract": "missing-option", "diagnostic_option_study_v1": "diagnostic"})
+    comparison = scene["blocks"][0]["rows"]
+    assert comparison[0][1]["value"] is None
+    assert [cell["value"] for cell in comparison[1][1:]] == ["6/6", 2, 4, 1, 0, 3, 7, 6, "후속 개발"]
+    cases = {row[0]: [cell["value"] for cell in row[1:]] for row in scene["blocks"][1]["rows"]}
+    assert cases["c06"][2:5] == ["confirmed", "reward", "단일 결함 확정"]
+    assert cases["c08"][4] == "복합 부분 확정"
+    assert cases["c03"][2:5] == ["HOLD", "-", "확정 없음"]
+    B.check_public({"scenes": [scene], "sources": sources.rows})
+
+
 def test_policy_comparison_separates_valid_option_actions_from_diagnostic_outcomes():
     rows = []
     for index in range(6):
@@ -247,10 +306,10 @@ def test_path_checker_rejects_private_or_network_references(text):
 
 def test_build_from_repository_is_publishable_and_never_mismatched(built):
     data = built
-    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 17))
+    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 18))
     assert [scene["id"] for scene in data["scenes"]] == [
         "failure", "curves", "warning", "probe", "correction", "demo", "nat_demo", "recovery", "motor", "hold", "upstream",
-        "upstream_demo", "d3", "nvidia", "prospective_comparison", "cost"]
+        "upstream_demo", "d3", "nvidia", "prospective_comparison", "registered_partitions", "cost"]
     statuses = {key: row["status"] for key, row in data["sources"].items()}
     assert "mismatch" not in statuses.values()
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
@@ -347,11 +406,11 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
                                    check=True, capture_output=True, text=True, encoding="utf-8")
         outputs[name] = json.loads(completed.stdout)
     clean = outputs["clean"]
-    assert len(clean) == 16 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
+    assert len(clean) == 17 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
     assert "<svg" in clean[1] and "polyline" in clean[1]
     dense = [scene["id"] for scene, html in zip(data["scenes"], clean, strict=True) if 'class="blocks dense"' in html]
     assert dense == ["correction", "demo", "nat_demo", "recovery", "upstream", "upstream_demo", "d3", "nvidia",
-                     "prospective_comparison", "cost"]
+                     "prospective_comparison", "registered_partitions", "cost"]
     for scene, html in zip(data["scenes"], clean):
         statuses = {data["sources"][source]["status"] for source in _scene_sources(scene)}
         assert ("waiting" in statuses) == ("대기" in html), scene["id"]
