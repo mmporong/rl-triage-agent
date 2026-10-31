@@ -1,0 +1,141 @@
+{
+  "bands": {
+    "path": "evals/results/p0c_fixed_eval_20261009/summary.json",
+    "sha256": "7589a132d4e1a55e159527389a8b635a1766472ecde558da0a1a704c286f3f23"
+  },
+  "bounds": {
+    "global_api_requests": 96,
+    "legacy_role_executions_worst_case": 144,
+    "paired_probes": 72,
+    "total_wall_s": 14400
+  },
+  "claims": {
+    "gpu_started_by_parent": false,
+    "model_version_advantage": false,
+    "recovery": false,
+    "unseen_family_generalization": false
+  },
+  "design": {
+    "automatic_repair": false,
+    "healthy_gate_model_requests": 0,
+    "healthy_gate_paired_probes": 0,
+    "opaque_cases": [
+      "c01",
+      "c02",
+      "c03",
+      "c04",
+      "c05",
+      "c06",
+      "c07",
+      "c08"
+    ],
+    "policies": [
+      "eager_model",
+      "evidence_guided_model",
+      "strong_registered_rule"
+    ],
+    "policy_order": [
+      [
+        "eager_model",
+        "evidence_guided_model",
+        "strong_registered_rule"
+      ],
+      [
+        "evidence_guided_model",
+        "strong_registered_rule",
+        "eager_model"
+      ],
+      [
+        "strong_registered_rule",
+        "eager_model",
+        "evidence_guided_model"
+      ],
+      [
+        "eager_model",
+        "evidence_guided_model",
+        "strong_registered_rule"
+      ],
+      [
+        "evidence_guided_model",
+        "strong_registered_rule",
+        "eager_model"
+      ],
+      [
+        "strong_registered_rule",
+        "eager_model",
+        "evidence_guided_model"
+      ],
+      [
+        "eager_model",
+        "evidence_guided_model",
+        "strong_registered_rule"
+      ],
+      [
+        "evidence_guided_model",
+        "strong_registered_rule",
+        "eager_model"
+      ]
+    ],
+    "same_seed_none_reference": true
+  },
+  "protocols": {
+    "paired_probe": {
+      "path": "bench/protocols/runtime_observation_paired_probes_20261031_v1.json",
+      "sha256_lf": "19354a533c518791787d1871785776cce87d0cf16aed61c557c0aabaf2c01bf8"
+    },
+    "study": {
+      "path": "bench/protocols/evidence_guided_study_20261101_v1.json",
+      "sha256_lf": "890ceea4322f4991a8c2b8c62f63574259fc3aab38a71b10845efa5713324653"
+    },
+    "training": {
+      "path": "bench/protocols/prospective_diagnosis_training_20261101_v1.json",
+      "sha256_lf": "09f3e29cd065d95291c413b6b393f4c5db8770cb51eb9c05b1cdfd21d89292a6"
+    },
+    "transport_v4": {
+      "path": "bench/protocols/prospective_agentic_nim_20261101_v4.json",
+      "sha256_lf": "fa2f837c280fddb7afa7f8b4a5499fc02cb8e3a8e88b88c231cb52a3006e65d0"
+    },
+    "view": {
+      "path": "bench/protocols/runtime_observation_view_v1.json",
+      "sha256_lf": "be2f41d0526f942ae0e3b8634840d1a7be31961c94d36d354f6c462f7c1a8a68"
+    }
+  },
+  "purpose": "prospective_registered_evidence_guided_system_comparison",
+  "runtime_source_sha256_lf": {
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0"
+  },
+  "schema": "prospective_agentic_comparison_protocol_v1",
+  "source_sha256_lf": {
+    "evals/core_seed_guard_v1.py": "a7755f67639a80f94452aba9d44b07ce97b582ee40f08c23a42f1201886e6fb1",
+    "evals/diagnostic_fact_ledger_v1.py": "36fc89b8b331bf32eb4f36c16638a29094cc1823a31015bd87840939c07fd62a",
+    "evals/evidence_guided_probe_host_v1.py": "5a9df3a326dc3d21fafb057ba13ede512274671f868629d3a797b143c5e536dd",
+    "evals/evidence_guided_selector_v1.py": "03d752ae62dc712fb8302426978c18b6c5830bb51aee393134c6520b72ad4594",
+    "evals/immutable_git_proof_cache_v1.py": "3ec442e9bc095e5d8e526724425da5f529dca7e827e59d036b4d9935501155f4",
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "evals/lineage_nim_transport_v1.py": "9ebfeb6a6de6b076f77dc683ac18dd36327172b65353b4742318c1b45540ea7e",
+    "evals/lineage_nim_transport_v2.py": "6c2e07012a455b2754e394dbbe6051077ae7d28469439ec900fcb6ee7b503027",
+    "evals/lineage_nim_transport_v3.py": "76969b83d67c63217187c7464f6c4eaaf37bb624a97182ffe97e4cd1f03c404b",
+    "evals/lineage_nim_transport_v4.py": "68d651bad943ca178c272ffd30d60a8abf223696d370328cf13a6be31066df35",
+    "evals/prospective_agentic_comparison_v1.py": "d1ad726e19cbe6ed9d2b9988814884570425093435cd054575f339c6313b02fd",
+    "evals/prospective_diagnosis_inputs_v1.py": "cc6ab9f3dda902dfaf2e8c8aab02e6976ee17f96367c2ffa929edd864472c0c5",
+    "evals/prospective_diagnosis_inputs_v2.py": "315d090de2d799252291c9dd47d1bbf8b7f44007ca9c3d0921dc817efbc05ff2",
+    "evals/recorded_optimizer_probe_v1.py": "c2790d53c70d2ece250018e93985c849bd044426480965397e7ca1756cbf65ae",
+    "evals/run_prospective_agentic_comparison_v1.py": "5bec46b078ac3aaecd813d93c53c01ad52f81747bef8df797eae12bfc0a13419",
+    "evals/runtime_observation_probe_v1.py": "1f2a1aa0f18a3d42d41e2eb2a45f263673ca3744118060a5707b9f53fbdcf56f",
+    "evals/runtime_observation_view_v1.py": "bcfb11cc00a86b36b88f67b1ed89791e62f74584330e7445474e100a9c0ea0ba",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "tests/test_diagnostic_fact_ledger_v1.py": "95c3a6ea34c448bd13f0b0c956dce96de661461db50112e5251b78022ddf6016",
+    "tests/test_evidence_guided_selector_v1.py": "6bb44e8b3ba0a138e6e122df507c812aa7cd7e84d1ee7876fa0de2160b8fee5f",
+    "tests/test_prospective_agentic_comparison_v1.py": "420f0971620d005eefc29dad7ba5917cf174e2a25eaa78b6de8cf337d4cf71fc",
+    "tests/test_recorded_optimizer_probe_v1.py": "969c1b18f32271f84deb6d19132d2914a70e3cc10b46c3add1d41f363c2b4bb4",
+    "tests/test_run_prospective_agentic_comparison_v1.py": "ed9f6a45f296bdcfedf2b0d330c29c1bf6ab58d452a3e0fd539355322f1acc53"
+  }
+}

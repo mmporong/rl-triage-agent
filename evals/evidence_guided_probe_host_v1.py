@@ -28,6 +28,11 @@ SCHEMA = "evidence_guided_probe_host_result_v1"
 APPROVAL_SCHEMA = "evidence_guided_probe_host_approval_v1"
 
 
+def legacy_run_id(state: dict[str, Any]) -> str:
+    """동결 view의 lowercase/숫자/underscore tag 계약을 사용한다."""
+    return f"evidence_guided_{state['state_digest'][:16]}"
+
+
 def _require(ok: bool, reason: str) -> None:
     if not ok:
         raise ValueError(reason)
@@ -181,7 +186,7 @@ def _legacy(
 
     ledger_path = out / "probes.ledger.jsonl"
     snapshot = C.V.build_snapshot(
-        state["initial_packet"], f"evidence-guided-{state['state_digest'][:16]}",
+        state["initial_packet"], legacy_run_id(state),
         "registry_next", C.V.file_digest(Path(C.V.PROTOCOL)), ledger_path,
     )
     choice = _legacy_choice(snapshot, target)

@@ -8,8 +8,19 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import test_selection_comparison_controller_v1 as LEGACY
 
 from evals import evidence_guided_probe_host_v1 as H
+
+
+def test_legacy_identifier_passes_actual_epoch_binding_contract() -> None:
+    state = {"state_digest": "a" * 64}
+    identifier = H.legacy_run_id(state)
+    bound = H.C.V.epoch_binding(LEGACY.packet(), identifier, "registry_next", LEGACY.VIEW_SHA)
+    assert bound["run_id"] == "evidence_guided_" + "a" * 16
+    with pytest.raises(ValueError, match="tag"):
+        H.C.V.epoch_binding(LEGACY.packet(), "evidence-guided-" + "a" * 16,
+                            "registry_next", LEGACY.VIEW_SHA)
 
 
 def _write(path: Path, value: object) -> Path:
