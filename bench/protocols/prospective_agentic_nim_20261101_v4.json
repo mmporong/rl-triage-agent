@@ -1,0 +1,314 @@
+{
+  "accepted_provider_models": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "component_v3_protocol": {
+    "path": "bench/protocols/prospective_agentic_nim_20261101_v3.json",
+    "sha256_lf": "f01bfe9144a74222a4805b9e78b016d8f3872fc0b71ce0d6a4216bb3bd84dd2c"
+  },
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "operator_approved": true,
+  "params": {
+    "extra_body": {
+      "reasoning_effort": "none"
+    },
+    "max_tokens": 16384,
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "stream": false,
+    "temperature": 0
+  },
+  "plan": {
+    "case_ids": [
+      "c01",
+      "c02",
+      "c03",
+      "c04",
+      "c05",
+      "c06",
+      "c07",
+      "c08"
+    ],
+    "global_request_cap": 96,
+    "logical_slots": [
+      {
+        "case_id": "c01",
+        "slot_id": "c01.eager_model.d1"
+      },
+      {
+        "case_id": "c01",
+        "slot_id": "c01.eager_model.d2"
+      },
+      {
+        "case_id": "c01",
+        "slot_id": "c01.eager_model.d3"
+      },
+      {
+        "case_id": "c01",
+        "slot_id": "c01.eager_model.d4"
+      },
+      {
+        "case_id": "c01",
+        "slot_id": "c01.evidence_guided_model.d1"
+      },
+      {
+        "case_id": "c01",
+        "slot_id": "c01.evidence_guided_model.d2"
+      },
+      {
+        "case_id": "c01",
+        "slot_id": "c01.evidence_guided_model.d3"
+      },
+      {
+        "case_id": "c01",
+        "slot_id": "c01.evidence_guided_model.d4"
+      },
+      {
+        "case_id": "c02",
+        "slot_id": "c02.eager_model.d1"
+      },
+      {
+        "case_id": "c02",
+        "slot_id": "c02.eager_model.d2"
+      },
+      {
+        "case_id": "c02",
+        "slot_id": "c02.eager_model.d3"
+      },
+      {
+        "case_id": "c02",
+        "slot_id": "c02.eager_model.d4"
+      },
+      {
+        "case_id": "c02",
+        "slot_id": "c02.evidence_guided_model.d1"
+      },
+      {
+        "case_id": "c02",
+        "slot_id": "c02.evidence_guided_model.d2"
+      },
+      {
+        "case_id": "c02",
+        "slot_id": "c02.evidence_guided_model.d3"
+      },
+      {
+        "case_id": "c02",
+        "slot_id": "c02.evidence_guided_model.d4"
+      },
+      {
+        "case_id": "c03",
+        "slot_id": "c03.eager_model.d1"
+      },
+      {
+        "case_id": "c03",
+        "slot_id": "c03.eager_model.d2"
+      },
+      {
+        "case_id": "c03",
+        "slot_id": "c03.eager_model.d3"
+      },
+      {
+        "case_id": "c03",
+        "slot_id": "c03.eager_model.d4"
+      },
+      {
+        "case_id": "c03",
+        "slot_id": "c03.evidence_guided_model.d1"
+      },
+      {
+        "case_id": "c03",
+        "slot_id": "c03.evidence_guided_model.d2"
+      },
+      {
+        "case_id": "c03",
+        "slot_id": "c03.evidence_guided_model.d3"
+      },
+      {
+        "case_id": "c03",
+        "slot_id": "c03.evidence_guided_model.d4"
+      },
+      {
+        "case_id": "c04",
+        "slot_id": "c04.eager_model.d1"
+      },
+      {
+        "case_id": "c04",
+        "slot_id": "c04.eager_model.d2"
+      },
+      {
+        "case_id": "c04",
+        "slot_id": "c04.eager_model.d3"
+      },
+      {
+        "case_id": "c04",
+        "slot_id": "c04.eager_model.d4"
+      },
+      {
+        "case_id": "c04",
+        "slot_id": "c04.evidence_guided_model.d1"
+      },
+      {
+        "case_id": "c04",
+        "slot_id": "c04.evidence_guided_model.d2"
+      },
+      {
+        "case_id": "c04",
+        "slot_id": "c04.evidence_guided_model.d3"
+      },
+      {
+        "case_id": "c04",
+        "slot_id": "c04.evidence_guided_model.d4"
+      },
+      {
+        "case_id": "c05",
+        "slot_id": "c05.eager_model.d1"
+      },
+      {
+        "case_id": "c05",
+        "slot_id": "c05.eager_model.d2"
+      },
+      {
+        "case_id": "c05",
+        "slot_id": "c05.eager_model.d3"
+      },
+      {
+        "case_id": "c05",
+        "slot_id": "c05.eager_model.d4"
+      },
+      {
+        "case_id": "c05",
+        "slot_id": "c05.evidence_guided_model.d1"
+      },
+      {
+        "case_id": "c05",
+        "slot_id": "c05.evidence_guided_model.d2"
+      },
+      {
+        "case_id": "c05",
+        "slot_id": "c05.evidence_guided_model.d3"
+      },
+      {
+        "case_id": "c05",
+        "slot_id": "c05.evidence_guided_model.d4"
+      },
+      {
+        "case_id": "c06",
+        "slot_id": "c06.eager_model.d1"
+      },
+      {
+        "case_id": "c06",
+        "slot_id": "c06.eager_model.d2"
+      },
+      {
+        "case_id": "c06",
+        "slot_id": "c06.eager_model.d3"
+      },
+      {
+        "case_id": "c06",
+        "slot_id": "c06.eager_model.d4"
+      },
+      {
+        "case_id": "c06",
+        "slot_id": "c06.evidence_guided_model.d1"
+      },
+      {
+        "case_id": "c06",
+        "slot_id": "c06.evidence_guided_model.d2"
+      },
+      {
+        "case_id": "c06",
+        "slot_id": "c06.evidence_guided_model.d3"
+      },
+      {
+        "case_id": "c06",
+        "slot_id": "c06.evidence_guided_model.d4"
+      },
+      {
+        "case_id": "c07",
+        "slot_id": "c07.eager_model.d1"
+      },
+      {
+        "case_id": "c07",
+        "slot_id": "c07.eager_model.d2"
+      },
+      {
+        "case_id": "c07",
+        "slot_id": "c07.eager_model.d3"
+      },
+      {
+        "case_id": "c07",
+        "slot_id": "c07.eager_model.d4"
+      },
+      {
+        "case_id": "c07",
+        "slot_id": "c07.evidence_guided_model.d1"
+      },
+      {
+        "case_id": "c07",
+        "slot_id": "c07.evidence_guided_model.d2"
+      },
+      {
+        "case_id": "c07",
+        "slot_id": "c07.evidence_guided_model.d3"
+      },
+      {
+        "case_id": "c07",
+        "slot_id": "c07.evidence_guided_model.d4"
+      },
+      {
+        "case_id": "c08",
+        "slot_id": "c08.eager_model.d1"
+      },
+      {
+        "case_id": "c08",
+        "slot_id": "c08.eager_model.d2"
+      },
+      {
+        "case_id": "c08",
+        "slot_id": "c08.eager_model.d3"
+      },
+      {
+        "case_id": "c08",
+        "slot_id": "c08.eager_model.d4"
+      },
+      {
+        "case_id": "c08",
+        "slot_id": "c08.evidence_guided_model.d1"
+      },
+      {
+        "case_id": "c08",
+        "slot_id": "c08.evidence_guided_model.d2"
+      },
+      {
+        "case_id": "c08",
+        "slot_id": "c08.evidence_guided_model.d3"
+      },
+      {
+        "case_id": "c08",
+        "slot_id": "c08.evidence_guided_model.d4"
+      }
+    ],
+    "per_slot_max": 3
+  },
+  "publication": {
+    "atomic_no_clobber_publish": true,
+    "existing_target_overwrite": false,
+    "partial_target_visible": false,
+    "same_directory_private_temp": true,
+    "target_never_precreated": true,
+    "temp_fsync": true
+  },
+  "schema": "lineage_nim_transport_protocol_v4",
+  "scope": {
+    "binding_fix": "validate_v2_top_level_anchor_session_component_source",
+    "duplicate_send": false,
+    "existing_v1_queue_recovery": false,
+    "new_queue_only": true,
+    "portable_binding_paths": "exact_alias_only",
+    "provider_retry": false
+  },
+  "source_sha256_lf": {
+    "evals/lineage_nim_transport_v4.py": "68d651bad943ca178c272ffd30d60a8abf223696d370328cf13a6be31066df35",
+    "tests/test_lineage_nim_transport_v4.py": "356002041d00adedd7779ab0c8585daeeccdeea283edbf48cc2838d9491738e7"
+  }
+}

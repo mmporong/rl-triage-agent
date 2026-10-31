@@ -28,7 +28,7 @@ Official pretrained H1 playback on stairs: [up](docs/media/stairs_h1_s172_202610
 
 1. **Notice.** A tracking alarm and a fixed evaluation over 26 velocity commands show that the policy does not follow commands.
 2. **Rank.** Nemotron reads the training telemetry and ranks likely causes (reward, actuator, exploration and others).
-3. **Probe.** It proposes one short Isaac Lab probe (about 20 seconds). After approval the probe runs, and frozen rules keep or remove each cause. This repeats until one cause remains, or the agent stops.
+3. **Probe.** It selects a registered check. After approval, checks inspect bound training records on CPU or run in Isaac Lab. The measured outcome narrows the registered causes until one remains, or the agent stops.
 4. **Correct.** The confirmed cause maps to one registered code correction and a recovery mode (continue training or retrain).
 5. **Verify.** After approval the policy is retrained, and the same fixed evaluation decides whether it recovered.
 
@@ -108,9 +108,11 @@ uv run python -m rl_triage.nemotron35_entry_v1 \
   --execute
 ```
 
-`--execute` may save model hypotheses and one registered next-check proposal. It does not approve or run that check, change a training configuration, retrain a policy or establish recovery. Probe approval, execution and correction remain separate recorded operations. The latest fresh 3.5 loop completed retraining and evaluation with a `not_recovered` verdict; the first seed-2221 call cited telemetry rather than video frames.
+`--execute` may save model hypotheses and one registered next-check proposal. Probe approval, execution, correction and recovery evaluation remain separate recorded operations. Recorded 3.5 outcomes include seed 2307 (`not_recovered`/HOLD) and a separately registered seed 2311 compound run (recovered after two approved corrections); see the [per-run evidence](docs/NEW-LINEAGE-COMPARISON.md). These runs do not establish video-assisted selection gains.
 
 For the frozen 3 Super benchmark workflow and OpenShell setup, see [multi-step investigation](docs/AGENTIC-INVESTIGATION.md) and [grounded single-run workflow](docs/GROUNDED-SINGLE-RUN.md). The [pipeline preflight](docs/PIPELINE-PREFLIGHT.md) checks the registered CPU-side inputs before a separately approved GPU operation.
+
+For existing RSL-style training, the optional [`observe_optimizer`](src/rl_triage/optimizer_trace.py) recorder exports step and minibatch counts without a fault label. Its output is a caller-instrumented trace for later inspection.
 
 ## Safety boundary
 
