@@ -1,0 +1,57 @@
+{
+  "budget": {
+    "execution_request_budget_s": 1200,
+    "max_decisions": 3,
+    "model_logical_slots": 3,
+    "model_post_cap_per_slot": 3,
+    "model_post_cap_total": 9
+  },
+  "claims": {
+    "correction": false,
+    "generalization": false,
+    "recovery": false,
+    "training": false
+  },
+  "component_post_backend_protocol": {
+    "path": "bench/protocols/lineage_post_probe_20261031_v1.json",
+    "sha256_lf": "571b80b79edbeabc2fa3519f879176533fa81adaeeebb1f6368640b67e65ea03"
+  },
+  "execution_contract": {
+    "actual_backend_required": true,
+    "complete_factory_injection": false,
+    "lease_metadata_bounded_retry": true,
+    "probe_executor_injection": false,
+    "result_relabelling_after_write": false,
+    "reuse_epoch0_runner": true
+  },
+  "input_contract": {
+    "case_source_type": "post_observation",
+    "different_corrections_max": 2,
+    "epoch": 2,
+    "prior_outcome": "not_recovered",
+    "same_seed_none_reference": true
+  },
+  "phase": "epoch2_after_valid_not_recovered_receipt_first_diagnosis_only",
+  "schema": "lineage_post_diagnosis_epoch_protocol_v1",
+  "source_sha256_lf": {
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/lineage_compound_retry_v1.py": "266348fae090293af920d698ec71cfd459cd9aab38a4ab07fa38ffbb935d339a",
+    "evals/lineage_gpu_wait_v1.py": "7a6f55f048568d056ea9a8f04b43d87c30408adae9067b3757d484b6ed43feac",
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "evals/lineage_nim_transport_v1.py": "9ebfeb6a6de6b076f77dc683ac18dd36327172b65353b4742318c1b45540ea7e",
+    "evals/lineage_post_correction_inputs_v1.py": "fb7f99b73ea59da9bd671fc430bacdefd095acfbfcbc041bffbfba03dc05cea3",
+    "evals/lineage_post_diagnosis_epoch_v1.py": "59bb14b8b7154c93861954d22dcf741edb3af8fd41f606506737456791b6b8a2",
+    "evals/lineage_post_recovery_candidate_v1.py": "579c1997a119b910e243b51a8549aa0c47d0f9e12008d5b28f8b33593bfdd4e3",
+    "evals/residual_model_call_v1.py": "b3afed7cbbe347acb1aaae9214e986bb18c5fac0fd81299cd95b6fb96e424797",
+    "evals/selection_comparison_call_v2.py": "46c5b97c993e6a66598d9ddd5eb15e62fe7bbf9282225fcb0c68c6b6c6291992",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "evals/selection_comparison_view_v1.py": "5180b96296251b3ae117edd612baba24676197dab93bab28f2e1cc0ef1d9e33d",
+    "tests/test_lineage_compound_retry_v1.py": "5ae71061336e5e86c8871fb32d00c2db542f1b13fc37db4ce78ceea6df822107",
+    "tests/test_lineage_gpu_wait_v1.py": "341544d729a43e9b1f4093c38c91f9ee3bb57e43af8810cecfd1dfaf9720b0bd",
+    "tests/test_lineage_lease_context_v2.py": "12045b2d012e5b8a1ab1644a47a2d59708f22e2823ae7dcfc75574ef36b7c6a9",
+    "tests/test_lineage_nim_transport_v1.py": "dccc535828c8c5fa522e31a7b9363478a8d67420540bee12accc350678473589",
+    "tests/test_lineage_post_correction_inputs_v1.py": "1c412e2d7ac53ecdba336471f10f746eb8a4100dd864c800c9a96b73ae6e7f83",
+    "tests/test_lineage_post_diagnosis_epoch_v1.py": "545ed93472748cc140a61d6474a0c953cef3433c7e06c84ffca424d3a3938528",
+    "tests/test_lineage_post_recovery_candidate_v1.py": "449d73aac82ffd5cbad0ceea3986d65f11c9de7417ba5277a2d8634ba369e427"
+  }
+}
