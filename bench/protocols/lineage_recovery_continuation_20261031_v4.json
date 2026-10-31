@@ -1,0 +1,42 @@
+{
+  "claims": {
+    "new_seed": false,
+    "new_training": false,
+    "overall_goal_complete": false
+  },
+  "failure_precondition": {
+    "error_type": "PermissionError",
+    "evaluation_gpu_jobs_started": 0,
+    "evaluation_owned_started": false,
+    "path_suffix": "CodexSignals\\gpu-lease.json"
+  },
+  "lease": {
+    "bounded_permission_retry": true,
+    "callback": "lease_context",
+    "module": "lineage_lease_context_v2"
+  },
+  "parent_protocol": {
+    "path": "bench/protocols/lineage_recovery_execution_20261031_v2.json",
+    "sha256_lf": "6bb10b0f28a2875b09f967d4fd638b2da0e8c6dda89a708ec22c30e8bd7517b4"
+  },
+  "phase": "evaluation_only_after_completed_training",
+  "reuse": {
+    "evaluation_conditions": 26,
+    "first_correction_only": true,
+    "fresh_initialization": true,
+    "new_correction_approvals": 0,
+    "new_model_calls": 0,
+    "new_training_jobs": 0,
+    "same_seed_reference": true,
+    "training_updates": 300
+  },
+  "schema": "lineage_recovery_continuation_protocol_v4",
+  "source_sha256_lf": {
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "evals/lineage_recovery_continuation_v3.py": "6053625b1444f93c65c32dcf322ba56075e5cb9cfa7489ea1dceb90d6aa5b3a0",
+    "evals/lineage_recovery_continuation_v4.py": "cf515745b013f27c000d41396d4255857cfb0a636484229f83f7f016263d1fa4",
+    "tests/test_lineage_lease_context_v2.py": "12045b2d012e5b8a1ab1644a47a2d59708f22e2823ae7dcfc75574ef36b7c6a9",
+    "tests/test_lineage_recovery_continuation_v3.py": "dcad4ad723382a7217ea83bdce213e981f5f042dd5c9b911a4fa339c41f95023",
+    "tests/test_lineage_recovery_continuation_v4.py": "3c7745b9229eae3fd2ed7223f5b1bf870442bfbc4d6f2ada1420ee2fc4587197"
+  }
+}
