@@ -1,0 +1,41 @@
+{
+  "adapter_contract": {
+    "arbitrary_manifest_rejected": true,
+    "execution_receipt": "parent-adapter-execution-receipt.json",
+    "inner_manifest_schema_unchanged": "lineage_compound_second_recovery_manifest_v1",
+    "inner_result_schema_unchanged": "lineage_compound_second_recovery_result_v1",
+    "parent_scope_required_for_prepare_and_execute": true,
+    "prepare_receipt": "parent-adapter-receipt.json",
+    "training_path_unchanged": "S1_BOTH_fresh300_fixed26"
+  },
+  "claims": {
+    "api_requests": 0,
+    "gpu_jobs": 0,
+    "recovery_effect": false
+  },
+  "component_protocols": {
+    "second_recovery_s1": {
+      "path": "bench/protocols/lineage_compound_second_recovery_20261031_v1.json",
+      "sha256_lf": "9af4950a10c3e96ef4e146e23f475c9f226b55671cf784b5d08b08b68380a33e"
+    }
+  },
+  "phase": "second_recovery_parent_bound_adapter_only",
+  "runtime_source_sha256_lf": {
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0"
+  },
+  "schema": "lineage_compound_second_recovery_protocol_v2",
+  "source_sha256_lf": {
+    "evals/lineage_compound_second_recovery_v2.py": "a5bed668e7c25d0ab369384f81ecd8606d76cc8698ec547987449028b6018a3e",
+    "evals/lineage_post_parent_binding_v1.py": "a9756ea43882286d69da43f393fa118ff88ca9d915ae8c41829afe8409b7e336",
+    "tests/test_lineage_compound_second_recovery_v2.py": "fc77919d2544bdf70a287bcf8581bd6504828f181c422ede52d2125f1c80e573",
+    "tests/test_lineage_post_parent_binding_v1.py": "8d45982ef88ddacc03535f7296fdf49bd878f48b16e5ce48d933300954f51e67"
+  }
+}
