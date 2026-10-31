@@ -1,0 +1,55 @@
+{
+  "arm": "F1",
+  "case_id": "case-03",
+  "correction": "restore_body_frame_reward",
+  "diagnosis_origin": {
+    "diagnosis_epoch_result_sha256": "144c57ce9d840d635bc0610bcbe52b319306df978749ee55ae414d96c1115a15",
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "transport_protocol_sha256": "636b40999e01019f57b5f87df08aff2aa0da81045e4270275a5a44bababa7ca9"
+  },
+  "evaluation": {
+    "conditions": 26,
+    "corrected_report": {
+      "path": "reports/case-03_model_adaptive-corrected.json",
+      "sha256": "64ff2b7ec687a54f8d72c96422da54bca50d8f6c0157ee84f2f6f749086c8f36"
+    },
+    "new_fixed_evaluations": 1,
+    "same_seed_reference_report": {
+      "path": "reports/case-03_model_adaptive-same-seed-reference.json",
+      "sha256": "0cb1e1af73c7a3201dccc0ac98e7d49f245876154ebd626153a74349444535e6"
+    }
+  },
+  "policy": "model_adaptive",
+  "recovery": {
+    "outcome": "recovered",
+    "verdict": {
+      "checks": {
+        "err_xy_ratio": true,
+        "err_yaw_ratio": true,
+        "fall_frac": true,
+        "survival_ratio": true
+      },
+      "failed": [],
+      "label": "healthy",
+      "short_horizon": false
+    }
+  },
+  "schema": "lineage_recovery_continuation_public_receipt_v1",
+  "scope": {
+    "first_registered_correction_only": true,
+    "generalization_claim": false,
+    "model_vs_version_3": false,
+    "new_seed": false,
+    "video_gain": false
+  },
+  "seed": 2303,
+  "status": "recovered",
+  "training": {
+    "checkpoint_sha256": "3a7ed715b753f1b317d087cf094838df816dc9cc93521ab88c1a8803282b66ed",
+    "fresh_initialization": true,
+    "new_training_jobs": 0,
+    "reused": true,
+    "seed_reused_for_pairing": true,
+    "updates": 300
+  }
+}

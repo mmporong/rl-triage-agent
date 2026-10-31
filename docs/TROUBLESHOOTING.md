@@ -865,5 +865,5 @@
 
 - 관찰: v2는 실제 3회 갱신 사전 실행과 300회 교정 학습을 완료했다. 이후 고정 평가 입장에서 `gpu-lease.json`을 읽는 중 `PermissionError`가 발생했다. 오류 파일명과 호출 경로를 확보했으며 평가 자식은 시작되지 않았다. 메타데이터의 원자 교체와 겹쳤을 가능성은 있으나 파일 접근 거부의 세부 원인은 확정하지 않았다.
 - 수정: [lease reader v2](../evals/lineage_lease_context_v2.py)는 canonical 메타데이터 파일의 `EACCES`와 같은 파일명에만 2초·최대 20회 안에서 새 읽기를 시도한다. 다른 파일, JSON 오류, 잘못된 소유자·기간·lock은 재시도하지 않는다. 원래 PID 계층·heartbeat·배타 lock 검증을 그대로 수행하며 과거 메타데이터를 캐시해 수용하지 않는다.
-- 재개: [평가 전용 실행기](../evals/lineage_recovery_continuation_v3.py)는 완료된 학습·체크포인트·텔레메트리와 consumed 원장을 검증해 재사용한다. 원래 실패와 원장은 보존하고, 새 원장 사본에 평가 결과를 추가한다. 새 학습·새 모델 호출·새 교정 승인은 없다.
+- 재개: [평가 전용 실행기 v4](../evals/lineage_recovery_continuation_v4.py)는 완료된 학습·체크포인트·텔레메트리와 consumed 원장을 검증해 재사용한다. 원래 학습 anchor와 새 등록 anchor를 각각 검증하고 조상 관계를 확인한다. 원래 실패와 원장은 보존하고, 새 원장 사본에 평가 결과를 추가한다. 새 학습·새 모델 호출·새 교정 승인은 없다. 실제 26조건 평가가 exit0으로 완료돼 [회복 결과](../evals/results/lineage_first_recovery_s2303_20261031_v1/summary.json)를 남겼다.
 - 재발 진단: [probe 예외 기록](../evals/lineage_probe_failure_evidence_v3.py)은 원래 판정을 바꾸지 않고 message·traceback·errno·winerror·filename을 별도 파일에 남긴다. 과거 상세 정보가 없는 오류를 같은 원인으로 소급 확정하지 않는다.

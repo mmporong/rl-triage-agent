@@ -1,0 +1,57 @@
+{
+  "candidate_rows": 1,
+  "completed_receipts": 4,
+  "diagnosis_epoch_result_sha256": "144c57ce9d840d635bc0610bcbe52b319306df978749ee55ae414d96c1115a15",
+  "diagnosis_model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "evaluation_conditions": 26,
+  "hold_input_rows": 3,
+  "new_fixed_evaluations": 1,
+  "new_training_jobs": 0,
+  "parent_source_anchor": "c3bff5021659c9effd92b6c1e1ef4dc0cc3abb1b",
+  "planned_rows": 4,
+  "receipts": [
+    {
+      "case_id": "case-03",
+      "path": "receipts/case-03_registry_next.json",
+      "policy": "registry_next",
+      "sha256": "d57f4a72aa94e10b729f6d27a1935cbfa69c3c80b6e9cf3c76f4f6aca7b93b85",
+      "status": "HOLD"
+    },
+    {
+      "case_id": "case-03",
+      "path": "receipts/case-03_model_adaptive.json",
+      "policy": "model_adaptive",
+      "sha256": "984dee10e5f1b4a468126a9dc2ae054234cecb9320298a538abb2bcf8535bb8d",
+      "status": "recovered"
+    },
+    {
+      "case_id": "case-07",
+      "path": "receipts/case-07_registry_next.json",
+      "policy": "registry_next",
+      "sha256": "df146575aef0871b9e4f212000f945905dc2d40ca6fe15e2f0f8dd3a0e092270",
+      "status": "HOLD"
+    },
+    {
+      "case_id": "case-07",
+      "path": "receipts/case-07_model_adaptive.json",
+      "policy": "model_adaptive",
+      "sha256": "f209c53cd121222834087b94a551ec4c9af96640d3cadc4a4d8e5c1da154d8c2",
+      "status": "HOLD"
+    }
+  ],
+  "recovery_status": "recovered",
+  "reused_training_jobs": 1,
+  "reused_training_updates": 300,
+  "schema": "lineage_recovery_continuation_public_export_v1",
+  "scope": {
+    "first_registered_correction_only": true,
+    "generalization_claim": false,
+    "model_vs_version_3": false,
+    "new_independent_seed": false,
+    "overall_goal_complete": false,
+    "same_seed_pairing": true,
+    "video_gain": false
+  },
+  "source_anchor": "70c4135cd70ed3a56c9bf9c3bf5378bb0cf4a336",
+  "status": "complete"
+}
