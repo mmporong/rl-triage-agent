@@ -1,0 +1,89 @@
+{
+  "analysis": {
+    "downstream_confirmation_is_post_exposure_development": true,
+    "feedback_denominator": "initial_invalid_fault_rows",
+    "first_decision_valid_denominator": 12,
+    "format_candidate_rule": "first_decision_valid_at_least_10_of_12_and_above_prior",
+    "hold_coverage_and_correct_family_separate": true,
+    "read_and_probe_actions_separate": true
+  },
+  "base_comparison_anchor": "164348c2b8df8f275371193306df6aa91d5d312b",
+  "base_comparison_protocol": {
+    "path": "bench/protocols/prospective_agentic_comparison_20261101_v5.json",
+    "sha256_lf": "8cd83d6389cde2d5e9eb2972c0fa6fa4ed50cd40a7154bede3fd8baeadc48b0b"
+  },
+  "bounds": {
+    "global_api_requests": 96,
+    "paired_probes": 36,
+    "sdk_role_executions": 72,
+    "total_wall_s": 14400
+  },
+  "claims": {
+    "default_mode_adoption": false,
+    "generalization": false,
+    "model_version_advantage": false,
+    "recovery": false,
+    "strong_rule_speed_comparison": false
+  },
+  "design": {
+    "automatic_repair": false,
+    "fault_rows": 12,
+    "model_action_budget_per_row": 4,
+    "normal_gate_is_not_model_success": true,
+    "normal_host_gate_rows": 4,
+    "opaque_cases": [
+      "c01",
+      "c02",
+      "c03",
+      "c04",
+      "c05",
+      "c06",
+      "c07",
+      "c08"
+    ],
+    "planned_rows": 16,
+    "policies": [
+      "eager_model",
+      "evidence_guided_model"
+    ],
+    "prior_strong_rule_reference_only": true,
+    "probe_budget_per_row": 3,
+    "same_information_tools_and_budgets": true
+  },
+  "inherited_source_sha256_lf": {
+    "evals/core_seed_guard_v1.py": "a7755f67639a80f94452aba9d44b07ce97b582ee40f08c23a42f1201886e6fb1",
+    "evals/diagnostic_fact_ledger_v1.py": "36fc89b8b331bf32eb4f36c16638a29094cc1823a31015bd87840939c07fd62a",
+    "evals/evidence_guided_probe_host_v1.py": "5a9df3a326dc3d21fafb057ba13ede512274671f868629d3a797b143c5e536dd",
+    "evals/evidence_guided_selector_v1.py": "03d752ae62dc712fb8302426978c18b6c5830bb51aee393134c6520b72ad4594",
+    "evals/immutable_git_proof_cache_v1.py": "3ec442e9bc095e5d8e526724425da5f529dca7e827e59d036b4d9935501155f4",
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "evals/lineage_nim_transport_v1.py": "9ebfeb6a6de6b076f77dc683ac18dd36327172b65353b4742318c1b45540ea7e",
+    "evals/lineage_nim_transport_v2.py": "6c2e07012a455b2754e394dbbe6051077ae7d28469439ec900fcb6ee7b503027",
+    "evals/lineage_nim_transport_v3.py": "76969b83d67c63217187c7464f6c4eaaf37bb624a97182ffe97e4cd1f03c404b",
+    "evals/lineage_nim_transport_v4.py": "68d651bad943ca178c272ffd30d60a8abf223696d370328cf13a6be31066df35",
+    "evals/prospective_agentic_comparison_v1.py": "d1ad726e19cbe6ed9d2b9988814884570425093435cd054575f339c6313b02fd",
+    "evals/prospective_diagnosis_inputs_v1.py": "cc6ab9f3dda902dfaf2e8c8aab02e6976ee17f96367c2ffa929edd864472c0c5",
+    "evals/prospective_diagnosis_inputs_v2.py": "315d090de2d799252291c9dd47d1bbf8b7f44007ca9c3d0921dc817efbc05ff2",
+    "evals/recorded_optimizer_probe_v1.py": "c2790d53c70d2ece250018e93985c849bd044426480965397e7ca1756cbf65ae",
+    "evals/run_prospective_agentic_comparison_v1.py": "5bec46b078ac3aaecd813d93c53c01ad52f81747bef8df797eae12bfc0a13419",
+    "evals/runtime_observation_probe_v1.py": "1f2a1aa0f18a3d42d41e2eb2a45f263673ca3744118060a5707b9f53fbdcf56f",
+    "evals/runtime_observation_view_v1.py": "bcfb11cc00a86b36b88f67b1ed89791e62f74584330e7445474e100a9c0ea0ba",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "tests/test_diagnostic_fact_ledger_v1.py": "95c3a6ea34c448bd13f0b0c956dce96de661461db50112e5251b78022ddf6016",
+    "tests/test_evidence_guided_selector_v1.py": "6bb44e8b3ba0a138e6e122df507c812aa7cd7e84d1ee7876fa0de2160b8fee5f",
+    "tests/test_prospective_agentic_comparison_v1.py": "420f0971620d005eefc29dad7ba5917cf174e2a25eaa78b6de8cf337d4cf71fc",
+    "tests/test_recorded_optimizer_probe_v1.py": "969c1b18f32271f84deb6d19132d2914a70e3cc10b46c3add1d41f363c2b4bb4",
+    "tests/test_run_prospective_agentic_comparison_v1.py": "ed9f6a45f296bdcfedf2b0d330c29c1bf6ab58d452a3e0fd539355322f1acc53"
+  },
+  "prior_comparison_result_sha256": "9aa3a919ca878e941f69fa2e1e8fe2c7aaa0c5ca4131d2b9b35dd42188577ed3",
+  "purpose": "post_exposure_registry_action_contract_development_study",
+  "schema": "registry_action_study_protocol_v1",
+  "source_sha256_lf": {
+    "evals/registry_action_loop_v1.py": "6ae854bd5bcf3dd8a30a59427ba7bca97fe3527c46fe2718d563133609097507",
+    "evals/registry_action_options_v1.py": "298d22267a2c71b2f6ba2d11fcf741d352146ed0772163bd34b77bbb3926b8b9",
+    "evals/run_registry_action_study_v1.py": "51c2cb849c2c666868c7e4d9527e1050deed42ff2b25e83d40182cf4e2156870",
+    "tests/test_registry_action_loop_v1.py": "7a41747f95e11617c16bd85daa445ddc8ba52f69bf84b1b148ce8e5600c9ddc0",
+    "tests/test_registry_action_options_v1.py": "107073a4e6a40f4a4ef9a22fcc3d39efbc217e2dfc974871ae1d56fa1fd5104b",
+    "tests/test_run_registry_action_study_v1.py": "d1d99b7a3c2c7b284aff6c7dfc48d2da6b1ece911ffaaa1152d0d79682c65898"
+  }
+}

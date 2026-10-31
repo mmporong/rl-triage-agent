@@ -1,0 +1,119 @@
+{
+  "bounds": {
+    "api_requests": 0,
+    "automatic_retry": false,
+    "corrections": 1,
+    "sdk_jobs": 3,
+    "wall_s": 5400
+  },
+  "claims": {
+    "model_selected_correction": false,
+    "new_model_call": false,
+    "recorded_probe_is_live_probe": false,
+    "recovery": false
+  },
+  "evaluation": {
+    "conditions": 26,
+    "corrected_seed": 3332,
+    "reference": "same_source_seed_2320_NONE"
+  },
+  "predictions": {
+    "candidate": "eligible_only_if_model_selected_recorded_abnormal",
+    "otherwise": "HOLD",
+    "recovery": "measured_not_assumed"
+  },
+  "preselected_case": {
+    "case_id": "c03",
+    "category": "R1_ONLY",
+    "policy": "eager_model",
+    "source_seed": 2320
+  },
+  "preselected_recovery_seed": 3332,
+  "purpose": "option_selected_recorded_count_registered_r1_recovery",
+  "repair": {
+    "applied_corrections": [
+      "restore_configured_ppo_epochs"
+    ],
+    "arm": "FIRST",
+    "checkpoint_loaded": false,
+    "correction_id": "restore_configured_ppo_epochs",
+    "mode": "fresh_restart",
+    "original_faults": [
+      "R1"
+    ],
+    "selected_by": "registered_host_rule",
+    "source_checkpoint_provenance_only": true
+  },
+  "runtime_source_sha256_lf": {
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0"
+  },
+  "schema": "evidence_guided_recovery_protocol_v2",
+  "selection_gate": {
+    "confirmed_component": "optimizer_update_count",
+    "model_must_select": true,
+    "option_id": "probe:P_recorded_optimizer_updates",
+    "outcome": "abnormal",
+    "probe": "P_recorded_optimizer_updates",
+    "provider_models": [
+      "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "private/nvidia/nemotron-3.5-super-120b-a12b"
+    ],
+    "selected_by": "model_option_id",
+    "selection_contract": "registry_action_options_v1"
+  },
+  "selection_study": {
+    "base_comparison_anchor": "164348c2b8df8f275371193306df6aa91d5d312b",
+    "path": "bench/protocols/registry_action_contract_development_20261101_v1.json",
+    "result_schema": "registry_action_study_result_v1",
+    "schema": "registry_action_study_protocol_v1",
+    "sha256_lf": "d50434dc5c0c4aaad958afa0c58a40c1ef39b25c45bfdf0575afacab03ae6dc6"
+  },
+  "smoke_seed": 4332,
+  "source_sha256_lf": {
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+    "bench/lineage_recovery_training_v1.py": "afa9ffe7645a4ab1729830ea3ab1c32bfd623d6fed41c6a7a5d601c1a156011b",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/r1_repair_training.py": "0b1b9aca9d17a4c8fce0a2f1aa451393bea701df66f4769156c2ff9d1f958ae6",
+    "bench/residual_faults_v1.py": "fae165b431588cb01e5140bd75481e907a0b3b71571df2beb6ba11278527ec25",
+    "bench/residual_probe_v1.py": "4d57ed44e9ecaf063d66746a200d28195cce4c322e5ca4f7de449a9106f40d1d",
+    "bench/residual_training_v1.py": "13e9d5733a9b49908e136e54dd0ac8b7dae387b40fa4115f254536c9d6692517",
+    "evals/evidence_guided_probe_host_v1.py": "5a9df3a326dc3d21fafb057ba13ede512274671f868629d3a797b143c5e536dd",
+    "evals/evidence_guided_recovery_v1.py": "52d9028e8862a5727224238c69b65f55d3b88cbf733eca01d6fe6df581810a45",
+    "evals/evidence_guided_selector_v1.py": "03d752ae62dc712fb8302426978c18b6c5830bb51aee393134c6520b72ad4594",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "evals/optimizer_runtime_facts_v1.py": "6bbfe0d590fcd86ea9702b91d48c05684542eaaf03a09c9087e0637dc619a942",
+    "evals/prospective_agentic_comparison_v1.py": "d1ad726e19cbe6ed9d2b9988814884570425093435cd054575f339c6313b02fd",
+    "evals/r1_repair_contract.py": "eeefe5819928cc0c5f81b0c3f38ae9900b31277698b4936eb2a850e7ec72f159",
+    "evals/recorded_optimizer_probe_v1.py": "c2790d53c70d2ece250018e93985c849bd044426480965397e7ca1756cbf65ae",
+    "evals/registry_action_loop_v1.py": "6ae854bd5bcf3dd8a30a59427ba7bca97fe3527c46fe2718d563133609097507",
+    "evals/registry_action_options_v1.py": "298d22267a2c71b2f6ba2d11fcf741d352146ed0772163bd34b77bbb3926b8b9",
+    "evals/residual_contract_v1.py": "0ad37bcc9399885a1d0c1e6e59b64053706fe1a1bd25b5253ac59b30068c5a90",
+    "evals/run_prospective_agentic_comparison_v1.py": "5bec46b078ac3aaecd813d93c53c01ad52f81747bef8df797eae12bfc0a13419",
+    "evals/run_registry_action_study_v1.py": "51c2cb849c2c666868c7e4d9527e1050deed42ff2b25e83d40182cf4e2156870",
+    "evals/runtime_observation_training_v1.py": "c5d82f6cd7832301e63e72f556786c547b76cbb86be3af55b81694afa98b5462",
+    "evals/runtime_training_inputs_v1.py": "5aa11788c9e91b7f8a5125424c89d40933d573e0af379fd6f93e27122c030c12",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "tests/test_evidence_guided_recovery_v1.py": "8f77feb8acb67f2b58b979079903f0073a3dcf3969586e37754c290cbc4fb520",
+    "tests/test_lineage_recovery_training_v1.py": "106e298bbffa1503c815cd73e5b5cc615de583279416de7fd5cc9422834999ea",
+    "tests/test_registry_action_loop_v1.py": "7a41747f95e11617c16bd85daa445ddc8ba52f69bf84b1b148ce8e5600c9ddc0",
+    "tests/test_registry_action_options_v1.py": "107073a4e6a40f4a4ef9a22fcc3d39efbc217e2dfc974871ae1d56fa1fd5104b",
+    "tests/test_run_registry_action_study_v1.py": "d1d99b7a3c2c7b284aff6c7dfc48d2da6b1ece911ffaaa1152d0d79682c65898"
+  },
+  "training": {
+    "configured_learning_epochs": 5,
+    "configured_mini_batches": 4,
+    "num_envs": 4096,
+    "runtime_updates_to_observe": 3,
+    "updates": 300
+  }
+}
