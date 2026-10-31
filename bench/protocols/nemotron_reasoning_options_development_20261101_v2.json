@@ -1,0 +1,474 @@
+{
+  "accepted_provider_models": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "analysis": {
+    "adoption_rule": {
+      "actual_probe_confirmation_before_diagnosis_benefit": true,
+      "complete_calls": 32,
+      "distinct_fault_cases_with_valid_read_or_probe_at_least": 2,
+      "enabled_low_fault_read_or_probe_above_legacy": true,
+      "enabled_low_fault_valid_at_least": "10/12",
+      "enabled_low_fault_valid_not_below_legacy": true,
+      "enabled_low_incomplete_not_above_legacy": true,
+      "normal_valid_probe_proposals_not_above_legacy": true,
+      "reasoning_surface_or_positive_reported_reasoning_tokens_required": true,
+      "scope": "development_action_candidate_only_not_default"
+    },
+    "development_inputs_already_observed": true,
+    "incomplete_or_length": "HOLD",
+    "missing_reasoning_tokens": "unknown_not_zero",
+    "model_or_reasoning_advantage_claim": false,
+    "paired_action_comparison_requires_both_valid": true,
+    "prediction": "requested low reasoning may change investigation actions; benefit and hosted execution of the mode are unconfirmed",
+    "reasoning_surface_is_auxiliary_telemetry": true,
+    "result_wording": {
+      "candidate_rule_pass": "post_exposure_action_candidate_not_diagnosis_or_recovery_improvement",
+      "normal_proposals_increased": "safety_tradeoff_do_not_adopt",
+      "reasoning_unexposed": "requested_mode_recorded_effective_reasoning_unverified",
+      "same_or_worse": "not_improved_do_not_adopt",
+      "unsupported_or_incomplete": "indeterminate_preserve_calls_no_fallback"
+    },
+    "transport_token_first": true,
+    "unsupported_enabled_low": "stop_without_fallback",
+    "validity_before_action_comparison": true
+  },
+  "calls": [
+    {
+      "abba_position": 1,
+      "call_index": 1,
+      "case_id": "c01",
+      "evaluation_role": "normal_model_only",
+      "messages_digest": "a0a0acb4ff1c0ed66d0f0fc618263b86b438412687253a254936d257b6130a59",
+      "messages_file_sha256": "92fb0f39cb040d3a76b6fc8a00382c154a92c164ad38cc116794350463d645e0",
+      "mode": "legacy_none",
+      "replicate": 1
+    },
+    {
+      "abba_position": 2,
+      "call_index": 2,
+      "case_id": "c01",
+      "evaluation_role": "normal_model_only",
+      "messages_digest": "a0a0acb4ff1c0ed66d0f0fc618263b86b438412687253a254936d257b6130a59",
+      "messages_file_sha256": "92fb0f39cb040d3a76b6fc8a00382c154a92c164ad38cc116794350463d645e0",
+      "mode": "enabled_low",
+      "replicate": 1
+    },
+    {
+      "abba_position": 3,
+      "call_index": 3,
+      "case_id": "c01",
+      "evaluation_role": "normal_model_only",
+      "messages_digest": "a0a0acb4ff1c0ed66d0f0fc618263b86b438412687253a254936d257b6130a59",
+      "messages_file_sha256": "92fb0f39cb040d3a76b6fc8a00382c154a92c164ad38cc116794350463d645e0",
+      "mode": "enabled_low",
+      "replicate": 2
+    },
+    {
+      "abba_position": 4,
+      "call_index": 4,
+      "case_id": "c01",
+      "evaluation_role": "normal_model_only",
+      "messages_digest": "a0a0acb4ff1c0ed66d0f0fc618263b86b438412687253a254936d257b6130a59",
+      "messages_file_sha256": "92fb0f39cb040d3a76b6fc8a00382c154a92c164ad38cc116794350463d645e0",
+      "mode": "legacy_none",
+      "replicate": 2
+    },
+    {
+      "abba_position": 1,
+      "call_index": 5,
+      "case_id": "c02",
+      "evaluation_role": "fault_development",
+      "messages_digest": "cc548b3af4970532b32dfd8789be2408bfec6aa66c527bcfbc9ee76377685d67",
+      "messages_file_sha256": "c847e0a815643fa08dd55bfc4b8cea3a5adb92c7be1f6a79dbeffb45920e2a80",
+      "mode": "legacy_none",
+      "replicate": 1
+    },
+    {
+      "abba_position": 2,
+      "call_index": 6,
+      "case_id": "c02",
+      "evaluation_role": "fault_development",
+      "messages_digest": "cc548b3af4970532b32dfd8789be2408bfec6aa66c527bcfbc9ee76377685d67",
+      "messages_file_sha256": "c847e0a815643fa08dd55bfc4b8cea3a5adb92c7be1f6a79dbeffb45920e2a80",
+      "mode": "enabled_low",
+      "replicate": 1
+    },
+    {
+      "abba_position": 3,
+      "call_index": 7,
+      "case_id": "c02",
+      "evaluation_role": "fault_development",
+      "messages_digest": "cc548b3af4970532b32dfd8789be2408bfec6aa66c527bcfbc9ee76377685d67",
+      "messages_file_sha256": "c847e0a815643fa08dd55bfc4b8cea3a5adb92c7be1f6a79dbeffb45920e2a80",
+      "mode": "enabled_low",
+      "replicate": 2
+    },
+    {
+      "abba_position": 4,
+      "call_index": 8,
+      "case_id": "c02",
+      "evaluation_role": "fault_development",
+      "messages_digest": "cc548b3af4970532b32dfd8789be2408bfec6aa66c527bcfbc9ee76377685d67",
+      "messages_file_sha256": "c847e0a815643fa08dd55bfc4b8cea3a5adb92c7be1f6a79dbeffb45920e2a80",
+      "mode": "legacy_none",
+      "replicate": 2
+    },
+    {
+      "abba_position": 1,
+      "call_index": 9,
+      "case_id": "c03",
+      "evaluation_role": "fault_development",
+      "messages_digest": "344e2a3c19f0e41cb253bc6907c98b517136a7f53e4a4c31826973b51d17582c",
+      "messages_file_sha256": "4bdf05a333dbe0baf2566cfa6e5439fd22e341b0fd87deb38857a6f10be44924",
+      "mode": "legacy_none",
+      "replicate": 1
+    },
+    {
+      "abba_position": 2,
+      "call_index": 10,
+      "case_id": "c03",
+      "evaluation_role": "fault_development",
+      "messages_digest": "344e2a3c19f0e41cb253bc6907c98b517136a7f53e4a4c31826973b51d17582c",
+      "messages_file_sha256": "4bdf05a333dbe0baf2566cfa6e5439fd22e341b0fd87deb38857a6f10be44924",
+      "mode": "enabled_low",
+      "replicate": 1
+    },
+    {
+      "abba_position": 3,
+      "call_index": 11,
+      "case_id": "c03",
+      "evaluation_role": "fault_development",
+      "messages_digest": "344e2a3c19f0e41cb253bc6907c98b517136a7f53e4a4c31826973b51d17582c",
+      "messages_file_sha256": "4bdf05a333dbe0baf2566cfa6e5439fd22e341b0fd87deb38857a6f10be44924",
+      "mode": "enabled_low",
+      "replicate": 2
+    },
+    {
+      "abba_position": 4,
+      "call_index": 12,
+      "case_id": "c03",
+      "evaluation_role": "fault_development",
+      "messages_digest": "344e2a3c19f0e41cb253bc6907c98b517136a7f53e4a4c31826973b51d17582c",
+      "messages_file_sha256": "4bdf05a333dbe0baf2566cfa6e5439fd22e341b0fd87deb38857a6f10be44924",
+      "mode": "legacy_none",
+      "replicate": 2
+    },
+    {
+      "abba_position": 1,
+      "call_index": 13,
+      "case_id": "c04",
+      "evaluation_role": "fault_development",
+      "messages_digest": "1e920aee2ba6b3295077ec0622a599c0af32da2f6ba56f66f93360815c045ad2",
+      "messages_file_sha256": "da010afd1d12d3d59470ce45f20162dcd2ca14b599033bf6664ed9a10953daec",
+      "mode": "legacy_none",
+      "replicate": 1
+    },
+    {
+      "abba_position": 2,
+      "call_index": 14,
+      "case_id": "c04",
+      "evaluation_role": "fault_development",
+      "messages_digest": "1e920aee2ba6b3295077ec0622a599c0af32da2f6ba56f66f93360815c045ad2",
+      "messages_file_sha256": "da010afd1d12d3d59470ce45f20162dcd2ca14b599033bf6664ed9a10953daec",
+      "mode": "enabled_low",
+      "replicate": 1
+    },
+    {
+      "abba_position": 3,
+      "call_index": 15,
+      "case_id": "c04",
+      "evaluation_role": "fault_development",
+      "messages_digest": "1e920aee2ba6b3295077ec0622a599c0af32da2f6ba56f66f93360815c045ad2",
+      "messages_file_sha256": "da010afd1d12d3d59470ce45f20162dcd2ca14b599033bf6664ed9a10953daec",
+      "mode": "enabled_low",
+      "replicate": 2
+    },
+    {
+      "abba_position": 4,
+      "call_index": 16,
+      "case_id": "c04",
+      "evaluation_role": "fault_development",
+      "messages_digest": "1e920aee2ba6b3295077ec0622a599c0af32da2f6ba56f66f93360815c045ad2",
+      "messages_file_sha256": "da010afd1d12d3d59470ce45f20162dcd2ca14b599033bf6664ed9a10953daec",
+      "mode": "legacy_none",
+      "replicate": 2
+    },
+    {
+      "abba_position": 1,
+      "call_index": 17,
+      "case_id": "c05",
+      "evaluation_role": "normal_model_only",
+      "messages_digest": "d6e891f92777aae5abebd14ebc1ec169aa978d8fd7fc1ed0a137854d762c1313",
+      "messages_file_sha256": "ab0ee1a4e2ec7bd0b6cdc887f726dface53c02f61b868f1c5447fa52d1c3d0e4",
+      "mode": "legacy_none",
+      "replicate": 1
+    },
+    {
+      "abba_position": 2,
+      "call_index": 18,
+      "case_id": "c05",
+      "evaluation_role": "normal_model_only",
+      "messages_digest": "d6e891f92777aae5abebd14ebc1ec169aa978d8fd7fc1ed0a137854d762c1313",
+      "messages_file_sha256": "ab0ee1a4e2ec7bd0b6cdc887f726dface53c02f61b868f1c5447fa52d1c3d0e4",
+      "mode": "enabled_low",
+      "replicate": 1
+    },
+    {
+      "abba_position": 3,
+      "call_index": 19,
+      "case_id": "c05",
+      "evaluation_role": "normal_model_only",
+      "messages_digest": "d6e891f92777aae5abebd14ebc1ec169aa978d8fd7fc1ed0a137854d762c1313",
+      "messages_file_sha256": "ab0ee1a4e2ec7bd0b6cdc887f726dface53c02f61b868f1c5447fa52d1c3d0e4",
+      "mode": "enabled_low",
+      "replicate": 2
+    },
+    {
+      "abba_position": 4,
+      "call_index": 20,
+      "case_id": "c05",
+      "evaluation_role": "normal_model_only",
+      "messages_digest": "d6e891f92777aae5abebd14ebc1ec169aa978d8fd7fc1ed0a137854d762c1313",
+      "messages_file_sha256": "ab0ee1a4e2ec7bd0b6cdc887f726dface53c02f61b868f1c5447fa52d1c3d0e4",
+      "mode": "legacy_none",
+      "replicate": 2
+    },
+    {
+      "abba_position": 1,
+      "call_index": 21,
+      "case_id": "c06",
+      "evaluation_role": "fault_development",
+      "messages_digest": "5e8d80c2e9afa47cdb2aafed4dcd6f54cb549ffbd47dd2219015f67900c4fd50",
+      "messages_file_sha256": "0a0e2afde10bab45829d89ee1d4834b6a4e68c0ba86fcdcfdda8a50ade9a8ca2",
+      "mode": "legacy_none",
+      "replicate": 1
+    },
+    {
+      "abba_position": 2,
+      "call_index": 22,
+      "case_id": "c06",
+      "evaluation_role": "fault_development",
+      "messages_digest": "5e8d80c2e9afa47cdb2aafed4dcd6f54cb549ffbd47dd2219015f67900c4fd50",
+      "messages_file_sha256": "0a0e2afde10bab45829d89ee1d4834b6a4e68c0ba86fcdcfdda8a50ade9a8ca2",
+      "mode": "enabled_low",
+      "replicate": 1
+    },
+    {
+      "abba_position": 3,
+      "call_index": 23,
+      "case_id": "c06",
+      "evaluation_role": "fault_development",
+      "messages_digest": "5e8d80c2e9afa47cdb2aafed4dcd6f54cb549ffbd47dd2219015f67900c4fd50",
+      "messages_file_sha256": "0a0e2afde10bab45829d89ee1d4834b6a4e68c0ba86fcdcfdda8a50ade9a8ca2",
+      "mode": "enabled_low",
+      "replicate": 2
+    },
+    {
+      "abba_position": 4,
+      "call_index": 24,
+      "case_id": "c06",
+      "evaluation_role": "fault_development",
+      "messages_digest": "5e8d80c2e9afa47cdb2aafed4dcd6f54cb549ffbd47dd2219015f67900c4fd50",
+      "messages_file_sha256": "0a0e2afde10bab45829d89ee1d4834b6a4e68c0ba86fcdcfdda8a50ade9a8ca2",
+      "mode": "legacy_none",
+      "replicate": 2
+    },
+    {
+      "abba_position": 1,
+      "call_index": 25,
+      "case_id": "c07",
+      "evaluation_role": "fault_development",
+      "messages_digest": "8ed51d9819d2414cb3591aa77139384329df8aead8cad18114bd269f3028239c",
+      "messages_file_sha256": "65b4046a7c3660c682c966f731537e01ec1107aa9eb4d8cb26ae08b46f4f9784",
+      "mode": "legacy_none",
+      "replicate": 1
+    },
+    {
+      "abba_position": 2,
+      "call_index": 26,
+      "case_id": "c07",
+      "evaluation_role": "fault_development",
+      "messages_digest": "8ed51d9819d2414cb3591aa77139384329df8aead8cad18114bd269f3028239c",
+      "messages_file_sha256": "65b4046a7c3660c682c966f731537e01ec1107aa9eb4d8cb26ae08b46f4f9784",
+      "mode": "enabled_low",
+      "replicate": 1
+    },
+    {
+      "abba_position": 3,
+      "call_index": 27,
+      "case_id": "c07",
+      "evaluation_role": "fault_development",
+      "messages_digest": "8ed51d9819d2414cb3591aa77139384329df8aead8cad18114bd269f3028239c",
+      "messages_file_sha256": "65b4046a7c3660c682c966f731537e01ec1107aa9eb4d8cb26ae08b46f4f9784",
+      "mode": "enabled_low",
+      "replicate": 2
+    },
+    {
+      "abba_position": 4,
+      "call_index": 28,
+      "case_id": "c07",
+      "evaluation_role": "fault_development",
+      "messages_digest": "8ed51d9819d2414cb3591aa77139384329df8aead8cad18114bd269f3028239c",
+      "messages_file_sha256": "65b4046a7c3660c682c966f731537e01ec1107aa9eb4d8cb26ae08b46f4f9784",
+      "mode": "legacy_none",
+      "replicate": 2
+    },
+    {
+      "abba_position": 1,
+      "call_index": 29,
+      "case_id": "c08",
+      "evaluation_role": "fault_development",
+      "messages_digest": "b45054d65a2ca5a2d2e96e83a6c8f1f4156815a2c75c910f063ee4e3411f7c7d",
+      "messages_file_sha256": "f4af294b5650536e7e3e7cb0922a1ff9642a34d056c7a4e277efb2603faa6385",
+      "mode": "legacy_none",
+      "replicate": 1
+    },
+    {
+      "abba_position": 2,
+      "call_index": 30,
+      "case_id": "c08",
+      "evaluation_role": "fault_development",
+      "messages_digest": "b45054d65a2ca5a2d2e96e83a6c8f1f4156815a2c75c910f063ee4e3411f7c7d",
+      "messages_file_sha256": "f4af294b5650536e7e3e7cb0922a1ff9642a34d056c7a4e277efb2603faa6385",
+      "mode": "enabled_low",
+      "replicate": 1
+    },
+    {
+      "abba_position": 3,
+      "call_index": 31,
+      "case_id": "c08",
+      "evaluation_role": "fault_development",
+      "messages_digest": "b45054d65a2ca5a2d2e96e83a6c8f1f4156815a2c75c910f063ee4e3411f7c7d",
+      "messages_file_sha256": "f4af294b5650536e7e3e7cb0922a1ff9642a34d056c7a4e277efb2603faa6385",
+      "mode": "enabled_low",
+      "replicate": 2
+    },
+    {
+      "abba_position": 4,
+      "call_index": 32,
+      "case_id": "c08",
+      "evaluation_role": "fault_development",
+      "messages_digest": "b45054d65a2ca5a2d2e96e83a6c8f1f4156815a2c75c910f063ee4e3411f7c7d",
+      "messages_file_sha256": "f4af294b5650536e7e3e7cb0922a1ff9642a34d056c7a4e277efb2603faa6385",
+      "mode": "legacy_none",
+      "replicate": 2
+    }
+  ],
+  "corpus": {
+    "entries_digest": "d884f8eea4735211213cd13c278c191cacdcd19a272fe8588bb2137154faf472",
+    "sha256": "825b5ce27b75bbf50c3bfb18e81c1bdac8a284f3610f385cea07de197f61da24",
+    "source_anchor": "640df7a801433d745ed5151393fef4be98cbb9a5"
+  },
+  "design": {
+    "actual_system_health_gate_unchanged": true,
+    "api_cap": 32,
+    "approval": false,
+    "cases": 8,
+    "fault_development_cases": 6,
+    "fault_labels_exposed": false,
+    "feedback_requests": 0,
+    "gpu_runs": 0,
+    "normal_calls_are_model_only_proposal_evaluation": true,
+    "normal_model_only_cases": 2,
+    "order_per_case": [
+      "legacy_none",
+      "enabled_low",
+      "enabled_low",
+      "legacy_none"
+    ],
+    "recovery": false,
+    "repair": false,
+    "same_messages_between_modes": true,
+    "single_call_no_retry": true
+  },
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "modes": {
+    "enabled_low": {
+      "extra_body": {
+        "chat_template_kwargs": {
+          "enable_thinking": true
+        },
+        "reasoning_effort": "low"
+      },
+      "max_tokens": 16384,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "stream": false,
+      "temperature": 0
+    },
+    "legacy_none": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "stream": false,
+      "temperature": 0
+    }
+  },
+  "parent_protocol": {
+    "path": "bench/protocols/diagnostic_option_study_20261101_v1.json",
+    "sha256_lf": "782c4755262f71cff28706e9f5775a8ad39192fe2392eb77cd0a5d52f5e59374"
+  },
+  "prior_invalid": {
+    "api_requests": 0,
+    "cause": "raw_messages_file_sha_was_compared_to_canonical_messages_digest",
+    "failure_stage": "before_first_dispatch",
+    "intent_files": 0,
+    "protocol": {
+      "path": "bench/protocols/nemotron_reasoning_options_development_20261101_v1.json",
+      "sha256_lf": "127c041e443f0a3617e55c952227ea5958d8125d236938ae1e7324dae8bb12c5"
+    },
+    "result_schema": "nemotron_reasoning_options_result_v1",
+    "semantic_retry": false,
+    "status": "invalid"
+  },
+  "schema": "nemotron_reasoning_options_study_plan_v2",
+  "source_sha256_lf": {
+    "bench/protocols/diagnostic_option_study_20261101_v1.json": "782c4755262f71cff28706e9f5775a8ad39192fe2392eb77cd0a5d52f5e59374",
+    "bench/protocols/nemotron_reasoning_options_development_20261101_v1.json": "127c041e443f0a3617e55c952227ea5958d8125d236938ae1e7324dae8bb12c5",
+    "evals/core_seed_guard_v1.py": "a7755f67639a80f94452aba9d44b07ce97b582ee40f08c23a42f1201886e6fb1",
+    "evals/diagnostic_fact_ledger_v1.py": "36fc89b8b331bf32eb4f36c16638a29094cc1823a31015bd87840939c07fd62a",
+    "evals/evidence_guided_probe_host_v1.py": "5a9df3a326dc3d21fafb057ba13ede512274671f868629d3a797b143c5e536dd",
+    "evals/evidence_guided_selector_v1.py": "03d752ae62dc712fb8302426978c18b6c5830bb51aee393134c6520b72ad4594",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/immutable_git_proof_cache_v1.py": "3ec442e9bc095e5d8e526724425da5f529dca7e827e59d036b4d9935501155f4",
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "evals/lineage_nim_transport_v1.py": "9ebfeb6a6de6b076f77dc683ac18dd36327172b65353b4742318c1b45540ea7e",
+    "evals/lineage_nim_transport_v2.py": "6c2e07012a455b2754e394dbbe6051077ae7d28469439ec900fcb6ee7b503027",
+    "evals/lineage_nim_transport_v3.py": "76969b83d67c63217187c7464f6c4eaaf37bb624a97182ffe97e4cd1f03c404b",
+    "evals/lineage_nim_transport_v4.py": "68d651bad943ca178c272ffd30d60a8abf223696d370328cf13a6be31066df35",
+    "evals/nemotron_reasoning_options_study_v1.py": "0db6b54ec5a8851490b30ee3d7ce8d92d05c166236f2d4bbc4ec842bcf2de68c",
+    "evals/nemotron_reasoning_options_study_v2.py": "bcf1cf613f3bef6abf5983e16e8524cdf54ed51c76df51893175ce3220219ec6",
+    "evals/prospective_agentic_comparison_v1.py": "d1ad726e19cbe6ed9d2b9988814884570425093435cd054575f339c6313b02fd",
+    "evals/prospective_diagnosis_inputs_v1.py": "cc6ab9f3dda902dfaf2e8c8aab02e6976ee17f96367c2ffa929edd864472c0c5",
+    "evals/prospective_diagnosis_inputs_v2.py": "315d090de2d799252291c9dd47d1bbf8b7f44007ca9c3d0921dc817efbc05ff2",
+    "evals/recorded_optimizer_probe_v1.py": "c2790d53c70d2ece250018e93985c849bd044426480965397e7ca1756cbf65ae",
+    "evals/registry_action_loop_v1.py": "6ae854bd5bcf3dd8a30a59427ba7bca97fe3527c46fe2718d563133609097507",
+    "evals/registry_action_loop_v2.py": "ef4e63a91b95bd49dd909b065e6236fb84ca8601132b4190387da54a872c1574",
+    "evals/registry_action_options_v1.py": "298d22267a2c71b2f6ba2d11fcf741d352146ed0772163bd34b77bbb3926b8b9",
+    "evals/registry_action_options_v2.py": "1aeb8bb3f0a51cb17e6d4dea43af17984e01c880de37e7998cb6777ef4c0e445",
+    "evals/run_diagnostic_option_study_v1.py": "60e13236fd4707cd01c9aa438c0231b2190a9a80b8ccb84ba394dea2409ddc77",
+    "evals/run_prospective_agentic_comparison_v1.py": "5bec46b078ac3aaecd813d93c53c01ad52f81747bef8df797eae12bfc0a13419",
+    "evals/run_registry_action_study_v1.py": "51c2cb849c2c666868c7e4d9527e1050deed42ff2b25e83d40182cf4e2156870",
+    "evals/runtime_observation_probe_v1.py": "1f2a1aa0f18a3d42d41e2eb2a45f263673ca3744118060a5707b9f53fbdcf56f",
+    "evals/runtime_observation_view_v1.py": "bcfb11cc00a86b36b88f67b1ed89791e62f74584330e7445474e100a9c0ea0ba",
+    "evals/selection_comparison_call_v2.py": "46c5b97c993e6a66598d9ddd5eb15e62fe7bbf9282225fcb0c68c6b6c6291992",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "tests/test_diagnostic_fact_ledger_v1.py": "95c3a6ea34c448bd13f0b0c956dce96de661461db50112e5251b78022ddf6016",
+    "tests/test_evidence_guided_selector_v1.py": "6bb44e8b3ba0a138e6e122df507c812aa7cd7e84d1ee7876fa0de2160b8fee5f",
+    "tests/test_nemotron_reasoning_options_study_v1.py": "d513537b0e1ff48df2f62ce421f2e21e3da857a6ae49a41b563453d177958d46",
+    "tests/test_nemotron_reasoning_options_study_v2.py": "933551fb88ca634ae4d9a619f90edd966fac9f08d763de5b65b4a0278d766d68",
+    "tests/test_prospective_agentic_comparison_v1.py": "420f0971620d005eefc29dad7ba5917cf174e2a25eaa78b6de8cf337d4cf71fc",
+    "tests/test_recorded_optimizer_probe_v1.py": "969c1b18f32271f84deb6d19132d2914a70e3cc10b46c3add1d41f363c2b4bb4",
+    "tests/test_registry_action_loop_v1.py": "7a41747f95e11617c16bd85daa445ddc8ba52f69bf84b1b148ce8e5600c9ddc0",
+    "tests/test_registry_action_loop_v2.py": "84a72388b74560a53f567fd8a35789b9a81f7bb329436baf7ca46f0765328ba5",
+    "tests/test_registry_action_options_v1.py": "107073a4e6a40f4a4ef9a22fcc3d39efbc217e2dfc974871ae1d56fa1fd5104b",
+    "tests/test_registry_action_options_v2.py": "95da13b8b38a8d2e7758b129199f7d6edb34db00bc37a747411b6bbc2050ad6e",
+    "tests/test_run_diagnostic_option_study_v1.py": "58e55193b88d590fe15e08bea37709191fde82f6a514918d6b4d4b76c1a8b8e3",
+    "tests/test_run_prospective_agentic_comparison_v1.py": "ed9f6a45f296bdcfedf2b0d330c29c1bf6ab58d452a3e0fd539355322f1acc53",
+    "tests/test_run_registry_action_study_v1.py": "d1d99b7a3c2c7b284aff6c7dfc48d2da6b1ece911ffaaa1152d0d79682c65898"
+  },
+  "status": "registered_only_after_commit"
+}
