@@ -957,6 +957,127 @@ def scene_registered_partitions(sources: Sources, slots: dict) -> dict:
     }
 
 
+def _reasoning_case(sources: Sources, relative: str, case_id: str, mode: str,
+                    ready: bool) -> tuple[dict | None, str]:
+    path = f"{relative}/cases/{case_id}-{mode}.json"
+    row = sources.file(path, kind="reasoning_diagnosis_case")
+    return (_read(sources.root / path) if ready and row["status"] == "ready" else None,
+            row["id"])
+
+
+def _contains_observation(value: Any, target: str, outcome: str) -> bool:
+    if isinstance(value, dict):
+        if value.get("target") == target and value.get("outcome") == outcome:
+            return True
+        return any(_contains_observation(child, target, outcome) for child in value.values())
+    if isinstance(value, list):
+        return any(_contains_observation(child, target, outcome) for child in value)
+    if isinstance(value, str) and value.startswith(("{", "[")):
+        try:
+            return _contains_observation(json.loads(value), target, outcome)
+        except json.JSONDecodeError:
+            return False
+    return False
+
+
+def scene_reasoning_followup(sources: Sources, slots: dict) -> dict:
+    """기록한 첫 reasoning 선택을 실제 진단 루프로 이어 간 개발 결과를 표시한다."""
+    reasoning_path = slots["reasoning_diagnosis_study"]
+    coverage_path = slots["diagnostic_coverage_audit"]
+    reasoning_row, summary = manifest_result(
+        sources, reasoning_path, manifest_name="artifact_manifest.json",
+        manifest_schema="reasoning_diagnosis_study_public_manifest_v1",
+        summary_schema="reasoning_diagnosis_study_public_summary_v1",
+        kind="reasoning_diagnosis_study")
+    coverage_row, coverage = manifest_result(
+        sources, coverage_path, manifest_name="artifact_manifest.json",
+        manifest_schema="diagnostic_coverage_audit_public_manifest_v1",
+        summary_schema="diagnostic_coverage_audit_public_summary_v1",
+        kind="diagnostic_coverage_audit")
+    sdk_by_mode: dict[str, int | None] = {}
+    for mode in ("legacy_none", "enabled_low"):
+        values = []
+        for case_id in ("c02", "c03", "c04", "c06", "c07", "c08"):
+            value, _source = _reasoning_case(
+                sources, reasoning_path, case_id, mode, summary is not None)
+            count = value and value.get("actual_sdk_role_executions")
+            if type(count) is not int:
+                values = []
+                break
+            values.append(count)
+        sdk_by_mode[mode] = sum(values) if len(values) == 6 else None
+    mode_rows = []
+    for mode, label in (("legacy_none", "reasoning 없음"), ("enabled_low", "reasoning low")):
+        metrics = (summary or {}).get("mode_metrics", {}).get(mode, {})
+        values = [
+            f"{metrics.get('correct_confirmed_family')}/6" if summary is not None else None,
+            f"{metrics.get('holds')}/6" if summary is not None else None,
+            metrics.get("compound_partial") if summary is not None else None,
+            metrics.get("wrong_family_confirmations") if summary is not None else None,
+            metrics.get("new_model_requests") if summary is not None else None,
+            sdk_by_mode[mode],
+        ]
+        mode_rows.append([label, *[cell(sources, value, reasoning_row["id"], None)
+                                  for value in values]])
+
+    legacy, legacy_id = _reasoning_case(
+        sources, reasoning_path, "c07", "legacy_none", summary is not None)
+    low, low_id = _reasoning_case(
+        sources, reasoning_path, "c07", "enabled_low", summary is not None)
+    legacy_dialogue_path = f"{reasoning_path}/dialogues/c07/legacy_none/step-02.json"
+    legacy_dialogue_row = sources.file(legacy_dialogue_path, kind="reasoning_diagnosis_dialogue")
+    legacy_dialogue = (_read(sources.root / legacy_dialogue_path)
+                       if summary is not None and legacy_dialogue_row["status"] == "ready" else None)
+    legacy_ok = bool(legacy and legacy.get("actions") == ["run_probe", "hold"]
+                     and legacy.get("decision_outcome") == "HOLD"
+                     and legacy.get("actual_sdk_role_executions") == 2
+                     and _contains_observation(legacy_dialogue, "P_reward", "normal"))
+    low_ok = bool(low and low.get("actions") == ["read_evidence", "run_probe"]
+                  and low.get("decision_outcome") == "confirmed"
+                  and low.get("correct_complete_family") is True
+                  and low.get("actual_sdk_role_executions") == 0
+                  and low.get("probe_execution_audit", [{}])[0].get("probe") ==
+                  "P_recorded_optimizer_updates")
+    case_rows = [
+        ["reasoning 없음", cell(sources, "P_reward → normal", legacy_dialogue_row["id"], None)
+         if legacy_ok else cell(sources, None, legacy_dialogue_row["id"], None),
+         cell(sources, "모델 HOLD", legacy_id, None) if legacy_ok else cell(sources, None, legacy_id, None),
+         cell(sources, 2, legacy_id, 0) if legacy_ok else cell(sources, None, legacy_id, 0)],
+        ["reasoning low", cell(sources, "count 읽기 → recorded count abnormal", low_id, None)
+         if low_ok else cell(sources, None, low_id, None),
+         cell(sources, "optimizer_update_count 확정", low_id, None)
+         if low_ok else cell(sources, None, low_id, None),
+         cell(sources, 0, low_id, 0) if low_ok else cell(sources, None, low_id, 0)],
+    ]
+    coverage_values = [
+        coverage and coverage.get("selection_actor"),
+        coverage and coverage.get("probe"), coverage and coverage.get("outcome"),
+        coverage and coverage.get("sdk_role_executions"),
+        "모델 결과 5/6 유지" if coverage is not None else None,
+    ]
+    return {
+        "id": "reasoning_followup", "title": "Reasoning 선택을 실제 진단까지 이어 본 후속 개발",
+        "lead": "같은 두 seed의 결함 6행에서 기록된 첫 선택을 이어 검사하고, 제안 형식과 실제 원인 확정을 나눠 본다.",
+        "blocks": [
+            {"type": "table", "title": "실제 진단 결과(각 결함 6행)",
+             "columns": ["요청 mode", "원인 확정", "HOLD", "복합 부분", "오확정", "새 API", "새 SDK role"],
+             "rows": mode_rows},
+            {"type": "table", "title": "대표 c07 · R1",
+             "columns": ["요청 mode", "관측 경로", "최종 판정", "새 SDK role"], "rows": case_rows},
+            {"type": "table", "wide": True, "title": "별도 operator coverage 감사(c02)",
+             "columns": ["선택 주체", "검사", "관측", "SDK role", "primary 집계"],
+             "rows": [[cell(sources, value, coverage_row["id"], None)
+                       for value in coverage_values]]},
+        ],
+        "notes": [
+            "원 응답 32회와 후속 새 API 8회는 분리했다. reasoning 없음은 새 API 2회·SDK role 4회, reasoning low는 새 API 6회·SDK role 2회다.",
+            "두 seed와 이미 공개된 결함을 쓴 노출 후 개발이다. 기본 mode는 바꾸지 않았고 새 교정·회복은 없다.",
+            "별도 operator 감사는 c02의 P_reward abnormal 관측 범위만 보완한다. 모델의 5/6을 6/6으로 바꾸지 않는다.",
+            "모델 3 대 3.5 또는 VL 구성의 이득, 일반화, 속도·GPU 절감의 근거가 아니다.",
+        ],
+    }
+
+
 def scene_cost(sources: Sources, slots: dict) -> dict:
     import publish_training_correction as Q3
     import publish_training_correction_v4 as Q4
@@ -1008,6 +1129,7 @@ def build(root: Path = ROOT) -> dict:
               scene_motor(sources, slots), scene_hold(sources), scene_upstream(sources), scene_upstream_demo(sources, slots),
               replay_d3.scene_d3(sources, slots), scene_nvidia(sources, slots),
               scene_prospective_comparison(sources, slots), scene_registered_partitions(sources, slots),
+              scene_reasoning_followup(sources, slots),
               scene_cost(sources, slots)]
     for index, scene in enumerate(scenes, start=1):
         scene["number"] = index

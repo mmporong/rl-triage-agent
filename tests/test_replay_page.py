@@ -211,6 +211,79 @@ def test_registered_partition_scene_uses_only_verified_summary_values(repo):
     B.check_public({"scenes": [scene], "sources": sources.rows})
 
 
+def _write_public_manifest(repo: Path, folder: str, manifest_schema: str,
+                           summary: dict, extra: dict[str, dict]) -> None:
+    root = repo / folder
+    root.mkdir(parents=True)
+    files = {"summary.json": summary, **extra}
+    declared = {}
+    for name, value in files.items():
+        path = root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
+        declared[name] = {"sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+    (root / "artifact_manifest.json").write_text(json.dumps({
+        "schema": manifest_schema, "files": declared}), encoding="utf-8")
+
+
+def test_reasoning_followup_waits_without_committed_public_manifests(repo):
+    sources = B.Sources(repo)
+    scene = B.scene_reasoning_followup(sources, {
+        "reasoning_diagnosis_study": "missing-reasoning",
+        "diagnostic_coverage_audit": "missing-coverage"})
+    assert scene["id"] == "reasoning_followup"
+    assert all(cell["value"] is None for block in scene["blocks"]
+               for row in block["rows"] for cell in row if isinstance(cell, dict))
+
+
+def test_reasoning_followup_uses_verified_summary_case_and_dialogue_sources(repo):
+    reasoning_summary = {"schema": "reasoning_diagnosis_study_public_summary_v1",
+        "mode_metrics": {
+            "legacy_none": {"correct_confirmed_family": 2, "holds": 4,
+                            "compound_partial": 0, "wrong_family_confirmations": 0,
+                            "new_model_requests": 2},
+            "enabled_low": {"correct_confirmed_family": 5, "holds": 1,
+                            "compound_partial": 2, "wrong_family_confirmations": 0,
+                            "new_model_requests": 6}}}
+    legacy = {"actions": ["run_probe", "hold"], "decision_outcome": "HOLD",
+              "actual_sdk_role_executions": 2}
+    low = {"actions": ["read_evidence", "run_probe"], "decision_outcome": "confirmed",
+           "correct_complete_family": True, "actual_sdk_role_executions": 0,
+           "probe_execution_audit": [{"probe": "P_recorded_optimizer_updates"}]}
+    reasoning_extra = {
+        f"cases/{case_id}-{mode}.json": {"actual_sdk_role_executions": (
+            2 if case_id in ({"c06", "c07"} if mode == "legacy_none" else {"c06"}) else 0)}
+        for case_id in ("c02", "c03", "c04", "c06", "c07", "c08")
+        for mode in ("legacy_none", "enabled_low")}
+    reasoning_extra.update({
+        "cases/c07-legacy_none.json": legacy, "cases/c07-enabled_low.json": low,
+        "dialogues/c07/legacy_none/step-02.json": {
+            "calls": [{"messages": [{"content": json.dumps({
+                "observations": [{"target": "P_reward", "outcome": "normal"}]})}]}]},
+    })
+    _write_public_manifest(repo, "reasoning", "reasoning_diagnosis_study_public_manifest_v1",
+                           reasoning_summary, reasoning_extra)
+    coverage = {"schema": "diagnostic_coverage_audit_public_summary_v1",
+                "selection_actor": "operator_registry_coverage_audit",
+                "probe": "P_reward", "outcome": "abnormal", "sdk_role_executions": 2}
+    _write_public_manifest(repo, "coverage", "diagnostic_coverage_audit_public_manifest_v1",
+                           coverage, {})
+    _git(repo, "add", "reasoning", "coverage")
+    _git(repo, "commit", "-q", "-m", "reasoning coverage")
+    sources = B.Sources(repo)
+    scene = B.scene_reasoning_followup(sources, {
+        "reasoning_diagnosis_study": "reasoning", "diagnostic_coverage_audit": "coverage"})
+    aggregate, cases, audit = scene["blocks"]
+    assert [[cell["value"] for cell in row[1:]] for row in aggregate["rows"]] == [
+        ["2/6", "4/6", 0, 0, 2, 4], ["5/6", "1/6", 2, 0, 6, 2]]
+    assert [cell["value"] for cell in cases["rows"][0][1:]] == ["P_reward → normal", "모델 HOLD", 2]
+    assert [cell["value"] for cell in cases["rows"][1][1:]] == [
+        "count 읽기 → recorded count abnormal", "optimizer_update_count 확정", 0]
+    assert [cell["value"] for cell in audit["rows"][0]] == [
+        "operator_registry_coverage_audit", "P_reward", "abnormal", 2, "모델 결과 5/6 유지"]
+    B.check_public({"scenes": [scene], "sources": sources.rows})
+
+
 def test_policy_comparison_separates_valid_option_actions_from_diagnostic_outcomes():
     rows = []
     for index in range(6):
@@ -306,10 +379,11 @@ def test_path_checker_rejects_private_or_network_references(text):
 
 def test_build_from_repository_is_publishable_and_never_mismatched(built):
     data = built
-    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 18))
+    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 19))
     assert [scene["id"] for scene in data["scenes"]] == [
         "failure", "curves", "warning", "probe", "correction", "demo", "nat_demo", "recovery", "motor", "hold", "upstream",
-        "upstream_demo", "d3", "nvidia", "prospective_comparison", "registered_partitions", "cost"]
+        "upstream_demo", "d3", "nvidia", "prospective_comparison", "registered_partitions",
+        "reasoning_followup", "cost"]
     statuses = {key: row["status"] for key, row in data["sources"].items()}
     assert "mismatch" not in statuses.values()
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
@@ -406,7 +480,7 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
                                    check=True, capture_output=True, text=True, encoding="utf-8")
         outputs[name] = json.loads(completed.stdout)
     clean = outputs["clean"]
-    assert len(clean) == 17 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
+    assert len(clean) == 18 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
     assert "<svg" in clean[1] and "polyline" in clean[1]
     dense = [scene["id"] for scene, html in zip(data["scenes"], clean, strict=True) if 'class="blocks dense"' in html]
     assert dense == ["correction", "demo", "nat_demo", "recovery", "upstream", "upstream_demo", "d3", "nvidia",
