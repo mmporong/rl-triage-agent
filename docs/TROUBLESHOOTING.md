@@ -886,3 +886,10 @@
 - 원인: 동결 선택기는 검사 예산이 0이고 후보가 여럿이면 `unidentifiable`을 반환한다. 세 번째 normal 뒤에도 다음 검사가 가능한 상태여야 한다는 종료 조건이 잘못됐다. 측정값·후보 축소·HOLD 규칙의 오류는 아니다.
 - 처리: 원래 실패와 미작성 result를 보존하고 [CPU 집계기](../evals/lineage_post_diagnosis_finalize_v1.py)에서 두 prefix 검사·세 응답·새 검사·승인 원장·최종 snapshot을 검증했다. 세 검사 완료와 controller 종료 실패를 [공개 집계](../evals/results/lineage_compound_s2307_20261031_v1/followup/summary.json)에 나눠 기록했다. CPU 집계는 새 API·검사·교정·학습을 허용하지 않는다.
 - 회귀: 예산 0의 미확정 상태는 `decision_limit HOLD`, 미완료 예산은 집계 거부, unknown은 unknown 유지, 지원 밖 physics 확정은 수리 권한 없는 HOLD로 처리한다. 기존 재개 등록은 재실행하지 않는다.
+
+### OPS-125: 원자 응답 queue의 binding 필드 위치 불일치
+
+- 관찰: 새 runtime 관측 개발 비교의 CPU 소비에서 transport v2의 `initialize → enqueue`가 `KeyError: 'anchor'`로 중단됐다. provider 송신은 0회였다.
+- 원인: 초기화는 anchor·session SHA·component·source 결합을 binding 객체의 최상위에 기록하지만, 소비 검증은 이를 protocol 참조 안에서 찾았다. JSON 원자 공개와 별개의 필드 조회 오류다.
+- 수정: [transport v3](../evals/lineage_nim_transport_v3.py)는 최상위 필드와 session의 등록 anchor를 대조한다. 기존 v1/v2·끝난 queue를 바꾸지 않고, 원자 공개·송신 전 intent·중복 송신 거부·요청 상한을 유지한다.
+- 검증: 실제 queue 초기화·송신 준비·CPU 응답·SHA·종료 경로와 binding 변조 거부를 확인했다. 실제 모델 호출과 새 seed 회복 효과는 별도 실행으로 판단한다.

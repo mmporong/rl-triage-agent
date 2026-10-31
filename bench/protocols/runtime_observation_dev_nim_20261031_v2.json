@@ -1,0 +1,57 @@
+{
+  "accepted_provider_models": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "component_v1_protocol": {
+    "path": "bench/protocols/runtime_observation_dev_nim_20261031_v1.json",
+    "sha256_lf": "839d7ff8964327964da3c5b6127f0fdc928e6919fcd11a7b43689ed66467f68c"
+  },
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "operator_approved": true,
+  "params": {
+    "extra_body": {
+      "reasoning_effort": "none"
+    },
+    "max_tokens": 16384,
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "stream": false,
+    "temperature": 0
+  },
+  "plan": {
+    "case_ids": [
+      "development-s2307"
+    ],
+    "global_request_cap": 6,
+    "logical_slots": [
+      {
+        "case_id": "development-s2307",
+        "slot_id": "telemetry_only"
+      },
+      {
+        "case_id": "development-s2307",
+        "slot_id": "telemetry_and_runtime"
+      }
+    ],
+    "per_slot_max": 3
+  },
+  "publication": {
+    "atomic_no_clobber_publish": true,
+    "existing_target_overwrite": false,
+    "partial_target_visible": false,
+    "same_directory_private_temp": true,
+    "target_never_precreated": true,
+    "temp_fsync": true
+  },
+  "schema": "lineage_nim_transport_protocol_v2",
+  "scope": {
+    "duplicate_send": false,
+    "existing_v1_queue_recovery": false,
+    "new_queue_only": true,
+    "provider_retry": false
+  },
+  "source_sha256_lf": {
+    "evals/lineage_nim_transport_v2.py": "6c2e07012a455b2754e394dbbe6051077ae7d28469439ec900fcb6ee7b503027",
+    "tests/test_lineage_nim_transport_v2.py": "bb896472e5257ee2f45fc4178c92c7bf223d03625bc2607b4199a36e891d00f3"
+  }
+}
