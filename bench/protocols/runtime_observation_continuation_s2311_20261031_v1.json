@@ -1,0 +1,187 @@
+{
+  "bounds": {
+    "combined_provider_requests_max": 24,
+    "development_model_requests": 2,
+    "epoch2_model_requests_max": 9,
+    "epoch2_model_slots": 3,
+    "eval_watchdog_s": 600,
+    "first_repair_training": 0,
+    "gpu_wait_s": 600,
+    "paired_probe_budget_s": 1200,
+    "repeat_first_probe": 0,
+    "second_repair_training_max": 1,
+    "source_training": 0,
+    "train_watchdog_s": 1800,
+    "wall_s": 14400
+  },
+  "components": {
+    "fixed": {
+      "path": "bench/protocols/fixed_eval_v1.json",
+      "sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46"
+    },
+    "probe": {
+      "path": "bench/protocols/runtime_observation_paired_probes_20261031_v1.json",
+      "sha256_lf": "19354a533c518791787d1871785776cce87d0cf16aed61c557c0aabaf2c01bf8"
+    },
+    "transport": {
+      "path": "bench/protocols/runtime_observation_continue_nim_20261031_v4.json",
+      "sha256_lf": "c6662818239938bdef2b8ecd20e4d7483e6913ccb8e9c7a6e6fbb29d43296be1"
+    },
+    "view": {
+      "path": "bench/protocols/runtime_observation_view_v1.json",
+      "sha256_lf": "be2f41d0526f942ae0e3b8634840d1a7be31961c94d36d354f6c462f7c1a8a68"
+    }
+  },
+  "coupling": {
+    "immutable_git_cache_operational_only": true,
+    "new_independent_seed": false,
+    "origin_overall_result_complete_required": false,
+    "requires_original_first_receipt": true,
+    "same_seen_seed": true
+  },
+  "external_effects": {
+    "brev_start": 0,
+    "lease_owner": "rl-triage-lineage-sources-v1",
+    "local_gpu_only": true,
+    "tokenfactory_requests": 0
+  },
+  "inherited": {
+    "conditions": [
+      "NONE",
+      "COMPOUND",
+      "FIRST_if_confirmed",
+      "BOTH_if_valid_not_recovered"
+    ],
+    "criteria": {
+      "HOLD": "invalid_model_or_unknown_or_unconfirmed_or_unsupported_or_exhausted_budget",
+      "confirmed": "existing_registered_single_subtype_and_actual_abnormal_confirmation_receipt",
+      "epoch2": "only_valid_not_recovered_receipt_with_current_checkpoint_and_consumed_correction_ledger",
+      "failure_absent": "preserve_and_stop_no_replacement_seed",
+      "recovery": "unchanged_fixed26_and_original_bands_against_same_seed_NONE",
+      "semantic_retry": false
+    },
+    "predictions": {
+      "COMPOUND": "source_failure_expected",
+      "NONE": "healthy_fixed26_host_gate_no_model_no_probe_no_correction",
+      "diagnosis": "runtime_counts_expected_to_prioritize_optimizer_probe_in_at_least_one_epoch",
+      "first_correction": "not_recovered_expected_with_one_remaining_fault",
+      "two_corrections": "recovered_expected_but_not_required_for_valid_measurement"
+    },
+    "training": {
+      "configured_epochs": 5,
+      "minibatches": 4,
+      "num_envs": 4096,
+      "recovery_mode": "fresh_restart",
+      "source_checkpoint_loaded": false,
+      "updates": 300
+    }
+  },
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "origin": {
+    "path": "bench/protocols/runtime_observation_recovery_s2311_20261031_v1.json",
+    "sha256_lf": "89ada9b7d0ee2266075d700109339c0d1307531bbe9b0b3da00bf106c60e95e2"
+  },
+  "outcomes": {
+    "HOLD": "등록된 경계에서 판단 또는 실행을 보류했으며 회복으로 계산하지 않는다.",
+    "not_recovered": "등록된 교정 뒤에도 새 seed의 고정26 회복 기준을 충족하지 못했다.",
+    "recovered": "등록된 새 seed의 복합 결함에서 계측을 포함한 진단·확인 검사·누적 교정·fresh 학습 뒤 고정26 회복 기준을 통과했다."
+  },
+  "params": {
+    "extra_body": {
+      "reasoning_effort": "none"
+    },
+    "max_tokens": 16384,
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "stream": false,
+    "temperature": 0
+  },
+  "purpose": "continue_verified_first_not_recovered_epoch_only",
+  "runtime_source_sha256_lf": {
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0"
+  },
+  "schema": "runtime_observation_continuation_protocol_v1",
+  "seed": 2311,
+  "source_sha256_lf": {
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+    "bench/lineage_recovery_training_v1.py": "afa9ffe7645a4ab1729830ea3ab1c32bfd623d6fed41c6a7a5d601c1a156011b",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/protocols/selection_comparison_view_v1.json": "81be94f3b359ea397179bd365d10d3694e5f7854675e909c495920c8d1129781",
+    "bench/r1_repair_training.py": "0b1b9aca9d17a4c8fce0a2f1aa451393bea701df66f4769156c2ff9d1f958ae6",
+    "bench/residual_faults_v1.py": "fae165b431588cb01e5140bd75481e907a0b3b71571df2beb6ba11278527ec25",
+    "bench/residual_probe_v1.py": "4d57ed44e9ecaf063d66746a200d28195cce4c322e5ca4f7de449a9106f40d1d",
+    "bench/residual_training_v1.py": "13e9d5733a9b49908e136e54dd0ac8b7dae387b40fa4115f254536c9d6692517",
+    "bench/run_lineage_recovery_v1.ps1": "83de5362d2e66d36f19bb836835f2ff1314db05d5b09ea1006c6e85f0bf62ce0",
+    "bench/run_runtime_observation_continuation_v1.ps1": "0f9e5e8f6b1dca4c89e4e44ce4c8ba105acea53b0c4d5d5e88b2f0713f01f976",
+    "bench/run_runtime_observation_v1.ps1": "466db99aba3f8c31c48985ec5133d8a99b684af9430bb430b08c265982809193",
+    "evals/core_seed_guard_v1.py": "a7755f67639a80f94452aba9d44b07ce97b582ee40f08c23a42f1201886e6fb1",
+    "evals/correction_model_call.py": "70d00e1d820700da7022493142e2017464fa2189cbcd4b95b97e4d6f558dfec0",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8",
+    "evals/immutable_git_proof_cache_v1.py": "3ec442e9bc095e5d8e526724425da5f529dca7e827e59d036b4d9935501155f4",
+    "evals/lineage_comparison_batch_v1.py": "780f16f2ea2dfc6e1479d71fdb62a6c656c294326b1c5c3938e18ea5e57f3e38",
+    "evals/lineage_compound_first_recovery_v1.py": "a25c63ba70b6c891bc31989a20e4071ace771898c89cd8810cb7e729e6e5ea74",
+    "evals/lineage_gpu_admission_v1.py": "e71e99fe308e11a754233a3b799d547b255ff9af74f20d0d1e1ab9c93630e029",
+    "evals/lineage_gpu_wait_v1.py": "7a6f55f048568d056ea9a8f04b43d87c30408adae9067b3757d484b6ed43feac",
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "evals/lineage_nim_transport_v1.py": "9ebfeb6a6de6b076f77dc683ac18dd36327172b65353b4742318c1b45540ea7e",
+    "evals/lineage_nim_transport_v2.py": "6c2e07012a455b2754e394dbbe6051077ae7d28469439ec900fcb6ee7b503027",
+    "evals/lineage_nim_transport_v3.py": "76969b83d67c63217187c7464f6c4eaaf37bb624a97182ffe97e4cd1f03c404b",
+    "evals/lineage_nim_transport_v4.py": "68d651bad943ca178c272ffd30d60a8abf223696d370328cf13a6be31066df35",
+    "evals/lineage_recovery_candidate_v1.py": "2ee5463798a77f8c86981c3d8d37374acae063c23884acf8d0c13b6b1a6edefb",
+    "evals/lineage_recovery_execution_v1.py": "958744724c34c217cfd1ade7f3fb6977d38cd98fa8c2740c60959a995a9c3db7",
+    "evals/lineage_recovery_execution_v2.py": "1c4a46c071d5be9d29cab34d011626bd1a9d8c9362db801922229c54e989c930",
+    "evals/lineage_recovery_inputs_v1.py": "6aebe192a20ba6c15f647c1713f6ef59873d3f78bfef46270255a6c0e492cf17",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "evals/optimizer_runtime_facts_v1.py": "6bbfe0d590fcd86ea9702b91d48c05684542eaaf03a09c9087e0637dc619a942",
+    "evals/preregistered_seed_guard.py": "e52ec2eceb4ab78b148e85a0e48f4b4e38eedbe8b803d83b37d1bb2ba975bcd2",
+    "evals/r1_repair_contract.py": "eeefe5819928cc0c5f81b0c3f38ae9900b31277698b4936eb2a850e7ec72f159",
+    "evals/residual_contract_v1.py": "0ad37bcc9399885a1d0c1e6e59b64053706fe1a1bd25b5253ac59b30068c5a90",
+    "evals/residual_demo_v1.py": "09a6bd9179219aff98774b57a836e6798e398ecde494278c17abedfe6a572e45",
+    "evals/residual_model_call_v1.py": "b3afed7cbbe347acb1aaae9214e986bb18c5fac0fd81299cd95b6fb96e424797",
+    "evals/residual_selection_v2.py": "d1a0028afbe00d2697246e4fe30640ec780e3c4b15486dd4f1ed7e722aec6bc8",
+    "evals/runtime_observation_continuation_v1.py": "bf00e119681444b92d4d34e7fdde82caa710d74c6cc13839c682b6832b503477",
+    "evals/runtime_observation_development_v1.py": "90fa0d9797dbff3e3bdef404f2ef5628b9d15eb832ad02c2c380b92e4f69712d",
+    "evals/runtime_observation_diagnosis_v1.py": "0d75c81585c9d9c69fbeb000f409ae88d7179452eee7487dff43611704704582",
+    "evals/runtime_observation_probe_v1.py": "1f2a1aa0f18a3d42d41e2eb2a45f263673ca3744118060a5707b9f53fbdcf56f",
+    "evals/runtime_observation_recovery_v1.py": "c0450d770648d99632802d7b74e4d9d1385a98d76b37132e91ef3adc4a9a47dc",
+    "evals/runtime_observation_training_v1.py": "c5d82f6cd7832301e63e72f556786c547b76cbb86be3af55b81694afa98b5462",
+    "evals/runtime_observation_view_v1.py": "bcfb11cc00a86b36b88f67b1ed89791e62f74584330e7445474e100a9c0ea0ba",
+    "evals/runtime_training_inputs_v1.py": "5aa11788c9e91b7f8a5125424c89d40933d573e0af379fd6f93e27122c030c12",
+    "evals/selection_comparison_call_v2.py": "46c5b97c993e6a66598d9ddd5eb15e62fe7bbf9282225fcb0c68c6b6c6291992",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "evals/selection_comparison_view_v1.py": "5180b96296251b3ae117edd612baba24676197dab93bab28f2e1cc0ef1d9e33d",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/active_diagnosis.py": "6439a854e50b0e3d5e5b77a77665215f0df7c8a496e2aa671af726effa848ea9",
+    "src/rl_triage/correction_ledger.py": "9953fdf609b29c9644b60bc86c3ad1a2c4d85274e9f14eede6da4e245c6a38f5",
+    "src/rl_triage/correction_registry.py": "ed00a2b5a78181db8dd61b80c8e76c42fce69cda8747fa24313a3fcfaef6ad95",
+    "src/rl_triage/mechanism_registry.py": "0bc3c47e52bdb6eb511cad5f6b76d047edfdfd1ca3c09d52fd637c47909d75d0",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "tests/test_core_seed_guard_v1.py": "70f224429d70b5f6d45d0d9dd653eb103f6f33d59f64aef2852a6d374a00cd5c",
+    "tests/test_immutable_git_proof_cache_v1.py": "a743de30756f57f9628a7de6830dbd4aff5cb2914d76601f6fab0341ac465bf0",
+    "tests/test_lineage_nim_transport_v1.py": "dccc535828c8c5fa522e31a7b9363478a8d67420540bee12accc350678473589",
+    "tests/test_lineage_nim_transport_v2.py": "bb896472e5257ee2f45fc4178c92c7bf223d03625bc2607b4199a36e891d00f3",
+    "tests/test_lineage_nim_transport_v3.py": "6c7529f88a982e42f3871a80c4eea2ec408a60f90e081b95cad0fc98ea110b53",
+    "tests/test_lineage_nim_transport_v4.py": "356002041d00adedd7779ab0c8585daeeccdeea283edbf48cc2838d9491738e7",
+    "tests/test_lineage_recovery_execution_v1.py": "d10ccdad2809bb3c9df2224930c78771c05330635104f0fd857f03a53f2fb7b8",
+    "tests/test_lineage_recovery_training_v1.py": "106e298bbffa1503c815cd73e5b5cc615de583279416de7fd5cc9422834999ea",
+    "tests/test_optimizer_runtime_facts_v1.py": "a4729fd0d7c65c3741aae68f6db75ce0397fbce86a5c356b2c3c25fc81b6b26f",
+    "tests/test_runtime_observation_continuation_v1.py": "34498b7a368a59ba160c122edb338c363b35b14de361286b085c3250067b584f",
+    "tests/test_runtime_observation_development_v1.py": "8d070355b921bdb697c624928a2d600594f872a4558bd22f1df0941dbd486862",
+    "tests/test_runtime_observation_diagnosis_v1.py": "4d36f88061e613097c548d034d12c1ff51f291704156664ed3bdd711b7fa584f",
+    "tests/test_runtime_observation_probe_v1.py": "e7d4c046f3bd84b4abeed7a195782df20c67784d25505493ffdb26f173a2f290",
+    "tests/test_runtime_observation_recovery_v1.py": "ac3965f614cbe7a7a0d33d4202dbf1a7baaaded26c0601e681bd060e562568a5",
+    "tests/test_runtime_observation_training_v1.py": "80325e48b226b8bd3de9a4fb90521e3f67222b9cf369d8dc1a3be161f9fb0d02",
+    "tests/test_runtime_observation_view_v1.py": "dfddd75d724836ee40ae918e3b6698feda24159fb6d576cbaa2ce57416a825c8",
+    "tests/test_runtime_training_inputs_v1.py": "5ab6a99eafd1b724131593c79e0c05f890461310feefd7e1613a80c756c59ccc",
+    "tests/test_selection_comparison_view_v1.py": "9a6526ba9b774be2079be17ff387ce3d128314adaf9f90800d2ce63bf6047b89"
+  },
+  "transport_runtime_observation": "lineage_nim_transport_protocol_v4"
+}
