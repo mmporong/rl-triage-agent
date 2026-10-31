@@ -1,0 +1,87 @@
+{
+  "development_followup_case_2307": {
+    "first_outcome": "not_recovered",
+    "followup_diagnosis": "HOLD",
+    "later_correction_executed": false,
+    "replaces_original_30_row_result": false,
+    "source": {
+      "path": "evals/results/lineage_compound_s2307_20261031_v1/summary.json",
+      "sha256": "2d1440c2750c861ae4e8871bd0f96326735c7f0dc1f49800e29c953c889fbfc5"
+    }
+  },
+  "new_execution": false,
+  "original_preselected_first_correction": {
+    "counts": {
+      "HOLD": 3,
+      "recovered": 1
+    },
+    "outcomes": [
+      {
+        "case_id": "case-03",
+        "outcome": "HOLD",
+        "policy": "registry_next",
+        "source": {
+          "path": "evals/results/lineage_first_recovery_s2303_20261031_v1/receipts/case-03_registry_next.json",
+          "sha256": "d57f4a72aa94e10b729f6d27a1935cbfa69c3c80b6e9cf3c76f4f6aca7b93b85"
+        }
+      },
+      {
+        "case_id": "case-03",
+        "outcome": "recovered",
+        "policy": "model_adaptive",
+        "source": {
+          "path": "evals/results/lineage_first_recovery_s2303_20261031_v1/receipts/case-03_model_adaptive.json",
+          "sha256": "984dee10e5f1b4a468126a9dc2ae054234cecb9320298a538abb2bcf8535bb8d"
+        }
+      },
+      {
+        "case_id": "case-07",
+        "outcome": "HOLD",
+        "policy": "registry_next",
+        "source": {
+          "path": "evals/results/lineage_first_recovery_s2303_20261031_v1/receipts/case-07_registry_next.json",
+          "sha256": "df146575aef0871b9e4f212000f945905dc2d40ca6fe15e2f0f8dd3a0e092270"
+        }
+      },
+      {
+        "case_id": "case-07",
+        "outcome": "HOLD",
+        "policy": "model_adaptive",
+        "source": {
+          "path": "evals/results/lineage_first_recovery_s2303_20261031_v1/receipts/case-07_model_adaptive.json",
+          "sha256": "f209c53cd121222834087b94a551ec4c9af96640d3cadc4a4d8e5c1da154d8c2"
+        }
+      }
+    ],
+    "planned_case_ids": [
+      "case-03",
+      "case-07"
+    ],
+    "planned_policy_rows": 4,
+    "source": {
+      "path": "evals/results/lineage_first_recovery_s2303_20261031_v1/summary.json",
+      "sha256": "81bbb8f1738b279ecc3292160dece48a6be5b1054d70c65b38803979a38ef73e"
+    },
+    "stage": "first_registered_correction_only"
+  },
+  "pooled_recovery_rate": null,
+  "reason_no_pooling": "preselected first-correction rows, development rerun, and later changed-input standalone case are different scopes",
+  "schema": "lineage_e2e_scope_inventory_v1",
+  "standalone_runtime_case_2311": {
+    "final_tracking_rmse_mps": 0.1416063768291903,
+    "first_outcome": "not_recovered",
+    "first_tracking_rmse_mps": 1.1633168334847432,
+    "fixed_conditions": 26,
+    "included_in_original_paired_comparison": false,
+    "model_requests": 4,
+    "replaces_original_30_row_result": false,
+    "second_outcome": "recovered",
+    "seed": 2311,
+    "source": {
+      "path": "evals/results/runtime_observation_compound_s2311_20261031_v1/summary.json",
+      "sha256": "0bb05ab138c81c2732f1ef1aff62eb407a452ac6dbccfbd90e32270361d9ae67"
+    },
+    "source_tracking_rmse_mps": 1.2189843368212436
+  },
+  "status": "complete"
+}

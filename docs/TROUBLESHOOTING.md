@@ -906,3 +906,9 @@
 - 변경: [불변 blob 캐시](../evals/immutable_git_proof_cache_v1.py)는 명시한 40자리 commit의 성공한 `git show <commit>:<path>`만 같은 실행 범위에서 재사용한다. 현재 파일·HEAD·index·체크포인트·원장·lease 읽기는 캐시하지 않는다. [별도 CPU 반복 검증](../evals/results/runtime_observation_compound_s2311_20261031_v1/proof-cache-cpu.json)에서 출력 digest가 같은 상태로 `git show` 336회가 168회로 줄었다. 이 수치는 모델 응답이나 전체 고리의 속도 개선 측정이 아니다.
 - 재개 경계: 첫 보상 교정의 300회 학습과 고정 26조건 평가는 유효한 `not_recovered` 영수증을 남겼다. 다음 모델 요청 전 queue를 닫아 원래 controller는 `invalid`로 종료됐으며 이 상태와 실패 원문은 보존한다. [새 등록](../bench/protocols/runtime_observation_continuation_s2311_20261031_v2.json)의 [실행기](../evals/runtime_observation_continuation_v1.py)는 첫 영수증·완료 원장·정상/복합 학습·원래 queue를 검증한 뒤 epoch2만 허용한다. 원래 source 학습과 첫 교정을 반복하지 않으며 전체 시간·API 상한을 이어 계산한다.
 - 실행 전 확인: 실제 첫 영수증을 재검산했고 원래 미송신 epoch2 snapshot과 재개 snapshot의 공개 view·모델 메시지가 같았다. 관련 CPU 검사 통과와 새 GPU 고리의 최종 결과는 구분한다.
+
+### OPS-128: 비교 행의 완료와 확인 검사의 미확정 구분
+
+- 관찰: 원래 진단 비교 30행은 기록상 `complete`였지만 26역할에는 probe 영수증 없는 부모 예외가, 1역할에는 자식 exit0·cleanup 뒤 `PermissionError`가 있었다. 결과 기록 완료를 측정 성공으로 해석하면 실행 실패와 진단 한도 HOLD가 섞인다.
+- 보완: [짝 비교 분석기](../evals/lineage_matched_analysis_v1.py)는 같은 source·초기 view·예산을 확인하고 관측 SHA·역할·자식 종료 증거와 측정값을 검증한다. 동결 분류와 후보 축소를 재생하며, 부모 예외를 성공 영수증으로 바꾸거나 측정값과 다른 outcome을 적은 자료를 거부한다. 원래 30행은 수정하지 않는다.
+- 검증과 결과: 재서명한 측정·outcome·역할·source 위조, 관측 누락과 경로 이탈을 CPU 회귀에서 거부했다. [새 집계](../evals/results/lineage_matched_analysis_20261101_v2/analysis.json)는 모델−고정 순서의 완전한 짝 4/10과 전체 미확정 범위를 분리한다. 이 분석의 새 GPU·API·학습은 0이다.
