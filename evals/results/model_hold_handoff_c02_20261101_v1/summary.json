@@ -1,0 +1,48 @@
+{
+  "api_requests": 0,
+  "approval_actor": "registered_handoff_trial_operator",
+  "case_id": "c02",
+  "claims": {
+    "correction": false,
+    "model_aggregate_improvement": false,
+    "model_improvement": false,
+    "new_independent_case": false,
+    "new_observation": false,
+    "new_training": false,
+    "recovery": false,
+    "speed_advantage": false
+  },
+  "original_model_selected_probe": false,
+  "paired_probes": 1,
+  "parent_model_outcome": "HOLD",
+  "parent_model_result_changed": false,
+  "parent_wall_s": 136.76500000001397,
+  "probe_outcome": "abnormal",
+  "proposal": {
+    "action": "run_probe",
+    "fact_ids": [
+      "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+      "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+      "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+      "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+    ],
+    "target": "P_reward"
+  },
+  "proposal_authority": {
+    "approval_granted": false,
+    "automatic_resume": false,
+    "correction_allowed": false,
+    "execution_allowed": false
+  },
+  "reference_case_id": "c01",
+  "schema": "model_hold_handoff_trial_public_summary_v1",
+  "scope": {
+    "automatic_resume": false,
+    "integration_trial_not_independent_case": true,
+    "post_exposure_development": true,
+    "same_source_prior_audit_already_observed": true
+  },
+  "sdk_role_executions": 2,
+  "selector_actor": "registered_rule_after_model_hold_proposal",
+  "status": "complete"
+}

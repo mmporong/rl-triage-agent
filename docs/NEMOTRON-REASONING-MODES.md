@@ -87,3 +87,5 @@
 감사는 모델 호출0회·새 Isaac 실행2회였으며, 선택 주체는 `operator_registry_coverage_audit`다. 기존 모델의 HOLD와5/6 집계는 바꾸지 않는다. 다른 검사의 결과나 새 교정·회복도 추정하지 않는다.
 
 [후속 제안 기능](../evals/model_hold_followup_v1.py)은 이런 유효 HOLD를 보존하면서 남은 예산의 등록 검사만 제안한다. 부모 결과 SHA, 닫힌 상태와 직전 상태, 모델 응답, source·checkpoint를 검증한다. c02에서는 `P_reward`, c07의 기존 설정에서는 갱신 기록 조회를 CPU에서 제안했다. 승인·실행·교정·자동 재개 권한은 모두 false다. 이는 원래 모델 선택과 분리한 기능이며, 실행 효과를5/6 결과에 더하지 않는다.
+
+이어 [별도 실행 등록](../bench/protocols/model_hold_handoff_trial_20261101_v1.json)으로 c02의 후속 제안을 실제 검사에 연결했다. 등록 규칙의 제안과 별개로 운영자 승인을 기록한 뒤 `P_reward` 한 쌍을 실행했고, [abnormal 결과와 상태 전이를 확인했다](../evals/results/model_hold_handoff_c02_20261101_v1/summary.json). API 호출은0회, 새 Isaac 실행은2회였다. 앞선 감사에서 결과를 본 같은 source를 사용한 실행 연결 시험이며, 원래 모델의 HOLD·5/6 집계·기본 모드는 그대로다. 교정·재학습·회복은 실행하지 않았다.
