@@ -1,0 +1,63 @@
+{
+  "budget": {
+    "api_cap": 0,
+    "automatic_retry": false,
+    "pair_cap": 2,
+    "sdk_role_cap": 4,
+    "wall_cap_s": 3600
+  },
+  "oracle_policy": {
+    "correction": false,
+    "host_storage_policy": "registry_next",
+    "name": "registered_f2_torque_oracle_control",
+    "new_model_calls": 0,
+    "probe": "P_torque",
+    "selection_performance_credit": 0,
+    "training": false
+  },
+  "original_budget": {
+    "paired_cap": 150,
+    "paired_consumed": 89,
+    "sdk_role_cap": 300,
+    "sdk_roles_consumed": 178,
+    "wall_cap_s": 144000,
+    "wall_consumed_s": 26423.893268999982
+  },
+  "private_plan_digest": "3cdb001018642393d090e1412de748bb4866c68d89f669301f33a724c96a1a1d",
+  "private_plan_sha256": "fc329ebbaa7a565fc01140fb91c015dcb19cd7993c037dfc6421e285f61d40aa",
+  "r3": {
+    "batch_sha256": "1d53f5f92c9ab9b616348c55e8dbc16a144c70f939fe5e9cd7e69ae98c78d4c9",
+    "config_sha256": "6b3078954ccc60329c1bda7f193aba2d22310220e75eb27ca09daa21f8e196b1",
+    "protocol_sha256": "4ff1beed12e6b8e230d16c963acbdb935938956b08134eaed95aa2f639a3202c",
+    "semantic_anchor": "a8f6dbe8679e1f9b54a47c4d7db415b35fd8c55e",
+    "source_index_sha256": "62894d9de7134f68789e4691fb69cef00228381a5ab3a774e2ec40d9b7aa99e5"
+  },
+  "schema": "f2_probe_coverage_overlay_protocol_v1",
+  "source_files_lf": {
+    "bench/run_f2_probe_coverage_v1.py": "c3835aed02cba12108da8270db143296ad58fcdde4423f37973eed784e90778f",
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "evals/lineage_probe_cost_audit_v1.py": "65518b3b552a52fc98a5d96775678a08d7c7b6829ecbf2dd92767f0fd759685d",
+    "evals/registered_optimizer_first_policy_v1.py": "90f7259fd06b0eb9234105850769169b0ec580e19fb5d0bd02d6cd1b7071d5ae",
+    "tests/test_f2_probe_coverage_v1.py": "469aeb6bea3e6891547c44afa8afa6ed79b35fb6f9d36696afd5afdc782cdfd6",
+    "tests/test_lineage_lease_context_v2.py": "12045b2d012e5b8a1ab1644a47a2d59708f22e2823ae7dcfc75574ef36b7c6a9",
+    "tests/test_lineage_probe_cost_audit_v1.py": "6bad7f07791fd48165dc83089356a62c190d9939fb948f6e677f57e3ee0263db",
+    "tests/test_registered_optimizer_first_policy_v1.py": "4109092e5267ff455ca2cc231867869f0d932123c348b523ce5ea019ae2fa04a"
+  },
+  "status": "draft_not_executable_until_committed",
+  "targets": [
+    {
+      "action": "execute_one_pair",
+      "case_checkpoint_sha256": "c7091796b1f40ceca0dc6e386815e199524ab50b84e11b4314996da7ce9d7fd8",
+      "case_id": "case-05",
+      "oracle_label": "F2",
+      "reference_checkpoint_sha256": "01feada6c56cead058f2711c7914aa0b2e11cd63dc8645831640e439dec7b307"
+    },
+    {
+      "action": "execute_one_pair",
+      "case_checkpoint_sha256": "5361817702413024a8b86386190169b72130b83cf9924966c592d73fb36878aa",
+      "case_id": "case-06",
+      "oracle_label": "F2",
+      "reference_checkpoint_sha256": "76a6bf9b987770244c5fcc1175d9bc07d69a9889c2fd88af2fc3a0759c62439c"
+    }
+  ]
+}
