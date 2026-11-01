@@ -1,7 +1,6 @@
 # pyright: reportMissingImports=false
 from __future__ import annotations
 
-import json
 import sys
 from contextlib import nullcontext
 from copy import deepcopy

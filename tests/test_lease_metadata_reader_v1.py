@@ -70,10 +70,10 @@ def test_invalid_json_and_non_object_are_not_retried(tmp_path: Path) -> None:
         calls = 0
         sleeps: list[float] = []
 
-        def reader(_path: Path) -> bytes:
+        def reader(_path: Path, selected_raw: bytes = raw) -> bytes:
             nonlocal calls
             calls += 1
-            return raw
+            return selected_raw
 
         with pytest.raises(error_type):
             M.read_lease_metadata(tmp_path / "gpu-lease.json", reader=reader,
@@ -87,10 +87,10 @@ def test_non_transient_permission_and_other_io_errors_are_not_retried(tmp_path: 
         calls = 0
         sleeps: list[float] = []
 
-        def reader(_path: Path) -> bytes:
+        def reader(_path: Path, selected_failure: BaseException = failure) -> bytes:
             nonlocal calls
             calls += 1
-            raise failure
+            raise selected_failure
 
         with pytest.raises(type(failure)) as caught:
             M.read_lease_metadata(tmp_path / "gpu-lease.json", reader=reader,

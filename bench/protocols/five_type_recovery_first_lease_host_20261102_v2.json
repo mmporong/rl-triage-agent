@@ -1,0 +1,39 @@
+{
+  "lease_reader": {
+    "callback": "lease_context",
+    "module": "lineage_lease_context_v2",
+    "source_files_lf": {
+      "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+      "tests/test_lineage_lease_context_v2.py": "12045b2d012e5b8a1ab1644a47a2d59708f22e2823ae7dcfc75574ef36b7c6a9"
+    }
+  },
+  "schema": "five_policy_recovery_lease_outer_host_v1",
+  "scope": {
+    "approval_changed": false,
+    "lease_binding_only": true,
+    "lease_validation_changed": false,
+    "prepare_cli_reused": true,
+    "run_cli_reused": true,
+    "sdk_api_caps_changed": false
+  },
+  "source_files_lf": {
+    "bench/run_five_policy_recovery_with_lease_v1.py": "41277e86217ddcb1549d2585d8d579e087a68f6af01a1a88555ab38796321bd6",
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "tests/test_five_policy_recovery_with_lease_v1.py": "d40e3f6458bd82fc638d008f5768c75d1a9a34f9f9e61e177f1be1199016b2b7",
+    "tests/test_lineage_lease_context_v2.py": "12045b2d012e5b8a1ab1644a47a2d59708f22e2823ae7dcfc75574ef36b7c6a9"
+  },
+  "stage_protocols": {
+    "first": {
+      "path": "bench/protocols/five_type_recovery_first_s4552_s4557_20261101_v1.json",
+      "sha256": "0836ae4dcf5bca5e0c57ec33c9eb872637dbe8af498a89c7a02368bc66cee941",
+      "sha256_lf": "0836ae4dcf5bca5e0c57ec33c9eb872637dbe8af498a89c7a02368bc66cee941",
+      "source_anchor": "a8f6dbe8679e1f9b54a47c4d7db415b35fd8c55e"
+    }
+  },
+  "status": "preregistered_outer_host",
+  "underlying_runner": {
+    "path": "bench/run_five_policy_recovery_loop_v1.py",
+    "sha256": "a50c2bb831253ca068724821b4de9cf73b3c73aa696a6080628d52e535900451",
+    "sha256_lf": "a50c2bb831253ca068724821b4de9cf73b3c73aa696a6080628d52e535900451"
+  }
+}
