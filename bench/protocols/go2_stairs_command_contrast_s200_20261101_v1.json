@@ -1,0 +1,142 @@
+{
+  "acceptance": {
+    "body_up_world_z_negative_count": 0,
+    "fps": 50,
+    "full_encoder_frames": 625,
+    "height_condition_pass": true,
+    "progress_condition_pass": true,
+    "shutdown_verified": true,
+    "termination_seen": false
+  },
+  "checkpoints": {
+    "quadruped": {
+      "bytes": 6881762,
+      "file": "go2_rough_checkpoint.pt",
+      "sha256": "f2aa77bf0349c10ec2a00071162e37123d0cf80f3447c3989c17a618e1b24ad2"
+    }
+  },
+  "claims": {
+    "development_seen_source": true,
+    "heldout": false,
+    "model_api": false,
+    "new_training": false,
+    "recovery_evidence": false,
+    "speed_effect_confirmed_before_run": false
+  },
+  "clips": [
+    {
+      "clip_id": "quadruped-stairs-up-step-0p05-cmd-0p25",
+      "command_x_m_s": 0.25,
+      "direction": "up"
+    },
+    {
+      "clip_id": "quadruped-stairs-down-step-0p05-cmd-0p25",
+      "command_x_m_s": 0.25,
+      "direction": "down"
+    },
+    {
+      "clip_id": "quadruped-stairs-up-step-0p05-cmd-0p75",
+      "command_x_m_s": 0.75,
+      "direction": "up"
+    },
+    {
+      "clip_id": "quadruped-stairs-down-step-0p05-cmd-0p75",
+      "command_x_m_s": 0.75,
+      "direction": "down"
+    }
+  ],
+  "condition": {
+    "checkpoint_sha256": "f2aa77bf0349c10ec2a00071162e37123d0cf80f3447c3989c17a618e1b24ad2",
+    "commands_x_m_s": [
+      0.25,
+      0.75
+    ],
+    "directions": [
+      "up",
+      "down"
+    ],
+    "fps": 50,
+    "frames": 625,
+    "seed": 200,
+    "step_height_m": 0.05,
+    "step_width_m": 0.3
+  },
+  "execution": {
+    "automatic_retry": 0,
+    "gpu_lease_owner": "rl-triage-lineage-sources-v1",
+    "maximum_sdk_processes": 4,
+    "motion_failure_continues_registered_conditions": true,
+    "parameter_sweep": false,
+    "technical_failure_stops_remaining": true,
+    "timeout_per_child_s": 1200
+  },
+  "isaaclab": {
+    "commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "common_files_lf": {
+      "source/isaaclab/isaaclab/terrains/config/rough.py": "4ae6c727d1ff5c1b483b7321a284fd9c241cfe26417c66d74ccbb33c3405fabc",
+      "source/isaaclab/isaaclab/terrains/trimesh/mesh_terrains.py": "586070f00af21420bd86e8610174bfa628d6b87ce5c86931011cc97f67358323",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+    },
+    "expected_runtime": {
+      "gymnasium": "1.2.0",
+      "isaaclab": "0.41.3",
+      "isaaclab_rl": "0.1.8",
+      "python": "3.10.15",
+      "rsl_rl": "2.3.3",
+      "torch": "2.7.0+cu128"
+    },
+    "files_lf": {
+      "source/isaaclab/isaaclab/terrains/config/rough.py": "4ae6c727d1ff5c1b483b7321a284fd9c241cfe26417c66d74ccbb33c3405fabc",
+      "source/isaaclab/isaaclab/terrains/trimesh/mesh_terrains.py": "586070f00af21420bd86e8610174bfa628d6b87ce5c86931011cc97f67358323",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+    },
+    "role_files_lf": {
+      "quadruped": {
+        "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0"
+      }
+    }
+  },
+  "preregistered_prediction": {
+    "command_0p25": {
+      "down": "existing_source_upright_rejection_expected",
+      "up": "existing_source_progress_failure_expected"
+    },
+    "command_0p75": {
+      "down": "effect_unknown_failure_possible",
+      "up": "effect_unknown_failure_possible"
+    },
+    "speed_effect_confirmed_before_run": false
+  },
+  "private_source_sha256_lf": {
+    "base_local_stairs_controller": "54a4303172753e1c39da89407fa62cfac21f39867b97dc7d63b1c565026de9f2",
+    "controller": "5687129bfb1658d3b6ab1e4ed21d0471243413a7c41cff2a2bd5c2e28a7bc1bd",
+    "exact_writer_shutdown_wrapper": "90c25252f171f6a85f247828df35c2cc23502511cb4b13b117780b90bfdb67fc",
+    "legacy_exact_writer_controller": "d9f633de92cd0b6bf5363c60666bfa7578782219d49b0b6b6c7f74bb7d39b552",
+    "preparer": "f612559c289a890c259e917d797441da9978a3c842e2b9f433c3d16e57e3160a",
+    "shutdown_policy_wrapper": "4fc429ada68b1675da91fc2d4571d63859ec3c61282574c65b339124670e2cc9",
+    "tests": "98467506e94c27dbb0057a2fa5ad4e928bf83bca0d209dbab30b389e58aec9bf"
+  },
+  "purpose": "같은 Go2 policy·seed·0.05m 계단에서 0.25m/s와 0.75m/s 명령을 비교한다.",
+  "result_language": {
+    "not_supported": "no_registered_condition_motion_accepted",
+    "partial": "some_registered_conditions_motion_accepted",
+    "positive": "all_four_conditions_motion_accepted",
+    "preserve_every_condition": true,
+    "technical_incomplete": "technical_failure_stopped_remaining_conditions"
+  },
+  "schema": "go2_stairs_velocity_execution_v1",
+  "source_anchor": "635564dab2ab9656897588b5bea07e7e631dd273",
+  "source_sha256_lf": {
+    "bench/run_go2_stairs_velocity_v1.py": "f6e0a2c4f3e30d1ba040fc0ebce0586f225c6daf23740037370b60f624d73807",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/run_stairs_playback_v2.py": "6858d73783ce02fecee6f901033660fd115c17f139d2937e07728fc25c075b5a",
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "evals/run_prospective_reasoning_confirmation_v2.py": "574e9319a560f3421f26c3c9bbf0abdb339023b3ecdf87277027f404d5db20c2",
+    "evals/stairs_motion_integrity_v1.py": "ce5b675850791aed4b9b90eced16f31a9782b4b8f7f0a227199582b35b66f8a8",
+    "tests/test_go2_stairs_velocity_v1.py": "65f3c5cf7471600c75ef04d722a1e86268b1de672ab7facf50e6fa89fe795466",
+    "tests/test_lineage_lease_context_v2.py": "12045b2d012e5b8a1ab1644a47a2d59708f22e2823ae7dcfc75574ef36b7c6a9",
+    "tests/test_run_prospective_reasoning_confirmation_v2.py": "9ffd089c1bd118bdb3f8b768700e90a9f1fb8fa4a52fc03911ca76a095d74cd2"
+  },
+  "status": "registered_only_after_commit"
+}
