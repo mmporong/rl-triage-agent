@@ -67,3 +67,12 @@ def test_cli_import_and_help_finish_without_sdk_or_provider(tmp_path: Path):
         cwd=ROOT, capture_output=True, encoding="utf-8", errors="replace", check=False, timeout=30)
     assert completed.returncode == 0, completed.stderr
     assert "--preflight" in completed.stdout and "--anchor" in completed.stdout
+
+
+def test_public_lease_metadata_uses_the_existing_canonical_normalizer():
+    raw = {"leaseId": "30c23b3a-f098-4002-b22c-bb9dddae3ec4",
+           "owner": B.R.SOURCE.OWNER, "state": "running", "completedUtc": None}
+    normalized = B.R2.normalize_lease_metadata(raw)
+    assert normalized["lease_id"] == raw["leaseId"] and "lease_id" not in raw
+    with pytest.raises(ValueError, match="충돌"):
+        B.R2.normalize_lease_metadata({**raw, "lease_id": "different"})

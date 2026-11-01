@@ -16,10 +16,12 @@ import local_pair_four_arm_v1 as M
 import local_pair_nim_transport_v1 as NIM
 import local_pair_probe_host_v1 as HOST
 import run_prospective_reasoning_confirmation_v1 as R
+import run_prospective_reasoning_confirmation_v2 as R2
 
 SOURCE_FILES = tuple(sorted({*M.SOURCE_FILES, *HOST.SOURCE_FILES, *NIM.SOURCE_FILES,
     "bench/run_local_pair_four_arm_v1.py", "tests/test_run_local_pair_four_arm_v1.py",
-    "evals/run_prospective_reasoning_confirmation_v1.py"}))
+    "evals/run_prospective_reasoning_confirmation_v1.py",
+    "evals/run_prospective_reasoning_confirmation_v2.py"}))
 
 
 def mounted(path: Path) -> str:
@@ -158,7 +160,7 @@ def execute(protocol: Path, anchor: str, config_path: Path, output: Path) -> dic
     output = output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     started = time.monotonic()
-    lease = R.SOURCE.LEASE.lease_context(output / "lease-initial")
+    lease = R2.normalize_lease_metadata(R.SOURCE.LEASE.lease_context(output / "lease-initial"))
     M.require(lease["owner"] == R.SOURCE.OWNER, "GPU lease owner")
     NIM.initialize(output / "nim", protocol_path=protocol, execution_anchor=anchor, api_cap=12)
     paired = 0
@@ -167,7 +169,7 @@ def execute(protocol: Path, anchor: str, config_path: Path, output: Path) -> dic
     def context(_request: dict | None = None) -> dict:
         M.require(time.monotonic() - started < spec["wall_cap_s"], "batch wall 상한")
         M.require(M.sha(config_path) == spec["execution_config_sha256"], "실행 config 변경")
-        now = R.SOURCE.LEASE.lease_context()
+        now = R2.normalize_lease_metadata(R.SOURCE.LEASE.lease_context())
         M.require(now["lease_id"] == lease["lease_id"] and now["owner"] == lease["owner"], "GPU lease 변경")
         for name, expected in spec["sources_lf"].items():
             M.require(M.sha(ROOT / name, lf=True) == expected, "실행 source 변경: " + name)
