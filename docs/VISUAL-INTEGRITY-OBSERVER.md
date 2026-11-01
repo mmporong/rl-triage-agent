@@ -42,6 +42,14 @@ Nemotron 3.5 Super VL이 이미지에서 로봇 위치를 읽고, 호스트가 �
 
 실제 VL 영수증으로 후속 소비 게이트도 CPU에서 실행했다. 오류 녹화 두 건의 소비자 호출은 각각 0회, 일치 녹화는 각각 1회였고 검사한 3초·6초 두 프레임만 전달됐다. 이 확인에서 추가 API는 없었고 새 원인 진단·교정·재학습도 수행하지 않았다.
 
+## 입력 누락과 프레임 품질의 별도 경계
+
+[입력 누락 검사](../evals/results/agentic_input_unavailability_dev_20261101_v1/summary.json)는 보관 사본에서 등록 프레임을 찾지 못하면 `HOLD/unknown` 영수증을 남기고 모델·승인·실행을 호출하지 않는다. 같은 영수증을 재사용할 수 있으며, 원본 프레임은 바꾸지 않는다.
+
+[품질 검사](../evals/agentic_frame_quality_guard_v1.py)는 등록 SHA와 기존 JPEG 검증을 통과한 이미지에 FFmpeg gray8의 4-neighbor Laplacian population variance를 계산한다. 사전등록한 개발용 floor 10 intensity² 미만은 `quality_below_registered_floor/unknown`으로 기록하고 해당 이미지 블록을 제외한다. 학습 수치와 텍스트는 유지한다. 이 floor는 보편적인 흐림 판정 기준이 아니며, 이미지 선명도만으로 시뮬레이션 상태와의 일치를 알 수 없다.
+
+[실제 CPU 소비](../evals/results/agentic_frame_quality_actual_development_20261101_v1/summary.json)는 기존 v07b 자료의 JPEG2개에서 903.5998·1078.9633 intensity²를 기록했다. 두 이미지는 floor를 통과했고 이미지2개·학습 fact48개가 유지됐다. 별도 Runtime은 보존된 조회 응답 뒤 `blocked_host`에서 멈췄으며 추가 API·승인·dispatch·GPU는0회였다. 프레임 조회자는 CPU 시험 운영자였고 모델의 선택이 아니다. 이 자료는 옛 렌더 계보의 가용성 대조이므로, 품질 통과를 행동 정답·영상 사용 승인·렌더 정합성으로 승격하지 않는다. 흐린 실제 녹화나 영상 기반 진단 이득은 이 측정에서 확인하지 않았다.
+
 ## 재현과 적용 범위
 
 - [V1 사전등록](../bench/protocols/visual_integrity_experiment_dev_20261030_v1.json)·[실패 결과와 원문](../evals/results/visual_integrity_dev_20261030_v1/summary.json)
