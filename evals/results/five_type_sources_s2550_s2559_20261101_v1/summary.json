@@ -1,0 +1,276 @@
+{
+  "actual": true,
+  "case_plan": [
+    {
+      "case_id": "case-01",
+      "classification": "eligible",
+      "exclusion_reason": null,
+      "reference_id": "source-02",
+      "reference_relation": "different_seed_normal_reference",
+      "source_id": "source-01",
+      "source_type": "NONE",
+      "valid_after_dedup": true
+    },
+    {
+      "case_id": "case-02",
+      "classification": "eligible",
+      "exclusion_reason": null,
+      "reference_id": "source-04",
+      "reference_relation": "different_seed_normal_reference",
+      "source_id": "source-03",
+      "source_type": "NONE",
+      "valid_after_dedup": true
+    },
+    {
+      "case_id": "case-03",
+      "classification": "eligible",
+      "exclusion_reason": null,
+      "reference_id": "source-05",
+      "reference_relation": "same_seed_none_reference",
+      "source_id": "source-06",
+      "source_type": "F1",
+      "valid_after_dedup": true
+    },
+    {
+      "case_id": "case-04",
+      "classification": "eligible",
+      "exclusion_reason": null,
+      "reference_id": "source-07",
+      "reference_relation": "same_seed_none_reference",
+      "source_id": "source-08",
+      "source_type": "F1",
+      "valid_after_dedup": true
+    },
+    {
+      "case_id": "case-05",
+      "classification": "eligible",
+      "exclusion_reason": null,
+      "reference_id": "source-09",
+      "reference_relation": "same_seed_none_reference",
+      "source_id": "source-10",
+      "source_type": "F2",
+      "valid_after_dedup": true
+    },
+    {
+      "case_id": "case-06",
+      "classification": "eligible",
+      "exclusion_reason": null,
+      "reference_id": "source-11",
+      "reference_relation": "same_seed_none_reference",
+      "source_id": "source-12",
+      "source_type": "F2",
+      "valid_after_dedup": true
+    },
+    {
+      "case_id": "case-07",
+      "classification": "eligible",
+      "exclusion_reason": null,
+      "reference_id": "source-13",
+      "reference_relation": "same_seed_none_reference",
+      "source_id": "source-14",
+      "source_type": "COMPOUND",
+      "valid_after_dedup": true
+    },
+    {
+      "case_id": "case-08",
+      "classification": "eligible",
+      "exclusion_reason": null,
+      "reference_id": "source-15",
+      "reference_relation": "same_seed_none_reference",
+      "source_id": "source-16",
+      "source_type": "COMPOUND",
+      "valid_after_dedup": true
+    },
+    {
+      "case_id": "case-09",
+      "classification": "out_of_support",
+      "exclusion_reason": null,
+      "reference_id": "source-17",
+      "reference_relation": "same_seed_none_reference",
+      "source_id": "source-18",
+      "source_type": "F5",
+      "valid_after_dedup": true
+    },
+    {
+      "case_id": "case-10",
+      "classification": "out_of_support",
+      "exclusion_reason": null,
+      "reference_id": "source-19",
+      "reference_relation": "same_seed_none_reference",
+      "source_id": "source-20",
+      "source_type": "F5",
+      "valid_after_dedup": true
+    }
+  ],
+  "classification_labels": {
+    "eligible": 8,
+    "out_of_support": 2
+  },
+  "counts": {
+    "actual_model_api_calls": 0,
+    "anonymous_sources": 20,
+    "excluded": 0,
+    "fixed26_sdk_completed": 20,
+    "planned_cases": 10,
+    "repairs": 0,
+    "training_sdk_completed": 20,
+    "valid_after_dedup": 10
+  },
+  "known_fault_types": [
+    "COMPOUND",
+    "F1",
+    "F2",
+    "F5"
+  ],
+  "known_source_types": [
+    "COMPOUND",
+    "F1",
+    "F2",
+    "F5",
+    "NONE"
+  ],
+  "reference_relationships": {
+    "different_seed_normal_reference": 2,
+    "same_seed_none_reference": 8
+  },
+  "runtime_observation": {
+    "available_flags": 0,
+    "fabricated": false,
+    "facts_per_case": 16,
+    "observed": 0,
+    "status": "unavailable_requires_separate_gpu_run"
+  },
+  "schema": "lineage_source_collection_public_v2_summary",
+  "scope": "actual_source_collection",
+  "sdk_completion_scope": "20 training과 20 fixed26 완료 receipt 수; wall-clock과 별도",
+  "seed_semantics": "새 source seed는 독립 반복이며 새 fault type을 뜻하지 않는다.",
+  "sources": [
+    {
+      "fixed26": "sources/source-01/fixed26.json",
+      "provenance": "sources/source-01/provenance.json",
+      "source_id": "source-01",
+      "training_curves": "sources/source-01/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-02/fixed26.json",
+      "provenance": "sources/source-02/provenance.json",
+      "source_id": "source-02",
+      "training_curves": "sources/source-02/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-03/fixed26.json",
+      "provenance": "sources/source-03/provenance.json",
+      "source_id": "source-03",
+      "training_curves": "sources/source-03/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-04/fixed26.json",
+      "provenance": "sources/source-04/provenance.json",
+      "source_id": "source-04",
+      "training_curves": "sources/source-04/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-05/fixed26.json",
+      "provenance": "sources/source-05/provenance.json",
+      "source_id": "source-05",
+      "training_curves": "sources/source-05/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-06/fixed26.json",
+      "provenance": "sources/source-06/provenance.json",
+      "source_id": "source-06",
+      "training_curves": "sources/source-06/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-07/fixed26.json",
+      "provenance": "sources/source-07/provenance.json",
+      "source_id": "source-07",
+      "training_curves": "sources/source-07/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-08/fixed26.json",
+      "provenance": "sources/source-08/provenance.json",
+      "source_id": "source-08",
+      "training_curves": "sources/source-08/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-09/fixed26.json",
+      "provenance": "sources/source-09/provenance.json",
+      "source_id": "source-09",
+      "training_curves": "sources/source-09/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-10/fixed26.json",
+      "provenance": "sources/source-10/provenance.json",
+      "source_id": "source-10",
+      "training_curves": "sources/source-10/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-11/fixed26.json",
+      "provenance": "sources/source-11/provenance.json",
+      "source_id": "source-11",
+      "training_curves": "sources/source-11/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-12/fixed26.json",
+      "provenance": "sources/source-12/provenance.json",
+      "source_id": "source-12",
+      "training_curves": "sources/source-12/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-13/fixed26.json",
+      "provenance": "sources/source-13/provenance.json",
+      "source_id": "source-13",
+      "training_curves": "sources/source-13/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-14/fixed26.json",
+      "provenance": "sources/source-14/provenance.json",
+      "source_id": "source-14",
+      "training_curves": "sources/source-14/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-15/fixed26.json",
+      "provenance": "sources/source-15/provenance.json",
+      "source_id": "source-15",
+      "training_curves": "sources/source-15/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-16/fixed26.json",
+      "provenance": "sources/source-16/provenance.json",
+      "source_id": "source-16",
+      "training_curves": "sources/source-16/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-17/fixed26.json",
+      "provenance": "sources/source-17/provenance.json",
+      "source_id": "source-17",
+      "training_curves": "sources/source-17/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-18/fixed26.json",
+      "provenance": "sources/source-18/provenance.json",
+      "source_id": "source-18",
+      "training_curves": "sources/source-18/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-19/fixed26.json",
+      "provenance": "sources/source-19/provenance.json",
+      "source_id": "source-19",
+      "training_curves": "sources/source-19/training-curves.json"
+    },
+    {
+      "fixed26": "sources/source-20/fixed26.json",
+      "provenance": "sources/source-20/provenance.json",
+      "source_id": "source-20",
+      "training_curves": "sources/source-20/training-curves.json"
+    }
+  ],
+  "status": "complete",
+  "wall_clock_s": {
+    "batch_parent": 11581.563000000024,
+    "fixed26_parent_sum": 963.8570000000182,
+    "scope": "parent_launch_to_owned_completion_not_sdk_completion_count",
+    "training_parent_sum": 10188.231999999902
+  }
+}
