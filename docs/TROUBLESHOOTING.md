@@ -912,3 +912,17 @@
 - 관찰: 원래 진단 비교 30행은 기록상 `complete`였지만 26역할에는 probe 영수증 없는 부모 예외가, 1역할에는 자식 exit0·cleanup 뒤 `PermissionError`가 있었다. 결과 기록 완료를 측정 성공으로 해석하면 실행 실패와 진단 한도 HOLD가 섞인다.
 - 보완: [짝 비교 분석기](../evals/lineage_matched_analysis_v1.py)는 같은 source·초기 view·예산을 확인하고 관측 SHA·역할·자식 종료 증거와 측정값을 검증한다. 동결 분류와 후보 축소를 재생하며, 부모 예외를 성공 영수증으로 바꾸거나 측정값과 다른 outcome을 적은 자료를 거부한다. 원래 30행은 수정하지 않는다.
 - 검증과 결과: 재서명한 측정·outcome·역할·source 위조, 관측 누락과 경로 이탈을 CPU 회귀에서 거부했다. [새 집계](../evals/results/lineage_matched_analysis_20261101_v2/analysis.json)는 모델−고정 순서의 완전한 짝 4/10과 전체 미확정 범위를 분리한다. 이 분석의 새 GPU·API·학습은 0이다.
+
+### OPS-129: 모델 제안 뒤 검사 호스트의 callback 계약 불일치
+
+- 관찰: 새 seed 비교의 첫 API 응답은 유효한 `P_reward` 제안이었으나, 첫 검사 역할을 준비하기 전에 실행이 종료됐다. API 1회와 응답은 보존됐고 검사 자식은 시작되지 않았다. 전체 24행 비교는 미완료이며 판정은 `indeterminate`다.
+- 원인: 비교 실행기의 문맥 검증은 성공 시 `True`를 반환하지만, paired 호스트는 `{"approved": true}` 객체를 요구한다. 저장된 실제 state·action·request spec으로 호스트의 첫 `before_role` 검사를 호출해 같은 오류를 재현했다. 객체 반환으로 바꾸면 이 경계가 통과한다. 모델 응답 오류와 구분한다.
+- 재개 조건: 동결 실행기와 실패 원문을 보존하고, 새 판에서 원래 문맥 검증을 통과한 경우에만 반환형을 변환한다. 첫 응답은 요청·응답 SHA와 메시지·인자를 대조해 재사용하며 다시 송신하지 않는다. 기존 1회 소비를 전체 API 한도에 포함한다. 실행 복구와 새 미노출 성능 검증을 구분한다.
+- 근거: [불완전 실행 기록](../evals/results/prospective_confirmation_execution_failure_20261101_v1/summary.json), [원래 paired 호스트](../evals/evidence_guided_probe_host_v1.py).
+
+### CAP-29: 로컬 녹화의 sidecar 경로가 native 영역 안에 배치됨
+
+- 관찰: 로컬 Isaac의 상태 기록 1프레임 점검은 정상 종료·소유 프로세스 정리를 통과했다. full 녹화는 첫 RGB 수집 전에 `sidecar 폴더가 native 녹화 경로와 겹친다`로 실패했다. 종료 전 `failure.json`을 봉인했으며 부모도 완료로 수용하지 않았다.
+- 원인: 새 로컬 실행기는 sidecar를 job stage 안에 배치했다. 재사용한 sidecar worker는 native 출력과 job stage의 내부·상위 경로를 모두 보호하므로 이 배치를 거부한다.
+- 조치: 새 판에서는 sidecar를 고유한 형제 경로에 배치한다. 기존 경로 분리 검사는 유지하고, 실제 job을 읽어 원래 `check_destination` 함수에 전달하는 CPU 회귀를 추가한다. full 625프레임·렌더 동기화·same-PTS·종료 검증의 실측 성공 전에는 영상 사용을 승인하지 않는다.
+- 코드: [로컬 v1](../bench/local_same_play_capture_v1.py), [경로 분리 검사](../bench/record_agentic_state_sidecar_v1.py).

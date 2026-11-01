@@ -1,0 +1,42 @@
+{
+  "assessment": "indeterminate",
+  "claims": {
+    "diagnosis_success": false,
+    "mode_advantage": false,
+    "model_failure": false,
+    "new_recovery": false,
+    "whole_comparison_complete": false
+  },
+  "completed_rows": 0,
+  "failure": {
+    "category": "harness_callback_contract_mismatch",
+    "consumer_requires": {
+      "approved": true
+    },
+    "cpu_reproduction": "ValueError: case before_role context 재검증이 승인되지 않았다",
+    "first_boundary": "case before_role",
+    "producer_return": "bool_true"
+  },
+  "first_proposal": {
+    "action": "run_probe",
+    "case_id": "c02",
+    "confirmation": null,
+    "policy": "legacy_none",
+    "target": "P_reward"
+  },
+  "model_requests_consumed": 1,
+  "paired_probes_completed": 0,
+  "planned_rows": 24,
+  "provider_responses_preserved": 1,
+  "retry": {
+    "new_http_requests_for_preserved_first_slot": 0,
+    "policy_or_threshold_change": false,
+    "preserve_prior_response": true,
+    "requires_new_registered_execution": true
+  },
+  "schema": "prospective_confirmation_execution_failure_public_v1",
+  "scope": "first_host_context_boundary_before_probe_execution",
+  "sdk_probe_executions": 0,
+  "status": "incomplete_execution_failure",
+  "valid_first_proposals": 1
+}
