@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import threading
 from copy import deepcopy
 from pathlib import Path
 
 import pytest  # pyright: ignore[reportMissingImports]
-from PIL import Image  # pyright: ignore[reportMissingImports]
 from test_agentic_investigation_evidence_v1 import (
     B,
     E,
@@ -39,7 +39,10 @@ def rebind_frames(data: dict, raw: bytes | None) -> None:
     for frame in contract["frames"][:2]:
         target = contract_path.parent / frame["path"]
         if raw is None:
-            Image.new("RGB", (64, 64), (127, 127, 127)).save(target, format="JPEG")
+            subprocess.run(
+                ["ffmpeg", "-hide_banner", "-loglevel", "error", "-f", "lavfi", "-i",
+                 "color=c=gray:s=64x64", "-frames:v", "1", "-y", str(target)],
+                check=True, capture_output=True)
         else:
             target.write_bytes(raw)
         frame["sha256"] = E.V01.sha256(target)
@@ -108,6 +111,11 @@ def test_blurred_alias_is_unknown_and_images_are_quarantined_but_text_remains(ca
 def test_decode_failure_metric_is_not_converted_to_a_numeric_quality_value() -> None:
     with pytest.raises(ValueError, match="decode unavailable"):
         Q.laplacian_variance(b"registered-sha-but-not-an-image")
+
+
+def test_official_venv_import_has_no_pillow_dependency() -> None:
+    assert "PIL" not in Q.sys.modules
+    assert Q.METRIC.startswith("ffmpeg_gray_u8_")
 
 
 def test_registered_sha_tamper_raises_before_quality_outcome(case: dict) -> None:  # noqa: F811
@@ -221,7 +229,7 @@ def test_policy_floor_rejects_bool_nan_and_infinity(tmp_path: Path, raw: str) ->
     path = tmp_path / "bad-policy.json"
     path.write_text(
         '{"schema":"agentic_frame_quality_policy_v1",'
-        '"metric":"luma_u8_4_neighbor_laplacian_population_variance",'
+        f'"metric":"{Q.METRIC}",'
         '"unit":"intensity_squared","min_laplacian_variance":' + raw + "}",
         encoding="utf-8",
     )

@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import base64
 import hashlib
-import io
 import json
 import math
+import subprocess
 import sys
 import threading
 from collections.abc import Iterator, Mapping
@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any, cast
 
 import numpy as np  # pyright: ignore[reportMissingImports]
-from PIL import Image, UnidentifiedImageError  # pyright: ignore[reportMissingImports]
 
 ROOT = Path(__file__).resolve().parents[1]
 for _folder in (ROOT / "evals", ROOT / "src"):
@@ -29,8 +28,9 @@ import agentic_runtime_input_guard_v1 as INPUT
 SCHEMA = "agentic_frame_quality_guard_v1"
 POLICY_SCHEMA = "agentic_frame_quality_policy_v1"
 VISUAL_SCHEMA = "agentic_frame_quality_visual_context_v1"
-METRIC = "luma_u8_4_neighbor_laplacian_population_variance"
+METRIC = "ffmpeg_gray_u8_4_neighbor_laplacian_population_variance"
 UNIT = "intensity_squared"
+DECODE_TIMEOUT_S = 10.0
 REQUIRED_SOURCES = {
     "evals/agentic_frame_quality_guard_v1.py",
     "tests/test_agentic_frame_quality_guard_v1.py",
@@ -76,15 +76,55 @@ def _image_bytes(content: list[dict[str, Any]]) -> bytes:
         raise ValueError("frame data URL base64") from error
 
 
-def laplacian_variance(raw: bytes) -> float:
-    """luma U8 내부 화소의 (4C-N-S-W-E) population variance [intensity²]."""
+def _pgm_gray_u8(raw: bytes) -> np.ndarray:
+    """검증된 이미지 bytes를 ffmpeg gray8 PGM으로 한 번 디코딩한다."""
     try:
-        with Image.open(io.BytesIO(raw)) as image:
-            luma = np.asarray(image.convert("L"), dtype=np.uint8)
-    except (UnidentifiedImageError, OSError, ValueError) as error:
+        result = subprocess.run(
+            ["ffmpeg", "-hide_banner", "-loglevel", "error", "-i", "pipe:0",
+             "-frames:v", "1", "-f", "image2pipe", "-vcodec", "pgm",
+             "-pix_fmt", "gray", "pipe:1"],
+            input=raw, capture_output=True, check=False, timeout=DECODE_TIMEOUT_S)
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError) as error:
         raise ValueError("frame image decode unavailable") from error
-    if luma.ndim != 2 or min(luma.shape) < 3:
+    if result.returncode != 0 or result.stderr.strip() or not result.stdout.startswith(b"P5"):
         raise ValueError("frame image decode unavailable")
+    data, position, tokens = result.stdout, 0, []
+    while len(tokens) < 4:
+        while position < len(data) and data[position] in b" \t\r\n":
+            position += 1
+        if position < len(data) and data[position] == ord("#"):
+            newline = data.find(b"\n", position)
+            if newline < 0:
+                raise ValueError("frame image decode unavailable")
+            position = newline + 1
+            continue
+        start = position
+        while position < len(data) and data[position] not in b" \t\r\n":
+            position += 1
+        if start == position:
+            raise ValueError("frame image decode unavailable")
+        tokens.append(data[start:position])
+    if tokens[0] != b"P5":
+        raise ValueError("frame image decode unavailable")
+    try:
+        width, height, maximum = (int(token) for token in tokens[1:])
+    except ValueError as error:
+        raise ValueError("frame image decode unavailable") from error
+    if position >= len(data) or data[position] not in b" \t\r\n":
+        raise ValueError("frame image decode unavailable")
+    if data[position:position + 2] == b"\r\n":
+        position += 2
+    else:
+        position += 1
+    pixels = data[position:]
+    if width < 3 or height < 3 or maximum != 255 or len(pixels) != width * height:
+        raise ValueError("frame image decode unavailable")
+    return np.frombuffer(pixels, dtype=np.uint8).reshape((height, width))
+
+
+def laplacian_variance(raw: bytes) -> float:
+    """ffmpeg gray U8 내부 화소의 (4C-N-S-W-E) population variance [intensity²]."""
+    luma = _pgm_gray_u8(raw)
     values = luma.astype(np.float64)
     laplacian = (4.0 * values[1:-1, 1:-1] - values[:-2, 1:-1] - values[2:, 1:-1]
                  - values[1:-1, :-2] - values[1:-1, 2:])

@@ -927,3 +927,10 @@
 - 조치: 새 판에서는 sidecar를 고유한 형제 경로에 배치한다. 기존 경로 분리 검사는 유지하고, 실제 job을 읽어 원래 `check_destination` 함수에 전달하는 CPU 회귀를 추가한다. full 625프레임·렌더 동기화·same-PTS·종료 검증의 실측 성공 전에는 영상 사용을 승인하지 않는다.
 - 후속: 분리된 경로는 실제 full v2에서 통과했지만, capture worker가 요구하는 `mode="record"`와 로컬 job의 모드 매핑이 달라 RGB 수집 전에 실패했다. v3는 job ID·고정 profile·checkpoint·source까지 worker 계약에 맞추며, 실제 capture factory의 모드·profile 검증을 CPU에서 확인했다. 이 확인을 full 녹화 성공으로 바꾸지 않는다.
 - 코드: [로컬 v1](../bench/local_same_play_capture_v1.py), [경로 분리 검사](../bench/record_agentic_state_sidecar_v1.py).
+
+### OPS-130: 프레임 품질 검사에 등록되지 않은 이미지 라이브러리 의존
+
+- 관찰: 공식 Windows Python 환경에서 실제 품질 검사 등록을 준비할 때 `PIL` import가 실패했다. 준비 폴더·품질 측정·모델 호출은 생성되지 않았다.
+- 원인: 초기 구현과 테스트가 Pillow를 사용했지만 저장소의 공식 환경에는 Pillow가 설치되지 않았다. 다른 Python 환경의 테스트 통과를 공식 환경의 재현 근거로 사용할 수 없다.
+- 수정: [품질 검사](../evals/agentic_frame_quality_guard_v1.py)는 기존 FFmpeg의 JPEG→PGM gray8 디코딩을 사용한다. 새 설치 없이 종료 코드·시간 제한·헤더·크기·픽셀 길이를 검증하며, metric 이름에도 FFmpeg gray8 변환을 명시한다. Laplacian population variance와 개발용 floor 10은 유지한다.
+- 검증: 공식 Python 3.12.13에서 관련 14개 테스트와 Pillow 미로드를 확인했다. 이 결과는 실제 입력의 품질 수치나 영상 효과를 입증하지 않으며, 해당 측정은 새 등록으로 수행한다.
