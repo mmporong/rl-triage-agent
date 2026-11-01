@@ -10716,6 +10716,310 @@ window.REPLAY_DATA = {
    "number": 17
   },
   {
+   "id": "four_way_development",
+   "title": "같은 수치에서 네 방식: 검사 3회와 1회",
+   "lead": "두 개발 계보에서 수치와 영상 방식 모두 P_reward 한 번으로 확정했다. 프레임 추가로 확정 결과나 검사 수가 달라지지 않았다.",
+   "blocks": [
+    {
+     "type": "table",
+     "title": "두 F1 계보 합계 · source 2430 / 2431",
+     "columns": [
+      "방식",
+      "올바른 확정",
+      "HOLD",
+      "짝 검사",
+      "API",
+      "SDK 역할",
+      "자식 wall(s)"
+     ],
+     "rows": [
+      [
+       "등록 규칙",
+       {
+        "value": "0/2",
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 6,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 12,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 268.85800000012387,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": 2
+       }
+      ],
+      [
+       "고정 순서",
+       {
+        "value": "2/2",
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 6,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 12,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 334.39100000006147,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": 2
+       }
+      ],
+      [
+       "3.5 수치",
+       {
+        "value": "2/2",
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 4,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 74.57799999997951,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": 2
+       }
+      ],
+      [
+       "같은 3.5 + 6프레임",
+       {
+        "value": "2/2",
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 4,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 72.61000000004424,
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": 2
+       }
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "title": "공통 입력과 실제 소비",
+     "columns": [
+      "항목",
+      "값"
+     ],
+     "rows": [
+      [
+       "공통 수치",
+       {
+        "value": "학습 48 + 같은 Play 54",
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "새 API / SDK 역할",
+       {
+        "value": "4 / 32",
+        "source": "evals/results/local_pair_four_arm_development_20261101_v1",
+        "digits": null
+       }
+      ]
+     ]
+    }
+   ],
+   "notes": [
+    "독립 계보는 2개다. 이미 본 보상 결함 개발 결과이며 새 계보 본평가나 모델 버전 비교가 아니다.",
+    "영상 방식도 학습 수치만 인용했다. raw frame 인용 0이며 영상 이득을 입증하지 않는다.",
+    "자식 wall은 시작·종료·정리 확인까지다. GPU kernel 시간이 아니다. 정상 host gate 8행은 모델의 정상 식별로 세지 않았다."
+   ],
+   "number": 18
+  },
+  {
+   "id": "stairs_motion_integrity",
+   "title": "계단 영상 판정: 거리와 높이 외에 몸체 자세 확인",
+   "lead": "Go2 하행의 기존 completed 판정에서 12.26초부터 몸체 위쪽 축이 world 아래쪽을 향한 13표본을 찾았다.",
+   "blocks": [
+    {
+     "type": "table",
+     "title": "기존 네 영상의 사후 CPU 감사",
+     "columns": [
+      "영상",
+      "기존 판정",
+      "최소 up-z",
+      "음수 표본",
+      "추가 관측"
+     ],
+     "rows": [
+      [
+       "H1 상행",
+       {
+        "value": "completed",
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0.9872842098020741,
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": 3
+       },
+       {
+        "value": 0,
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "뒤집힘 미관측",
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "H1 하행",
+       {
+        "value": "completed",
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0.9886204967632537,
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": 3
+       },
+       {
+        "value": 0,
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "뒤집힘 미관측",
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "Go2 상행 5cm",
+       {
+        "value": "failed",
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0.8457120941132933,
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": 3
+       },
+       {
+        "value": 0,
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "기존 실패 유지",
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "Go2 하행 5cm",
+       {
+        "value": "completed",
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": -0.5833989197888134,
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": 3
+       },
+       {
+        "value": 13,
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "완료 해석과 자세 충돌",
+        "source": "evals/results/stairs_motion_integrity_20261101_v1",
+        "digits": null
+       }
+      ]
+     ]
+    }
+   ],
+   "notes": [
+    "Go2 하행의 기존 결과는 보존하고 안정적 보행 시연 완료로 수용하지 않는다. 상행의 진행 실패도 유지한다.",
+    "몸체 위쪽 축의 world-z 내적을 사용했다. 음수 없음도 안정성 전체의 증명이 아니며, 낙상 원인은 확정하지 않았다.",
+    "공식 기학습 정책 재생의 사후 감사다. 모델이 발견한 결과나 RL Triage의 계단 교정·회복 성과가 아니다."
+   ],
+   "number": 19
+  },
+  {
    "id": "cost",
    "title": "비용과 재현",
    "dense": true,
@@ -10922,7 +11226,7 @@ window.REPLAY_DATA = {
     "parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
     "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."
    ],
-   "number": 18
+   "number": 20
   }
  ],
  "sources": {
@@ -13411,6 +13715,102 @@ window.REPLAY_DATA = {
    "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/summary.json",
    "kind": "reasoning_confirmation_base_file",
    "sha256": "ff84b1af2dee791577002c119060286106a3574a51fa52490e78a228efa46578",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/local_pair_four_arm_development_20261101_v1": {
+   "id": "evals/results/local_pair_four_arm_development_20261101_v1",
+   "path": "evals/results/local_pair_four_arm_development_20261101_v1/manifest.json",
+   "kind": "local_pair_four_arm",
+   "sha256": "d3031943c9420173aff18cd2ef199044ad71fbacd522bb5b13a3f512ae7500d6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/local_pair_four_arm_development_20261101_v1/cases.json": {
+   "id": "evals/results/local_pair_four_arm_development_20261101_v1/cases.json",
+   "path": "evals/results/local_pair_four_arm_development_20261101_v1/cases.json",
+   "kind": "local_pair_four_arm_file",
+   "sha256": "581891ddcc82e9f0fa172a30d515cbbfa4538e616ec13b12f73069b2ac37cbdc",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/local_pair_four_arm_development_20261101_v1/provenance.json": {
+   "id": "evals/results/local_pair_four_arm_development_20261101_v1/provenance.json",
+   "path": "evals/results/local_pair_four_arm_development_20261101_v1/provenance.json",
+   "kind": "local_pair_four_arm_file",
+   "sha256": "901570f83e4264a9bb483e478fb85c4dc7ab7a214365188939c064f241130620",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/local_pair_four_arm_development_20261101_v1/summary.json": {
+   "id": "evals/results/local_pair_four_arm_development_20261101_v1/summary.json",
+   "path": "evals/results/local_pair_four_arm_development_20261101_v1/summary.json",
+   "kind": "local_pair_four_arm_file",
+   "sha256": "54c5699937369c8b77be5176166c5cba473930ab04b6caec792263869d4bd7ad",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/stairs_motion_integrity_20261101_v1": {
+   "id": "evals/results/stairs_motion_integrity_20261101_v1",
+   "path": "evals/results/stairs_motion_integrity_20261101_v1/manifest.json",
+   "kind": "stairs_motion_integrity",
+   "sha256": "b696624ece7436de6681b51cea2ba222f311c21b5e2f442534977b66228f6185",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/stairs_motion_integrity_20261101_v1/audit.json": {
+   "id": "evals/results/stairs_motion_integrity_20261101_v1/audit.json",
+   "path": "evals/results/stairs_motion_integrity_20261101_v1/audit.json",
+   "kind": "stairs_motion_integrity_file",
+   "sha256": "63b8a6eecd624c52fcf4437714877b1572c8ebecfec48b77f1853d76edb1f858",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/stairs_motion_integrity_20261101_v1/inputs.json": {
+   "id": "evals/results/stairs_motion_integrity_20261101_v1/inputs.json",
+   "path": "evals/results/stairs_motion_integrity_20261101_v1/inputs.json",
+   "kind": "stairs_motion_integrity_file",
+   "sha256": "8aaceb6f069b19c1584b295cfa4fced2cc0375b8d6d7fbe06c205c59383abfc3",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/stairs_motion_integrity_20261101_v1/provenance.json": {
+   "id": "evals/results/stairs_motion_integrity_20261101_v1/provenance.json",
+   "path": "evals/results/stairs_motion_integrity_20261101_v1/provenance.json",
+   "kind": "stairs_motion_integrity_file",
+   "sha256": "0364d73f485b0f0a3b2ef29953a3200e39b3ca8e97cbae8e6df164aff8380714",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-down/manifest.json": {
+   "id": "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-down/manifest.json",
+   "path": "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-down/manifest.json",
+   "kind": "stairs_motion_integrity_file",
+   "sha256": "42003e7ad7c76b910e825c427bafae406931e46846bfe1157c97ee5eb9b3e06c",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-down/state-trace.jsonl": {
+   "id": "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-down/state-trace.jsonl",
+   "path": "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-down/state-trace.jsonl",
+   "kind": "stairs_motion_integrity_file",
+   "sha256": "31b6fffd1e499a3880fd186b91fcc955188097ab6aef42a6a6ed43a98bd29990",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-up/manifest.json": {
+   "id": "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-up/manifest.json",
+   "path": "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-up/manifest.json",
+   "kind": "stairs_motion_integrity_file",
+   "sha256": "06908f3f6d35ba4b448d2029359dfdb5069a08f3d0b60216b53f95ba11d5a3cd",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-up/state-trace.jsonl": {
+   "id": "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-up/state-trace.jsonl",
+   "path": "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-up/state-trace.jsonl",
+   "kind": "stairs_motion_integrity_file",
+   "sha256": "cdb155661c2671c7c7a8433c08b77c481ed60edaa72f0af96c1020003e7c12d4",
    "status": "ready",
    "reason": null
   },

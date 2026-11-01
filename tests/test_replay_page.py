@@ -462,11 +462,11 @@ def test_path_checker_rejects_private_or_network_references(text):
 
 def test_build_from_repository_is_publishable_and_never_mismatched(built):
     data = built
-    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 19))
+    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 21))
     assert [scene["id"] for scene in data["scenes"]] == [
         "failure", "curves", "warning", "probe", "correction", "demo", "nat_demo", "recovery", "motor", "hold", "upstream",
         "upstream_demo", "d3", "nvidia", "prospective_comparison", "registered_partitions",
-        "reasoning_followup", "cost"]
+        "reasoning_followup", "four_way_development", "stairs_motion_integrity", "cost"]
     statuses = {key: row["status"] for key, row in data["sources"].items()}
     assert "mismatch" not in statuses.values()
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
@@ -563,7 +563,7 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
                                    check=True, capture_output=True, text=True, encoding="utf-8")
         outputs[name] = json.loads(completed.stdout)
     clean = outputs["clean"]
-    assert len(clean) == 18 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
+    assert len(clean) == 20 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
     assert "<svg" in clean[1] and "polyline" in clean[1]
     dense = [scene["id"] for scene, html in zip(data["scenes"], clean, strict=True) if 'class="blocks dense"' in html]
     assert dense == ["correction", "demo", "nat_demo", "recovery", "upstream", "upstream_demo", "d3", "nvidia",
@@ -789,3 +789,36 @@ def test_nvidia_scene_shows_the_rescore_row_only_after_the_public_summary_replay
     waiting = B.Sources(repo)
     assert rows(waiting)[name] is None and waiting.rows["evals/results/nat_eval_rescore_v1"]["status"] == "waiting"
     assert rows(_MotorSources(repo, {"nat_eval_rescore_v1": {"items": 67}}))[name] == "67항목 · 판정 차이 0"
+
+
+@pytest.mark.parametrize("source,slot,scene_function", [
+    ("local_pair_four_arm_development_20261101_v1", "local_pair_four_arm", B.scene_four_way_development),
+    ("stairs_motion_integrity_20261101_v1", "stairs_motion_integrity", B.scene_stairs_motion),
+])
+def test_new_comparison_and_motion_scenes_block_uncommitted_or_hash_broken_data(repo, source, slot, scene_function):
+    shutil.copytree(ROOT / "evals/results" / source, repo / "release")
+    pending_sources = B.Sources(repo)
+    pending_scene = scene_function(pending_sources, {slot: "release"})
+    assert pending_sources.rows["release"]["status"] == "waiting"
+    assert all(item.get("value") is None for block in pending_scene["blocks"]
+               for row in block["rows"] for item in row if isinstance(item, dict))
+    paths = [path.relative_to(repo).as_posix() for path in sorted((repo / "release").rglob("*")) if path.is_file()]
+    _git(repo, "add", "--", *paths)
+    _git(repo, "commit", "-q", "-m", "approved public release")
+    sources = B.Sources(repo)
+    scene = scene_function(sources, {slot: "release"})
+    assert sources.rows["release"]["status"] == "ready"
+    assert any(item.get("value") is not None for block in scene["blocks"]
+               for row in block["rows"] for item in row if isinstance(item, dict))
+    file_name = "summary.json" if slot == "local_pair_four_arm" else "audit.json"
+    damaged = repo / "release" / file_name
+    changed = json.loads(damaged.read_text(encoding="utf-8"))
+    changed["status"] = "invalid"
+    damaged.write_text(json.dumps(changed), encoding="utf-8")
+    _git(repo, "add", "--", "release/" + file_name)
+    _git(repo, "commit", "-q", "-m", "damaged release body")
+    rejected_sources = B.Sources(repo)
+    rejected = scene_function(rejected_sources, {slot: "release"})
+    assert rejected_sources.rows["release"]["status"] == "mismatch"
+    assert all(item.get("value") is None for block in rejected["blocks"]
+               for row in block["rows"] for item in row if isinstance(item, dict))

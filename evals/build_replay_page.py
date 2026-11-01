@@ -135,7 +135,8 @@ class Sources:
 
 
 def manifest_result(sources: Sources, relative: str, *, manifest_name: str,
-                    manifest_schema: str, summary_schema: str, kind: str) -> tuple[dict, dict | None]:
+                    manifest_schema: str, summary_schema: str, kind: str,
+                    summary_name: str = "summary.json") -> tuple[dict, dict | None]:
     """manifest가 선언한 공개 파일 전체가 커밋·SHA 일치할 때만 summary를 반환한다."""
     if relative in sources.replays:
         return sources.rows[relative], sources.replays[relative]
@@ -175,7 +176,9 @@ def manifest_result(sources: Sources, relative: str, *, manifest_name: str,
                                       expected_sha256=expected)
             if source_row["status"] != "ready":
                 raise ValueError("public manifest 파일 승인 불일치")
-        summary = _read(sources.root / relative / "summary.json")
+        if summary_name not in declared:
+            raise ValueError("public summary가 manifest에 없다")
+        summary = _read(sources.root / relative / summary_name)
         if summary.get("schema") != summary_schema:
             raise ValueError("public summary schema 불일치")
     except (OSError, ValueError, TypeError, KeyError) as error:
@@ -1196,6 +1199,66 @@ def scene_reasoning_followup(sources: Sources, slots: dict) -> dict:
     }
 
 
+def scene_four_way_development(sources: Sources, slots: dict) -> dict:
+    row, summary = manifest_result(sources, slots["local_pair_four_arm"], manifest_name="manifest.json",
+        manifest_schema="local_pair_four_arm_public_v1_manifest",
+        summary_schema="local_pair_four_arm_public_v1_summary", kind="local_pair_four_arm")
+    rows = []
+    for arm, title in (("registry_next", "등록 규칙"), ("fixed_eligible", "고정 순서"),
+                       ("logs_only", "3.5 수치"), ("logs_plus_frames", "같은 3.5 + 6프레임")):
+        metrics = (summary or {}).get("arms", {}).get(arm, {})
+        confirmed = metrics.get("correct_confirmation", {})
+        values = [f"{confirmed.get('successes')}/{confirmed.get('total')}" if metrics else None,
+                  metrics.get("hold"), metrics.get("paired_probe_count"), metrics.get("provider_calls"),
+                  metrics.get("raw_role_execution_count"), metrics.get("raw_owned_child_wall_s")]
+        rows.append([title, *[cell(sources, value, row["id"], 2 if i == 5 else None)
+                             for i, value in enumerate(values)]])
+    return {"id": "four_way_development", "title": "같은 수치에서 네 방식: 검사 3회와 1회",
+        "lead": ("두 개발 계보에서 수치와 영상 방식 모두 P_reward 한 번으로 확정했다. 프레임 추가로 확정 결과나 검사 수가 달라지지 않았다."
+                 if summary else "공개 manifest와 파일 SHA가 확인된 경우에만 네 방식 비교의 수치를 표시한다."),
+        "blocks": [{"type": "table", "title": "두 F1 계보 합계 · source 2430 / 2431",
+                    "columns": ["방식", "올바른 확정", "HOLD", "짝 검사", "API", "SDK 역할", "자식 wall(s)"],
+                    "rows": rows},
+                   {"type": "table", "title": "공통 입력과 실제 소비", "columns": ["항목", "값"],
+                    "rows": [["공통 수치", cell(sources, "학습 48 + 같은 Play 54", row["id"], None)],
+                             ["새 API / SDK 역할", cell(sources,
+                              f"{summary['actual_api_calls']} / {summary['actual_sdk_role_executions']}" if summary else None,
+                              row["id"], None)]]}],
+        "notes": ["독립 계보는 2개다. 이미 본 보상 결함 개발 결과이며 새 계보 본평가나 모델 버전 비교가 아니다.",
+                  ("영상 방식도 학습 수치만 인용했다. raw frame 인용 0이며 영상 이득을 입증하지 않는다."
+                   if summary else "영상 인용과 실제 검사 결과를 분리하며 원인 확정과 회복을 구분한다."),
+                  "자식 wall은 시작·종료·정리 확인까지다. GPU kernel 시간이 아니다. 정상 host gate 8행은 모델의 정상 식별로 세지 않았다."]}
+
+
+def scene_stairs_motion(sources: Sources, slots: dict) -> dict:
+    row, audit = manifest_result(sources, slots["stairs_motion_integrity"], manifest_name="manifest.json",
+        manifest_schema="stairs_motion_integrity_public_manifest_v1",
+        summary_schema="stairs_motion_integrity_batch_v1", summary_name="audit.json", kind="stairs_motion_integrity")
+    by_clip = {item["clip_id"]: item for item in (audit or {}).get("rows", [])}
+    rows = []
+    labels = {"upright_completion_contradicted": "완료 해석과 자세 충돌",
+              "original_failure_preserved": "기존 실패 유지",
+              "no_inversion_observed_not_full_stability_proof": "뒤집힘 미관측"}
+    for key, title in (("biped-stairs-up", "H1 상행"), ("biped-stairs-down", "H1 하행"),
+                       ("quadruped-stairs-up-step-0p05", "Go2 상행 5cm"),
+                       ("quadruped-stairs-down-step-0p05", "Go2 하행 5cm")):
+        entry = by_clip.get(key, {})
+        values = [entry.get("original_assessment", {}).get("outcome"),
+                  entry.get("body_up_world_z", {}).get("min"),
+                  entry.get("body_up_world_z", {}).get("negative_count"),
+                  labels.get(entry.get("integrity_result"))]
+        rows.append([title, *[cell(sources, value, row["id"], 3 if i == 1 else None)
+                             for i, value in enumerate(values)]])
+    return {"id": "stairs_motion_integrity", "title": "계단 영상 판정: 거리와 높이 외에 몸체 자세 확인",
+        "lead": ("Go2 하행의 기존 completed 판정에서 12.26초부터 몸체 위쪽 축이 world 아래쪽을 향한 13표본을 찾았다."
+                 if audit else "공개 manifest와 파일 SHA가 확인된 경우에만 기존 계단 영상의 자세 관측을 표시한다."),
+        "blocks": [{"type": "table", "title": "기존 네 영상의 사후 CPU 감사",
+                    "columns": ["영상", "기존 판정", "최소 up-z", "음수 표본", "추가 관측"], "rows": rows}],
+        "notes": ["Go2 하행의 기존 결과는 보존하고 안정적 보행 시연 완료로 수용하지 않는다. 상행의 진행 실패도 유지한다.",
+                  "몸체 위쪽 축의 world-z 내적을 사용했다. 음수 없음도 안정성 전체의 증명이 아니며, 낙상 원인은 확정하지 않았다.",
+                  "공식 기학습 정책 재생의 사후 감사다. 모델이 발견한 결과나 RL Triage의 계단 교정·회복 성과가 아니다."]}
+
+
 def scene_cost(sources: Sources, slots: dict) -> dict:
     import publish_training_correction as Q3
     import publish_training_correction_v4 as Q4
@@ -1248,6 +1311,7 @@ def build(root: Path = ROOT) -> dict:
               replay_d3.scene_d3(sources, slots), scene_nvidia(sources, slots),
               scene_prospective_comparison(sources, slots), scene_registered_partitions(sources, slots),
               scene_reasoning_followup(sources, slots),
+              scene_four_way_development(sources, slots), scene_stairs_motion(sources, slots),
               scene_cost(sources, slots)]
     for index, scene in enumerate(scenes, start=1):
         scene["number"] = index
