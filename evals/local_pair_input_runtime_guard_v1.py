@@ -132,7 +132,9 @@ def gate_transport(result: dict) -> dict:
     pairs = {"completed": "semantic_valid", "unknown": "semantic_invalid",
              "infra_error": "infrastructure_unknown"}
     if (not isinstance(result, dict)
-            or result.get("schema") != "local_pair_nim_verified_call_v1"
+            or result.get("schema") not in {"local_pair_nim_verified_call_v1",
+                                             "lineage_five_policy_nim_verified_call_v1",
+                                             "five_policy_recovery_nim_verified_call_v1"}
             or result.get("status") not in pairs
             or result.get("outcome") != pairs[result["status"]]
             or type(result.get("live")) is not bool

@@ -1,0 +1,42 @@
+{
+  "case_replacement": false,
+  "epoch3": false,
+  "execution_authorized": false,
+  "execution_freshness_required": true,
+  "first_gpu_phase": {
+    "api_cap": 0,
+    "sdk_cap": 8,
+    "wall_cap_s": 14400
+  },
+  "first_seeds": {
+    "case-03:fixed_eligible": 4552,
+    "case-03:logs_only": 4553,
+    "case-07:fixed_eligible": 4556,
+    "case-07:logs_only": 4557
+  },
+  "fixed_before_new_model_and_recovery_results_utc": "2026-11-01T10:21:30.958963+00:00",
+  "max_distinct_corrections": 2,
+  "model_result_dependent_seed_selection": false,
+  "pipeline_denominator": 4,
+  "schema": "five_policy_recovery_conditional_design_v1",
+  "second_gpu_phase": {
+    "api_cap": 32,
+    "sdk_cap": 32,
+    "wall_cap_s": 43200
+  },
+  "second_requires_valid_not_recovered_receipt": true,
+  "second_seeds": {
+    "case-03:fixed_eligible": 5552,
+    "case-03:logs_only": 5553,
+    "case-07:fixed_eligible": 5556,
+    "case-07:logs_only": 5557
+  },
+  "seed_absence_checked": false,
+  "source_case_denominator": 2,
+  "status": "preregistered_conditional_design",
+  "study_design": {
+    "path": "bench/protocols/agentic_five_type_evaluation_s2550_s2559_20261101_v2.json",
+    "sha256_lf": "31dbc2aa4b6ac8b6d582ae2f96062b8e58d0d6899990e4bd926ac9ac95a9e3a2"
+  },
+  "training_mode": "fresh_restart_300"
+}
