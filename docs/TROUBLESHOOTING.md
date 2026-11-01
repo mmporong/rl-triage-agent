@@ -950,3 +950,10 @@
 - 원인: 공용 metadata는 `leaseId`를 제공한다. 새 실행기는 기존 변환 함수를 거치지 않고 `lease_id`를 읽었다.
 - 수정: [실행기](../bench/run_local_pair_four_arm_v1.py)는 기존 `normalize_lease_metadata`를 재사용한다. 원 metadata를 보존하면서 owner·실행 상태·UUID·두 이름의 충돌을 검증한다. v1 기록을 보존하고 [v2 등록](../bench/protocols/local_pair_four_arm_s2430_s2431_20261101_v2.json)과 새 출력 경로로 이어간다. 입력·모델·도구·한도·판정은 같다.
 - 검증: 실제 공용 metadata 형태와 이름 충돌 회귀를 추가해 관련 22개 테스트를 통과했다. 이 수정의 CPU 검증을 진단 성공이나 영상 효과로 세지 않는다.
+
+### OPS-133: 계단 거리·높이 완료와 몸체 뒤집힘의 충돌
+
+- 관찰: Go2 하행 재생은 거리·높이 기준에서 `completed`, `termination=false`였지만 12.26초부터 몸체 위쪽 축의 world-z 내적이 음수인 표본 13개를 남겼다. 마지막 값은 −0.583399였다. 기존 종료·진행 판정만으로 안정적인 시연 완료를 수용하면 이 상태가 통과한다.
+- 확인된 판정 공백: 기존 완료 조건에 upright 관측이 없었다. 동결 task의 termination에도 별도의 orientation 조건이 없다. 이 사실은 뒤집힘의 학습 원인을 규명한 결과가 아니다.
+- 보완: [자세 감사](../evals/stairs_motion_integrity_v1.py)는 원래 판정을 보존하면서 `upright_completion_contradicted`를 추가한다. [후속 등록](../bench/protocols/go2_stairs_command_contrast_s200_20261101_v1.json)은 진행·높이·종료 증거와 body-up-z 음수 0개를 수용 조건으로 고정했다.
+- 실측: 같은 정책·지형·초기 상태의 0.25/0.75m/s 네 조건을 실행했다. 0.25m/s 실패 trace는 기존 자료와 SHA가 같았고, 0.75m/s 상행·하행은 등록 기준을 통과했다. SDK 4회 모두 자연 종료·정리를 확인했다. [조건별 결과와 원본 영상](GO2-STAIRS-COMMAND-CONTRAST.md)을 공개했으며, 이 재생을 모델 진단·학습 교정·회복으로 세지 않는다.

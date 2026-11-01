@@ -1,0 +1,116 @@
+{
+  "budgets_observed": {
+    "api_calls": 0,
+    "approvals_granted": 0,
+    "dispatch_calls": 0,
+    "gpu_calls": 0
+  },
+  "busy_guard": {
+    "calls": {
+      "approve": 0,
+      "busy_reader": 1,
+      "dispatch": 0,
+      "lookup": 0
+    },
+    "exact_callback_contract": true,
+    "held_before_original_host_approval": true,
+    "result": {
+      "busy_observation": {
+        "observation_id": "ri364-observation-001",
+        "status": "busy"
+      },
+      "reason": "gpu_resource_busy",
+      "status": "hold"
+    }
+  },
+  "cases": [
+    {
+      "approval_granted": false,
+      "case_id": "actual_original",
+      "classification": "actual_source_read_only",
+      "execution_authorized_after": false,
+      "frame_refs": 2,
+      "host_gate": "quality_available_only",
+      "image_count": 2,
+      "quality": [
+        {
+          "outcome": "available",
+          "value": 903.5998223054389
+        },
+        {
+          "outcome": "available",
+          "value": 1078.963332430279
+        }
+      ],
+      "source_unchanged": true,
+      "visual_outcome": "available"
+    },
+    {
+      "approval_granted": false,
+      "case_id": "controlled_blur",
+      "classification": "controlled_perturbation_of_actual_copy",
+      "execution_authorized_after": false,
+      "frame_refs": 0,
+      "host_gate": "HOLD_visual_evidence",
+      "image_count": 0,
+      "quality": [
+        {
+          "outcome": "quality_below_registered_floor",
+          "value": 0.7152089682669425
+        },
+        {
+          "outcome": "quality_below_registered_floor",
+          "value": 0.7003416284817923
+        }
+      ],
+      "source_unchanged": true,
+      "visual_outcome": "unknown"
+    },
+    {
+      "approval_granted": false,
+      "case_id": "controlled_decode_corrupt",
+      "classification": "controlled_perturbation_of_actual_copy",
+      "execution_authorized_after": false,
+      "frame_refs": 0,
+      "host_gate": "HOLD_registered_input_invalid",
+      "image_count": 0,
+      "quality": [],
+      "source_unchanged": true,
+      "visual_outcome": "not_reached_upstream_contract_rejection"
+    },
+    {
+      "approval_granted": false,
+      "case_id": "controlled_decoder_unavailable",
+      "classification": "controlled_decoder_environment_perturbation_on_actual_copy",
+      "execution_authorized_after": false,
+      "frame_refs": 0,
+      "host_gate": "HOLD_visual_evidence",
+      "image_count": 0,
+      "quality": [
+        {
+          "outcome": "quarantined_decode_unavailable",
+          "value": null
+        },
+        {
+          "outcome": "quarantined_decode_unavailable",
+          "value": null
+        }
+      ],
+      "source_unchanged": true,
+      "visual_outcome": "unknown"
+    }
+  ],
+  "schema": "agentic_input_guard_cpu_development_summary_v1",
+  "scope": {
+    "controlled_perturbations": true,
+    "development_seen_actual_frame_bytes": true,
+    "full_error_matrix_complete": false,
+    "new_actual_api_outage": false,
+    "new_actual_gpu_contention": false,
+    "new_model_effect": false,
+    "original_frames": 2,
+    "semantic_blur_understanding": false,
+    "source_files_checked": 28
+  },
+  "status": "complete_bounded_cpu_component_consumption"
+}
