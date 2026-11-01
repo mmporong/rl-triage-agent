@@ -1,0 +1,89 @@
+{
+  "schema": "stairs_playback_manifest_v2",
+  "clip_id": "quadruped-stairs-up-step-0p05",
+  "robot_role": "quadruped",
+  "direction": "up",
+  "training_task": "Isaac-Velocity-Rough-Unitree-Go2-v0",
+  "play_task": "Isaac-Velocity-Rough-Unitree-Go2-Play-v0",
+  "checkpoint_sha256": "f2aa77bf0349c10ec2a00071162e37123d0cf80f3447c3989c17a618e1b24ad2",
+  "source": {
+    "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "isaaclab_files_lf": {
+      "source/isaaclab/isaaclab/terrains/config/rough.py": "4ae6c727d1ff5c1b483b7321a284fd9c241cfe26417c66d74ccbb33c3405fabc",
+      "source/isaaclab/isaaclab/terrains/trimesh/mesh_terrains.py": "586070f00af21420bd86e8610174bfa628d6b87ce5c86931011cc97f67358323",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+    },
+    "runner_sha256_lf": "6858d73783ce02fecee6f901033660fd115c17f139d2937e07728fc25c075b5a"
+  },
+  "terrain": {
+    "terrain_id": "pyramid_stairs_inv",
+    "terrain_seed": 200,
+    "step_height_m": 0.05,
+    "step_width_m": 0.3,
+    "spawn": "terrain_origin_center",
+    "heading_rad": 0.0,
+    "command": {
+      "lin_vel_x": 0.25,
+      "lin_vel_y": 0.0,
+      "ang_vel_z": 0.0
+    },
+    "direction_geometry": "center_low_to_outer_up"
+  },
+  "isaaclab_source": {
+    "commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+    "files_lf": {
+      "source/isaaclab/isaaclab/terrains/config/rough.py": "4ae6c727d1ff5c1b483b7321a284fd9c241cfe26417c66d74ccbb33c3405fabc",
+      "source/isaaclab/isaaclab/terrains/trimesh/mesh_terrains.py": "586070f00af21420bd86e8610174bfa628d6b87ce5c86931011cc97f67358323",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+      "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+    }
+  },
+  "assessment": {
+    "outcome": "failed",
+    "root_dx_m": 1.0760176181793213,
+    "root_dz_m": -0.05675143841654062,
+    "height_condition_pass": false,
+    "progress_condition_pass": false,
+    "termination_seen": false,
+    "trace_rows": 626
+  },
+  "video": {
+    "path": "video/rl-video-step-0.mp4",
+    "sha256": "5c8f09600f3dae78a3dacde483efee26982dfcbfb53727ceefaecb68c67ffc6c"
+  },
+  "record_video_contract": {
+    "gymnasium_version": "1.2.0",
+    "source": "https://raw.githubusercontent.com/Farama-Foundation/Gymnasium/v1.2.0/gymnasium/wrappers/rendering.py",
+    "step_trigger": "step_id == 0",
+    "video_length": 625,
+    "executed_steps": 625,
+    "frames_before_close": 625,
+    "recording_before_close": true,
+    "close_finalizes_recording": true
+  },
+  "state_trace": {
+    "path": "state-trace.jsonl",
+    "sha256": "cdb155661c2671c7c7a8433c08b77c481ed60edaa72f0af96c1020003e7c12d4"
+  },
+  "render_sync": {
+    "method": "simulation_context_forward_before_env_render",
+    "calls": 625,
+    "physics_state_unchanged": true
+  },
+  "camera": {
+    "origin_type": "asset_root",
+    "asset_name": "robot",
+    "env_index": 0,
+    "eye": [
+      6.0,
+      6.0,
+      3.0
+    ],
+    "lookat": [
+      0.0,
+      0.0,
+      0.5
+    ]
+  }
+}

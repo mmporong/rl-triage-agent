@@ -1,0 +1,131 @@
+{
+  "actual_api_calls": 4,
+  "actual_sdk_role_executions": 32,
+  "arms": {
+    "fixed_eligible": {
+      "correct_confirmation": {
+        "fraction": 1.0,
+        "successes": 2,
+        "total": 2,
+        "wilson95_high": 1.0,
+        "wilson95_low": 0.34238022750665303
+      },
+      "frame_fact_citation_count": 0,
+      "hold": 0,
+      "infra_unknown": 0,
+      "owned_child_known_wall_s": 0.0,
+      "owned_child_unknown_count": 6,
+      "paired_probe_count": 6,
+      "provider_calls": 0,
+      "provider_unknown": 0,
+      "provider_wall_s": 0.0,
+      "raw_owned_child_wall_s": 334.39100000006147,
+      "raw_role_execution_count": 12,
+      "semantic_invalid": 0,
+      "wrong_confirmation": 0
+    },
+    "logs_only": {
+      "correct_confirmation": {
+        "fraction": 1.0,
+        "successes": 2,
+        "total": 2,
+        "wilson95_high": 1.0,
+        "wilson95_low": 0.34238022750665303
+      },
+      "frame_fact_citation_count": 0,
+      "hold": 0,
+      "infra_unknown": 0,
+      "owned_child_known_wall_s": 0.0,
+      "owned_child_unknown_count": 2,
+      "paired_probe_count": 2,
+      "provider_calls": 2,
+      "provider_unknown": 0,
+      "provider_wall_s": 3.683340719988337,
+      "raw_owned_child_wall_s": 74.57799999997951,
+      "raw_role_execution_count": 4,
+      "semantic_invalid": 0,
+      "wrong_confirmation": 0
+    },
+    "logs_plus_frames": {
+      "correct_confirmation": {
+        "fraction": 1.0,
+        "successes": 2,
+        "total": 2,
+        "wilson95_high": 1.0,
+        "wilson95_low": 0.34238022750665303
+      },
+      "frame_fact_citation_count": 0,
+      "hold": 0,
+      "infra_unknown": 0,
+      "owned_child_known_wall_s": 0.0,
+      "owned_child_unknown_count": 2,
+      "paired_probe_count": 2,
+      "provider_calls": 2,
+      "provider_unknown": 0,
+      "provider_wall_s": 5.118042853006045,
+      "raw_owned_child_wall_s": 72.61000000004424,
+      "raw_role_execution_count": 4,
+      "semantic_invalid": 0,
+      "wrong_confirmation": 0
+    },
+    "registry_next": {
+      "correct_confirmation": {
+        "fraction": 0.0,
+        "successes": 0,
+        "total": 2,
+        "wilson95_high": 0.6576197724933469,
+        "wilson95_low": 0.0
+      },
+      "frame_fact_citation_count": 0,
+      "hold": 2,
+      "infra_unknown": 0,
+      "owned_child_known_wall_s": 0.0,
+      "owned_child_unknown_count": 6,
+      "paired_probe_count": 6,
+      "provider_calls": 0,
+      "provider_unknown": 0,
+      "provider_wall_s": 0.0,
+      "raw_owned_child_wall_s": 268.85800000012387,
+      "raw_role_execution_count": 12,
+      "semantic_invalid": 0,
+      "wrong_confirmation": 0
+    }
+  },
+  "claims": {
+    "default_mode_adopted": false,
+    "heldout": false,
+    "llm_superiority": false,
+    "recovery": false,
+    "repair": false,
+    "video_advantage_confirmed": false
+  },
+  "fault_rows": 8,
+  "healthy_host_controls": 8,
+  "independent_source_seeds": 2,
+  "normal_control_semantics": "정상 8행은 host healthy gate이며 모델의 정상 식별이 아니다.",
+  "paired_model_contrast": {
+    "discordant": 0,
+    "exact_two_sided_p": null,
+    "logs_only_better": 0,
+    "logs_plus_frames_better": 0
+  },
+  "schema": "local_pair_four_arm_public_v1_summary",
+  "scope": "development_seen_sources",
+  "sdk_role_executions_upper_bound": 48,
+  "seed_paired_contrasts": [
+    {
+      "logs_only_correct": true,
+      "logs_plus_frames_correct": true,
+      "seed": 2430,
+      "source_id": "source2430"
+    },
+    {
+      "logs_only_correct": true,
+      "logs_plus_frames_correct": true,
+      "seed": 2431,
+      "source_id": "source2431"
+    }
+  ],
+  "status": "complete",
+  "uncertainty": "독립 source seed는 2개이며 8 fault row를 독립 seed 8개로 해석하지 않는다. paired exact p와 Wilson 구간은 기술값이며 우월성 주장이 아니다."
+}
