@@ -964,3 +964,17 @@
 - 원인: 결함 정책과 정상 참조는 일부 seed를 의도적으로 공유한다. 실행기가 학습 job 20행에서 뽑은 seed를 그대로 전달했지만 기존 freshness 검사는 중복 없는 목록을 요구했다.
 - 수정: [새 원천 실행기](../evals/lineage_source_batch_v2.py)는 첫 등장 순서를 유지해 seed만 중복 제거한 뒤 기존 core 검사를 호출한다. 원천 20개, 사례/참조 관계, 기록 검색 범위와 재사용 거부 조건은 바꾸지 않는다. [v2 원천 등록](../bench/protocols/lineage_source_collection_s2550_s2559_20261101_v2.json)과 [v2 평가 설계](../bench/protocols/agentic_five_type_evaluation_s2550_s2559_20261101_v2.json)는 기존 v1을 보존한다.
 - 검증: 실제 core guard를 사용한 회귀에서 smoke 포함 13개·제외 12개의 고유 seed 검사를 확인했고 관련 11개 테스트를 통과했다. 이는 학습 완료나 진단 효과의 근거가 아니다.
+
+### OPS-135: 다섯 정책 비교 중 lease 메타데이터 읽기 거부
+
+- 관찰: 10사례·5정책 비교는 18행을 마친 뒤 `gpu-lease.json`의 `PermissionError`로 종료됐다. 중단된 행은 첫 검사를 완료했고 두 번째 검사의 선택·예약을 남겼지만, paired 호스트의 승인 전에 멈췄다. 원래 모델 요청 7건과 검사 예약 18건은 소비 기록에 보존한다.
+- 원인 범위: 새 부모가 원래 `lineage_source_batch_v1.lease_context`를 호출해 canonical 파일 읽기 오류를 재시도하지 않았다. 메타데이터 교체와 파일 공유 위반이 겹쳤을 가능성이 있으나 당시 경쟁 핸들은 관측하지 못했다. 모델 판단이나 학습 실패로 분류하지 않는다.
+- 재개 조건: 완료한 행의 원문·모델·검사 receipt를 재사용하고 중단 행은 유효한 첫 검사와 인프라 HOLD로 남긴다. 미시작 행만 새 재개 등록으로 수행한다. 끝난 작업의 재실행, 과거 응답 재송신, 실패 원문 덮어쓰기는 허용하지 않는다.
+- 읽기 경계: [기존 canonical lease reader](../evals/lineage_lease_context_v2.py)의 제한된 새 읽기와 원래 PID·소유자·heartbeat·배타 lock 검증을 함께 사용한다. [Windows 파일 잠금 회귀](../tests/test_lease_metadata_reader_v1.py)는 일시 잠금 해제 후 성공과 지속 잠금의 deadline 실패를 확인했다. CPU 확인과 미시작 행의 실제 후속 완료는 구분한다.
+
+### OPS-136: 검사는 완료됐지만 상위 집계에서 실행 시간이 unknown
+
+- 관찰: 완료된 짝 검사의 상위 결과에는 `owned_child_wall_s=null`, known 합계 `0`, 역할 두 개가 unknown으로 기록됐다. 역할별 원문에는 reference `20.422s`, case `19.25s`와 정상 종료·정리 증거가 있었다. 상위 known 합계 0을 실행 시간 0으로 해석하지 않는다.
+- 원인: 역할 receipt 검증기는 raw `execution`과 owned 결과의 일치를 확인한 뒤 반환 projection에서 `execution`을 제외했다. 호스트의 시간 집계는 그 projection에서 `execution.wall_s`를 찾으므로 unknown으로 남겼다.
+- 보완: [비용 감사기](../evals/lineage_probe_cost_audit_v1.py)는 원문을 수정하지 않고 receipt·계획·승인·checkpoint·owned 결과를 다시 결합해 시간을 별도로 복원한다. 해당 짝의 복원 합계는 `39.672s`이며 범위는 자식 시작부터 종료·정리 확인까지다. GPU 커널 시간이나 GPU 사용 시간으로 바꾸지 않는다.
+- 검증과 공개 범위: [관련 회귀](../tests/test_lineage_probe_cost_audit_v1.py)에서 변조·역할 교체·누락을 거부하고 실행 0과 미관측을 구분했다. 실제 한 짝의 검증 전후 원문 10파일 SHA가 같았다. 전체 50행의 공개 비용 집계는 비교 완료 뒤 생성하며, 한 짝을 전체 비용 효과로 일반화하지 않는다.
