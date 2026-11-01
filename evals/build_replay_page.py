@@ -980,45 +980,169 @@ def _contains_observation(value: Any, target: str, outcome: str) -> bool:
     return False
 
 
+def _reasoning_confirmation_release(sources: Sources, relative: str | None) -> tuple[dict, dict | None]:
+    """새 source reasoning 확인 묶음의 release→base 해시 사슬을 검증한다."""
+    key = relative or "slot:reasoning_confirmation"
+    if key in sources.replays:
+        return sources.rows[key], sources.replays[key]
+    sources.replays[key] = None
+    row = {"id": key, "path": f"{relative}/release-manifest.json" if relative else None,
+           "kind": "reasoning_confirmation_release", "sha256": None,
+           "status": "waiting", "reason": "path_not_set" if relative is None else "missing"}
+    sources.rows[key] = row
+    if relative is None:
+        return row, None
+    root = sources.root / relative
+    release_path = root / "release-manifest.json"
+    if not release_path.is_file():
+        return row, None
+    row["sha256"] = _sha(release_path)
+    if not _git(sources.root, "ls-files", "--", relative).stdout.strip():
+        row["reason"] = "not_committed"
+        return row, None
+    if _git(sources.root, "status", "--porcelain", "--", relative).stdout.strip():
+        row["status"], row["reason"] = "mismatch", "modified_since_commit"
+        return row, None
+    try:
+        release = _read(release_path)
+        if release.get("schema") != "prospective_reasoning_confirmation_release_manifest_v2":
+            raise ValueError("reasoning release manifest schema 불일치")
+        if release.get("status") != "complete" or release.get("verified_base_artifact_count") != 44:
+            raise ValueError("reasoning release 상태 불일치")
+        release_files = release.get("files")
+        if (not isinstance(release_files, dict)
+                or set(release_files) != {"release-provenance.json", "release-summary.json"}):
+            raise ValueError("reasoning release 파일 목록 불일치")
+        for name, expected in release_files.items():
+            source_row = sources.file(f"{relative}/{name}", kind="reasoning_confirmation_release_file",
+                                      expected_sha256=expected)
+            if source_row["status"] != "ready":
+                raise ValueError("reasoning release 파일 승인 불일치")
+        provenance = _read(root / "release-provenance.json")
+        release_summary = _read(root / "release-summary.json")
+        if provenance.get("schema") != "prospective_reasoning_confirmation_release_provenance_v2":
+            raise ValueError("reasoning release provenance schema 불일치")
+        base_manifest_path = root / "verified-base" / "artifact-manifest.json"
+        base_manifest_sha = _sha(base_manifest_path)
+        if base_manifest_sha != release.get("verified_base_manifest_sha256"):
+            raise ValueError("reasoning base manifest SHA 불일치")
+        if base_manifest_sha != provenance.get("verified_base_manifest_sha256"):
+            raise ValueError("reasoning provenance base manifest SHA 불일치")
+        base_manifest = _read(base_manifest_path)
+        if base_manifest.get("schema") != "prospective_reasoning_confirmation_public_manifest_v1":
+            raise ValueError("reasoning base manifest schema 불일치")
+        declared = base_manifest.get("files")
+        if base_manifest.get("status") != "complete" or base_manifest.get("artifact_count") != 44:
+            raise ValueError("reasoning base manifest 상태 불일치")
+        if not isinstance(declared, dict) or len(declared) != 44:
+            raise ValueError("reasoning base manifest 수량 불일치")
+        actual = {path.relative_to(root / "verified-base").as_posix()
+                  for path in (root / "verified-base").rglob("*") if path.is_file()}
+        if actual != {"artifact-manifest.json", *declared}:
+            raise ValueError("reasoning base inventory 불일치")
+        top_level = {path.relative_to(root).as_posix() for path in root.rglob("*") if path.is_file()}
+        expected_top_level = {"release-manifest.json", *release_files,
+                              *(f"verified-base/{name}" for name in actual)}
+        if top_level != expected_top_level:
+            raise ValueError("reasoning release inventory 불일치")
+        for name, expected in declared.items():
+            pure = PurePosixPath(name)
+            if pure.is_absolute() or ".." in pure.parts or pure.as_posix() != name:
+                raise ValueError("reasoning base 상대 경로 불일치")
+            source_row = sources.file(f"{relative}/verified-base/{name}",
+                                      kind="reasoning_confirmation_base_file",
+                                      expected_sha256=expected)
+            if source_row["status"] != "ready":
+                raise ValueError("reasoning base 파일 승인 불일치")
+        base_summary = _read(root / "verified-base" / "summary.json")
+        if _sha(root / "verified-base" / "summary.json") != release_summary.get(
+                "verified_base_summary_sha256"):
+            raise ValueError("reasoning base summary SHA 불일치")
+        if base_summary.get("schema") != "prospective_reasoning_confirmation_public_summary_v1":
+            raise ValueError("reasoning base summary schema 불일치")
+        case_names = [name for name in declared if name.startswith("cases/")]
+        call_names = [name for name in declared if name.startswith("calls/")]
+        if len(case_names) != 24 or len(call_names) != 18:
+            raise ValueError("reasoning 공개 행·호출 수 불일치")
+        if base_summary.get("complete_rows") != 24 or base_summary.get("model_requests") != 18:
+            raise ValueError("reasoning summary 행·호출 수 불일치")
+        policies = base_summary.get("policies")
+        if not isinstance(policies, dict):
+            raise ValueError("reasoning policy summary 불일치")
+        for mode in ("legacy_none", "enabled_low"):
+            metrics = policies.get(mode, {})
+            if (metrics.get("rows") != 8 or metrics.get("fault_rows") != 6
+                    or metrics.get("compound_complete") != 0
+                    or metrics.get("wrong_family_confirmations") != 0):
+                raise ValueError("reasoning policy 집계 불일치")
+        uncertainty = base_summary.get("uncertainty", {})
+        if (base_summary.get("independent_source_seeds") != 2
+                or uncertainty.get("independent_units") != 2
+                or uncertainty.get("independent_unit") != "source_seed"):
+            raise ValueError("reasoning 독립 seed 수 불일치")
+        policy_audit = release_summary.get("policy_audit", {})
+        if (release_summary.get("assessment") != "not_confirmed"
+                or release_summary.get("complete_rows") != 24
+                or policy_audit.get("status") != "registered_rule_prose_code_mismatch"
+                or policy_audit.get("rule_description_matches_actual_sequence") is not False
+                or policy_audit.get("rule_arm_unqualified_for_stated_sequence") is not True):
+            raise ValueError("reasoning release 판정·정책 감사 불일치")
+        accounting = release_summary.get("provider_request_accounting", {})
+        if (accounting.get("model_requests_including_replay") != 18
+                or accounting.get("replayed_preserved_requests") != 1
+                or accounting.get("new_provider_requests") != 17):
+            raise ValueError("reasoning provider 호출 원장 불일치")
+    except (OSError, ValueError, TypeError, KeyError) as error:
+        row["status"], row["reason"] = "mismatch", f"release_failed:{type(error).__name__}"
+        return row, None
+    row["status"], row["reason"] = "ready", None
+    result = {"base": base_summary, "release": release_summary, "provenance": provenance}
+    sources.replays[key] = result
+    return row, result
+
+
 def scene_reasoning_followup(sources: Sources, slots: dict) -> dict:
     """기록한 첫 reasoning 선택을 실제 진단 루프로 이어 간 개발 결과를 표시한다."""
     reasoning_path = slots["reasoning_diagnosis_study"]
-    coverage_path = slots["diagnostic_coverage_audit"]
+    confirmation_path = slots.get("reasoning_confirmation")
     reasoning_row, summary = manifest_result(
         sources, reasoning_path, manifest_name="artifact_manifest.json",
         manifest_schema="reasoning_diagnosis_study_public_manifest_v1",
         summary_schema="reasoning_diagnosis_study_public_summary_v1",
         kind="reasoning_diagnosis_study")
-    coverage_row, coverage = manifest_result(
-        sources, coverage_path, manifest_name="artifact_manifest.json",
-        manifest_schema="diagnostic_coverage_audit_public_manifest_v1",
-        summary_schema="diagnostic_coverage_audit_public_summary_v1",
-        kind="diagnostic_coverage_audit")
-    sdk_by_mode: dict[str, int | None] = {}
-    for mode in ("legacy_none", "enabled_low"):
-        values = []
-        for case_id in ("c02", "c03", "c04", "c06", "c07", "c08"):
-            value, _source = _reasoning_case(
-                sources, reasoning_path, case_id, mode, summary is not None)
-            count = value and value.get("actual_sdk_role_executions")
-            if type(count) is not int:
-                values = []
-                break
-            values.append(count)
-        sdk_by_mode[mode] = sum(values) if len(values) == 6 else None
+    confirmation_row, confirmation = _reasoning_confirmation_release(sources, confirmation_path)
+    new_summary = (confirmation or {}).get("base", {})
     mode_rows = []
     for mode, label in (("legacy_none", "reasoning 없음"), ("enabled_low", "reasoning low")):
         metrics = (summary or {}).get("mode_metrics", {}).get(mode, {})
+        new_metrics = new_summary.get("policies", {}).get(mode, {})
+        single_correct = (new_metrics.get("correct_confirmed_families", 0)
+                          - new_metrics.get("compound_partial", 0))
         values = [
             f"{metrics.get('correct_confirmed_family')}/6" if summary is not None else None,
-            f"{metrics.get('holds')}/6" if summary is not None else None,
-            metrics.get("compound_partial") if summary is not None else None,
-            metrics.get("wrong_family_confirmations") if summary is not None else None,
-            metrics.get("new_model_requests") if summary is not None else None,
-            sdk_by_mode[mode],
+            f"{new_metrics.get('correct_confirmed_families')}/6" if confirmation is not None else None,
+            f"{single_correct}/4" if confirmation is not None else None,
+            f"{new_metrics.get('compound_partial')}/2" if confirmation is not None else None,
+            new_metrics.get("model_requests") if confirmation is not None else None,
+            new_metrics.get("paired_probes") if confirmation is not None else None,
         ]
-        mode_rows.append([label, *[cell(sources, value, reasoning_row["id"], None)
-                                  for value in values]])
+        mode_rows.append([label,
+                          cell(sources, values[0], reasoning_row["id"], None),
+                          *[cell(sources, value, confirmation_row["id"], None)
+                            for value in values[1:]]])
+
+    contrasts = new_summary.get("seed_paired_contrasts", []) if confirmation is not None else []
+    contrast_by_seed = {row.get("seed"): row for row in contrasts if isinstance(row, dict)}
+    seed_rows = []
+    for seed in (2430, 2431):
+        contrast = contrast_by_seed.get(seed, {})
+        seed_rows.append([
+            str(seed),
+            cell(sources, f"{contrast.get('legacy_none_correct')}/3" if contrast else None,
+                 confirmation_row["id"], None),
+            cell(sources, f"{contrast.get('enabled_low_correct')}/3" if contrast else None,
+                 confirmation_row["id"], None),
+        ])
 
     legacy, legacy_id = _reasoning_case(
         sources, reasoning_path, "c07", "legacy_none", summary is not None)
@@ -1049,31 +1173,25 @@ def scene_reasoning_followup(sources: Sources, slots: dict) -> dict:
          if low_ok else cell(sources, None, low_id, None),
          cell(sources, 0, low_id, 0) if low_ok else cell(sources, None, low_id, 0)],
     ]
-    coverage_values = [
-        coverage and coverage.get("selection_actor"),
-        coverage and coverage.get("probe"), coverage and coverage.get("outcome"),
-        coverage and coverage.get("sdk_role_executions"),
-        "모델 결과 5/6 유지" if coverage is not None else None,
-    ]
     return {
-        "id": "reasoning_followup", "title": "Reasoning 선택을 실제 진단까지 이어 본 후속 개발",
-        "lead": "같은 두 seed의 결함 6행에서 기록된 첫 선택을 이어 검사하고, 제안 형식과 실제 원인 확정을 나눠 본다.",
+        "id": "reasoning_followup", "title": "Reasoning 후속 확인: 개발 결과와 새 source 결과",
+        "lead": "개발 2/6 대 5/6 뒤 새 seed에서는 4/6 대 3/6이었다. 사전 판정은 not_confirmed다.",
         "blocks": [
-            {"type": "table", "title": "실제 진단 결과(각 결함 6행)",
-             "columns": ["요청 mode", "원인 확정", "HOLD", "복합 부분", "오확정", "새 API", "새 SDK role"],
+            {"type": "table", "title": "개발 기록 → 새 source 확인(각 mode 결함 6행)",
+             "columns": ["요청 mode", "기존 개발 확정", "새 확정", "단일 결함", "복합 일부", "새 자료 요청", "paired 검사"],
              "rows": mode_rows},
-            {"type": "table", "title": "대표 c07 · R1",
+            {"type": "table", "title": "새 source seed별 확정(각 seed 결함 3행)",
+             "columns": ["source seed", "reasoning 없음", "reasoning low"], "rows": seed_rows},
+            {"type": "table", "title": "옛 개발 예시 · c07 R1",
              "columns": ["요청 mode", "관측 경로", "최종 판정", "새 SDK role"], "rows": case_rows},
-            {"type": "table", "wide": True, "title": "별도 operator coverage 감사(c02)",
-             "columns": ["선택 주체", "검사", "관측", "SDK role", "primary 집계"],
-             "rows": [[cell(sources, value, coverage_row["id"], None)
-                       for value in coverage_values]]},
         ],
         "notes": [
-            "원 응답 32회와 후속 새 API 8회는 분리했다. reasoning 없음은 새 API 2회·SDK role 4회, reasoning low는 새 API 6회·SDK role 2회다.",
-            "두 seed와 이미 공개된 결함을 쓴 노출 후 개발이다. 기본 mode는 바꾸지 않았고 새 교정·회복은 없다.",
-            "별도 operator 감사는 c02의 P_reward abnormal 관측 범위만 보완한다. 모델의 5/6을 6/6으로 바꾸지 않는다.",
-            "모델 3 대 3.5 또는 VL 구성의 이득, 일반화, 속도·GPU 절감의 근거가 아니다.",
+            "새 자료의 판정은 not_confirmed이며 기본 mode는 바꾸지 않았다. 복합 결함 전체 확정은 두 mode 모두 0/2다.",
+            "정상 6행은 host gate라 API와 probe가 0이다. LLM의 정상 판정으로 세지 않았다.",
+            "모델 API 18회에는 보존 응답 replay 1회와 새 요청 17회가 포함된다. post-response host 계약 수정 뒤 같은 source로 이어 간 노출 후 개발이다.",
+            "독립 단위는 source seed 2개다. 6개 결함 행을 독립 seed로 세지 않으며 원래 4-arm 확인도 아니다.",
+            "등록한 규칙 문구와 동결 코드의 실제 순서가 달라 규칙 arm은 강한 기준선으로 해석하지 않는다. SDK upper bound 38은 실측 실행 횟수가 아니다.",
+            "옛 c07 표는 기존 개발 자료다. 새 source 성능, 회복, 영상 이득, LLM 우월의 근거로 바꾸지 않는다.",
         ],
     }
 

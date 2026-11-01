@@ -10535,20 +10535,20 @@ window.REPLAY_DATA = {
   },
   {
    "id": "reasoning_followup",
-   "title": "Reasoning 선택을 실제 진단까지 이어 본 후속 개발",
-   "lead": "같은 두 seed의 결함 6행에서 기록된 첫 선택을 이어 검사하고, 제안 형식과 실제 원인 확정을 나눠 본다.",
+   "title": "Reasoning 후속 확인: 개발 결과와 새 source 결과",
+   "lead": "개발 2/6 대 5/6 뒤 새 seed에서는 4/6 대 3/6이었다. 사전 판정은 not_confirmed다.",
    "blocks": [
     {
      "type": "table",
-     "title": "실제 진단 결과(각 결함 6행)",
+     "title": "개발 기록 → 새 source 확인(각 mode 결함 6행)",
      "columns": [
       "요청 mode",
-      "원인 확정",
-      "HOLD",
-      "복합 부분",
-      "오확정",
-      "새 API",
-      "새 SDK role"
+      "기존 개발 확정",
+      "새 확정",
+      "단일 결함",
+      "복합 일부",
+      "새 자료 요청",
+      "paired 검사"
      ],
      "rows": [
       [
@@ -10560,27 +10560,27 @@ window.REPLAY_DATA = {
        },
        {
         "value": "4/6",
-        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
         "digits": null
        },
        {
-        "value": 0,
-        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "value": "2/4",
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
         "digits": null
        },
        {
-        "value": 0,
-        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "value": "2/2",
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
         "digits": null
        },
        {
-        "value": 2,
-        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "value": 8,
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
         "digits": null
        },
        {
-        "value": 4,
-        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "value": 5,
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
         "digits": null
        }
       ],
@@ -10592,28 +10592,28 @@ window.REPLAY_DATA = {
         "digits": null
        },
        {
-        "value": "1/6",
-        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "value": "3/6",
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
         "digits": null
        },
        {
-        "value": 2,
-        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "value": "2/4",
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
         "digits": null
        },
        {
-        "value": 0,
-        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "value": "1/2",
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
         "digits": null
        },
        {
-        "value": 6,
-        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "value": 10,
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
         "digits": null
        },
        {
-        "value": 2,
-        "source": "evals/results/reasoning_diagnosis_study_development_20261101_v1",
+        "value": 4,
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
         "digits": null
        }
       ]
@@ -10621,7 +10621,44 @@ window.REPLAY_DATA = {
     },
     {
      "type": "table",
-     "title": "대표 c07 · R1",
+     "title": "새 source seed별 확정(각 seed 결함 3행)",
+     "columns": [
+      "source seed",
+      "reasoning 없음",
+      "reasoning low"
+     ],
+     "rows": [
+      [
+       "2430",
+       {
+        "value": "3/3",
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
+        "digits": null
+       },
+       {
+        "value": "1/3",
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
+        "digits": null
+       }
+      ],
+      [
+       "2431",
+       {
+        "value": "1/3",
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
+        "digits": null
+       },
+       {
+        "value": "2/3",
+        "source": "evals/results/prospective_reasoning_confirmation_20261101_v3",
+        "digits": null
+       }
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "title": "옛 개발 예시 · c07 R1",
      "columns": [
       "요청 mode",
       "관측 경로",
@@ -10666,54 +10703,15 @@ window.REPLAY_DATA = {
        }
       ]
      ]
-    },
-    {
-     "type": "table",
-     "wide": true,
-     "title": "별도 operator coverage 감사(c02)",
-     "columns": [
-      "선택 주체",
-      "검사",
-      "관측",
-      "SDK role",
-      "primary 집계"
-     ],
-     "rows": [
-      [
-       {
-        "value": "operator_registry_coverage_audit",
-        "source": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
-        "digits": null
-       },
-       {
-        "value": "P_reward",
-        "source": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
-        "digits": null
-       },
-       {
-        "value": "abnormal",
-        "source": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
-        "digits": null
-       },
-       {
-        "value": 2,
-        "source": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
-        "digits": null
-       },
-       {
-        "value": "모델 결과 5/6 유지",
-        "source": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
-        "digits": null
-       }
-      ]
-     ]
     }
    ],
    "notes": [
-    "원 응답 32회와 후속 새 API 8회는 분리했다. reasoning 없음은 새 API 2회·SDK role 4회, reasoning low는 새 API 6회·SDK role 2회다.",
-    "두 seed와 이미 공개된 결함을 쓴 노출 후 개발이다. 기본 mode는 바꾸지 않았고 새 교정·회복은 없다.",
-    "별도 operator 감사는 c02의 P_reward abnormal 관측 범위만 보완한다. 모델의 5/6을 6/6으로 바꾸지 않는다.",
-    "모델 3 대 3.5 또는 VL 구성의 이득, 일반화, 속도·GPU 절감의 근거가 아니다."
+    "새 자료의 판정은 not_confirmed이며 기본 mode는 바꾸지 않았다. 복합 결함 전체 확정은 두 mode 모두 0/2다.",
+    "정상 6행은 host gate라 API와 probe가 0이다. LLM의 정상 판정으로 세지 않았다.",
+    "모델 API 18회에는 보존 응답 replay 1회와 새 요청 17회가 포함된다. post-response host 계약 수정 뒤 같은 source로 이어 간 노출 후 개발이다.",
+    "독립 단위는 source seed 2개다. 6개 결함 행을 독립 seed로 세지 않으며 원래 4-arm 확인도 아니다.",
+    "등록한 규칙 문구와 동결 코드의 실제 순서가 달라 규칙 arm은 강한 기준선으로 해석하지 않는다. SDK upper bound 38은 실측 실행 횟수가 아니다.",
+    "옛 c07 표는 기존 개발 자료다. 새 source 성능, 회복, 영상 이득, LLM 우월의 근거로 바꾸지 않는다."
    ],
    "number": 17
   },
@@ -13040,43 +13038,379 @@ window.REPLAY_DATA = {
    "status": "ready",
    "reason": null
   },
-  "evals/results/diagnostic_coverage_audit_c02_20261101_v1": {
-   "id": "evals/results/diagnostic_coverage_audit_c02_20261101_v1",
-   "path": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/artifact_manifest.json",
-   "kind": "diagnostic_coverage_audit",
-   "sha256": "af35402b977f9f86d10bd354cff436b9dd03b852cba95c467c303040a0cf7e64",
+  "evals/results/prospective_reasoning_confirmation_20261101_v3": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/release-manifest.json",
+   "kind": "reasoning_confirmation_release",
+   "sha256": "a7d5ee49b95c8237cb035f403e58eb3c39a3e60b8729887e6c4973c47b9c9d65",
    "status": "ready",
    "reason": null
   },
-  "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/case.json": {
-   "id": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/case.json",
-   "path": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/case.json",
-   "kind": "diagnostic_coverage_audit_file",
-   "sha256": "6209481cc84da66e717d0edf16982a6d9fce93151d538434906990eb8a755e9e",
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/release-provenance.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/release-provenance.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/release-provenance.json",
+   "kind": "reasoning_confirmation_release_file",
+   "sha256": "74e8d67fb77b3bc7bcbd5dbf3bd71f36c1637d3faf25af8bd9ea5a0714a96340",
    "status": "ready",
    "reason": null
   },
-  "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/reference.json": {
-   "id": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/reference.json",
-   "path": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/measurements/reference.json",
-   "kind": "diagnostic_coverage_audit_file",
-   "sha256": "16ac5af139693f4df2d771bbb5d5681e7d6a2841f2351d8085933701352f5516",
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/release-summary.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/release-summary.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/release-summary.json",
+   "kind": "reasoning_confirmation_release_file",
+   "sha256": "d866f59a3f7abf78fde561abaed37434b8c75bce83b1beba013be0d08ea05a96",
    "status": "ready",
    "reason": null
   },
-  "evals/results/diagnostic_coverage_audit_c02_20261101_v1/source_provenance.json": {
-   "id": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/source_provenance.json",
-   "path": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/source_provenance.json",
-   "kind": "diagnostic_coverage_audit_file",
-   "sha256": "e08ff72813aa8e39ea1190ecb33d386043247735ec4e1efb71c60634453b0e00",
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.enabled_low.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.enabled_low.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.enabled_low.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "151af0c618241325b5620604cbabdc56864145cfffe7aafd34513f5c9617f28e",
    "status": "ready",
    "reason": null
   },
-  "evals/results/diagnostic_coverage_audit_c02_20261101_v1/summary.json": {
-   "id": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/summary.json",
-   "path": "evals/results/diagnostic_coverage_audit_c02_20261101_v1/summary.json",
-   "kind": "diagnostic_coverage_audit_file",
-   "sha256": "91df2b847e96568b67b867ec18f6d02c9534a44806584aadfedd927134a3a1e0",
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.enabled_low.d2.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.enabled_low.d2.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.enabled_low.d2.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "1facc4844c8809ffc0d1acf7c3242c2cda32a01c008ebd7d0e99dee3e6b90fe6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.enabled_low.d3.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.enabled_low.d3.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.enabled_low.d3.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "5854d8253881f27fadf79cc841a8f6218a259cf604ffc8d4d4dd28e9fe4319fd",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.legacy_none.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.legacy_none.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c02.legacy_none.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "8e5501856b4785e011db617de0933e5f90e2231bf3aeed1152bc898f44849919",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.enabled_low.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.enabled_low.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.enabled_low.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "d778045d3455f78477de786c62440b0f35daeb538456e2a40d2d2996569d4317",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.enabled_low.d2.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.enabled_low.d2.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.enabled_low.d2.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "ae97af76d157a57b09fd07c569bb978e5fbbdc9d19766324cb1364adde54d38f",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.legacy_none.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.legacy_none.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.legacy_none.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "be6e4bc0d1ce07f0e53486e40b423d55494aef377f7b90fd55a311659fb43fb3",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.legacy_none.d2.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.legacy_none.d2.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c03.legacy_none.d2.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "f31b1af56556acb791370722ab392bc4ac556f863a1da5f6a0554eff1aa9fc05",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c04.enabled_low.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c04.enabled_low.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c04.enabled_low.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "f0e2482de80e4b3f27f895b5bc92ffe9a6449e738a5ca47a60610a597502fac5",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c04.legacy_none.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c04.legacy_none.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c04.legacy_none.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "a883d767d6a643d690fab2317ba8fe40e1431a99070c9eece24b04127fe651ef",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c06.enabled_low.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c06.enabled_low.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c06.enabled_low.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "935f1f2f8cf996f3ac5f5a389395284c576aa96941a45bf0ad197c3d04fbf44d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c06.legacy_none.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c06.legacy_none.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c06.legacy_none.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "8b0f7398b02f0eec169182f3111644a664c83e407d1d68b517e9e93d1d68deb4",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c07.enabled_low.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c07.enabled_low.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c07.enabled_low.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "0d4125e7315162e112cfb12387b42d077ca346549e3d44b8d0c11ed7398e34ba",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c07.legacy_none.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c07.legacy_none.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c07.legacy_none.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "ea5b6441203d31c9ea9ed5027974bdd3c04553c2d5d7570d4a8d821c88f4530d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c07.legacy_none.d2.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c07.legacy_none.d2.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c07.legacy_none.d2.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "0e9ed63ecc3471e2cc211907d5fa18897fc61e56653e30ced747b0bdbcc72539",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c08.enabled_low.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c08.enabled_low.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c08.enabled_low.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "d403b07c3cd4c2dcbd7ae9ff83767ec6af7c637dce2b008b2085d9a0d0ceb9f4",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c08.enabled_low.d2.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c08.enabled_low.d2.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c08.enabled_low.d2.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "c5971d8289176bd4ea62870e21ff9b39f700d1391c305cdcc6f2ada9fa3971b1",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c08.legacy_none.d1.a1.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c08.legacy_none.d1.a1.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/calls/c08.legacy_none.d1.a1.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "f4a29998c3d8148bea537b321c932860583d513b78aca2e9284f99be47f26ae8",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c01.enabled_low.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c01.enabled_low.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c01.enabled_low.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "5a5ff918cd95ed8bc012b1e615cb4f3d4364ed2cddc8430fa271ca81fc6c9604",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c01.legacy_none.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c01.legacy_none.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c01.legacy_none.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "8065415cba2500f595d897dc19c53b73890d05983ae02a7844a0d014fe1b927d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c01.strong_registered_rule.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c01.strong_registered_rule.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c01.strong_registered_rule.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "6bf17416eaaaeb58193fdb1ed720c6086667fe0760d15f89ece70272562e4dbe",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c02.enabled_low.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c02.enabled_low.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c02.enabled_low.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "ec92af0c01de36d880b63210c55fcee15badcaed643f0e2dea219197adbc89bf",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c02.legacy_none.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c02.legacy_none.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c02.legacy_none.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "ef4834e08d18cfdd20f91d0620485dfec6727666c0c9ab1ff0547c90b705cac1",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c02.strong_registered_rule.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c02.strong_registered_rule.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c02.strong_registered_rule.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "5b769a86aea0806f968be8831deee0b82ec9b6774ecfc931c5d26b3e0ef3a562",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c03.enabled_low.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c03.enabled_low.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c03.enabled_low.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "7ce6ea4bc9f115a454385e23d6aa383466cfd95d9cebd31c4af14f69cd477666",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c03.legacy_none.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c03.legacy_none.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c03.legacy_none.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "d6e4bcfe50b33406150cbd1874fca4dd0b5a97f2f7d47b82b20c6694c194769f",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c03.strong_registered_rule.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c03.strong_registered_rule.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c03.strong_registered_rule.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "37bfa1d57b618bed919ae1cc046b2cd69709d89a65eb02c7ef742ffa43e09623",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c04.enabled_low.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c04.enabled_low.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c04.enabled_low.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "c25e55a6681bcb0eedf441caec4fe780d271c03651b30e7fa986748bb7a91aae",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c04.legacy_none.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c04.legacy_none.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c04.legacy_none.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "eda46d522531fdc59875c13c85ab2ddfff9c08d3b1481dcfb702307cd1f7e0c9",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c04.strong_registered_rule.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c04.strong_registered_rule.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c04.strong_registered_rule.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "257960ea22819b3b9e3ece43f35a8befdbeb0f1007e18546bc77663ec82b0ade",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c05.enabled_low.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c05.enabled_low.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c05.enabled_low.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "6019ab73c1e7cb0ac37897deb087cdde91a68befa79a2ec8931dfebd967c10bf",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c05.legacy_none.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c05.legacy_none.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c05.legacy_none.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "34c39f40edb5564edffc8cc1041b2e16c5a76f2276f62204e5ed43746c572076",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c05.strong_registered_rule.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c05.strong_registered_rule.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c05.strong_registered_rule.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "234ed8ade7176a75ae26ecd758c1c369ac29c59ea8255b7950d41eab13629b74",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c06.enabled_low.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c06.enabled_low.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c06.enabled_low.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "757c3f7c0843bb54f45cd19d2b50be776ff62fad97328d9d288fa53c13ff81d6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c06.legacy_none.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c06.legacy_none.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c06.legacy_none.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "dc4f66d4b2a0896462586b31b17ecbc55e10e16e434ddf0bf9c8c95ce592815c",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c06.strong_registered_rule.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c06.strong_registered_rule.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c06.strong_registered_rule.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "ab96dbd862821efaa652370bda21d6ec9bc82b926e5ce008381b4b6aaffe8194",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c07.enabled_low.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c07.enabled_low.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c07.enabled_low.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "9044edb85ff00bd160a994b2ab3304e300240ff8a1c31d5195ccfd59c8480b09",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c07.legacy_none.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c07.legacy_none.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c07.legacy_none.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "878d337a3edfdd6489589e09dce9b72b4015c78f7ca965cf21bbf25b95ebcde7",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c07.strong_registered_rule.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c07.strong_registered_rule.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c07.strong_registered_rule.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "9e3d7e33e873a3b8f0ef7d99a0f6aa1af8fc9b73f2569532c1939b7cdc0e501b",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c08.enabled_low.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c08.enabled_low.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c08.enabled_low.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "ee497be6ceb78f34af992b738a794d6d323de7ca856b269dc6b69d9af86dfb49",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c08.legacy_none.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c08.legacy_none.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c08.legacy_none.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "725d6938df8b63bdfb97831f2463dc7eb87658754db0690d2ccae7448a94b7b4",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c08.strong_registered_rule.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c08.strong_registered_rule.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/cases/c08.strong_registered_rule.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "d4e0f9170de7fba2b0466616c546f20102fa1818154c11e14e38fb23aaff6799",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/source-provenance.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/source-provenance.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/source-provenance.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "80c9fa26af53b0b11c03e1ce85aebbc7f45cad1b15c178914b68ea0a9b7867c5",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/summary.json": {
+   "id": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/summary.json",
+   "path": "evals/results/prospective_reasoning_confirmation_20261101_v3/verified-base/summary.json",
+   "kind": "reasoning_confirmation_base_file",
+   "sha256": "ff84b1af2dee791577002c119060286106a3574a51fa52490e78a228efa46578",
    "status": "ready",
    "reason": null
   },

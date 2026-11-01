@@ -226,10 +226,76 @@ def _write_public_manifest(repo: Path, folder: str, manifest_schema: str,
         "schema": manifest_schema, "files": declared}), encoding="utf-8")
 
 
+def _write_reasoning_confirmation_release(repo: Path, folder: str, *, bad_base_sha: bool = False) -> None:
+    root = repo / folder
+    base = root / "verified-base"
+    base.mkdir(parents=True)
+    summary = {
+        "schema": "prospective_reasoning_confirmation_public_summary_v1",
+        "complete_rows": 24, "model_requests": 18, "independent_source_seeds": 2,
+        "policies": {
+            "legacy_none": {"rows": 8, "fault_rows": 6, "correct_confirmed_families": 4,
+                            "compound_complete": 0, "compound_partial": 2,
+                            "wrong_family_confirmations": 0, "model_requests": 8,
+                            "paired_probes": 5},
+            "enabled_low": {"rows": 8, "fault_rows": 6, "correct_confirmed_families": 3,
+                            "compound_complete": 0, "compound_partial": 1,
+                            "wrong_family_confirmations": 0, "model_requests": 10,
+                            "paired_probes": 4},
+        },
+        "seed_paired_contrasts": [
+            {"seed": 2430, "legacy_none_correct": 3, "enabled_low_correct": 1},
+            {"seed": 2431, "legacy_none_correct": 1, "enabled_low_correct": 2},
+        ],
+        "uncertainty": {"independent_units": 2, "independent_unit": "source_seed"},
+    }
+    files = {"summary.json": summary, "source-provenance.json": {"schema": "fixture"}}
+    for index in range(24):
+        files[f"cases/c{index + 1:02d}.json"] = {"row": index}
+    for index in range(18):
+        files[f"calls/c{index + 1:02d}.json"] = {"call": index}
+    declared = {}
+    for name, value in files.items():
+        path = base / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value), encoding="utf-8")
+        declared[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+    base_manifest = {"schema": "prospective_reasoning_confirmation_public_manifest_v1",
+                     "status": "complete", "artifact_count": 44, "files": declared}
+    base_manifest_path = base / "artifact-manifest.json"
+    base_manifest_path.write_text(json.dumps(base_manifest), encoding="utf-8")
+    base_sha = hashlib.sha256(base_manifest_path.read_bytes()).hexdigest()
+    release_summary = {
+        "schema": "prospective_reasoning_confirmation_release_summary_v2",
+        "assessment": "not_confirmed", "complete_rows": 24,
+        "verified_base_summary_sha256": declared["summary.json"],
+        "policy_audit": {"status": "registered_rule_prose_code_mismatch",
+                         "rule_description_matches_actual_sequence": False,
+                         "rule_arm_unqualified_for_stated_sequence": True},
+        "provider_request_accounting": {"model_requests_including_replay": 18,
+                                        "replayed_preserved_requests": 1,
+                                        "new_provider_requests": 17},
+    }
+    provenance = {"schema": "prospective_reasoning_confirmation_release_provenance_v2",
+                  "verified_base_manifest_sha256": base_sha}
+    for name, value in (("release-summary.json", release_summary),
+                        ("release-provenance.json", provenance)):
+        (root / name).write_text(json.dumps(value), encoding="utf-8")
+    release = {
+        "schema": "prospective_reasoning_confirmation_release_manifest_v2",
+        "status": "complete", "verified_base_artifact_count": 44,
+        "verified_base_manifest_sha256": "0" * 64 if bad_base_sha else base_sha,
+        "files": {name: hashlib.sha256((root / name).read_bytes()).hexdigest()
+                  for name in ("release-summary.json", "release-provenance.json")},
+    }
+    (root / "release-manifest.json").write_text(json.dumps(release), encoding="utf-8")
+
+
 def test_reasoning_followup_waits_without_committed_public_manifests(repo):
     sources = B.Sources(repo)
     scene = B.scene_reasoning_followup(sources, {
         "reasoning_diagnosis_study": "missing-reasoning",
+        "reasoning_confirmation": "missing-confirmation",
         "diagnostic_coverage_audit": "missing-coverage"})
     assert scene["id"] == "reasoning_followup"
     assert all(cell["value"] is None for block in scene["blocks"]
@@ -250,7 +316,7 @@ def test_reasoning_followup_uses_verified_summary_case_and_dialogue_sources(repo
     low = {"actions": ["read_evidence", "run_probe"], "decision_outcome": "confirmed",
            "correct_complete_family": True, "actual_sdk_role_executions": 0,
            "probe_execution_audit": [{"probe": "P_recorded_optimizer_updates"}]}
-    reasoning_extra = {
+    reasoning_extra: dict[str, dict] = {
         f"cases/{case_id}-{mode}.json": {"actual_sdk_role_executions": (
             2 if case_id in ({"c06", "c07"} if mode == "legacy_none" else {"c06"}) else 0)}
         for case_id in ("c02", "c03", "c04", "c06", "c07", "c08")
@@ -268,20 +334,37 @@ def test_reasoning_followup_uses_verified_summary_case_and_dialogue_sources(repo
                 "probe": "P_reward", "outcome": "abnormal", "sdk_role_executions": 2}
     _write_public_manifest(repo, "coverage", "diagnostic_coverage_audit_public_manifest_v1",
                            coverage, {})
-    _git(repo, "add", "reasoning", "coverage")
+    _write_reasoning_confirmation_release(repo, "confirmation")
+    _git(repo, "add", "reasoning", "coverage", "confirmation")
     _git(repo, "commit", "-q", "-m", "reasoning coverage")
     sources = B.Sources(repo)
     scene = B.scene_reasoning_followup(sources, {
-        "reasoning_diagnosis_study": "reasoning", "diagnostic_coverage_audit": "coverage"})
-    aggregate, cases, audit = scene["blocks"]
+        "reasoning_diagnosis_study": "reasoning", "reasoning_confirmation": "confirmation",
+        "diagnostic_coverage_audit": "coverage"})
+    aggregate, seeds, cases = scene["blocks"]
     assert [[cell["value"] for cell in row[1:]] for row in aggregate["rows"]] == [
-        ["2/6", "4/6", 0, 0, 2, 4], ["5/6", "1/6", 2, 0, 6, 2]]
+        ["2/6", "4/6", "2/4", "2/2", 8, 5],
+        ["5/6", "3/6", "2/4", "1/2", 10, 4]]
+    assert [[cell["value"] for cell in row[1:]] for row in seeds["rows"]] == [
+        ["3/3", "1/3"], ["1/3", "2/3"]]
     assert [cell["value"] for cell in cases["rows"][0][1:]] == ["P_reward → normal", "모델 HOLD", 2]
     assert [cell["value"] for cell in cases["rows"][1][1:]] == [
         "count 읽기 → recorded count abnormal", "optimizer_update_count 확정", 0]
-    assert [cell["value"] for cell in audit["rows"][0]] == [
-        "operator_registry_coverage_audit", "P_reward", "abnormal", 2, "모델 결과 5/6 유지"]
     B.check_public({"scenes": [scene], "sources": sources.rows})
+
+
+def test_reasoning_followup_rejects_broken_release_to_base_hash_chain(repo):
+    _write_reasoning_confirmation_release(repo, "confirmation", bad_base_sha=True)
+    _git(repo, "add", "confirmation")
+    _git(repo, "commit", "-q", "-m", "broken confirmation fixture")
+    sources = B.Sources(repo)
+    scene = B.scene_reasoning_followup(sources, {
+        "reasoning_diagnosis_study": "missing-reasoning",
+        "reasoning_confirmation": "confirmation",
+        "diagnostic_coverage_audit": "missing-coverage"})
+    assert sources.rows["confirmation"]["status"] == "mismatch"
+    assert all(cell["value"] is None for row in scene["blocks"][0]["rows"]
+               for cell in row[2:])
 
 
 def test_policy_comparison_separates_valid_option_actions_from_diagnostic_outcomes():
