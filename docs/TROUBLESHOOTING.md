@@ -928,6 +928,7 @@
 - 후속: 분리된 경로는 실제 full v2에서 통과했지만, capture worker가 요구하는 `mode="record"`와 로컬 job의 모드 매핑이 달라 RGB 수집 전에 실패했다. v3는 job ID·고정 profile·checkpoint·source까지 worker 계약에 맞추며, 실제 capture factory의 모드·profile 검증을 CPU에서 확인했다. 이 확인을 full 녹화 성공으로 바꾸지 않는다.
 - 코드: [로컬 v1](../bench/local_same_play_capture_v1.py), [경로 분리 검사](../bench/record_agentic_state_sidecar_v1.py).
 - [v3 실측](../evals/results/local_same_play_capture_s2430_none_20261101_v3/summary.json): 정상 정책의 full 625프레임을 50fps·12.5초로 수집했다. native·sidecar·same-PTS·렌더 동기화625회·종료 증거와 소유 프로세스 정리를 통과했다. 이는 기술 녹화 완료이며 모델 입력 사용·행동·회복 승인과 구분한다.
+- [같은 설정의 후속 수집](../evals/results/local_same_play_pairs_s2430_s2431_20261101_v1/summary.json)은 seed2430·2431의 정상/F1 네 영상을 모두 같은 조건으로 완료했다. 총2,500프레임을 독립 사례로 세지 않으며, 학습 기록과 결합한 영상 유무 비교는 별도 등록·실행으로 판단한다.
 
 ### OPS-130: 프레임 품질 검사에 등록되지 않은 이미지 라이브러리 의존
 
