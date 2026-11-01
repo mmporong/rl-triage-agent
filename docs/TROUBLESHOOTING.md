@@ -943,3 +943,10 @@
 - 원인: corpus 준비와 실제 epoch는 같은 내용·SHA의 fact ledger를 서로 다른 폴더에 봉인한다. selector 초기 state digest에는 ledger 경로도 포함되므로 corpus state를 실제 epoch의 초기 state로 사용할 수 없었다.
 - 수정: [공개 검증기 v3](../evals/export_prospective_reasoning_confirmation_v3.py)는 실제 epoch ledger의 SHA·source binding과 동결 packet을 대조하고 기존 `initialize`로 초기 state를 재생한다. 이후 규칙 선택·승인·검사 영수증·상태 전이·최종 집계 검증은 유지한다. 기존 검증기·실행·결과를 바꾸지 않는다.
 - 검증: 실제 c02의4단계·검사3회를 재생했고 관련27개 테스트를 통과했다. 전체24행의 [공개 결과](../evals/results/prospective_reasoning_confirmation_20261101_v3/release-summary.json)는 `not_confirmed`이며, 규칙 설명과 동결 코드 순서의 별도 불일치도 공개한다. 공개 변환에서 새 API·GPU 실행은0회다.
+
+### OPS-132: 네 방식 실행기의 GPU lease ID 형식 연결
+
+- 관찰: 네 방식 비교 v1은 입력 재확인과 lease 취득 뒤, 첫 진단 전에 `KeyError: lease_id`로 종료됐다. 모델 요청과 검사 자식 실행은 모두 0회였고 lease는 해제됐다.
+- 원인: 공용 metadata는 `leaseId`를 제공한다. 새 실행기는 기존 변환 함수를 거치지 않고 `lease_id`를 읽었다.
+- 수정: [실행기](../bench/run_local_pair_four_arm_v1.py)는 기존 `normalize_lease_metadata`를 재사용한다. 원 metadata를 보존하면서 owner·실행 상태·UUID·두 이름의 충돌을 검증한다. v1 기록을 보존하고 [v2 등록](../bench/protocols/local_pair_four_arm_s2430_s2431_20261101_v2.json)과 새 출력 경로로 이어간다. 입력·모델·도구·한도·판정은 같다.
+- 검증: 실제 공용 metadata 형태와 이름 충돌 회귀를 추가해 관련 22개 테스트를 통과했다. 이 수정의 CPU 검증을 진단 성공이나 영상 효과로 세지 않는다.
