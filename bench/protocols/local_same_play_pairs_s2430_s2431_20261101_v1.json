@@ -1,0 +1,117 @@
+{
+  "claims": {
+    "capture_approved": false,
+    "expected_technical_complete": true,
+    "heldout": false,
+    "model_ready": false,
+    "new_image_model_exposure": false,
+    "recovery": false,
+    "used_for_decision": false,
+    "video_benefit": false
+  },
+  "existing_s2430_none_full": {
+    "fps": 50,
+    "frames": 625,
+    "proof_count": 9,
+    "same_pts": true,
+    "sha256": "6cdd6ca6ae9c774a65a0a914db643e07e351cc71fa1beecb78be6d534eef05be"
+  },
+  "exposure": {
+    "fault_source_states_used_in_prior_text_comparison": true,
+    "heldout_or_new_model_performance_claim": false,
+    "independent_source_seeds": 2,
+    "normal_source_closed_by_host_gate_not_model": true,
+    "same_source_development_capture": true,
+    "source_training_and_fixed_results_seen_before_registration": true
+  },
+  "failure_rule": "stop_at_first_failed_smoke_or_full_preserve_all_original_artifacts_no_replacement",
+  "new_conditions": [
+    {
+      "logical_id": "s2430-f1",
+      "sha256": "08dc6ae83aef7a413091970498f6ab1b1ece838ae9801c7d47fc771dab29f6f6"
+    },
+    {
+      "logical_id": "s2431-none",
+      "sha256": "b2c4a70dad0d757582642007ebdea2e42e228584e4fcd2bb024879b5af12fd5c"
+    },
+    {
+      "logical_id": "s2431-f1",
+      "sha256": "cc9989044d876c1f993f90745c44131fc421b5ad5aa0c190503c50de249a2bb3"
+    }
+  ],
+  "parent_technical_result": {
+    "scope": "existing_s2430_none_full_v3",
+    "sha256": "6cdd6ca6ae9c774a65a0a914db643e07e351cc71fa1beecb78be6d534eef05be"
+  },
+  "plan": {
+    "api_calls": 0,
+    "conditions": 3,
+    "fresh_stage_per_failure": true,
+    "full_frames_each": 625,
+    "lease_helper": "Use-GpuLease.ps1",
+    "lease_owner": "rl-triage-lineage-sources-v1",
+    "same_profile": true,
+    "sdk_launch_cap": 6,
+    "smoke_frames_each": 1
+  },
+  "preregistered_success": "all_three_conditions_smoke_exit0_then_full625_with_native_sidecar_same_pts_render_sync_shutdown_owned_exit0_cleanup; model_and_behavior_flags_remain_false",
+  "protocol_candidates": [
+    {
+      "logical_id": "s2430-f1",
+      "sha256": "6be2a0ef447bd29fec555831213fd2dac85a34108791abda8130b9e26eedd7db",
+      "target": "bench/protocols/local_same_play_capture_s2430_f1_20261101_v1.json",
+      "version": 1
+    },
+    {
+      "logical_id": "s2430-f1",
+      "sha256": "80564effb507fdd4812d75c21f6f38df68eb804e6107e5624bca9864cbc8bded",
+      "target": "bench/protocols/local_same_play_capture_s2430_f1_20261101_v2.json",
+      "version": 2
+    },
+    {
+      "logical_id": "s2430-f1",
+      "sha256": "dad7d3f6cd0bfece6d4f490121bf14199870219275e843315d7750bc8b1199e6",
+      "target": "bench/protocols/local_same_play_capture_s2430_f1_20261101_v3.json",
+      "version": 3
+    },
+    {
+      "logical_id": "s2431-none",
+      "sha256": "6a6d47abff1f24300a222f8cc73527a3a63709892fe5f7d1bfbc6b81d75658d8",
+      "target": "bench/protocols/local_same_play_capture_s2431_none_20261101_v1.json",
+      "version": 1
+    },
+    {
+      "logical_id": "s2431-none",
+      "sha256": "ac668d19956c41c432c50d2fe456db091aa4af7a8c071dae6e4aa5a45c42bafb",
+      "target": "bench/protocols/local_same_play_capture_s2431_none_20261101_v2.json",
+      "version": 2
+    },
+    {
+      "logical_id": "s2431-none",
+      "sha256": "ddb1e6843aa53b7120519494d2a131ded4ff5f820cce0cbc110a86a8b481bc50",
+      "target": "bench/protocols/local_same_play_capture_s2431_none_20261101_v3.json",
+      "version": 3
+    },
+    {
+      "logical_id": "s2431-f1",
+      "sha256": "e39bd0f8a41e49cfcf8ea26830d10ae1ff8b006d296280d5ab9d517e486703fa",
+      "target": "bench/protocols/local_same_play_capture_s2431_f1_20261101_v1.json",
+      "version": 1
+    },
+    {
+      "logical_id": "s2431-f1",
+      "sha256": "0ce21bafecf7c6642efa7d61a3d129ee757be19692ff634fa2baafaa24f3eac0",
+      "target": "bench/protocols/local_same_play_capture_s2431_f1_20261101_v2.json",
+      "version": 2
+    },
+    {
+      "logical_id": "s2431-f1",
+      "sha256": "5c208e937996cbfe4bae40dca0c3554141b6ba1cba51248a443e7627c746eee1",
+      "target": "bench/protocols/local_same_play_capture_s2431_f1_20261101_v3.json",
+      "version": 3
+    }
+  ],
+  "schema": "local_same_play_pair_capture_phase_v1",
+  "source_anchor": "dfa76de03ccd803d87ff93dc656531e5450f3aa9",
+  "status": "registered_before_new_three_condition_gpu"
+}
