@@ -1,0 +1,58 @@
+{
+  "contexts": {
+    "cached_normal_shadow": {
+      "case_id": "case-01",
+      "existing_call_ordinal": 1,
+      "live_receipt": true,
+      "new_http_requests": 0,
+      "outcome": "semantic_valid",
+      "policy": "logs_only",
+      "role": "정상 shadow의 완료 receipt를 같은 결과로 재사용한 CPU 검증",
+      "same_verified_result": true,
+      "sender_callbacks": 0,
+      "source_type": "NONE",
+      "status": "completed"
+    },
+    "diagnosis_input": {
+      "case_id": "case-03",
+      "existing_call_ordinal": 5,
+      "live_receipt": true,
+      "outcome": "semantic_valid",
+      "policy": "logs_only",
+      "role": "F1 진단 입력으로 이미 생성된 응답의 읽기 전용 검증",
+      "source_type": "F1",
+      "status": "completed"
+    }
+  },
+  "counts": {
+    "cached_reuse_new_http_requests": 0,
+    "cached_reuse_sender_callbacks": 0,
+    "existing_model_responses_read_and_verified": 2,
+    "exporter_new_http_requests": 0,
+    "gpu_operations": 0,
+    "hold_rows": 8,
+    "matrix_new_http_requests": 0,
+    "matrix_rows": 10,
+    "verified_rows": 2
+  },
+  "evidence_classes": {
+    "actual_model_sdk_raw": 1,
+    "controlled_injection": 1,
+    "controlled_perturbation": 7,
+    "fixture_transport": 1
+  },
+  "interpretation_limits": {
+    "actual_api_outage_induced": false,
+    "api_outage_cause_or_rate_measured": false,
+    "busy_is_controlled_injection": true,
+    "diagnostic_accuracy_measured": false,
+    "fixture_transport_promoted_to_actual": false,
+    "gpu_busy_measured": false,
+    "model_effect_measured": false,
+    "other_live_batch_calls_global_immutability_claimed": false,
+    "semantic_blur_recognition_measured": false
+  },
+  "schema": "lineage_runtime_guards_public_v1_summary",
+  "scope": "actual_source_runtime_guard_public_projection",
+  "status": "complete"
+}

@@ -466,7 +466,8 @@ def test_build_from_repository_is_publishable_and_never_mismatched(built):
     assert [scene["id"] for scene in data["scenes"]] == [
         "failure", "curves", "warning", "probe", "correction", "demo", "nat_demo", "recovery", "motor", "hold", "upstream",
         "upstream_demo", "d3", "nvidia", "prospective_comparison", "registered_partitions",
-        "reasoning_followup", "four_way_development", "five_type_sources", "stairs_motion_integrity", "stairs_command_contrast", "cost"]
+        "reasoning_followup", "four_way_development", "five_type_sources", "five_policy_diagnosis",
+        "five_policy_recovery", "stairs_motion_integrity", "stairs_command_contrast", "cost"]
     statuses = {key: row["status"] for key, row in data["sources"].items()}
     assert "mismatch" not in statuses.values()
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
@@ -567,7 +568,8 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
     assert "<svg" in clean[1] and "polyline" in clean[1]
     dense = [scene["id"] for scene, html in zip(data["scenes"], clean, strict=True) if 'class="blocks dense"' in html]
     assert dense == ["correction", "demo", "nat_demo", "recovery", "upstream", "upstream_demo", "d3", "nvidia",
-                     "prospective_comparison", "registered_partitions", "cost"]
+                     "prospective_comparison", "registered_partitions", "five_policy_diagnosis",
+                     "five_policy_recovery", "cost"]
     for scene, html in zip(data["scenes"], clean):
         statuses = {data["sources"][source]["status"] for source in _scene_sources(scene)}
         assert ("waiting" in statuses) == ("대기" in html), scene["id"]

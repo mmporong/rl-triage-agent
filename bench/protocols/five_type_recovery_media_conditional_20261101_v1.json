@@ -1,0 +1,108 @@
+{
+  "authority": {
+    "api": false,
+    "capture_approved": false,
+    "gpu": false,
+    "model_ready": false,
+    "used_for_decision": false
+  },
+  "budget": {
+    "api_cap": 0,
+    "automatic_retries": 0,
+    "full_per_recovered_target": 1,
+    "sdk_cap": 3,
+    "smoke": 1,
+    "wall_cap_s": 9000
+  },
+  "fixed_before_r4_final_results": true,
+  "input_media": {
+    "case-03": {
+      "case": "source-06",
+      "reference": "source-05"
+    },
+    "case-07": {
+      "case": "source-14",
+      "reference": "source-13"
+    },
+    "fault_reference_recapture": false,
+    "source_batch_expected": {
+      "pairs": 10,
+      "source_artifacts": 20
+    }
+  },
+  "play": {
+    "actor_inference_only": true,
+    "camera_profile": "same_play_fixed_v1",
+    "command_mps": 1.0,
+    "controller_seed": 42,
+    "duration_s": 12.5,
+    "fps": 50,
+    "frames": 625,
+    "height": 480,
+    "num_envs": 1,
+    "render_sync": true,
+    "same_pts": true,
+    "shutdown": "vision_shutdown_policy_v1",
+    "sidecar": true,
+    "task": "Isaac-Velocity-Flat-Unitree-Go2-Play-v0",
+    "training": false,
+    "width": 640
+  },
+  "recovery_inputs": {
+    "first_protocol": "bench/protocols/five_type_recovery_first_s4552_s4557_20261101_v1.json",
+    "prior_conditional_design": "bench/protocols/five_policy_recovery_conditional_s2552_s2556_20261101_v1.json",
+    "required_export_schemas": [
+      "five_policy_recovery_public_manifest_v1",
+      "five_policy_recovery_public_summary_v1",
+      "five_policy_recovery_public_cases_v1",
+      "five_policy_recovery_public_provenance_v1"
+    ],
+    "source_v2_envelope_allowed": false
+  },
+  "runtime": {
+    "actuator_change": false,
+    "exclusive_gpu_lease": true,
+    "fault_injection": false,
+    "owned_process": true
+  },
+  "schema": "five_type_recovery_media_conditional_v1",
+  "selection": {
+    "first_precedes_second": true,
+    "hold_without_replacement": true,
+    "replacement_target": false,
+    "required_final_outcome": "recovered"
+  },
+  "source_closure": {
+    "count": 241,
+    "sha256_lf_map_digest": "eb92f708452bf2c7d7d367e590561d96432ac664019549e4644f4d908bdd2279"
+  },
+  "status": "preregistered_conditional",
+  "target_order": [
+    "case-03:logs_only",
+    "case-07:logs_only"
+  ],
+  "targets": {
+    "case-03:logs_only": {
+      "case_id": "case-03",
+      "first_seed": 4553,
+      "policy": "logs_only",
+      "second_seed": 5553,
+      "source_arm": "F1",
+      "source_pair": {
+        "case": "source-06",
+        "reference": "source-05"
+      }
+    },
+    "case-07:logs_only": {
+      "case_id": "case-07",
+      "first_seed": 4557,
+      "policy": "logs_only",
+      "second_seed": 5557,
+      "source_arm": "COMPOUND",
+      "source_pair": {
+        "case": "source-14",
+        "reference": "source-13"
+      }
+    }
+  }
+}

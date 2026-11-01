@@ -1,0 +1,185 @@
+{
+  "rows": [
+    {
+      "approval_granted": false,
+      "automatic_retry": false,
+      "case": "actual_model_sdk_receipts",
+      "decision": null,
+      "dispatch_granted": false,
+      "evidence": {
+        "existing_receipts_verified": 1,
+        "live": true,
+        "new_http_requests": 0,
+        "outcome": "semantic_valid",
+        "status": "completed"
+      },
+      "evidence_class": "actual_model_sdk_raw",
+      "reason": null,
+      "stage": null,
+      "status": "verified"
+    },
+    {
+      "approval_granted": false,
+      "automatic_retry": false,
+      "case": "registered_input_missing",
+      "decision": "HOLD",
+      "dispatch_granted": false,
+      "evidence": {
+        "fault": {
+          "disposition": "HOLD",
+          "error_type": "FileNotFoundError",
+          "reason": "registered_input_unavailable",
+          "schema": "local_pair_input_runtime_fault_v1",
+          "stage": "input"
+        }
+      },
+      "evidence_class": "controlled_perturbation",
+      "reason": "registered_input_unavailable",
+      "stage": "input",
+      "status": "HOLD"
+    },
+    {
+      "approval_granted": false,
+      "automatic_retry": false,
+      "case": "registered_input_permission",
+      "decision": "HOLD",
+      "dispatch_granted": false,
+      "evidence": {
+        "fault": {
+          "disposition": "HOLD",
+          "error_type": "PermissionError",
+          "reason": "registered_input_unavailable",
+          "schema": "local_pair_input_runtime_fault_v1",
+          "stage": "input"
+        }
+      },
+      "evidence_class": "controlled_perturbation",
+      "reason": "registered_input_unavailable",
+      "stage": "input",
+      "status": "HOLD"
+    },
+    {
+      "approval_granted": false,
+      "automatic_retry": false,
+      "case": "blur_frame_quarantine",
+      "decision": "HOLD",
+      "dispatch_granted": false,
+      "evidence": {
+        "frame_refs_count": 0,
+        "image_count": 0,
+        "outcomes": [
+          "quality_below_registered_floor"
+        ]
+      },
+      "evidence_class": "controlled_perturbation",
+      "reason": "visual_quality_unknown",
+      "stage": "quality",
+      "status": "HOLD"
+    },
+    {
+      "approval_granted": false,
+      "automatic_retry": false,
+      "case": "visual_numeric_conflict",
+      "decision": "HOLD",
+      "dispatch_granted": false,
+      "evidence": {
+        "numeric_status": "inconsistent",
+        "visual_status": "consistent"
+      },
+      "evidence_class": "controlled_perturbation",
+      "reason": "verified_visual_numeric_conflict",
+      "stage": "geometry",
+      "status": "HOLD"
+    },
+    {
+      "approval_granted": false,
+      "automatic_retry": false,
+      "case": "visual_numeric_unknown",
+      "decision": "HOLD",
+      "dispatch_granted": false,
+      "evidence": {
+        "numeric_status": "unknown",
+        "visual_status": "unclear"
+      },
+      "evidence_class": "controlled_perturbation",
+      "reason": "visual_or_numeric_unknown",
+      "stage": "geometry",
+      "status": "HOLD"
+    },
+    {
+      "approval_granted": false,
+      "automatic_retry": false,
+      "case": "gpu_busy_pre_dispatch",
+      "decision": "HOLD",
+      "dispatch_granted": false,
+      "evidence": {
+        "measurement_kind": "controlled_injection_not_gpu_measurement",
+        "observation_id": "matrix-injected-busy-1",
+        "status": "busy"
+      },
+      "evidence_class": "controlled_injection",
+      "reason": "gpu_resource_busy",
+      "stage": "busy",
+      "status": "HOLD"
+    },
+    {
+      "approval_granted": false,
+      "automatic_retry": false,
+      "case": "typed_transport_timeout",
+      "decision": "HOLD",
+      "dispatch_granted": false,
+      "evidence": {
+        "fault": {
+          "disposition": "HOLD",
+          "error_type": "TimeoutError",
+          "reason": "typed_transport_error",
+          "schema": "local_pair_input_runtime_fault_v1",
+          "stage": "transport"
+        }
+      },
+      "evidence_class": "controlled_perturbation",
+      "reason": "typed_transport_error",
+      "stage": "transport",
+      "status": "HOLD"
+    },
+    {
+      "approval_granted": false,
+      "automatic_retry": false,
+      "case": "pending_no_automatic_resend",
+      "decision": "HOLD",
+      "dispatch_granted": false,
+      "evidence": {
+        "fault": {
+          "disposition": "HOLD",
+          "error_type": "RuntimeError",
+          "reason": "transport_pending_no_resend",
+          "schema": "local_pair_input_runtime_fault_v1",
+          "stage": "transport"
+        }
+      },
+      "evidence_class": "controlled_perturbation",
+      "reason": "transport_pending_no_resend",
+      "stage": "transport",
+      "status": "HOLD"
+    },
+    {
+      "approval_granted": false,
+      "automatic_retry": false,
+      "case": "completed_receipt_reuse",
+      "decision": null,
+      "dispatch_granted": false,
+      "evidence": {
+        "actual_backend_admissible": false,
+        "automatic_retries": 0,
+        "duplicate_send_calls": 0,
+        "fixture_send_calls": 1
+      },
+      "evidence_class": "fixture_transport",
+      "reason": null,
+      "stage": null,
+      "status": "verified"
+    }
+  ],
+  "schema": "lineage_runtime_guards_public_v1_cases",
+  "status": "complete"
+}

@@ -1270,6 +1270,167 @@ def scene_five_type_sources(sources: Sources, slots: dict) -> dict:
         "scope": SCOPE_SOURCE_COLLECTION}
 
 
+def scene_five_policy_diagnosis(sources: Sources, slots: dict) -> dict:
+    relative = slots["five_policy_diagnosis"]
+    row, summary = manifest_result(
+        sources, relative, manifest_name="manifest.json",
+        manifest_schema="lineage_five_policy_public_manifest_v1",
+        summary_schema="lineage_five_policy_summary_v1", kind="five_policy_diagnosis")
+    cases_relative = f"{relative}/cases.json"
+    cases_source = sources.file(cases_relative, kind="five_policy_diagnosis_file")
+    cases = (_read(sources.root / cases_relative)
+             if summary is not None and cases_source["status"] == "ready" else None)
+    case_rows = (cases or {}).get("rows", [])
+    labels = {
+        "registry_next": "등록 규칙", "fixed_eligible": "고정 순서",
+        "logs_only": "3.5 수치", "logs_plus_frames": "3.5 + 프레임",
+        "optimizer_first_registered_rule": "optimizer 우선 등록 규칙",
+    }
+    outcome_rows = []
+    boundary_rows = []
+    for policy in labels:
+        metrics = (summary or {}).get("policies", {}).get(policy, {})
+        tokens = metrics.get("provider_tokens") or {}
+        outcome_values = [
+            (f"{metrics.get('correct_any_family')}/{metrics.get('qualified_fault_cases')}"
+             if metrics else None),
+            metrics.get("wrong_confirmation"), metrics.get("hold_rows"),
+            (f"{metrics.get('compound_partial')} / {metrics.get('compound_full')}"
+             if metrics else None),
+            metrics.get("paired_probes"), metrics.get("model_calls"),
+            metrics.get("parent_wall_s"),
+        ]
+        outcome_rows.append([labels[policy], *[
+            cell(sources, value, row["id"], 2 if index == 6 else None)
+            for index, value in enumerate(outcome_values)
+        ]])
+        policy_cases = [item for item in case_rows if item.get("policy") == policy]
+        f5 = [item for item in policy_cases if item.get("qualification", {}).get("arm") == "F5"]
+        f5_value = (f"{sum(item.get('correct_any_family') is True for item in f5)} 진단 · "
+                    f"{sum(item.get('hold_reason') == 'repair_unsupported' for item in f5)} repair_unsupported"
+                    if cases else None)
+        usage_complete = metrics and metrics.get("provider_usage_unknown_calls") == 0
+        provider_complete = metrics and metrics.get("provider_unknown_events") == 0
+        boundary_values = [
+            (f"{metrics.get('normal_model_shadow_proposal')} / "
+             f"{metrics.get('normal_model_observed')}" if metrics else None),
+            metrics.get("normal_host_gate"), f5_value,
+            tokens.get("total_tokens") if usage_complete else None,
+            metrics.get("provider_wall_s") if provider_complete else None,
+        ]
+        boundary_rows.append([labels[policy], *[
+            cell(sources, value, cases_source["id"] if index == 2 else row["id"],
+                 2 if index == 4 else None)
+            for index, value in enumerate(boundary_values)
+        ]])
+    lead = "공개 manifest와 파일 SHA가 확인된 경우에만 10개 독립 case의 다섯 정책 진단을 표시한다."
+    if summary is not None:
+        lead = (f"독립 case {summary['denominator']['independent_cases']}개를 정책마다 같은 완료 조건으로 비교했다. "
+                f"등록 주대조 판정은 {summary['primary']['outcome']}, "
+                f"등록 영상대조 판정은 {summary['secondary']['outcome']}이다.")
+    return {
+        "id": "five_policy_diagnosis", "title": "다섯 정책 진단: 확정·HOLD와 실제 비용", "dense": True,
+        "lead": lead,
+        "blocks": [
+            {"type": "table", "wide": True, "title": "정책별 진단과 완료 비용",
+             "columns": ["정책", "올바른 확정 / 결함", "오확정", "HOLD", "복합 부분 / 전체",
+                         "짝 검사", "API", "parent wall(s)"], "rows": outcome_rows},
+            {"type": "table", "wide": True, "title": "정상 gate·F5와 모델 API 비용",
+             "columns": ["정책", "정상 native shadow 제안 / 관측", "정상 host gate",
+                         "F5", "provider tokens", "provider wall(s)"], "rows": boundary_rows},
+        ],
+        "notes": [
+            "정상 native shadow와 host gate를 분리한다. 정상 행의 host gate는 모델이 정상을 확정한 결과가 아니다.",
+            "복합 결함의 부분 확정과 전체 확정을 분리한다. F5는 진단 대상으로 남지만 repair_unsupported이면 교정 성공으로 세지 않는다.",
+            "분모는 독립 case checkpoint이며 반복 호출·프레임은 분모를 늘리지 않는다. parent wall은 GPU kernel 시간이나 비용 절감량이 아니다.",
+            "3.5·프레임 효과는 등록 대조의 공개 판정만 표시한다. 모델 버전 우위·GPU 절감·새 결함 일반화의 근거가 아니다.",
+        ],
+    }
+
+
+def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
+    relative = slots["five_policy_recovery"]
+    row, summary = manifest_result(
+        sources, relative, manifest_name="manifest.json",
+        manifest_schema="five_policy_recovery_public_manifest_v1",
+        summary_schema="five_policy_recovery_public_summary_v1", kind="five_policy_recovery")
+    cases_relative = f"{relative}/cases.json"
+    cases_source = sources.file(cases_relative, kind="five_policy_recovery_file")
+    cases = (_read(sources.root / cases_relative)
+             if summary is not None and cases_source["status"] == "ready" else None)
+    public_rows = (cases or {}).get("rows", [])
+    targets = (("case-03", "fixed_eligible"), ("case-03", "logs_only"),
+               ("case-07", "fixed_eligible"), ("case-07", "logs_only"))
+    pipeline_rows = []
+    cost_rows = []
+    for case_id, policy in targets:
+        item = next((value for value in public_rows
+                     if value.get("case_id") == case_id and value.get("policy") == policy), None)
+        source_label = (f"{item['source_arm']} · seed {item['source_seed']}"
+                        if item is not None else None)
+        pipeline_rows.append([
+            f"{case_id} · {policy}",
+            cell(sources, source_label, cases_source["id"], None),
+            cell(sources, item and item.get("first_candidate_status"), cases_source["id"], None),
+            cell(sources, item and item.get("first_outcome"), cases_source["id"], None),
+            cell(sources, ("필요" if item and item.get("second_required") else "불필요")
+                 if item else None, cases_source["id"], None),
+            cell(sources, item and item.get("second_outcome"), cases_source["id"], None),
+            cell(sources, item and item.get("final_outcome"), cases_source["id"], None),
+        ])
+        first = (item or {}).get("first_training")
+        second_cost = (item or {}).get("second_diagnosis_cost")
+        second = (item or {}).get("second_training")
+        first_values = ([first.get("training_execution_wall_s"), first.get("fixed_execution_wall_s")]
+                        if first else [None, None])
+        first_value = (f"학습 {first_values[0]}s · 평가 {first_values[1]}s"
+                       if all(value is not None for value in first_values) else None)
+        diagnosis_values = ([second_cost.get("paired_probe_sdk_executions"),
+                             second_cost.get("model_api_calls")] if second_cost else [None, None])
+        diagnosis_value = (f"검사 {diagnosis_values[0]} · API {diagnosis_values[1]}"
+                           if all(value is not None for value in diagnosis_values) else None)
+        provider_tokens = ((second_cost.get("provider_tokens") or {}).get("total_tokens")
+                           if second_cost else None)
+        provider_wall = second_cost.get("provider_wall_s") if second_cost else None
+        provider_value = (f"tokens {provider_tokens} · wall {provider_wall}s"
+                          if provider_tokens is not None and provider_wall is not None else None)
+        second_values = ([second.get("training_execution_wall_s"), second.get("fixed_execution_wall_s")]
+                         if second else [None, None])
+        second_value = (f"학습 {second_values[0]}s · 평가 {second_values[1]}s"
+                        if all(value is not None for value in second_values) else None)
+        cost_rows.append([
+            f"{case_id} · {policy}",
+            cell(sources, first_value, cases_source["id"], None),
+            cell(sources, diagnosis_value, cases_source["id"], None),
+            cell(sources, provider_value, cases_source["id"], None),
+            cell(sources, second_value, cases_source["id"], None),
+        ])
+    lead = "공개 manifest와 파일 SHA가 확인된 경우에만 사전 선택한 네 recovery pipeline을 표시한다."
+    if summary is not None:
+        outcomes = summary["final_outcomes"]
+        lead = (f"원래 source 계보 {summary['independent_source_lineages']}개에서 pipeline "
+                f"{summary['pipeline_denominator']}개를 분리했다. 최종 결과는 회복 {outcomes['recovered']}, "
+                f"미회복 {outcomes['not_recovered']}, HOLD {outcomes['HOLD']}다.")
+    return {
+        "id": "five_policy_recovery", "title": "사전 선택 네 pipeline: FIRST·SECOND·최종 회복", "dense": True,
+        "lead": lead,
+        "blocks": [
+            {"type": "table", "wide": True, "title": "원래 source와 단계별 판정",
+             "columns": ["pipeline", "원래 source", "FIRST 후보", "FIRST 결과", "SECOND", "SECOND 결과", "최종"],
+             "rows": pipeline_rows},
+            {"type": "table", "wide": True, "title": "단계별 실제 비용",
+             "columns": ["pipeline", "FIRST 학습 · 평가", "SECOND 검사 · API",
+                         "SECOND provider 비용", "SECOND 학습 · 평가"],
+             "rows": cost_rows},
+        ],
+        "notes": [
+            "네 pipeline은 두 원래 source 계보에서 갈라진다. pipeline 4개와 독립 source 2개를 같은 분모로 세지 않는다.",
+            "FIRST 결과, 필요한 경우의 SECOND 진단·학습, 최종 회복을 분리한다. not_recovered를 자동 재시도나 회복으로 바꾸지 않는다.",
+            "비용이 원문 receipt에 없으면 숫자를 채우지 않는다. 모델 우위·GPU 절감·등록 범위 밖 회복의 근거가 아니다.",
+        ],
+    }
+
+
 def scene_stairs_motion(sources: Sources, slots: dict) -> dict:
     row, audit = manifest_result(sources, slots["stairs_motion_integrity"], manifest_name="manifest.json",
         manifest_schema="stairs_motion_integrity_public_manifest_v1",
@@ -1374,6 +1535,7 @@ def build(root: Path = ROOT) -> dict:
               scene_prospective_comparison(sources, slots), scene_registered_partitions(sources, slots),
               scene_reasoning_followup(sources, slots),
               scene_four_way_development(sources, slots), scene_five_type_sources(sources, slots),
+              scene_five_policy_diagnosis(sources, slots), scene_five_policy_recovery(sources, slots),
               scene_stairs_motion(sources, slots),
               scene_stairs_command(sources, slots),
               scene_cost(sources, slots)]
