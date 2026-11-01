@@ -1,0 +1,71 @@
+{
+  "acceptance": {
+    "body_up_world_z_negative_count": 0,
+    "fps": 50,
+    "full_encoder_frames": 625,
+    "height_condition_pass": true,
+    "progress_condition_pass": true,
+    "shutdown_verified": true,
+    "termination_seen": false
+  },
+  "claims": {
+    "development_seen_source": true,
+    "four_conditions_are_four_independent_seeds": false,
+    "generalization": false,
+    "heldout": false,
+    "model_api": false,
+    "new_training": false,
+    "recovery": false,
+    "video_benefit": false
+  },
+  "conditions": 4,
+  "contrasts": [
+    {
+      "checkpoint_terrain_runtime_exact_match": true,
+      "direction": "up",
+      "initial_state_exact_match": true,
+      "motion_accepted_0p25": false,
+      "motion_accepted_0p75": true,
+      "negative_count_delta_0p75_minus_0p25": 0,
+      "owned_child_wall_delta_s_0p75_minus_0p25": -3.62400000001071,
+      "root_dx_delta_m_0p75_minus_0p25": 7.892173528671265,
+      "root_dz_delta_m_0p75_minus_0p25": 0.39508522395044565
+    },
+    {
+      "checkpoint_terrain_runtime_exact_match": true,
+      "direction": "down",
+      "initial_state_exact_match": true,
+      "motion_accepted_0p25": false,
+      "motion_accepted_0p75": true,
+      "negative_count_delta_0p75_minus_0p25": -13,
+      "owned_child_wall_delta_s_0p75_minus_0p25": 0.9839999999967404,
+      "root_dx_delta_m_0p75_minus_0p25": 6.3733978271484375,
+      "root_dz_delta_m_0p75_minus_0p25": -0.05919638276100159
+    }
+  ],
+  "independent_source_seeds": 1,
+  "media_copied": true,
+  "motion_accepted_conditions": 2,
+  "preregistered_prediction": {
+    "command_0p25": {
+      "down": "existing_source_upright_rejection_expected",
+      "up": "existing_source_progress_failure_expected"
+    },
+    "command_0p75": {
+      "down": "effect_unknown_failure_possible",
+      "up": "effect_unknown_failure_possible"
+    },
+    "speed_effect_confirmed_before_run": false
+  },
+  "registered_outcome": "partial",
+  "result_language": {
+    "not_supported": "no_registered_condition_motion_accepted",
+    "partial": "some_registered_conditions_motion_accepted",
+    "positive": "all_four_conditions_motion_accepted",
+    "preserve_every_condition": true,
+    "technical_incomplete": "technical_failure_stopped_remaining_conditions"
+  },
+  "schema": "go2_stairs_command_contrast_public_v1",
+  "status": "complete",
+  "technical_complete_conditions": 4
+}

@@ -22,7 +22,7 @@ In the reward-frame fault below, episodes last almost to the time limit and the 
 
 Newer same-Play recordings for seed 2221 show a healthy policy and an F1 (reward-frame) fault policy, 625 frames at 50 fps each: [healthy](docs/media/agentic_f1_fresh_render_dev_20261029h_v1/reference.mp4) · [fault](docs/media/agentic_f1_fresh_render_dev_20261029h_v1/case.mp4) · [provenance](docs/media/agentic_f1_fresh_render_dev_20261029h_v1/source_manifest.json). They compare a healthy and a faulty policy; they are not a recovery video.
 
-Official pretrained H1 stair playback: [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) · [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4) · [source](docs/media/stairs_h1_s172_20261030_v1/README.md). Both Go2 directions remain incomplete: a [motion audit](docs/STAIRS-MOTION-INTEGRITY.md) preserves the uphill failure and flags inversion in a downhill clip that passed distance/height checks. These are policy playback studies, separate from RL Triage recovery.
+Official pretrained stair playback: H1 [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) · [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4), and Go2 [up/down with a command contrast](docs/GO2-STAIRS-COMMAND-CONTRAST.md). With the same Go2 policy and initial state, 0.75m/s passed both directions; the 0.25m/s uphill stall and downhill inversion are preserved. These are policy playback studies, separate from RL Triage recovery.
 
 ## How it works
 
