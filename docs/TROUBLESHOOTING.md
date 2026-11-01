@@ -925,4 +925,5 @@
 - 관찰: 로컬 Isaac의 상태 기록 1프레임 점검은 정상 종료·소유 프로세스 정리를 통과했다. full 녹화는 첫 RGB 수집 전에 `sidecar 폴더가 native 녹화 경로와 겹친다`로 실패했다. 종료 전 `failure.json`을 봉인했으며 부모도 완료로 수용하지 않았다.
 - 원인: 새 로컬 실행기는 sidecar를 job stage 안에 배치했다. 재사용한 sidecar worker는 native 출력과 job stage의 내부·상위 경로를 모두 보호하므로 이 배치를 거부한다.
 - 조치: 새 판에서는 sidecar를 고유한 형제 경로에 배치한다. 기존 경로 분리 검사는 유지하고, 실제 job을 읽어 원래 `check_destination` 함수에 전달하는 CPU 회귀를 추가한다. full 625프레임·렌더 동기화·same-PTS·종료 검증의 실측 성공 전에는 영상 사용을 승인하지 않는다.
+- 후속: 분리된 경로는 실제 full v2에서 통과했지만, capture worker가 요구하는 `mode="record"`와 로컬 job의 모드 매핑이 달라 RGB 수집 전에 실패했다. v3는 job ID·고정 profile·checkpoint·source까지 worker 계약에 맞추며, 실제 capture factory의 모드·profile 검증을 CPU에서 확인했다. 이 확인을 full 녹화 성공으로 바꾸지 않는다.
 - 코드: [로컬 v1](../bench/local_same_play_capture_v1.py), [경로 분리 검사](../bench/record_agentic_state_sidecar_v1.py).
