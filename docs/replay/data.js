@@ -10902,6 +10902,190 @@ window.REPLAY_DATA = {
    "number": 18
   },
   {
+   "id": "five_type_sources",
+   "title": "다섯 유형의 새 학습 입력 확보",
+   "lead": "정상 사례도 다른 seed의 정상 정책과 비교한다. 결함·참조 학습과 고정 평가를 진단 결과와 분리한다.",
+   "blocks": [
+    {
+     "type": "table",
+     "title": "등록한 사례와 적용 범위",
+     "columns": [
+      "유형",
+      "계획 사례",
+      "중복 제외 후",
+      "적격",
+      "교정 미지원"
+     ],
+     "rows": [
+      [
+       "정상",
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "보상 좌표",
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "모터",
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "보상 + PPO epoch",
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "마찰 · 교정 미지원",
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 0,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": 2,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       }
+      ]
+     ]
+    },
+    {
+     "type": "table",
+     "title": "실제 원천 수집 · 진단과 회복의 분모가 아님",
+     "columns": [
+      "항목",
+      "횟수"
+     ],
+     "rows": [
+      [
+       "학습 완료",
+       {
+        "value": 20,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "26조건 평가 완료",
+       {
+        "value": 20,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "이 원천 단계의 모델 호출",
+       {
+        "value": 0,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "이 원천 단계의 교정",
+       {
+        "value": 0,
+        "source": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+        "digits": null
+       }
+      ]
+     ]
+    }
+   ],
+   "notes": [
+    "적격은 비교 입력의 적용성 판정이다. 원인 확정이나 회복 성공을 뜻하지 않는다.",
+    "F5는 원천 학습과 진단 대상으로 남기고 교정 학습은 허용하지 않는다. 실패가 없는 다른 seed로 바꾸지 않는다.",
+    "이미 알려진 결함 종류의 새 seed 반복이다. 새로운 결함 종류에 대한 일반화·GPU 절감의 근거가 아니다."
+   ],
+   "scope": "커밋된 원천 학습·고정 평가의 수집 결과다. 모델의 진단·영상 기여·교정·회복 결과로 합산하지 않는다.",
+   "number": 19
+  },
+  {
    "id": "stairs_motion_integrity",
    "title": "계단 영상 판정: 거리와 높이 외에 몸체 자세 확인",
    "lead": "Go2 하행의 기존 completed 판정에서 12.26초부터 몸체 위쪽 축이 world 아래쪽을 향한 13표본을 찾았다.",
@@ -11017,7 +11201,7 @@ window.REPLAY_DATA = {
     "몸체 위쪽 축의 world-z 내적을 사용했다. 음수 없음도 안정성 전체의 증명이 아니며, 낙상 원인은 확정하지 않았다.",
     "공식 기학습 정책 재생의 사후 감사다. 모델이 발견한 결과나 RL Triage의 계단 교정·회복 성과가 아니다."
    ],
-   "number": 19
+   "number": 20
   },
   {
    "id": "stairs_command_contrast",
@@ -11089,7 +11273,7 @@ window.REPLAY_DATA = {
     "수용 기준: 625프레임·50fps·종료 증거, 진행·높이 통과, termination 없음, body-up-z 음수 0표본.",
     "정책·seed·지형·초기 상태를 고정한 단일 계보 개발 재생이다. 새 학습·모델 판단·RL Triage 교정·회복 성과가 아니다."
    ],
-   "number": 20
+   "number": 21
   },
   {
    "id": "cost",
@@ -11298,7 +11482,7 @@ window.REPLAY_DATA = {
     "parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
     "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."
    ],
-   "number": 21
+   "number": 22
   }
  ],
  "sources": {
@@ -13819,6 +14003,510 @@ window.REPLAY_DATA = {
    "path": "evals/results/local_pair_four_arm_development_20261101_v1/summary.json",
    "kind": "local_pair_four_arm_file",
    "sha256": "54c5699937369c8b77be5176166c5cba473930ab04b6caec792263869d4bd7ad",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/manifest.json",
+   "kind": "five_type_sources",
+   "sha256": "141a72f9b7c15e7a684a70811ddcf03f1c813981be8e8b356a0bceff69b4ce60",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "db62600d9c5a6bd8ac5e6654cf9bb596b3cb7f08775803a32f14a11e77307258",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-01/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-01/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-01/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "6d55a8f2c70aac238adad92da25c8aefaf30d381704093d3805a0a33e29f88dd",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-01/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-01/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-01/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "269560291535c857207541787846004abfe56cb6885036239d1184e28f43b35d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-01/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-01/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-01/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "cfe134548ddb62422f8ad15206c728b221300a28d0f009ce852a4d893fe102a0",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-02/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-02/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-02/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "8c329e376a56554bebaec8ea16b073f82f55147b65cb5da249e639178d64891f",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-02/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-02/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-02/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "fdd57e51f81583ffe170f40071e91511f948235605024f9f865e62be80277ed6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-02/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-02/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-02/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "4667fd994496c83d47e00b65c03bb6803ce642a97d559279c7ff55fab057aedf",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-03/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-03/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-03/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "5fd313bda4e6ef44514a4a0e066a2211685c91e41aa55a2547c1fab177961595",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-03/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-03/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-03/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "16402e37486eb8540e63dfebf6d74e3e1c0f5b91404e02ee9630d3fd589d6ab0",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-03/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-03/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-03/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "95ce4c87678cd4d48ee085107071f1e3dc49ab69b159d3738b3c7677d7b595ba",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-04/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-04/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-04/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "3a9cd2beb72407ea801b5655c83c3035a17b792eac25050a9d35e801c4df8e3d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-04/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-04/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-04/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "e7ec61bf4f6fb493df64c5b9f78e6695f8e967278c45ae2e0e57e4fc2f8746c3",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-04/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-04/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-04/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "a074068dc64cc53f48af43e3b1eae02fd738b192986c0e26012cf489e3c5cb6c",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-05/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-05/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-05/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "0441083f5ade716f5107f09b8f15ccea73cd28493f7c88ed510a57cfcd7cd6a1",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-05/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-05/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-05/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "17bf087f0e710e7ddfbcce68c00f3524bd6d9500044d0bcf0f224903c091d27e",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-05/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-05/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-05/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "36e5f5cec4d2dc25514ca3410f9c6d5793afb6cf887c87f1f0d28dc17ed44d6c",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-06/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-06/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-06/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "8ab9f46b2d61ce50662d2b99cbfbc7b4ae4f6989dfbfcab8d94d10272db8aa28",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-06/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-06/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-06/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "40b329f08afb6876fb56342b98b013215c7740fedef33b41ea3620cbfb526d75",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-06/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-06/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-06/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "9a1afa81a05778a732a43526c6c2b16382a8a8e4ba219369421af4a5f20d7247",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-07/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-07/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-07/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "46c73282b8e15bab935e6402acbae56069f2ceeb0cb83174b32ed03d1f56dd78",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-07/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-07/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-07/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "c326decaca85314c4af4f5a722b1d0bffc23d9a7cbef19680844d9d5738bc5c8",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-07/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-07/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-07/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "78a8809a2f1011a0f3655ecbcb4cad25c18e620d9d659315abf24bf53d5d6787",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-08/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-08/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-08/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "eff7a929d766b7050e58a316225928c3a288cb94acdedcfda619be2a82ddd285",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-08/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-08/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-08/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "50e48eddbe231535badb1b30d9d58c27a654696b5de1e2a6f6a19c1c29524437",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-08/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-08/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-08/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "b9d5a8a8da927a717fd25b1ab0b9772bc26a313730b48fee28f2eceffaa020ca",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-09/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-09/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-09/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "c982913fbcfec85804a0d2011c8c15397656cfc4700cfcd983458a33a6c666ae",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-09/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-09/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-09/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "5420fc4181858c4fc6f1a86b9812066c62117ef6130c766655556a41241f6c9a",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-09/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-09/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-09/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "3a74cefbd9b39613765f9b5c1c0458bc2cbe8ce30ed39f6db98f894afe0a614e",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-10/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-10/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-10/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "a6f071fe891276ed128077bbc0895ffffe2f4f40b1037d3eb1b338ce6c7e6a02",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-10/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-10/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-10/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "660ef1419089c2aa9ea540683d4f5b680f77ab3e35ba744240458fd6c14b501f",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-10/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-10/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-10/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "4c10e79317f8d695f4a2522f5c6c563f92a091cdc4f96df010de464ad429b00e",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-11/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-11/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-11/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "7d0936b852d2970f7e61339c0dac3214dc0b2d7464908158a9cd687aa7a9ae1b",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-11/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-11/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-11/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "1641bbcb30c0c99fe15468a861d1ca110bf83276b841457cc96df67775d5afe1",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-11/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-11/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-11/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "f40ba29d2b65b4485099e7cc602b59f41e966fba7bd659b8607e8dcc040bcd40",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-12/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-12/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-12/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "514da235cd72042a7c9f80fc572e9ce2d262688dc2e00b493fa1ca01806cc292",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-12/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-12/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-12/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "fd20aa358d1d98263f51d2b9aa7bcab65c852abd958530d9e5f524e522b03f8f",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-12/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-12/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-12/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "d7ffcf2edf4cd6cc17515009d7d8a0026feb0a20eb2c7a8a6cd903100b6b5275",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-13/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-13/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-13/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "156e49f8e9c89048548deb3d4a8aca3690bc3c8f31d92974c745059070bb42b5",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-13/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-13/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-13/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "1ad2c20b3ecea307e2b1bd51666e0730eb73c99d82b037c3aea2485c128ca2d6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-13/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-13/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-13/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "f92d31f97e94d55e15bc14ce2dab0e986c7afa67f3cbe01fec5d8da7d7aa50de",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-14/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-14/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-14/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "48d7f48535f387f34617dc16b208a20b78e38e7c2181ae2a8dd3d80e1c0896ce",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-14/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-14/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-14/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "1b1949b73f23faff4b0f600ac48c67223f20a348f0a881094cde41785163b54a",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-14/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-14/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-14/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "cc67fee069a2cb64f3982b376b9f11e75560271beba77509673c460d09c12303",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-15/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-15/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-15/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "062f9fe4086f8a76052d8ba693e7bf72d97226fda07c9379bcd699dfefb3b3ed",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-15/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-15/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-15/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "1042712dbc97b3a2df00f7a00919f0a45451b9ca397f84c524afef5d363a1568",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-15/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-15/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-15/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "a30c7e4b4571a30191210602de866e82bc7e0046245bd916f10e9f00e1337a3e",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-16/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-16/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-16/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "6367b7e0deb1ba2dbd1a99c7c69030b084c60b73dabb2831732e524873364ba3",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-16/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-16/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-16/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "394467e0536fc194a5b8493076bb0756ffd221d745a449cbd856299c4da8b6a7",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-16/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-16/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-16/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "4617f89241029f25a5ee14c4e24822a6c6ed5fb0b0da45554f4430f3784d9475",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-17/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-17/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-17/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "d1fe22c24c944b5833c464902768c7fe7b95551e00d78f92729360d1f5fc26df",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-17/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-17/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-17/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "c94ea02de862609cd3b94229bdcd527dff34cfd5512e1516b51be5d60837e8b4",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-17/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-17/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-17/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "29e6cc2b1f096dd9a16847051a750221bcf4d62b0451675042eb5c607b7ac437",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-18/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-18/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-18/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "5a8f57cf6fd96611b8fabe47207d4f8c83f174553f4bd6d84ca2433907cd0fec",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-18/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-18/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-18/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "4d62328337d8cddb3edab12beac8f0679e186504ad2e957479ac7231236cc27d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-18/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-18/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-18/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "50eb322ec04c56a309e76aff6afa0d0ff10941a01891011258768239a861c613",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-19/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-19/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-19/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "06dce6e3b9bcfb4e10172270826d6ae72d6ec70f2af88b745e8fc19826b8efb6",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-19/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-19/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-19/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "d000a9a27fe8f7be8c50ce30033200c50aebfea0327b3c97a5fee9c59a65eb20",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-19/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-19/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-19/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "5568a05e2367216cb7ceee6ce9a96feda0cec467a22005242c5bbd257ce24612",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-20/fixed26.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-20/fixed26.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-20/fixed26.json",
+   "kind": "five_type_sources_file",
+   "sha256": "4fda27c452f3febbc73b258cd80c9a2af5cf6cf2398e4a644e2b62803db0ac66",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-20/provenance.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-20/provenance.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-20/provenance.json",
+   "kind": "five_type_sources_file",
+   "sha256": "c42d2d3f84cba5bd7c954b484342547a23129b793bb26963f0f2e223959b02a9",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-20/training-curves.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-20/training-curves.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/sources/source-20/training-curves.json",
+   "kind": "five_type_sources_file",
+   "sha256": "6ee21d71dd68144cf728785bbd964bcdc3ec8c61ff0d7d39e25b16b5e93203ff",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_sources_s2550_s2559_20261101_v1/summary.json": {
+   "id": "evals/results/five_type_sources_s2550_s2559_20261101_v1/summary.json",
+   "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/summary.json",
+   "kind": "five_type_sources_file",
+   "sha256": "83c99549ff293c6926e425678169c9aad902505fcc56542aad630ded2b124592",
    "status": "ready",
    "reason": null
   },

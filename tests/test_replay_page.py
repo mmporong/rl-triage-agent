@@ -462,11 +462,11 @@ def test_path_checker_rejects_private_or_network_references(text):
 
 def test_build_from_repository_is_publishable_and_never_mismatched(built):
     data = built
-    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 22))
+    assert [scene["number"] for scene in data["scenes"]] == list(range(1, len(data["scenes"]) + 1))
     assert [scene["id"] for scene in data["scenes"]] == [
         "failure", "curves", "warning", "probe", "correction", "demo", "nat_demo", "recovery", "motor", "hold", "upstream",
         "upstream_demo", "d3", "nvidia", "prospective_comparison", "registered_partitions",
-        "reasoning_followup", "four_way_development", "stairs_motion_integrity", "stairs_command_contrast", "cost"]
+        "reasoning_followup", "four_way_development", "five_type_sources", "stairs_motion_integrity", "stairs_command_contrast", "cost"]
     statuses = {key: row["status"] for key, row in data["sources"].items()}
     assert "mismatch" not in statuses.values()
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
@@ -503,7 +503,7 @@ def test_scene_scope_overrides_the_common_footer_only_where_the_facts_differ(bui
     assert {k: v for k, v in scopes.items() if v} == {
         "demo": B.SCOPE_NEW_SEED_DEMO, "nat_demo": B.SCOPE_NEW_SEED_DEMO,
         "hold": B.SCOPE_HOLD, "upstream": B.SCOPE_UPSTREAM_SMOKE, "upstream_demo": B.SCOPE_UPSTREAM_DEMO,
-        "d3": replay_d3.SCOPE_D3}
+        "d3": replay_d3.SCOPE_D3, "five_type_sources": B.SCOPE_SOURCE_COLLECTION}
     assert "새 seed" in B.SCOPE_NEW_SEED_DEMO and "이미 본 합성 결함 개발 사례" not in B.SCOPE_NEW_SEED_DEMO
     assert "seed 2026" in B.SCOPE_UPSTREAM_SMOKE and "새 seed" in B.SCOPE_UPSTREAM_DEMO
     for text in (B.SCOPE_COMMON, B.SCOPE_NEW_SEED_DEMO, B.SCOPE_HOLD, B.SCOPE_UPSTREAM_SMOKE, B.SCOPE_UPSTREAM_DEMO,
@@ -563,7 +563,7 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
                                    check=True, capture_output=True, text=True, encoding="utf-8")
         outputs[name] = json.loads(completed.stdout)
     clean = outputs["clean"]
-    assert len(clean) == 21 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
+    assert len(clean) == len(data["scenes"]) and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
     assert "<svg" in clean[1] and "polyline" in clean[1]
     dense = [scene["id"] for scene, html in zip(data["scenes"], clean, strict=True) if 'class="blocks dense"' in html]
     assert dense == ["correction", "demo", "nat_demo", "recovery", "upstream", "upstream_demo", "d3", "nvidia",
@@ -795,6 +795,7 @@ def test_nvidia_scene_shows_the_rescore_row_only_after_the_public_summary_replay
     ("local_pair_four_arm_development_20261101_v1", "local_pair_four_arm", B.scene_four_way_development),
     ("stairs_motion_integrity_20261101_v1", "stairs_motion_integrity", B.scene_stairs_motion),
     ("go2_stairs_command_contrast_s200_20261101_v1", "go2_stairs_command", B.scene_stairs_command),
+    ("five_type_sources_s2550_s2559_20261101_v1", "five_type_sources", B.scene_five_type_sources),
 ])
 def test_new_comparison_and_motion_scenes_block_uncommitted_or_hash_broken_data(repo, source, slot, scene_function):
     shutil.copytree(ROOT / "evals/results" / source, repo / "release")
@@ -823,3 +824,16 @@ def test_new_comparison_and_motion_scenes_block_uncommitted_or_hash_broken_data(
     assert rejected_sources.rows["release"]["status"] == "mismatch"
     assert all(item.get("value") is None for block in rejected["blocks"]
                for row in block["rows"] for item in row if isinstance(item, dict))
+
+
+def test_source_collection_scene_keeps_unsupported_cases_and_zero_agent_execution(built):
+    scene = next(row for row in built["scenes"] if row["id"] == "five_type_sources")
+    rows = _rows(scene["blocks"][0])
+    assert sum(values[0] for values in rows.values()) == 10
+    assert sum(values[1] for values in rows.values()) == 10
+    assert rows["마찰 · 교정 미지원"] == [2, 2, 0, 2]
+    assert sum(values[2] for values in rows.values()) == 8
+    assert _rows(scene["blocks"][1]) == {
+        "학습 완료": [20], "26조건 평가 완료": [20],
+        "이 원천 단계의 모델 호출": [0], "이 원천 단계의 교정": [0],
+    }

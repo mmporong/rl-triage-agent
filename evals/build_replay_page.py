@@ -51,6 +51,8 @@ SCOPE_UPSTREAM_SMOKE = ("다른 프레임워크에서 원인이 확정된 결함
 SCOPE_HOLD = "외부 원인 결함을 주입한 사례(T1)와 결함 없는 정상 입력(T2)의 이미 본 개발 기록이며, 정확도·일반화의 근거가 아니다."
 SCOPE_UPSTREAM_DEMO = ("다른 프레임워크에서 원인이 확정된 결함을 우리가 이식해 주입한 사례이며, 새 seed 단일 실행이다. "
                        "진단 정확도·교정 성공률·일반화의 근거가 아니다.")
+SCOPE_SOURCE_COLLECTION = ("커밋된 원천 학습·고정 평가의 수집 결과다. "
+                           "모델의 진단·영상 기여·교정·회복 결과로 합산하지 않는다.")
 MOTOR_CURVE_STATES = {"complete": "완료", "failed": "기록 실패", "invalid": "무효", "not_executed": "미실행"}
 RECOVERY_LABELS = {"recovered": "회복", "not_recovered": "미회복", "invalid": "판정 보류"}
 
@@ -1239,6 +1241,35 @@ def scene_four_way_development(sources: Sources, slots: dict) -> dict:
                   "자식 wall은 시작·종료·정리 확인까지다. GPU kernel 시간이 아니다. 정상 host gate 8행은 모델의 정상 식별로 세지 않았다."]}
 
 
+def scene_five_type_sources(sources: Sources, slots: dict) -> dict:
+    row, summary = manifest_result(sources, slots["five_type_sources"], manifest_name="manifest.json",
+        manifest_schema="lineage_source_collection_public_v2_manifest",
+        summary_schema="lineage_source_collection_public_v2_summary", kind="five_type_sources")
+    cases = (summary or {}).get("case_plan", [])
+    rows = []
+    for source_type, label in (("NONE", "정상"), ("F1", "보상 좌표"), ("F2", "모터"),
+                               ("COMPOUND", "보상 + PPO epoch"), ("F5", "마찰 · 교정 미지원")):
+        group = [case for case in cases if case["source_type"] == source_type]
+        values = ([len(group), sum(case["valid_after_dedup"] is True for case in group),
+                   sum(case["classification"] == "eligible" for case in group),
+                   sum(case["classification"] == "out_of_support" for case in group)] if summary else [None] * 4)
+        rows.append([label, *[cell(sources, value, row["id"], None) for value in values]])
+    counts = (summary or {}).get("counts", {})
+    totals = [[label, cell(sources, counts.get(key), row["id"], None)] for key, label in (
+        ("training_sdk_completed", "학습 완료"), ("fixed26_sdk_completed", "26조건 평가 완료"),
+        ("actual_model_api_calls", "이 원천 단계의 모델 호출"), ("repairs", "이 원천 단계의 교정"))]
+    return {"id": "five_type_sources", "title": "다섯 유형의 새 학습 입력 확보",
+        "lead": "정상 사례도 다른 seed의 정상 정책과 비교한다. 결함·참조 학습과 고정 평가를 진단 결과와 분리한다.",
+        "blocks": [{"type": "table", "title": "등록한 사례와 적용 범위",
+                    "columns": ["유형", "계획 사례", "중복 제외 후", "적격", "교정 미지원"], "rows": rows},
+                   {"type": "table", "title": "실제 원천 수집 · 진단과 회복의 분모가 아님",
+                    "columns": ["항목", "횟수"], "rows": totals}],
+        "notes": ["적격은 비교 입력의 적용성 판정이다. 원인 확정이나 회복 성공을 뜻하지 않는다.",
+                  "F5는 원천 학습과 진단 대상으로 남기고 교정 학습은 허용하지 않는다. 실패가 없는 다른 seed로 바꾸지 않는다.",
+                  "이미 알려진 결함 종류의 새 seed 반복이다. 새로운 결함 종류에 대한 일반화·GPU 절감의 근거가 아니다."],
+        "scope": SCOPE_SOURCE_COLLECTION}
+
+
 def scene_stairs_motion(sources: Sources, slots: dict) -> dict:
     row, audit = manifest_result(sources, slots["stairs_motion_integrity"], manifest_name="manifest.json",
         manifest_schema="stairs_motion_integrity_public_manifest_v1",
@@ -1342,7 +1373,8 @@ def build(root: Path = ROOT) -> dict:
               replay_d3.scene_d3(sources, slots), scene_nvidia(sources, slots),
               scene_prospective_comparison(sources, slots), scene_registered_partitions(sources, slots),
               scene_reasoning_followup(sources, slots),
-              scene_four_way_development(sources, slots), scene_stairs_motion(sources, slots),
+              scene_four_way_development(sources, slots), scene_five_type_sources(sources, slots),
+              scene_stairs_motion(sources, slots),
               scene_stairs_command(sources, slots),
               scene_cost(sources, slots)]
     for index, scene in enumerate(scenes, start=1):
