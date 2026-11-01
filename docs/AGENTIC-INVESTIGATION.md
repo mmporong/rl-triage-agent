@@ -207,3 +207,9 @@ cd "$HOME/rl-triage-agent"
 [새 가동 구간 예산 등록](../bench/protocols/agentic_f1_render_capture_phase_20261028_v3.json)은 검증한 이전 가동 4,523.833015초와 이번 Start부터 Stop까지를 합산한다. 꺼진 구간은 제외하고 최초 생성 시각과 이전 벽시계 추정 기록은 보존한다. 금액 $10·가동 9,500초·촬영 조건은 유지하며 메인 회귀 58개를 통과했다. [AWS 텍스트 고리 등록](../bench/protocols/agentic_runtime_text_s2221_20261028_v2.json)은 기존 두 모델 응답을 같은 입력인지 검증해 재사용하고, 새 기한의 임대 기준과 실제 AWS Python 환경에서 검사쌍을 실행하도록 고정한다. 두 판은 같은 VM을 직렬로 사용한다.
 
 [텍스트 고리 v3](../bench/protocols/agentic_runtime_text_s2221_20261028_v3.json)은 새 IO 계약을 먼저 봉인하고 그 SHA와 Runtime 폴더를 결합한다. v2는 실제 검사 없이 보존한다. 같은 원본의 모델 응답 두 건과 API 원장을 유지하며 GPU 검사는 새 Parent 등록 뒤 실행한다.
+
+## 등록된 프레임 누락 처리
+
+[입력 guard](../evals/agentic_runtime_input_guard_v1.py)는 등록된 evidence 경로의 파일 누락·접근 불가를 모델 호출 전에 확인한다. 누락은 `HOLD/unknown` 영수증으로 남기며, 같은 등록으로 조사를 다시 열면 기존 영수증을 재사용한다. 소스나 등록 해시가 달라진 경우에는 무결성 오류를 먼저 거부한다.
+
+[실제 개발 입력의 CPU 확인](../evals/results/agentic_input_unavailability_dev_20261101_v1/summary.json)은 6프레임 계약의 가용 입력과 한 프레임을 제거한 소유 사본을 사용했다. 가용 입력은 기존 조회 기록을 재생한 뒤 승인 호스트가 없어 `blocked_host`로 끝났고, 누락 사본은 `input_unavailable_hold`였다. 두 조사를 다시 열었을 때 원문 변경과 새 API·승인·dispatch·GPU 실행은 없었다. 이 결과의 범위는 입력 가용성과 영수증 재사용의 개발 검증이다.
