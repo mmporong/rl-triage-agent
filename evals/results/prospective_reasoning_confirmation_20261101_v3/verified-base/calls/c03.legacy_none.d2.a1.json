@@ -1,0 +1,54 @@
+{
+  "api_wall_s": 1.4690179669996724,
+  "attempt": 1,
+  "automatic_retry": false,
+  "case_id": "c03",
+  "disposition": "semantic_valid",
+  "error_type": null,
+  "final_json": {
+    "fact_ids": [
+      "runtime:case:expected_optimizer_steps",
+      "runtime:case:optimizer_steps_min",
+      "runtime:case:optimizer_steps_max"
+    ],
+    "option_id": "probe:P_recorded_optimizer_updates"
+  },
+  "finish_reason": "stop",
+  "infra_error": null,
+  "messages_sha256": "ce69fe911a30b11ec2a4ab7e0f350f6b08ceb0f3a360fce08e7062f4c3659eaa",
+  "policy": "legacy_none",
+  "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+  "provider_usable": true,
+  "reasoning_body_included": false,
+  "request_params": {
+    "extra_body": {
+      "reasoning_effort": "none"
+    },
+    "max_tokens": 16384,
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "stream": false,
+    "temperature": 0
+  },
+  "request_sha256": "9234e7ccd41df206ad159f3a0544633d0e9f768d678003fc6eb59d0bd69c3407",
+  "response_sha256": "dfcac6cfb748a754feaa1834d4c749cd98c230522f42ec721eb4599ac187399a",
+  "review_codes": [],
+  "review_status": "valid",
+  "schema": "prospective_reasoning_confirmation_public_call_v1",
+  "slot": "c03.legacy_none.d2.a1",
+  "step": 2,
+  "usage": {
+    "reported_fields": [
+      "input_tokens",
+      "output_tokens",
+      "total_tokens",
+      "reasoning_tokens"
+    ],
+    "status": "complete",
+    "values": {
+      "input_tokens": 5296,
+      "output_tokens": 49,
+      "reasoning_tokens": 0,
+      "total_tokens": 5345
+    }
+  }
+}

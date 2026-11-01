@@ -927,6 +927,7 @@
 - 조치: 새 판에서는 sidecar를 고유한 형제 경로에 배치한다. 기존 경로 분리 검사는 유지하고, 실제 job을 읽어 원래 `check_destination` 함수에 전달하는 CPU 회귀를 추가한다. full 625프레임·렌더 동기화·same-PTS·종료 검증의 실측 성공 전에는 영상 사용을 승인하지 않는다.
 - 후속: 분리된 경로는 실제 full v2에서 통과했지만, capture worker가 요구하는 `mode="record"`와 로컬 job의 모드 매핑이 달라 RGB 수집 전에 실패했다. v3는 job ID·고정 profile·checkpoint·source까지 worker 계약에 맞추며, 실제 capture factory의 모드·profile 검증을 CPU에서 확인했다. 이 확인을 full 녹화 성공으로 바꾸지 않는다.
 - 코드: [로컬 v1](../bench/local_same_play_capture_v1.py), [경로 분리 검사](../bench/record_agentic_state_sidecar_v1.py).
+- [v3 실측](../evals/results/local_same_play_capture_s2430_none_20261101_v3/summary.json): 정상 정책의 full 625프레임을 50fps·12.5초로 수집했다. native·sidecar·same-PTS·렌더 동기화625회·종료 증거와 소유 프로세스 정리를 통과했다. 이는 기술 녹화 완료이며 모델 입력 사용·행동·회복 승인과 구분한다.
 
 ### OPS-130: 프레임 품질 검사에 등록되지 않은 이미지 라이브러리 의존
 
@@ -934,3 +935,10 @@
 - 원인: 초기 구현과 테스트가 Pillow를 사용했지만 저장소의 공식 환경에는 Pillow가 설치되지 않았다. 다른 Python 환경의 테스트 통과를 공식 환경의 재현 근거로 사용할 수 없다.
 - 수정: [품질 검사](../evals/agentic_frame_quality_guard_v1.py)는 기존 FFmpeg의 JPEG→PGM gray8 디코딩을 사용한다. 새 설치 없이 종료 코드·시간 제한·헤더·크기·픽셀 길이를 검증하며, metric 이름에도 FFmpeg gray8 변환을 명시한다. Laplacian population variance와 개발용 floor 10은 유지한다.
 - 검증: 공식 Python 3.12.13에서 관련 14개 테스트와 Pillow 미로드를 확인했다. 이 결과는 실제 입력의 품질 수치나 영상 효과를 입증하지 않으며, 해당 측정은 새 등록으로 수행한다.
+
+### OPS-131: 공개 결과 재생 시 근거 원장의 경로가 초기 state에 반영됨
+
+- 관찰: 완료된 24행 비교를 공개용으로 재생할 때 규칙 arm의 첫 `state_before` 대조가 실패했다. 실행 결과와 모델 응답은 보존됐으며 공개 폴더 생성 전에 중단됐다.
+- 원인: corpus 준비와 실제 epoch는 같은 내용·SHA의 fact ledger를 서로 다른 폴더에 봉인한다. selector 초기 state digest에는 ledger 경로도 포함되므로 corpus state를 실제 epoch의 초기 state로 사용할 수 없었다.
+- 수정: [공개 검증기 v3](../evals/export_prospective_reasoning_confirmation_v3.py)는 실제 epoch ledger의 SHA·source binding과 동결 packet을 대조하고 기존 `initialize`로 초기 state를 재생한다. 이후 규칙 선택·승인·검사 영수증·상태 전이·최종 집계 검증은 유지한다. 기존 검증기·실행·결과를 바꾸지 않는다.
+- 검증: 실제 c02의4단계·검사3회를 재생했고 관련27개 테스트를 통과했다. 전체24행의 [공개 결과](../evals/results/prospective_reasoning_confirmation_20261101_v3/release-summary.json)는 `not_confirmed`이며, 규칙 설명과 동결 코드 순서의 별도 불일치도 공개한다. 공개 변환에서 새 API·GPU 실행은0회다.

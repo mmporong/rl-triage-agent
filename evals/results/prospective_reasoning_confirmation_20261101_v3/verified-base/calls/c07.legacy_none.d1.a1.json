@@ -1,0 +1,55 @@
+{
+  "api_wall_s": 1.7141443510045065,
+  "attempt": 1,
+  "automatic_retry": false,
+  "case_id": "c07",
+  "disposition": "semantic_valid",
+  "error_type": null,
+  "final_json": {
+    "fact_ids": [
+      "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+      "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+      "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+      "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+    ],
+    "option_id": "probe:P_reward"
+  },
+  "finish_reason": "stop",
+  "infra_error": null,
+  "messages_sha256": "901807e419abcaf3e68f6e8400e913463dfbc694841662d256fdbe6a39551997",
+  "policy": "legacy_none",
+  "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+  "provider_usable": true,
+  "reasoning_body_included": false,
+  "request_params": {
+    "extra_body": {
+      "reasoning_effort": "none"
+    },
+    "max_tokens": 16384,
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "stream": false,
+    "temperature": 0
+  },
+  "request_sha256": "ee6d5ce0aacabbf71e796ddb742f6137d0dfff71264289172b09c048ec10e7e8",
+  "response_sha256": "c185bce0fd682a3cadacbc47f9722635ed1f3290b4d73f9f3cf1edbe42ef49ca",
+  "review_codes": [],
+  "review_status": "valid",
+  "schema": "prospective_reasoning_confirmation_public_call_v1",
+  "slot": "c07.legacy_none.d1.a1",
+  "step": 1,
+  "usage": {
+    "reported_fields": [
+      "input_tokens",
+      "output_tokens",
+      "total_tokens",
+      "reasoning_tokens"
+    ],
+    "status": "complete",
+    "values": {
+      "input_tokens": 4609,
+      "output_tokens": 95,
+      "reasoning_tokens": 0,
+      "total_tokens": 4704
+    }
+  }
+}

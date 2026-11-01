@@ -1,0 +1,133 @@
+{
+  "assessment": "not_confirmed",
+  "claims": {
+    "default_mode_adoption": false,
+    "llm_superiority": false,
+    "model_version_advantage": false,
+    "new_fault_family_generalization": false,
+    "new_recovery": false,
+    "reasoning_body_public": false,
+    "recovery": false,
+    "repair": false,
+    "visual_benefit": false
+  },
+  "complete_rows": 24,
+  "independent_source_seeds": 2,
+  "model_requests": 18,
+  "paired_probes": 19,
+  "planned_rows": 24,
+  "policies": {
+    "enabled_low": {
+      "compound_complete": 0,
+      "compound_partial": 1,
+      "correct_confirmed_families": 3,
+      "fault_rows": 6,
+      "holds": 5,
+      "infrastructure_unknown_calls": 0,
+      "model_requests": 10,
+      "paired_probes": 4,
+      "provider_calls": 10,
+      "provider_incomplete_calls": 0,
+      "provider_unusable_events": 0,
+      "provider_usable_calls": 10,
+      "rows": 8,
+      "semantic_invalid_calls": 0,
+      "semantic_invalid_events": 0,
+      "semantic_valid_calls": 10,
+      "wrong_family_confirmations": 0
+    },
+    "legacy_none": {
+      "compound_complete": 0,
+      "compound_partial": 2,
+      "correct_confirmed_families": 4,
+      "fault_rows": 6,
+      "holds": 4,
+      "infrastructure_unknown_calls": 0,
+      "model_requests": 8,
+      "paired_probes": 5,
+      "provider_calls": 8,
+      "provider_incomplete_calls": 0,
+      "provider_unusable_events": 0,
+      "provider_usable_calls": 8,
+      "rows": 8,
+      "semantic_invalid_calls": 0,
+      "semantic_invalid_events": 0,
+      "semantic_valid_calls": 8,
+      "wrong_family_confirmations": 0
+    },
+    "strong_registered_rule": {
+      "compound_complete": 0,
+      "compound_partial": 2,
+      "correct_confirmed_families": 4,
+      "fault_rows": 6,
+      "holds": 4,
+      "infrastructure_unknown_calls": 0,
+      "model_requests": 0,
+      "paired_probes": 10,
+      "provider_calls": 0,
+      "provider_incomplete_calls": 0,
+      "provider_unusable_events": 0,
+      "provider_usable_calls": 0,
+      "rows": 8,
+      "semantic_invalid_calls": 0,
+      "semantic_invalid_events": 0,
+      "semantic_valid_calls": 0,
+      "wrong_family_confirmations": 0
+    }
+  },
+  "schema": "prospective_reasoning_confirmation_public_summary_v1",
+  "sdk_role_executions_upper_bound": 38,
+  "seed_paired_contrasts": [
+    {
+      "enabled_low_correct": 1,
+      "legacy_none_correct": 3,
+      "seed": 2430,
+      "strong_rule_correct": 2
+    },
+    {
+      "enabled_low_correct": 2,
+      "legacy_none_correct": 1,
+      "seed": 2431,
+      "strong_rule_correct": 2
+    }
+  ],
+  "status": "complete",
+  "timing": {
+    "api_wall_s": 377.1026912850357,
+    "owned_child_wall_s": 469.2969999999623,
+    "parent_probe_wall_s": 1507.408689999953,
+    "scope": "component_sums_not_whole_execution_wall"
+  },
+  "uncertainty": {
+    "fault_conditions_per_seed": 3,
+    "fault_rows_are_not_independent_seeds": true,
+    "fault_rows_per_policy": 6,
+    "independent_unit": "source_seed",
+    "independent_units": 2,
+    "p_value_reported": false,
+    "post_exposure_design": true,
+    "small_sample": true
+  },
+  "usage_observation": {
+    "input_tokens": {
+      "complete": true,
+      "known_sum": 85553,
+      "reported_calls": 18
+    },
+    "output_tokens": {
+      "complete": true,
+      "known_sum": 29158,
+      "reported_calls": 18
+    },
+    "reasoning_tokens": {
+      "complete": true,
+      "known_sum": 28401,
+      "reported_calls": 18
+    },
+    "total_tokens": {
+      "complete": true,
+      "known_sum": 114711,
+      "reported_calls": 18
+    }
+  }
+}
