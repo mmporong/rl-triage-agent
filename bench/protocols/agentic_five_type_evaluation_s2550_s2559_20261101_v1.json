@@ -1,0 +1,247 @@
+{
+  "authority": {
+    "api": false,
+    "correction": false,
+    "gpu": false,
+    "probe": false,
+    "training": false
+  },
+  "auxiliary_policies": [
+    "optimizer_first_registered_rule"
+  ],
+  "baseline_provenance": {
+    "current_live_probe": "P_optimizer_updates",
+    "host_spec_policy_carrier": "existing_C_snapshot_policy_must_be_reported_separately_and_unique_run_id_bound",
+    "legacy_prose_or_results_relabelled": false,
+    "legacy_recorded_probe": "P_recorded_optimizer_updates",
+    "policy": "optimizer_first_registered_rule",
+    "source": "evals/registered_optimizer_first_policy_v1.py",
+    "source_sha256_lf": "90f7259fd06b0eb9234105850769169b0ec580e19fb5d0bd02d6cd1b7071d5ae"
+  },
+  "case_plan": [
+    {
+      "arm": "NONE",
+      "case_id": "case-01",
+      "reference_job": "none-reference-s3550",
+      "reference_relation": "different_seed_normal_reference",
+      "seed": 2550,
+      "source_job": "none-case-s2550"
+    },
+    {
+      "arm": "NONE",
+      "case_id": "case-02",
+      "reference_job": "none-reference-s3551",
+      "reference_relation": "different_seed_normal_reference",
+      "seed": 2551,
+      "source_job": "none-case-s2551"
+    },
+    {
+      "arm": "F1",
+      "case_id": "case-03",
+      "reference_job": "none-s2552",
+      "reference_relation": "same_seed_none_reference",
+      "seed": 2552,
+      "source_job": "f1-s2552"
+    },
+    {
+      "arm": "F1",
+      "case_id": "case-04",
+      "reference_job": "none-s2553",
+      "reference_relation": "same_seed_none_reference",
+      "seed": 2553,
+      "source_job": "f1-s2553"
+    },
+    {
+      "arm": "F2",
+      "case_id": "case-05",
+      "reference_job": "none-s2554",
+      "reference_relation": "same_seed_none_reference",
+      "seed": 2554,
+      "source_job": "f2-s2554"
+    },
+    {
+      "arm": "F2",
+      "case_id": "case-06",
+      "reference_job": "none-s2555",
+      "reference_relation": "same_seed_none_reference",
+      "seed": 2555,
+      "source_job": "f2-s2555"
+    },
+    {
+      "arm": "COMPOUND",
+      "case_id": "case-07",
+      "reference_job": "none-s2556",
+      "reference_relation": "same_seed_none_reference",
+      "seed": 2556,
+      "source_job": "compound-s2556"
+    },
+    {
+      "arm": "COMPOUND",
+      "case_id": "case-08",
+      "reference_job": "none-s2557",
+      "reference_relation": "same_seed_none_reference",
+      "seed": 2557,
+      "source_job": "compound-s2557"
+    },
+    {
+      "arm": "F5",
+      "case_id": "case-09",
+      "reference_job": "none-s2558",
+      "reference_relation": "same_seed_none_reference",
+      "seed": 2558,
+      "source_job": "f5-s2558"
+    },
+    {
+      "arm": "F5",
+      "case_id": "case-10",
+      "reference_job": "none-s2559",
+      "reference_relation": "same_seed_none_reference",
+      "seed": 2559,
+      "source_job": "f5-s2559"
+    }
+  ],
+  "compound_scoring": {
+    "any_correct_family": "one_case_partial_confirmation",
+    "full_cause_confirmation": "requires_all_injected_families",
+    "partial_is_full": false,
+    "two_partial_families_are_two_independent_cases": false
+  },
+  "diagnosis_sdk_upper_bound": {
+    "actual_role_executions": 300,
+    "paired_per_row": 3,
+    "paired_probe_total": 150,
+    "planned_case_policy_rows": 50,
+    "raw_frame_capture": "separate_committed_protocol_before_capture"
+  },
+  "execution_registration_requirement": "bind_this_design_sha256_case_order_source_proofs_policies_parameters_outcomes_and_budget_without_post_result_changes",
+  "known_fault_types": true,
+  "measurement_scope": {
+    "model_version_improvement": false,
+    "new_fault_generalization": false,
+    "source_collection_equals_recovery": false,
+    "visual_benefit_predeclared_true": false
+  },
+  "model": {
+    "extra_body": {
+      "reasoning_effort": "none"
+    },
+    "max_tokens": 1024,
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "stream": false,
+    "temperature": 0
+  },
+  "new_seed_is_not_new_fault_family": true,
+  "outcome_rules": {
+    "inconclusive": "technical_missing_pairs_or_insufficient_qualified_scope",
+    "minimum_qualified_scope_for_positive_summary": {
+      "cases": 6,
+      "types": 3
+    },
+    "no_observed_gain": "qualified_comparison_complete_but_positive_and_conditional_probe_criteria_not_met",
+    "positive_in_registered_scope": "more_fault_cases_correct_than_primary_comparator_with_no_more_wrong_confirmations_or_normal_shadow_intervention_proposals",
+    "probe_count_to_total_time_savings_conversion": false,
+    "regression": "fewer_fault_cases_correct_or_more_wrong_confirmations_or_normal_shadow_intervention_proposals",
+    "same_accuracy_lower_probe_count": "same_correct_fault_count_no_more_wrong_or_normal_shadow_proposals_and_lower_paired_probe_sum_on_at_least_two_common_correct_cases",
+    "small_sample_general_superiority_claim": false,
+    "visual_gain": "matched_image_arm_improves_correct_confirmation_or_conditional_probe_count_and_valid_frame_citation_matches_actual_confirming_probe"
+  },
+  "predictions": {
+    "F1_F2_COMPOUND": "registered_fault_failure_expected_but_absence_preserved",
+    "F5": "source_failure_may_be_absent_diagnosis_can_be_supported_but_repair_is_not",
+    "NONE": "healthy_bands_expected_native_false_proposals_possible",
+    "frames": "no_prior_gain_confirmed_no_positive_effect_required",
+    "optimizer_first_rule": "explicit_known_mechanism_order_may_match_or_outperform_model"
+  },
+  "preselected_end_to_end": {
+    "case_ids": [
+      "case-03",
+      "case-07"
+    ],
+    "maximum_distinct_corrections": 2,
+    "pipelines": 4,
+    "policies": [
+      "fixed_eligible",
+      "logs_only"
+    ],
+    "replace_ineligible_or_held_case": false,
+    "reward_recovery_mode": "restart",
+    "second_epoch_requires_valid_not_recovered_receipt": true,
+    "success_and_HOLD_denominator": "these_four_pipelines_only"
+  },
+  "primary_contrast": [
+    "logs_only",
+    "fixed_eligible"
+  ],
+  "primary_endpoint": "correct_registered_family_confirmation_on_qualified_fault_cases",
+  "primary_policies": [
+    "registry_next",
+    "fixed_eligible",
+    "logs_only",
+    "logs_plus_frames"
+  ],
+  "request_allocations": {
+    "automatic_retries": 0,
+    "count_sent_unknown_and_failed": true,
+    "diagnosis": 72,
+    "end_to_end": 32,
+    "error_matrix": 8,
+    "increase_during_execution": false,
+    "smoke_and_infrastructure_reserved": 8,
+    "whole_new_study": 120
+  },
+  "same_authority": {
+    "frame_delta_only": true,
+    "hidden_runtime_fact_projection": "backend_only_unavailable_until_measured",
+    "host_generates_args_expectations_and_approvals": true,
+    "max_paired_probes_per_fault_arm": 3,
+    "normal_host_gate": "blocks_actual_probe_and_correction_for_healthy_control",
+    "normal_model_shadow": "one_unapproved_native_decision_per_normal_case_per_model_arm_counted_separately",
+    "numeric_fact_projection": "case24_plus_reference24_training_fields_plus_available_same_Play_facts",
+    "probe_ids": [
+      "P_episode",
+      "P_noise",
+      "P_optimizer_updates",
+      "P_physics",
+      "P_reward",
+      "P_torque",
+      "P_value"
+    ],
+    "registry_digest_sha256": "4adb616bc519cb86a6b7a1f68e306cf469ec99796c428488af7fb4bee2a1da48"
+  },
+  "schema": "agentic_five_type_evaluation_design_v1",
+  "secondary_contrast": [
+    "logs_plus_frames",
+    "logs_only"
+  ],
+  "source_protocol": {
+    "path": "bench/protocols/lineage_source_collection_s2550_s2559_20261101_v1.json",
+    "sha256_lf": "69faaa1c16984ce6d989eb3be9492722ee342421d649c3651741ff8ef0ff2695"
+  },
+  "source_selection": {
+    "eligible_reference_requires_fixed26_healthy": true,
+    "external_archives_seed_absence_proven": false,
+    "fault_source_requires_fixed26_failure": true,
+    "normal_case_self_reference": false,
+    "not_applicable": "preserve_without_replacement",
+    "replacement_seeds": 0,
+    "source_failure_absent": "exclude_from_failure_comparison_and_report_planned_and_qualified_counts",
+    "source_qualification_before_model_calls": true
+  },
+  "source_training_jobs": 20,
+  "status": "design_fixed_requires_separate_execution_registration",
+  "uncertainty": {
+    "actual_sdk_api_full_wall_and_unknowns_separate": true,
+    "normal_and_fault_metrics_separate": true,
+    "repeat_calls_or_frames_are_independent_cases": false,
+    "report_case_level_pairs": true,
+    "report_intervals_and_uncomputable_reasons": true,
+    "unit": "independent_policy_lineage"
+  },
+  "unsupported_F5": {
+    "confirmed_supported_observation_with_repair_unsupported_hold": "correct_diagnosis_and_safe_hold",
+    "diagnosis_allowed": true,
+    "family": "physics",
+    "mechanism": "contact_friction_times_0p25",
+    "repair_allowed": false
+  }
+}
