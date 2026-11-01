@@ -204,7 +204,7 @@ def fresh(protocol: dict[str, Any], lab: Path, *, include_smoke: bool = True) ->
     seeds = [row["seed"] for row in protocol["training_jobs"]]
     if include_smoke:
         seeds.append(protocol["smoke_job"]["seed"])
-    return SEEDS.assert_fresh_seeds(seeds, lab, repo=ROOT)
+    return SEEDS.assert_fresh_seeds(list(dict.fromkeys(seeds)), lab, repo=ROOT)
 
 
 def evidence_abi(evidence: dict[str, Any]) -> dict[str, Any]:

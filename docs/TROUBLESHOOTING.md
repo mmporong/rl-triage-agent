@@ -957,3 +957,10 @@
 - 확인된 판정 공백: 기존 완료 조건에 upright 관측이 없었다. 동결 task의 termination에도 별도의 orientation 조건이 없다. 이 사실은 뒤집힘의 학습 원인을 규명한 결과가 아니다.
 - 보완: [자세 감사](../evals/stairs_motion_integrity_v1.py)는 원래 판정을 보존하면서 `upright_completion_contradicted`를 추가한다. [후속 등록](../bench/protocols/go2_stairs_command_contrast_s200_20261101_v1.json)은 진행·높이·종료 증거와 body-up-z 음수 0개를 수용 조건으로 고정했다.
 - 실측: 같은 정책·지형·초기 상태의 0.25/0.75m/s 네 조건을 실행했다. 0.25m/s 실패 trace는 기존 자료와 SHA가 같았고, 0.75m/s 상행·하행은 등록 기준을 통과했다. SDK 4회 모두 자연 종료·정리를 확인했다. [조건별 결과와 원본 영상](GO2-STAIRS-COMMAND-CONTRAST.md)을 공개했으며, 이 재생을 모델 진단·학습 교정·회복으로 세지 않는다.
+
+### OPS-134: 같은 seed 참조를 포함한 학습 목록의 freshness 검사
+
+- 관찰: 10사례·20학습 원천의 실행 전 `fresh-seeds` 단계가 중복 seed 목록으로 거부됐다. GPU 학습·모델 요청은 모두 0회였고 seed가 소비되지 않았다.
+- 원인: 결함 정책과 정상 참조는 일부 seed를 의도적으로 공유한다. 실행기가 학습 job 20행에서 뽑은 seed를 그대로 전달했지만 기존 freshness 검사는 중복 없는 목록을 요구했다.
+- 수정: [새 원천 실행기](../evals/lineage_source_batch_v2.py)는 첫 등장 순서를 유지해 seed만 중복 제거한 뒤 기존 core 검사를 호출한다. 원천 20개, 사례/참조 관계, 기록 검색 범위와 재사용 거부 조건은 바꾸지 않는다. [v2 원천 등록](../bench/protocols/lineage_source_collection_s2550_s2559_20261101_v2.json)과 [v2 평가 설계](../bench/protocols/agentic_five_type_evaluation_s2550_s2559_20261101_v2.json)는 기존 v1을 보존한다.
+- 검증: 실제 core guard를 사용한 회귀에서 smoke 포함 13개·제외 12개의 고유 seed 검사를 확인했고 관련 11개 테스트를 통과했다. 이는 학습 완료나 진단 효과의 근거가 아니다.

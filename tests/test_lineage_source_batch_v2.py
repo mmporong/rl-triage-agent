@@ -61,6 +61,24 @@ def test_freshness_uses_existing_core_pruning_guard() -> None:
     assert "tests/test_core_seed_guard_v1.py" in B.source_files()
 
 
+def test_freshness_passes_twenty_paired_jobs_to_actual_guard_without_duplicate_seeds(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo, lab = tmp_path / "repo", tmp_path / "lab"
+    (repo / "bench").mkdir(parents=True)
+    (repo / "evals").mkdir()
+    (lab / "logs").mkdir(parents=True)
+    monkeypatch.setattr(B, "ROOT", repo)
+    _, training, smoke = B.jobs(list(range(2550, 2560)), [3550, 3551], 4550)
+    assert len(training) == 20
+    protocol = {"training_jobs": training, "smoke_job": smoke}
+    checked = B.fresh(protocol, lab)
+    assert checked["status"] == "fresh" and len(checked["seeds"]) == 13
+    assert set(checked["seeds"]) == {*range(2550, 2560), 3550, 3551, 4550}
+    after_smoke = B.fresh(protocol, lab, include_smoke=False)
+    assert len(after_smoke["seeds"]) == 12 and 4550 not in after_smoke["seeds"]
+
+
 def test_protocol_rejects_budget_and_duplicate_seed() -> None:
     value = _value()
     assert len(B.validate_protocol(value)["training_jobs"]) == 20
