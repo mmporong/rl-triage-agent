@@ -1,0 +1,63 @@
+{
+  "authority": {
+    "api": false,
+    "correction": false,
+    "cpu_input_preparation": true,
+    "gpu": false,
+    "probe": false
+  },
+  "frame_selection": {
+    "case": [
+      "f1",
+      "f2",
+      "f3"
+    ],
+    "reference": [
+      "f4",
+      "f5",
+      "f6"
+    ],
+    "source_indices_per_role": [
+      0,
+      2,
+      5
+    ],
+    "window": 1
+  },
+  "input_protocol": {
+    "execution_anchor": "c2e28023b048dab6696858a7bfe70a480f8fb436",
+    "path": "bench/protocols/local_same_play_pair_inputs_s2430_s2431_20261101_v1.json",
+    "sha256": "92156cc9c3a7f1ab11811b360a3294f617a28cd795d0e2e2c2542c31f3e4af8c"
+  },
+  "projection": {
+    "image_counts": [
+      0,
+      6
+    ],
+    "runtime_facts_excluded_equally": 16,
+    "same_play_numeric_facts": 54,
+    "training_facts": 48
+  },
+  "schema": "local_same_play_pair_provider_protocol_v1",
+  "source_anchor": "8c141724f67b18ffcda112dd93e58bb7acbb6446",
+  "sources_lf": {
+    "bench/record_vision_evidence_v1.py": "4224edca62895421fe13eb28dbff3af6971d15eb5e209f167ee18b9a6022559a",
+    "evals/agentic_evidence_index_v1.py": "15041293fc4a9798d01957bd895bbe9e9bcced844f50fa3c0ed4b68205ab4d14",
+    "evals/agentic_investigation_call_v1.py": "8b3dd3783217948044fa29225e58937384b0b1b8e403bed20f6afc1dae514fb5",
+    "evals/agentic_investigation_call_v2.py": "1c79512b0766a17cc51a0d39370c895200da0910f12bdf50119717e91503d5ec",
+    "evals/agentic_investigation_contract_v1.py": "caa7a26db12328ae4d95c9de7535d030d4c0b68804364ab1c34e52b29384ad32",
+    "evals/agentic_investigation_contract_v2.py": "3b24ae4437f896871ac8a91fbe99eb3707a0d177e45b7cc5af2fe3d6d3586077",
+    "evals/agentic_paired_evidence_v1.py": "b1d6532eba734c8550c2d96ba7eebfe781102b83a94d71bec67ac325bfa18349",
+    "evals/agentic_state_facts_v1.py": "8bbba4144428eb5ed26a25a769c77d69aa1d19912f40c549ce978863056ef5b3",
+    "evals/local_same_play_pair_inputs_v1.py": "cd21248f3de5ce028bbd210946f0d66c5f3206c0df3d80e1145c99612529a4f9",
+    "evals/local_same_play_pair_provider_v1.py": "ce1d479b0ae91b305e152862de52bfb817183edf2ce8c13e3c6f426d5e58e6cd",
+    "evals/residual_selection_v2.py": "d1a0028afbe00d2697246e4fe30640ec780e3c4b15486dd4f1ed7e722aec6bc8",
+    "evals/selection_comparison_controller_v1.py": "6d1b5312d9a974433341c98fd8a0b80c990029a1d76a2a10d27955aa70fcc809",
+    "evals/selection_comparison_view_v1.py": "5180b96296251b3ae117edd612baba24676197dab93bab28f2e1cc0ef1d9e33d",
+    "evals/vision_evidence_contract_v1.py": "82f370942492611246832aed4e6fefbc8b71cfa38a8b4d2798f809437d67babf",
+    "evals/vision_selection_sources_v1.py": "65959043ebc312c75b89935f96c08ceefa69071b525040fd17283166b5219519",
+    "evals/vision_transferred_input_acceptance_v2.py": "e865722a222f66f262072af6047ea22bd38b38b8f021ef82c479f7298911e5bd",
+    "tests/test_local_same_play_pair_provider_v1.py": "0c2482c37dcbed2b8c1ee32850c0d5356865f8c38ebf0f0ed758acea0552b8f0"
+  },
+  "status": "registered_before_provider_materialization"
+}
