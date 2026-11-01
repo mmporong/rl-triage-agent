@@ -41,9 +41,15 @@ inline execution과 owned 결과가 다르거나 role·plan·request·checkpoint
 
 같은 receipt SHA가 여러 step이나 role에서 참조되면 최초 참조만 합산하고 중복 위치와 원인을 별도로
 기록한다. paired probe 0건은 `no_probe_executed`이며 unknown receipt와 다르다.
-등록 intent가 있지만 HOST pair 실행과 receipt가 없는 경우는 `unexecuted_pair_intents`로 분리하고
-SDK 역할 수를 0으로 기록한다. 이는 실행이 없었다는 뜻이며, 실행한 역할의 missing wall을 0으로
-채운다는 뜻이 아니다.
+pair result가 없더라도 한 역할 receipt가 완료된 interruption은 `orphan_role_cost`로 검증하고 전체
+consumed SDK 역할 수와 known wall에 한 번만 합산한다. 이 값은 정책 진단 step으로 승격하지 않는다.
+나머지 역할이 실행 승인 전에 멈췄다는 명시적 plan·폴더 inventory·오류 단계가 있을 때만
+`not_executed`로 기록한다. pair result가 없다는 사실만으로 두 역할 모두 SDK 0이라고 추론하지 않으며,
+실행한 역할의 missing wall을 0으로 채우지 않는다.
+
+intent 회계는 reserved 역할, verified timed 역할, orphan 역할, 명시적 미실행 역할, 아직 해소되지 않은
+reserved 역할을 나눈다. 동일 orphan receipt가 completed step이나 다른 interruption에 다시 나타나면
+SHA 중복 제거가 적용된다.
 
 SDK role wall은 GPU kernel 시간이나 GPU busy 시간이 아니다. parent launch부터 프로세스 종료와 owned
 job 비어 있음 확인까지의 wall 범위다. 이 감사는 진단 효능, 모델 비교, 새 GPU 감소 효과를 측정하지

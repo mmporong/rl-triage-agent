@@ -100,6 +100,44 @@ def universe() -> list[dict]:
     } for case in range(1, 11) for policy in A.DRIVER.ARMS]
 
 
+def interruption_fixture(tmp_path: Path, *, tamper_owned: bool = False) -> dict:
+    pair_path = pair_fixture(tmp_path, walls={"reference": 18.0, "case": 2.0})
+    pair = A.read(pair_path)
+    reference_receipt = A.read(Path(pair["receipts"]["reference"]["path"]))
+    case_receipt_path = Path(pair["receipts"]["case"]["path"])
+    case_receipt = A.read(case_receipt_path)
+    case_owned = Path(case_receipt["raw_refs"]["owned_result"]["path"])
+    case_claim = Path(case_receipt["claim"]["path"])
+    case_receipt_path.unlink()
+    case_owned.unlink()
+    case_claim.unlink()
+    if tamper_owned:
+        owned = Path(reference_receipt["raw_refs"]["owned_result"]["path"])
+        value = A.read(owned)
+        value["wall_s"] = 19.0
+        owned.write_bytes(A.json_bytes(value))
+    return {
+        "schema": "lineage_five_policy_partial_role_interruption_v1",
+        "stage": "paired_probe_role_execution", "case_id": "case-04",
+        "arm": "fixed_eligible", "step": 2, "probe": "P_reward",
+        "pair_result": None, "authorization": pair["authorization"],
+        "roles": {
+            "reference": {
+                "status": "complete", "plan": pair["plans"]["reference"],
+                "receipt": pair["receipts"]["reference"],
+                "owned_result": reference_receipt["raw_refs"]["owned_result"],
+                "claim": {"path": reference_receipt["claim"]["path"],
+                          "sha256": reference_receipt["claim"]["sha256"]},
+            },
+            "case": {
+                "status": "not_executed", "plan": pair["plans"]["case"],
+                "receipt": None, "owned_result": None, "claim": None,
+                "reason": "lease_read_permission_error_before_case_execute_approval",
+            },
+        },
+    }
+
+
 def test_inspect_pair_reconstructs_two_owned_roles_and_preserves_reported_unknown(
         tmp_path: Path) -> None:
     path = pair_fixture(tmp_path)
@@ -164,10 +202,37 @@ def test_duplicate_receipt_is_counted_once_and_all_50_rows_are_preserved() -> No
     assert result["totals"]["zero_probe_rows"] == 48
     with pytest.raises(ValueError, match="complete"):
         A._aggregate(rows[:-1])
-    accounting = A._intent_accounting(3, 2)
-    assert accounting["unexecuted_pair_intents"] == 1
-    assert accounting["sdk_roles_from_unexecuted_intents"] == 0
-    assert accounting["unexecuted_intent_timing"] is None
+    accounting = A._intent_accounting(
+        18, 17, timed_roles=35, orphan_roles=1, explicit_not_executed_roles=1)
+    assert accounting["pair_intents_without_pair_result"] == 1
+    assert accounting["verified_orphan_sdk_roles"] == 1
+    assert accounting["verified_timed_sdk_roles"] == 35
+    assert accounting["explicit_not_executed_roles"] == 1
+    assert accounting["unresolved_reserved_roles"] == 0
+    assert accounting["whole_pair_sdk_zero_inferred"] is False
+
+
+def test_orphan_reference_is_timed_once_and_case_zero_requires_explicit_evidence(
+        tmp_path: Path) -> None:
+    orphan = A.inspect_orphan_role(interruption_fixture(tmp_path / "valid"))
+    assert orphan["policy_diagnosis_step"] is False
+    assert orphan["orphan_role_cost"]["role"] == "reference"
+    assert orphan["orphan_role_cost"]["wall_s"] == 18.0
+    assert orphan["unexecuted_role"]["role"] == "case"
+    assert orphan["unexecuted_role"]["wall_s"] is None
+    rows = universe()
+    rows[0]["partial_role_interruptions"] = [orphan]
+    duplicate_role = deepcopy(orphan["orphan_role_cost"])
+    rows[1]["steps"] = [{"step": 1, "pair": {
+        "pair_parent_wall_s": 1.0, "reconstructed": {"roles": [duplicate_role]}}}]
+    result = A._aggregate(rows)
+    assert len(result["duplicates"]) == 1
+    assert result["totals"]["sdk_roles_counted_once"] == 1
+    assert result["totals"]["orphan_roles_counted_once"] == 1
+    assert result["totals"]["known_owned_wall_s"] == 18.0
+    assert result["totals"]["explicit_not_executed_roles"] == 1
+    with pytest.raises(ValueError, match="owned-result"):
+        A.inspect_orphan_role(interruption_fixture(tmp_path / "tampered", tamper_owned=True))
 
 
 def test_inspect_step_reuses_host_verify_pair(

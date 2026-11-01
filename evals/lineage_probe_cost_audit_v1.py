@@ -325,6 +325,104 @@ def inspect_pair(result_path: Path) -> dict[str, Any]:
     }
 
 
+def inspect_orphan_role(interruption: dict[str, Any]) -> dict[str, Any]:
+    """pair result 없이 완료된 reference role과 미실행 case role을 분리 검증한다."""
+    require(interruption.get("schema") == "lineage_five_policy_partial_role_interruption_v1"
+            and interruption.get("stage") == "paired_probe_role_execution"
+            and interruption.get("pair_result") is None
+            and interruption.get("case_id") in {f"case-{index:02d}" for index in range(1, 11)}
+            and interruption.get("arm") in DRIVER.ARMS
+            and type(interruption.get("step")) is int and interruption["step"] >= 1
+            and isinstance(interruption.get("probe"), str),
+            "partial role interruption 형식이 다르다")
+    roles = interruption.get("roles")
+    require(isinstance(roles, dict) and set(roles) == {"reference", "case"},
+            "partial role 두 역할이 없다")
+    authorization_path = _bound(interruption.get("authorization"), "orphan authorization")
+    authorization = read(authorization_path)
+    probe = interruption["probe"]
+    request_id = authorization.get("request_id")
+    require(authorization.get("request_spec", {}).get("probe") == probe
+            and isinstance(request_id, str), "orphan authorization request/probe가 다르다")
+
+    reference = roles["reference"]
+    require(isinstance(reference, dict) and reference.get("status") == "complete",
+            "orphan reference 완료 표식이 없다")
+    reference_plan = _bound(reference.get("plan"), "orphan reference plan")
+    reference_receipt = _bound(reference.get("receipt"), "orphan reference receipt")
+    reference_owned = _bound(reference.get("owned_result"), "orphan reference owned-result")
+    reference_claim = _bound(reference.get("claim"), "orphan reference claim")
+    plan = read(reference_plan)
+    receipt = read(reference_receipt)
+    claim_body = read(reference_claim)
+    owned = read(reference_owned)
+    expected_checkpoint = authorization["request_spec"]["reference_checkpoint_sha256"]
+    require(plan.get("role") == "reference" and plan.get("probe") == probe
+            and plan.get("checkpoint", {}).get("sha256") == expected_checkpoint
+            and authorization.get("plan_sha256", {}).get("reference") == sha(reference_plan),
+            "orphan reference plan/request/checkpoint 결합이 다르다")
+    receipt_authorization = receipt.get("authorization")
+    claim = receipt.get("claim")
+    require(receipt.get("status") == "complete" and receipt.get("role") == "reference"
+            and receipt.get("probe") == probe and receipt.get("plan") == reference["plan"]
+            and receipt.get("checkpoint_sha256") == expected_checkpoint
+            and receipt.get("raw_refs", {}).get("owned_result") == reference["owned_result"]
+            and isinstance(receipt_authorization, dict)
+            and receipt_authorization.get("sha256") == sha(authorization_path)
+            and receipt_authorization.get("request_id") == request_id
+            and isinstance(claim, dict) and claim.get("path") == str(reference_claim)
+            and claim.get("sha256") == sha(reference_claim) and claim.get("body") == claim_body
+            and claim_body.get("role") == "reference"
+            and claim_body.get("request_id") == request_id
+            and claim_body.get("plan_sha256") == sha(reference_plan)
+            and claim_body.get("checkpoint_sha256") == expected_checkpoint,
+            "orphan reference receipt/claim/request 결합이 다르다")
+    execution = _execution(receipt.get("execution"), "orphan reference")
+    require(execution == owned, "orphan reference inline execution과 owned-result가 다르다")
+
+    case = roles["case"]
+    require(isinstance(case, dict) and case.get("status") == "not_executed"
+            and case.get("receipt") is None and case.get("owned_result") is None
+            and case.get("claim") is None
+            and case.get("reason") == "lease_read_permission_error_before_case_execute_approval",
+            "orphan case 미실행 증거가 다르다")
+    case_plan = _bound(case.get("plan"), "orphan case plan")
+    case_value = read(case_plan)
+    expected_case_checkpoint = authorization["request_spec"]["checkpoint_sha256"]
+    require(case_value.get("role") == "case" and case_value.get("probe") == probe
+            and case_value.get("checkpoint", {}).get("sha256") == expected_case_checkpoint
+            and authorization.get("plan_sha256", {}).get("case") == sha(case_plan),
+            "orphan case plan/request/checkpoint 결합이 다르다")
+    require(not (case_plan.parent / "probe_receipt.json").exists()
+            and not (case_plan.parent / "owned-result.json").exists()
+            and not (case_plan.parent / "owned/launch.json").exists(),
+            "orphan case에 실행 산출물이 있다")
+    case_claim = reference_claim.with_name("case.json")
+    require(not case_claim.exists(), "orphan case claim이 존재한다")
+    wall = _wall(execution["wall_s"], "orphan reference wall_s")
+    return {
+        "schema": SCHEMA + "_orphan_role", "status": "verified",
+        "case_id": interruption["case_id"], "policy": interruption["arm"],
+        "step": interruption["step"], "probe": probe,
+        "policy_diagnosis_step": False, "additional_execution": False,
+        "orphan_role_cost": {
+            "role": "reference", "status": "complete", "wall_s": wall,
+            "wall_scope": WALL_SCOPE, "timing_source": "receipt_reconstruction",
+            "authorization_sha256": sha(authorization_path),
+            "plan_sha256": sha(reference_plan), "receipt_sha256": sha(reference_receipt),
+            "owned_result_sha256": sha(reference_owned), "claim_sha256": sha(reference_claim),
+            "checkpoint_sha256": expected_checkpoint,
+        },
+        "unexecuted_role": {
+            "role": "case", "status": "not_executed", "wall_s": None,
+            "plan_sha256": sha(case_plan), "checkpoint_sha256": expected_case_checkpoint,
+            "reason": case["reason"], "receipt_present": False,
+            "owned_result_present": False, "owned_launch_present": False,
+            "claim_present": False,
+        },
+    }
+
+
 def _historical_snapshot(detail: dict[str, Any], source: dict[str, Any], step_index: int,
                          pair: dict[str, Any], temp_root: Path) -> dict[str, Any]:
     ledger_path = Path(pair["public_ledger"]["path"]).resolve(strict=True)
@@ -384,21 +482,29 @@ def _deduplicate(rows: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list
     duplicates: list[dict[str, Any]] = []
     output = deepcopy(rows)
     for row in output:
-        for step in row["steps"]:
-            for role in step["pair"]["reconstructed"]["roles"]:
-                receipt = role.get("receipt_sha256")
-                role["counted_once"] = receipt is not None and receipt not in seen
-                if receipt is None:
-                    continue
-                identity = {"case_id": row["case_id"], "policy": row["policy"],
-                            "step": step["step"], "role": role["role"]}
-                if receipt in seen:
-                    role["duplicate_of"] = deepcopy(seen[receipt])
-                    duplicates.append({"receipt_sha256": receipt,
-                                       "first": deepcopy(seen[receipt]), "duplicate": identity,
-                                       "reason": "same_receipt_referenced_multiple_times"})
-                else:
-                    seen[receipt] = identity
+        candidates = [role for step in row["steps"]
+                      for role in step["pair"]["reconstructed"]["roles"]]
+        candidates.extend(item["orphan_role_cost"]
+                          for item in row.get("partial_role_interruptions", []))
+        for role in candidates:
+            receipt = role.get("receipt_sha256")
+            role["counted_once"] = receipt is not None and receipt not in seen
+            if receipt is None:
+                continue
+            step_value = next((step["step"] for step in row["steps"]
+                               if role in step["pair"]["reconstructed"]["roles"]),
+                              next((item["step"] for item in row.get(
+                                  "partial_role_interruptions", [])
+                                    if role is item["orphan_role_cost"]), None))
+            identity = {"case_id": row["case_id"], "policy": row["policy"],
+                        "step": step_value, "role": role["role"]}
+            if receipt in seen:
+                role["duplicate_of"] = deepcopy(seen[receipt])
+                duplicates.append({"receipt_sha256": receipt,
+                                   "first": deepcopy(seen[receipt]), "duplicate": identity,
+                                   "reason": "same_receipt_referenced_multiple_times"})
+            else:
+                seen[receipt] = identity
     return output, duplicates
 
 
@@ -412,15 +518,23 @@ def _aggregate(rows: list[dict[str, Any]]) -> dict[str, Any]:
     def totals(selected: list[dict[str, Any]]) -> dict[str, Any]:
         roles = [role for row in selected for step in row["steps"]
                  for role in step["pair"]["reconstructed"]["roles"]]
+        orphan_roles = [item["orphan_role_cost"] for row in selected
+                        for item in row.get("partial_role_interruptions", [])]
+        roles.extend(orphan_roles)
         counted = [role for role in roles if role.get("counted_once")]
         unknown = [role for role in roles if role.get("status") == "unknown"]
+        unexecuted = [item["unexecuted_role"] for row in selected
+                      for item in row.get("partial_role_interruptions", [])]
         return {
             "planned_rows": len(selected),
             "zero_probe_rows": sum(not row["steps"] for row in selected),
             "paired_probe_steps": sum(len(row["steps"]) for row in selected),
             "sdk_roles_counted_once": len(counted),
+            "orphan_roles_counted_once": sum(
+                role.get("counted_once") is True for role in orphan_roles),
             "known_owned_wall_s": sum(role["wall_s"] for role in counted),
             "unknown_role_receipts": len(unknown),
+            "explicit_not_executed_roles": len(unexecuted),
             "pair_parent_wall_s": sum(step["pair"]["pair_parent_wall_s"]
                                       for row in selected for step in row["steps"]),
             "row_parent_wall_s": sum(row["row_parent_wall_s"] for row in selected),
@@ -435,20 +549,27 @@ def _aggregate(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "totals": totals(deduped), "by_policy": policies, "by_case": cases}
 
 
-def _intent_accounting(paired_intents: object, completed_pairs: int) -> dict[str, Any]:
+def _intent_accounting(paired_intents: object, completed_pairs: int, *,
+                       timed_roles: int, orphan_roles: int,
+                       explicit_not_executed_roles: int) -> dict[str, Any]:
     require(type(paired_intents) is int and paired_intents >= completed_pairs >= 0,
             "paired intent/completed pair 수가 다르다")
     unexecuted = cast(int, paired_intents) - completed_pairs
+    reserved = cast(int, paired_intents) * 2
+    unresolved = reserved - timed_roles - explicit_not_executed_roles
+    require(unresolved >= 0 and orphan_roles <= timed_roles,
+            "reserved/timed/orphan/unexecuted role 수가 다르다")
     return {
         "registered_pair_intents": paired_intents,
         "completed_pair_results": completed_pairs,
-        "unexecuted_pair_intents": unexecuted,
-        "sdk_roles_from_unexecuted_intents": 0,
-        "unexecuted_intent_timing": None if unexecuted else "not_applicable",
-        "interpretation": (
-            "intent는 있었지만 HOST pair 실행/receipt가 없어 SDK role 시간으로 세지 않음"
-            if unexecuted else "모든 paired intent에 완료 pair result가 있음"
-        ),
+        "pair_intents_without_pair_result": unexecuted,
+        "reserved_sdk_roles": reserved,
+        "verified_timed_sdk_roles": timed_roles,
+        "verified_orphan_sdk_roles": orphan_roles,
+        "explicit_not_executed_roles": explicit_not_executed_roles,
+        "unresolved_reserved_roles": unresolved,
+        "whole_pair_sdk_zero_inferred": False,
+        "missing_wall_filled_with_zero": False,
     }
 
 
@@ -474,17 +595,26 @@ def audit_batch(batch_path: Path, protocol_path: Path, config_path: Path,
             require(isinstance(source, dict), f"{case_id} source가 actual preflight에 없다")
             steps = [inspect_step(detail_path, source, index, temp_root / f"row-{len(rows):02d}")
                      for index in range(len(detail.get("steps", [])))]
+            interruptions = []
+            if detail.get("interruption") is not None:
+                require(isinstance(detail["interruption"], dict), "interruption 형식이 다르다")
+                interruptions.append(inspect_orphan_role(detail["interruption"]))
             rows.append({
                 "schema": ROW_SCHEMA, "case_id": case_id, "policy": policy,
                 "end_state": detail.get("end_state"),
                 "execution_state": "no_probe_executed" if not steps else "paired_probe_executed",
                 "steps": steps,
+                "partial_role_interruptions": interruptions,
                 "row_parent_wall_s": _wall(detail.get("parent_wall_s"), "row parent wall_s"),
                 "source_digest": detail.get("source_digest"),
             })
     aggregate = _aggregate(rows)
+    totals = aggregate["totals"]
     aggregate["intent_accounting"] = _intent_accounting(
-        batch.get("paired_intents"), aggregate["totals"]["paired_probe_steps"])
+        batch.get("paired_intents"), totals["paired_probe_steps"],
+        timed_roles=totals["sdk_roles_counted_once"],
+        orphan_roles=totals["orphan_roles_counted_once"],
+        explicit_not_executed_roles=totals["explicit_not_executed_roles"])
     return {"batch": batch, "protocol": protocol, "config": config, **aggregate}
 
 
