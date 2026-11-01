@@ -1,0 +1,38 @@
+{
+  "case_id": "c03",
+  "category": "R1_ONLY",
+  "checkpoint_sha256": "70003e4b6efa9bd13b01cdda8a3799bbef176b97c8d3636a86bcd3c8f04dc872",
+  "claims": {
+    "diagnosis": false,
+    "model_advantage": false,
+    "recovery": false,
+    "repair": false,
+    "visual_benefit": false
+  },
+  "fixed_conditions": 26,
+  "gate": {
+    "reason": null,
+    "run": true,
+    "source_outcome": "not_recovered"
+  },
+  "registered_metrics": {
+    "fall_rate": 0.0,
+    "lin_vel_rmse_mps": 1.1595136616088313,
+    "mean_survival_s": 20.0,
+    "yaw_rate_rmse_radps": 0.7271580050215825
+  },
+  "schema": "prospective_source_qualification_public_condition_v1",
+  "seed": 2430,
+  "timing": {
+    "fixed_eval_owned_job": {
+      "gpu_kernel_time": false,
+      "scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+      "wall_s": 44.93799999996554
+    },
+    "training_owned_job": {
+      "gpu_kernel_time": false,
+      "scope": "parent_launch_to_exit_and_owned_job_empty_verification",
+      "wall_s": 476.90600000001723
+    }
+  }
+}
