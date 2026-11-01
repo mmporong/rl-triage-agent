@@ -462,11 +462,11 @@ def test_path_checker_rejects_private_or_network_references(text):
 
 def test_build_from_repository_is_publishable_and_never_mismatched(built):
     data = built
-    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 21))
+    assert [scene["number"] for scene in data["scenes"]] == list(range(1, 22))
     assert [scene["id"] for scene in data["scenes"]] == [
         "failure", "curves", "warning", "probe", "correction", "demo", "nat_demo", "recovery", "motor", "hold", "upstream",
         "upstream_demo", "d3", "nvidia", "prospective_comparison", "registered_partitions",
-        "reasoning_followup", "four_way_development", "stairs_motion_integrity", "cost"]
+        "reasoning_followup", "four_way_development", "stairs_motion_integrity", "stairs_command_contrast", "cost"]
     statuses = {key: row["status"] for key, row in data["sources"].items()}
     assert "mismatch" not in statuses.values()
     for tag in ("reward_resume_dev3_20261013", "motor_resume_dev_20261013", "timeout_resume_dev_20261013"):
@@ -563,7 +563,7 @@ def test_every_scene_renders_and_unapproved_numbers_show_status(tmp_path, built)
                                    check=True, capture_output=True, text=True, encoding="utf-8")
         outputs[name] = json.loads(completed.stdout)
     clean = outputs["clean"]
-    assert len(clean) == 20 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
+    assert len(clean) == 21 and all(_js_escape(scene["title"]) in html for scene, html in zip(data["scenes"], clean))
     assert "<svg" in clean[1] and "polyline" in clean[1]
     dense = [scene["id"] for scene, html in zip(data["scenes"], clean, strict=True) if 'class="blocks dense"' in html]
     assert dense == ["correction", "demo", "nat_demo", "recovery", "upstream", "upstream_demo", "d3", "nvidia",
@@ -794,6 +794,7 @@ def test_nvidia_scene_shows_the_rescore_row_only_after_the_public_summary_replay
 @pytest.mark.parametrize("source,slot,scene_function", [
     ("local_pair_four_arm_development_20261101_v1", "local_pair_four_arm", B.scene_four_way_development),
     ("stairs_motion_integrity_20261101_v1", "stairs_motion_integrity", B.scene_stairs_motion),
+    ("go2_stairs_command_contrast_s200_20261101_v1", "go2_stairs_command", B.scene_stairs_command),
 ])
 def test_new_comparison_and_motion_scenes_block_uncommitted_or_hash_broken_data(repo, source, slot, scene_function):
     shutil.copytree(ROOT / "evals/results" / source, repo / "release")
@@ -810,7 +811,7 @@ def test_new_comparison_and_motion_scenes_block_uncommitted_or_hash_broken_data(
     assert sources.rows["release"]["status"] == "ready"
     assert any(item.get("value") is not None for block in scene["blocks"]
                for row in block["rows"] for item in row if isinstance(item, dict))
-    file_name = "summary.json" if slot == "local_pair_four_arm" else "audit.json"
+    file_name = "audit.json" if slot == "stairs_motion_integrity" else "summary.json"
     damaged = repo / "release" / file_name
     changed = json.loads(damaged.read_text(encoding="utf-8"))
     changed["status"] = "invalid"

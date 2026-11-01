@@ -11020,6 +11020,78 @@ window.REPLAY_DATA = {
    "number": 19
   },
   {
+   "id": "stairs_command_contrast",
+   "title": "같은 Go2 정책: 명령 속도 변경 후 계단 상하행 통과",
+   "lead": "명령만 0.25에서 0.75m/s로 바꾼 재생에서 상행·하행 모두 진행·높이·자세 기준을 통과했다.",
+   "blocks": [
+    {
+     "type": "table",
+     "title": "seed 200 · 5cm 단차 · 공식 기학습 정책",
+     "columns": [
+      "방향",
+      "0.25m/s",
+      "0.75m/s",
+      "초기 상태",
+      "정책·지형·runtime"
+     ],
+     "rows": [
+      [
+       "상행",
+       {
+        "value": "불수용",
+        "source": "evals/results/go2_stairs_command_contrast_s200_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "통과",
+        "source": "evals/results/go2_stairs_command_contrast_s200_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "동일",
+        "source": "evals/results/go2_stairs_command_contrast_s200_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "동일",
+        "source": "evals/results/go2_stairs_command_contrast_s200_20261101_v1",
+        "digits": null
+       }
+      ],
+      [
+       "하행",
+       {
+        "value": "불수용",
+        "source": "evals/results/go2_stairs_command_contrast_s200_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "통과",
+        "source": "evals/results/go2_stairs_command_contrast_s200_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "동일",
+        "source": "evals/results/go2_stairs_command_contrast_s200_20261101_v1",
+        "digits": null
+       },
+       {
+        "value": "동일",
+        "source": "evals/results/go2_stairs_command_contrast_s200_20261101_v1",
+        "digits": null
+       }
+      ]
+     ]
+    }
+   ],
+   "notes": [
+    "0.25m/s 상행 실패와 하행 뒤집힘을 재현·보존했다. 전체 네 조건 판정은 partial이며 두 0.75m/s 조건만 수용했다.",
+    "수용 기준: 625프레임·50fps·종료 증거, 진행·높이 통과, termination 없음, body-up-z 음수 0표본.",
+    "정책·seed·지형·초기 상태를 고정한 단일 계보 개발 재생이다. 새 학습·모델 판단·RL Triage 교정·회복 성과가 아니다."
+   ],
+   "number": 20
+  },
+  {
    "id": "cost",
    "title": "비용과 재현",
    "dense": true,
@@ -11226,7 +11298,7 @@ window.REPLAY_DATA = {
     "parent wall time은 부모 프로세스 실행부터 종료 확인까지이며 GPU 커널 시간이나 다른 방법 대비 절감량이 아니다.",
     "replay는 공개 파일의 수치를 다시 계산할 뿐 실행 프로세스의 신원을 재인증하지 않는다."
    ],
-   "number": 20
+   "number": 21
   }
  ],
  "sources": {
@@ -13811,6 +13883,78 @@ window.REPLAY_DATA = {
    "path": "evals/results/stairs_motion_integrity_20261101_v1/sources/go2-up/state-trace.jsonl",
    "kind": "stairs_motion_integrity_file",
    "sha256": "cdb155661c2671c7c7a8433c08b77c481ed60edaa72f0af96c1020003e7c12d4",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/go2_stairs_command_contrast_s200_20261101_v1": {
+   "id": "evals/results/go2_stairs_command_contrast_s200_20261101_v1",
+   "path": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/manifest.json",
+   "kind": "go2_stairs_command",
+   "sha256": "7b7f4b7008a4ebad565b747e8291518dfc12b14d4b66ae980ba5880d6a561e7d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/go2_stairs_command_contrast_s200_20261101_v1/cases.json": {
+   "id": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/cases.json",
+   "path": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/cases.json",
+   "kind": "go2_stairs_command_file",
+   "sha256": "635bdaa75847015600bba3a6c68046ed6449d0da3a879378dc8610b2545f87e8",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-down-step-0p05-cmd-0p25.mp4": {
+   "id": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-down-step-0p05-cmd-0p25.mp4",
+   "path": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-down-step-0p05-cmd-0p25.mp4",
+   "kind": "go2_stairs_command_file",
+   "sha256": "e199c6cd71d62894c98a79315b588a74f5290236a706bf7c1368a5568e59a6f0",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-down-step-0p05-cmd-0p75.mp4": {
+   "id": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-down-step-0p05-cmd-0p75.mp4",
+   "path": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-down-step-0p05-cmd-0p75.mp4",
+   "kind": "go2_stairs_command_file",
+   "sha256": "5dedd54494d252fab686d32da164fa818ea6990c13d3e12557b5dd69df073f4a",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-up-step-0p05-cmd-0p25.mp4": {
+   "id": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-up-step-0p05-cmd-0p25.mp4",
+   "path": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-up-step-0p05-cmd-0p25.mp4",
+   "kind": "go2_stairs_command_file",
+   "sha256": "c4f3a930799e854209a3cea8d38a97ad197da60fa87eebb4925b0d484113f98d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-up-step-0p05-cmd-0p75.mp4": {
+   "id": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-up-step-0p05-cmd-0p75.mp4",
+   "path": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media/quadruped-stairs-up-step-0p05-cmd-0p75.mp4",
+   "kind": "go2_stairs_command_file",
+   "sha256": "882bd379cfeb53c61e7fc7c8a4e7895c9ae8f2163d13c92ce9905354e2d2272d",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media.json": {
+   "id": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media.json",
+   "path": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/media.json",
+   "kind": "go2_stairs_command_file",
+   "sha256": "5bc64ddea68c4c7d9b2bcd44b8a671ab640894a23877fb72fd370bb6a21c6161",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/go2_stairs_command_contrast_s200_20261101_v1/provenance.json": {
+   "id": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/provenance.json",
+   "path": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/provenance.json",
+   "kind": "go2_stairs_command_file",
+   "sha256": "b9d51878fc103222a535b37094907bd28a5bbcdce782d02cd0f8cc5408fb4db5",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/go2_stairs_command_contrast_s200_20261101_v1/summary.json": {
+   "id": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/summary.json",
+   "path": "evals/results/go2_stairs_command_contrast_s200_20261101_v1/summary.json",
+   "kind": "go2_stairs_command_file",
+   "sha256": "2fdb69e45922ec53b54fcd1442bdb925a183020359b72532a1c167d9660d0b70",
    "status": "ready",
    "reason": null
   },

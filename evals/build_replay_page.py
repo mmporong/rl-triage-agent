@@ -157,9 +157,18 @@ def manifest_result(sources: Sources, relative: str, *, manifest_name: str,
         return row, None
     try:
         manifest = _read(manifest_path)
-        if manifest.get("schema") != manifest_schema or not isinstance(manifest.get("files"), dict):
+        if manifest.get("schema") != manifest_schema:
             raise ValueError("public manifest schema/files 불일치")
         declared = manifest["files"]
+        if isinstance(declared, list):
+            if any(not isinstance(item, dict) or set(item) != {"path", "sha256"} for item in declared):
+                raise ValueError("public manifest list entry 불일치")
+            mapped = {item["path"]: item["sha256"] for item in declared}
+            if len(mapped) != len(declared):
+                raise ValueError("public manifest 중복 경로")
+            declared = mapped
+        if not isinstance(declared, dict):
+            raise TypeError("public manifest files 불일치")
         expected_files = {manifest_name, *declared}
         actual_files = {path.relative_to(sources.root / relative).as_posix()
                         for path in (sources.root / relative).rglob("*") if path.is_file()}
@@ -1259,6 +1268,28 @@ def scene_stairs_motion(sources: Sources, slots: dict) -> dict:
                   "공식 기학습 정책 재생의 사후 감사다. 모델이 발견한 결과나 RL Triage의 계단 교정·회복 성과가 아니다."]}
 
 
+def scene_stairs_command(sources: Sources, slots: dict) -> dict:
+    row, summary = manifest_result(sources, slots["go2_stairs_command"], manifest_name="manifest.json",
+        manifest_schema="go2_stairs_command_contrast_manifest_v1",
+        summary_schema="go2_stairs_command_contrast_public_v1", kind="go2_stairs_command")
+    rows = []
+    for direction, title in (("up", "상행"), ("down", "하행")):
+        entry = next((item for item in (summary or {}).get("contrasts", []) if item["direction"] == direction), {})
+        values = [entry.get("motion_accepted_0p25"), entry.get("motion_accepted_0p75"),
+                  entry.get("initial_state_exact_match"), entry.get("checkpoint_terrain_runtime_exact_match")]
+        rows.append([title, *[cell(sources, "통과" if value is True else "불수용" if value is False else None,
+                                 row["id"], None) for value in values[:2]],
+                     *[cell(sources, "동일" if value is True else None, row["id"], None) for value in values[2:]]])
+    return {"id": "stairs_command_contrast", "title": "같은 Go2 정책: 명령 속도 변경 후 계단 상하행 통과",
+        "lead": ("명령만 0.25에서 0.75m/s로 바꾼 재생에서 상행·하행 모두 진행·높이·자세 기준을 통과했다."
+                 if summary else "등록 결과와 영상 SHA가 확인된 뒤 계단 명령 대조를 표시한다."),
+        "blocks": [{"type": "table", "title": "seed 200 · 5cm 단차 · 공식 기학습 정책",
+                    "columns": ["방향", "0.25m/s", "0.75m/s", "초기 상태", "정책·지형·runtime"], "rows": rows}],
+        "notes": ["0.25m/s 상행 실패와 하행 뒤집힘을 재현·보존했다. 전체 네 조건 판정은 partial이며 두 0.75m/s 조건만 수용했다.",
+                  "수용 기준: 625프레임·50fps·종료 증거, 진행·높이 통과, termination 없음, body-up-z 음수 0표본.",
+                  "정책·seed·지형·초기 상태를 고정한 단일 계보 개발 재생이다. 새 학습·모델 판단·RL Triage 교정·회복 성과가 아니다."]}
+
+
 def scene_cost(sources: Sources, slots: dict) -> dict:
     import publish_training_correction as Q3
     import publish_training_correction_v4 as Q4
@@ -1312,6 +1343,7 @@ def build(root: Path = ROOT) -> dict:
               scene_prospective_comparison(sources, slots), scene_registered_partitions(sources, slots),
               scene_reasoning_followup(sources, slots),
               scene_four_way_development(sources, slots), scene_stairs_motion(sources, slots),
+              scene_stairs_command(sources, slots),
               scene_cost(sources, slots)]
     for index, scene in enumerate(scenes, start=1):
         scene["number"] = index
