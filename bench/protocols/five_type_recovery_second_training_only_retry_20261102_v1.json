@@ -1,0 +1,199 @@
+{
+  "binding_change": "guarded_training_component_only",
+  "budget": {
+    "api_cap": 32,
+    "cumulative_parent_wall_cap_s": 43200,
+    "cumulative_sdk_upper_bound": 26,
+    "new_api_calls": 0,
+    "new_nim_calls": 0,
+    "new_training_fixed_sdk_cap": 2,
+    "nim_cap": 32,
+    "prior_api_calls": 6,
+    "prior_nim_calls": 6,
+    "prior_physical_sdk": 24,
+    "remaining_parent_wall_s": 32416.254672,
+    "sdk_cap": 32
+  },
+  "epoch3_allowed": false,
+  "model_or_probe_rerun_allowed": false,
+  "parent": {
+    "path": "bench/protocols/five_type_recovery_second_receipt_followup_retry_20261102_v1.json",
+    "sha256": "8b4a200ae648af650a82aa78e0091a63f2265b745cd82ca365c5c92d8f38ab29"
+  },
+  "preserved_diagnosis_count": 4,
+  "preserved_probe_physical_roles": 24,
+  "prior": {
+    "closed_lease_sha256": "65bf4a8e0edc7a0d41ff967cbb5942cba5bdc93ca513cf47aa50d5885d180f9c",
+    "cumulative_wall_us": 10783745328,
+    "inventory_digest": "20d9ed4c8fec5fa9dac30aab7254b593517d1492fc414781d339238e25710c1c",
+    "inventory_sha256": "0483a98c175142a4a0b9b6225979401ddd45f53d703424ce1c61a8163e88988c",
+    "lease_id": "54f68338-f984-4b95-a6fc-f6f83b6296cf",
+    "new_api_cap": 0,
+    "new_training_physical_cap": 2,
+    "old_wall_us": 6950256152,
+    "prior_api_calls": 6,
+    "prior_nim_calls": 6,
+    "prior_physical_roles": 24,
+    "records": [
+      {
+        "candidate": {
+          "sha256": "ce7c77d5c7020bf77921a18e22663d4183ee3b6b1f2ff809fc40ad0ebe4b0fa7"
+        },
+        "candidate_status": "HOLD",
+        "confirmed_family": null,
+        "diagnosis": {
+          "sha256": "5fb9bbf5cda56bba582542e60be602f93067d0902b64103fd3324110412ed8aa"
+        },
+        "end_state": "HOLD",
+        "key": "case-03_fixed_eligible",
+        "probes": [
+          {
+            "outcome": "normal",
+            "probe": "P_episode"
+          },
+          {
+            "outcome": "normal",
+            "probe": "P_noise"
+          },
+          {
+            "outcome": "normal",
+            "probe": "P_torque"
+          }
+        ],
+        "second_correction": null
+      },
+      {
+        "candidate": {
+          "sha256": "ee88b520b4c7b778408d777897a2b5f9c8b9edfdf82a9c6a0c39eaabfd430c5a"
+        },
+        "candidate_status": "HOLD",
+        "confirmed_family": null,
+        "diagnosis": {
+          "sha256": "74fea2bf95aaf52dc58d039dbe0227f33c96fd6d7e2e9ff99697d1f5786962ff"
+        },
+        "end_state": "HOLD",
+        "key": "case-03_logs_only",
+        "probes": [
+          {
+            "outcome": "normal",
+            "probe": "P_episode"
+          },
+          {
+            "outcome": "normal",
+            "probe": "P_optimizer_updates"
+          },
+          {
+            "outcome": "normal",
+            "probe": "P_value"
+          }
+        ],
+        "second_correction": null
+      },
+      {
+        "candidate": {
+          "sha256": "e80c0930f07c603e64404779e45333cdbfa23f661d47785a240d213e6faeb42a"
+        },
+        "candidate_status": "HOLD",
+        "confirmed_family": null,
+        "diagnosis": {
+          "sha256": "b901db05532904570c10cceec1e30e4a1fb4b09f78fb07d591e71c0dca75d778"
+        },
+        "end_state": "HOLD",
+        "key": "case-07_fixed_eligible",
+        "probes": [
+          {
+            "outcome": "normal",
+            "probe": "P_episode"
+          },
+          {
+            "outcome": "normal",
+            "probe": "P_noise"
+          },
+          {
+            "outcome": "normal",
+            "probe": "P_torque"
+          }
+        ],
+        "second_correction": null
+      },
+      {
+        "candidate": {
+          "sha256": "4ba96795c4c466eb6d6a9351f4b51b19fd10ef9fd8ed86ce6f545a59084f281c"
+        },
+        "candidate_status": "validated_candidate",
+        "confirmed_family": "optimizer_update_count",
+        "diagnosis": {
+          "sha256": "a09c1b903140aeb45bf2f39d8d02e397494e5bfec9abfc6386302e1d398999fa"
+        },
+        "end_state": "confirmed",
+        "key": "case-07_logs_only",
+        "probes": [
+          {
+            "outcome": "normal",
+            "probe": "P_episode"
+          },
+          {
+            "outcome": "normal",
+            "probe": "P_value"
+          },
+          {
+            "outcome": "abnormal",
+            "probe": "P_optimizer_updates"
+          }
+        ],
+        "second_correction": "restore_configured_ppo_epochs"
+      }
+    ],
+    "remaining_wall_s": 32416.254672
+  },
+  "schema": "five_policy_recovery_second_training_only_retry_protocol_v1",
+  "semantic_retry": false,
+  "sources_lf": {
+    "bench/run_five_policy_recovery_resume_v2.py": "95c517cdc5d80e8c543b7e3ccb9af227f7c1aadf3df96c172e769dbb39843b6a",
+    "bench/run_five_policy_recovery_resume_v3.py": "5dd0a1380df818fa031c2e9cb7cc4ffc57686fd8435f8ffb1c8cfc05304bb106",
+    "bench/run_five_policy_recovery_resume_v4.py": "fa88e60ffe254c5ef3ae0459787d1f55e884136623809d082986c3479c2e498d",
+    "bench/run_five_policy_recovery_resume_v5.py": "6d3bb01722b21ecf86ed8c6657337bffe9018712936e29744037cfc13b64411b",
+    "bench/run_five_policy_recovery_resume_v6.py": "0e8ee30c8d1a6bb86b5d6ca08442191511c25ba1c4625d5a2f5723b5a1595e68",
+    "bench/run_five_policy_recovery_resume_v7.py": "5bad9526135d3243206f8f72c88c1723cd5c406a9a6d9cb26d629a80b72320d8",
+    "bench/run_five_policy_recovery_resume_v8.py": "573ae9fa1ab11ebc79e5b6328ce296ef30c898f49fd058f23e65977cf5b92c6a",
+    "bench/run_five_policy_recovery_resume_v9.py": "cb728516b6899dde1dfb42193e975ddd02d99c94fa091344171d6af3806626fd",
+    "evals/core_seed_guard_v2.py": "1594303e608a4a65dc753969320c84d957c22e4588434300519f53afff8f77b1",
+    "evals/export_five_policy_recovery_v2.py": "a23cf77d9c8669aa78094656f301b44003b73b6f676d761d479718dfc1a696ce",
+    "evals/lease_timestamps.py": "dd88cc4af421ee8bba3f75715093c9a71766522d13ab060cbcf35696453971a2",
+    "evals/recovery_epoch2_parent_binding_v1.py": "1ce21a129bd15041fdbb698cddc1a84c4d1a827c267c900cba3fe9b1b472ce8a",
+    "evals/recovery_epoch2_probe_boundary_v1.py": "688ff5f32230eec2ec255714da3bb7b720f36b34c9c9f1ad958a31e52345bd40",
+    "evals/recovery_epoch2_training_boundary_v1.py": "7f3b09ba067c62e101fc123eedd2f0c98a4be2766754dee842de71712261943a",
+    "evals/recovery_git_blob_cache_v1.py": "9b75e0fa6c0cfc0c0c8a5d1775ba8013d9846193058e45c2c7d86e4e29edf2a9",
+    "evals/recovery_legacy_validation_isolation_v1.py": "2dd5e81a1aec38e318cfced57fdcfd077696bf06450b456c0980de5adeb384d4",
+    "evals/recovery_outcome_contract_v1.py": "7a97f7f11b176bce90a6625e4ffeb6f2e77c2582496c7401a18da6d5bbeaa002",
+    "evals/recovery_receipt_snapshot_routes_v1.py": "1d782a28754dbe8cdb6045ed7957550b5a97de0c58cca94c2224a98a94ac37c7",
+    "evals/recovery_recorded_pair_reuse_v1.py": "a057b4a688c9c480b2714647d82a4aff9a0ab9190215d08b5ae93b844c32eb73",
+    "evals/recovery_recorded_pair_reuse_v2.py": "447e81b6b99a825bd2dc6e4afea833588f6f1462ae2d6667ab584ee678b0240e",
+    "tests/test_core_seed_guard_v2.py": "ff2afe77435b369bff721d95c5e041236530e651472851764f73c560e65bd15f",
+    "tests/test_export_five_policy_recovery_v2.py": "d1d4bbdf73c752c5a279a047d22bd60060bdda362ea5d1104c54d181a0744173",
+    "tests/test_five_policy_recovery_resume_v2.py": "8619f3030f9c329e4af949d66d0c466447a1d45303a42703f1cf75704a7bd278",
+    "tests/test_five_policy_recovery_resume_v3.py": "3388a9e973a0c0e820985b700de86e24dcfba9a388a7fb0d94099f9b9d243efe",
+    "tests/test_five_policy_recovery_resume_v4.py": "2cd582acfadc31b286ad73c801eeebe7b107e629716f40d559f431634a2cbe0e",
+    "tests/test_five_policy_recovery_resume_v5.py": "3fdad22c1d4322bf2209bb8468b1c5f59e2880fbb4c221159567b884d4108cc1",
+    "tests/test_five_policy_recovery_resume_v6.py": "9acf7283e27dbb234570bea0b5c434928f8d7ea801411ce2df9c3b31383b02a3",
+    "tests/test_five_policy_recovery_resume_v7.py": "815166f524abea96cbb0237832a98c7c4617711c3213ddc10f7f5fc04e43d5b3",
+    "tests/test_five_policy_recovery_resume_v8.py": "e1cdcabcfcf9b5579a5c43cc6bddf28bb971cd215c93af36a9da10b0b1de097c",
+    "tests/test_five_policy_recovery_resume_v9.py": "cea22af9071d0e1b8c5f419b190540a55be4f71a06679294307969137aa20e3f",
+    "tests/test_lease_timestamps.py": "89ed5803d3095803ed186f4877c85d0de386b8b06220c61b1081d4e4b772e7cf",
+    "tests/test_recovery_epoch2_parent_binding_v1.py": "a988f0fe6e3b5ad9cc20845793774d9b3426f80c14cc28644b64df4d40e72fbc",
+    "tests/test_recovery_epoch2_probe_boundary_v1.py": "4a8566e31857505a44c2188d8cf41d8f82b176a55d5b7b38202a28e0f5fb0351",
+    "tests/test_recovery_epoch2_training_boundary_v1.py": "eadf7574a1402a234087190c094889f673121f6670bcfd7d53f7426ab8bef10b",
+    "tests/test_recovery_git_blob_cache_v1.py": "4354d5a4c06ca515146f9c61b012a5486e68e00866d3f169048170fa5ef5bfc8",
+    "tests/test_recovery_legacy_validation_isolation_v1.py": "10684a4ca1d8a298f1df83c335cf80dfa4956ad9b6bd70e32cec0675bcece96d",
+    "tests/test_recovery_outcome_contract_v1.py": "1d8b2d929d5933e44ef0e1c93b2c94a461891b4759f34ce9682fa279b57e198c",
+    "tests/test_recovery_receipt_snapshot_routes_v1.py": "c018573cfffaf8f8ffb03a2707e28f273b569de6be252665501d3307a1969285",
+    "tests/test_recovery_recorded_pair_reuse_v1.py": "97840295921584f253e8bc12cbd0168e8bb487eaca6f8f47a44877963ff39288",
+    "tests/test_recovery_recorded_pair_reuse_v2.py": "b6ab1cd79cb7d53a6941bd7a938966a3e2d93bc9f5c85a82c50c49eb38556a2b"
+  },
+  "status": "preregistered_training_only_retry",
+  "training_component": {
+    "anchor": "e8f27ec3180cd75a37871f7a61832daaa3bbb29d",
+    "path": "bench/protocols/five_type_recovery_second_training_component_20261102_v1.json",
+    "sha256": "7fbdbe7b59bd9c3d1f1cc7f3c34ba25c3f4d5e2c98c2b3fc5b8f2d819f53ad34"
+  }
+}
