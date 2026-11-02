@@ -1,0 +1,36 @@
+{
+  "GPU_executed": false,
+  "admission_phases": [
+    "prepare",
+    "prepare",
+    "claim"
+  ],
+  "approval_callback_fixture": false,
+  "first_physical_pair_reused": true,
+  "fixture_boundaries": [
+    "lease",
+    "GPU reader",
+    "owned child"
+  ],
+  "followup_probe": "P_noise",
+  "lease_acquired": false,
+  "new_API": 0,
+  "new_SDK": 0,
+  "new_physical_roles": 0,
+  "operational_context_preserved": true,
+  "owned_boundary_calls": 1,
+  "prior_physical_roles": 2,
+  "raw_evidence_sha256": "38bc0c328723c1b60c8caac15e092d31197670a56fabfc5f0ce78ee393f92a4f",
+  "schema": "recovery_followup_delegate_public_CPU_v1",
+  "scope": "real_operational_context_saved_inputs_then_owned_child_sentinel_not_GPU_execution",
+  "source_files": [
+    "evals/recovery_recorded_pair_reuse_v2.py",
+    "tests/test_recovery_recorded_pair_reuse_v2.py",
+    "bench/run_five_policy_recovery_resume_v8.py",
+    "tests/test_five_policy_recovery_resume_v8.py"
+  ],
+  "status": "owned_boundary_reached",
+  "v7_original_digest": "3f18f91e480e7718f727a500b83efa738c36c2218501c21809984caa501c30c2",
+  "v7_original_files": 23,
+  "v7_original_unchanged": true
+}

@@ -1042,3 +1042,10 @@
 - 수정: [snapshot 경로 분리](../evals/recovery_receipt_snapshot_routes_v1.py)는 public·backend packet을 각 등록 경로로 보내고 epoch-2의 historical·final 부모 검증을 유지한다. [완료 짝 재사용](../evals/recovery_recorded_pair_reuse_v1.py)은 기존 receipt를 원래 `HOST.verify_pair`와 `FIRST._verify_steps`로 재검증한 뒤 새 public ledger에 한 번만 기록한다. 검사를 다시 실행하지 않는다.
 - 검증: [공개 CPU 결과](../evals/results/recovery_receipt_reuse_cpu_20261102_v1/result.json)는 원본 78파일의 inventory digest가 `49615c79a5f76a61d48b2a7284ef4b5501dfc7574590e0d7eba56a3102df5592`로 유지됐고 API 0회·새 SDK 0회·기존 물리 역할 2개임을 기록한다. 부모 시간 `232.42612550000194s`는 완료된 측정을 한 번 재정산한 값이며 새 GPU 시간이 아니다.
 - 후속: V7은 science 조건·seed·모델·판정·실행 상한을 바꾸지 않는다. 이 CPU 결과 시점에는 V7 실제 실행을 시작하지 않았으며 검사·교정·회복 결과는 후속 실행으로 판단한다.
+
+### OPS-146: 첫 검사 재사용 경계가 같은 사례의 후속 검사를 차단함
+
+- 관찰: V7의 첫 `P_episode` 재사용은 통과했지만 같은 사례의 다음 `P_noise` 요청을 첫 검사로 분류해 거부했다. 새 API·SDK 실행은0회였으며 첫 재사용과 미시작 후속 예약을 구분해 원문23파일을 보존했다.
+- 원인과 수정: 재사용 대상 비교가 run ID·policy만 확인해 다음 관측 상태를 구분하지 못했다. [재사용 v2](../evals/recovery_recorded_pair_reuse_v2.py)는 빈 관측의 첫 exact 검사만 재사용하고, 같은 입력·부모·checkpoint와 완료 receipt를 검증한 후속 요청은 원 실행기로 넘긴다. 첫 검사 건너뛰기·중복·원장 교체는 거부한다.
+- 검증: [운영 CPU 결과](../evals/results/recovery_followup_delegate_cpu_20261102_v1/result.json)는 원 운영 factory·승인 callback을 유지한 채 첫 재사용 이후 `P_noise`의 두 역할 준비·claim·authorization·owned child 호출 직전까지 도달했다. lease·GPU reader·child만 fixture이며 새 SDK·API는0이다. 첫→두 번째→세 번째 요청의 상태 전이는 관련 회귀로 확인했다.
+- 재실행: [v8](../bench/run_five_policy_recovery_resume_v8.py)은 완료 물리 역할2개를 한 번만 재사용하고 새 물리 역할30개·누적32개·API32·같은 네 고리와 판정을 유지한다. 이전 시간 상계3,833.489176초를 보존하고 남은39,366.510824초를 사용한다. CPU 통과를 실제 회복으로 세지 않는다.
