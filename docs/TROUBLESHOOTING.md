@@ -1020,3 +1020,11 @@
 - 원인: 재사용한 진단 드라이버는 epoch-1 경로에서 `build_snapshot`의 parent 인자를 생략한다. epoch-2 adapter가 입력·receipt를 검증했으나 이 호출의 parent를 연결하지 않았다. 실제 snapshot까지 진행하지 않은 선행 점검은 이 경계를 확인하지 못했다.
 - 수정: [부모 결합 scope](../evals/recovery_epoch2_parent_binding_v1.py)는 검증된 source의 이전 영수증·새 checkpoint·교정·run ID와 저장 policy를 묶어, 격리된 드라이버에만 parent를 공급한다. 원래 snapshot/history 검증과 실제 source 재구성은 유지하며 다른 case·arm·checkpoint를 거부한다. [재실행기](../bench/run_five_policy_recovery_resume_v4.py)는 실패 원문·이전 등록·소스16개를 새 protocol에 결합한다. 사용하지 않은 같은 seed를 유지하고 기존 lease 시간의 보수 상계377.790608초를 차감해 남은 부모 예산42,822.209392초를 준다. API32·SDK32의 누적 상한은 그대로다.
 - 검증: [실제 네 입력의 CPU 결과](../evals/results/recovery_epoch2_parent_cpu_20261102_v1/result.json)에서 원래 오류를 재현한 뒤 snapshot·history·판단 context4개와 바꿔끼우기 거부12개, scope 복원을 확인했다. API·SDK·승인은0이다. 이 수정은 원인 진단이나 회복 성공이 아니며 이후 실제 실행의 결과로 판단한다.
+
+### OPS-143: 후속 검사의 선택 뷰와 runtime 뷰 계약 혼용
+
+- 관찰: 부모 결합을 수정한 실행은 첫 `P_episode` 요청까지 진행했으나 runtime 뷰 검증에서 멈췄다. API와 SDK 실행은0회다. 짝 검사 intent1건의 예약2역할은 backend 입장 전 취소로 구분하고, 실패 원문14개와 종료된 lease를 보존했다.
+- 원인: 후속 loop의 `view_protocol`은 선택 뷰를 가리켰지만 paired 호스트는 runtime observation 뷰를 요구한다. 호스트 내부의 epoch-2 snapshot에도 부모 인자가 빠져 있어 두 경계를 함께 수정했다.
+- 수정: [typed 계약](../evals/recovery_epoch2_probe_boundary_v1.py)은 기존 선택 뷰를 별도 필드에 보존하고 runtime 뷰를 결합한다. 격리 호스트에는 공개 binding·checkpoint·이전 receipt와 일치하는 backend 부모만 공급한다. [후속 실행기](../bench/run_five_policy_recovery_resume_v5.py)는 두 실패의 시간 상계1,025.528011초를 차감해 남은42,174.471989초를 사용한다. 입력4개·seed·모델·판정·arm당 검사3회·API32·SDK32 상한은 유지한다.
+- 검증: [실제 원문의 CPU 결과](../evals/results/recovery_epoch2_probe_boundary_cpu_20261102_v1/result.json)는 source 재구성, runtime 뷰, case/reference 계획2개, authorization·claim을 검증한 뒤 child 호출 직전 sentinel에서 멈췄다. GPU 입장·lease·승인 callback·child 호출은 명시한 CPU fixture다. 이 결과를 실제 검사 실행이나 회복으로 세지 않으며, 다음 실행은 새 등록과 새 출력 경로를 사용한다.
+- 재생 자료 구분: CPU 호스트 재생은 저장 snapshot의 원장 경로에 fixture event3개를 새로 썼다. 원래 실패14파일의 바이트는 같고 추가 원장은 삭제하지 않았다. [별도 출처 기록](../evals/results/recovery_epoch2_probe_boundary_cpu_20261102_v1/fixture-ledger-provenance.json)으로 이 원장을 결합해 실제 검사·승인·SDK 실행과 구분한다. 이후 CPU 재생은 새 원장 경로에서 snapshot을 구성해야 한다.
