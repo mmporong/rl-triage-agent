@@ -1013,3 +1013,10 @@
 - 확인된 비용: 녹화 source anchor와 paired-input protocol의 commit blob을 중첩 검증할 때 같은 `git show <40자리 commit>:<파일>`을 반복했다. profile에는 AST 기반 source closure 재계산과 현재 파일 읽기도 포함되므로 모든 대기 시간이 Git 때문이라고 단정하지 않는다.
 - 수정: [불변 blob 재사용 scope](../evals/recovery_git_blob_cache_v1.py)는 고정된8개 모듈의 성공한 exact Git 조회만 부모 프로세스 안에서 메모한다. 현재 source·checkpoint·receipt·runtime·lease·승인·API 상태의 검사는 매번 수행한다. HEAD·index·ancestry·실패·실행 파일 대체·환경 변경은 캐시하지 않으며 모듈별 proxy는 종료 시 복원한다. [SECOND 실행 경계](../bench/run_five_policy_recovery_resume_v3.py)는 이 소스와 정책을 추가 공개 protocol에 결합하고 기존 실행기를 호출한다.
 - 실제 CPU 확인: [같은 입력의 검증 결과](../evals/results/recovery_source_git_cache_cpu_20261102_v1/result.json)는 원문과 재구성 값이 같고, immutable 조회1,561회·재사용10,236회·우회234회를 기록했다. 현재 코드·원래 subprocess identity도 복원됐다. 관측 시간112.25초는 개발 환경의 한 번 측정이며, profiler·병렬 부하가 다른 기존 시간과 절감률로 비교하지 않는다. API·SDK 실행은0회다. 회복 기준·입력·모델·seed·예산은 바꾸지 않는다.
+
+### OPS-142: 두 번째 epoch의 snapshot에 부모 결합 인자를 생략
+
+- 관찰: SECOND 입력 네 개와 실행 호스트 검증 뒤 첫 snapshot 생성에서 `다른 arm 또는 출력 checkpoint의 부모`로 중단됐다. 모델 요청·검사·학습은0회였고 기존 실패 파일7개와 종료된 lease를 보존했다.
+- 원인: 재사용한 진단 드라이버는 epoch-1 경로에서 `build_snapshot`의 parent 인자를 생략한다. epoch-2 adapter가 입력·receipt를 검증했으나 이 호출의 parent를 연결하지 않았다. 실제 snapshot까지 진행하지 않은 선행 점검은 이 경계를 확인하지 못했다.
+- 수정: [부모 결합 scope](../evals/recovery_epoch2_parent_binding_v1.py)는 검증된 source의 이전 영수증·새 checkpoint·교정·run ID와 저장 policy를 묶어, 격리된 드라이버에만 parent를 공급한다. 원래 snapshot/history 검증과 실제 source 재구성은 유지하며 다른 case·arm·checkpoint를 거부한다. [재실행기](../bench/run_five_policy_recovery_resume_v4.py)는 실패 원문·이전 등록·소스16개를 새 protocol에 결합한다. 사용하지 않은 같은 seed를 유지하고 기존 lease 시간의 보수 상계377.790608초를 차감해 남은 부모 예산42,822.209392초를 준다. API32·SDK32의 누적 상한은 그대로다.
+- 검증: [실제 네 입력의 CPU 결과](../evals/results/recovery_epoch2_parent_cpu_20261102_v1/result.json)에서 원래 오류를 재현한 뒤 snapshot·history·판단 context4개와 바꿔끼우기 거부12개, scope 복원을 확인했다. API·SDK·승인은0이다. 이 수정은 원인 진단이나 회복 성공이 아니며 이후 실제 실행의 결과로 판단한다.
