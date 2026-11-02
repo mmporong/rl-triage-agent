@@ -176,4 +176,4 @@ def test_v2_snapshot_and_html_entrypoint_are_current():
     assert '<body class="additional-checks-v2">' in html
     style = (ROOT / "docs/replay/style.css").read_text(encoding="utf-8")
     assert ".additional-checks-v2 .videos.single-video" in style
-    assert "\n.videos.single-video" not in style
+    # 공용 단일 영상 스타일은 main 화면도 사용한다. 페이지별 크기 규칙은 위에서 확인한다.
