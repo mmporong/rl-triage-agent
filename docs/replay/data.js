@@ -11087,14 +11087,14 @@ window.REPLAY_DATA = {
   },
   {
    "id": "five_policy_diagnosis",
-   "title": "다섯 정책 진단: 확정·HOLD와 실제 비용",
+   "title": "다섯 정책 진단: 확정·HOLD와 실행 기록",
    "dense": true,
-   "lead": "공개 manifest와 파일 SHA가 확인된 경우에만 10개 독립 case의 다섯 정책 진단을 표시한다.",
+   "lead": "독립 case 10개를 정책마다 같은 완료 조건으로 비교했다. 등록 주대조 판정은 inconclusive, 등록 영상대조 판정은 inconclusive이다.",
    "blocks": [
     {
      "type": "table",
      "wide": true,
-     "title": "정책별 진단과 완료 비용",
+     "title": "정책별 진단과 실행 기록 범위",
      "columns": [
       "정책",
       "올바른 확정 / 결함",
@@ -11103,43 +11103,43 @@ window.REPLAY_DATA = {
       "복합 부분 / 전체",
       "짝 검사",
       "API",
-      "parent wall(s)"
+      "parent wall 기록(s)"
      ],
      "rows": [
       [
        "등록 규칙",
        {
-        "value": null,
+        "value": "2/8",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 10,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "0 / 0",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 22,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 4895.016553100082,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": 2
        }
@@ -11147,37 +11147,37 @@ window.REPLAY_DATA = {
       [
        "고정 순서",
        {
-        "value": null,
+        "value": "3/8",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 7,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "2 / 0",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 22,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "5289.11s 기록 · 동일 범위 비교 불가",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": 2
        }
@@ -11185,37 +11185,37 @@ window.REPLAY_DATA = {
       [
        "3.5 수치",
        {
-        "value": null,
+        "value": "4/8",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 6,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "2 / 0",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 16,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 18,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 7027.223406700126,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": 2
        }
@@ -11223,37 +11223,37 @@ window.REPLAY_DATA = {
       [
        "3.5 + 프레임",
        {
-        "value": null,
+        "value": "4/8",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 6,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "2 / 0",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 10,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 12,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "4055.03s 기록 · 동일 범위 비교 불가",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": 2
        }
@@ -11261,37 +11261,37 @@ window.REPLAY_DATA = {
       [
        "optimizer 우선 등록 규칙",
        {
-        "value": null,
+        "value": "4/8",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 6,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "2 / 0",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 18,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 4034.754982000042,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": 2
        }
@@ -11314,27 +11314,27 @@ window.REPLAY_DATA = {
       [
        "등록 규칙",
        {
-        "value": null,
+        "value": "0 / 0",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 2,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "2 진단 · 2 repair_unsupported",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0.0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": 2
        }
@@ -11342,27 +11342,27 @@ window.REPLAY_DATA = {
       [
        "고정 순서",
        {
-        "value": null,
+        "value": "0 / 0",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 2,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "0 진단 · 0 repair_unsupported",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0.0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": 2
        }
@@ -11370,27 +11370,27 @@ window.REPLAY_DATA = {
       [
        "3.5 수치",
        {
-        "value": null,
+        "value": "2 / 2",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 2,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "0 진단 · 0 repair_unsupported",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": 84391,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 41.280998331087176,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": 2
        }
@@ -11398,27 +11398,27 @@ window.REPLAY_DATA = {
       [
        "3.5 + 프레임",
        {
-        "value": null,
+        "value": "2 / 2",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 2,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "0 진단 · 0 repair_unsupported",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": 87398,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 28.897050061030313,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": 2
        }
@@ -11426,27 +11426,27 @@ window.REPLAY_DATA = {
       [
        "optimizer 우선 등록 규칙",
        {
-        "value": null,
+        "value": "0 / 0",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 2,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": "0 진단 · 0 repair_unsupported",
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": null
        },
        {
-        "value": null,
+        "value": 0.0,
         "source": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
         "digits": 2
        }
@@ -11456,8 +11456,9 @@ window.REPLAY_DATA = {
    ],
    "notes": [
     "정상 native shadow와 host gate를 분리한다. 정상 행의 host gate는 모델이 정상을 확정한 결과가 아니다.",
-    "복합 결함의 부분 확정과 전체 확정을 분리한다. F5는 진단 대상으로 남지만 repair_unsupported이면 교정 성공으로 세지 않는다.",
+    "첫 원인 확정으로 끝나는 고리다. 복합 전체 확정 0은 전체 원인 탐색의 실패율이 아니다. F5의 repair_unsupported도 교정 성공이 아니다.",
     "분모는 독립 case checkpoint이며 반복 호출·프레임은 분모를 늘리지 않는다. parent wall은 GPU kernel 시간이나 비용 절감량이 아니다.",
+    "기술 중단 행이 포함된 정책의 parent wall은 미완결 관측을 포함하므로 동일 범위 비용으로 비교하지 않는다.",
     "3.5·프레임 효과는 등록 대조의 공개 판정만 표시한다. 모델 버전 우위·GPU 절감·새 결함 일반화의 근거가 아니다."
    ],
    "number": 20
@@ -15159,17 +15160,33 @@ window.REPLAY_DATA = {
    "id": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1",
    "path": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/manifest.json",
    "kind": "five_policy_diagnosis",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "missing"
+   "sha256": "becaa5947d3848c366e3b6a4b8060d671e542d66584b08733dc0a36e20c5f2a5",
+   "status": "ready",
+   "reason": null
   },
   "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/cases.json": {
    "id": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/cases.json",
    "path": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/cases.json",
    "kind": "five_policy_diagnosis_file",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "missing"
+   "sha256": "c039217df73ee6d583e8a66246331764e4bc6bf7c0ad81db13c5bfed1ad0141e",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/provenance.json": {
+   "id": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/provenance.json",
+   "path": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/provenance.json",
+   "kind": "five_policy_diagnosis_file",
+   "sha256": "47f0836c575496353221f9d254e771fe601fd98f6156ddec0b72566f10ee4c05",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/summary.json": {
+   "id": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/summary.json",
+   "path": "evals/results/five_type_diagnosis_s2550_s2559_20261101_v1/summary.json",
+   "kind": "five_policy_diagnosis_file",
+   "sha256": "f91eafcac05954827b6cad987834a02aefdbc0cc8881a73c0f3ca26b6eb19b86",
+   "status": "ready",
+   "reason": null
   },
   "evals/results/five_type_recovery_s4552_s5557_20261101_v1": {
    "id": "evals/results/five_type_recovery_s4552_s5557_20261101_v1",
