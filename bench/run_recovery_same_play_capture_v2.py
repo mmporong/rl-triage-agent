@@ -179,7 +179,7 @@ def _verify_selected_second(second_path: Path, *, v9_plan: Mapping[str, Any],
     _v7, _v6, _v5, second_plan_path, _sources = V9.V8._parents(parent)
     second_plan = read(second_plan_path)
     loop_path = V1.bound(second_plan["loop_protocol"], "SECOND loop protocol")
-    with TRAIN_BOUNDARY.training_boundary_scope(
+    with EXPORT2.OUTCOME.recovery_outcome_scope(), TRAIN_BOUNDARY.training_boundary_scope(
         loop_protocol=loop_path, loop_anchor=second_plan["anchor"],
         training_protocol=V1.bound(v9_plan["training_protocol"], "training protocol"),
         training_anchor=v9_plan["training_anchor"], lab=lab,

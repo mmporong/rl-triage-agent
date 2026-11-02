@@ -1056,3 +1056,9 @@
 - 원인: 진단 loop는 `sources_lf`를 쓰지만 guarded 학습기는 별도로 등록된 `source_sha256_lf`와 runtime source 9개를 요구한다. 같은 protocol 객체를 두 계약에 넘긴 것이 실패 원인이다. 모델의 검사 선택 실패와 구분한다.
 - 보존: [실행 요약](../evals/results/recovery_training_binding_failure_20261102_v1/result.json)에 원문902파일의 inventory digest, 실제 모델 요청6회, 새 검사 SDK22역할·기존2역할, 학습0회와 시간 상계를 기록했다. 완료 진단과 검사 결과를 재송신하지 않는다. 회복 결과는 미측정이며, 후보 검증을 회복으로 세지 않는다.
 - 후속 조건: 기존 loop·후보·receipt 검증을 유지하면서 별도 학습 component를 등록하고, 원래 manifest 생성과 runtime binding을 CPU에서 확인한다. 재개 범위는 미시작 seed5557의 두 교정 적용·300회 새 학습·26조건 평가로 제한한다. 결과를 본 뒤 모델·검사·seed·판정 기준을 바꾸지 않는다.
+
+### OPS-148: 회복 영상 준비 검증에서 outcome scope 누락
+
+- 관찰: SECOND 학습과 고정 평가가 끝난 뒤 조건부 영상의 CPU 준비가 중단됐다. 공개 결과 변환은 통과했지만, 녹화 준비의 별도 학습 검증에서 재계산한 판정에 `outcome` 필드가 없어 저장 영수증과 달랐다. 이 준비에서는 GPU·API를 실행하지 않았다.
+- 원인과 수정: 원 결과 변환기는 `recovery_outcome_scope()` 안에서 판정을 계산한다. [영상 adapter](../bench/run_recovery_same_play_capture_v2.py)의 별도 검증도 같은 scope와 원 학습 component 검증을 함께 사용하도록 맞췄다. 기존 판정·영수증·checkpoint·실행 권한은 바꾸지 않는다.
+- 검증과 재시도: 두 scope의 동시 적용과 종료 후 복원을 회귀로 확인했다. 기존 미실행 adapter 등록 v1과 실패 원문은 보존하고 [등록 v2](../bench/protocols/five_type_recovery_media_continuation_adapter_20261102_v2.json)를 사용한다. 실제 CPU 준비·입장 검증을 통과한 뒤에만 원래 조건에 맞는 `case-07:logs_only` 회복 정책 한 개를 녹화한다. 회복 수치는 [종단 결과](FIVE-TYPE-RECOVERY-COMPARISON.md)의 학습·행동 평가 근거이며, 영상 준비의 통과로 새 회복을 합산하지 않는다.

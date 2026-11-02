@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
@@ -135,3 +136,60 @@ def test_protocol_value_propagates_parent_anchor_failure(
     )
     with pytest.raises(ValueError, match="parent blob mismatch"):
         C.protocol_value(design, "a" * 40)
+
+
+def test_selected_second_uses_outcome_and_training_scopes(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+) -> None:
+    def save(name: str, value: dict) -> Path:
+        path = tmp_path / name
+        path.write_text(__import__("json").dumps(value), encoding="utf-8")
+        return path
+
+    candidate = save("candidate.json", {"inputs": {}})
+    receipt = save("receipt.json", {"candidate": C.V1.B._ref(candidate)})
+    result = save("result.json", {"receipt": C.V1.B._ref(receipt)})
+    second = save("second.json", {"records": [{"case_id": "case-07", "policy": "logs_only",
+                                                "outcome": "recovered", "result": C.V1.B._ref(result),
+                                                "candidate": C.V1.B._ref(candidate)}]})
+    loop = save("loop.json", {})
+    second_plan = save("second-plan.json", {"loop_protocol": C.V1.B._ref(loop), "anchor": "l" * 40})
+    parent = save("parent.json", {})
+    parent_private = save("parent-private.json", {})
+    training = save("training.json", {})
+    active: set[str] = set()
+
+    @contextmanager
+    def outcome_scope():
+        active.add("outcome")
+        try:
+            yield
+        finally:
+            active.remove("outcome")
+
+    @contextmanager
+    def training_scope(**_kwargs: object):
+        active.add("training")
+        try:
+            yield
+        finally:
+            active.remove("training")
+
+    monkeypatch.setattr(C.EXPORT2.OUTCOME, "recovery_outcome_scope", outcome_scope)
+    monkeypatch.setattr(C.TRAIN_BOUNDARY, "training_boundary_scope", training_scope)
+    monkeypatch.setattr(C.V9.V8, "verify_protocol", lambda *_a, **_k: {})
+    monkeypatch.setattr(C.V9.V8, "_parents", lambda *_a: ({}, {}, {}, second_plan, []))
+    monkeypatch.setattr(
+        C.EXPORT2, "_training",
+        lambda *_a, **_k: ({"fixed_conditions": 26, "fresh_initialization": True}
+                            if active == {"outcome", "training"}
+                            else pytest.fail("required scopes are not active")),
+    )
+    value = C._verify_selected_second(
+        second,
+        v9_plan={"parent_protocol": C.V1.B._ref(parent), "parent_private_plan": C.V1.B._ref(parent_private),
+                 "parent_anchor": "p" * 40, "training_protocol": C.V1.B._ref(training),
+                 "training_anchor": "t" * 40},
+        lab=tmp_path,
+    )
+    assert value["fixed_conditions"] == 26 and active == set()

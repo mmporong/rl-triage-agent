@@ -11467,7 +11467,7 @@ window.REPLAY_DATA = {
    "id": "five_policy_recovery",
    "title": "사전 선택 네 pipeline: FIRST·SECOND·최종 회복",
    "dense": true,
-   "lead": "공개 manifest와 파일 SHA가 확인된 경우에만 사전 선택한 네 recovery pipeline을 표시한다.",
+   "lead": "원래 source 계보 2개에서 pipeline 4개를 분리했다. 최종 결과는 회복 1, 미회복 0, HOLD 3다. 회복 행의 첫 세 update는 case [4, 4, 4], reference [20, 20, 20], 교정 뒤 [20, 20, 20]로 기록됐다.",
    "blocks": [
     {
      "type": "table",
@@ -11476,7 +11476,7 @@ window.REPLAY_DATA = {
      "columns": [
       "pipeline",
       "원래 source",
-      "FIRST 후보",
+      "SECOND 검사",
       "FIRST 결과",
       "SECOND",
       "SECOND 결과",
@@ -11486,32 +11486,32 @@ window.REPLAY_DATA = {
       [
        "case-03 · fixed_eligible",
        {
-        "value": null,
+        "value": "F1 · seed 2552",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "episode 정상 → noise 정상 → torque 정상",
+        "source": "evals/results/five_type_recovery_observations_20261102_v1",
+        "digits": null
+       },
+       {
+        "value": "not_recovered",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "필요",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "HOLD",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
-        "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
-        "digits": null
-       },
-       {
-        "value": null,
+        "value": "HOLD",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        }
@@ -11519,32 +11519,32 @@ window.REPLAY_DATA = {
       [
        "case-03 · logs_only",
        {
-        "value": null,
+        "value": "F1 · seed 2552",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "episode 정상 → updates 정상 → value 정상",
+        "source": "evals/results/five_type_recovery_observations_20261102_v1",
+        "digits": null
+       },
+       {
+        "value": "not_recovered",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "필요",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "HOLD",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
-        "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
-        "digits": null
-       },
-       {
-        "value": null,
+        "value": "HOLD",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        }
@@ -11552,32 +11552,32 @@ window.REPLAY_DATA = {
       [
        "case-07 · fixed_eligible",
        {
-        "value": null,
+        "value": "COMPOUND · seed 2556",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "episode 정상 → noise 정상 → torque 정상",
+        "source": "evals/results/five_type_recovery_observations_20261102_v1",
+        "digits": null
+       },
+       {
+        "value": "not_recovered",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "필요",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "HOLD",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
-        "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
-        "digits": null
-       },
-       {
-        "value": null,
+        "value": "HOLD",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        }
@@ -11585,32 +11585,32 @@ window.REPLAY_DATA = {
       [
        "case-07 · logs_only",
        {
-        "value": null,
+        "value": "COMPOUND · seed 2556",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "episode 정상 → value 정상 → updates 이상",
+        "source": "evals/results/five_type_recovery_observations_20261102_v1",
+        "digits": null
+       },
+       {
+        "value": "not_recovered",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "필요",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "recovered",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
-        "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
-        "digits": null
-       },
-       {
-        "value": null,
+        "value": "recovered",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        }
@@ -11632,17 +11632,17 @@ window.REPLAY_DATA = {
       [
        "case-03 · fixed_eligible",
        {
-        "value": null,
+        "value": "학습 601.2820000000065s · 평가 54.56300000002375s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "검사 6 · API 0",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "tokens 0 · wall 0.0s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
@@ -11655,17 +11655,17 @@ window.REPLAY_DATA = {
       [
        "case-03 · logs_only",
        {
-        "value": null,
+        "value": "학습 496.9220000000205s · 평가 46.28099999995902s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "검사 6 · API 3",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "tokens 11586 · wall 8.781036333006341s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
@@ -11678,17 +11678,17 @@ window.REPLAY_DATA = {
       [
        "case-07 · fixed_eligible",
        {
-        "value": null,
+        "value": "학습 492.39100000000326s · 평가 42.89100000000326s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "검사 6 · API 0",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "tokens 0 · wall 0.0s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
@@ -11701,22 +11701,22 @@ window.REPLAY_DATA = {
       [
        "case-07 · logs_only",
        {
-        "value": null,
+        "value": "학습 492.1570000000065s · 평가 45.875s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "검사 6 · API 3",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "tokens 10646 · wall 6.362269011995522s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "학습 474.545999999973s · 평가 43.46799999999348s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        }
@@ -11727,6 +11727,7 @@ window.REPLAY_DATA = {
    "notes": [
     "네 pipeline은 두 원래 source 계보에서 갈라진다. pipeline 4개와 독립 source 2개를 같은 분모로 세지 않는다.",
     "FIRST 결과, 필요한 경우의 SECOND 진단·학습, 최종 회복을 분리한다. not_recovered를 자동 재시도나 회복으로 바꾸지 않는다.",
+    "4→20 검사는 같은 설정의 fresh 3-update 관측이다. 과거 checkpoint 실행값으로 추정하지 않는다.",
     "비용이 원문 receipt에 없으면 숫자를 채우지 않는다. 모델 우위·GPU 절감·등록 범위 밖 회복의 근거가 아니다."
    ],
    "number": 21
@@ -15192,17 +15193,49 @@ window.REPLAY_DATA = {
    "id": "evals/results/five_type_recovery_s4552_s5557_20261101_v1",
    "path": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/manifest.json",
    "kind": "five_policy_recovery",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "missing"
+   "sha256": "4095f25b14e27c97731877df982e8ecb58d44cf58ab6b3d4190f38c3810bd667",
+   "status": "ready",
+   "reason": null
   },
   "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json": {
    "id": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
    "path": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
    "kind": "five_policy_recovery_file",
-   "sha256": null,
-   "status": "waiting",
-   "reason": "missing"
+   "sha256": "39a1ae7d25e83415749d91990936393e7d01ae0053537f29a92255fc99d4771f",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_recovery_s4552_s5557_20261101_v1/provenance.json": {
+   "id": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/provenance.json",
+   "path": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/provenance.json",
+   "kind": "five_policy_recovery_file",
+   "sha256": "9afc0529a9e9d9185bf15abdc8279d1f7072138485f8b703b96733a25f9e9262",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_recovery_s4552_s5557_20261101_v1/summary.json": {
+   "id": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/summary.json",
+   "path": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/summary.json",
+   "kind": "five_policy_recovery_file",
+   "sha256": "d8f5ebc5e5babb98618ae3c319a5721391e1abe8c8a8c890e57dad05471d2331",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_recovery_observations_20261102_v1": {
+   "id": "evals/results/five_type_recovery_observations_20261102_v1",
+   "path": "evals/results/five_type_recovery_observations_20261102_v1/manifest.json",
+   "kind": "five_policy_recovery_observations",
+   "sha256": "5ca381df72ee7a1a77bb09215cfc7c19b3ba341098ecabf8b4faae863ce9fd39",
+   "status": "ready",
+   "reason": null
+  },
+  "evals/results/five_type_recovery_observations_20261102_v1/summary.json": {
+   "id": "evals/results/five_type_recovery_observations_20261102_v1/summary.json",
+   "path": "evals/results/five_type_recovery_observations_20261102_v1/summary.json",
+   "kind": "five_policy_recovery_observations_file",
+   "sha256": "77d3b8c839c6ac14e149c72628da3f25bbb4b313d8f664577f159d6573d4134d",
+   "status": "ready",
+   "reason": null
   },
   "evals/results/stairs_motion_integrity_20261101_v1": {
    "id": "evals/results/stairs_motion_integrity_20261101_v1",
