@@ -313,7 +313,7 @@ def test_r4_observations_require_committed_matching_canonical_manifest(tmp_path:
     assert rows["case-07 · logs_only"][2]["value"] == (
         "episode 정상 → value 정상 → updates 이상")
     assert rows["case-07 · logs_only"][2]["source"] == "observations"
-    assert "case [4, 4, 4], reference [20, 20, 20], 교정 뒤 [20, 20, 20]" in scene["lead"]
+    assert "4 → 20 (참조 20)" in scene["lead"]
     assert sources.rows["observations"]["status"] == "ready"
 
 

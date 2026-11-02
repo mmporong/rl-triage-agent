@@ -1513,6 +1513,8 @@ def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
                          if second else [None, None])
         second_value = (f"학습 {float(second_values[0]):.3f}s · 평가 {float(second_values[1]):.3f}s"
                         if all(value is not None for value in second_values) else None)
+        if item is not None and second is None and item.get("final_outcome") == "HOLD":
+            second_value = "미실행 · HOLD"
         cost_rows.append([
             f"{case_id} · {policy}",
             cell(sources, first_value, cases_source["id"], None),
@@ -1531,8 +1533,9 @@ def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
         before = counts["fresh_three_update_inspection"]["case"]["observed_steps"]
         reference = counts["fresh_three_update_inspection"]["reference"]["observed_steps"]
         after = counts["second_training"]["observed_steps"]
-        lead += (f" 회복 행의 첫 세 update는 case {before}, reference {reference}, "
-                 f"교정 뒤 {after}로 기록됐다.")
+        lead = (f"원래 source {summary['independent_source_lineages']}개 · 고리 {summary['pipeline_denominator']}개: "
+                f"회복 {summary['final_outcomes']['recovered']} · HOLD {summary['final_outcomes']['HOLD']}. "
+                f"회복 행의 첫 3 update 갱신 횟수: {before[0]} → {after[0]} (참조 {reference[0]}).")
     return {
         "id": "five_policy_recovery", "title": "사전 선택 네 pipeline: FIRST·SECOND·최종 회복", "dense": True,
         "lead": lead,
@@ -1540,7 +1543,7 @@ def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
             {"type": "table", "wide": True, "title": "원래 source와 단계별 판정",
              "columns": ["pipeline", "원래 source", "SECOND 검사", "FIRST 결과", "SECOND", "SECOND 결과", "최종"],
              "rows": pipeline_rows},
-            {"type": "table", "wide": True, "title": "단계별 실제 비용",
+            {"type": "table", "title": "단계별 실제 비용",
              "columns": ["pipeline", "FIRST 학습 · 평가", "SECOND SDK · API",
                          "SECOND provider 비용", "SECOND 학습 · 평가"],
              "rows": cost_rows},
@@ -1551,11 +1554,9 @@ def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
             }]},
         ],
         "notes": [
-            "네 pipeline은 두 원래 source 계보에서 갈라진다. pipeline 4개와 독립 source 2개를 같은 분모로 세지 않는다.",
-            "FIRST 결과, 필요한 경우의 SECOND 진단·학습, 최종 회복을 분리한다. not_recovered를 자동 재시도나 회복으로 바꾸지 않는다.",
-            "4→20 검사는 같은 설정의 fresh 3-update 관측이다. 과거 checkpoint 실행값으로 추정하지 않는다.",
-            "영상은 등록된 비교의 재생이며 모델 버전·VL 우위의 근거가 아니다. 회복 판정은 fixed26 영수증에서 가져온다.",
-            "비용이 원문 receipt에 없으면 숫자를 채우지 않는다. 모델 우위·GPU 절감·등록 범위 밖 회복의 근거가 아니다.",
+            "두 원래 source에서 네 pipeline이 갈라진다. FIRST 미회복·SECOND·최종 판정을 분리하며 HOLD를 자동 재시도하지 않는다.",
+            "4→20은 같은 설정의 fresh 3-update 관측이다. 영상은 재생 자료이고 회복 판정은 fixed26 영수증에 따른다.",
+            "미확인 비용은 채우지 않는다. 작은 개발 비교이며 모델 버전·VL·선택기 우위나 GPU 절감·등록 밖 회복의 근거가 아니다.",
         ],
     }
 

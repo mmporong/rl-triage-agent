@@ -11467,7 +11467,7 @@ window.REPLAY_DATA = {
    "id": "five_policy_recovery",
    "title": "사전 선택 네 pipeline: FIRST·SECOND·최종 회복",
    "dense": true,
-   "lead": "원래 source 계보 2개에서 pipeline 4개를 분리했다. 최종 결과는 회복 1, 미회복 0, HOLD 3다. 회복 행의 첫 세 update는 case [4, 4, 4], reference [20, 20, 20], 교정 뒤 [20, 20, 20]로 기록됐다.",
+   "lead": "원래 source 2개 · 고리 4개: 회복 1 · HOLD 3. 회복 행의 첫 3 update 갱신 횟수: 4 → 20 (참조 20).",
    "blocks": [
     {
      "type": "table",
@@ -11619,12 +11619,11 @@ window.REPLAY_DATA = {
     },
     {
      "type": "table",
-     "wide": true,
      "title": "단계별 실제 비용",
      "columns": [
       "pipeline",
       "FIRST 학습 · 평가",
-      "SECOND 검사 · API",
+      "SECOND SDK · API",
       "SECOND provider 비용",
       "SECOND 학습 · 평가"
      ],
@@ -11632,22 +11631,22 @@ window.REPLAY_DATA = {
       [
        "case-03 · fixed_eligible",
        {
-        "value": "학습 601.2820000000065s · 평가 54.56300000002375s",
+        "value": "학습 601.282s · 평가 54.563s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": "검사 6 · API 0",
+        "value": "SDK 6 · API 0",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": "tokens 0 · wall 0.0s",
+        "value": "tokens 0 · wall 0.000s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "미실행 · HOLD",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        }
@@ -11655,22 +11654,22 @@ window.REPLAY_DATA = {
       [
        "case-03 · logs_only",
        {
-        "value": "학습 496.9220000000205s · 평가 46.28099999995902s",
+        "value": "학습 496.922s · 평가 46.281s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": "검사 6 · API 3",
+        "value": "SDK 6 · API 3",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": "tokens 11586 · wall 8.781036333006341s",
+        "value": "tokens 11586 · wall 8.781s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "미실행 · HOLD",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        }
@@ -11678,22 +11677,22 @@ window.REPLAY_DATA = {
       [
        "case-07 · fixed_eligible",
        {
-        "value": "학습 492.39100000000326s · 평가 42.89100000000326s",
+        "value": "학습 492.391s · 평가 42.891s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": "검사 6 · API 0",
+        "value": "SDK 6 · API 0",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": "tokens 0 · wall 0.0s",
+        "value": "tokens 0 · wall 0.000s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": null,
+        "value": "미실행 · HOLD",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        }
@@ -11701,34 +11700,42 @@ window.REPLAY_DATA = {
       [
        "case-07 · logs_only",
        {
-        "value": "학습 492.1570000000065s · 평가 45.875s",
+        "value": "학습 492.157s · 평가 45.875s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": "검사 6 · API 3",
+        "value": "SDK 6 · API 3",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": "tokens 10646 · wall 6.362269011995522s",
+        "value": "tokens 10646 · wall 6.362s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        },
        {
-        "value": "학습 474.545999999973s · 평가 43.46799999999348s",
+        "value": "학습 474.546s · 평가 43.468s",
         "source": "evals/results/five_type_recovery_s4552_s5557_20261101_v1/cases.json",
         "digits": null
        }
       ]
      ]
+    },
+    {
+     "type": "video",
+     "items": [
+      {
+       "label": "Normal / Compound / After two registered corrections · 등록 실험 재생. 다른 세 pipeline은 HOLD이며 영상은 회복 판정을 새로 만들지 않는다.",
+       "source": "docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4"
+      }
+     ]
     }
    ],
    "notes": [
-    "네 pipeline은 두 원래 source 계보에서 갈라진다. pipeline 4개와 독립 source 2개를 같은 분모로 세지 않는다.",
-    "FIRST 결과, 필요한 경우의 SECOND 진단·학습, 최종 회복을 분리한다. not_recovered를 자동 재시도나 회복으로 바꾸지 않는다.",
-    "4→20 검사는 같은 설정의 fresh 3-update 관측이다. 과거 checkpoint 실행값으로 추정하지 않는다.",
-    "비용이 원문 receipt에 없으면 숫자를 채우지 않는다. 모델 우위·GPU 절감·등록 범위 밖 회복의 근거가 아니다."
+    "두 원래 source에서 네 pipeline이 갈라진다. FIRST 미회복·SECOND·최종 판정을 분리하며 HOLD를 자동 재시도하지 않는다.",
+    "4→20은 같은 설정의 fresh 3-update 관측이다. 영상은 재생 자료이고 회복 판정은 fixed26 영수증에 따른다.",
+    "미확인 비용은 채우지 않는다. 작은 개발 비교이며 모델 버전·VL·선택기 우위나 GPU 절감·등록 밖 회복의 근거가 아니다."
    ],
    "number": 21
   },
@@ -15234,6 +15241,22 @@ window.REPLAY_DATA = {
    "path": "evals/results/five_type_recovery_observations_20261102_v1/summary.json",
    "kind": "five_policy_recovery_observations_file",
    "sha256": "77d3b8c839c6ac14e149c72628da3f25bbb4b313d8f664577f159d6573d4134d",
+   "status": "ready",
+   "reason": null
+  },
+  "docs/media/five_type_recovery_s5557_20261102_v1/source_manifest.json": {
+   "id": "docs/media/five_type_recovery_s5557_20261102_v1/source_manifest.json",
+   "path": "docs/media/five_type_recovery_s5557_20261102_v1/source_manifest.json",
+   "kind": "media_manifest",
+   "sha256": "d940d48aaa700ceeee41387e4d227f635995c41892827d46289a2e9bdbfd155e",
+   "status": "ready",
+   "reason": null
+  },
+  "docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4": {
+   "id": "docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4",
+   "path": "docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4",
+   "kind": "video",
+   "sha256": "b0f507f76c161f5da33821ee143af6c3672e6211a147ab3e49a460392aa76b95",
    "status": "ready",
    "reason": null
   },

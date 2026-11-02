@@ -1062,3 +1062,9 @@
 - 관찰: SECOND 학습과 고정 평가가 끝난 뒤 조건부 영상의 CPU 준비가 중단됐다. 공개 결과 변환은 통과했지만, 녹화 준비의 별도 학습 검증에서 재계산한 판정에 `outcome` 필드가 없어 저장 영수증과 달랐다. 이 준비에서는 GPU·API를 실행하지 않았다.
 - 원인과 수정: 원 결과 변환기는 `recovery_outcome_scope()` 안에서 판정을 계산한다. [영상 adapter](../bench/run_recovery_same_play_capture_v2.py)의 별도 검증도 같은 scope와 원 학습 component 검증을 함께 사용하도록 맞췄다. 기존 판정·영수증·checkpoint·실행 권한은 바꾸지 않는다.
 - 검증과 재시도: 두 scope의 동시 적용과 종료 후 복원을 회귀로 확인했다. 기존 미실행 adapter 등록 v1과 실패 원문은 보존하고 [등록 v2](../bench/protocols/five_type_recovery_media_continuation_adapter_20261102_v2.json)를 사용한다. 실제 CPU 준비·입장 검증을 통과한 뒤에만 원래 조건에 맞는 `case-07:logs_only` 회복 정책 한 개를 녹화한다. 회복 수치는 [종단 결과](FIVE-TYPE-RECOVERY-COMPARISON.md)의 학습·행동 평가 근거이며, 영상 준비의 통과로 새 회복을 합산하지 않는다.
+
+### OPS-149: 재생 영상의 상위 패널 clipping을 놓친 레이아웃 검사
+
+- 관찰: 회복 영상의 공개 SHA와 내부 요소의 크기는 통과했지만 실제 FHD 화면에서 영상이 표 아래로 가려졌다. 기존 검사는 각 요소의 scroll/client 크기를 비교해 상위 패널의 `overflow:hidden`으로 가려진 경우를 놓쳤다. 최초 통과 기록과 화면은 보존했다.
+- 수정: [재생 데이터](../evals/build_replay_page.py)의 비용 표와 영상은 두 열에 두고, 단일 영상은 한 칸을 채우도록 [스타일](replay/style.css)을 맞췄다. 완료된 HOLD의 미실행 학습은 대기가 아니라 미실행으로 표시하며 원문 수치·판정은 유지한다.
+- 검증: 최종 FHD 검사는 상위 패널 경계와 영상 metadata·오류까지 확인했다. 강화한 첫 검사에서는 해당 장면의 가려짐을 검출했고, 배치 수정 뒤24장면의 넘침·clipping·JavaScript·영상 metadata 오류가 모두0이었다. 임시 headless Edge는 종료했다. 이 배치 변경은 모델·학습·회복 성능의 변화가 아니다.
