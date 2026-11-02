@@ -135,13 +135,17 @@ def main(argv: list[str] | None = None) -> int:
         build_protocol(second_plan=args.second_plan,
                        compatibility_protocol=args.compatibility_protocol, out=args.out)
     else:
-        run_second_operational(
-            args.plan, host_protocol=args.host_protocol, host_anchor=args.host_anchor,
-            compatibility_protocol=args.compatibility_protocol,
-            compatibility_anchor=args.compatibility_anchor,
-            cache_protocol=args.cache_protocol, cache_anchor=args.cache_anchor,
-            transport_root=args.transport_root, lab=args.lab,
-            isaac_python=args.isaac_python, out=args.out, approver=args.approver)
+        try:
+            run_second_operational(
+                args.plan, host_protocol=args.host_protocol, host_anchor=args.host_anchor,
+                compatibility_protocol=args.compatibility_protocol,
+                compatibility_anchor=args.compatibility_anchor,
+                cache_protocol=args.cache_protocol, cache_anchor=args.cache_anchor,
+                transport_root=args.transport_root, lab=args.lab,
+                isaac_python=args.isaac_python, out=args.out, approver=args.approver)
+        except BaseException as error:
+            CONT.RUN._record_cli_failure(args.out, "run-second", error)
+            raise
     return 0
 
 

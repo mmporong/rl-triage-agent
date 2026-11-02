@@ -109,3 +109,25 @@ def test_different_anchor_is_rejected_before_original_runner(tmp_path: Path) -> 
             cache_protocol=tmp_path, cache_anchor="b" * 40,
             transport_root=tmp_path, lab=tmp_path, isaac_python=tmp_path,
             out=tmp_path, approver=V.CONT.RUN.APPROVER)
+
+
+def test_cli_preserves_original_error_and_parent_evidence(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail(*args, **kwargs):
+        raise RuntimeError("original parent failure")
+
+    monkeypatch.setattr(V, "run_second_operational", fail)
+    out = tmp_path / "actual"
+    argv = ["run-second"]
+    for name in ("plan", "host-protocol", "compatibility-protocol", "cache-protocol",
+                 "transport-root", "lab", "isaac-python"):
+        argv.extend(["--" + name, str(tmp_path / name)])
+    for name in ("host-anchor", "compatibility-anchor", "cache-anchor"):
+        argv.extend(["--" + name, "a" * 40])
+    argv.extend(["--out", str(out), "--approver", V.CONT.RUN.APPROVER])
+    with pytest.raises(RuntimeError, match="original parent failure"):
+        V.main(argv)
+    error = json.loads((out / "parent-error.json").read_text(encoding="utf-8"))
+    assert error["error"] == "original parent failure"
+    assert error["automatic_retry"] is False
