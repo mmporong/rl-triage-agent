@@ -1368,7 +1368,103 @@ def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
     cases_source = sources.file(cases_relative, kind="five_policy_recovery_file")
     cases = (_read(sources.root / cases_relative)
              if summary is not None and cases_source["status"] == "ready" else None)
+    observations_relative = slots.get("five_policy_recovery_observations")
+    if observations_relative is None:
+        observations_source = sources.file(None, kind="five_policy_recovery_observations")
+        observations = None
+    else:
+        observations_source, observations = manifest_result(
+            sources, observations_relative, manifest_name="manifest.json",
+            manifest_schema="five_policy_recovery_observations_manifest_v1",
+            summary_schema="five_policy_recovery_observations_v1",
+            kind="five_policy_recovery_observations")
+        if observations is not None and row["status"] != "ready":
+            observations_source["status"] = "waiting"
+            observations_source["reason"] = "canonical_manifest_not_ready"
+            sources.replays[observations_relative] = None
+            observations = None
+        elif observations is not None and observations.get("canonical_manifest_sha256") != row["sha256"]:
+            observations_source["status"] = "mismatch"
+            observations_source["reason"] = "canonical_manifest_sha256_mismatch"
+            sources.replays[observations_relative] = None
+            observations = None
+        elif observations is not None:
+            try:
+                observation_rows = observations["rows"]
+                optimizer = observations["optimizer_counts"]
+                fresh = optimizer["fresh_three_update_inspection"]
+                count_records = [optimizer["first_training"], fresh["case"],
+                                 fresh["reference"], optimizer["second_training"]]
+                expected_targets = {(case, policy) for case, policy in (
+                    ("case-03", "fixed_eligible"), ("case-03", "logs_only"),
+                    ("case-07", "fixed_eligible"), ("case-07", "logs_only"))}
+                manifest_value = _read(sources.root / observations_relative / "manifest.json")
+                if (manifest_value.get("status") != "complete"
+                        or observations.get("status") != "complete"
+                        or not isinstance(observation_rows, list) or len(observation_rows) != 4
+                        or {(item["case_id"], item["policy"]) for item in observation_rows}
+                        != expected_targets
+                        or any(not isinstance(item["records_sha256"], str)
+                               or len(item["records_sha256"]) != 64
+                               or item["updates"] != [0, 1, 2]
+                               or item["expected_steps"] != [20, 20, 20]
+                               or not isinstance(item["observed_steps"], list)
+                               or len(item["observed_steps"]) != 3
+                               or item["observed_minibatches"] != item["observed_steps"]
+                               for item in count_records)
+                        or optimizer["first_training"]["observed_steps"] != [4, 4, 4]
+                        or fresh["case"]["observed_steps"] != [4, 4, 4]
+                        or fresh["reference"]["observed_steps"] != [20, 20, 20]
+                        or optimizer["second_training"]["observed_steps"] != [20, 20, 20]
+                        or not isinstance(observations["probe_physical_roles"], list)
+                        or len(observations["probe_physical_roles"]) != 24
+                        or observations["probe_physical_roles_count"] != 24
+                        or observations["first_training_fixed_physical_roles"] != 8
+                        or observations["second_training_fixed_physical_roles"] != 2
+                        or observations["second_total_physical_roles"] != 26
+                        or observations["R4_total_physical_roles"] != 34
+                        or observations["second_model_requests"] != 6
+                        or observations["continuation_new_model_or_probe_calls"] != 0
+                        or observations["prior_failed_parent_wall_s"] != 10783.745328
+                        or abs(observations["continuation_parent_wall_s"] - 1865.516) > 1e-6
+                        or not isinstance(observations["probe_owned_wall_sum_s"], (int, float))):
+                    raise ValueError("recovery observation contract 불일치")
+                for item in observation_rows:
+                    steps = item["steps"]
+                    if (not isinstance(steps, list) or len(steps) > 3
+                            or [step["step"] for step in steps] != list(range(1, len(steps) + 1))
+                            or item["first_outcome"] != "not_recovered"
+                            or item["final_outcome"] not in {"recovered", "not_recovered", "HOLD"}
+                            or item["candidate_status"] not in {"validated_candidate", "HOLD"}
+                            or any(step["probe"] not in {
+                                "P_episode", "P_noise", "P_torque", "P_value",
+                                "P_optimizer_updates"} or step["outcome"] not in {
+                                    "normal", "abnormal"}
+                                   or step["selected_by"] not in {"model", "fixed_order"}
+                                   or not isinstance(step["fact_ids"], list)
+                                   or not all(isinstance(fact, str) for fact in step["fact_ids"])
+                                   or not isinstance(step["pair_result_sha256"], str)
+                                   or len(step["pair_result_sha256"]) != 64
+                                   or not isinstance(step["pair_parent_wall_s"], (int, float))
+                                   or not isinstance(step["owned_wall_s"], (int, float))
+                                   or step["pair_parent_wall_s"] < 0 or step["owned_wall_s"] < 0
+                                   for step in steps)):
+                        raise ValueError("recovery observation steps 불일치")
+                if (sum(item["model_calls"] for item in observation_rows)
+                        != observations["second_model_requests"]
+                        or abs(sum(step["owned_wall_s"] for item in observation_rows
+                                   for step in item["steps"])
+                               - observations["probe_owned_wall_sum_s"]) > 1e-9):
+                    raise ValueError("recovery observation 합계 불일치")
+            except (KeyError, TypeError, ValueError):
+                observations_source["status"] = "mismatch"
+                observations_source["reason"] = "observation_contract_mismatch"
+                sources.replays[observations_relative] = None
+                observations = None
     public_rows = (cases or {}).get("rows", [])
+    observations_by_target = {
+        (item["case_id"], item["policy"]): item
+        for item in (observations or {}).get("rows", [])}
     targets = (("case-03", "fixed_eligible"), ("case-03", "logs_only"),
                ("case-07", "fixed_eligible"), ("case-07", "logs_only"))
     pipeline_rows = []
@@ -1378,10 +1474,16 @@ def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
                      if value.get("case_id") == case_id and value.get("policy") == policy), None)
         source_label = (f"{item['source_arm']} · seed {item['source_seed']}"
                         if item is not None else None)
+        observed = observations_by_target.get((case_id, policy))
+        probe_labels = {"P_episode": "episode", "P_noise": "noise", "P_torque": "torque",
+                        "P_value": "value", "P_optimizer_updates": "updates"}
+        probe_sequence = (" → ".join(
+            f"{probe_labels[step['probe']]} {'이상' if step['outcome'] == 'abnormal' else '정상'}"
+            for step in observed["steps"]) if observed is not None else None)
         pipeline_rows.append([
             f"{case_id} · {policy}",
             cell(sources, source_label, cases_source["id"], None),
-            cell(sources, item and item.get("first_candidate_status"), cases_source["id"], None),
+            cell(sources, probe_sequence, observations_source["id"], None),
             cell(sources, item and item.get("first_outcome"), cases_source["id"], None),
             cell(sources, ("필요" if item and item.get("second_required") else "불필요")
                  if item else None, cases_source["id"], None),
@@ -1421,12 +1523,19 @@ def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
         lead = (f"원래 source 계보 {summary['independent_source_lineages']}개에서 pipeline "
                 f"{summary['pipeline_denominator']}개를 분리했다. 최종 결과는 회복 {outcomes['recovered']}, "
                 f"미회복 {outcomes['not_recovered']}, HOLD {outcomes['HOLD']}다.")
+    if summary is not None and observations is not None:
+        counts = observations["optimizer_counts"]
+        before = counts["fresh_three_update_inspection"]["case"]["observed_steps"]
+        reference = counts["fresh_three_update_inspection"]["reference"]["observed_steps"]
+        after = counts["second_training"]["observed_steps"]
+        lead += (f" 회복 행의 첫 세 update는 case {before}, reference {reference}, "
+                 f"교정 뒤 {after}로 기록됐다.")
     return {
         "id": "five_policy_recovery", "title": "사전 선택 네 pipeline: FIRST·SECOND·최종 회복", "dense": True,
         "lead": lead,
         "blocks": [
             {"type": "table", "wide": True, "title": "원래 source와 단계별 판정",
-             "columns": ["pipeline", "원래 source", "FIRST 후보", "FIRST 결과", "SECOND", "SECOND 결과", "최종"],
+             "columns": ["pipeline", "원래 source", "SECOND 검사", "FIRST 결과", "SECOND", "SECOND 결과", "최종"],
              "rows": pipeline_rows},
             {"type": "table", "wide": True, "title": "단계별 실제 비용",
              "columns": ["pipeline", "FIRST 학습 · 평가", "SECOND 검사 · API",
@@ -1436,6 +1545,7 @@ def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
         "notes": [
             "네 pipeline은 두 원래 source 계보에서 갈라진다. pipeline 4개와 독립 source 2개를 같은 분모로 세지 않는다.",
             "FIRST 결과, 필요한 경우의 SECOND 진단·학습, 최종 회복을 분리한다. not_recovered를 자동 재시도나 회복으로 바꾸지 않는다.",
+            "4→20 검사는 같은 설정의 fresh 3-update 관측이다. 과거 checkpoint 실행값으로 추정하지 않는다.",
             "비용이 원문 receipt에 없으면 숫자를 채우지 않는다. 모델 우위·GPU 절감·등록 범위 밖 회복의 근거가 아니다.",
         ],
     }

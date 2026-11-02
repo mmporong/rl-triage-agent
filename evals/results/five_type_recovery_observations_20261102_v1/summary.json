@@ -1,0 +1,713 @@
+{
+  "R4_total_physical_roles": 34,
+  "benchmark_truth_used_by_candidate_gate": true,
+  "canonical_manifest_sha256": "4095f25b14e27c97731877df982e8ecb58d44cf58ab6b3d4190f38c3810bd667",
+  "continuation_new_model_or_probe_calls": 0,
+  "continuation_parent_wall_s": 1865.5160000000033,
+  "first_training_fixed_physical_roles": 8,
+  "ground_truth_in_model_input": false,
+  "image_driven_selection_gain": false,
+  "independent_source_lineages": 2,
+  "model_version_comparison": false,
+  "optimizer_counts": {
+    "checkpoint_execution_history_inferred": false,
+    "first_training": {
+      "expected_steps": [
+        20,
+        20,
+        20
+      ],
+      "observed_minibatches": [
+        4,
+        4,
+        4
+      ],
+      "observed_steps": [
+        4,
+        4,
+        4
+      ],
+      "records_sha256": "6ae4157da0254a645421cd9003ce556c376483961b720ddd2010e90a242d63ab",
+      "updates": [
+        0,
+        1,
+        2
+      ]
+    },
+    "fresh_three_update_inspection": {
+      "case": {
+        "expected_steps": [
+          20,
+          20,
+          20
+        ],
+        "observed_minibatches": [
+          4,
+          4,
+          4
+        ],
+        "observed_steps": [
+          4,
+          4,
+          4
+        ],
+        "records_sha256": "b3e3436729faab67063f008f24076de15569a1f41aca00478a1a546502ce83ac",
+        "updates": [
+          0,
+          1,
+          2
+        ]
+      },
+      "reference": {
+        "expected_steps": [
+          20,
+          20,
+          20
+        ],
+        "observed_minibatches": [
+          20,
+          20,
+          20
+        ],
+        "observed_steps": [
+          20,
+          20,
+          20
+        ],
+        "records_sha256": "6568e75facbece6d96b9ec26e012c68a212f0f371a67b166040fe22175c711d7",
+        "updates": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    "observed_training_updates": 3,
+    "second_training": {
+      "expected_steps": [
+        20,
+        20,
+        20
+      ],
+      "observed_minibatches": [
+        20,
+        20,
+        20
+      ],
+      "observed_steps": [
+        20,
+        20,
+        20
+      ],
+      "records_sha256": "efb9f83c4475b1cf353d53cf09c2bae8fbf822ca60be95d42a5ffd0d63695a2b",
+      "updates": [
+        0,
+        1,
+        2
+      ]
+    },
+    "whole_300_update_step_counts_claimed": false
+  },
+  "owned_wall_scope": "process_start_to_exit_cleanup_not_GPU_kernel_time",
+  "pipelines": 4,
+  "prior_failed_parent_wall_s": 10783.745328,
+  "probe_owned_wall_sum_s": 700.8760000000475,
+  "probe_physical_roles": [
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "bdf835c032058e2e32debe59bf54a9d4bfbcd06a0a54adb39eca55490fabff25",
+      "owned_wall_s": 45.67200000002049,
+      "policy": "fixed_eligible",
+      "probe": "P_episode",
+      "role": "case",
+      "step": 1
+    },
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "5728e8b47caa7ae79e57d866333d8d13a0a68e85cca0e52b82af6f3c7702dcdf",
+      "owned_wall_s": 45.34400000004098,
+      "policy": "fixed_eligible",
+      "probe": "P_episode",
+      "role": "reference",
+      "step": 1
+    },
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "a823b7b75fb114a54ddebbe5b2ae8f4fd7b4102a4a7cec264ddc48135cfba7bb",
+      "owned_wall_s": 17.34399999998277,
+      "policy": "fixed_eligible",
+      "probe": "P_noise",
+      "role": "case",
+      "step": 2
+    },
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "76ff6f002aaa336d4e94b18d18795d38867d079011cc81561a20e3fe53e61859",
+      "owned_wall_s": 17.17200000002049,
+      "policy": "fixed_eligible",
+      "probe": "P_noise",
+      "role": "reference",
+      "step": 2
+    },
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "b89bbe59ebe779965d8c1608f15fbfe62e5123008be7f7cc27ff01c3ad237bf5",
+      "owned_wall_s": 27.17199999996228,
+      "policy": "fixed_eligible",
+      "probe": "P_torque",
+      "role": "case",
+      "step": 3
+    },
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "e3e270fb2f319bcc949b86e3f129e0e8cebb34e8b5bef3f2a337c9a90ce78d67",
+      "owned_wall_s": 26.46799999999348,
+      "policy": "fixed_eligible",
+      "probe": "P_torque",
+      "role": "reference",
+      "step": 3
+    },
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "d7b852c5cd7351b7c5aa303e4cc20863f4ba3f04d4fafad9fd13bdfd8aad4d92",
+      "owned_wall_s": 45.51500000001397,
+      "policy": "logs_only",
+      "probe": "P_episode",
+      "role": "case",
+      "step": 1
+    },
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "800849341b07fa07a982bfdc317d9f4c886e3ec97778f770f71ed646ddaeb539",
+      "owned_wall_s": 45.78200000000652,
+      "policy": "logs_only",
+      "probe": "P_episode",
+      "role": "reference",
+      "step": 1
+    },
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "f50d3d8affb56a4ed1decd88e02a247d7e014bdd2b9b9bd99d3cb3df54615889",
+      "owned_wall_s": 28.875,
+      "policy": "logs_only",
+      "probe": "P_optimizer_updates",
+      "role": "case",
+      "step": 2
+    },
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "dbd786f9b90b8ab90dfb01357061b1c44b94daabaa014043c724b51769927739",
+      "owned_wall_s": 30.60899999999674,
+      "policy": "logs_only",
+      "probe": "P_optimizer_updates",
+      "role": "reference",
+      "step": 2
+    },
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "4d5e6df594f2dde9a422d8fc6e67c412e3aa0d303d24f97005943b6672a1e08f",
+      "owned_wall_s": 10.561999999976251,
+      "policy": "logs_only",
+      "probe": "P_value",
+      "role": "case",
+      "step": 3
+    },
+    {
+      "case_id": "case-03",
+      "owned_result_sha256": "2e6fed30a9c7d60146188168ea11afb40608d3e058d599535c134d7737c02245",
+      "owned_wall_s": 10.73499999998603,
+      "policy": "logs_only",
+      "probe": "P_value",
+      "role": "reference",
+      "step": 3
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "cd9e56234e710cf28508e731efc62df027c619457e4c0beebd5b1bc67c0f6fe5",
+      "owned_wall_s": 45.82799999997951,
+      "policy": "fixed_eligible",
+      "probe": "P_episode",
+      "role": "case",
+      "step": 1
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "bac8402177489051a9b9a72a654728bf096aa5bed71ed0d3325c74aa78d332a8",
+      "owned_wall_s": 45.73399999999674,
+      "policy": "fixed_eligible",
+      "probe": "P_episode",
+      "role": "reference",
+      "step": 1
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "8d316a4bc24988eb58638761eb6a428d66d4da3706e79a3723f343963526e9af",
+      "owned_wall_s": 17.43800000002375,
+      "policy": "fixed_eligible",
+      "probe": "P_noise",
+      "role": "case",
+      "step": 2
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "25432165a285c6aab1dc6e7c2268118f18acc5687ca871d751b3e56c0024fc34",
+      "owned_wall_s": 17.29700000002049,
+      "policy": "fixed_eligible",
+      "probe": "P_noise",
+      "role": "reference",
+      "step": 2
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "72ff65ee9f0aa8e5cac9122dc0bd9fbfa0ecae2ded09032382a9a5db17faf068",
+      "owned_wall_s": 26.68700000003446,
+      "policy": "fixed_eligible",
+      "probe": "P_torque",
+      "role": "case",
+      "step": 3
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "ba1433b2ada8bb852c719e1d6dc3035c846117b88993227d787dc982283fb03c",
+      "owned_wall_s": 26.46899999998277,
+      "policy": "fixed_eligible",
+      "probe": "P_torque",
+      "role": "reference",
+      "step": 3
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "6a23d29f7af44b304e1cf3086d5cef10eef9cf58a6019173b45f93e9e6ed6db9",
+      "owned_wall_s": 46.18800000002375,
+      "policy": "logs_only",
+      "probe": "P_episode",
+      "role": "case",
+      "step": 1
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "48ed73a6e48ee3832a71f7252b0612bf503a6985dc96e5643d565ed2efc735ff",
+      "owned_wall_s": 45.84399999998277,
+      "policy": "logs_only",
+      "probe": "P_episode",
+      "role": "reference",
+      "step": 1
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "0171dc81691a5b20f6124676fb32616c09eb03176aadb54bbf9d3ebadb172f6d",
+      "owned_wall_s": 10.795999999972992,
+      "policy": "logs_only",
+      "probe": "P_value",
+      "role": "case",
+      "step": 2
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "abd1e74f267891e0f6af49f2b19e889ff45b626cf52123b9c9804b5c4833cd6e",
+      "owned_wall_s": 10.672000000020489,
+      "policy": "logs_only",
+      "probe": "P_value",
+      "role": "reference",
+      "step": 2
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "863f62308d61e2e220c1503970f165a710249af19c364f5d5f4beef14f5bfb21",
+      "owned_wall_s": 28.03200000000652,
+      "policy": "logs_only",
+      "probe": "P_optimizer_updates",
+      "role": "case",
+      "step": 3
+    },
+    {
+      "case_id": "case-07",
+      "owned_result_sha256": "ca9d8f9168e328d9a374ed1ebe5d61e7c2a723e6e54e57deab0cdcbe9bddb7ac",
+      "owned_wall_s": 28.64100000000326,
+      "policy": "logs_only",
+      "probe": "P_optimizer_updates",
+      "role": "reference",
+      "step": 3
+    }
+  ],
+  "probe_physical_roles_count": 24,
+  "rows": [
+    {
+      "candidate_sha256": "ce7c77d5c7020bf77921a18e22663d4183ee3b6b1f2ff809fc40ad0ebe4b0fa7",
+      "candidate_status": "HOLD",
+      "case_id": "case-03",
+      "confirmed_family": null,
+      "diagnosis_sha256": "5fb9bbf5cda56bba582542e60be602f93067d0902b64103fd3324110412ed8aa",
+      "final_outcome": "HOLD",
+      "first_outcome": "not_recovered",
+      "model_calls": 0,
+      "policy": "fixed_eligible",
+      "probe_owned_wall_s": 179.1720000000205,
+      "second_correction": null,
+      "steps": [
+        {
+          "fact_ids": [],
+          "outcome": "normal",
+          "owned_wall_s": 91.01600000006147,
+          "pair_parent_wall_s": 232.42612550000194,
+          "pair_result_sha256": "1d658d7249bbaa5afbbbb1d2a0dd957a9eb897fad8fb594b66a32ea9a080f174",
+          "probe": "P_episode",
+          "selected_by": "fixed_order",
+          "step": 1
+        },
+        {
+          "fact_ids": [],
+          "outcome": "normal",
+          "owned_wall_s": 34.51600000000326,
+          "pair_parent_wall_s": 173.98005110002123,
+          "pair_result_sha256": "90bf288943d104f6bf7869cf2cf4b24aacd978cb10a3ceb6ac326423f16bef0b",
+          "probe": "P_noise",
+          "selected_by": "fixed_order",
+          "step": 2
+        },
+        {
+          "fact_ids": [],
+          "outcome": "normal",
+          "owned_wall_s": 53.63999999995576,
+          "pair_parent_wall_s": 193.62781400000677,
+          "pair_result_sha256": "4ff7eb4eddce4c324459f233f7e0cdce0ec80b9f9476e470d99890bdbdf9d82d",
+          "probe": "P_torque",
+          "selected_by": "fixed_order",
+          "step": 3
+        }
+      ]
+    },
+    {
+      "candidate_sha256": "ee88b520b4c7b778408d777897a2b5f9c8b9edfdf82a9c6a0c39eaabfd430c5a",
+      "candidate_status": "HOLD",
+      "case_id": "case-03",
+      "confirmed_family": null,
+      "diagnosis_sha256": "74fea2bf95aaf52dc58d039dbe0227f33c96fd6d7e2e9ff99697d1f5786962ff",
+      "final_outcome": "HOLD",
+      "first_outcome": "not_recovered",
+      "model_calls": 3,
+      "policy": "logs_only",
+      "probe_owned_wall_s": 172.0779999999795,
+      "second_correction": null,
+      "steps": [
+        {
+          "fact_ids": [
+            "telemetry:case:Train/mean_reward",
+            "telemetry:reference:Train/mean_reward",
+            "telemetry:case:Episode_Termination/time_out",
+            "telemetry:reference:Episode_Termination/time_out",
+            "telemetry:case:Episode_Termination/base_contact",
+            "telemetry:reference:Episode_Termination/base_contact",
+            "telemetry:case:Train/mean_episode_length",
+            "telemetry:reference:Train/mean_episode_length",
+            "telemetry:case:Loss/value_function",
+            "telemetry:reference:Loss/value_function",
+            "telemetry:case:Loss/surrogate",
+            "telemetry:reference:Loss/surrogate",
+            "telemetry:case:Loss/entropy",
+            "telemetry:reference:Loss/entropy",
+            "telemetry:case:Policy/mean_noise_std",
+            "telemetry:reference:Policy/mean_noise_std",
+            "telemetry:case:Metrics/base_velocity/error_vel_xy",
+            "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+            "telemetry:case:Metrics/base_velocity/error_vel_yaw",
+            "telemetry:reference:Metrics/base_velocity/error_vel_yaw",
+            "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+            "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+            "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+            "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+            "telemetry:case:Episode_Reward/dof_torques_l2",
+            "telemetry:reference:Episode_Reward/dof_torques_l2",
+            "telemetry:case:Episode_Reward/dof_acc_l2",
+            "telemetry:reference:Episode_Reward/dof_acc_l2",
+            "telemetry:case:Episode_Reward/action_rate_l2",
+            "telemetry:reference:Episode_Reward/action_rate_l2",
+            "telemetry:case:Episode_Reward/ang_vel_xy_l2",
+            "telemetry:reference:Episode_Reward/ang_vel_xy_l2",
+            "telemetry:case:Episode_Reward/lin_vel_z_l2",
+            "telemetry:reference:Episode_Reward/lin_vel_z_l2",
+            "telemetry:case:Episode_Reward/flat_orientation_l2",
+            "telemetry:reference:Episode_Reward/flat_orientation_l2",
+            "telemetry:case:Episode_Reward/feet_air_time",
+            "telemetry:reference:Episode_Reward/feet_air_time",
+            "telemetry:case:Episode_Reward/dof_pos_limits",
+            "telemetry:reference:Episode_Reward/dof_pos_limits",
+            "telemetry:case:Loss/learning_rate",
+            "telemetry:reference:Loss/learning_rate",
+            "telemetry:case:Perf/total_fps",
+            "telemetry:reference:Perf/total_fps",
+            "telemetry:case:Perf/collection time",
+            "telemetry:reference:Perf/collection time",
+            "telemetry:case:Perf/learning_time",
+            "telemetry:reference:Perf/learning_time"
+          ],
+          "outcome": "normal",
+          "owned_wall_s": 91.29700000002049,
+          "pair_parent_wall_s": 225.37086439999985,
+          "pair_result_sha256": "650de0d0de2ec4cbe93fc7138f25519def9fd72ddd8cfeea9a28734d2b26103b",
+          "probe": "P_episode",
+          "selected_by": "model",
+          "step": 1
+        },
+        {
+          "fact_ids": [
+            "observation:0:P_episode:median_timeout_step",
+            "observation:0:P_episode:outcome",
+            "observation:0:P_episode:timeout_count",
+            "observation:0:P_episode:timeout_ratio",
+            "telemetry:case:Train/mean_episode_length",
+            "telemetry:reference:Train/mean_episode_length",
+            "telemetry:case:Train/mean_reward",
+            "telemetry:reference:Train/mean_reward",
+            "telemetry:case:Loss/value_function",
+            "telemetry:reference:Loss/value_function",
+            "telemetry:case:Loss/surrogate",
+            "telemetry:reference:Loss/surrogate",
+            "telemetry:case:Loss/learning_rate",
+            "telemetry:reference:Loss/learning_rate",
+            "telemetry:case:Loss/entropy",
+            "telemetry:reference:Loss/entropy",
+            "telemetry:case:Policy/mean_noise_std",
+            "telemetry:reference:Policy/mean_noise_std",
+            "telemetry:case:Metrics/base_velocity/error_vel_xy",
+            "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+            "telemetry:case:Metrics/base_velocity/error_vel_yaw",
+            "telemetry:reference:Metrics/base_velocity/error_vel_yaw",
+            "telemetry:case:Episode_Termination/base_contact",
+            "telemetry:reference:Episode_Termination/base_contact",
+            "telemetry:case:Episode_Termination/time_out",
+            "telemetry:reference:Episode_Termination/time_out",
+            "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+            "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+            "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+            "telemetry:reference:Episode_Reward/track_ang_vel_z_exp",
+            "telemetry:case:Episode_Reward/dof_torques_l2",
+            "telemetry:reference:Episode_Reward/dof_torques_l2",
+            "telemetry:case:Episode_Reward/action_rate_l2",
+            "telemetry:reference:Episode_Reward/action_rate_l2",
+            "telemetry:case:Episode_Reward/dof_acc_l2",
+            "telemetry:reference:Episode_Reward/dof_acc_l2",
+            "telemetry:case:Episode_Reward/ang_vel_xy_l2",
+            "telemetry:reference:Episode_Reward/ang_vel_xy_l2",
+            "telemetry:case:Episode_Reward/lin_vel_z_l2",
+            "telemetry:reference:Episode_Reward/lin_vel_z_l2",
+            "telemetry:case:Episode_Reward/flat_orientation_l2",
+            "telemetry:reference:Episode_Reward/flat_orientation_l2",
+            "telemetry:case:Episode_Reward/feet_air_time",
+            "telemetry:reference:Episode_Reward/feet_air_time",
+            "telemetry:case:Episode_Reward/dof_pos_limits",
+            "telemetry:reference:Episode_Reward/dof_pos_limits",
+            "telemetry:case:Perf/total_fps",
+            "telemetry:reference:Perf/total_fps",
+            "telemetry:case:Perf/collection time",
+            "telemetry:reference:Perf/collection time",
+            "telemetry:case:Perf/learning_time",
+            "telemetry:reference:Perf/learning_time"
+          ],
+          "outcome": "normal",
+          "owned_wall_s": 59.48399999999674,
+          "pair_parent_wall_s": 194.11039470002288,
+          "pair_result_sha256": "7de48525ae6affd9f2c872f9e6e6ae897c7f26f9c8bf6e900e6f0abff5f13899",
+          "probe": "P_optimizer_updates",
+          "selected_by": "model",
+          "step": 2
+        },
+        {
+          "fact_ids": [
+            "telemetry:case:Train/mean_reward",
+            "telemetry:reference:Train/mean_reward",
+            "telemetry:case:Train/mean_episode_length",
+            "telemetry:reference:Train/mean_episode_length",
+            "telemetry:case:Loss/value_function",
+            "telemetry:reference:Loss/value_function",
+            "telemetry:case:Loss/surrogate",
+            "telemetry:reference:Loss/surrogate",
+            "telemetry:case:Loss/entropy",
+            "telemetry:reference:Loss/entropy",
+            "telemetry:case:Loss/learning_rate",
+            "telemetry:reference:Loss/learning_rate",
+            "telemetry:case:Policy/mean_noise_std",
+            "telemetry:reference:Policy/mean_noise_std",
+            "telemetry:case:Metrics/base_velocity/error_vel_xy",
+            "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+            "telemetry:case:Metrics/base_velocity/error_vel_yaw",
+            "telemetry:reference:Metrics/base_velocity/error_vel_yaw",
+            "telemetry:case:Episode_Termination/time_out",
+            "telemetry:reference:Episode_Termination/time_out",
+            "observation:0:P_episode:timeout_ratio",
+            "observation:0:P_episode:timeout_count",
+            "observation:0:P_episode:median_timeout_step",
+            "observation:0:P_episode:outcome",
+            "observation:1:P_optimizer_updates:outcome"
+          ],
+          "outcome": "normal",
+          "owned_wall_s": 21.29699999996228,
+          "pair_parent_wall_s": 155.2762223999598,
+          "pair_result_sha256": "95c89832bead81486384cc38ca37c1c24969745d3ff1e8e6499c1ab43c9fd5a9",
+          "probe": "P_value",
+          "selected_by": "model",
+          "step": 3
+        }
+      ]
+    },
+    {
+      "candidate_sha256": "e80c0930f07c603e64404779e45333cdbfa23f661d47785a240d213e6faeb42a",
+      "candidate_status": "HOLD",
+      "case_id": "case-07",
+      "confirmed_family": null,
+      "diagnosis_sha256": "b901db05532904570c10cceec1e30e4a1fb4b09f78fb07d591e71c0dca75d778",
+      "final_outcome": "HOLD",
+      "first_outcome": "not_recovered",
+      "model_calls": 0,
+      "policy": "fixed_eligible",
+      "probe_owned_wall_s": 179.45300000003772,
+      "second_correction": null,
+      "steps": [
+        {
+          "fact_ids": [],
+          "outcome": "normal",
+          "owned_wall_s": 91.56199999997625,
+          "pair_parent_wall_s": 231.7728365000221,
+          "pair_result_sha256": "4bae4e01d673cc6da0a8ab3e7f9c237f4e45cf962570ae9835b10088e317d0ce",
+          "probe": "P_episode",
+          "selected_by": "fixed_order",
+          "step": 1
+        },
+        {
+          "fact_ids": [],
+          "outcome": "normal",
+          "owned_wall_s": 34.73500000004424,
+          "pair_parent_wall_s": 173.4277894999832,
+          "pair_result_sha256": "07db58cb780daa345b6307bb65c1fd9f981babc1a183c2f040abe44a5114a5bb",
+          "probe": "P_noise",
+          "selected_by": "fixed_order",
+          "step": 2
+        },
+        {
+          "fact_ids": [],
+          "outcome": "normal",
+          "owned_wall_s": 53.15600000001723,
+          "pair_parent_wall_s": 193.3105997000239,
+          "pair_result_sha256": "6cb1e5f42f6ad5c29a91ee12b77e0da18b6798932e6541c4f25988f47a2ee253",
+          "probe": "P_torque",
+          "selected_by": "fixed_order",
+          "step": 3
+        }
+      ]
+    },
+    {
+      "candidate_sha256": "4ba96795c4c466eb6d6a9351f4b51b19fd10ef9fd8ed86ce6f545a59084f281c",
+      "candidate_status": "validated_candidate",
+      "case_id": "case-07",
+      "confirmed_family": "optimizer_update_count",
+      "diagnosis_sha256": "a09c1b903140aeb45bf2f39d8d02e397494e5bfec9abfc6386302e1d398999fa",
+      "final_outcome": "recovered",
+      "first_outcome": "not_recovered",
+      "model_calls": 3,
+      "policy": "logs_only",
+      "probe_owned_wall_s": 170.17300000000978,
+      "second_correction": "restore_configured_ppo_epochs",
+      "steps": [
+        {
+          "fact_ids": [
+            "telemetry:case:Train/mean_reward",
+            "telemetry:reference:Train/mean_reward",
+            "telemetry:case:Train/mean_episode_length",
+            "telemetry:reference:Train/mean_episode_length",
+            "telemetry:case:Episode_Termination/time_out",
+            "telemetry:reference:Episode_Termination/time_out",
+            "telemetry:case:Metrics/base_velocity/error_vel_xy",
+            "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+            "telemetry:case:Metrics/base_velocity/error_vel_yaw",
+            "telemetry:reference:Metrics/base_velocity/error_vel_yaw",
+            "telemetry:case:Loss/value_function",
+            "telemetry:reference:Loss/value_function",
+            "telemetry:case:Loss/entropy",
+            "telemetry:reference:Loss/entropy",
+            "telemetry:case:Policy/mean_noise_std",
+            "telemetry:reference:Policy/mean_noise_std",
+            "telemetry:case:Episode_Reward/track_lin_vel_xy_exp",
+            "telemetry:reference:Episode_Reward/track_lin_vel_xy_exp",
+            "telemetry:case:Episode_Reward/track_ang_vel_z_exp",
+            "telemetry:reference:Episode_Reward/track_ang_vel_z_exp"
+          ],
+          "outcome": "normal",
+          "owned_wall_s": 92.03200000000652,
+          "pair_parent_wall_s": 225.82717060000869,
+          "pair_result_sha256": "9bcb95f48a23c62021a5eaa45ea2053f444cd0f7499896e1c6896233cbf5ec8b",
+          "probe": "P_episode",
+          "selected_by": "model",
+          "step": 1
+        },
+        {
+          "fact_ids": [
+            "telemetry:case:Train/mean_reward",
+            "telemetry:reference:Train/mean_reward",
+            "telemetry:case:Loss/value_function",
+            "telemetry:reference:Loss/value_function",
+            "telemetry:case:Loss/entropy",
+            "telemetry:reference:Loss/entropy",
+            "telemetry:case:Policy/mean_noise_std",
+            "telemetry:reference:Policy/mean_noise_std",
+            "telemetry:case:Metrics/base_velocity/error_vel_xy",
+            "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+            "telemetry:case:Metrics/base_velocity/error_vel_yaw",
+            "telemetry:reference:Metrics/base_velocity/error_vel_yaw",
+            "telemetry:case:Train/mean_episode_length",
+            "telemetry:reference:Train/mean_episode_length",
+            "observation:0:P_episode:outcome",
+            "observation:0:P_episode:median_timeout_step",
+            "observation:0:P_episode:timeout_count",
+            "observation:0:P_episode:timeout_ratio"
+          ],
+          "outcome": "normal",
+          "owned_wall_s": 21.46799999999348,
+          "pair_parent_wall_s": 155.8374782000319,
+          "pair_result_sha256": "8bcee3f1612c23a639d4e507e578f5d781e341b2f4d09d1af6bb5688ee33b4d6",
+          "probe": "P_value",
+          "selected_by": "model",
+          "step": 2
+        },
+        {
+          "fact_ids": [
+            "telemetry:case:Train/mean_reward",
+            "telemetry:reference:Train/mean_reward",
+            "telemetry:case:Metrics/base_velocity/error_vel_xy",
+            "telemetry:reference:Metrics/base_velocity/error_vel_xy",
+            "telemetry:case:Policy/mean_noise_std",
+            "telemetry:reference:Policy/mean_noise_std",
+            "telemetry:case:Loss/entropy",
+            "telemetry:reference:Loss/entropy",
+            "telemetry:case:Loss/value_function",
+            "telemetry:reference:Loss/value_function",
+            "telemetry:case:Loss/surrogate",
+            "telemetry:reference:Loss/surrogate",
+            "telemetry:case:Loss/learning_rate",
+            "telemetry:reference:Loss/learning_rate",
+            "observation:1:P_value:actor_change",
+            "observation:1:P_value:critic_change",
+            "observation:0:P_episode:timeout_ratio",
+            "observation:0:P_episode:timeout_count",
+            "observation:0:P_episode:median_timeout_step"
+          ],
+          "outcome": "abnormal",
+          "owned_wall_s": 56.67300000000978,
+          "pair_parent_wall_s": 190.04406480002217,
+          "pair_result_sha256": "f566535d9c20b2bb6099daea78f99c5683721ea7f4b286705a0df46f9fe202f3",
+          "probe": "P_optimizer_updates",
+          "selected_by": "model",
+          "step": 3
+        }
+      ]
+    }
+  ],
+  "same_checkpoint_policy_pair": false,
+  "schema": "five_policy_recovery_observations_v1",
+  "scope": "post_measurement_projection_of_completed_actual_records",
+  "second_model_requests": 6,
+  "second_total_physical_roles": 26,
+  "second_training_fixed_physical_roles": 2,
+  "source_commit": "96adf5a29f16e370727744eb27b532f5cdd19fdb",
+  "status": "complete",
+  "superiority_claim": false
+}

@@ -44,6 +44,65 @@ def _bundle(repo: Path, name: str, *, manifest_schema: str, summary: dict, cases
     })
 
 
+def _observations_bundle(repo: Path, name: str, *, canonical_sha256: str) -> None:
+    probes = (
+        ("case-03", "fixed_eligible", ("P_episode", "P_noise", "P_torque"), "HOLD"),
+        ("case-03", "logs_only", ("P_episode", "P_optimizer_updates", "P_value"), "HOLD"),
+        ("case-07", "fixed_eligible", ("P_episode", "P_noise", "P_torque"), "HOLD"),
+        ("case-07", "logs_only", ("P_episode", "P_value", "P_optimizer_updates"), "recovered"),
+    )
+    rows = []
+    for case_id, policy, names, final in probes:
+        rows.append({
+            "case_id": case_id, "policy": policy, "first_outcome": "not_recovered",
+            "final_outcome": final,
+            "candidate_status": "validated_candidate" if final == "recovered" else "HOLD",
+            "confirmed_family": "optimizer_update_count" if final == "recovered" else None,
+            "second_correction": "restore_configured_ppo_epochs" if final == "recovered" else None,
+            "model_calls": 3 if policy == "logs_only" else 0,
+            "probe_owned_wall_s": 3.0,
+            "steps": [{
+                "step": index, "probe": probe,
+                "outcome": "abnormal" if final == "recovered" and index == 3 else "normal",
+                "selected_by": "model" if policy == "logs_only" else "fixed_order",
+                "fact_ids": [f"fact-{index}"], "pair_result_sha256": str(index) * 64,
+                "pair_parent_wall_s": 1.0, "owned_wall_s": 1.0,
+            } for index, probe in enumerate(names, 1)],
+        })
+    count = lambda value, digest: {
+        "records_sha256": digest * 64, "updates": [0, 1, 2],
+        "expected_steps": [20, 20, 20], "observed_steps": value,
+        "observed_minibatches": value,
+    }
+    summary = {
+        "schema": "five_policy_recovery_observations_v1", "status": "complete",
+        "canonical_manifest_sha256": canonical_sha256, "rows": rows,
+        "optimizer_counts": {
+            "first_training": count([4, 4, 4], "a"),
+            "fresh_three_update_inspection": {
+                "case": count([4, 4, 4], "b"),
+                "reference": count([20, 20, 20], "c")},
+            "second_training": count([20, 20, 20], "d"),
+        },
+        "probe_physical_roles": [{"role": index + 1} for index in range(24)],
+        "probe_physical_roles_count": 24, "probe_owned_wall_sum_s": 12.0,
+        "first_training_fixed_physical_roles": 8,
+        "second_training_fixed_physical_roles": 2,
+        "second_total_physical_roles": 26, "R4_total_physical_roles": 34,
+        "second_model_requests": 6, "continuation_new_model_or_probe_calls": 0,
+        "prior_failed_parent_wall_s": 10783.745328,
+        "continuation_parent_wall_s": 1865.516,
+    }
+    folder = repo / name
+    _write(folder / "summary.json", summary)
+    digest = hashlib.sha256((folder / "summary.json").read_bytes()).hexdigest()
+    _write(folder / "manifest.json", {
+        "schema": "five_policy_recovery_observations_manifest_v1", "status": "complete",
+        "files": {"summary.json": {"sha256": digest,
+                                    "size_bytes": (folder / "summary.json").stat().st_size}},
+    })
+
+
 def _diagnosis_fixture() -> tuple[dict, dict]:
     metrics = {}
     rows = []
@@ -197,7 +256,8 @@ def test_r4_keeps_four_pipelines_two_sources_and_separates_first_second_cost(tmp
     summary, cases = _recovery_fixture()
     _bundle(repo, "r4", manifest_schema="five_policy_recovery_public_manifest_v1",
             summary=summary, cases=cases)
-    slots = {"five_policy_recovery": "r4"}
+    slots = {"five_policy_recovery": "r4",
+             "five_policy_recovery_observations": "r4-observations"}
     waiting = B.scene_five_policy_recovery(B.Sources(repo), slots)
     assert all(value is None for value in _values(waiting))
 
@@ -212,7 +272,7 @@ def test_r4_keeps_four_pipelines_two_sources_and_separates_first_second_cost(tmp
     assert {row[1]["value"] for row in pipelines} == {"F1 · seed 2552", "COMPOUND · seed 2556"}
     second = next(row for row in pipelines if row[0] == "case-03 · logs_only")
     assert [item["value"] for item in second[2:]] == [
-        "validated_candidate", "not_recovered", "필요", "recovered", "recovered"]
+        None, "not_recovered", "필요", "recovered", "recovered"]
     second_cost = next(row for row in costs if row[0] == "case-03 · logs_only")
     assert [item["value"] for item in second_cost[1:]] == [
         "학습 22.0s · 평가 5.0s", "검사 2 · API 1", "tokens 45 · wall 1.5s",
@@ -222,3 +282,58 @@ def test_r4_keeps_four_pipelines_two_sources_and_separates_first_second_cost(tmp
     (repo / "r4/summary.json").write_text("{}", encoding="utf-8")
     rejected = B.scene_five_policy_recovery(B.Sources(repo), slots)
     assert all(value is None for value in _values(rejected))
+
+
+def test_r4_observations_require_committed_matching_canonical_manifest(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-q")
+    summary, cases = _recovery_fixture()
+    _bundle(repo, "r4", manifest_schema="five_policy_recovery_public_manifest_v1",
+            summary=summary, cases=cases)
+    canonical_sha = hashlib.sha256((repo / "r4/manifest.json").read_bytes()).hexdigest()
+    _observations_bundle(repo, "observations", canonical_sha256=canonical_sha)
+    slots = {"five_policy_recovery": "r4",
+             "five_policy_recovery_observations": "observations"}
+
+    waiting_sources = B.Sources(repo)
+    waiting = B.scene_five_policy_recovery(waiting_sources, slots)
+    assert all(row[2]["value"] is None for row in waiting["blocks"][0]["rows"])
+    assert waiting_sources.rows["observations"]["status"] == "waiting"
+
+    paths = [path.relative_to(repo).as_posix() for folder in (repo / "r4", repo / "observations")
+             for path in folder.iterdir()]
+    _git(repo, "add", "--", *paths)
+    _git(repo, "commit", "-q", "-m", "r4 observations fixture")
+    sources = B.Sources(repo)
+    scene = B.scene_five_policy_recovery(sources, slots)
+    rows = {row[0]: row for row in scene["blocks"][0]["rows"]}
+    assert rows["case-03 · fixed_eligible"][2]["value"] == (
+        "episode 정상 → noise 정상 → torque 정상")
+    assert rows["case-07 · logs_only"][2]["value"] == (
+        "episode 정상 → value 정상 → updates 이상")
+    assert rows["case-07 · logs_only"][2]["source"] == "observations"
+    assert "case [4, 4, 4], reference [20, 20, 20], 교정 뒤 [20, 20, 20]" in scene["lead"]
+    assert sources.rows["observations"]["status"] == "ready"
+
+
+def test_r4_observations_reject_canonical_manifest_substitution(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-q")
+    summary, cases = _recovery_fixture()
+    _bundle(repo, "r4", manifest_schema="five_policy_recovery_public_manifest_v1",
+            summary=summary, cases=cases)
+    _observations_bundle(repo, "observations", canonical_sha256="f" * 64)
+    paths = [path.relative_to(repo).as_posix() for folder in (repo / "r4", repo / "observations")
+             for path in folder.iterdir()]
+    _git(repo, "add", "--", *paths)
+    _git(repo, "commit", "-q", "-m", "substituted observations fixture")
+    sources = B.Sources(repo)
+    scene = B.scene_five_policy_recovery(sources, {
+        "five_policy_recovery": "r4",
+        "five_policy_recovery_observations": "observations"})
+    assert all(row[2]["value"] is None for row in scene["blocks"][0]["rows"])
+    assert all(row[3]["value"] is not None for row in scene["blocks"][0]["rows"])
+    assert sources.rows["observations"]["status"] == "mismatch"
+    assert sources.rows["observations"]["reason"] == "canonical_manifest_sha256_mismatch"
