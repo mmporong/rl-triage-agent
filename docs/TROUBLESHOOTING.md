@@ -1028,3 +1028,10 @@
 - 수정: [typed 계약](../evals/recovery_epoch2_probe_boundary_v1.py)은 기존 선택 뷰를 별도 필드에 보존하고 runtime 뷰를 결합한다. 격리 호스트에는 공개 binding·checkpoint·이전 receipt와 일치하는 backend 부모만 공급한다. [후속 실행기](../bench/run_five_policy_recovery_resume_v5.py)는 두 실패의 시간 상계1,025.528011초를 차감해 남은42,174.471989초를 사용한다. 입력4개·seed·모델·판정·arm당 검사3회·API32·SDK32 상한은 유지한다.
 - 검증: [실제 원문의 CPU 결과](../evals/results/recovery_epoch2_probe_boundary_cpu_20261102_v1/result.json)는 source 재구성, runtime 뷰, case/reference 계획2개, authorization·claim을 검증한 뒤 child 호출 직전 sentinel에서 멈췄다. GPU 입장·lease·승인 callback·child 호출은 명시한 CPU fixture다. 이 결과를 실제 검사 실행이나 회복으로 세지 않으며, 다음 실행은 새 등록과 새 출력 경로를 사용한다.
 - 재생 자료 구분: CPU 호스트 재생은 저장 snapshot의 원장 경로에 fixture event3개를 새로 썼다. 원래 실패14파일의 바이트는 같고 추가 원장은 삭제하지 않았다. [별도 출처 기록](../evals/results/recovery_epoch2_probe_boundary_cpu_20261102_v1/fixture-ledger-provenance.json)으로 이 원장을 결합해 실제 검사·승인·SDK 실행과 구분한다. 이후 CPU 재생은 새 원장 경로에서 snapshot을 구성해야 한다.
+
+### OPS-144: runtime 뷰와 운영 callback의 legacy source 재검증 충돌
+
+- 관찰: typed 뷰와 backend 부모 결합은 통과했지만, 첫 검사 준비 승인 callback에서 `다른 runtime view protocol SHA`로 종료됐다. 모델 요청·SDK 실행은0회다. 앞선 CPU 점검은 승인 callback을 fixture로 바꿔 이 경계를 확인하지 못했다.
+- 원인: runtime 뷰 scope는 공통 view의 fact 집합·protocol·검증 함수를 바꾼다. 그 안에서 운영 callback이 과거 선택 문맥을 재검증하면서 legacy protocol SHA를 runtime 검증기에 넘겼다. 저장 자료의 오류나 모델의 오진과 구분한다.
+- 수정: [source 검증 격리](../evals/recovery_legacy_validation_isolation_v1.py)는 두 source 검증 함수가 원래 검증을 수행하는 동안만 legacy 뷰를 복원하고, 이후 runtime 뷰로 되돌린다. runtime snapshot·authorization·receipt 검증과 source 재구성은 유지한다. [실행기 v6](../bench/run_five_policy_recovery_resume_v6.py)는 세 실패의 시간 상계1,761.960669초를 보존하고 남은41,438.039331초를 사용한다. 입력·모델·seed·판정·실행 상한은 같다.
+- 검증: [실제 운영 callback CPU 결과](../evals/results/recovery_legacy_validation_cpu_20261102_v1/result.json)는 원래 `_operational_probe_factory`와 source 검증을 유지한 채 새 임시 원장에서 `prepare → prepare → claim → child 호출 직전`까지 통과했다. GPU 입장·lease·GPU reader·마지막 child만 fixture이며, 승인 callback은 대체하지 않았다. 기존 실행 원문과 source의 바이트가 같음을 확인했다. 실제 검사·회복은 후속 실행으로 판단한다.

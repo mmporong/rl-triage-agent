@@ -1,0 +1,63 @@
+{
+  "binding_change": "legacy_source_validation_isolation",
+  "budget": {
+    "api_cap": 32,
+    "cumulative_parent_wall_cap_s": 43200,
+    "per_arm_pair_cap": 3,
+    "remaining_parent_wall_s": 41438.039331,
+    "sdk_cap": 32,
+    "targets": 4
+  },
+  "epoch3_allowed": false,
+  "parent": {
+    "path": "bench/protocols/five_type_recovery_second_probe_boundary_retry_20261102_v1.json",
+    "sha256": "31a1d100008dc7952634b884f45099307d7e8cc7f94b8d659d2a75cebc5230f7"
+  },
+  "prior": {
+    "api_calls": 0,
+    "closed_lease_sha256": "1b5f4249ee86f5ee6a56ee32ee45e5d1bb8ec19cd9a273ba44f50f7d7a5ff2bc",
+    "cumulative_wall_us": 1761960669,
+    "inventory_digest": "dbbb3bcbdac78a8cbad60d5c514bc40a5118b61ab3a89ae2d9966228327f1429",
+    "inventory_sha256": "34df169a32030769f20262fc476b2590a1d1faa6b2c4c06cd58d5be9ea8103c4",
+    "lease_id": "4c456072-2b71-492f-aec9-9be9ee9865b9",
+    "paired_intents_cancelled_before_backend": 1,
+    "parent_cumulative_wall_us": 1025528011,
+    "sdk_roles_reserved_cancelled": 2,
+    "sdk_started": 0,
+    "total_paired_intents_cancelled_before_backend": 2,
+    "total_sdk_roles_reserved_cancelled": 4,
+    "wall_us": 736432658
+  },
+  "same_registered_sources_model_seeds_criteria": true,
+  "schema": "five_policy_recovery_legacy_validation_retry_protocol_v1",
+  "semantic_retry": false,
+  "sources_lf": {
+    "bench/run_five_policy_recovery_resume_v2.py": "95c517cdc5d80e8c543b7e3ccb9af227f7c1aadf3df96c172e769dbb39843b6a",
+    "bench/run_five_policy_recovery_resume_v3.py": "5dd0a1380df818fa031c2e9cb7cc4ffc57686fd8435f8ffb1c8cfc05304bb106",
+    "bench/run_five_policy_recovery_resume_v4.py": "fa88e60ffe254c5ef3ae0459787d1f55e884136623809d082986c3479c2e498d",
+    "bench/run_five_policy_recovery_resume_v5.py": "6d3bb01722b21ecf86ed8c6657337bffe9018712936e29744037cfc13b64411b",
+    "bench/run_five_policy_recovery_resume_v6.py": "0e8ee30c8d1a6bb86b5d6ca08442191511c25ba1c4625d5a2f5723b5a1595e68",
+    "evals/core_seed_guard_v2.py": "1594303e608a4a65dc753969320c84d957c22e4588434300519f53afff8f77b1",
+    "evals/export_five_policy_recovery_v2.py": "a23cf77d9c8669aa78094656f301b44003b73b6f676d761d479718dfc1a696ce",
+    "evals/lease_timestamps.py": "dd88cc4af421ee8bba3f75715093c9a71766522d13ab060cbcf35696453971a2",
+    "evals/recovery_epoch2_parent_binding_v1.py": "1ce21a129bd15041fdbb698cddc1a84c4d1a827c267c900cba3fe9b1b472ce8a",
+    "evals/recovery_epoch2_probe_boundary_v1.py": "688ff5f32230eec2ec255714da3bb7b720f36b34c9c9f1ad958a31e52345bd40",
+    "evals/recovery_git_blob_cache_v1.py": "9b75e0fa6c0cfc0c0c8a5d1775ba8013d9846193058e45c2c7d86e4e29edf2a9",
+    "evals/recovery_legacy_validation_isolation_v1.py": "2dd5e81a1aec38e318cfced57fdcfd077696bf06450b456c0980de5adeb384d4",
+    "evals/recovery_outcome_contract_v1.py": "7a97f7f11b176bce90a6625e4ffeb6f2e77c2582496c7401a18da6d5bbeaa002",
+    "tests/test_core_seed_guard_v2.py": "ff2afe77435b369bff721d95c5e041236530e651472851764f73c560e65bd15f",
+    "tests/test_export_five_policy_recovery_v2.py": "d1d4bbdf73c752c5a279a047d22bd60060bdda362ea5d1104c54d181a0744173",
+    "tests/test_five_policy_recovery_resume_v2.py": "8619f3030f9c329e4af949d66d0c466447a1d45303a42703f1cf75704a7bd278",
+    "tests/test_five_policy_recovery_resume_v3.py": "3388a9e973a0c0e820985b700de86e24dcfba9a388a7fb0d94099f9b9d243efe",
+    "tests/test_five_policy_recovery_resume_v4.py": "2cd582acfadc31b286ad73c801eeebe7b107e629716f40d559f431634a2cbe0e",
+    "tests/test_five_policy_recovery_resume_v5.py": "3fdad22c1d4322bf2209bb8468b1c5f59e2880fbb4c221159567b884d4108cc1",
+    "tests/test_five_policy_recovery_resume_v6.py": "9acf7283e27dbb234570bea0b5c434928f8d7ea801411ce2df9c3b31383b02a3",
+    "tests/test_lease_timestamps.py": "89ed5803d3095803ed186f4877c85d0de386b8b06220c61b1081d4e4b772e7cf",
+    "tests/test_recovery_epoch2_parent_binding_v1.py": "a988f0fe6e3b5ad9cc20845793774d9b3426f80c14cc28644b64df4d40e72fbc",
+    "tests/test_recovery_epoch2_probe_boundary_v1.py": "4a8566e31857505a44c2188d8cf41d8f82b176a55d5b7b38202a28e0f5fb0351",
+    "tests/test_recovery_git_blob_cache_v1.py": "4354d5a4c06ca515146f9c61b012a5486e68e00866d3f169048170fa5ef5bfc8",
+    "tests/test_recovery_legacy_validation_isolation_v1.py": "10684a4ca1d8a298f1df83c335cf80dfa4956ad9b6bd70e32cec0675bcece96d",
+    "tests/test_recovery_outcome_contract_v1.py": "1d8b2d929d5933e44ef0e1c93b2c94a461891b4759f34ce9682fa279b57e198c"
+  },
+  "status": "preregistered_legacy_validation_isolation_retry"
+}
