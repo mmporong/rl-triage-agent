@@ -1,0 +1,43 @@
+{
+  "first_correction_component": {
+    "path": "bench/protocols/five_type_recovery_first_s4552_s4557_20261101_v1.json",
+    "sha256_lf": "0836ae4dcf5bca5e0c57ec33c9eb872637dbe8af498a89c7a02368bc66cee941"
+  },
+  "parent_loop_protocol": {
+    "anchor": "1dfd0f4523b044a2827a39054b2edefc1770c0a9",
+    "path": "bench/protocols/five_type_recovery_second_s5552_s5557_20261102_v2.json",
+    "sha256_lf": "e0fb60b68918815a46686c491eeb32d72d1b8d6e9bf001793dac3faf5b7a86eb"
+  },
+  "runtime_source_sha256_lf": {
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/algorithms/ppo.py": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/modules/actor_critic.py": "51ce8c6504a7434f86e5188ccb11e9fc981e46f764c00e32be3e8febe7112ae2",
+    "_isaac_sim/kit/python/Lib/site-packages/rsl_rl/runners/on_policy_runner.py": "5ae9e87aabd62ecc9cf1ffdced0866875e0613f396af69877daaf517f7d2e33d",
+    "scripts/reinforcement_learning/rsl_rl/train.py": "b89c32e46c1d24797db7ef02e0b9d66aaf1b191fa287cbf12a7e98c406351545",
+    "source/isaaclab/isaaclab/actuators/actuator_pd.py": "3cc59c456c4ed6e12581a7e5dfe37e007cd7f6128150d6f1aff3f074198cf012",
+    "source/isaaclab/isaaclab/envs/mdp/rewards.py": "884a24a4470a9e7432de99341f905c932f8a7a58f02d5eb89f703b1288db2a76",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/agents/rsl_rl_ppo_cfg.py": "9c6be6e159252eee986fb136c20c88dc3782d2d93c0057dfceb5a3f6beafa290",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0"
+  },
+  "schema": "recovery_epoch2_training_boundary_protocol_v1",
+  "source_sha256_lf": {
+    "bench/hidden_faults.py": "43ae485e8fcdbdbbad208bc8d6d80a308c6ec9e39c7327cd05cafc736a956346",
+    "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+    "bench/lineage_recovery_training_v1.py": "afa9ffe7645a4ab1729830ea3ab1c32bfd623d6fed41c6a7a5d601c1a156011b",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/r1_repair_training.py": "0b1b9aca9d17a4c8fce0a2f1aa451393bea701df66f4769156c2ff9d1f958ae6",
+    "bench/residual_faults_v1.py": "fae165b431588cb01e5140bd75481e907a0b3b71571df2beb6ba11278527ec25",
+    "bench/residual_probe_v1.py": "4d57ed44e9ecaf063d66746a200d28195cce4c322e5ca4f7de449a9106f40d1d",
+    "bench/residual_training_v1.py": "13e9d5733a9b49908e136e54dd0ac8b7dae387b40fa4115f254536c9d6692517",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "evals/recovery_epoch2_training_boundary_v1.py": "7f3b09ba067c62e101fc123eedd2f0c98a4be2766754dee842de71712261943a",
+    "tests/test_lineage_recovery_training_v1.py": "106e298bbffa1503c815cd73e5b5cc615de583279416de7fd5cc9422834999ea",
+    "tests/test_recovery_epoch2_training_boundary_v1.py": "eadf7574a1402a234087190c094889f673121f6670bcfd7d53f7426ab8bef10b"
+  },
+  "status": "registered",
+  "training": {
+    "arm": "BOTH",
+    "fixed_conditions": 26,
+    "max_iterations": 300
+  }
+}

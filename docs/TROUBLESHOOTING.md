@@ -1049,3 +1049,10 @@
 - 원인과 수정: 재사용 대상 비교가 run ID·policy만 확인해 다음 관측 상태를 구분하지 못했다. [재사용 v2](../evals/recovery_recorded_pair_reuse_v2.py)는 빈 관측의 첫 exact 검사만 재사용하고, 같은 입력·부모·checkpoint와 완료 receipt를 검증한 후속 요청은 원 실행기로 넘긴다. 첫 검사 건너뛰기·중복·원장 교체는 거부한다.
 - 검증: [운영 CPU 결과](../evals/results/recovery_followup_delegate_cpu_20261102_v1/result.json)는 원 운영 factory·승인 callback을 유지한 채 첫 재사용 이후 `P_noise`의 두 역할 준비·claim·authorization·owned child 호출 직전까지 도달했다. lease·GPU reader·child만 fixture이며 새 SDK·API는0이다. 첫→두 번째→세 번째 요청의 상태 전이는 관련 회귀로 확인했다.
 - 재실행: [v8](../bench/run_five_policy_recovery_resume_v8.py)은 완료 물리 역할2개를 한 번만 재사용하고 새 물리 역할30개·누적32개·API32·같은 네 고리와 판정을 유지한다. 이전 시간 상계3,833.489176초를 보존하고 남은39,366.510824초를 사용한다. CPU 통과를 실제 회복으로 세지 않는다.
+
+### OPS-147: 진단 loop와 학습 protocol의 source 계약 불일치
+
+- 관찰: V8의 네 진단은 모두 끝났다. 세 후보는 HOLD였고, 복합 사례의 모델 경로는 `P_episode normal → P_value normal → P_optimizer_updates abnormal` 뒤 두 번째 교정 후보를 검증했다. 학습 manifest를 만드는 단계에서 `protocol에 guarded training source closure가 없다`로 종료됐다. 새 재학습·후속 평가는 시작되지 않았다.
+- 원인: 진단 loop는 `sources_lf`를 쓰지만 guarded 학습기는 별도로 등록된 `source_sha256_lf`와 runtime source 9개를 요구한다. 같은 protocol 객체를 두 계약에 넘긴 것이 실패 원인이다. 모델의 검사 선택 실패와 구분한다.
+- 보존: [실행 요약](../evals/results/recovery_training_binding_failure_20261102_v1/result.json)에 원문902파일의 inventory digest, 실제 모델 요청6회, 새 검사 SDK22역할·기존2역할, 학습0회와 시간 상계를 기록했다. 완료 진단과 검사 결과를 재송신하지 않는다. 회복 결과는 미측정이며, 후보 검증을 회복으로 세지 않는다.
+- 후속 조건: 기존 loop·후보·receipt 검증을 유지하면서 별도 학습 component를 등록하고, 원래 manifest 생성과 runtime binding을 CPU에서 확인한다. 재개 범위는 미시작 seed5557의 두 교정 적용·300회 새 학습·26조건 평가로 제한한다. 결과를 본 뒤 모델·검사·seed·판정 기준을 바꾸지 않는다.
