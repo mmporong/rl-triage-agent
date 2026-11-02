@@ -1006,3 +1006,10 @@
 - 원인: 기존 검사는 모든 문자열에서 seed 모양을 찾았으며, 실행의 protocol 참조와 실제 seed·명령·checkpoint를 구분하지 않았다.
 - 수정: [core guard v2](../evals/core_seed_guard_v2.py)는 공개 protocol 폴더의 계획 참조임을 경로와 원문 SHA로 확인한 경우에만 그 참조 파일명의 seed를 제외한다. 구조화된 실제 seed, 실행 인자, checkpoint, 학습 로그 검사는 유지하며 비공개 provider 폴더는 열거 전에 제외한다.
 - 검증: 같은 실제 receipt에서 기존 파서는4552·4557을, 새 파서는4552만 반환했다. [회귀](../tests/test_core_seed_guard_v2.py)는 실제 사용의 거부, 잘못된 SHA의 거부와 예외 후 원복을 확인한다. 새 seed로 교체하거나 광역 기록을 제외해 우회하지 않는다.
+
+### OPS-141: 두 번째 진단 입력 검증에서 불변 Git 조회 반복
+
+- 관찰: 완료된 첫 교정의 실제 입력 하나를 재검증한 개발 profile에서 `subprocess.run`이12,091회 호출됐다. 학습·검사 실행 전의 CPU 출처 확인이며 모델 응답 지연이나 GPU 커널 시간이 아니다.
+- 확인된 비용: 녹화 source anchor와 paired-input protocol의 commit blob을 중첩 검증할 때 같은 `git show <40자리 commit>:<파일>`을 반복했다. profile에는 AST 기반 source closure 재계산과 현재 파일 읽기도 포함되므로 모든 대기 시간이 Git 때문이라고 단정하지 않는다.
+- 수정: [불변 blob 재사용 scope](../evals/recovery_git_blob_cache_v1.py)는 고정된8개 모듈의 성공한 exact Git 조회만 부모 프로세스 안에서 메모한다. 현재 source·checkpoint·receipt·runtime·lease·승인·API 상태의 검사는 매번 수행한다. HEAD·index·ancestry·실패·실행 파일 대체·환경 변경은 캐시하지 않으며 모듈별 proxy는 종료 시 복원한다. [SECOND 실행 경계](../bench/run_five_policy_recovery_resume_v3.py)는 이 소스와 정책을 추가 공개 protocol에 결합하고 기존 실행기를 호출한다.
+- 실제 CPU 확인: [같은 입력의 검증 결과](../evals/results/recovery_source_git_cache_cpu_20261102_v1/result.json)는 원문과 재구성 값이 같고, immutable 조회1,561회·재사용10,236회·우회234회를 기록했다. 현재 코드·원래 subprocess identity도 복원됐다. 관측 시간112.25초는 개발 환경의 한 번 측정이며, profiler·병렬 부하가 다른 기존 시간과 절감률로 비교하지 않는다. API·SDK 실행은0회다. 회복 기준·입력·모델·seed·예산은 바꾸지 않는다.
