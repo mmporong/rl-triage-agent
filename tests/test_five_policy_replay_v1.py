@@ -56,11 +56,14 @@ def _diagnosis_fixture() -> tuple[dict, dict]:
             "wrong_confirmation": policy_index, "normal_model_shadow_proposal": policy_index % 2,
             "normal_model_observed": 2, "normal_model_unobserved": 0,
             "normal_host_gate": 2, "hold_rows": 3,
+            "infra_unknown_rows": 1 if policy == "fixed_eligible" else 0,
             "paired_probes": 20 + policy_index, "model_calls": 8 + policy_index,
             "provider_tokens": {"prompt_tokens": 100, "completion_tokens": 20,
                                 "total_tokens": 120 + policy_index},
             "provider_usage_unknown_calls": 0, "provider_unknown_events": 0,
-            "provider_wall_s": 1.25 + policy_index, "parent_wall_s": 11.5 + policy_index,
+            "provider_wall_s": 1.25 + policy_index,
+            "parent_wall_s": (5289.112526100129 if policy == "fixed_eligible"
+                              else 11.5 + policy_index),
         }
         for case_number in range(1, 11):
             arm = "NONE" if case_number <= 2 else "F5" if case_number >= 9 else "F1"
@@ -73,6 +76,9 @@ def _diagnosis_fixture() -> tuple[dict, dict]:
                 "compound_full": False, "normal_shadow_proposal": False,
                 "normal_shadow_observed": arm == "NONE", "normal_host_gate": arm == "NONE",
                 "hold": arm in {"NONE", "F5"},
+                "infra_unknown_events": (1 if policy == "fixed_eligible"
+                                         and case_number == 4 else 0),
+                "technical_missing": policy == "fixed_eligible" and case_number == 4,
                 "hold_reason": "repair_unsupported" if arm == "F5" else
                 "normal_shadow_only_host_gate" if arm == "NONE" else None,
             })
@@ -166,8 +172,18 @@ def test_r3_waits_then_preserves_case_denominator_normal_gate_and_f5(tmp_path: P
     outcomes = {row[0]: [item["value"] for item in row[1:]] for row in scene["blocks"][0]["rows"]}
     boundaries = {row[0]: [item["value"] for item in row[1:]] for row in scene["blocks"][1]["rows"]}
     assert outcomes["등록 규칙"] == ["5/8", 0, 3, "1 / 0", 20, 8, 11.5]
+    assert outcomes["고정 순서"] == [
+        "6/8", 1, 3, "1 / 1", 21, 9,
+        "5289.11s 기록 · 동일 범위 비교 불가",
+    ]
+    assert [outcomes[label][-1] for label in (
+        "등록 규칙", "3.5 수치", "3.5 + 프레임", "optimizer 우선 등록 규칙"
+    )] == [11.5, 13.5, 14.5, 15.5]
     assert boundaries["등록 규칙"] == ["0 / 2", 2, "2 진단 · 2 repair_unsupported", 120, 1.25]
     assert "독립 case 10개" in scene["lead"] and "no_observed_gain" in scene["lead"]
+    assert scene["title"] == "다섯 정책 진단: 확정·HOLD와 실행 기록"
+    assert scene["blocks"][0]["title"] == "정책별 진단과 실행 기록 범위"
+    assert any("동일 범위 비용으로 비교하지 않는다" in note for note in scene["notes"])
 
     (repo / "r3/cases.json").write_text("{}", encoding="utf-8")
     rejected = B.scene_five_policy_diagnosis(B.Sources(repo), slots)

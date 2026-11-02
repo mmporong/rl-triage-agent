@@ -1,0 +1,72 @@
+{
+  "automatic_retry": false,
+  "budgets": {
+    "api_calls": 0,
+    "first_wall_s": 14400.0,
+    "new_sdk_execution_cap": 6,
+    "old_lease_elapsed_s": 1499.316089,
+    "old_sdk_executions": 2,
+    "remaining_wall_s": 12900.683911,
+    "total_sdk_execution_cap": 8
+  },
+  "original": {
+    "anchor": "a8f6dbe8679e1f9b54a47c4d7db415b35fd8c55e",
+    "first_protocol": {
+      "path": "bench/protocols/five_type_recovery_first_s4552_s4557_20261101_v1.json",
+      "sha256": "0836ae4dcf5bca5e0c57ec33c9eb872637dbe8af498a89c7a02368bc66cee941"
+    },
+    "host_anchor": "ccf70bac3b01a003b7863618a3cef9b78bfdc0a7",
+    "host_protocol": {
+      "path": "bench/protocols/five_type_recovery_first_lease_host_20261102_v2.json",
+      "sha256": "052152ad9c38f56ee71f3e3fcc4d1f087365064fadb6f13950e89a1209c4ee8b"
+    }
+  },
+  "prior": {
+    "case_id": "case-03",
+    "closed_lease_sha256": "a47c5512062ebbcc2bb8260045bc21a5480b98e5966c49033b6de9179185d534",
+    "finalized_result_sha256": "f3b8df7631ad7f08659e14e88f585e04ca9176896e31ced8c75f1e7c3cef8967",
+    "inventory_sha256": "785790886779f416973ba1a1f74d5677a655a7cbd5059aa93f4fb83fd13e3c5e",
+    "lease_id": "0a3d32f2-92b9-45ce-85d2-5547f3fbd0d3",
+    "policy": "fixed_eligible"
+  },
+  "private_plan_sha256": "a2661157edcfbdb1cbd4b8f0cf7881dc46b02b5fb7164aa52b59e37869b6c28b",
+  "schema": "five_policy_recovery_first_continuation_protocol_v2",
+  "second_phase_requires_new_registered_protocol": true,
+  "sources_lf": {
+    "bench/run_five_policy_recovery_resume_v2.py": "95c517cdc5d80e8c543b7e3ccb9af227f7c1aadf3df96c172e769dbb39843b6a",
+    "evals/core_seed_guard_v2.py": "1594303e608a4a65dc753969320c84d957c22e4588434300519f53afff8f77b1",
+    "evals/lease_timestamps.py": "dd88cc4af421ee8bba3f75715093c9a71766522d13ab060cbcf35696453971a2",
+    "evals/recovery_outcome_contract_v1.py": "7a97f7f11b176bce90a6625e4ffeb6f2e77c2582496c7401a18da6d5bbeaa002",
+    "tests/test_core_seed_guard_v2.py": "ff2afe77435b369bff721d95c5e041236530e651472851764f73c560e65bd15f",
+    "tests/test_five_policy_recovery_resume_v2.py": "8619f3030f9c329e4af949d66d0c466447a1d45303a42703f1cf75704a7bd278",
+    "tests/test_lease_timestamps.py": "89ed5803d3095803ed186f4877c85d0de386b8b06220c61b1081d4e4b772e7cf",
+    "tests/test_recovery_outcome_contract_v1.py": "1d8b2d929d5933e44ef0e1c93b2c94a461891b4759f34ce9682fa279b57e198c"
+  },
+  "status": "preregistered_continuation",
+  "targets": [
+    {
+      "candidate_sha256": "dec9c55214b9a649da445d9f7f88756e9fd9929f59ea73bbd0686594cb92ead5",
+      "case_id": "case-03",
+      "policy": "fixed_eligible",
+      "registered_seed": 4552
+    },
+    {
+      "candidate_sha256": "e7e466a56377bdaf465934200666d5fdcdf40cc07316cbfe3147278872e0fdc5",
+      "case_id": "case-03",
+      "policy": "logs_only",
+      "registered_seed": 4553
+    },
+    {
+      "candidate_sha256": "91a3174eb9cf9315e87f181c24cf79daa542dd8feeccf3c4ebf641c3e70d8e37",
+      "case_id": "case-07",
+      "policy": "fixed_eligible",
+      "registered_seed": 4556
+    },
+    {
+      "candidate_sha256": "6268fc9c7bb3588c94525d9fc064aed0e0477b3421fa137113b70adb2c4fddac",
+      "case_id": "case-07",
+      "policy": "logs_only",
+      "registered_seed": 4557
+    }
+  ]
+}

@@ -1291,6 +1291,16 @@ def scene_five_policy_diagnosis(sources: Sources, slots: dict) -> dict:
     for policy in labels:
         metrics = (summary or {}).get("policies", {}).get(policy, {})
         tokens = metrics.get("provider_tokens") or {}
+        policy_cases = [item for item in case_rows if item.get("policy") == policy]
+        incomplete_cost_rows = max(
+            metrics.get("infra_unknown_rows", 0) if metrics else 0,
+            sum(item.get("technical_missing") is True for item in policy_cases),
+        )
+        parent_wall = metrics.get("parent_wall_s")
+        parent_wall_value = (
+            f"{parent_wall:.2f}s 기록 · 동일 범위 비교 불가"
+            if parent_wall is not None and incomplete_cost_rows else parent_wall
+        )
         outcome_values = [
             (f"{metrics.get('correct_any_family')}/{metrics.get('qualified_fault_cases')}"
              if metrics else None),
@@ -1298,13 +1308,12 @@ def scene_five_policy_diagnosis(sources: Sources, slots: dict) -> dict:
             (f"{metrics.get('compound_partial')} / {metrics.get('compound_full')}"
              if metrics else None),
             metrics.get("paired_probes"), metrics.get("model_calls"),
-            metrics.get("parent_wall_s"),
+            parent_wall_value,
         ]
         outcome_rows.append([labels[policy], *[
             cell(sources, value, row["id"], 2 if index == 6 else None)
             for index, value in enumerate(outcome_values)
         ]])
-        policy_cases = [item for item in case_rows if item.get("policy") == policy]
         f5 = [item for item in policy_cases if item.get("qualification", {}).get("arm") == "F5"]
         f5_value = (f"{sum(item.get('correct_any_family') is True for item in f5)} 진단 · "
                     f"{sum(item.get('hold_reason') == 'repair_unsupported' for item in f5)} repair_unsupported"
@@ -1329,20 +1338,21 @@ def scene_five_policy_diagnosis(sources: Sources, slots: dict) -> dict:
                 f"등록 주대조 판정은 {summary['primary']['outcome']}, "
                 f"등록 영상대조 판정은 {summary['secondary']['outcome']}이다.")
     return {
-        "id": "five_policy_diagnosis", "title": "다섯 정책 진단: 확정·HOLD와 실제 비용", "dense": True,
+        "id": "five_policy_diagnosis", "title": "다섯 정책 진단: 확정·HOLD와 실행 기록", "dense": True,
         "lead": lead,
         "blocks": [
-            {"type": "table", "wide": True, "title": "정책별 진단과 완료 비용",
+            {"type": "table", "wide": True, "title": "정책별 진단과 실행 기록 범위",
              "columns": ["정책", "올바른 확정 / 결함", "오확정", "HOLD", "복합 부분 / 전체",
-                         "짝 검사", "API", "parent wall(s)"], "rows": outcome_rows},
+                         "짝 검사", "API", "parent wall 기록(s)"], "rows": outcome_rows},
             {"type": "table", "wide": True, "title": "정상 gate·F5와 모델 API 비용",
              "columns": ["정책", "정상 native shadow 제안 / 관측", "정상 host gate",
                          "F5", "provider tokens", "provider wall(s)"], "rows": boundary_rows},
         ],
         "notes": [
             "정상 native shadow와 host gate를 분리한다. 정상 행의 host gate는 모델이 정상을 확정한 결과가 아니다.",
-            "복합 결함의 부분 확정과 전체 확정을 분리한다. F5는 진단 대상으로 남지만 repair_unsupported이면 교정 성공으로 세지 않는다.",
+            "첫 원인 확정으로 끝나는 고리다. 복합 전체 확정 0은 전체 원인 탐색의 실패율이 아니다. F5의 repair_unsupported도 교정 성공이 아니다.",
             "분모는 독립 case checkpoint이며 반복 호출·프레임은 분모를 늘리지 않는다. parent wall은 GPU kernel 시간이나 비용 절감량이 아니다.",
+            "기술 중단 행이 포함된 정책의 parent wall은 미완결 관측을 포함하므로 동일 범위 비용으로 비교하지 않는다.",
             "3.5·프레임 효과는 등록 대조의 공개 판정만 표시한다. 모델 버전 우위·GPU 절감·새 결함 일반화의 근거가 아니다.",
         ],
     }

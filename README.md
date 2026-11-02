@@ -38,7 +38,7 @@ Every probe and retraining run needs a recorded approval, and each approval is c
 |---|---|
 | Nemotron 3 Super 120B | Decision model in the recorded demonstrations and frozen workflow configurations |
 | Nemotron 3.5 Super VL | Diagnosis and correction proposals in new versions; policy-frame observations and body localization for render/state checks stay separate from recovery decisions |
-| NeMo Agent Toolkit 1.9 | Agent workflows (`configs/*.yml`) and tools (`src/rl_triage/nat_functions.py`) |
+| NeMo Agent Toolkit 1.9 | Configured agent workflows and the 3.5 assessment entry; comparison and recovery experiments use separate host controllers |
 | OpenShell 0.1.1 + openshell-prover | Sandbox with Landlock file policy, L7 network policy and key injection; SMT check of every requested permission |
 | Isaac Lab 2.1.1 / Isaac Sim 4.5 | Fault injection, probes, retraining, fixed evaluation and recorded clips |
 | NVIDIA Skills | `skills/isaaclab-rl-triage` in NVIDIA skill format; the Isaac Lab `isaaclab-debugging-rl-training` checklist validates model correction proposals |
@@ -58,7 +58,7 @@ Who decides what differs by run, so results are not pooled as model choices. In 
 
 **Nemotron 3.5.** [Latency measurements](docs/NEMOTRON35-EVIDENCE-REPORT.md) and [VL integrity checks](docs/VISUAL-INTEGRITY-OBSERVER.md) are reported separately. [Action-contract development](docs/EVIDENCE-GUIDED-DIAGNOSIS.md) made 12/12 first decisions valid (previously 0/12) and led to one preselected R1 recovery. A [reasoning-mode development trial](docs/NEMOTRON-REASONING-MODES.md) increased correct probe-confirmed families from 2/6 to 5/6, including partial compound diagnoses. A two-seed followup did not confirm this improvement: the original mode confirmed 4/6 families versus 3/6 with reasoning enabled, again including partial diagnoses. The default mode is unchanged. These studies do not establish a model-version or image-driven diagnosis advantage.
 
-**Current visual workflow.** A [four-way development comparison](docs/LOCAL-PAIR-FOUR-ARM-COMPARISON.md) used two reward-fault sources with the same 48 training and 54 Play facts. Both 3.5 views, with zero or six images, confirmed 2/2 faults using one paired probe per source; fixed order used three, while `registry_next` held after three. The image view cited telemetry only, so image-driven improvement remains unproved. The earlier [full correction loop](docs/AGENTIC-LOCAL-F1-RECOVERY.md) ended `not_recovered`; its verdict and [same-seed control](docs/SAME-SEED-RECOVERY-CONTROL.md) are preserved. Frames deferred by the [render audit](evals/results/vision_render_integrity_audit_20261028_v1/summary.json) remain deferred.
+**Current comparison.** A [five-policy comparison](docs/FIVE-TYPE-DIAGNOSIS-COMPARISON.md) completed 50 rows on 10 new source policies from known fault types. On the seven technically comparable fault pairs, 3.5 telemetry and fixed order each confirmed three families; their three common successes used 3 versus 9 paired probes. The preregistered verdict was inconclusive. Adding six Play frames produced no extra confirmations or frame-fact citations. All five policies missed two motor faults within the three-probe budget; a separate post-observation torque control observed both. Normal shadow proposals occurred in all four model decisions and were blocked by the benchmark host gate. The [earlier correction loop](docs/AGENTIC-LOCAL-F1-RECOVERY.md) remains `not_recovered`, and frames deferred by the [render audit](evals/results/vision_render_integrity_audit_20261028_v1/summary.json) remain deferred.
 
 ## At A Glance
 
@@ -68,8 +68,8 @@ Who decides what differs by run, so results are not pooled as model choices. In 
 | Contributor or provenance | Mollet (Korea Agentic AI Hackathon 2026) |
 | Use this when | An Isaac Lab RSL-RL training run fails, with or without a known healthy reference |
 | You will get | Ranked hypotheses with telemetry evidence and one next measurement or experiment. Reference-based workflows can register an experiment and obtain a verification verdict; single-run assessments are saved under `preregistrations/assessments/<case>.json`. |
-| Runs on | Linux or Windows 11 + WSL2 (Ubuntu 24.04) with Docker; Isaac Lab on a Windows or Linux RTX host for retraining |
-| Requires | NVIDIA API access to the chosen experiment's registered model (new versions: `nvidia/nemotron-3.5-super-vl-120b-a12b`; archived configurations retain 3 Super), OpenShell 0.1.1 gateway, `uv` |
+| Runs on | Linux or Windows 11 + WSL2 (Ubuntu 24.04); Docker for the sandbox path, and a Windows or Linux RTX host for Isaac Lab retraining |
+| Requires | `uv` and NVIDIA API access to the registered model (new versions: `nvidia/nemotron-3.5-super-vl-120b-a12b`; archived configurations retain 3 Super). The sandbox workflow also requires an OpenShell 0.1.1 gateway. |
 | Verified on | Windows 11 + WSL2 Ubuntu 24.04, Docker 29.8.1, OpenShell 0.1.1, NeMo Agent Toolkit 1.9.0, Isaac Sim 4.5.0 / Isaac Lab 2.1.1, RTX 3060 12 GB |
 | Evidence level | live end-to-end |
 | Support and maturity | Best-effort community support; hackathon prototype |
@@ -116,6 +116,8 @@ For existing RSL-style training, the optional [`observe_optimizer`](src/rl_triag
 
 ## Safety boundary
 
+The controls below were verified in the recorded OpenShell sandbox path. The 3.5 assessment entry and registered experiment controllers run on the host with separate approval and receipt checks.
+
 | Threat | Control | Evidence |
 | --- | --- | --- |
 | Agent edits configs, joint limits or rewards to pass the gate | No config path in the sandbox filesystem policy; bridge has no config API (405) | kernel test PASS; prover counterexample `PUT /config/` |
@@ -124,7 +126,7 @@ For existing RSL-style training, the optional [`observe_optimizer`](src/rl_triag
 | API key leakage | OpenShell provider injects the key at egress; the sandbox sees `openshell:resolve:...` | observed in sandbox run |
 | Writing reference data | Landlock read-only; prover returns `unsupported` → fail-closed reject | kernel test PASS |
 
-Network rules apply to child processes, so code run by the analysis tool can still reach the allowed NVIDIA inference path. Brev GPU runs happen on the host side, outside the OpenShell sandbox. This recipe uses the OpenShell path described in the NemoClaw docs; the NemoClaw harness path is not verified here.
+Within that sandbox, network rules also apply to child processes. Host-side model workers and GPU runs are outside this boundary. This recipe uses the OpenShell path described in the NemoClaw docs; the NemoClaw harness path is not verified here.
 
 ## Verification
 
@@ -179,7 +181,7 @@ The correction replay reports `"status": "pass"` when all six loop records match
 
 - **Main results:** [end-to-end demonstration](docs/E2E-REWARD-DEMO.md) · [two diagnosis rounds](docs/RESIDUAL-DIAGNOSIS-RESULT.md) · [optimizer inspection and R1 repair](docs/OPTIMIZER-OBSERVABILITY.md) · [ANYmal-C port](docs/ANYMAL-C-PORT.md) · [U1 scope extension](docs/U1-SCOPE-EXTENSION.md) · [external faults](docs/T1-EXTERNAL-FAULTS.md) · [healthy inputs](docs/T2-NO-INTERVENTION.md)
 - **Further checks:** [recovery modes and partial resets](docs/TRAINING-CORRECTION.md) · [probe-selection comparison](docs/SELECTION-COMPARISON.md) · [10-case diagnosis comparison and first-correction protocol](docs/NEW-LINEAGE-COMPARISON.md) · [PPO gradient check](docs/PPO-GRADIENT-CHECK.md) · [cross-robot applicability contract](docs/COMBINATION-APPLICABILITY.md) · [model repeatability](docs/N2-PASS-K.md) · [multi-change search](docs/D3-MULTI-CHANGE.md) · [Nemotron endpoint comparison](docs/NEMOTRON-ENDPOINT-COMPARISON-V3.md) · [3.5 paired comparison](docs/NEMOTRON35-VALUE-COMPARISON.md)
-- **Benchmarks:** [five-type source data](docs/FIVE-TYPE-SOURCE-COLLECTION.md) · [first benchmark and baselines](evals/results/p0a2_holdout_20261008/) · [hidden-fault set](evals/results/replay_p0c_20261009/) · [probe loop on 18 runs](evals/results/p1a_loop_compare_20261009/) (14 confirmed with 2.1 probes on average, no wrong confirmation)
+- **Benchmarks:** [five-policy comparison](docs/FIVE-TYPE-DIAGNOSIS-COMPARISON.md) · [five-type source data](docs/FIVE-TYPE-SOURCE-COLLECTION.md) · [first benchmark and baselines](evals/results/p0a2_holdout_20261008/) · [hidden-fault set](evals/results/replay_p0c_20261009/) · [probe loop on 18 runs](evals/results/p1a_loop_compare_20261009/) (14 confirmed with 2.1 probes on average, no wrong confirmation)
 - **Video and compute:** [evidence story replay](docs/AGENTIC-STORY-REPLAY.md) · [video evidence contract](docs/VISION-EVIDENCE-CONTRACT.md) · [Brev data collection](docs/VISION-BREV-DATA.md) · [Brev environment](docs/VISION-BREV-ENVIRONMENT.md) · [multi-step investigation](docs/AGENTIC-INVESTIGATION.md) · [Brev compute pilot](docs/BREV-COMPUTE-PILOT.md) · [troubleshooting](docs/TROUBLESHOOTING.md)
 - **Earlier development:** [Brev registered-F1 run](docs/BREV-RECOVERY.md) · [grounded single-run workflow](docs/GROUNDED-SINGLE-RUN.md) · [active diagnosis](docs/ACTIVE-DIAGNOSIS.md) · [resumable diagnosis](docs/RESUMABLE-DIAGNOSIS.md) · [live approval-loop records](docs/LIVE-LOOP-EVIDENCE.md) · [callback correction feasibility](docs/RECOVERY-FEASIBILITY.md)
 
@@ -192,6 +194,6 @@ Isaac Lab 로봇 강화학습이 겉으로는 잘 끝났는데 실제 과제에 
 - **두 번째 교정:** 기존 복합 사례 2120·2121과 새 3.5 고리의 seed 2311은 첫 교정 뒤 미회복을 확인하고 두 번째 교정에서 회복했습니다. 2311은 모델이 고른 갱신 검사로 예상 20회·실제 4회를 확인해 epoch를 복원했고, 추종 오차는 1.219→1.163→0.142m/s였습니다. 이전 2307의 세 검사 HOLD는 유지합니다. [입력·검사·회복 근거](docs/NEW-LINEAGE-COMPARISON.md#갱신-계측을-연결한-새-복합-사례)를 구분해 기록했습니다.
 - **이식:** ANYmal-C의 새 seed 2047 보상 결함을 검사 한 번으로 확정하고 재학습으로 회복했습니다. 다른 프레임워크에서 옮긴 U1 버그는 범위 경고가 났고, 그 결과를 본 뒤 넓힌 교정으로 2051·2062가 회복했습니다(모델 고리 밖).
 - **멈춤:** 외부에서 가져온 결함 한 종의 세 실행은 원인 없음으로 끝났고 틀린 확정은 없었습니다. 정상 입력에는 고리를 열지 않았고, 출력 형식을 두 번 어긴 모델 응답은 규칙으로 대신 채우지 않고 멈췄습니다.
-- **3.5와 영상:** [행동 계약 개발 비교](docs/EVIDENCE-GUIDED-DIAGNOSIS.md)에서 첫 응답 유효성은0/12→12/12였고, 별도 사전 고정 R1은 추종 오차0.152m/s로 회복했습니다(seed3332). 검사 예측 설명을 보강한 조회 방식은 보상1건·복합의 보상 원인1건을 확인했고4건은 HOLD였습니다. 같은 자료의 사후 개발 결과입니다. [VL 위치 관찰](docs/VISUAL-INTEGRITY-OBSERVER.md)은 렌더 오류2건을 격리했습니다. 모델 버전 효과나 영상에 따른 검사 선택 이득은 확인하지 못했습니다.
+- **3.5와 영상:** [새 10원천·다섯 정책 비교](docs/FIVE-TYPE-DIAGNOSIS-COMPARISON.md)는 50행을 종결했습니다. 기술적으로 비교 가능한 결함7쌍에서 수치 모델과 고정 순서는 각각3건을 확정했고, 함께 맞힌3건의 짝 검사는3회 대9회였습니다. 등록 판정은 미확정이며, 영상 추가의 확정 수 증가나 프레임 근거 인용은 없었습니다. 두 모터 결함은 모든 선택기가 놓쳤지만 사후 토크 대조는2/2 이상을 관측했습니다. 정상 shadow 제안4건은 호스트가 차단했으며 모델 정상 식별로 세지 않습니다. [VL 위치 관찰](docs/VISUAL-INTEGRITY-OBSERVER.md)의 렌더 오류 격리와 진단·회복 효과를 구분합니다.
 
 결함·검사·교정을 같은 팀이 만들었고, 평지 보행 과제 두 개와 적은 seed로 얻은 결과입니다. 진단 정확도·일반화·규칙 대비 우위·GPU 비용 절감은 주장하지 않습니다.

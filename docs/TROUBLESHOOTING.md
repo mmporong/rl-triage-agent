@@ -978,3 +978,31 @@
 - 원인: 역할 receipt 검증기는 raw `execution`과 owned 결과의 일치를 확인한 뒤 반환 projection에서 `execution`을 제외했다. 호스트의 시간 집계는 그 projection에서 `execution.wall_s`를 찾으므로 unknown으로 남겼다.
 - 보완: [비용 감사기](../evals/lineage_probe_cost_audit_v1.py)는 원문을 수정하지 않고 receipt·계획·승인·checkpoint·owned 결과를 다시 결합해 시간을 별도로 복원한다. 해당 짝의 복원 합계는 `39.672s`이며 범위는 자식 시작부터 종료·정리 확인까지다. GPU 커널 시간이나 GPU 사용 시간으로 바꾸지 않는다.
 - 검증과 공개 범위: [관련 회귀](../tests/test_lineage_probe_cost_audit_v1.py)에서 변조·역할 교체·누락을 거부하고 실행 0과 미관측을 구분했다. 실제 한 짝의 검증 전후 원문 10파일 SHA가 같았다. 전체 50행의 공개 비용 집계는 비교 완료 뒤 생성하며, 한 짝을 전체 비용 효과로 일반화하지 않는다.
+
+### OPS-137: 후속 pending 요청이 과거 완료 receipt의 비용 감사를 막음
+
+- 관찰: 50행 비교의 공개 비용 감사가 과거 완료 step에서 `ledger not single done request`로 중단됐다. 그 요청의 네 event는 완료 상태였고, 같은 ledger 뒤에는 다른 요청의 `proposed→approved→consumed` 세 event가 남아 있었다. GPU 실행·원래 결과는 바뀌지 않았다.
+- 원인: 재사용한 HOST 완료 검사가 현재 ledger 전체에 pending 요청이 없어야 한다고 요구해, 과거 완료 prefix와 후속 요청을 구분하지 못했다.
+- 수정: [v2 감사기](../evals/lineage_probe_cost_audit_v2.py)는 원 ledger 전체를 검증한 뒤 봉인된 완료 prefix의 bytes·SHA·event 경계를 대조하고 해당 prefix로 기존 완료 검사를 수행한다. 같은 요청의 suffix·미완료·변조·잘못된 receipt는 거부하며 backend suffix는 허용하지 않는다. 원문 파일은 수정하지 않는다.
+- 검증: 실제 완료 step에서 v1 거부와 v2 HOST 통과를 확인했고 관련 원문 SHA 전후가 같았다. [회귀](../tests/test_lineage_probe_cost_audit_v2.py)는 pending suffix와 잘못된 checkpoint·prefix·receipt 거부를 확인한다. 전체 비용 감사의 완료 여부는 공개 결과로 별도 확인한다.
+
+### OPS-138: 초기 snapshot을 완료 ledger에 연결한 뒤 freshness 검사
+
+- 관찰: 두 F2 토크 검사는 정상 종료했고 둘 다 abnormal이었으나, 공개 변환은 `변조 또는 오래된 snapshot`으로 중단됐다. 공개 파일을 쓰기 전 실패했으며 추가 검사·모델 호출은 없었다.
+- 원인: 변환기가 빈 ledger 시점의 snapshot을 복원한 뒤 경로를 완료 ledger로 바꾸고 `oracle_choice`를 호출했다. 이 함수의 freshness 검사는 완료 history로 snapshot을 다시 계산하므로 초기 snapshot과 달랐다.
+- 수정: [v2 변환기](../evals/export_f2_probe_coverage_v2.py)는 빈 ledger 시점에서 원래 choice를 검증한 뒤 사본의 ledger 경로를 복원하고, 봉인된 pair snapshot SHA와 정확히 대조한다. 기존 source anchor·프로토콜·승인·checkpoint·receipt·종료 검증은 유지한다.
+- 검증: 실제 case-05에서 v1 실패와 v2 snapshot 복원을 확인했고 원문 SHA 전후가 같았다. [회귀](../tests/test_export_f2_probe_coverage_v2.py)는 완료 ledger, 잘못된 choice·snapshot digest·packet을 구분한다. 이 변환 수정을 새 GPU 성과나 선택기 개선으로 세지 않는다.
+
+### OPS-139: 회복 판정의 outer outcome을 inner verdict에서 읽음
+
+- 관찰: 첫 교정의 300회 학습과 26조건 평가가 모두 자연 종료·정리를 마쳤으나, 부모의 판정 처리에서 `등록 recovery 판정이 아니다`로 중단됐다. 원 학습·평가를 실패나 미실행으로 바꾸지 않는다.
+- 원인: canonical recovery 함수는 `{verdict: {label, checks, ...}, outcome: ...}`를 반환한다. 새 소비자가 안쪽 verdict에서 outcome을 읽었고, 기존 테스트가 실제 함수 대신 잘못된 반환 모양을 주입해 오류를 놓쳤다.
+- 수정: [상태 계약](../evals/recovery_outcome_contract_v1.py)은 원 label과 outer outcome의 일치를 검증한 뒤, 복사한 inner verdict에 같은 outcome만 추가한다. [이어 실행기](../bench/run_five_policy_recovery_resume_v2.py)는 완료 역할을 CPU에서 검증해 재사용하고 미시작 고리만 새 등록으로 실행한다. 기존 판정 밴드·대상·seed·SDK 상한은 유지한다.
+- 검증: 실제 helper의 healthy·unhealthy·undetermined, 충돌 거부와 scope 복원을 확인했다. 첫 실측은 canonical `not_recovered`이며, 함수 연결 수정이 회복 결과를 바꾸지는 않는다. 완료한 두 SDK 역할의 비용·원 승인·원 lease와 기존 invalid 기록을 보존한다.
+
+### OPS-140: 계획 protocol 파일명의 seed 범위를 실행으로 오인
+
+- 관찰: seed4552만 학습한 첫 교정 receipt가 만들어진 뒤, 미실행 seed4557의 freshness 검사가 거부됐다. 원인은 receipt의 protocol 참조 파일명에 포함된 `_s4552_s4557_` 문자열이었다.
+- 원인: 기존 검사는 모든 문자열에서 seed 모양을 찾았으며, 실행의 protocol 참조와 실제 seed·명령·checkpoint를 구분하지 않았다.
+- 수정: [core guard v2](../evals/core_seed_guard_v2.py)는 공개 protocol 폴더의 계획 참조임을 경로와 원문 SHA로 확인한 경우에만 그 참조 파일명의 seed를 제외한다. 구조화된 실제 seed, 실행 인자, checkpoint, 학습 로그 검사는 유지하며 비공개 provider 폴더는 열거 전에 제외한다.
+- 검증: 같은 실제 receipt에서 기존 파서는4552·4557을, 새 파서는4552만 반환했다. [회귀](../tests/test_core_seed_guard_v2.py)는 실제 사용의 거부, 잘못된 SHA의 거부와 예외 후 원복을 확인한다. 새 seed로 교체하거나 광역 기록을 제외해 우회하지 않는다.

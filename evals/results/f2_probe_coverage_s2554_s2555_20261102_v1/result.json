@@ -1,0 +1,115 @@
+{
+  "claims": {
+    "diagnosis_success_credit": 0,
+    "original_50_row_comparison_modified": false,
+    "recovery_or_media_credit": 0,
+    "selection_performance_credit": 0
+  },
+  "evidence": {
+    "exporter_sources": [
+      {
+        "component": "run_f2_probe_coverage_v1.py",
+        "sha256": "c3835aed02cba12108da8270db143296ad58fcdde4423f37973eed784e90778f"
+      },
+      {
+        "component": "F2-PROBE-COVERAGE.md",
+        "sha256": "6d9e3ca9de87052dc8c7e374590467e480933c11371aa062e1675bea464a38c3"
+      },
+      {
+        "component": "export_f2_probe_coverage_v1.py",
+        "sha256": "aeec5bc00b94e8367f4c4563b146fe83874509ce18cb3d1cddc312349a149b36"
+      },
+      {
+        "component": "lineage_lease_context_v2.py",
+        "sha256": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c"
+      },
+      {
+        "component": "lineage_probe_cost_audit_v1.py",
+        "sha256": "65518b3b552a52fc98a5d96775678a08d7c7b6829ecbf2dd92767f0fd759685d"
+      },
+      {
+        "component": "registered_optimizer_first_policy_v1.py",
+        "sha256": "90f7259fd06b0eb9234105850769169b0ec580e19fb5d0bd02d6cd1b7071d5ae"
+      },
+      {
+        "component": "test_export_f2_probe_coverage_v1.py",
+        "sha256": "521623b67db110260a4d2ec63b2d4bf075ad7bdf9ed54bade28db0b54721fe6a"
+      },
+      {
+        "component": "test_f2_probe_coverage_v1.py",
+        "sha256": "469aeb6bea3e6891547c44afa8afa6ed79b35fb6f9d36696afd5afdc782cdfd6"
+      },
+      {
+        "component": "test_lineage_lease_context_v2.py",
+        "sha256": "12045b2d012e5b8a1ab1644a47a2d59708f22e2823ae7dcfc75574ef36b7c6a9"
+      },
+      {
+        "component": "test_lineage_probe_cost_audit_v1.py",
+        "sha256": "6bad7f07791fd48165dc83089356a62c190d9939fb948f6e677f57e3ee0263db"
+      },
+      {
+        "component": "test_registered_optimizer_first_policy_v1.py",
+        "sha256": "4109092e5267ff455ca2cc231867869f0d932123c348b523ce5ea019ae2fa04a"
+      }
+    ],
+    "original_batch_sha256": "1d53f5f92c9ab9b616348c55e8dbc16a144c70f939fe5e9cd7e69ae98c78d4c9",
+    "overlay_sha256": "376140c48f474ca381e2dcf2e96fd1c94e8149deea09a48ec8beb0e156037c03",
+    "private_plan_sha256": "fc329ebbaa7a565fc01140fb91c015dcb19cd7993c037dfc6421e285f61d40aa",
+    "registration_anchor": "eaad2ead2ff25293ac2372e5f244b25754c9dfdd"
+  },
+  "new_cost": {
+    "api_calls": 0,
+    "known_owned_wall_s": 137.26399999996647,
+    "pairs": 2,
+    "sdk_roles_observed": 4,
+    "sdk_roles_reserved": 4
+  },
+  "schema": "f2_probe_coverage_public_export_v1",
+  "scope": "posthoc_development_probe_coverage_control",
+  "status": "verified",
+  "targets": [
+    {
+      "case_id": "case-05",
+      "control_policy": "registered_f2_torque_oracle_control",
+      "cost": {
+        "known_owned_wall_s": 69.46799999999348,
+        "new_sdk_roles_observed": 2,
+        "new_sdk_roles_reserved": 2,
+        "reused_prior_receipt": false
+      },
+      "coverage": "confirmed_signature",
+      "execution": "executed_one_pair",
+      "fault": "F2",
+      "outcome": "abnormal",
+      "pair_result_sha256": "be846be9f73481ea0caa3d462601965f11f78081b9cd931829a1ad1dbbee77b1",
+      "probe": "P_torque",
+      "selection_performance_credit": 0
+    },
+    {
+      "case_id": "case-06",
+      "control_policy": "registered_f2_torque_oracle_control",
+      "cost": {
+        "known_owned_wall_s": 67.79599999997299,
+        "new_sdk_roles_observed": 2,
+        "new_sdk_roles_reserved": 2,
+        "reused_prior_receipt": false
+      },
+      "coverage": "confirmed_signature",
+      "execution": "executed_one_pair",
+      "fault": "F2",
+      "outcome": "abnormal",
+      "pair_result_sha256": "29f62a5f0658f64019a4bc40a3ddb888905e43c86cad08b37f4fbcc032fdfe8f",
+      "probe": "P_torque",
+      "selection_performance_credit": 0
+    }
+  ],
+  "validator": {
+    "frozen_v1_schema": "f2_probe_coverage_public_export_v1",
+    "frozen_v1_source_anchor": "eaad2ead2ff25293ac2372e5f244b25754c9dfdd",
+    "frozen_v1_source_closure_preserved": true,
+    "frozen_v1_verifier_sha256_lf": "aeec5bc00b94e8367f4c4563b146fe83874509ce18cb3d1cddc312349a149b36",
+    "historical_reconstruction": "validate_choice_before_exact_ledger_retarget",
+    "schema": "f2_probe_coverage_public_export_v2",
+    "v2_source_sha256_lf": "ec0236c99ba6c63d2a1b837192eb8a4da9ec98260e406a2f84eb4da8386870db"
+  }
+}

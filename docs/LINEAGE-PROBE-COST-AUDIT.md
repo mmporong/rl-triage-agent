@@ -25,6 +25,8 @@ runtime receipt verifier는 raw receipt의 `execution`과 owned 결과가 같은
 - exit code 0, natural exit, timeout false, cleanup verified
 - wall scope `parent_launch_to_exit_and_owned_job_empty_verification`
 
+완료 뒤 다른 요청이 pending인 ledger도 과거 완료 요청을 보존한다. [v2 감사기](../evals/lineage_probe_cost_audit_v2.py)는 원 ledger 전체의 형식·상태 전이를 먼저 검증하고, 해당 pair에 봉인된 byte length·SHA의 완료 prefix를 기존 HOST 완료 검사에 전달한다. 같은 요청의 후속 event, 미완료 요청, prefix 변조는 거부한다. public ledger의 다른 요청 suffix만 허용하며 backend ledger에는 suffix를 허용하지 않는다. 현재 전체 snapshot·receipt·checkpoint·종료 검증은 유지한다.
+
 inline execution과 owned 결과가 다르거나 role·plan·request·checkpoint가 바뀌면 거부한다. receipt가
 명시적으로 없으면 wall time은 `null`로 유지하며 0으로 채우지 않는다. 실제 완료 wall time이
 `0.0`이면 known 값 0으로 보존해 missing과 구분한다.
@@ -64,7 +66,7 @@ R3 `result.json`이 complete 50행이 된 뒤 다음처럼 실행한다. product
 Set-Location "$HOME\rl-triage-agent"
 $env:PYTHONUTF8='1'
 $env:PYTHONDONTWRITEBYTECODE='1'
-.\.venv\Scripts\python.exe -B evals/lineage_probe_cost_audit_v1.py export `
+.\.venv\Scripts\python.exe -B evals/lineage_probe_cost_audit_v2.py export `
   --batch $BATCH_RESULT `
   --protocol bench/protocols/five_type_diagnosis_s2550_s2559_20261101_v1_five_policy.json `
   --config $EXECUTION_CONFIG `
@@ -72,4 +74,19 @@ $env:PYTHONDONTWRITEBYTECODE='1'
   --out evals/results/lineage_probe_cost_audit_20261102_v1
 ```
 
-현재 R3 batch가 진행 중이므로 이 공개 tag는 아직 만들지 않았다.
+R3 50행은 완료됐다. 비용 감사는 원래 판정·실행 결과를 바꾸지 않는 후처리이며, 공개 결과의 `historical_prefix_validation`은 사용한 v2 source SHA와 prefix 검증 범위를 기록한다.
+
+## 실제 50행 감사 결과
+
+[공개 요약](../evals/results/lineage_probe_cost_audit_20261102_v1/summary.json)은 완료 pair 88건과 짝 결과가 없는 완료 역할 1건을 재검증했다.
+
+| 항목 | 검증된 값 |
+|---|---:|
+| 짝 검사 intent / 완료 pair | 89 / 88 |
+| 예약 SDK 역할 / 시간 확인 역할 | 178 / 177 |
+| 한 번만 합산한 orphan 역할 | 1 |
+| 승인 전에 멈춘 명시적 미실행 역할 | 1 |
+| 시간 미확인 / 미해소 예약 역할 | 0 / 0 |
+| 역할별 owned wall 합계 | 4,161.601초 |
+
+미완결 짝의 정상 참조 역할 `18.032초`도 합계에 포함했다. 이 합계는 SDK 자식 시작부터 종료·정리 확인까지의 시간이며, GPU 커널 시간이나 절감량이 아니다. 전체 batch 부모 wall과 계측 범위가 다르므로 두 값을 나눠 GPU 사용률로 해석하지 않는다. 정책별 검사 수와 입력 부재·기술 중단 조건도 다르므로 원시 합계만으로 정책의 비용 우위를 정하지 않는다.
