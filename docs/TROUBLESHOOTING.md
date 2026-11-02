@@ -1035,3 +1035,10 @@
 - 원인: runtime 뷰 scope는 공통 view의 fact 집합·protocol·검증 함수를 바꾼다. 그 안에서 운영 callback이 과거 선택 문맥을 재검증하면서 legacy protocol SHA를 runtime 검증기에 넘겼다. 저장 자료의 오류나 모델의 오진과 구분한다.
 - 수정: [source 검증 격리](../evals/recovery_legacy_validation_isolation_v1.py)는 두 source 검증 함수가 원래 검증을 수행하는 동안만 legacy 뷰를 복원하고, 이후 runtime 뷰로 되돌린다. runtime snapshot·authorization·receipt 검증과 source 재구성은 유지한다. [실행기 v6](../bench/run_five_policy_recovery_resume_v6.py)는 세 실패의 시간 상계1,761.960669초를 보존하고 남은41,438.039331초를 사용한다. 입력·모델·seed·판정·실행 상한은 같다.
 - 검증: [실제 운영 callback CPU 결과](../evals/results/recovery_legacy_validation_cpu_20261102_v1/result.json)는 원래 `_operational_probe_factory`와 source 검증을 유지한 채 새 임시 원장에서 `prepare → prepare → claim → child 호출 직전`까지 통과했다. GPU 입장·lease·GPU reader·마지막 child만 fixture이며, 승인 callback은 대체하지 않았다. 기존 실행 원문과 source의 바이트가 같음을 확인했다. 실제 검사·회복은 후속 실행으로 판단한다.
+
+### OPS-145: 완료된 짝 검사의 public/backend snapshot 경로 혼용
+
+- 관찰: V6는 `P_episode`의 reference·case SDK 2역할을 정상 종료하고 짝 결과 `normal`을 만들었다. 후속 receipt 검증에서 public 48-fact packet을 backend 64-fact 전용 snapshot 경로로 보내 중단됐다. 완료된 검사를 실패나 미실행으로 바꾸지 않는다.
+- 수정: [snapshot 경로 분리](../evals/recovery_receipt_snapshot_routes_v1.py)는 public·backend packet을 각 등록 경로로 보내고 epoch-2의 historical·final 부모 검증을 유지한다. [완료 짝 재사용](../evals/recovery_recorded_pair_reuse_v1.py)은 기존 receipt를 원래 `HOST.verify_pair`와 `FIRST._verify_steps`로 재검증한 뒤 새 public ledger에 한 번만 기록한다. 검사를 다시 실행하지 않는다.
+- 검증: [공개 CPU 결과](../evals/results/recovery_receipt_reuse_cpu_20261102_v1/result.json)는 원본 78파일의 inventory digest가 `49615c79a5f76a61d48b2a7284ef4b5501dfc7574590e0d7eba56a3102df5592`로 유지됐고 API 0회·새 SDK 0회·기존 물리 역할 2개임을 기록한다. 부모 시간 `232.42612550000194s`는 완료된 측정을 한 번 재정산한 값이며 새 GPU 시간이 아니다.
+- 후속: V7은 science 조건·seed·모델·판정·실행 상한을 바꾸지 않는다. 이 CPU 결과 시점에는 V7 실제 실행을 시작하지 않았으며 검사·교정·회복 결과는 후속 실행으로 판단한다.
