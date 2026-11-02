@@ -1465,6 +1465,9 @@ def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
     observations_by_target = {
         (item["case_id"], item["policy"]): item
         for item in (observations or {}).get("rows", [])}
+    media_folder = slots.get("five_policy_recovery_media")
+    recovery_video = (media_video(sources, media_folder) if media_folder is not None
+                      else sources.file(None, kind="five_policy_recovery_media"))
     targets = (("case-03", "fixed_eligible"), ("case-03", "logs_only"),
                ("case-07", "fixed_eligible"), ("case-07", "logs_only"))
     pipeline_rows = []
@@ -1495,20 +1498,20 @@ def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
         second = (item or {}).get("second_training")
         first_values = ([first.get("training_execution_wall_s"), first.get("fixed_execution_wall_s")]
                         if first else [None, None])
-        first_value = (f"학습 {first_values[0]}s · 평가 {first_values[1]}s"
+        first_value = (f"학습 {float(first_values[0]):.3f}s · 평가 {float(first_values[1]):.3f}s"
                        if all(value is not None for value in first_values) else None)
         diagnosis_values = ([second_cost.get("paired_probe_sdk_executions"),
                              second_cost.get("model_api_calls")] if second_cost else [None, None])
-        diagnosis_value = (f"검사 {diagnosis_values[0]} · API {diagnosis_values[1]}"
+        diagnosis_value = (f"SDK {diagnosis_values[0]} · API {diagnosis_values[1]}"
                            if all(value is not None for value in diagnosis_values) else None)
         provider_tokens = ((second_cost.get("provider_tokens") or {}).get("total_tokens")
                            if second_cost else None)
         provider_wall = second_cost.get("provider_wall_s") if second_cost else None
-        provider_value = (f"tokens {provider_tokens} · wall {provider_wall}s"
+        provider_value = (f"tokens {provider_tokens} · wall {float(provider_wall):.3f}s"
                           if provider_tokens is not None and provider_wall is not None else None)
         second_values = ([second.get("training_execution_wall_s"), second.get("fixed_execution_wall_s")]
                          if second else [None, None])
-        second_value = (f"학습 {second_values[0]}s · 평가 {second_values[1]}s"
+        second_value = (f"학습 {float(second_values[0]):.3f}s · 평가 {float(second_values[1]):.3f}s"
                         if all(value is not None for value in second_values) else None)
         cost_rows.append([
             f"{case_id} · {policy}",
@@ -1538,14 +1541,20 @@ def scene_five_policy_recovery(sources: Sources, slots: dict) -> dict:
              "columns": ["pipeline", "원래 source", "SECOND 검사", "FIRST 결과", "SECOND", "SECOND 결과", "최종"],
              "rows": pipeline_rows},
             {"type": "table", "wide": True, "title": "단계별 실제 비용",
-             "columns": ["pipeline", "FIRST 학습 · 평가", "SECOND 검사 · API",
+             "columns": ["pipeline", "FIRST 학습 · 평가", "SECOND SDK · API",
                          "SECOND provider 비용", "SECOND 학습 · 평가"],
              "rows": cost_rows},
+            {"type": "video", "items": [{
+                "label": ("Normal / Compound / After two registered corrections · 등록 실험 재생. "
+                          "다른 세 pipeline은 HOLD이며 영상은 회복 판정을 새로 만들지 않는다."),
+                "source": recovery_video["id"],
+            }]},
         ],
         "notes": [
             "네 pipeline은 두 원래 source 계보에서 갈라진다. pipeline 4개와 독립 source 2개를 같은 분모로 세지 않는다.",
             "FIRST 결과, 필요한 경우의 SECOND 진단·학습, 최종 회복을 분리한다. not_recovered를 자동 재시도나 회복으로 바꾸지 않는다.",
             "4→20 검사는 같은 설정의 fresh 3-update 관측이다. 과거 checkpoint 실행값으로 추정하지 않는다.",
+            "영상은 등록된 비교의 재생이며 모델 버전·VL 우위의 근거가 아니다. 회복 판정은 fixed26 영수증에서 가져온다.",
             "비용이 원문 receipt에 없으면 숫자를 채우지 않는다. 모델 우위·GPU 절감·등록 범위 밖 회복의 근거가 아니다.",
         ],
     }

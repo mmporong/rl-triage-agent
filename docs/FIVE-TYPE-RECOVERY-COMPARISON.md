@@ -112,3 +112,11 @@ optimizer 횟수를 모두 계측했다고 주장하지 않는다.
 새 학습의 owned wall은474.546초, 고정 평가는43.468초였다. 이는 process 시작부터
 종료·정리까지의 시간이며 GPU 커널 시간이 아니다. 조건부 회복 영상은 별도 녹화
 등록으로 연결하며 수치 회복 판정에 영상을 사용하지 않는다.
+
+## 같은 Play 조건의 정책 재생
+
+[정상·복합 결함·두 교정 뒤 비교 영상](media/five_type_recovery_s5557_20261102_v1/comparison.mp4)은 기존 원천13·14의 정상/복합 정책과 새 회복5557 정책을 가로로 편집한 자료다. 각 원본은625프레임·50fps·12.5초·640×480이며, 카메라·명령1m/s·제어 seed42 조건을 유지했다. 재생 중 결함을 새로 주입하거나 액추에이터를 바꾸지 않았다.
+
+새 회복 정책은 공용 GPU 임대에서1프레임 smoke1회와 전체 녹화1회를 정상 종료했다. 실제 SDK 실행은2회이며 모델/API·새 학습은0회다. render forward625회, 물리 상태 비간섭, native/sidecar/PTS·checkpoint·종료 증거는 원 검증기로 대조했다. 영상의 정상적인 종료·정리와 학습 회복 판정은 별도 근거다.
+
+[정상 원본](media/five_type_recovery_s5557_20261102_v1/normal.mp4)·[복합 결함 원본](media/five_type_recovery_s5557_20261102_v1/compound.mp4)·[두 교정 뒤 원본](media/five_type_recovery_s5557_20261102_v1/after-two-corrections.mp4)은 byte copy이며, [출처 manifest](media/five_type_recovery_s5557_20261102_v1/source_manifest.json)에 SHA를 담았다. `comparison.mp4`는 라벨이 있는 파생 편집물이다. manifest의 GPU0/API0은 CPU에서 수행한 공개 변환 단계의 사용량이며, 앞서 수행한 실제 녹화 SDK2회를0으로 바꾸지 않는다. 원래 capture/model/decision 승인 플래그는false로 보존했다. 이 재생을3.5 버전이나 VL 방식의 우위, 새로운 회복 판정으로 합산하지 않는다.

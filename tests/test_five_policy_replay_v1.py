@@ -207,7 +207,7 @@ def _recovery_fixture() -> tuple[dict, dict]:
 
 
 def _values(scene: dict) -> list[object]:
-    return [item["value"] for block in scene["blocks"] for row in block["rows"]
+    return [item["value"] for block in scene["blocks"] for row in block.get("rows", [])
             for item in row if isinstance(item, dict)]
 
 
@@ -275,8 +275,8 @@ def test_r4_keeps_four_pipelines_two_sources_and_separates_first_second_cost(tmp
         None, "not_recovered", "필요", "recovered", "recovered"]
     second_cost = next(row for row in costs if row[0] == "case-03 · logs_only")
     assert [item["value"] for item in second_cost[1:]] == [
-        "학습 22.0s · 평가 5.0s", "검사 2 · API 1", "tokens 45 · wall 1.5s",
-        "학습 32.0s · 평가 6.0s"]
+        "학습 22.000s · 평가 5.000s", "SDK 2 · API 1", "tokens 45 · wall 1.500s",
+        "학습 32.000s · 평가 6.000s"]
     assert "source 계보 2개" in scene["lead"] and "pipeline 4개" in scene["lead"]
 
     (repo / "r4/summary.json").write_text("{}", encoding="utf-8")
@@ -337,3 +337,47 @@ def test_r4_observations_reject_canonical_manifest_substitution(tmp_path: Path) 
     assert all(row[3]["value"] is not None for row in scene["blocks"][0]["rows"])
     assert sources.rows["observations"]["status"] == "mismatch"
     assert sources.rows["observations"]["reason"] == "canonical_manifest_sha256_mismatch"
+
+
+def test_r4_recovery_media_uses_manifest_gate_without_changing_result_tables(
+        tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-q")
+    summary, cases = _recovery_fixture()
+    _bundle(repo, "r4", manifest_schema="five_policy_recovery_public_manifest_v1",
+            summary=summary, cases=cases)
+    recovery_paths = [path.relative_to(repo).as_posix() for path in (repo / "r4").iterdir()]
+    _git(repo, "add", "--", *recovery_paths)
+    _git(repo, "commit", "-q", "-m", "r4 fixture")
+    media = repo / "docs/media/recovery"
+    media.mkdir(parents=True)
+    video = b"three-panel-video"
+    (media / "comparison.mp4").write_bytes(video)
+    _write(media / "source_manifest.json", {
+        "comparison": {"mp4": {"sha256": hashlib.sha256(video).hexdigest()}}})
+    slots = {"five_policy_recovery": "r4",
+             "five_policy_recovery_media": "docs/media/recovery"}
+
+    waiting_sources = B.Sources(repo)
+    waiting = B.scene_five_policy_recovery(waiting_sources, slots)
+    assert waiting["blocks"][2]["type"] == "video"
+    waiting_video = waiting["blocks"][2]["items"][0]
+    assert waiting_sources.rows[waiting_video["source"]]["status"] == "waiting"
+    assert all(row[3]["value"] is not None for row in waiting["blocks"][0]["rows"])
+
+    _git(repo, "add", "--", "docs/media/recovery/comparison.mp4",
+         "docs/media/recovery/source_manifest.json")
+    _git(repo, "commit", "-q", "-m", "recovery media")
+    ready_sources = B.Sources(repo)
+    ready = B.scene_five_policy_recovery(ready_sources, slots)
+    source = ready["blocks"][2]["items"][0]["source"]
+    assert ready_sources.rows[source]["status"] == "ready"
+    assert "After two registered corrections" in ready["blocks"][2]["items"][0]["label"]
+
+    (media / "comparison.mp4").write_bytes(b"changed")
+    rejected_sources = B.Sources(repo)
+    rejected = B.scene_five_policy_recovery(rejected_sources, slots)
+    source = rejected["blocks"][2]["items"][0]["source"]
+    assert rejected_sources.rows[source]["status"] == "mismatch"
+    assert all(row[3]["value"] is not None for row in rejected["blocks"][0]["rows"])
