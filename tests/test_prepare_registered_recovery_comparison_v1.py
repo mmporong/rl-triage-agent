@@ -127,7 +127,8 @@ def _patch_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple
     source = _write(tmp_path / "source.py", b"source\n")
     for relative in (prepare.COMPARISON.REVIEW_POLICY_RELATIVE,
                      "bench/protocols/diagnostic_recovery_comparison_20261104_v2.md",
-                     "bench/protocols/diagnostic_recovery_comparison_20261104_v3.md"):
+                     "bench/protocols/diagnostic_recovery_comparison_20261104_v3.md",
+                     "bench/protocols/diagnostic_recovery_comparison_20261104_v4.md"):
         _write(tmp_path / relative, (prepare.ROOT / relative).read_bytes())
     monkeypatch.setattr(prepare, "ROOT", tmp_path)
     monkeypatch.setattr(prepare, "RECIPE", recipe)

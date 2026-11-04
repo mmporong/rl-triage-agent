@@ -54,6 +54,7 @@ _SOURCE_FILES = {
     "evals/core_seed_guard_v1.py",
     "tests/test_core_seed_guard_v1.py",
     "bench/protocols/diagnostic_recovery_comparison_20261104_v3.md",
+    "bench/protocols/diagnostic_recovery_comparison_20261104_v4.md",
     "evals/run_registered_recovery_comparison_v1.py",
     "evals/registered_recovery_backend_v1.py",
     "evals/registered_recovery_resources_v1.py",
@@ -426,6 +427,9 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     inputs.append({"role": "terminal_hold_integration_preregistration",
                    "path": "bench/protocols/diagnostic_recovery_comparison_20261104_v3.md",
                    "sha256": _sha(ROOT / "bench/protocols/diagnostic_recovery_comparison_20261104_v3.md", lf=True)})
+    inputs.append({"role": "owned_stage_infrastructure_preregistration",
+                   "path": "bench/protocols/diagnostic_recovery_comparison_20261104_v4.md",
+                   "sha256": _sha(ROOT / "bench/protocols/diagnostic_recovery_comparison_20261104_v4.md", lf=True)})
     for case in CASES:
         old = case
         row = phase_inputs.get(f"protocol:{old}")
