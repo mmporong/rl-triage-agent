@@ -2,7 +2,7 @@
 
 새 조사 진입점은 입력 검증, 다음 검사 제안, 승인, 실행, 중단 후 결과 접수, 내보내기를 같은 세션 원장에 남긴다. 모델은 검사 ID와 근거 fact ID를 고른다. 실행 인자와 권한은 등록된 호스트가 검증한다.
 
-개발 대조에서는 정상·모터 함수 결함·PPO 갱신 횟수 오류·계산 오류를 Isaac 실행으로 관측했다. 모터 두 건은 부모 정규화기를 수정한 뒤 보관 원문으로 다시 검증했다. 새 원천 20학습·20고정평가의 수집이 끝났다. 네 방식의 첫 비교는 17arm을 기록한 뒤 임대 파일 읽기 오류로 중단됐으며, 수정판과 새 회복 경로는 아직 실측 전이다. [중단 기록과 해석](../evals/results/diagnostic_comparison_s2660_s2669_20261104_v3_incomplete/interpretation.md)은 모델 성능 비교와 구분한다.
+개발 대조에서는 정상·모터 함수 결함·PPO 갱신 횟수 오류·계산 오류를 Isaac 실행으로 관측했다. 모터 두 건은 부모 정규화기를 수정한 뒤 보관 원문으로 다시 검증했다. 새 원천 20학습·20고정평가 뒤 네 방식의 진단 비교 24행과 교정·평가 비교 16행을 완료했다. 진단에서 네 방식 모두 전체 원인 집합을 2/6사례에서 확인했고, 교정 비교는 미회복15행·HOLD1행이었다. [중단된 첫 비교](../evals/results/diagnostic_comparison_s2660_s2669_20261104_v3_incomplete/interpretation.md)는 별도 이력으로 보존한다. [완료한 진단 결과](../evals/results/diagnostic_comparison_s2664_s2669_20261104_v4/summary.json)의 부분 확인과 HOLD를 전체 원인 확인으로 합치지 않는다.
 
 ## 지원하는 확인 검사
 
@@ -24,10 +24,10 @@
 
 ```powershell
 cd "$HOME/rl-triage-agent"
-.\.venv\Scripts\python.exe -m rl_triage.investigate --help
+.\.venv\Scripts\python.exe -m rl_triage.investigate_v2 --help
 ```
 
-명령은 `prepare`, `next`, `approve`, `dispatch`, `settle`, `status`, `export`다. `--session`은 세션 폴더, `--input`은 해당 명령의 JSON 입력이다. 기본 backend는 `registered_diagnostic_v1`이며 임의 Python 모듈이나 셸 명령을 입력받지 않는다.
+명령은 `prepare`, `next`, `approve`, `dispatch`, `settle`, `status`, `export`다. `--session`은 세션 폴더, `--input`은 해당 명령의 JSON 입력이다. 기본 backend는 `registered_diagnostic_v1`이며 임의 Python 모듈이나 셸 명령을 입력받지 않는다. `investigate_v2`는 기존 실행 함수를 재사용하면서 모델 HOLD와 아직 접수하지 못한 도구 실행 상태를 구분한다.
 
 `prepare`는 등록된 case/reference의 고정 26조건 평가, source manifest, 기준·프로토콜 SHA, 검사 registry, 실제 artifact resolver를 재검증한다. `next`는 제안만 남기며 실행하지 않는다. `approve`는 검사·사례·원천·체크포인트·request·effect·registry에 결합된 호스트 승인 파일을 요구한다. `dispatch`는 그 승인을 한 번 소비한 뒤에만 등록된 자식 실행기로 넘어간다.
 
@@ -54,7 +54,7 @@ CPU fixture backend는 `--backend cpu_fixture_v1 --fixture`를 함께 지정한 
 | `recovery-post` | 새 체크포인트와 실제 고정 평가 수치, 교정 기록, 비용을 내보낸다. |
 | `recovery-review` | 등록된 원천·교정 후 근거·호스트 정책을 다시 확인하고 다음 판단을 제안한다. 새 모델·GPU 실행이나 승인을 만들지 않는다. |
 
-새 실행 경로는 모터 함수 교정 후 이어 학습, PPO epoch 복원 후 재학습, PPO surrogate 계산 복원 후 재학습을 지원한다. 기존 교정 표는 보존하고 optimizer 두 항을 새 등록 표에 추가했다. 이 연결의 CPU 검증과 실제 교정·회복 측정은 구분한다.
+새 실행 경로는 모터 함수 교정 후 이어 학습, PPO epoch 복원 후 재학습, PPO surrogate 계산 복원 후 재학습을 지원한다. 기존 교정 표는 보존하고 optimizer 두 항을 새 등록 표에 추가했다. 이번 네 방식 비교에서 실행한 교정은 모터와 epoch 복원이다. 계산 복원 경로의 구현을 이번 비교의 실측으로 쓰지 않는다.
 
 epoch 교정의 새 실행기는 원천의 등록 보상·모터 구성을 보존한다. 복합 결함에서 epoch를 고치며 보상 함수까지 함께 기본값으로 바꾸지 않도록 원천 설정·SDK 코드 계약·새 runtime 지문을 결합한다. 과거 학습의 runtime 지문은 확보되지 않았으므로, 등록 구성의 출처와 새 학습에서 확인한 구현을 구분한다.
 
