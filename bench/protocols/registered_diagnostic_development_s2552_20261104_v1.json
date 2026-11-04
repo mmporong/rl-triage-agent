@@ -1,0 +1,79 @@
+{
+  "actors": [
+    "registered-host"
+  ],
+  "backend_id": "registered_diagnostic_v1",
+  "components": {
+    "P_actuator_mapping": {
+      "artifacts": {
+        "checkpoint": {
+          "artifact_id": "case03-f1-s2552-checkpoint",
+          "sha256": "e0206f2882b0678f0ca15c4457328db67228d8d77e6612cd94ff1259755dd1a8"
+        },
+        "child_protocol": {
+          "artifact_id": "diagnostic-child-protocol-v1",
+          "sha256": "739d2d71faafd20f102e53d449171895598de6749c43b3059204a0fef8d2d306"
+        },
+        "execution": {
+          "artifact_id": "actuator-config-s2552",
+          "sha256": "a5f7da3ffc3a35c4539d4d94d7c2297163a793a472068dfadc0779d7c6e5be41"
+        }
+      },
+      "component_id": "actuator-mapping-v1",
+      "dispatcher_id": "bench.diagnostic_observer_child_v1",
+      "execution_class": "actual"
+    },
+    "P_optimizer_count": {
+      "artifacts": {
+        "checkpoint": {
+          "artifact_id": "case03-f1-s2552-checkpoint",
+          "sha256": "e0206f2882b0678f0ca15c4457328db67228d8d77e6612cd94ff1259755dd1a8"
+        },
+        "child_protocol": {
+          "artifact_id": "diagnostic-child-protocol-v1",
+          "sha256": "739d2d71faafd20f102e53d449171895598de6749c43b3059204a0fef8d2d306"
+        },
+        "execution": {
+          "artifact_id": "optimizer-config-s2552",
+          "sha256": "3043854c0cf0483d8ca071a3ee26c00a2c480dc3effb01912b278b3d54b81a1a"
+        }
+      },
+      "component_id": "optimizer-update-bundle-v1",
+      "dispatcher_id": "bench.diagnostic_observer_child_v1",
+      "execution_class": "actual"
+    },
+    "P_optimizer_gradient": {
+      "artifacts": {
+        "checkpoint": {
+          "artifact_id": "case03-f1-s2552-checkpoint",
+          "sha256": "e0206f2882b0678f0ca15c4457328db67228d8d77e6612cd94ff1259755dd1a8"
+        },
+        "child_protocol": {
+          "artifact_id": "diagnostic-child-protocol-v1",
+          "sha256": "739d2d71faafd20f102e53d449171895598de6749c43b3059204a0fef8d2d306"
+        },
+        "execution": {
+          "artifact_id": "optimizer-config-s2552",
+          "sha256": "3043854c0cf0483d8ca071a3ee26c00a2c480dc3effb01912b278b3d54b81a1a"
+        }
+      },
+      "component_id": "optimizer-update-bundle-v1",
+      "dispatcher_id": "bench.diagnostic_observer_child_v1",
+      "execution_class": "actual"
+    }
+  },
+  "model": {
+    "api_cap": 40,
+    "api_scope_id": "registered-development-shared-nim-v1",
+    "params_sha256": "c32337f987178f3a8cf3661104c024a515b6e3f328e6918658ebcd8590a4ab1a",
+    "source_anchor": "ff7de8f8100d9eefba98fe2965de69b64daf0a0a"
+  },
+  "registry_profile": "runtime_confirmation_v1",
+  "registry_sha256": "e80c29aec78c8e1c1a5581174a2940c05cb8323ddf291a6b4a7d6f2079a28065",
+  "schema": "registered_diagnostic_protocol_v1",
+  "source_registration": {
+    "collection_manifest_sha256": "141a72f9b7c15e7a684a70811ddcf03f1c813981be8e8b356a0bceff69b4ce60",
+    "criteria_sha256": "7589a132d4e1a55e159527389a8b635a1766472ecde558da0a1a704c286f3f23",
+    "fixed_protocol_sha256": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46"
+  }
+}
