@@ -46,12 +46,16 @@ RESULT_SCHEMA = "post_actuator_operational_result_v5"
 RUNNER_REL = "evals/run_registered_post_actuator_confirmation_v5.py"
 CHILD_REL = "bench/post_actuator_child_v4.py"
 TEST_REL = "tests/test_run_registered_post_actuator_confirmation_v5.py"
+AUTHORITY_BINDING_TEST_REL = "tests/test_post_actuator_authority_binding_v1.py"
 PY310_TEST_REL = "tests/post_actuator_child_py310_preflight_v4.py"
 INNER_REL = "bench/protocols/registered_post_actuator_confirmation_v4.json"
 OUTER_REL = "bench/protocols/registered_post_actuator_operational_v5.json"
+DELEGATED_APPROVAL_REL = "bench/protocols/post_actuator_delegated_approval_20261105_v1.json"
+DELEGATED_APPROVAL_SCHEMA = "post_actuator_delegated_approval_v1"
 PRIMARY_PLAN_SCHEMA = PRIMARY.PLAN_SCHEMA_V7
 SOURCE_RELATIONS = (
-    RUNNER_REL, CHILD_REL, TEST_REL, PY310_TEST_REL, INNER_REL,
+    RUNNER_REL, CHILD_REL, TEST_REL, AUTHORITY_BINDING_TEST_REL, PY310_TEST_REL, INNER_REL,
+    DELEGATED_APPROVAL_REL,
     "evals/registered_post_actuator_confirmation_v1.py",
     "bench/actuator_envelope_runtime.py",
     "bench/run_actuator_envelope_runtime.py",
@@ -245,12 +249,55 @@ def _host_gate(source: Mapping[str, Any]):
     })
 
 
+def _delegated_approval(value: object, *, repo_root: Path = ROOT
+                        ) -> tuple[dict[str, str], dict[str, Any]]:
+    path = repo_root / DELEGATED_APPROVAL_REL
+    expected_ref = {"path": DELEGATED_APPROVAL_REL, "sha256": _sha(path)}
+    if value != expected_ref:
+        raise ValueError("delegated approval reference differs")
+    receipt = _read(path)
+    expected = {
+        "schema": DELEGATED_APPROVAL_SCHEMA,
+        "status": "registered",
+        "authority_kind": "delegated_host_record_not_credential",
+        "actor": "codex_main_goal_owner",
+        "approval_id": "ri451-post-actuator-v13-20261105",
+        "request_id": "post-actuator-s2664-v13-20261105",
+        "effect_key": "post-actuator-s2664-mapping-v1",
+        "profile_id": POST.PROFILE_ID,
+        "case_id": "case-05",
+        "condition": "NONE",
+        "post_sdk_cap": POST_SDK_CAP,
+        "study_sdk_cap": STUDY_SDK_CAP,
+        "api_cap": 0,
+        "result_seen_design": True,
+        "model_selects_receipt": False,
+        "source_inputs_sha256":
+            "11cd0bc13be4aec43cb31f5f73fde2bdeb33cdfbf0c0788ea4d8dc0d03cad26b",
+        "target_binding": {
+            "checkpoint_sha256":
+                "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7",
+            "fixed_report_sha256":
+                "8e553408c55053c64e97e83902f806d06586ee388ceb4a3a93be4a73355ee825",
+            "recovery_receipt_sha256":
+                "1774de2d8fed9c37cd736277ad40bc4b594b15787c927b972693996620f9353a",
+            "primary_plan_sha256":
+                "bd94f8b4cace7bb199a13965dec6a61a1859c4e20c6644d7ae34f3e617fd8a5c",
+            "primary_result_sha256":
+                "d1ad52627b3f295a395ce317fde961572be5a1b1f266db599f3c4d3fb8c9fe97",
+        },
+    }
+    if receipt != expected:
+        raise ValueError("delegated approval receipt differs")
+    return deepcopy(expected_ref), deepcopy(receipt)
+
+
 def validate_outer(value: object, *, repo_root: Path = ROOT) -> dict[str, Any]:
     fields = {
         "schema", "status", "profile_id", "condition", "max_sdk_launches",
         "child_entrypoint", "inner_confirmation_protocol", "primary_plan",
         "primary_execution", "source_sha256_lf", "result_seen_design", "automatic_retry",
-        "post_budget", "interpretation",
+        "post_budget", "interpretation", "delegated_approval",
     }
     if not isinstance(value, Mapping) or set(value) != fields:
         raise ValueError("outer protocol fields differ")
@@ -288,6 +335,7 @@ def validate_outer(value: object, *, repo_root: Path = ROOT) -> dict[str, Any]:
         raise ValueError("primary plan differs")
     _primary_execution(value.get("primary_execution"))
     _post_budget(value.get("post_budget"))
+    _delegated_approval(value.get("delegated_approval"), repo_root=repo_root)
     POST._protocol(_read(repo_root / INNER_REL))
     return deepcopy(dict(value))
 
@@ -348,6 +396,7 @@ def _authority(value: object, source_path: Path, outer_path: Path,
     fields = {
         "schema", "status", "profile_id", "case_id", "condition", "sdk_launches_approved",
         "approval_id", "request_id", "effect_key", "approved_by", "source_inputs",
+        "delegated_approval",
         "outer_protocol", "primary_result", "primary_manifest", "primary_plan",
         "primary_supervisor",
         "source_sha256_lf", "registration_anchor", "result_seen_design", "automatic_retry",
@@ -361,9 +410,13 @@ def _authority(value: object, source_path: Path, outer_path: Path,
             or value.get("result_seen_design") is not True or value.get("automatic_retry") is not False
             or value.get("approval_basis") != "post_primary_completion_result_seen_development"):
         raise ValueError("authority fixed values differ")
-    for name in ("approval_id", "request_id", "effect_key", "approved_by"):
-        if not isinstance(value.get(name), str) or not value[name]:
-            raise ValueError(f"authority {name} differs")
+    approval_ref, approval = _delegated_approval(value.get("delegated_approval"))
+    if (approval_ref != outer.get("delegated_approval")
+            or value.get("approval_id") != approval["approval_id"]
+            or value.get("request_id") != approval["request_id"]
+            or value.get("effect_key") != approval["effect_key"]
+            or value.get("approved_by") != approval["actor"]):
+        raise ValueError("authority delegated identity differs")
     if (_ref(value["source_inputs"], "authority source", (ROOT,))
             != {"path": str(source_path), "sha256": _sha(source_path)}
             or _ref(value["outer_protocol"], "authority protocol", (ROOT,))
@@ -371,6 +424,19 @@ def _authority(value: object, source_path: Path, outer_path: Path,
         raise ValueError("authority source or protocol binding differs")
     if value.get("source_sha256_lf") != outer["source_sha256_lf"]:
         raise ValueError("authority operational closure differs")
+    source_body = _read(source_path)
+    target = approval["target_binding"]
+    if (_sha(source_path) != approval["source_inputs_sha256"]
+            or source_body.get("checkpoint", {}).get("sha256") != target["checkpoint_sha256"]
+            or source_body.get("fixed_report", {}).get("sha256")
+            != target["fixed_report_sha256"]
+            or source_body.get("recovery_receipt", {}).get("sha256")
+            != target["recovery_receipt_sha256"]
+            or not isinstance(value.get("primary_plan"), Mapping)
+            or value["primary_plan"].get("sha256") != target["primary_plan_sha256"]
+            or not isinstance(value.get("primary_result"), Mapping)
+            or value["primary_result"].get("sha256") != target["primary_result_sha256"]):
+        raise ValueError("authority delegated target differs")
     _git_anchor(value["registration_anchor"], outer, outer_path)
     return deepcopy(dict(value))
 

@@ -1,0 +1,105 @@
+{
+  "schema": "registered_post_actuator_measurement_plan_v2",
+  "study_id": "u2_post_actuator_primary_v13_20261105",
+  "measurement_scope": "result_seen_development_confirmation",
+  "primary": {
+    "plan": "bench/protocols/registered_recovery_comparison_s2664_s2667_20261105_v13.json",
+    "plan_sha256": "bd94f8b4cace7bb199a13965dec6a61a1859c4e20c6644d7ae34f3e617fd8a5c",
+    "source_anchor": "367f785c9d689d5fff9f7488c2163d720877ebb4",
+    "registration_anchor": "ab0c312f06b1404b36c64253281b58bcb4a18f87",
+    "terminal_result_sha256": "d1ad52627b3f295a395ce317fde961572be5a1b1f266db599f3c4d3fb8c9fe97",
+    "terminal_supervisor_sha256": "1a702b7aac70c41fbaaf290cc55d8c4d174d6d820cecdbe5b56b11ed6a8b38a1"
+  },
+  "target": {
+    "case_id": "case-05",
+    "method": "fixed_sequence",
+    "condition": "NONE",
+    "checkpoint_sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7",
+    "fixed_report_sha256": "8e553408c55053c64e97e83902f806d06586ee388ceb4a3a93be4a73355ee825",
+    "checkpoint_association_only": true,
+    "loads_checkpoint_weights": false,
+    "trained_policy_validated_by_this_probe": false
+  },
+  "controller_sources": {
+    "observer": {
+      "sha256_lf": "2d9d810537a07cc8b8507a9d9188115896629dfd0a1b4051dc2e55cc57ffbee4"
+    },
+    "supervisor": {
+      "sha256_lf": "aeb74448397ae8028bfd898dc59c3b66fa1e6954bb19ff8943f7054f23cb534f"
+    },
+    "launcher": {
+      "sha256_lf": "f2e3d1fbc70088899d55c369f1d80308734de949760becab6f2649334239b6f9"
+    },
+    "cpu_regression": {
+      "sha256_lf": "1de326aea9f4c848acdfd7f56b6a9df82a9a3d05ad792ca24edc1c921c8ba28d"
+    }
+  },
+  "sampling": {
+    "interval_s": 2.0,
+    "max_gap_s": 6.0,
+    "scope": "whole_device_including_other_loads",
+    "window": "inside_live_lease_before_operation_prechecks_until_operation_return_or_failure",
+    "process_attribution": null,
+    "whole_parent_energy_wh": null,
+    "whole_parent_peak_power_w": null
+  },
+  "accounting": {
+    "parent_full_wall_s": "add_once",
+    "owned_wall_s": "nested_breakdown_only",
+    "phase_wall_s": "nested_breakdown_only",
+    "parent_process_cpu_s": "supervisor_process_only",
+    "child_process_cpu_s": null,
+    "actual_billing_usd": null,
+    "provider_gpu_cost_usd": null,
+    "post_confirmation_is_not_a_recovery_arm": true
+  },
+  "limits": {
+    "primary_recovery_sdk_attempts": 32,
+    "post_sdk_launches": 1,
+    "recovery_and_post_sdk_attempts": 33,
+    "model_api_calls": 0,
+    "automatic_sdk_retry": false,
+    "owned_process_tree_watchdog_s": 2100
+  },
+  "expected_decisions": {
+    "normal_mapping_absolute_qualified_relative_below_band": "reference_review_without_correction_authority",
+    "normal_mapping_behavior_healthy": "no_intervention",
+    "abnormal_or_unknown_mapping": "hold",
+    "unobserved_causes": "remain_unknown"
+  },
+  "execution_gates": [
+    "canonical_primary_complete_16_arms_and_owned_cleanup",
+    "committed_public_operation_source_and_protocol_closure",
+    "checkpoint_fixed_report_and_receipt_exact_binding",
+    "separate_host_approval_and_global_single_consumption",
+    "real_consumer_cpu_preflight_before_sdk",
+    "public_gpu_lease_and_live_admission",
+    "fresh_tag_and_fresh_outputs"
+  ],
+  "result_wording": {
+    "complete": "정책 가중치를 로드하지 않은 모터 함수 확인과 개입 분기 결과를 기록했다. 장치 관측은 부모 전체 구간이나 프로세스 전용 에너지로 해석하지 않는다.",
+    "failed": "post 확인 또는 계측이 실패했다. 실패 원문과 확인 가능한 비용만 보존하며 정상·회복으로 집계하지 않는다.",
+    "not_started": "실행 전 조건이 충족되지 않아 SDK를 시작하지 않았다."
+  },
+  "interpreters": {
+    "outer_supervisor": "existing_base_python_stdlib_only",
+    "lease_inner_observer": "existing_repository_venv_with_pyyaml",
+    "sdk_child": "registered_isaac_python_3_10_15"
+  },
+  "previous_plan": {
+    "path": "bench/protocols/post_actuator_measurement_20261105_v1.json",
+    "sha256": "11c1858abe650a7dc23be0702e43080cfb31287d5bdeb6a133571904acf5be9e",
+    "status": "superseded_without_SDK_execution"
+  },
+  "watchdog_scope": "owned child tree including lease wait, observer and SDK; parent pre/post validation lies outside this watchdog",
+  "timeout_handling": {
+    "owned_cleanup_required": true,
+    "missing_sampler_stop": "unknown_no_energy_or_success_meter",
+    "same_tag_retry": false
+  },
+  "status": "registered",
+  "delegated_approval": {
+    "path": "bench/protocols/post_actuator_delegated_approval_20261105_v1.json",
+    "sha256": "b7b626e60c50a68d17094295b668ed691ad30bcc96b910f21e93fc8ee46f1c92"
+  }
+}
