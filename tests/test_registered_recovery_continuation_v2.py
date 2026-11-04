@@ -225,3 +225,29 @@ def test_v3_wait_scope_is_explicit_and_keeps_v2_profile_separate(monkeypatch: py
     context["protocol_body"]["schema"] = B.SCHEMA_V2
     with pytest.raises(ValueError, match="unregistered desktop"):
         B._extensions(context["protocol_body"])
+
+
+def test_v3_shared_profile_requires_its_own_sources_and_has_no_callback_route(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    from evals import registered_desktop_gpu_shared_v1 as shared
+
+    calls = []
+
+    @contextmanager
+    def scope():
+        calls.append("entered")
+        try:
+            yield
+        finally:
+            calls.append("restored")
+
+    monkeypatch.setattr(shared, "snapshot_scope", scope)
+    context = {"protocol_body": {"schema": B.SCHEMA_V3,
+        "source_closure": {key: "a" * 64 for key in B._DESKTOP_SOURCES | B._SHARED_SOURCES},
+        "operation": {"gpu_admission_profile": B.SHARED_PROFILE, "prior_training_artifact_id": None}}}
+    with B._gpu_scope(context):
+        assert calls == ["entered"]
+    assert calls == ["entered", "restored"]
+    context["protocol_body"]["source_closure"].pop("bench/protocols/registered_desktop_gpu_shared_v1.json")
+    with pytest.raises(ValueError, match="desktop admission policy source"):
+        B._extensions(context["protocol_body"])

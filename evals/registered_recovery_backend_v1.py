@@ -30,6 +30,7 @@ SCHEMA_V2 = "registered_recovery_protocol_v2"
 SCHEMA_V3 = "registered_recovery_protocol_v3"
 DESKTOP_PROFILE = "registered_desktop_shared_v2"
 WAIT_PROFILE = "registered_desktop_shared_wait_v1"
+SHARED_PROFILE = "registered_desktop_shared_baseline_v1"
 RECEIPT_SCHEMA = "registered_recovery_receipt_v1"
 _HIDDEN = {"scoring", "original_faults", "remaining_faults", "hidden_label", "hidden_labels",
            "answer_key", "correct_any_family"}
@@ -68,6 +69,8 @@ _DESKTOP_SOURCES = {
 _PRIOR_SOURCES = {"evals/registered_prior_training_v1.py", "tests/test_registered_prior_training_v1.py"}
 _WAIT_SOURCES = {"evals/registered_desktop_gpu_wait_v1.py", "tests/test_registered_desktop_gpu_wait_v1.py",
                  "bench/protocols/registered_desktop_gpu_wait_v1.json"}
+_SHARED_SOURCES = {"evals/registered_desktop_gpu_shared_v1.py", "tests/test_registered_desktop_gpu_shared_v1.py",
+                   "bench/protocols/registered_desktop_gpu_shared_v1.json"}
 _CONTINUATION_SOURCES = {"evals/registered_recovery_continuation_v3.py",
                          "tests/test_registered_recovery_continuation_v3.py"}
 
@@ -169,11 +172,13 @@ def _extensions(protocol: Mapping[str, Any]) -> str | None:
                  "v2 operation extensions require v2 protocol")
         return None
     v3 = protocol.get("schema") == SCHEMA_V3
-    _require(operation.get("gpu_admission_profile") == (WAIT_PROFILE if v3 else DESKTOP_PROFILE),
+    profile = operation.get("gpu_admission_profile")
+    _require(profile in ({WAIT_PROFILE, SHARED_PROFILE} if v3 else {DESKTOP_PROFILE}),
              "unregistered desktop GPU admission profile")
     _require(_DESKTOP_SOURCES <= set(protocol["source_closure"]), "desktop policy source missing")
     if v3:
-        _require(_WAIT_SOURCES <= set(protocol["source_closure"]), "desktop wait policy source missing")
+        required_sources = _SHARED_SOURCES if profile == SHARED_PROFILE else _WAIT_SOURCES
+        _require(required_sources <= set(protocol["source_closure"]), "desktop admission policy source missing")
     prior_id = operation.get("prior_training_artifact_id")
     _require(prior_id is None or isinstance(prior_id, str) and bool(prior_id), "prior training artifact id")
     if prior_id is not None:
@@ -216,8 +221,12 @@ def _gpu_scope(context: Mapping[str, Any]):
     _extensions(protocol)
     if protocol.get("schema") not in {SCHEMA_V2, SCHEMA_V3}:
         return nullcontext()
-    name = ("evals.registered_desktop_gpu_wait_v1" if protocol.get("schema") == SCHEMA_V3
-            else "evals.registered_desktop_gpu_admission_v1")
+    if protocol.get("schema") == SCHEMA_V3:
+        name = ("evals.registered_desktop_gpu_shared_v1"
+                if protocol["operation"]["gpu_admission_profile"] == SHARED_PROFILE
+                else "evals.registered_desktop_gpu_wait_v1")
+    else:
+        name = "evals.registered_desktop_gpu_admission_v1"
     module = importlib.import_module(name)
     return module.snapshot_scope()
 

@@ -124,6 +124,17 @@ _CONTINUATION_V3_SOURCE_FILES = _CONTINUATION_SOURCE_FILES | {
 }
 GPU_ADMISSION_PROFILE = "registered_desktop_shared_v2"
 GPU_ADMISSION_PROFILE_V3 = "registered_desktop_shared_wait_v1"
+GPU_ADMISSION_PROFILE_V3_SHARED = "registered_desktop_shared_baseline_v1"
+_V3_PROFILE_TAGS = {
+    GPU_ADMISSION_PROFILE_V3: "v6_fresh",
+    GPU_ADMISSION_PROFILE_V3_SHARED: "v7_shared_desktop",
+}
+_CONTINUATION_V7_SOURCE_FILES = {
+    "evals/registered_desktop_gpu_shared_v1.py",
+    "tests/test_registered_desktop_gpu_shared_v1.py",
+    "bench/protocols/registered_desktop_gpu_shared_v1.json",
+    "bench/protocols/diagnostic_recovery_comparison_20261104_v7.md",
+}
 PRIOR_V5_SOURCE_ANCHOR = "f9d5fea93cce406a325f578bc6f4597cc0bc35c5"
 PRIOR_V5_REGISTRATION_ANCHOR = "bf1632ee6770e681e9e8c4c5b1df890ebaed12a6"
 
@@ -167,13 +178,16 @@ def _git_blob(anchor: str, relative: str) -> bytes:
 
 
 def _source_closure(anchor: str, *, include_continuation: bool = False,
-                    include_continuation_v3: bool = False) -> dict[str, str]:
+                    include_continuation_v3: bool = False,
+                    include_continuation_v7: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
     source_files = set(_SOURCE_FILES)
     if include_continuation_v3:
         source_files |= _CONTINUATION_V3_SOURCE_FILES
+        if include_continuation_v7:
+            source_files |= _CONTINUATION_V7_SOURCE_FILES
     elif include_continuation:
         source_files |= _CONTINUATION_SOURCE_FILES
     for relative in sorted(source_files):
@@ -557,6 +571,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                       prior_completed_effect_proof: Path | None = None,
                       prior_static_training_proof: Path | None = None,
                       isaaclab_root: Path | None = None,
+                      gpu_admission_profile: str | None = None,
                       require_committed: bool = True) -> dict:
     out = Path(output).resolve()
     if out.exists():
@@ -571,6 +586,11 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     if not {f"case-{int(case[-2:]):02d}" for case in CASES} <= set(phase_cases):
         raise PreparationError("phase-A selected cases missing")
     v3_requested = prior_completed_effect_proof is not None or prior_static_training_proof is not None
+    if gpu_admission_profile is not None and not v3_requested:
+        raise PreparationError("explicit GPU admission profile requires v3 continuation proofs")
+    selected_v3_profile = gpu_admission_profile or GPU_ADMISSION_PROFILE_V3
+    if selected_v3_profile not in _V3_PROFILE_TAGS:
+        raise PreparationError("unsupported v3 GPU admission profile")
     if v3_requested and (
         prior_completed_effect_proof is None
         or prior_static_training_proof is None
@@ -601,12 +621,18 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         source_anchor,
         include_continuation=continuation_sources,
         include_continuation_v3=v3 is not None,
+        include_continuation_v7=(
+            v3 is not None and selected_v3_profile == GPU_ADMISSION_PROFILE_V3_SHARED
+        ),
     ) if require_committed else {
         path: _sha(ROOT / path, lf=True)
         for path in sorted(
             _SOURCE_FILES
             | (_CONTINUATION_SOURCE_FILES if continuation_sources else set())
             | (_CONTINUATION_V3_SOURCE_FILES if v3 is not None else set())
+            | (_CONTINUATION_V7_SOURCE_FILES
+               if v3 is not None and selected_v3_profile == GPU_ADMISSION_PROFILE_V3_SHARED
+               else set())
         )
     }
     sdk = _read(sdk_contract)
@@ -716,11 +742,11 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     if v3 is not None:
         imports, _proof_refs = v3
         plan["continuation"] = {
-            "gpu_admission_profile": GPU_ADMISSION_PROFILE_V3,
+            "gpu_admission_profile": selected_v3_profile,
             "stage_imports": imports,
             "prior_consumed_gpu_sdk_launches": 3,
             "expected_new_gpu_sdk_launches": 27,
-            "continuation_tag": "v6_fresh",
+            "continuation_tag": _V3_PROFILE_TAGS[selected_v3_profile],
             "prior_v5_registration_anchor": PRIOR_V5_REGISTRATION_ANCHOR,
             "prior_incomplete_preserved": True,
         }
@@ -952,7 +978,7 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V2, COMPARISON.PLAN_SCHEMA_V3}:
                     operation.update({
                         "gpu_admission_profile": (
-                            GPU_ADMISSION_PROFILE_V3
+                            plan["continuation"]["gpu_admission_profile"]
                             if plan["schema"] == COMPARISON.PLAN_SCHEMA_V3
                             else GPU_ADMISSION_PROFILE
                         ),
@@ -1047,6 +1073,7 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("--prior-completed-effect-proof", type=Path)
     t.add_argument("--prior-static-training-proof", type=Path)
     t.add_argument("--isaaclab-root", type=Path)
+    t.add_argument("--gpu-admission-profile", choices=tuple(_V3_PROFILE_TAGS))
     t.add_argument("--allow-uncommitted-fixture", action="store_true")
     j = sub.add_parser("jobs")
     j.add_argument("--templates", required=True, type=Path)
@@ -1069,6 +1096,7 @@ def main(argv: list[str] | None = None) -> int:
                 prior_completed_effect_proof=args.prior_completed_effect_proof,
                 prior_static_training_proof=args.prior_static_training_proof,
                 isaaclab_root=args.isaaclab_root,
+                gpu_admission_profile=args.gpu_admission_profile,
                 require_committed=not args.allow_uncommitted_fixture)
         else:
             result = prepare_jobs(templates=args.templates, registered_plan=args.registered_plan,

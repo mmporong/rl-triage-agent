@@ -332,6 +332,28 @@ def test_templates_v3_bind_two_imports_and_separate_historical_sdk_budget(
     public = (out / "registered-plan.json").read_text(encoding="utf-8")
     assert str(tmp_path) not in public
 
+    (prepare.ROOT / "shared.py").write_text("# registered shared profile\n", encoding="utf-8")
+    monkeypatch.setattr(prepare, "_CONTINUATION_V7_SOURCE_FILES", {"shared.py"})
+    shared_out = tmp_path / "templates-v7"
+    prepare.prepare_templates(
+        source_index=index, metadata=metadata, diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+        output=shared_out, actor="operator", isaaclab_commit="c" * 40,
+        prior_completed_effect_proof=effect, prior_static_training_proof=training,
+        isaaclab_root=isaaclab,
+        gpu_admission_profile=prepare.GPU_ADMISSION_PROFILE_V3_SHARED,
+        require_committed=False,
+    )
+    shared_plan = json.loads((shared_out / "registered-plan.json").read_text(encoding="utf-8"))
+    assert shared_plan["continuation"]["gpu_admission_profile"] == (
+        prepare.GPU_ADMISSION_PROFILE_V3_SHARED
+    )
+    assert shared_plan["continuation"]["continuation_tag"] == "v7_shared_desktop"
+    assert "shared.py" in shared_plan["source_closure"]
+    assert plan["continuation"]["gpu_admission_profile"] == prepare.GPU_ADMISSION_PROFILE_V3
+    assert plan["continuation"]["continuation_tag"] == "v6_fresh"
+
     monkeypatch.setattr(prepare.COMPARISON, "load_plan", lambda *_args, **_kwargs: plan)
     monkeypatch.setattr(
         prepare.SEED_GUARD,
@@ -451,6 +473,38 @@ def test_templates_v3_reject_cross_method_training_proof(
             prior_completed_effect_proof=effect, prior_static_training_proof=training,
             isaaclab_root=isaaclab, require_committed=False,
         )
+
+
+def test_templates_reject_explicit_shared_profile_without_v3_proofs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    with pytest.raises(prepare.PreparationError, match="requires v3 continuation proofs"):
+        prepare.prepare_templates(
+            source_index=index, metadata=metadata, diagnostic_plan=phase,
+            diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+            sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+            output=tmp_path / "bad-profile", actor="operator", isaaclab_commit="c" * 40,
+            gpu_admission_profile=prepare.GPU_ADMISSION_PROFILE_V3_SHARED,
+            require_committed=False,
+        )
+
+
+def test_v7_shared_profile_source_closure_is_complete() -> None:
+    expected = {
+        "evals/registered_desktop_gpu_shared_v1.py",
+        "tests/test_registered_desktop_gpu_shared_v1.py",
+        "bench/protocols/registered_desktop_gpu_shared_v1.json",
+        "bench/protocols/diagnostic_recovery_comparison_20261104_v7.md",
+    }
+    assert prepare._CONTINUATION_V7_SOURCE_FILES == expected
+    assert all((prepare.ROOT / relative).is_file() for relative in expected)
+    policy = json.loads(
+        (prepare.ROOT / "bench/protocols/registered_desktop_gpu_shared_v1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert policy["profile_id"] == prepare.GPU_ADMISSION_PROFILE_V3_SHARED
 
 
 def test_templates_reject_source_manifest_or_code_contract_substitution(

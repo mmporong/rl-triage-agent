@@ -203,6 +203,10 @@ def _validate_plan(plan: dict) -> None:
             raise ComparisonContractError("prior training logical identity differs")
     if schema == PLAN_SCHEMA_V3:
         continuation = plan["continuation"]
+        profile_tag = {
+            "registered_desktop_shared_wait_v1": "v6_fresh",
+            "registered_desktop_shared_baseline_v1": "v7_shared_desktop",
+        }
         required = {
             "gpu_admission_profile", "stage_imports", "prior_consumed_gpu_sdk_launches",
             "expected_new_gpu_sdk_launches", "continuation_tag",
@@ -211,10 +215,11 @@ def _validate_plan(plan: dict) -> None:
         if (
             not isinstance(continuation, dict)
             or set(continuation) != required
-            or continuation["gpu_admission_profile"] != "registered_desktop_shared_wait_v1"
+            or continuation["gpu_admission_profile"] not in profile_tag
             or continuation["prior_consumed_gpu_sdk_launches"] != 3
             or continuation["expected_new_gpu_sdk_launches"] != 27
-            or continuation["continuation_tag"] != "v6_fresh"
+            or continuation["continuation_tag"]
+            != profile_tag.get(continuation["gpu_admission_profile"])
             or _COMMIT.fullmatch(str(continuation["prior_v5_registration_anchor"])) is None
             or continuation["prior_incomplete_preserved"] is not True
             or case_ids != set(SUPPORTED_CASES)

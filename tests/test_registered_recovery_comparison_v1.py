@@ -420,6 +420,19 @@ def test_v3_rejects_completed_effect_with_fresh_recovery_authority(tmp_path: Pat
         )
 
 
+def test_v3_accepts_only_registered_profile_tag_pairs(tmp_path: Path) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08")
+    )
+    plan, _proofs = _upgrade_to_v3(plan_path, job_path, tmp_path)
+    plan["continuation"]["gpu_admission_profile"] = "registered_desktop_shared_baseline_v1"
+    plan["continuation"]["continuation_tag"] = "v7_shared_desktop"
+    comparison._validate_plan(plan)
+    plan["continuation"]["continuation_tag"] = "v6_fresh"
+    with pytest.raises(comparison.ComparisonContractError, match="accounting/profile"):
+        comparison._validate_plan(plan)
+
+
 def test_prepare_rejects_partially_null_recovery_authority(tmp_path: Path) -> None:
     repo, plan, job_path, out = _fixture(tmp_path)
     job = json.loads(job_path.read_text(encoding="utf-8"))
