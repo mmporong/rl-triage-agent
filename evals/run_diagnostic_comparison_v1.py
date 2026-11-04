@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from rl_triage import investigate
+from rl_triage.investigation_session import _journal_module as _decision_journal_module
 from rl_triage.investigation_session import file_sha, reference, write_new
 
 SCHEMA = "diagnostic_comparison_plan_v1"
@@ -26,6 +27,7 @@ FIXTURE_BACKEND = investigate.FIXTURE_BACKEND
 TERMINAL = {
     "confirmed",
     "none_supported",
+    "unidentifiable",
     "hold_unknown",
     "hold_budget_exhausted",
     "host_no_intervention",
@@ -509,6 +511,243 @@ def _number_or_none(value: object, label: str) -> float | None:
     return number
 
 
+def _token_or_none(value: object) -> int | None:
+    return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else None
+
+
+def _readonly_model_journal(
+    root: Path,
+    api_root: Path,
+    session_manifest: dict,
+    *,
+    case_id: str,
+    method: str,
+    ordinal: int,
+) -> tuple[dict, dict, Any]:
+    """파일을 생성하는 생성자 없이 원장 validator를 복원한다."""
+    journal_module = _decision_journal_module()
+    manifest_path = root / "manifest.json"
+    manifest = journal_module._read(manifest_path)
+    binding = session_manifest.get("model_binding")
+    verification = session_manifest.get("source_verification")
+    if not isinstance(binding, dict) or not isinstance(verification, dict):
+        raise ComparisonContractError("model journal has no session binding")
+    expected_api_root = Path(str(binding["api_root"])) if "api_root" in binding else root.parents[1] / "api"
+    expected_api_root = expected_api_root.resolve(strict=False)
+    if api_root.resolve(strict=False) != expected_api_root:
+        raise ComparisonContractError("model journal API root differs from session binding")
+    decision_binding = manifest.get("binding")
+    if not isinstance(decision_binding, dict) or (
+        decision_binding.get("run_id") != f"{case_id}:{method}:{ordinal}"
+        or decision_binding.get("source_anchor") != binding.get("source_anchor")
+        or decision_binding.get("protocol_sha256") != binding.get("protocol_sha256")
+        or decision_binding.get("checkpoint_sha256") != verification.get("checkpoint_sha256")
+        or manifest.get("params") != binding.get("params")
+        or manifest.get("api_cap") != binding.get("api_cap")
+    ):
+        raise ComparisonContractError("model journal binding differs from session")
+
+    journal = object.__new__(journal_module.DecisionJournal)
+    journal.root = root.resolve(strict=True)
+    journal.api_root = api_root.resolve(strict=True)
+    journal.binding = deepcopy(decision_binding)
+    journal.params = deepcopy(manifest["params"])
+    journal.retry_delay_s = float(manifest["retry_delay_s"])
+    journal.api_cap = manifest["api_cap"]
+    journal.manifest_path = manifest_path.resolve(strict=True)
+    journal.api_manifest_path = (api_root / "manifest.json").resolve(strict=True)
+    journal.manifest_sha256 = journal_module.file_sha(journal.manifest_path)
+    journal.binding_sha256 = journal_module.digest(journal.binding)
+    journal.params_sha256 = journal_module.digest(journal.params)
+    try:
+        journal._verify_prepared()
+        audit = journal._audit_api()
+    except journal_module.JournalError as error:
+        raise ComparisonContractError("model journal integrity audit failed") from error
+
+    terminal_path = root / "terminal.json"
+    terminal = None
+    if terminal_path.exists():
+        try:
+            terminal = journal_module._read(terminal_path)
+        except journal_module.JournalError as error:
+            raise ComparisonContractError("model terminal integrity audit failed") from error
+        required = {
+            "schema", "manifest_sha256", "status", "engine_result", "calls_sha256",
+            "completed_calls",
+        }
+        completed = [row["response"]["result"] for row in audit["own"] if row["response"] is not None]
+        if (
+            set(terminal) != required
+            or terminal.get("schema") != "model_decision_terminal_v1"
+            or terminal.get("manifest_sha256") != journal.manifest_sha256
+            or terminal.get("status") not in journal_module.TERMINAL_STATUSES
+            or not isinstance(terminal.get("engine_result"), dict)
+            or terminal.get("completed_calls") != len(completed)
+            or terminal.get("calls_sha256") != journal_module.digest(completed)
+        ):
+            raise ComparisonContractError("model terminal/API snapshot binding differs")
+    return manifest, audit, terminal
+
+
+def _model_costs(
+    session: Path,
+    session_manifest: dict,
+    max_checks: int,
+    *,
+    case_id: str,
+    method: str,
+) -> tuple[list[dict], list[dict], list[dict]]:
+    binding = session_manifest.get("model_binding")
+    if binding is None:
+        return [], [], []
+    if not isinstance(binding, dict):
+        raise ComparisonContractError("session model binding is invalid")
+    api_root = Path(str(binding.get("api_root", session / "api")))
+    if not api_root.is_absolute() or api_root.is_symlink():
+        raise ComparisonContractError("session API root is invalid")
+
+    events: list[dict] = []
+    journals: list[dict] = []
+    flat_refs: list[dict] = []
+    seen_reservations: set[str] = set()
+    for ordinal in range(max_checks):
+        root = session / "model" / f"{ordinal:04d}"
+        manifest_path = root / "manifest.json"
+        if not manifest_path.exists():
+            continue
+        if manifest_path.is_symlink():
+            raise ComparisonContractError("model journal manifest is a symlink")
+        manifest, audit, terminal = _readonly_model_journal(
+            root, api_root, session_manifest, case_id=case_id, method=method, ordinal=ordinal
+        )
+        journal_refs: dict[str, Any] = {
+            "manifest": reference(manifest_path),
+            "api_manifest": reference(api_root / "manifest.json"),
+            "terminal": reference(root / "terminal.json") if terminal is not None else None,
+            "attempts": [],
+        }
+        flat_refs.extend([journal_refs["manifest"], journal_refs["api_manifest"]])
+        if journal_refs["terminal"] is not None:
+            flat_refs.append(journal_refs["terminal"])
+        for row in audit["own"]:
+            reservation_path = row["reservation_path"]
+            reservation = row["reservation"]
+            response_path = row["response_path"]
+            response = row["response"]
+            reservation_sha = file_sha(reservation_path)
+            if reservation_sha in seen_reservations:
+                raise ComparisonContractError("model API reservation was counted twice")
+            seen_reservations.add(reservation_sha)
+            response_ref = reference(response_path) if response_path is not None else None
+            receipt_path = api_root / "receipts" / reservation_path.name
+            receipt_ref = reference(receipt_path) if response_path is not None else None
+            attempt_refs = {
+                "reservation": reference(reservation_path),
+                "response": response_ref,
+                "receipt": receipt_ref,
+            }
+            journal_refs["attempts"].append(attempt_refs)
+            flat_refs.extend(ref for ref in attempt_refs.values() if ref is not None)
+
+            result = response["result"] if response is not None else None
+            usage = result.get("usage") if isinstance(result, dict) else None
+            raw_usage = deepcopy(usage) if isinstance(usage, dict) else None
+            input_tokens = _token_or_none(usage.get("prompt_tokens")) if isinstance(usage, dict) else None
+            output_tokens = (
+                _token_or_none(usage.get("completion_tokens")) if isinstance(usage, dict) else None
+            )
+            response_wall = (
+                _number_or_none(result.get("wall_s"), "model response wall_s")
+                if isinstance(result, dict) and "wall_s" in result
+                else None
+            )
+            if isinstance(result, dict) and "http_status" in result:
+                http_status = result["http_status"]
+                confirmed_http_response = (
+                    1
+                    if isinstance(http_status, int)
+                    and not isinstance(http_status, bool)
+                    and 100 <= http_status <= 599
+                    else 0
+                    if http_status is None
+                    else None
+                )
+            else:
+                confirmed_http_response = None
+            safe_result = result if isinstance(result, dict) else {}
+            result_class = (
+                "unconfirmed"
+                if response is None
+                else "infra_error"
+                if response["status"] == "infra_error"
+                else "failed"
+                if safe_result.get("status") == "error"
+                or isinstance(safe_result.get("error_type"), str)
+                else "normal"
+            )
+            status = (
+                "unknown" if result_class == "unconfirmed"
+                else "completed" if result_class == "normal"
+                else "failed"
+            )
+            events.append(
+                {
+                    "schema": "diagnostic_resource_cost_event_v1",
+                    "phase_id": (
+                        f"model:{case_id}:{method}:{ordinal}:{reservation['index']}"
+                    ),
+                    "attempt_id": f"model:{reservation_sha}",
+                    "receipt_id": f"model:{reservation_sha}",
+                    "status": status,
+                    "costs": {
+                        "model_calls": 1 if response is not None else None,
+                        "input_tokens": input_tokens,
+                        "output_tokens": output_tokens,
+                        "gpu_wall_s": 0.0,
+                        "cpu_s": None,
+                        "human_review_s": None,
+                        "execution_wall_s": response_wall,
+                        "simulator_steps": 0,
+                    },
+                    "model_api": {
+                        "global_index": reservation["index"],
+                        "decision_manifest_sha256": file_sha(manifest_path),
+                        "reservation_sha256": reservation_sha,
+                        "reservation_consumed_budget": True,
+                        "completion_attempt_returned": response is not None,
+                        "result_class": result_class,
+                        "model_call_scope": (
+                            "completion_attempt_returned"
+                            if response is not None
+                            else "unconfirmed_after_reservation"
+                        ),
+                        "confirmed_http_response": confirmed_http_response,
+                        "http_response_evidence_scope": "safe_result.http_status",
+                        "response_wall_s": response_wall,
+                        "response_wall_scope": "nim_transport.result.wall_s" if response_wall is not None else None,
+                        "usage": raw_usage,
+                        "hosted_provider_gpu_s": None,
+                        "actual_billing_usd": None,
+                        "reproducible_estimate_usd": None,
+                        "raw_refs": attempt_refs,
+                    },
+                }
+            )
+        journals.append(
+            {
+                "ordinal": ordinal,
+                "run_id": manifest["binding"]["run_id"],
+                "reserved_global": audit["reserved"],
+                "pending_global": audit["pending"],
+                "own_attempts": len(audit["own"]),
+                "refs": journal_refs,
+            }
+        )
+    unique_refs = {item["path"]: item for item in flat_refs}
+    return events, journals, list(unique_refs.values())
+
+
 def _request_cost(
     session: Path,
     session_manifest: dict,
@@ -591,9 +830,9 @@ def _request_cost(
             "receipt_id": receipt_id,
             "status": event_status,
             "costs": {
-                "model_calls": None,
-                "input_tokens": None,
-                "output_tokens": None,
+                "model_calls": 0,
+                "input_tokens": 0,
+                "output_tokens": 0,
                 "gpu_wall_s": gpu_wall,
                 "cpu_s": None,
                 "human_review_s": None,
@@ -711,9 +950,9 @@ def _request_cost(
         "receipt_id": receipt_id,
         "status": event_status,
         "costs": {
-            "model_calls": None,
-            "input_tokens": None,
-            "output_tokens": None,
+            "model_calls": 0,
+            "input_tokens": 0,
+            "output_tokens": 0,
             "gpu_wall_s": effective_gpu,
             "cpu_s": None,
             "human_review_s": None,
@@ -725,17 +964,14 @@ def _request_cost(
 
 
 def _raw_refs(session: Path, max_checks: int, *, case_id: str, method: str) -> dict:
-    refs: dict[str, Any] = {"host_receipts": [], "api_journals": [], "actual_stages": []}
+    refs: dict[str, Any] = {
+        "host_receipts": [], "api_journals": [], "model_journals": [], "actual_stages": []
+    }
     receipt_dir = session / "host_receipts"
     if receipt_dir.is_dir() and not receipt_dir.is_symlink():
         for path in sorted(receipt_dir.glob("*.json")):
             if path.is_file() and not path.is_symlink():
                 refs["host_receipts"].append(reference(path))
-    for ordinal in range(max_checks):
-        for name in ("terminal.json", "attempts.jsonl"):
-            path = session / "model" / f"{ordinal:04d}" / name
-            if path.is_file() and not path.is_symlink():
-                refs["api_journals"].append(reference(path))
     manifest_path = session / "manifest.json"
     if not manifest_path.is_file() or manifest_path.is_symlink():
         refs["resource_cost"] = {
@@ -746,6 +982,11 @@ def _raw_refs(session: Path, max_checks: int, *, case_id: str, method: str) -> d
         }
         return refs
     session_manifest = _json_file(manifest_path, "session manifest")
+    model_events, model_journals, api_refs = _model_costs(
+        session, session_manifest, max_checks, case_id=case_id, method=method
+    )
+    refs["model_journals"] = model_journals
+    refs["api_journals"] = api_refs
     events = _session_events(session)
     requests: dict[str, dict] = {}
     receipts: dict[str, dict] = {}
@@ -767,6 +1008,7 @@ def _raw_refs(session: Path, max_checks: int, *, case_id: str, method: str) -> d
             cost_event["attempt_id"] = f"{case_id}:{method}:{cost_event['attempt_id']}"
             cost_event["receipt_id"] = f"{case_id}:{method}:{cost_event['receipt_id']}"
             cost_events.append(cost_event)
+    cost_events.extend(model_events)
     actual_owned = [row["actual_owned"] for row in refs["actual_stages"]]
 
     def total(field: str) -> int | float | None:
@@ -795,6 +1037,56 @@ def _raw_refs(session: Path, max_checks: int, *, case_id: str, method: str) -> d
                 ))
                 for row in actual_owned
             ),
+        },
+        "model_api_summary": {
+            "reserved_attempts": len(model_events),
+            "completed_attempts": sum(
+                event["model_api"]["completion_attempt_returned"] for event in model_events
+            ),
+            "normal_results": sum(
+                event["model_api"]["result_class"] == "normal" for event in model_events
+            ),
+            "infra_error_results": sum(
+                event["model_api"]["result_class"] == "infra_error" for event in model_events
+            ),
+            "failed_results": sum(
+                event["model_api"]["result_class"] == "failed" for event in model_events
+            ),
+            "unconfirmed_reservations": sum(
+                event["model_api"]["result_class"] == "unconfirmed" for event in model_events
+            ),
+            "model_calls": (
+                None
+                if any(event["costs"]["model_calls"] is None for event in model_events)
+                else sum(event["costs"]["model_calls"] for event in model_events)
+            ),
+            "known_model_calls": sum(
+                event["costs"]["model_calls"]
+                for event in model_events
+                if event["costs"]["model_calls"] is not None
+            ),
+            "confirmed_http_responses": sum(
+                event["model_api"]["confirmed_http_response"] == 1 for event in model_events
+            ),
+            "confirmed_no_http_responses": sum(
+                event["model_api"]["confirmed_http_response"] == 0 for event in model_events
+            ),
+            "unknown_http_response_count": sum(
+                event["model_api"]["confirmed_http_response"] is None for event in model_events
+            ),
+            "input_tokens": (
+                0 if not model_events else None
+                if any(event["costs"]["input_tokens"] is None for event in model_events)
+                else sum(event["costs"]["input_tokens"] for event in model_events)
+            ),
+            "output_tokens": (
+                0 if not model_events else None
+                if any(event["costs"]["output_tokens"] is None for event in model_events)
+                else sum(event["costs"]["output_tokens"] for event in model_events)
+            ),
+            "hosted_provider_gpu_s": None,
+            "actual_billing_usd": None,
+            "reproducible_estimate_usd": None,
         },
         "aggregation": "one_effective_event_per_request_stage_preferred_over_host_receipt",
     }

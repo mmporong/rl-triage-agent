@@ -4,16 +4,18 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
-from rl_triage import investigate
+from rl_triage import investigate, mechanism_confirmation
 from rl_triage.investigation_session import reference, write_new
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "evals"))
+import model_decision_journal_v1 as MODEL_JOURNAL
 import run_diagnostic_comparison_v1 as RUNNER
 
 
@@ -150,6 +152,8 @@ def test_cpu_fixture_runs_all_four_arms_in_preregistered_rotation(tmp_path: Path
     fixture_cost = report["arms"][0]["resource_cost"]
     assert len(fixture_cost["events"]) == 1
     assert fixture_cost["events"][0]["costs"]["gpu_wall_s"] == 0.0
+    assert fixture_cost["events"][0]["costs"]["model_calls"] == 0
+    assert fixture_cost["model_api_summary"]["reserved_attempts"] == 0
     request_cost = fixture_cost["request_costs"][0]
     assert request_cost["actual_owned"]["owned_sdk_execution_count"] == 0
     assert request_cost["effective_cost_source"] == "host_receipt"
@@ -593,6 +597,204 @@ def test_resume_settlement_zero_does_not_erase_or_double_actual_spend(tmp_path: 
         assert request["logical_settlement"]["ledger_settlement_gpu_s"] == 0.0
         assert request["actual_owned"]["owned_wall_s"] == 12.5
         assert request["double_count_prevented"] is True
+
+
+def _cpu_model_journal_session(
+    tmp_path: Path, *, pending: bool = False, failed: bool = False
+) -> Path:
+    label = "pending" if pending else "failed" if failed else "completed"
+    session = tmp_path / f"{label}-session"
+    session.mkdir()
+    api_root = tmp_path / f"{label}-api"
+    params = {"temperature": 0}
+    source_anchor = "1" * 40
+    protocol_sha = "2" * 64
+    checkpoint_sha = "a" * 64
+    write_new(
+        session / "manifest.json",
+        {
+            "source": {"path": "sanitized-source", "sha256": "b" * 64},
+            "source_verification": {"case_id": "case-model", "checkpoint_sha256": checkpoint_sha},
+            "method": "one_shot_llm",
+            "model_binding": {
+                "source_anchor": source_anchor,
+                "protocol_sha256": protocol_sha,
+                "params": params,
+                "api_cap": 40,
+                "api_root": str(api_root.resolve()),
+            },
+            "execution_class": "fixture",
+        },
+    )
+    messages = [{"role": "user", "content": "sanitized CPU fixture"}]
+    decision = MODEL_JOURNAL.DecisionJournal(
+        session / "model/0000",
+        api_root,
+        {
+            "run_id": "case-model:one_shot_llm:0",
+            "source_anchor": source_anchor,
+            "protocol_sha256": protocol_sha,
+            "checkpoint_sha256": checkpoint_sha,
+            "snapshot_sha256": "c" * 64,
+            "initial_messages_sha256": MODEL_JOURNAL.digest(messages),
+        },
+        params,
+        api_cap=40,
+    )
+
+    def engine(complete):
+        complete(messages, params)
+        return {"selection": {"action": "hold"}}
+
+    def complete(_messages, _params):
+        if pending:
+            raise KeyboardInterrupt
+        if failed:
+            raise ConnectionError("sanitized fixture transport failure")
+        return {
+            "content": '{"action":"hold"}',
+            "status": "ok",
+            "http_status": 200,
+            "wall_s": 1.25,
+            "usage": {
+                "prompt_tokens": 11,
+                "completion_tokens": 3,
+                "total_tokens": 14,
+                "cached_tokens": 2,
+            },
+        }
+
+    if pending:
+        with pytest.raises(KeyboardInterrupt):
+            decision.advance(engine, complete, lambda: datetime.now(UTC))
+    else:
+        decision.advance(engine, complete, lambda: datetime.now(UTC))
+    return session
+
+
+def test_cpu_fixture_model_journal_cost_uses_audited_transport_once(tmp_path: Path) -> None:
+    session = _cpu_model_journal_session(tmp_path)
+
+    first = RUNNER._raw_refs(session, 3, case_id="case-model", method="one_shot_llm")
+    second = RUNNER._raw_refs(session, 3, case_id="case-model", method="one_shot_llm")
+
+    for raw in (first, second):
+        cost = raw["resource_cost"]
+        assert len(cost["events"]) == 1
+        event = cost["events"][0]
+        assert event["status"] == "completed"
+        assert event["costs"] == {
+            "model_calls": 1,
+            "input_tokens": 11,
+            "output_tokens": 3,
+            "gpu_wall_s": 0.0,
+            "cpu_s": None,
+            "human_review_s": None,
+            "execution_wall_s": 1.25,
+            "simulator_steps": 0,
+        }
+        assert event["model_api"]["usage"]["cached_tokens"] == 2
+        assert event["model_api"]["hosted_provider_gpu_s"] is None
+        assert event["model_api"]["actual_billing_usd"] is None
+        assert event["model_api"]["reproducible_estimate_usd"] is None
+        assert cost["model_api_summary"] == {
+            "reserved_attempts": 1,
+            "completed_attempts": 1,
+            "normal_results": 1,
+            "infra_error_results": 0,
+            "failed_results": 0,
+            "unconfirmed_reservations": 0,
+            "model_calls": 1,
+            "known_model_calls": 1,
+            "confirmed_http_responses": 1,
+            "confirmed_no_http_responses": 0,
+            "unknown_http_response_count": 0,
+            "input_tokens": 11,
+            "output_tokens": 3,
+            "hosted_provider_gpu_s": None,
+            "actual_billing_usd": None,
+            "reproducible_estimate_usd": None,
+        }
+    assert first["resource_cost"]["events"][0]["attempt_id"] == second["resource_cost"]["events"][0]["attempt_id"]
+
+
+def test_cpu_fixture_pending_model_reservation_counts_attempt_without_fake_usage(tmp_path: Path) -> None:
+    session = _cpu_model_journal_session(tmp_path, pending=True)
+
+    raw = RUNNER._raw_refs(session, 1, case_id="case-model", method="one_shot_llm")
+
+    event = raw["resource_cost"]["events"][0]
+    assert event["status"] == "unknown"
+    assert event["costs"]["model_calls"] is None
+    assert event["costs"]["input_tokens"] is None
+    assert event["costs"]["output_tokens"] is None
+    assert event["costs"]["execution_wall_s"] is None
+    assert event["model_api"]["raw_refs"]["response"] is None
+    summary = raw["resource_cost"]["model_api_summary"]
+    assert summary["reserved_attempts"] == 1
+    assert summary["completed_attempts"] == 0
+    assert summary["unconfirmed_reservations"] == 1
+    assert summary["model_calls"] is None
+    assert summary["known_model_calls"] == 0
+
+
+def test_cpu_fixture_failed_model_transport_counts_attempt_and_audits_receipt(tmp_path: Path) -> None:
+    session = _cpu_model_journal_session(tmp_path, failed=True)
+
+    raw = RUNNER._raw_refs(session, 1, case_id="case-model", method="one_shot_llm")
+
+    event = raw["resource_cost"]["events"][0]
+    assert event["status"] == "failed"
+    assert event["costs"]["model_calls"] == 1
+    assert event["costs"]["input_tokens"] is None
+    assert event["costs"]["execution_wall_s"] >= 0
+    assert event["model_api"]["raw_refs"]["response"] is not None
+    assert event["model_api"]["raw_refs"]["receipt"] is not None
+
+
+def test_runtime_confirmation_cpu_fixture_all_normal_ends_unidentifiable_without_fourth_cost(
+    tmp_path: Path,
+) -> None:
+    runtime = mechanism_confirmation.mechanism_registry(profile="runtime_confirmation_v1")
+    probes = list(runtime["fixed_order"])
+    plan_ref, binding, repo, output = _setup(tmp_path, probe_scope=probes)
+    plan_path = repo / plan_ref["path"]
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan["authorization"]["probe_scope"] = probes
+    plan_path.write_bytes(RUNNER.canonical(plan) + b"\n")
+    plan_ref = {"path": "plan.json", "sha256": RUNNER._lf_sha(plan_path)}
+    binding["plan"] = plan_ref
+    for arm in binding["cases"][0]["arms"]:
+        arm["prepare_payload"]["registry"] = runtime
+        source_path = Path(arm["source_path"])
+        source = json.loads(source_path.read_text(encoding="utf-8"))
+        source["binding"]["fixture_outcomes"] = dict.fromkeys(probes, "normal")
+        source_path.write_bytes(RUNNER.canonical(source) + b"\n")
+
+    fixed_session = Path(binding["cases"][0]["arms"][0]["session_path"])
+    dispatches = 0
+
+    def invoke(command, session, payload, **kwargs):
+        nonlocal dispatches
+        if command == "dispatch" and session == fixed_session:
+            dispatches += 1
+        return investigate.run(command, session, payload, **kwargs)
+
+    report = RUNNER.run_comparison(
+        plan_ref,
+        binding,
+        repo_root=repo,
+        output_root=output,
+        fixture=True,
+        invoke=invoke,
+    )
+
+    fixed = report["arms"][0]
+    assert fixed["status"] == "unidentifiable"
+    assert dispatches == 3
+    assert len(fixed["resource_cost"]["request_costs"]) == 3
+    assert fixed["resource_cost"]["model_api_summary"]["reserved_attempts"] == 0
+    assert sum(event["costs"]["gpu_wall_s"] for event in fixed["resource_cost"]["events"]) == 0
 
 
 def test_actual_source_integrity_failure_stops_batch_and_sampler_in_finally(tmp_path: Path) -> None:
