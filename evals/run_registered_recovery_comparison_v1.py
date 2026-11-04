@@ -38,6 +38,7 @@ PLAN_SCHEMA_V6 = "registered_recovery_comparison_plan_v6"
 PLAN_SCHEMA_V7 = "registered_recovery_comparison_plan_v7"
 PLAN_SCHEMA_V8 = "registered_recovery_comparison_plan_v8"
 PLAN_SCHEMA_V9 = "registered_recovery_comparison_plan_v9"
+PLAN_SCHEMA_V10 = "registered_recovery_comparison_plan_v10"
 CONSISTENT_OBSERVATION_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261104_v9.md"
 CONSISTENT_OBSERVATION_SOURCES = {
     "evals/registered_desktop_gpu_retry_v1.py", "tests/test_registered_desktop_gpu_retry_v1.py",
@@ -62,6 +63,7 @@ V12_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v12.md"
 V13_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v13.md"
 V14_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v14.md"
 V15_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v15.md"
+V16_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v16.md"
 V13_PUBLIC_SUMMARY = (
     "evals/results/recovery_comparison_s2664_s2667_20261105_v13/summary.json"
 )
@@ -70,6 +72,13 @@ V13_PUBLIC_SUMMARY_SHA256 = (
 )
 RESOURCE_REMEASUREMENT_PROFILE = "balanced_resource_remeasurement_v1"
 RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE = "balanced_resource_remeasurement_namespaced_v1"
+RESOURCE_MANIFEST_RETRY_PROFILE = "balanced_resource_manifest_retry_v1"
+V15_FAILURE_SUMMARY = (
+    "evals/results/balanced_recovery_v15_20261105_manifest_failure_lf_v2/summary.json"
+)
+V15_FAILURE_SUMMARY_SHA256 = (
+    "60992cb88d95ab15ab65e275cd35e9f2157122cd1e43ff4f646a754df31412f0"
+)
 BALANCED_RESOURCE_SUMMARY_SOURCES = {
     "evals/summarize_balanced_recovery_resources_v1.py",
     "tests/test_summarize_balanced_recovery_resources_v1.py",
@@ -235,12 +244,12 @@ def _validate_plan(plan: dict) -> None:
     if schema in {PLAN_SCHEMA_V2, PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5,
                   PLAN_SCHEMA_V6, PLAN_SCHEMA_V7}:
         fields.add("continuation")
-    if schema in {PLAN_SCHEMA_V8, PLAN_SCHEMA_V9}:
+    if schema in {PLAN_SCHEMA_V8, PLAN_SCHEMA_V9, PLAN_SCHEMA_V10}:
         fields.add("resource_remeasurement")
     if set(plan) != fields or schema not in {PLAN_SCHEMA, PLAN_SCHEMA_V2, PLAN_SCHEMA_V3,
                                              PLAN_SCHEMA_V4, PLAN_SCHEMA_V5,
                                              PLAN_SCHEMA_V6, PLAN_SCHEMA_V7,
-                                             PLAN_SCHEMA_V8, PLAN_SCHEMA_V9}:
+                                             PLAN_SCHEMA_V8, PLAN_SCHEMA_V9, PLAN_SCHEMA_V10}:
         raise ComparisonContractError("plan fields differ")
     if _COMMIT.fullmatch(str(plan["source_anchor"])) is None:
         raise ComparisonContractError("source anchor differs")
@@ -272,6 +281,7 @@ def _validate_plan(plan: dict) -> None:
         PLAN_SCHEMA_V7: 14,
         PLAN_SCHEMA_V8: 32,
         PLAN_SCHEMA_V9: 32,
+        PLAN_SCHEMA_V10: 31,
     }[schema]
     expected_total_cap = {
         PLAN_SCHEMA: len(case_ids) * 16,
@@ -283,6 +293,7 @@ def _validate_plan(plan: dict) -> None:
         PLAN_SCHEMA_V7: 28,
         PLAN_SCHEMA_V8: 64,
         PLAN_SCHEMA_V9: 64,
+        PLAN_SCHEMA_V10: 63,
     }[schema]
     expected_cpu_cap = 7 if schema in {PLAN_SCHEMA_V5, PLAN_SCHEMA_V6, PLAN_SCHEMA_V7} else len(case_ids) * 4
     if limits != {"max_recoveries": len(case_ids) * 4,
@@ -556,11 +567,12 @@ def _validate_plan(plan: dict) -> None:
         }
         if len(by_artifact) != 8 or by_artifact != entries:
             raise ComparisonContractError("v6 completed effect registry binding differs")
-    if schema in {PLAN_SCHEMA_V8, PLAN_SCHEMA_V9}:
+    if schema in {PLAN_SCHEMA_V8, PLAN_SCHEMA_V9, PLAN_SCHEMA_V10}:
         remeasurement = plan["resource_remeasurement"]
-        if remeasurement != {
-            "profile_id": (RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE
-                           if schema == PLAN_SCHEMA_V9 else RESOURCE_REMEASUREMENT_PROFILE),
+        expected_remeasurement = {
+            "profile_id": ({PLAN_SCHEMA_V8: RESOURCE_REMEASUREMENT_PROFILE,
+                            PLAN_SCHEMA_V9: RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,
+                            PLAN_SCHEMA_V10: RESOURCE_MANIFEST_RETRY_PROFILE}[schema]),
             "scope": "already_seen_development_resource_check",
             "imports_allowed": False,
             "known_primary_outcomes": {
@@ -580,7 +592,20 @@ def _validate_plan(plan: dict) -> None:
                 "cumulative_gpu_sdk_launch_cap": 65,
             },
             "no_model_requery": True,
-        }:
+        }
+        if schema == PLAN_SCHEMA_V10:
+            expected_remeasurement["known_failed_remeasurement"] = {
+                "path": V15_FAILURE_SUMMARY, "sha256": V15_FAILURE_SUMMARY_SHA256,
+            }
+            expected_remeasurement["accounting"] = {
+                "prior_primary_sdk_launches": 32,
+                "prior_post_sdk_launches": 1,
+                "prior_failed_remeasurement_sdk_launches": 1,
+                "prior_whole_study_sdk_launches": 34,
+                "new_gpu_sdk_launch_cap": 31,
+                "cumulative_gpu_sdk_launch_cap": 65,
+            }
+        if remeasurement != expected_remeasurement:
             raise ComparisonContractError("v8 resource remeasurement contract differs")
         if case_ids != set(SUPPORTED_CASES):
             raise ComparisonContractError("v8 complete case matrix required")
@@ -609,6 +634,13 @@ def _validate_plan(plan: dict) -> None:
         "case-08": {"resume": 2667, "restart": 6467},
     }:
         raise ComparisonContractError("v8 registered restart seed map differs")
+    if schema == PLAN_SCHEMA_V10 and policy["seeds"] != {
+        "case-05": {"resume": 2664, "restart": 5664},
+        "case-06": {"resume": 2665, "restart": 5665},
+        "case-07": {"resume": 2666, "restart": 6666},
+        "case-08": {"resume": 2667, "restart": 6667},
+    }:
+        raise ComparisonContractError("v10 registered restart seed map differs")
     commitments = plan["template_commitments"]
     mechanisms = {"actuator", "optimizer_update_count", "optimizer_surrogate"}
     if not isinstance(commitments, dict) or set(commitments) != case_ids:
@@ -709,7 +741,7 @@ def _validate_plan(plan: dict) -> None:
                     "sha256": closure.get(V13_NOTE)})
         ):
             raise ComparisonContractError("v6 retry preregistration/policy closure missing")
-    if schema in {PLAN_SCHEMA_V8, PLAN_SCHEMA_V9}:
+    if schema in {PLAN_SCHEMA_V8, PLAN_SCHEMA_V9, PLAN_SCHEMA_V10}:
         notes = {row["role"]: row for row in inputs}
         if (
             not (CONSISTENT_OBSERVATION_SOURCES | BALANCED_ADMISSION_SOURCES
@@ -741,6 +773,23 @@ def _validate_plan(plan: dict) -> None:
             }
         ):
             raise ComparisonContractError("v9 actuator namespace preregistration/closure missing")
+        if schema == PLAN_SCHEMA_V10 and (
+            not (BALANCED_NAMESPACE_SOURCES | {V16_NOTE, V15_FAILURE_SUMMARY}) <= set(closure)
+            or closure.get(V15_FAILURE_SUMMARY) != V15_FAILURE_SUMMARY_SHA256
+            or notes.get("balanced_resource_namespace_preregistration") != {
+                "role": "balanced_resource_namespace_preregistration",
+                "path": V15_NOTE, "sha256": closure.get(V15_NOTE),
+            }
+            or notes.get("balanced_resource_manifest_retry_preregistration") != {
+                "role": "balanced_resource_manifest_retry_preregistration",
+                "path": V16_NOTE, "sha256": closure.get(V16_NOTE),
+            }
+            or notes.get("failed_resource_remeasurement") != {
+                "role": "failed_resource_remeasurement",
+                "path": V15_FAILURE_SUMMARY, "sha256": V15_FAILURE_SUMMARY_SHA256,
+            }
+        ):
+            raise ComparisonContractError("v10 manifest retry preregistration/closure missing")
 
 
 def load_plan(plan_path: Path, *, repo_root: Path, registration_anchor: str,
@@ -812,7 +861,7 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
     if not isinstance(rows, list) or len(rows) != len(case_ids) * 4:
         raise ComparisonContractError("complete recovery arm matrix required")
     if plan["schema"] in {PLAN_SCHEMA_V5, PLAN_SCHEMA_V6, PLAN_SCHEMA_V7,
-                           PLAN_SCHEMA_V8, PLAN_SCHEMA_V9}:
+                           PLAN_SCHEMA_V8, PLAN_SCHEMA_V9, PLAN_SCHEMA_V10}:
         expected_order = [
             (case["case_id"], method)
             for case in plan["cases"]
@@ -911,7 +960,7 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
         }
         continuation_schema = plan["schema"] in {
             PLAN_SCHEMA_V2, PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5,
-            PLAN_SCHEMA_V6, PLAN_SCHEMA_V7, PLAN_SCHEMA_V8, PLAN_SCHEMA_V9,
+            PLAN_SCHEMA_V6, PLAN_SCHEMA_V7, PLAN_SCHEMA_V8, PLAN_SCHEMA_V9, PLAN_SCHEMA_V10,
         }
         if (not isinstance(protocol, dict)
                 or (continuation_schema
@@ -920,7 +969,7 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
                         if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4,
                                               PLAN_SCHEMA_V5, PLAN_SCHEMA_V6,
                                               PLAN_SCHEMA_V7, PLAN_SCHEMA_V8,
-                                              PLAN_SCHEMA_V9}
+                                              PLAN_SCHEMA_V9, PLAN_SCHEMA_V10}
                         else "registered_recovery_protocol_v2"
                     ))
                 or (continuation_schema and set(operation) != operation_v2_fields)
@@ -1009,7 +1058,7 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
                          or operation.get("correction_id") != expected_import["correction_id"]
                      )))):
             raise ComparisonContractError("completed-import prior arm/profile binding differs")
-        if (plan["schema"] in {PLAN_SCHEMA_V8, PLAN_SCHEMA_V9}
+        if (plan["schema"] in {PLAN_SCHEMA_V8, PLAN_SCHEMA_V9, PLAN_SCHEMA_V10}
                 and (operation.get("gpu_admission_profile")
                      != "registered_desktop_shared_retry_v1"
                      or prior_id is not None
@@ -1032,6 +1081,13 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
                      or training_binding.get("namespace_profile")
                      != RESOURCE_REMEASUREMENT_PROFILE)):
             raise ComparisonContractError("v9 actuator namespace binding differs")
+        if (plan["schema"] == PLAN_SCHEMA_V10 and mechanism == "actuator"
+                and (not isinstance(training_binding, dict)
+                     or training_binding.get("schema")
+                     != "registered_actuator_recovery_binding_v3"
+                     or training_binding.get("namespace_profile")
+                     != RESOURCE_REMEASUREMENT_PROFILE)):
+            raise ComparisonContractError("v10 actuator namespace binding differs")
         if prior_id is not None:
             if set(artifacts) != {training_id, fixed_id, prior_id}:
                 raise ComparisonContractError("prior training resolver artifacts differ")
@@ -1050,7 +1106,7 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
                            "approval_ref": {"path": str(approval_path), "sha256": row["approval_ref"]["sha256"]}})
     if seen != expected:
         raise ComparisonContractError("job arm matrix incomplete")
-    if plan["schema"] in {PLAN_SCHEMA_V8, PLAN_SCHEMA_V9}:
+    if plan["schema"] in {PLAN_SCHEMA_V8, PLAN_SCHEMA_V9, PLAN_SCHEMA_V10}:
         holds = [
             (row["case_id"], row["method"])
             for row in normalized
@@ -1533,7 +1589,8 @@ def advance(folder: Path) -> dict:
         return current
     try:
         plan = _read(Path(manifest["plan"]["path"]))
-        if plan.get("schema") in {PLAN_SCHEMA_V7, PLAN_SCHEMA_V8, PLAN_SCHEMA_V9}:
+        if plan.get("schema") in {PLAN_SCHEMA_V7, PLAN_SCHEMA_V8, PLAN_SCHEMA_V9,
+                                   PLAN_SCHEMA_V10}:
             verify_prepared_manifest(
                 root,
                 repo_root=_ENTRY_ROOT,

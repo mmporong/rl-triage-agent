@@ -27,7 +27,9 @@ from evals import run_training_correction as LEGACY
 
 SCHEMA = "registered_actuator_recovery_binding_v1"
 SCHEMA_V2 = "registered_actuator_recovery_binding_v2"
+SCHEMA_V3 = "registered_actuator_recovery_binding_v3"
 NAMESPACE_PROFILE = "balanced_resource_remeasurement_v1"
+NAMESPACE_RECEIPT_SCHEMA = "registered_actuator_run_namespace_v1"
 CORRECTION = "restore_motor_torque_speed"
 
 
@@ -59,12 +61,13 @@ def validate_prepared_binding(binding: Mapping[str, Any]) -> dict:
               "correction_source_contract", "action_scale", "rsl_rl_version", "isaaclab_commit",
               "num_steps_per_env"}
     schema = binding.get("schema") if isinstance(binding, Mapping) else None
-    if schema == SCHEMA_V2:
+    if schema in {SCHEMA_V2, SCHEMA_V3}:
         fields.add("namespace_profile")
     if (not isinstance(binding, Mapping) or set(binding) != fields
-            or schema not in {SCHEMA, SCHEMA_V2}):
+            or schema not in {SCHEMA, SCHEMA_V2, SCHEMA_V3}):
         raise ValueError("actuator recovery binding fields")
-    if schema == SCHEMA_V2 and binding["namespace_profile"] != NAMESPACE_PROFILE:
+    if schema in {SCHEMA_V2, SCHEMA_V3} \
+            and binding["namespace_profile"] != NAMESPACE_PROFILE:
         raise ValueError("actuator recovery namespace profile")
     if binding["max_iterations"] != 300 or binding["resume_iteration"] != 299:
         raise ValueError("actuator recovery iteration binding")
@@ -139,9 +142,12 @@ class _Host:
         if Path(path).resolve() != self.manifest_path:
             raise ValueError("manifest path differs")
         manifest = _read(self.manifest_path)
+        namespace = self.validate_namespace_receipt() if self.binding["schema"] == SCHEMA_V3 else None
         expected = manifest_for(self.manifest_path.parent, self.binding,
                                 Path(manifest["isaaclab_root"]), manifest["run_name"],
-                                original_run_name=manifest.get("original_run_name"))
+                                original_run_name=(namespace["original_run_name"]
+                                                   if namespace is not None
+                                                   else manifest.get("original_run_name")))
         if manifest != expected:
             raise ValueError("manifest differs from registered actuator binding")
         protocol = {"correction_source_contract": self.binding["correction_source_contract"],
@@ -149,6 +155,20 @@ class _Host:
                     "rsl_rl_version": self.binding["rsl_rl_version"],
                     "isaaclab_commit": self.binding["isaaclab_commit"]}
         return manifest, protocol
+
+    def validate_namespace_receipt(self) -> dict:
+        path = self.manifest_path.parent / "run-namespace.json"
+        row = _read(path)
+        fields = {"schema", "namespace_profile", "original_run_name", "effective_run_name",
+                  "binding_sha256", "manifest_sha256"}
+        if (set(row) != fields or row["schema"] != NAMESPACE_RECEIPT_SCHEMA
+                or row["namespace_profile"] != NAMESPACE_PROFILE
+                or row["binding_sha256"] != _sha(self.manifest_path.parent / "binding.json")
+                or row["manifest_sha256"] != _sha(self.manifest_path)
+                or row["effective_run_name"] != training_run_name(
+                    row["original_run_name"], self.binding["seed"], self.binding)):
+            raise ValueError("actuator recovery namespace receipt differs")
+        return row
 
     def validate_training_configuration(self, log_dir: Path, manifest: dict) -> None:
         source_env = _read_yaml(Path(manifest["resume_env_config_path"]))
@@ -186,7 +206,8 @@ def training_run_name(request_id: str, seed: int, binding: Mapping[str, Any]) ->
     schema = binding.get("schema")
     if schema == SCHEMA:
         return request_id
-    if schema != SCHEMA_V2 or binding.get("namespace_profile") != NAMESPACE_PROFILE:
+    if schema not in {SCHEMA_V2, SCHEMA_V3} \
+            or binding.get("namespace_profile") != NAMESPACE_PROFILE:
         raise ValueError("actuator recovery namespace binding")
     checkpoint = binding.get("resume_checkpoint")
     if not isinstance(checkpoint, Mapping) or not isinstance(checkpoint.get("sha256"), str):
@@ -223,15 +244,16 @@ def manifest_for(stage: Path, binding: Mapping[str, Any], isaaclab: Path, run_na
         "resume_env_config_path": str(Path(binding["resume_env_config"]["path"]).resolve()),
         "resume_agent_config_path": str(Path(binding["resume_agent_config"]["path"]).resolve()),
     }
-    if binding["schema"] == SCHEMA_V2:
+    if binding["schema"] in {SCHEMA_V2, SCHEMA_V3}:
         if original_run_name is None or run_name != training_run_name(
                 original_run_name, binding["seed"], binding):
             raise ValueError("v2 actuator manifest namespace differs")
-        manifest.update({
-            "namespace_profile": binding["namespace_profile"],
-            "original_run_name": original_run_name,
-            "effective_run_name": run_name,
-        })
+        if binding["schema"] == SCHEMA_V2:
+            manifest.update({
+                "namespace_profile": binding["namespace_profile"],
+                "original_run_name": original_run_name,
+                "effective_run_name": run_name,
+            })
     elif original_run_name is not None:
         raise ValueError("v1 actuator manifest forbids namespace identity")
     return manifest
@@ -239,7 +261,10 @@ def manifest_for(stage: Path, binding: Mapping[str, Any], isaaclab: Path, run_na
 
 def child_main(manifest_path: Path, binding_path: Path) -> dict:
     binding = validate_binding(_read(binding_path), Path.cwd())
-    return CHILD.execute(Path(manifest_path), _Host(binding, Path(manifest_path)))
+    host = _Host(binding, Path(manifest_path))
+    if binding["schema"] == SCHEMA_V3:
+        host.validate_namespace_receipt()
+    return CHILD.execute(Path(manifest_path), host)
 
 
 def train(stage: Path, isaaclab: Path, arm: str, seed: int, run_name: str,
@@ -256,13 +281,29 @@ def train(stage: Path, isaaclab: Path, arm: str, seed: int, run_name: str,
     _write_new(binding_path, bound)
     manifest = manifest_for(
         Path(stage), bound, Path(isaaclab), effective_run_name,
-        original_run_name=run_name if bound["schema"] == SCHEMA_V2 else None,
+        original_run_name=run_name if bound["schema"] in {SCHEMA_V2, SCHEMA_V3} else None,
     )
     _write_new(manifest_path, manifest)
+    namespace_receipt = None
+    if bound["schema"] == SCHEMA_V3:
+        namespace_receipt = {
+            "schema": NAMESPACE_RECEIPT_SCHEMA,
+            "namespace_profile": bound["namespace_profile"],
+            "original_run_name": run_name,
+            "effective_run_name": effective_run_name,
+            "binding_sha256": _sha(binding_path),
+            "manifest_sha256": _sha(manifest_path),
+        }
+        _write_new(Path(stage) / "run-namespace.json", namespace_receipt)
+        if _Host(bound, manifest_path).validate_namespace_receipt() != namespace_receipt:
+            raise ValueError("actuator recovery namespace receipt self-check differs")
     runner = V2._prepared_owned(owned)
     execution = runner(Path(stage) / "owned", [str(Path(isaaclab) / "_isaac_sim/python.bat"), "-B",
         str(Path(__file__).resolve()), "--manifest", str(manifest_path), "--binding", str(binding_path)],
         Path(isaaclab), V1.WATCHDOG["train"])
+    if (namespace_receipt is not None
+            and _Host(bound, manifest_path).validate_namespace_receipt() != namespace_receipt):
+        raise ValueError("actuator recovery namespace receipt post-run differs")
     _write_new(Path(stage) / "execution.json", dict(execution))
     if not V1._finished(execution):
         raise RuntimeError("registered actuator training did not finish cleanly")
@@ -275,7 +316,7 @@ def train(stage: Path, isaaclab: Path, arm: str, seed: int, run_name: str,
     configuration: dict[str, Any] = {
         "source_checkpoint_consumed": True, "optimizer_state_resumed": True,
     }
-    if bound["schema"] == SCHEMA_V2:
+    if bound["schema"] in {SCHEMA_V2, SCHEMA_V3}:
         configuration.update({
             "namespace_profile": bound["namespace_profile"],
             "original_run_name": run_name,

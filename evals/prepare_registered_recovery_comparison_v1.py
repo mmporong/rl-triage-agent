@@ -204,7 +204,9 @@ RESOURCE_REMEASUREMENT_PROFILE = COMPARISON.RESOURCE_REMEASUREMENT_PROFILE
 RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE = (
     COMPARISON.RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE
 )
+RESOURCE_MANIFEST_RETRY_PROFILE = COMPARISON.RESOURCE_MANIFEST_RETRY_PROFILE
 REGISTERED_RESTART_SEED_OVERRIDES_V14 = {"case-07": 6466, "case-08": 6467}
+REGISTERED_RESTART_SEED_OVERRIDES_V16 = {"case-07": 6666, "case-08": 6667}
 RESOURCE_REMEASUREMENT_PREREGISTRATION_V14 = COMPARISON.V14_NOTE
 _RESOURCE_REMEASUREMENT_SOURCE_FILES = {
     RESOURCE_REMEASUREMENT_PREREGISTRATION_V14,
@@ -213,6 +215,9 @@ _RESOURCE_REMEASUREMENT_SOURCE_FILES = {
     "tests/test_summarize_balanced_recovery_resources_v1.py",
 } | COMPARISON.BALANCED_ADMISSION_SOURCES
 _RESOURCE_REMEASUREMENT_NAMESPACE_SOURCE_FILES = COMPARISON.BALANCED_NAMESPACE_SOURCES
+_RESOURCE_MANIFEST_RETRY_SOURCE_FILES = {
+    COMPARISON.V16_NOTE, COMPARISON.V15_FAILURE_SUMMARY,
+}
 PRIOR_V5_SOURCE_ANCHOR = "f9d5fea93cce406a325f578bc6f4597cc0bc35c5"
 PRIOR_V5_REGISTRATION_ANCHOR = "bf1632ee6770e681e9e8c4c5b1df890ebaed12a6"
 PRIOR_V7_REGISTRATION_ANCHOR = "47fec9fc6107e6efde09950d52e64f5465751252"
@@ -295,7 +300,8 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
                     include_epoch_close_retry_v12: bool = False,
                     include_epoch_namespace_retry_v13: bool = False,
                     include_resource_remeasurement_v14: bool = False,
-                    include_resource_namespace_v15: bool = False) -> dict[str, str]:
+                    include_resource_namespace_v15: bool = False,
+                    include_resource_manifest_retry_v16: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
@@ -322,6 +328,10 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
         if not include_resource_remeasurement_v14:
             raise PreparationError("v15 namespace requires v14 resource remeasurement sources")
         source_files |= _RESOURCE_REMEASUREMENT_NAMESPACE_SOURCE_FILES
+    if include_resource_manifest_retry_v16:
+        if not include_resource_namespace_v15:
+            raise PreparationError("v16 manifest retry requires v15 namespace sources")
+        source_files |= _RESOURCE_MANIFEST_RETRY_SOURCE_FILES
     if include_observation_retry:
         if not include_continuation_v4:
             raise PreparationError("observation retry requires v4 completed-effect imports")
@@ -797,7 +807,8 @@ def _environment_preservation(*, source: dict, source_seed: int, training_seed: 
 
 
 def _actuator_binding(anchor: str, seed: int, refs: dict, report: dict, sdk_contract: dict,
-                      isaaclab_commit: str, namespace_profile: str | None = None) -> dict:
+                      isaaclab_commit: str, namespace_profile: str | None = None,
+                      *, schema: str | None = None) -> dict:
     if _HEX40.fullmatch(isaaclab_commit) is None:
         raise PreparationError("Isaac Lab commit format")
     agent = ACTUATOR._read_yaml(Path(refs["agent"]["path"]))
@@ -806,8 +817,13 @@ def _actuator_binding(anchor: str, seed: int, refs: dict, report: dict, sdk_cont
         raise PreparationError("source num_steps_per_env missing")
     if namespace_profile not in {None, ACTUATOR.NAMESPACE_PROFILE}:
         raise PreparationError("actuator recovery namespace profile differs")
+    expected_schema = (ACTUATOR.SCHEMA if namespace_profile is None else ACTUATOR.SCHEMA_V2)
+    selected_schema = schema or expected_schema
+    if selected_schema not in {expected_schema, ACTUATOR.SCHEMA_V3} \
+            or (selected_schema == ACTUATOR.SCHEMA_V3 and namespace_profile is None):
+        raise PreparationError("actuator recovery binding schema differs")
     binding = {
-        "schema": ACTUATOR.SCHEMA_V2 if namespace_profile is not None else ACTUATOR.SCHEMA,
+        "schema": selected_schema,
         "source_commit_sha": anchor,
         "task": "Isaac-Velocity-Flat-Unitree-Go2-v0", "seed": seed,
         "num_envs": 4096, "max_iterations": 300, "resume_iteration": 299,
@@ -848,6 +864,7 @@ def _restart_seed_map(
         COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY: REGISTERED_RESTART_SEED_OVERRIDES_V13,
         RESOURCE_REMEASUREMENT_PROFILE: REGISTERED_RESTART_SEED_OVERRIDES_V14,
         RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE: REGISTERED_RESTART_SEED_OVERRIDES_V14,
+        RESOURCE_MANIFEST_RETRY_PROFILE: REGISTERED_RESTART_SEED_OVERRIDES_V16,
     }
     if completed_import_profile not in registered:
         raise PreparationError("restart seed overrides require motor completed imports")
@@ -896,9 +913,11 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         raise PreparationError("phase-A selected cases missing")
     v8_requested = resource_remeasurement_profile == RESOURCE_REMEASUREMENT_PROFILE
     v9_requested = resource_remeasurement_profile == RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE
-    resource_requested = v8_requested or v9_requested
+    v10_requested = resource_remeasurement_profile == RESOURCE_MANIFEST_RETRY_PROFILE
+    resource_requested = v8_requested or v9_requested or v10_requested
     if resource_remeasurement_profile not in {
         None, RESOURCE_REMEASUREMENT_PROFILE, RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,
+        RESOURCE_MANIFEST_RETRY_PROFILE,
     }:
         raise PreparationError("unsupported resource remeasurement profile")
     v7_requested = completed_import_profile == COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY
@@ -956,7 +975,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         or completed_effect_proofs is not None
         or isaaclab_root is None
         or gpu_admission_profile != GPU_ADMISSION_PROFILE_RETRY
-        or restart_seed_overrides != REGISTERED_RESTART_SEED_OVERRIDES_V14
+        or restart_seed_overrides != (REGISTERED_RESTART_SEED_OVERRIDES_V16
+                                      if v10_requested else REGISTERED_RESTART_SEED_OVERRIDES_V14)
         or epoch_shutdown_failure_proof is not None
         or epoch_namespace_failure_context is not None
     ):
@@ -1028,7 +1048,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         include_epoch_close_retry_v12=v6_requested,
         include_epoch_namespace_retry_v13=v7_requested,
         include_resource_remeasurement_v14=resource_requested,
-        include_resource_namespace_v15=v9_requested,
+        include_resource_namespace_v15=v9_requested or v10_requested,
+        include_resource_manifest_retry_v16=v10_requested,
     ) if require_committed else {
         path: _sha(ROOT / path, lf=True)
         for path in sorted(
@@ -1052,7 +1073,9 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             | (_CONTINUATION_V13_SOURCE_FILES if v7_requested else set())
             | (_RESOURCE_REMEASUREMENT_SOURCE_FILES | _CONTINUATION_RETRY_SOURCE_FILES
                if resource_requested else set())
-            | (_RESOURCE_REMEASUREMENT_NAMESPACE_SOURCE_FILES if v9_requested else set())
+            | (_RESOURCE_REMEASUREMENT_NAMESPACE_SOURCE_FILES
+               if v9_requested or v10_requested else set())
+            | (_RESOURCE_MANIFEST_RETRY_SOURCE_FILES if v10_requested else set())
         )
     }
     sdk = _read(sdk_contract)
@@ -1084,7 +1107,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         training = {
             "actuator": _actuator_binding(
                 source_anchor, SOURCE_SEEDS[case], refs, report, sdk, isaaclab_commit,
-                ACTUATOR.NAMESPACE_PROFILE if v9_requested else None,
+                ACTUATOR.NAMESPACE_PROFILE if v9_requested or v10_requested else None,
+                schema=ACTUATOR.SCHEMA_V3 if v10_requested else None,
             ),
             "optimizer_update_count": _optimizer_binding(source_anchor, refs["checkpoint"]["sha256"],
                                                           runtime, "optimizer_update_count", closure,
@@ -1172,12 +1196,20 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                 "sha256": COMPARISON.V13_PUBLIC_SUMMARY_SHA256,
             },
         ])
-    if v9_requested:
+    if v9_requested or v10_requested:
         inputs.append({
             "role": "balanced_resource_namespace_preregistration",
             "path": COMPARISON.V15_NOTE,
             "sha256": closure[COMPARISON.V15_NOTE],
         })
+    if v10_requested:
+        inputs.extend([
+            {"role": "balanced_resource_manifest_retry_preregistration",
+             "path": COMPARISON.V16_NOTE, "sha256": closure[COMPARISON.V16_NOTE]},
+            {"role": "failed_resource_remeasurement",
+             "path": COMPARISON.V15_FAILURE_SUMMARY,
+             "sha256": COMPARISON.V15_FAILURE_SUMMARY_SHA256},
+        ])
     for case in CASES:
         old = case
         row = phase_inputs.get(f"protocol:{old}")
@@ -1187,7 +1219,9 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                        "sha256": row["sha256"]})
     plan = {
         "schema": (
-            COMPARISON.PLAN_SCHEMA_V9
+            COMPARISON.PLAN_SCHEMA_V10
+            if v10_requested
+            else COMPARISON.PLAN_SCHEMA_V9
             if v9_requested
             else COMPARISON.PLAN_SCHEMA_V8
             if v8_requested
@@ -1204,10 +1238,10 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         "source_closure": closure, "methods": list(METHODS),
         "cases": [{"case_id": case, "rotation": _rotation(i)} for i, case in enumerate(CASES)],
         "limits": {"max_recoveries": 16,
-                   "gpu_sdk_launch_cap": 14 if v6_requested else 15 if v5 is not None else 27 if v4 is not None else 29 if v3 is not None else 31 if prior is not None else 32,
+                   "gpu_sdk_launch_cap": 31 if v10_requested else 14 if v6_requested else 15 if v5 is not None else 27 if v4 is not None else 29 if v3 is not None else 31 if prior is not None else 32,
                    "cpu_checkpoint_launch_cap": 7 if v5 is not None else 16,
                    "cpu_telemetry_launch_cap": 7 if v5 is not None else 16,
-                   "total_owned_launch_cap": 28 if v6_requested else 29 if v5 is not None else 59 if v4 is not None else 61 if v3 is not None else 63 if prior is not None else 64,
+                   "total_owned_launch_cap": 63 if v10_requested else 28 if v6_requested else 29 if v5 is not None else 59 if v4 is not None else 61 if v3 is not None else 63 if prior is not None else 64,
                    "max_parent_wall_s_per_recovery": 5000, "api_cap": 0},
         "inputs": inputs, "backend": investigate.REGISTERED_BACKEND,
         "authorization": {"actor": actor,
@@ -1239,6 +1273,19 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             },
             "no_model_requery": True,
         }
+        if v10_requested:
+            plan["resource_remeasurement"]["known_failed_remeasurement"] = {
+                "path": COMPARISON.V15_FAILURE_SUMMARY,
+                "sha256": COMPARISON.V15_FAILURE_SUMMARY_SHA256,
+            }
+            plan["resource_remeasurement"]["accounting"] = {
+                "prior_primary_sdk_launches": 32,
+                "prior_post_sdk_launches": 1,
+                "prior_failed_remeasurement_sdk_launches": 1,
+                "prior_whole_study_sdk_launches": 34,
+                "new_gpu_sdk_launch_cap": 31,
+                "cumulative_gpu_sdk_launch_cap": 65,
+            }
     if prior is not None:
         _proof_ref, logical = prior
         plan["continuation"] = {
@@ -1532,7 +1579,7 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
         ("case-07", "case-08")
         if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6,
                               COMPARISON.PLAN_SCHEMA_V7, COMPARISON.PLAN_SCHEMA_V8,
-                              COMPARISON.PLAN_SCHEMA_V9}
+                              COMPARISON.PLAN_SCHEMA_V9, COMPARISON.PLAN_SCHEMA_V10}
         else CASES
     )
     freshness = SEED_GUARD.assert_fresh_seeds(
@@ -1549,7 +1596,7 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
             tuple(case_rows[case]["rotation"])
             if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6,
                                   COMPARISON.PLAN_SCHEMA_V7, COMPARISON.PLAN_SCHEMA_V8,
-                                  COMPARISON.PLAN_SCHEMA_V9}
+                                  COMPARISON.PLAN_SCHEMA_V9, COMPARISON.PLAN_SCHEMA_V10}
             else METHODS
         )
         for method in ordered_methods:
@@ -1621,12 +1668,14 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V2, COMPARISON.PLAN_SCHEMA_V3,
                                       COMPARISON.PLAN_SCHEMA_V4, COMPARISON.PLAN_SCHEMA_V5,
                                       COMPARISON.PLAN_SCHEMA_V6, COMPARISON.PLAN_SCHEMA_V7,
-                                      COMPARISON.PLAN_SCHEMA_V8, COMPARISON.PLAN_SCHEMA_V9}:
+                                      COMPARISON.PLAN_SCHEMA_V8, COMPARISON.PLAN_SCHEMA_V9,
+                                      COMPARISON.PLAN_SCHEMA_V10}:
                     operation.update({
                         "gpu_admission_profile": (
                             GPU_ADMISSION_PROFILE_RETRY
                             if plan["schema"] in {
-                                COMPARISON.PLAN_SCHEMA_V8, COMPARISON.PLAN_SCHEMA_V9}
+                                COMPARISON.PLAN_SCHEMA_V8, COMPARISON.PLAN_SCHEMA_V9,
+                                COMPARISON.PLAN_SCHEMA_V10}
                             else plan["continuation"]["gpu_admission_profile"]
                             if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3,
                                                   COMPARISON.PLAN_SCHEMA_V4,
@@ -1658,7 +1707,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                                                       COMPARISON.PLAN_SCHEMA_V6,
                                                       COMPARISON.PLAN_SCHEMA_V7,
                                                       COMPARISON.PLAN_SCHEMA_V8,
-                                                      COMPARISON.PLAN_SCHEMA_V9}
+                                                      COMPARISON.PLAN_SCHEMA_V9,
+                                                      COMPARISON.PLAN_SCHEMA_V10}
                                 else "registered_recovery_protocol_v2"
                                 if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2
                                 else "registered_recovery_protocol_v1"
@@ -1746,6 +1796,7 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("--resource-remeasurement-profile", choices=(
         RESOURCE_REMEASUREMENT_PROFILE,
         RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,
+        RESOURCE_MANIFEST_RETRY_PROFILE,
     ))
     t.add_argument("--completed-effect-proof", action="append", default=[],
                    metavar="ARTIFACT_ID=PATH")
@@ -1800,7 +1851,9 @@ def main(argv: list[str] | None = None) -> int:
                 completed_effect_proofs=completed_effect_proofs,
                 completed_import_profile=args.completed_import_profile,
                 restart_seed_overrides=(
-                    REGISTERED_RESTART_SEED_OVERRIDES_V14
+                    REGISTERED_RESTART_SEED_OVERRIDES_V16
+                    if args.resource_remeasurement_profile == RESOURCE_MANIFEST_RETRY_PROFILE
+                    else REGISTERED_RESTART_SEED_OVERRIDES_V14
                     if args.resource_remeasurement_profile in {
                         RESOURCE_REMEASUREMENT_PROFILE,
                         RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,

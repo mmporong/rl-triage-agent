@@ -728,6 +728,72 @@ def _upgrade_to_v9(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dic
     return plan, job
 
 
+def _upgrade_to_v10(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dict, dict]:
+    plan, job = _upgrade_to_v9(plan_path, job_path, tmp_path)
+    repo = plan_path.parent
+    project_root = Path(comparison.__file__).resolve().parents[1]
+    v16 = repo / comparison.V16_NOTE
+    v16.parent.mkdir(parents=True, exist_ok=True)
+    v16.write_text("registered manifest retry fixture\n", encoding="utf-8")
+    failure = repo / comparison.V15_FAILURE_SUMMARY
+    failure.parent.mkdir(parents=True, exist_ok=True)
+    failure.write_bytes((project_root / comparison.V15_FAILURE_SUMMARY).read_bytes())
+    plan["schema"] = comparison.PLAN_SCHEMA_V10
+    plan["limits"].update(gpu_sdk_launch_cap=31, total_owned_launch_cap=63)
+    plan["recovery_policy"]["seeds"]["case-07"]["restart"] = 6666
+    plan["recovery_policy"]["seeds"]["case-08"]["restart"] = 6667
+    plan["source_closure"].update({
+        comparison.V16_NOTE: comparison._lf_sha(v16),
+        comparison.V15_FAILURE_SUMMARY: comparison.V15_FAILURE_SUMMARY_SHA256,
+    })
+    plan["inputs"].extend([
+        {"role": "balanced_resource_manifest_retry_preregistration",
+         "path": comparison.V16_NOTE, "sha256": comparison._lf_sha(v16)},
+        {"role": "failed_resource_remeasurement", "path": comparison.V15_FAILURE_SUMMARY,
+         "sha256": comparison.V15_FAILURE_SUMMARY_SHA256},
+    ])
+    resource = plan["resource_remeasurement"]
+    resource["profile_id"] = comparison.RESOURCE_MANIFEST_RETRY_PROFILE
+    resource["known_failed_remeasurement"] = {
+        "path": comparison.V15_FAILURE_SUMMARY,
+        "sha256": comparison.V15_FAILURE_SUMMARY_SHA256,
+    }
+    resource["accounting"] = {
+        "prior_primary_sdk_launches": 32, "prior_post_sdk_launches": 1,
+        "prior_failed_remeasurement_sdk_launches": 1,
+        "prior_whole_study_sdk_launches": 34, "new_gpu_sdk_launch_cap": 31,
+        "cumulative_gpu_sdk_launch_cap": 65,
+    }
+    for row in job["arms"]:
+        payload = row.get("recovery_payload")
+        if payload is None:
+            continue
+        protocol_path = Path(payload["protocol"]["path"])
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol["source_closure"] = plan["source_closure"]
+        if row["case_id"] in {"case-07", "case-08"}:
+            mode = protocol["operation"]["recovery_mode"]
+            protocol["operation"]["training_seed"] = plan["recovery_policy"]["seeds"][
+                row["case_id"]][mode]
+        payload["protocol"] = _write(protocol_path, protocol)
+        if protocol["diagnostic"]["mechanism"] != "actuator":
+            continue
+        resolver_path = Path(payload["artifact_resolver"]["path"])
+        resolver = json.loads(resolver_path.read_text(encoding="utf-8"))
+        training_path = Path(resolver["artifacts"]["training"]["path"])
+        training = json.loads(training_path.read_text(encoding="utf-8"))
+        training["schema"] = "registered_actuator_recovery_binding_v3"
+        training_ref = _write(training_path, training)
+        resolver["artifacts"]["training"] = training_ref
+        payload["artifact_resolver"] = _write(resolver_path, resolver)
+        plan["template_commitments"][row["case_id"]]["actuator"][
+            "training_binding_sha256"] = training_ref["sha256"]
+    plan_ref = _write(plan_path, plan)
+    job["plan"] = plan_ref
+    _write(job_path, job)
+    return plan, job
+
+
 def _prepared_v7_for_advance(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> tuple[Path, dict, dict[str, str], dict[str, str]]:
@@ -1198,6 +1264,60 @@ def test_v9_requires_namespaced_actuator_binding_and_preserves_v8_contract(
     with pytest.raises(comparison.ComparisonContractError,
                        match="v9 actuator namespace binding differs"):
         comparison._validate_job(job, job["plan"], plan, job_path)
+
+
+def test_v10_retries_manifest_failure_with_v3_sidecar_binding(
+    tmp_path: Path,
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, job = _upgrade_to_v10(plan_path, job_path, tmp_path)
+    comparison._validate_plan(plan)
+    normalized = comparison._validate_job(job, job["plan"], plan, job_path)
+    assert len(normalized) == 16
+    assert plan["limits"]["gpu_sdk_launch_cap"] == 31
+    assert plan["resource_remeasurement"]["accounting"][
+        "prior_failed_remeasurement_sdk_launches"] == 1
+    assert plan["recovery_policy"]["seeds"]["case-07"]["restart"] == 6666
+    actuator = next(row for row in job["arms"] if row.get("recovery_payload")
+                    and row["case_id"] == "case-05")
+    resolver_path = Path(actuator["recovery_payload"]["artifact_resolver"]["path"])
+    resolver = json.loads(resolver_path.read_text(encoding="utf-8"))
+    training_path = Path(resolver["artifacts"]["training"]["path"])
+    training = json.loads(training_path.read_text(encoding="utf-8"))
+    training["schema"] = "registered_actuator_recovery_binding_v2"
+    training_ref = _write(training_path, training)
+    resolver["artifacts"]["training"] = training_ref
+    actuator["recovery_payload"]["artifact_resolver"] = _write(resolver_path, resolver)
+    plan["template_commitments"]["case-05"]["actuator"][
+        "training_binding_sha256"] = training_ref["sha256"]
+    with pytest.raises(comparison.ComparisonContractError,
+                       match="v10 actuator namespace binding differs"):
+        comparison._validate_job(job, job["plan"], plan, job_path)
+
+
+@pytest.mark.parametrize("mutation,match", [
+    ("failure_sha", "resource remeasurement contract"),
+    ("seed", "v10 registered restart seed map"),
+    ("cap", "recovery/GPU/API cap differs"),
+    ("note", "manifest retry preregistration/closure"),
+])
+def test_v10_rejects_changed_failure_authority_seed_cap_or_note(
+    tmp_path: Path, mutation: str, match: str,
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, _job = _upgrade_to_v10(plan_path, job_path, tmp_path)
+    if mutation == "failure_sha":
+        plan["resource_remeasurement"]["known_failed_remeasurement"]["sha256"] = "0" * 64
+    elif mutation == "seed":
+        plan["recovery_policy"]["seeds"]["case-07"]["restart"] = 6466
+    elif mutation == "cap":
+        plan["limits"]["gpu_sdk_launch_cap"] = 32
+    else:
+        plan["source_closure"].pop(comparison.V16_NOTE)
+    with pytest.raises(comparison.ComparisonContractError, match=match):
+        comparison._validate_plan(plan)
 
 
 @pytest.mark.parametrize("mutation,match", [

@@ -12,6 +12,19 @@ from rl_triage import investigation_session as io
 def _plan(*, schema: str | None = None) -> dict:
     selected_schema = schema or summary.controller.PLAN_SCHEMA_V8
     profile = summary.PLAN_PROFILES[selected_schema]
+    prior = 34 if selected_schema == "registered_recovery_comparison_plan_v10" else 33
+    sdk_cap = 31 if selected_schema == "registered_recovery_comparison_plan_v10" else 32
+    owned_cap = 63 if selected_schema == "registered_recovery_comparison_plan_v10" else 64
+    remeasurement = {
+        "profile_id": profile, "imports_allowed": False, "no_model_requery": True,
+        "accounting": {"prior_whole_study_sdk_launches": prior,
+                       "cumulative_gpu_sdk_launch_cap": 65},
+        "known_primary_outcomes": {"path": "evals/results/old/summary.json",
+                                   "sha256": "e" * 64},
+    }
+    if selected_schema == "registered_recovery_comparison_plan_v10":
+        remeasurement["known_failed_remeasurement"] = {
+            "path": "evals/results/failed/summary.json", "sha256": "f" * 64}
     methods = list(summary.controller.METHODS)
     cases = []
     for index, case_id in enumerate(summary.controller.SUPPORTED_CASES):
@@ -21,14 +34,8 @@ def _plan(*, schema: str | None = None) -> dict:
         "cases": cases,
         "inputs": [{"role": "diagnostic_plan", "path": "bench/protocols/diagnostic.json",
                     "sha256": "d" * 64}],
-        "limits": {"gpu_sdk_launch_cap": 32},
-        "resource_remeasurement": {
-            "profile_id": profile, "imports_allowed": False, "no_model_requery": True,
-            "accounting": {"prior_whole_study_sdk_launches": 33,
-                           "cumulative_gpu_sdk_launch_cap": 65},
-            "known_primary_outcomes": {"path": "evals/results/old/summary.json",
-                                       "sha256": "e" * 64},
-        },
+        "limits": {"gpu_sdk_launch_cap": sdk_cap, "total_owned_launch_cap": owned_cap},
+        "resource_remeasurement": remeasurement,
     }
 
 
@@ -154,6 +161,15 @@ def test_v9_namespaced_profile_is_accepted_without_changing_denominators() -> No
     manifest = _manifest(plan)
     status = _status(manifest, plan)
     summary._validate_batch(manifest, plan, status, _timing(plan))
+
+
+def test_v10_manifest_retry_profile_preserves_denominators_and_uses_reduced_cap() -> None:
+    plan = _plan(schema="registered_recovery_comparison_plan_v10")
+    manifest = _manifest(plan)
+    status = _status(manifest, plan)
+    summary._validate_batch(manifest, plan, status, _timing(plan))
+    assert plan["limits"]["gpu_sdk_launch_cap"] == 31
+    assert plan["resource_remeasurement"]["accounting"]["prior_whole_study_sdk_launches"] == 34
 
 
 def test_export_calls_production_base_and_preserves_measured_outcomes(

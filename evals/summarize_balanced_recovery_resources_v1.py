@@ -25,6 +25,7 @@ SCHEMA = "balanced_recovery_resource_summary_v1"
 PLAN_PROFILES = {
     controller.PLAN_SCHEMA_V8: controller.RESOURCE_REMEASUREMENT_PROFILE,
     controller.PLAN_SCHEMA_V9: controller.RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,
+    "registered_recovery_comparison_plan_v10": "balanced_resource_manifest_retry_v1",
 }
 EXPECTED_HOLD = ("case-07", "iterative_agent")
 
@@ -248,7 +249,11 @@ def export(prepared: Path, out: Path, *, controller_sha: str, terminal: Path,
         raise ExportError("final controller snapshot differs from current status")
     timing = timing_evidence.read_timing(root)
     _validate_batch(manifest, plan, status, timing)
-    expected_mode = "recovery_v15" if plan["schema"] == controller.PLAN_SCHEMA_V9 else "recovery_v14"
+    expected_mode = {
+        controller.PLAN_SCHEMA_V8: "recovery_v14",
+        controller.PLAN_SCHEMA_V9: "recovery_v15",
+        "registered_recovery_comparison_plan_v10": "recovery_v16",
+    }[plan["schema"]]
     terminal_public = _terminal(terminal, terminal_sha, expected_mode=expected_mode)
     staging = target.parent / f".{target.name}.base-{uuid.uuid4().hex}"
     try:
@@ -258,7 +263,8 @@ def export(prepared: Path, out: Path, *, controller_sha: str, terminal: Path,
         if staging.exists():
             shutil.rmtree(staging)
     resource_arms, totals, private_resources = _resource_details(status)
-    if totals["new_sdk_launches"] > 32 or totals["total_owned_children"] > 64:
+    if (totals["new_sdk_launches"] > plan["limits"]["gpu_sdk_launch_cap"]
+            or totals["total_owned_children"] > plan["limits"]["total_owned_launch_cap"]):
         raise ExportError("measured launch count exceeds the registered cap")
     prior = plan["resource_remeasurement"]["accounting"]
     cumulative = (prior["prior_whole_study_sdk_launches"] + totals["new_sdk_launches"])
@@ -271,6 +277,9 @@ def export(prepared: Path, out: Path, *, controller_sha: str, terminal: Path,
     if len(diagnostic_inputs) != 1:
         raise ExportError("one original diagnostic plan source is required")
     known_primary = plan["resource_remeasurement"]["known_primary_outcomes"]
+    known_failure = plan["resource_remeasurement"].get("known_failed_remeasurement")
+    failure_source = ([] if known_failure is None else [{
+        "logical_id": "known-failed-remeasurement", "sha256": known_failure["sha256"]}])
     public = {"schema": SCHEMA, "status": "complete",
               "plan_schema": plan["schema"],
               "resource_profile": plan["resource_remeasurement"]["profile_id"],
@@ -292,7 +301,8 @@ def export(prepared: Path, out: Path, *, controller_sha: str, terminal: Path,
                           {"logical_id": "known-primary-summary",
                            "sha256": known_primary["sha256"]},
                           {"logical_id": "registered-job", "sha256": manifest["job"]["sha256"]},
-                          {"logical_id": "final-controller-result", "sha256": io.file_sha(final_path)}],
+                          {"logical_id": "final-controller-result", "sha256": io.file_sha(final_path)},
+                          *failure_source],
               "api_calls": 0, "unknown_values_are_not_zero": True}
     _assert_public(public)
     target.mkdir(parents=True)
