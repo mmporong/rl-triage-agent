@@ -237,9 +237,11 @@ def _verify_anchor_blobs(root: Path, anchor: str, closure: Mapping[str, str]) ->
 
 def _verify_hash_map(
     root: Path, value: object, name: str, *, normalize_lf: bool = False,
+    allow_isaac_sdk_alias: bool = False,
 ) -> dict[str, str]:
     if not isinstance(value, Mapping) or not value:
         raise ValueError(f"{name} must be a non-empty object")
+    root = root.resolve(strict=True)
     result = {}
     for relative, digest in value.items():
         if (not isinstance(relative, str) or not relative or Path(relative).is_absolute()
@@ -247,7 +249,13 @@ def _verify_hash_map(
                 or SHA256.fullmatch(digest) is None):
             raise ValueError(f"{name} entry is invalid")
         path = (root / relative).resolve()
-        if not path.is_relative_to(root) or not path.is_file():
+        allowed_root = root
+        if allow_isaac_sdk_alias and Path(relative).parts[0] == "_isaac_sim":
+            # Isaac Lab 설치의 고정 SDK alias만 허용하고 그 안의 추가 이탈은 거부한다.
+            allowed_root = (root / "_isaac_sim").resolve(strict=True)
+            if not allowed_root.is_dir():
+                raise ValueError("Isaac SDK alias is not a directory")
+        if not path.is_relative_to(allowed_root) or not path.is_file():
             raise ValueError(f"{name} path changed: {relative}")
         actual = _sha_lf(path) if normalize_lf else _sha(path)
         if actual != digest:
@@ -342,7 +350,9 @@ def verify_manifest(
             or runtime_pins.get("logical_root") != "isaaclab"):
         raise ValueError("runtime pins logical root differs")
     _verify_anchor_blobs(root, manifest["source_anchor"], closure)
-    runtime = _verify_hash_map(isaaclab, runtime_pins["sha256"], "runtime pins")
+    runtime = _verify_hash_map(
+        isaaclab, runtime_pins["sha256"], "runtime pins", allow_isaac_sdk_alias=True,
+    )
     checkpoint = _checkpoint(manifest["checkpoint"])
     approval = _verify_approval(manifest["consumed_approval"], manifest["request_id"], manifest["effect_key"])
     lease = _verify_lease(manifest["outer_lease"])

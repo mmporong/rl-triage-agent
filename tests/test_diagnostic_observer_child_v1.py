@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -157,6 +158,51 @@ def test_build_and_verify_manifest_binds_registered_component(
 def test_import_boundary_does_not_load_sdk_or_torch() -> None:
     assert "torch" not in sys.modules
     assert not any(name.startswith("isaaclab") for name in sys.modules)
+
+
+def _directory_alias(link: Path, target: Path) -> None:
+    if os.name == "nt":
+        subprocess.run(
+            ["cmd", "/d", "/c", "mklink", "/J", str(link), str(target)],
+            check=True, capture_output=True, encoding="utf-8", errors="replace",
+        )
+    else:
+        link.symlink_to(target, target_is_directory=True)
+
+
+def test_sdk_installation_alias_is_allowed_only_for_runtime_pins(tmp_path: Path) -> None:
+    lab, sdk = tmp_path / "lab", tmp_path / "installed-sdk"
+    lab.mkdir()
+    sdk.mkdir()
+    code = sdk / "ppo.py"
+    code.write_text("sdk source\n", encoding="utf-8")
+    _directory_alias(lab / "_isaac_sim", sdk)
+    pins = {"_isaac_sim/ppo.py": sha(code)}
+    with pytest.raises(ValueError, match="path changed"):
+        C._verify_hash_map(lab, pins, "source closure")
+    assert C._verify_hash_map(lab, pins, "runtime pins", allow_isaac_sdk_alias=True) == pins
+    with pytest.raises(ValueError, match="path changed"):
+        C._verify_hash_map(lab, {"_isaac_sim/ppo.py": "0" * 64}, "runtime pins",
+                           allow_isaac_sdk_alias=True)
+
+
+def test_sdk_alias_does_not_allow_other_or_nested_directory_escapes(tmp_path: Path) -> None:
+    lab, sdk, outside = (tmp_path / name for name in ("lab", "sdk", "outside"))
+    for directory in (lab, sdk, outside):
+        directory.mkdir()
+    code = outside / "outside.py"
+    code.write_text("outside source\n", encoding="utf-8")
+    _directory_alias(lab / "_isaac_sim", sdk)
+    _directory_alias(lab / "unregistered", outside)
+    _directory_alias(sdk / "escape", outside)
+    for relative in ("unregistered/outside.py", "_isaac_sim/escape/outside.py"):
+        with pytest.raises(ValueError, match="path changed"):
+            C._verify_hash_map(lab, {relative: sha(code)}, "runtime pins",
+                               allow_isaac_sdk_alias=True)
+    for relative in ("../outside/outside.py", str(code)):
+        with pytest.raises(ValueError, match="entry is invalid"):
+            C._verify_hash_map(lab, {relative: sha(code)}, "runtime pins",
+                               allow_isaac_sdk_alias=True)
 
 
 @pytest.mark.parametrize("mutation", [
