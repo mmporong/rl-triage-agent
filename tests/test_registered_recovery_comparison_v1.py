@@ -8,6 +8,10 @@ import pytest
 from evals import registered_recovery_resources_v1 as recovery_resources
 from evals import run_registered_recovery_comparison_v1 as comparison
 from rl_triage.investigation_session import file_sha
+from tests.registered_failure_evidence_fixture_v1 import (
+    namespace_fixture,
+    shutdown_fixture,
+)
 
 
 def test_standalone_recovery_controller_help_outside_repo(tmp_path: Path) -> None:
@@ -551,20 +555,18 @@ def _upgrade_to_v7(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dic
 
 def _prepared_v7_for_advance(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> tuple[Path, dict]:
+) -> tuple[Path, dict, dict[str, str], dict[str, str]]:
     repo, plan_path, job_path, out = _fixture(
         tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    proof_ref = shutdown_fixture(tmp_path / "failure-fixture", monkeypatch)
+    context_ref = namespace_fixture(tmp_path / "failure-fixture", monkeypatch)
+    monkeypatch.setattr(
+        comparison, "EPOCH_SHUTDOWN_FAILURE_PROOF_SHA256", proof_ref["sha256"]
+    )
     plan, proofs, registry = _upgrade_to_v7(plan_path, job_path, tmp_path)
-    project = Path(comparison.__file__).resolve().parents[1]
-    private = (project / "bench/private/claude_reward_track_20261013/codex_main_20261025"
-               / "vision_goal/ri_upgrade_451_20261104")
     job = json.loads(job_path.read_text(encoding="utf-8"))
-    proof_path = private / "v11_shutdown_failure_522/failure-proof.json"
-    context_path = private / "v12_run_name_failure_528/context.json"
-    job["epoch_shutdown_failure_proof"] = {
-        "path": str(proof_path.resolve()), "sha256": comparison.EPOCH_SHUTDOWN_FAILURE_PROOF_SHA256}
-    job["epoch_namespace_failure_context"] = {
-        "path": str(context_path.resolve()), "sha256": comparison.namespace_failure.CONTEXT_SHA256}
+    job["epoch_shutdown_failure_proof"] = proof_ref
+    job["epoch_namespace_failure_context"] = context_ref
     _write(job_path, job)
     monkeypatch.setattr(comparison, "_completed_effect_registry", lambda: registry)
     monkeypatch.setattr(comparison, "load_plan", lambda *_args, **_kwargs: plan)
@@ -596,7 +598,7 @@ def _prepared_v7_for_advance(
     monkeypatch.setattr(comparison, "_continuation_module", lambda _plan: ProofModule)
     comparison.prepare(plan_path, job_path, out, repo_root=repo,
                        registration_anchor="b" * 40, require_committed=False)
-    return out, plan
+    return out, plan, proof_ref, context_ref
 
 
 def _make_recovery_null(job_path: Path) -> None:
@@ -960,7 +962,7 @@ def test_v7_rejects_missing_namespace_failure_before_output(
 def test_v7_advance_revalidates_canonical_manifest_before_transition(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    out, _plan = _prepared_v7_for_advance(tmp_path, monkeypatch)
+    out, _plan, _proof_ref, _context_ref = _prepared_v7_for_advance(tmp_path, monkeypatch)
     calls = []
     original = comparison.verify_prepared_manifest
 
@@ -986,24 +988,18 @@ def test_v7_advance_revalidates_canonical_manifest_before_transition(
 def test_v7_advance_rejects_raw_evidence_change_before_backend(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, evidence: str
 ) -> None:
-    out, _plan = _prepared_v7_for_advance(tmp_path, monkeypatch)
+    out, _plan, proof_ref, context_ref = _prepared_v7_for_advance(tmp_path, monkeypatch)
     backend_calls = []
     monkeypatch.setattr(comparison.investigate, "run",
         lambda *_args, **_kwargs: backend_calls.append(True))
     if evidence == "namespace_raw":
-        context = json.loads((Path(__file__).resolve().parents[1]
-            / "bench/private/claude_reward_track_20261013/codex_main_20261025/vision_goal"
-            / "ri_upgrade_451_20261104/v12_run_name_failure_528/context.json").read_text(
-                encoding="utf-8"))
+        context = json.loads(Path(context_ref["path"]).read_text(encoding="utf-8"))
         changed = Path(context["references"]["error"]["path"]).resolve()
         original = comparison.namespace_failure._sha
         monkeypatch.setattr(comparison.namespace_failure, "_sha",
             lambda path: "0" * 64 if Path(path).resolve() == changed else original(path))
     else:
-        proof = json.loads((Path(__file__).resolve().parents[1]
-            / "bench/private/claude_reward_track_20261013/codex_main_20261025/vision_goal"
-            / "ri_upgrade_451_20261104/v11_shutdown_failure_522/failure-proof.json").read_text(
-                encoding="utf-8"))
+        proof = json.loads(Path(proof_ref["path"]).read_text(encoding="utf-8"))
         changed = Path(next(iter(proof["refs"].values()))["path"]).resolve()
         original = comparison.epoch_failure._sha
         monkeypatch.setattr(comparison.epoch_failure, "_sha",
@@ -1017,7 +1013,7 @@ def test_v7_advance_rejects_raw_evidence_change_before_backend(
 def test_v7_advance_rejects_resealed_manifest_arm_before_backend(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    out, _plan = _prepared_v7_for_advance(tmp_path, monkeypatch)
+    out, _plan, _proof_ref, _context_ref = _prepared_v7_for_advance(tmp_path, monkeypatch)
     manifest = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
     manifest["arms"][8]["approval_ref"] = {"path": "replaced", "sha256": "0" * 64}
     changed = _write(out / "manifest.json", manifest)

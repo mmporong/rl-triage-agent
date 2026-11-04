@@ -1068,3 +1068,36 @@
 - 관찰: 회복 영상의 공개 SHA와 내부 요소의 크기는 통과했지만 실제 FHD 화면에서 영상이 표 아래로 가려졌다. 기존 검사는 각 요소의 scroll/client 크기를 비교해 상위 패널의 `overflow:hidden`으로 가려진 경우를 놓쳤다. 최초 통과 기록과 화면은 보존했다.
 - 수정: [재생 데이터](../evals/build_replay_page.py)의 비용 표와 영상은 두 열에 두고, 단일 영상은 한 칸을 채우도록 [스타일](replay/style.css)을 맞췄다. 완료된 HOLD의 미실행 학습은 대기가 아니라 미실행으로 표시하며 원문 수치·판정은 유지한다.
 - 검증: 최종 FHD 검사는 상위 패널 경계와 영상 metadata·오류까지 확인했다. 강화한 첫 검사에서는 해당 장면의 가려짐을 검출했고, 배치 수정 뒤24장면의 넘침·clipping·JavaScript·영상 metadata 오류가 모두0이었다. 임시 headless Edge는 종료했다. 이 배치 변경은 모델·학습·회복 성능의 변화가 아니다.
+
+
+### OPS-150: SDK 종료 뒤에 놓인 최종 환경 증거가 작성되지 않음
+
+- 관찰: 첫 epoch 교정은 학습과 checkpoint 저장 뒤 자연 exit 0으로 끝났지만 최종 환경 봉인 파일이 없었다. 고정 평가는 시작하지 않았으며 [원래 실행](../evals/results/recovery_comparison_s2664_s2667_20261105_v11_shutdown_evidence/context.json)은 unknown으로 보존한다.
+- 수정: [학습 wrapper](../bench/registered_epoch_recovery_training_v1.py)는 정상 `learn` 반환을 확인한 뒤 `env.close` 전에 최종 환경을 봉인한다. 조기 종료·학습 오류·구성 변경은 거부한다. 실제 SDK 종료 뒤에 Python 코드가 계속 실행된다고 가정하지 않는다.
+- 확인: [V13 결과](../evals/results/recovery_comparison_s2664_s2667_20261105_v13/summary.json)의 새 학습 7개는 최종 환경·checkpoint·고정 평가까지 검증됐다. 일곱 정책 모두 미회복이며, 실행 계층의 수정과 행동 회복을 구분한다.
+
+### OPS-151: 요청 ID를 전역 학습 로그 이름으로 재사용한 충돌
+
+- 관찰: [V12](../evals/results/recovery_comparison_s2664_s2667_20261105_v12_pre_sdk_evidence/context.json)는 기존 학습 로그 이름과 충돌해 SDK 시작 전에 끝났다. consumed 요청을 다시 실행하지 않았고 원 기록을 보존했다.
+- 수정: [epoch 실행기](../evals/registered_epoch_recovery_execution_v1.py)의 이름은 원 요청·검증 seed·불변 환경 결합으로 결정한다. 기존 같은 이름 거부는 유지한다. CPU 선행 점검도 임의 이름 대신 실제 요청 인자를 소비한다.
+- 확인: V13에서 새 SDK 14회로 학습·고정 평가 7효과를 완료했다. 이전 실패·재개 비용은 [원장](../evals/results/recovery_comparison_s2664_s2667_20261105_v13/whole-cost-ledger.json)에 남기며 새 성공으로 바꾸지 않는다.
+
+### OPS-152: 고정 행렬과 사전등록한 사례별 실행 순서의 불일치
+
+- 관찰: 후속 확인의 예산 검증기가 고정 method 순서만 허용해 실제 완료된 V13의 rotation을 거부했다. 이 거부는 SDK 전에 발생했다.
+- 수정: [후속 확인 core](../evals/registered_post_actuator_confirmation_v5_core.py)는 등록 plan에서 사례별 순서를 재구성하고 canonical manifest·완료 원장·기존 효과를 대조한다. SDK 32회와 별도 post 1회의 경계를 유지한다.
+- 범위: 과거 모터 효과 8개의 순서 차이는 소급 수정하지 않는다. 해당 시간·에너지를 균형 순서의 인과 비교로 쓰지 않으며 [비교 문서](MECHANISM-AGENT-RESOURCE-COMPARISON.md)에 구분했다.
+
+### OPS-153: 후속 확인의 승인 결합과 계측 범위
+
+- 수정: [고정 승인 영수증](../bench/protocols/post_actuator_delegated_approval_20261105_v1.json)을 outer·Git 소스에 묶고 주체·요청·원천 SHA를 정확히 대조한다. 이는 위임한 호스트 기록이며 암호학적 로그인 인증은 아니다. [실행 등록](../bench/protocols/post_actuator_execution_20261105_v1.json)은 실제 입력과 설정 해시를 고정한다.
+- 시간 제한: [계측 v2](../bench/protocols/post_actuator_measurement_20261105_v2.json)는 소유 자식 트리에서 강제되는 2100초만 등록한다. 기본 Python 감독자와 저장소 가상환경의 observer를 분리하고, BREAKAWAY 지원이 없으면 발송 전에 거부한다. 원문·로그·timeout 정리 증거를 보존한다.
+- 확인: [실제 post](../evals/results/post_actuator_confirmation_s2664_20261105_v1/result.json)는 모터 함수 normal·상태 복원 뒤 `reference_review`로 끝났고 추가 교정 권한을 만들지 않았다. 부모 153.216초와 Simulator 자식 13.797초는 중첩 구간이며 더하지 않는다. 부분 장치 관측을 전체 부모 에너지로 바꾸지 않는다.
+- 조회: `python -m rl_triage.investigate_v3 post-status`는 커밋된 공개 자료를 읽는 재생 조회다. 새 측정·SDK·모델 호출로 집계하지 않는다.
+
+
+### OPS-154: 기본 테스트가 비공개 실험 자료에 의존함
+
+- 관찰: 완료한 실험 원문을 요구하는 테스트가 공개 기본 suite에 섞여 있어 원문 없는 새 checkout에서 실행할 수 없었다.
+- 수정: [공용 fixture](../tests/registered_failure_evidence_fixture_v1.py)는 임시 raw·context·proof의 SHA를 만들어 실제 validator의 positive·변조 거부 계약을 검사한다. 이전 실측 통합 개발 테스트의 원본은 보존하고 런타임·프로토콜·결과를 바꾸지 않았다.
+- 확인: 비공개 폴더가 없는 공개 archive 복제본에서 관련 60개가 통과했다. 이 통과는 CPU 계약 검증이며 원래 SDK 실측을 대체하지 않는다. 과거 실험의 source anchor는 당시 테스트 바이트를 계속 가리킨다.
