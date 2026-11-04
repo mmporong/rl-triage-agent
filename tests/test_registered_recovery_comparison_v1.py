@@ -677,6 +677,57 @@ def _upgrade_to_v8(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dic
     return plan, job
 
 
+def _upgrade_to_v9(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dict, dict]:
+    plan, job = _upgrade_to_v8(plan_path, job_path, tmp_path)
+    repo = plan_path.parent
+    project_root = Path(comparison.__file__).resolve().parents[1]
+    namespace_sources = {}
+    for relative in comparison.BALANCED_NAMESPACE_SOURCES:
+        path = repo / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if relative == comparison.V15_NOTE:
+            path.write_text("registered actuator namespace fixture\n", encoding="utf-8")
+        else:
+            path.write_bytes((project_root / relative).read_bytes())
+        namespace_sources[relative] = comparison._lf_sha(path)
+    plan["schema"] = comparison.PLAN_SCHEMA_V9
+    plan["resource_remeasurement"]["profile_id"] = (
+        comparison.RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE)
+    plan["source_closure"].update(namespace_sources)
+    plan["inputs"].append({
+        "role": "balanced_resource_namespace_preregistration",
+        "path": comparison.V15_NOTE,
+        "sha256": namespace_sources[comparison.V15_NOTE],
+    })
+    for row in job["arms"]:
+        payload = row.get("recovery_payload")
+        if payload is None:
+            continue
+        protocol_path = Path(payload["protocol"]["path"])
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol["source_closure"] = plan["source_closure"]
+        payload["protocol"] = _write(protocol_path, protocol)
+        if protocol["diagnostic"]["mechanism"] != "actuator":
+            continue
+        resolver_path = Path(payload["artifact_resolver"]["path"])
+        resolver = json.loads(resolver_path.read_text(encoding="utf-8"))
+        training_path = Path(resolver["artifacts"]["training"]["path"])
+        training = json.loads(training_path.read_text(encoding="utf-8"))
+        training.update({
+            "schema": "registered_actuator_recovery_binding_v2",
+            "namespace_profile": comparison.RESOURCE_REMEASUREMENT_PROFILE,
+        })
+        training_ref = _write(training_path, training)
+        resolver["artifacts"]["training"] = training_ref
+        payload["artifact_resolver"] = _write(resolver_path, resolver)
+        plan["template_commitments"][row["case_id"]]["actuator"][
+            "training_binding_sha256"] = training_ref["sha256"]
+    plan_ref = _write(plan_path, plan)
+    job["plan"] = plan_ref
+    _write(job_path, job)
+    return plan, job
+
+
 def _prepared_v7_for_advance(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> tuple[Path, dict, dict[str, str], dict[str, str]]:
@@ -1116,6 +1167,37 @@ def test_v8_production_backend_requires_every_desktop_admission_source(
     with pytest.raises(comparison.ComparisonContractError,
                        match="resource remeasurement preregistration/closure"):
         comparison._validate_plan(changed)
+
+
+def test_v9_requires_namespaced_actuator_binding_and_preserves_v8_contract(
+    tmp_path: Path,
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, job = _upgrade_to_v9(plan_path, job_path, tmp_path)
+    comparison._validate_plan(plan)
+    normalized = comparison._validate_job(job, job["plan"], plan, job_path)
+    assert len(normalized) == 16
+    assert plan["resource_remeasurement"]["profile_id"] == (
+        comparison.RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE)
+    assert comparison.BALANCED_NAMESPACE_SOURCES <= set(plan["source_closure"])
+    actuator = next(row for row in job["arms"] if row.get("recovery_payload")
+                    and row["case_id"] == "case-05")
+    resolver = json.loads(Path(actuator["recovery_payload"]["artifact_resolver"]["path"])
+                          .read_text(encoding="utf-8"))
+    training_path = Path(resolver["artifacts"]["training"]["path"])
+    training = json.loads(training_path.read_text(encoding="utf-8"))
+    training.pop("namespace_profile")
+    training["schema"] = "registered_actuator_recovery_binding_v1"
+    changed_training = _write(training_path, training)
+    resolver["artifacts"]["training"] = changed_training
+    plan["template_commitments"][actuator["case_id"]]["actuator"][
+        "training_binding_sha256"] = changed_training["sha256"]
+    actuator["recovery_payload"]["artifact_resolver"] = _write(
+        Path(actuator["recovery_payload"]["artifact_resolver"]["path"]), resolver)
+    with pytest.raises(comparison.ComparisonContractError,
+                       match="v9 actuator namespace binding differs"):
+        comparison._validate_job(job, job["plan"], plan, job_path)
 
 
 @pytest.mark.parametrize("mutation,match", [

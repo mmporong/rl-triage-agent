@@ -201,6 +201,9 @@ _CONTINUATION_V13_SOURCE_FILES = {
     EPOCH_NAMESPACE_RETRY_PREREGISTRATION_V13,
 }
 RESOURCE_REMEASUREMENT_PROFILE = COMPARISON.RESOURCE_REMEASUREMENT_PROFILE
+RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE = (
+    COMPARISON.RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE
+)
 REGISTERED_RESTART_SEED_OVERRIDES_V14 = {"case-07": 6466, "case-08": 6467}
 RESOURCE_REMEASUREMENT_PREREGISTRATION_V14 = COMPARISON.V14_NOTE
 _RESOURCE_REMEASUREMENT_SOURCE_FILES = {
@@ -209,6 +212,7 @@ _RESOURCE_REMEASUREMENT_SOURCE_FILES = {
     "evals/summarize_balanced_recovery_resources_v1.py",
     "tests/test_summarize_balanced_recovery_resources_v1.py",
 } | COMPARISON.BALANCED_ADMISSION_SOURCES
+_RESOURCE_REMEASUREMENT_NAMESPACE_SOURCE_FILES = COMPARISON.BALANCED_NAMESPACE_SOURCES
 PRIOR_V5_SOURCE_ANCHOR = "f9d5fea93cce406a325f578bc6f4597cc0bc35c5"
 PRIOR_V5_REGISTRATION_ANCHOR = "bf1632ee6770e681e9e8c4c5b1df890ebaed12a6"
 PRIOR_V7_REGISTRATION_ANCHOR = "47fec9fc6107e6efde09950d52e64f5465751252"
@@ -290,7 +294,8 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
                     include_restart_seed_v11: bool = False,
                     include_epoch_close_retry_v12: bool = False,
                     include_epoch_namespace_retry_v13: bool = False,
-                    include_resource_remeasurement_v14: bool = False) -> dict[str, str]:
+                    include_resource_remeasurement_v14: bool = False,
+                    include_resource_namespace_v15: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
@@ -313,6 +318,10 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
         source_files |= _CONTINUATION_V13_SOURCE_FILES
     if include_resource_remeasurement_v14:
         source_files |= _RESOURCE_REMEASUREMENT_SOURCE_FILES | _CONTINUATION_RETRY_SOURCE_FILES
+    if include_resource_namespace_v15:
+        if not include_resource_remeasurement_v14:
+            raise PreparationError("v15 namespace requires v14 resource remeasurement sources")
+        source_files |= _RESOURCE_REMEASUREMENT_NAMESPACE_SOURCE_FILES
     if include_observation_retry:
         if not include_continuation_v4:
             raise PreparationError("observation retry requires v4 completed-effect imports")
@@ -788,15 +797,18 @@ def _environment_preservation(*, source: dict, source_seed: int, training_seed: 
 
 
 def _actuator_binding(anchor: str, seed: int, refs: dict, report: dict, sdk_contract: dict,
-                      isaaclab_commit: str) -> dict:
+                      isaaclab_commit: str, namespace_profile: str | None = None) -> dict:
     if _HEX40.fullmatch(isaaclab_commit) is None:
         raise PreparationError("Isaac Lab commit format")
     agent = ACTUATOR._read_yaml(Path(refs["agent"]["path"]))
     num_steps = agent.get("num_steps_per_env")
     if type(num_steps) is not int or num_steps <= 0:
         raise PreparationError("source num_steps_per_env missing")
-    return {
-        "schema": ACTUATOR.SCHEMA, "source_commit_sha": anchor,
+    if namespace_profile not in {None, ACTUATOR.NAMESPACE_PROFILE}:
+        raise PreparationError("actuator recovery namespace profile differs")
+    binding = {
+        "schema": ACTUATOR.SCHEMA_V2 if namespace_profile is not None else ACTUATOR.SCHEMA,
+        "source_commit_sha": anchor,
         "task": "Isaac-Velocity-Flat-Unitree-Go2-v0", "seed": seed,
         "num_envs": 4096, "max_iterations": 300, "resume_iteration": 299,
         "resume_checkpoint": refs["checkpoint"], "resume_env_config": refs["env"],
@@ -806,6 +818,9 @@ def _actuator_binding(anchor: str, seed: int, refs: dict, report: dict, sdk_cont
         "isaaclab_commit": isaaclab_commit,
         "num_steps_per_env": num_steps,
     }
+    if namespace_profile is not None:
+        binding["namespace_profile"] = namespace_profile
+    return binding
 
 
 def _fixed_binding(report_ref: dict, report: dict, bands: dict, runtime: dict) -> dict:
@@ -832,6 +847,7 @@ def _restart_seed_map(
         COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY: REGISTERED_RESTART_SEED_OVERRIDES_V12,
         COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY: REGISTERED_RESTART_SEED_OVERRIDES_V13,
         RESOURCE_REMEASUREMENT_PROFILE: REGISTERED_RESTART_SEED_OVERRIDES_V14,
+        RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE: REGISTERED_RESTART_SEED_OVERRIDES_V14,
     }
     if completed_import_profile not in registered:
         raise PreparationError("restart seed overrides require motor completed imports")
@@ -879,7 +895,11 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     if not {f"case-{int(case[-2:]):02d}" for case in CASES} <= set(phase_cases):
         raise PreparationError("phase-A selected cases missing")
     v8_requested = resource_remeasurement_profile == RESOURCE_REMEASUREMENT_PROFILE
-    if resource_remeasurement_profile not in {None, RESOURCE_REMEASUREMENT_PROFILE}:
+    v9_requested = resource_remeasurement_profile == RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE
+    resource_requested = v8_requested or v9_requested
+    if resource_remeasurement_profile not in {
+        None, RESOURCE_REMEASUREMENT_PROFILE, RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,
+    }:
         raise PreparationError("unsupported resource remeasurement profile")
     v7_requested = completed_import_profile == COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY
     v6_requested = completed_import_profile in {
@@ -891,23 +911,23 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY,
         COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY,
     }
-    if v8_requested and completed_import_profile is not None:
+    if resource_requested and completed_import_profile is not None:
         raise PreparationError("resource remeasurement forbids completed imports")
     restart_seeds = _restart_seed_map(
-        RESOURCE_REMEASUREMENT_PROFILE if v8_requested else completed_import_profile,
+        resource_remeasurement_profile if resource_requested else completed_import_profile,
         restart_seed_overrides,
     )
     v4_requested = completed_effect_proofs is not None and not v5_requested
     v3_requested = prior_completed_effect_proof is not None or prior_static_training_proof is not None
     if gpu_admission_profile is not None and not (
-        v3_requested or v4_requested or v5_requested or v8_requested
+        v3_requested or v4_requested or v5_requested or resource_requested
     ):
         raise PreparationError("explicit GPU admission profile requires v3 continuation proofs")
     selected_v3_profile = gpu_admission_profile or GPU_ADMISSION_PROFILE_V3
     selected_v4_profile = gpu_admission_profile or (
         GPU_ADMISSION_PROFILE_RETRY if v5_requested else GPU_ADMISSION_PROFILE_V3_SHARED
     )
-    if not (v4_requested or v5_requested or v8_requested) \
+    if not (v4_requested or v5_requested or resource_requested) \
             and selected_v3_profile not in _V3_PROFILE_TAGS:
         raise PreparationError("unsupported v3 GPU admission profile")
     if v3_requested and (
@@ -930,7 +950,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         or selected_v4_profile != GPU_ADMISSION_PROFILE_RETRY
     ):
         raise PreparationError("v5 completed import profile inputs differ")
-    if v8_requested and (
+    if resource_requested and (
         v3_requested or v4_requested or v5_requested
         or prior_training_proof is not None
         or completed_effect_proofs is not None
@@ -966,7 +986,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             raise PreparationError("epoch shutdown failure proof requires v12 profile")
         if epoch_namespace_failure_context is not None:
             raise PreparationError("namespace failure context requires v13 profile")
-    if not (v3_requested or v4_requested or v5_requested or v8_requested) and (
+    if not (v3_requested or v4_requested or v5_requested or resource_requested) and (
         prior_training_proof is None
     ) != (isaaclab_root is None):
         raise PreparationError("prior proof and Isaac Lab root must be supplied together")
@@ -1003,11 +1023,12 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         ),
         include_completed_v5=v5 is not None,
         include_restart_seed_v11=(
-            restart_seed_overrides is not None and not v6_requested and not v8_requested
+            restart_seed_overrides is not None and not v6_requested and not resource_requested
         ),
         include_epoch_close_retry_v12=v6_requested,
         include_epoch_namespace_retry_v13=v7_requested,
-        include_resource_remeasurement_v14=v8_requested,
+        include_resource_remeasurement_v14=resource_requested,
+        include_resource_namespace_v15=v9_requested,
     ) if require_committed else {
         path: _sha(ROOT / path, lf=True)
         for path in sorted(
@@ -1024,12 +1045,14 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                or v5 is not None else set())
             | (_CONTINUATION_V5_SOURCE_FILES if v5 is not None else set())
              | (_CONTINUATION_V11_SOURCE_FILES
-                if restart_seed_overrides is not None and not v6_requested and not v8_requested
+                if restart_seed_overrides is not None and not v6_requested
+                and not resource_requested
                 else set())
             | (_CONTINUATION_V12_SOURCE_FILES if v6_requested else set())
             | (_CONTINUATION_V13_SOURCE_FILES if v7_requested else set())
             | (_RESOURCE_REMEASUREMENT_SOURCE_FILES | _CONTINUATION_RETRY_SOURCE_FILES
-               if v8_requested else set())
+               if resource_requested else set())
+            | (_RESOURCE_REMEASUREMENT_NAMESPACE_SOURCE_FILES if v9_requested else set())
         )
     }
     sdk = _read(sdk_contract)
@@ -1059,8 +1082,10 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             refs=refs, code_contract_path=recipe_code_contract, code_contract=recipe_code,
             output=case_dir / "optimizer_update_count")
         training = {
-            "actuator": _actuator_binding(source_anchor, SOURCE_SEEDS[case], refs, report, sdk,
-                                           isaaclab_commit),
+            "actuator": _actuator_binding(
+                source_anchor, SOURCE_SEEDS[case], refs, report, sdk, isaaclab_commit,
+                ACTUATOR.NAMESPACE_PROFILE if v9_requested else None,
+            ),
             "optimizer_update_count": _optimizer_binding(source_anchor, refs["checkpoint"]["sha256"],
                                                           runtime, "optimizer_update_count", closure,
                                                           environment),
@@ -1109,7 +1134,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         inputs.append({"role": "completed_motor_effect_registry",
                        "path": COMPLETED_EFFECT_REGISTRY_RELATIVE,
                        "sha256": COMPLETED_EFFECT_REGISTRY_SHA256_LF})
-    if restart_seed_overrides is not None and not v6_requested and not v8_requested:
+    if restart_seed_overrides is not None and not v6_requested and not resource_requested:
         inputs.append({
             "role": "restart_seed_preregistration",
             "path": RESTART_SEED_PREREGISTRATION_V11,
@@ -1134,7 +1159,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             "path": EPOCH_NAMESPACE_RETRY_PREREGISTRATION_V13,
             "sha256": closure[EPOCH_NAMESPACE_RETRY_PREREGISTRATION_V13],
         })
-    if v8_requested:
+    if resource_requested:
         inputs.extend([
             {
                 "role": "balanced_resource_remeasurement_preregistration",
@@ -1147,6 +1172,12 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                 "sha256": COMPARISON.V13_PUBLIC_SUMMARY_SHA256,
             },
         ])
+    if v9_requested:
+        inputs.append({
+            "role": "balanced_resource_namespace_preregistration",
+            "path": COMPARISON.V15_NOTE,
+            "sha256": closure[COMPARISON.V15_NOTE],
+        })
     for case in CASES:
         old = case
         row = phase_inputs.get(f"protocol:{old}")
@@ -1156,7 +1187,9 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                        "sha256": row["sha256"]})
     plan = {
         "schema": (
-            COMPARISON.PLAN_SCHEMA_V8
+            COMPARISON.PLAN_SCHEMA_V9
+            if v9_requested
+            else COMPARISON.PLAN_SCHEMA_V8
             if v8_requested
             else COMPARISON.PLAN_SCHEMA_V7
             if v7_requested
@@ -1186,9 +1219,9 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                             "source_cost_policy": "phase_a_shared_count_once"},
         "template_commitments": commitments,
     }
-    if v8_requested:
+    if resource_requested:
         plan["resource_remeasurement"] = {
-            "profile_id": RESOURCE_REMEASUREMENT_PROFILE,
+            "profile_id": resource_remeasurement_profile,
             "scope": "already_seen_development_resource_check",
             "imports_allowed": False,
             "known_primary_outcomes": {
@@ -1498,7 +1531,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
     freshness_cases = (
         ("case-07", "case-08")
         if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6,
-                              COMPARISON.PLAN_SCHEMA_V7, COMPARISON.PLAN_SCHEMA_V8}
+                              COMPARISON.PLAN_SCHEMA_V7, COMPARISON.PLAN_SCHEMA_V8,
+                              COMPARISON.PLAN_SCHEMA_V9}
         else CASES
     )
     freshness = SEED_GUARD.assert_fresh_seeds(
@@ -1514,7 +1548,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
         ordered_methods = (
             tuple(case_rows[case]["rotation"])
             if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6,
-                                  COMPARISON.PLAN_SCHEMA_V7, COMPARISON.PLAN_SCHEMA_V8}
+                                  COMPARISON.PLAN_SCHEMA_V7, COMPARISON.PLAN_SCHEMA_V8,
+                                  COMPARISON.PLAN_SCHEMA_V9}
             else METHODS
         )
         for method in ordered_methods:
@@ -1586,11 +1621,12 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V2, COMPARISON.PLAN_SCHEMA_V3,
                                       COMPARISON.PLAN_SCHEMA_V4, COMPARISON.PLAN_SCHEMA_V5,
                                       COMPARISON.PLAN_SCHEMA_V6, COMPARISON.PLAN_SCHEMA_V7,
-                                      COMPARISON.PLAN_SCHEMA_V8}:
+                                      COMPARISON.PLAN_SCHEMA_V8, COMPARISON.PLAN_SCHEMA_V9}:
                     operation.update({
                         "gpu_admission_profile": (
                             GPU_ADMISSION_PROFILE_RETRY
-                            if plan["schema"] == COMPARISON.PLAN_SCHEMA_V8
+                            if plan["schema"] in {
+                                COMPARISON.PLAN_SCHEMA_V8, COMPARISON.PLAN_SCHEMA_V9}
                             else plan["continuation"]["gpu_admission_profile"]
                             if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3,
                                                   COMPARISON.PLAN_SCHEMA_V4,
@@ -1621,7 +1657,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                                                       COMPARISON.PLAN_SCHEMA_V5,
                                                       COMPARISON.PLAN_SCHEMA_V6,
                                                       COMPARISON.PLAN_SCHEMA_V7,
-                                                      COMPARISON.PLAN_SCHEMA_V8}
+                                                      COMPARISON.PLAN_SCHEMA_V8,
+                                                      COMPARISON.PLAN_SCHEMA_V9}
                                 else "registered_recovery_protocol_v2"
                                 if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2
                                 else "registered_recovery_protocol_v1"
@@ -1708,6 +1745,7 @@ def main(argv: list[str] | None = None) -> int:
     ))
     t.add_argument("--resource-remeasurement-profile", choices=(
         RESOURCE_REMEASUREMENT_PROFILE,
+        RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,
     ))
     t.add_argument("--completed-effect-proof", action="append", default=[],
                    metavar="ARTIFACT_ID=PATH")
@@ -1763,7 +1801,10 @@ def main(argv: list[str] | None = None) -> int:
                 completed_import_profile=args.completed_import_profile,
                 restart_seed_overrides=(
                     REGISTERED_RESTART_SEED_OVERRIDES_V14
-                    if args.resource_remeasurement_profile == RESOURCE_REMEASUREMENT_PROFILE
+                    if args.resource_remeasurement_profile in {
+                        RESOURCE_REMEASUREMENT_PROFILE,
+                        RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,
+                    }
                     else REGISTERED_RESTART_SEED_OVERRIDES_V13
                     if args.completed_import_profile
                     == COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY

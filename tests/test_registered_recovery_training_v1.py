@@ -37,7 +37,8 @@ def _ref(path: Path, body: bytes) -> dict:
     return {"path": str(path.resolve()), "sha256": hashlib.sha256(body).hexdigest()}
 
 
-def _binding(tmp_path: Path) -> dict:
+def _binding(tmp_path: Path, *, schema: str = training.SCHEMA) -> dict:
+    tmp_path.mkdir(parents=True, exist_ok=True)
     targets = {}
     for correction_id, spec in training.ADAPTER.TARGETS.items():
         path = tmp_path / spec["source"]
@@ -45,8 +46,8 @@ def _binding(tmp_path: Path) -> dict:
         path.write_bytes((correction_id + "\n").encode())
         targets[correction_id] = {**spec, "source_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
                                   "clean_fingerprint": hashlib.sha256((correction_id + "-fp").encode()).hexdigest()}
-    return {
-        "schema": training.SCHEMA, "source_commit_sha": "a" * 40, "task": training.V1.TASK,
+    binding = {
+        "schema": schema, "source_commit_sha": "a" * 40, "task": training.V1.TASK,
         "seed": 2552, "num_envs": 1024, "max_iterations": 300, "resume_iteration": 299,
         "resume_checkpoint": _ref(tmp_path / "model_299.pt", b"checkpoint"),
         "resume_env_config": _ref(tmp_path / "env.yaml", b"env"),
@@ -57,6 +58,48 @@ def _binding(tmp_path: Path) -> dict:
         "action_scale": 0.25, "rsl_rl_version": "2.2.4", "isaaclab_commit": "b" * 40,
         "num_steps_per_env": 24,
     }
+    if schema == training.SCHEMA_V2:
+        binding["namespace_profile"] = training.NAMESPACE_PROFILE
+    return binding
+
+
+def test_v2_training_name_is_source_bound_and_v1_name_is_unchanged(tmp_path: Path) -> None:
+    v1 = _binding(tmp_path / "v1")
+    assert training.training_run_name("request_1", 2552, v1) == "request_1"
+    v2 = _binding(tmp_path / "v2", schema=training.SCHEMA_V2)
+    baseline = training.training_run_name("request_1", 2552, v2)
+    assert len(baseline) <= 63 and baseline.startswith("request_1_ns_")
+    variants = []
+    for field, value in (
+        ("source_commit_sha", "c" * 40),
+        ("seed", 2553),
+    ):
+        changed = json.loads(json.dumps(v2))
+        changed[field] = value
+        variants.append(training.training_run_name(
+            "request_1", changed["seed"], changed))
+    checkpoint = json.loads(json.dumps(v2))
+    checkpoint["resume_checkpoint"]["sha256"] = "d" * 64
+    variants.append(training.training_run_name("request_1", 2552, checkpoint))
+    variants.append(training.training_run_name("request_2", 2552, v2))
+    assert len({baseline, *variants}) == 5
+
+
+@pytest.mark.parametrize("schema,namespace", [
+    (training.SCHEMA, training.NAMESPACE_PROFILE),
+    (training.SCHEMA_V2, None),
+    (training.SCHEMA_V2, "unknown_profile"),
+])
+def test_binding_versions_reject_crossed_or_unknown_namespace(
+    tmp_path: Path, schema: str, namespace: str | None,
+) -> None:
+    binding = _binding(tmp_path, schema=schema)
+    if namespace is None:
+        binding.pop("namespace_profile", None)
+    else:
+        binding["namespace_profile"] = namespace
+    with pytest.raises(ValueError, match="actuator recovery (binding fields|namespace profile)"):
+        training.validate_prepared_binding(binding)
 
 
 def test_cpu_binding_requires_exact_source_contract_and_resume_artifacts(
@@ -81,6 +124,48 @@ def test_manifest_is_f2_resume_with_only_registered_correction(
     assert manifest["correction_id"] == "restore_motor_torque_speed"
     assert manifest["resume_checkpoint_sha256"] == binding["resume_checkpoint"]["sha256"]
     assert manifest["max_iterations"] == 300
+
+
+def test_v2_train_binds_original_and_effective_names_without_changing_request(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    binding = _binding(tmp_path, schema=training.SCHEMA_V2)
+    launcher = tmp_path / "_isaac_sim/python.bat"
+    launcher.parent.mkdir(parents=True, exist_ok=True)
+    launcher.write_text("@echo off\n", encoding="utf-8")
+    stage = tmp_path / "stage-v2"
+    observed = {}
+
+    def owned(_owned_stage, args, _cwd, _watchdog):
+        manifest_path = Path(args[args.index("--manifest") + 1])
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        observed.update(manifest)
+        checkpoint = manifest_path.parent / "model_598.pt"
+        checkpoint.write_bytes(b"new-checkpoint")
+        (manifest_path.parent / "correction.json").write_text(json.dumps({
+            "schema": "correction_readback_v1",
+            "selected_correction": training.CORRECTION,
+        }), encoding="utf-8")
+        (manifest_path.parent / "receipt.json").write_text(json.dumps({
+            "checkpoint": {"path": str(checkpoint),
+                           "sha256": hashlib.sha256(checkpoint.read_bytes()).hexdigest()},
+        }), encoding="utf-8")
+        return {"job_assigned_before_release": True, "natural_exit": True,
+                "timed_out": False, "error_type": None, "exit_code": 0,
+                "cleanup_verified": True, "wall_s": 1.0}
+
+    monkeypatch.setattr(training.LEGACY, "validate_readback", lambda *_args: None)
+    result = training.train(
+        stage, tmp_path, "CORRECTED", 2552, "request_1", binding, owned=owned)
+    expected = training.training_run_name("request_1", 2552, binding)
+    assert observed["run_name"] == observed["effective_run_name"] == expected
+    assert observed["original_run_name"] == "request_1"
+    assert observed["namespace_profile"] == training.NAMESPACE_PROFILE
+    assert result["configuration"] == {
+        "source_checkpoint_consumed": True, "optimizer_state_resumed": True,
+        "namespace_profile": training.NAMESPACE_PROFILE,
+        "original_run_name": "request_1", "effective_run_name": expected,
+    }
 
 
 def test_host_312_preserves_sdk_310_contract_and_builds_fixed_child_argv(

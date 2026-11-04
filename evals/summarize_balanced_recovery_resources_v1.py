@@ -22,8 +22,10 @@ from evals import summarize_registered_recovery_comparison_v1 as base
 from rl_triage import investigation_session as io
 
 SCHEMA = "balanced_recovery_resource_summary_v1"
-PLAN_SCHEMA = controller.PLAN_SCHEMA_V8
-PROFILE = controller.RESOURCE_REMEASUREMENT_PROFILE
+PLAN_PROFILES = {
+    controller.PLAN_SCHEMA_V8: controller.RESOURCE_REMEASUREMENT_PROFILE,
+    controller.PLAN_SCHEMA_V9: controller.RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,
+}
 EXPECTED_HOLD = ("case-07", "iterative_agent")
 
 
@@ -84,16 +86,16 @@ def _observed_order(timing: dict[str, Any]) -> list[tuple[str, str]]:
     return compressed
 
 
-def _terminal(path: Path, expected_sha: str) -> dict[str, Any]:
+def _terminal(path: Path, expected_sha: str, *, expected_mode: str) -> dict[str, Any]:
     terminal = Path(path).resolve(strict=True)
     if io.file_sha(terminal) != expected_sha:
         raise ExportError("terminal receipt SHA differs")
     body = json.loads(terminal.read_text(encoding="utf-8"))
     required = {"mode", "exit_code", "natural_exit", "cleanup_verified",
                 "supervisor_call_wall_s", "config_sha256"}
-    if (not required <= set(body) or body["mode"] != "recovery_v14" or body["exit_code"] != 0
+    if (not required <= set(body) or body["mode"] != expected_mode or body["exit_code"] != 0
             or body["natural_exit"] is not True or body["cleanup_verified"] is not True):
-        raise ExportError("terminal supervisor receipt is not a successful V14 exit")
+        raise ExportError("terminal supervisor receipt is not a successful registered exit")
     wall = _number(body["supervisor_call_wall_s"], "supervisor call wall")
     if wall < 0:
         raise ExportError("supervisor call wall differs")
@@ -202,8 +204,9 @@ def _prep_refs(values: list[str]) -> tuple[list[dict[str, str]], list[dict[str, 
 
 def _validate_batch(manifest: dict[str, Any], plan: dict[str, Any], status: dict[str, Any],
                     timing: dict[str, Any]) -> None:
-    if (plan.get("schema") != PLAN_SCHEMA
-            or plan.get("resource_remeasurement", {}).get("profile_id") != PROFILE
+    schema = plan.get("schema")
+    if (schema not in PLAN_PROFILES
+            or plan.get("resource_remeasurement", {}).get("profile_id") != PLAN_PROFILES[schema]
             or plan["resource_remeasurement"].get("imports_allowed") is not False
             or plan["resource_remeasurement"].get("no_model_requery") is not True):
         raise ExportError("balanced resource plan differs")
@@ -245,7 +248,8 @@ def export(prepared: Path, out: Path, *, controller_sha: str, terminal: Path,
         raise ExportError("final controller snapshot differs from current status")
     timing = timing_evidence.read_timing(root)
     _validate_batch(manifest, plan, status, timing)
-    terminal_public = _terminal(terminal, terminal_sha)
+    expected_mode = "recovery_v15" if plan["schema"] == controller.PLAN_SCHEMA_V9 else "recovery_v14"
+    terminal_public = _terminal(terminal, terminal_sha, expected_mode=expected_mode)
     staging = target.parent / f".{target.name}.base-{uuid.uuid4().hex}"
     try:
         base_public = base.summarize(root, staging)
@@ -267,7 +271,10 @@ def export(prepared: Path, out: Path, *, controller_sha: str, terminal: Path,
     if len(diagnostic_inputs) != 1:
         raise ExportError("one original diagnostic plan source is required")
     known_primary = plan["resource_remeasurement"]["known_primary_outcomes"]
-    public = {"schema": SCHEMA, "status": "complete", "planned_arms": 16,
+    public = {"schema": SCHEMA, "status": "complete",
+              "plan_schema": plan["schema"],
+              "resource_profile": plan["resource_remeasurement"]["profile_id"],
+              "planned_arms": 16,
               "attempted_arms": 15, "diagnostic_hold_arms": 1, "imported_arms": 0,
               "outcomes": outcomes, "arms": resource_arms, "resources": totals,
               "outer_supervisor": terminal_public,

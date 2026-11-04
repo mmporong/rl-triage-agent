@@ -26,6 +26,8 @@ from evals import r1_repair_execution_v2 as V2
 from evals import run_training_correction as LEGACY
 
 SCHEMA = "registered_actuator_recovery_binding_v1"
+SCHEMA_V2 = "registered_actuator_recovery_binding_v2"
+NAMESPACE_PROFILE = "balanced_resource_remeasurement_v1"
 CORRECTION = "restore_motor_torque_speed"
 
 
@@ -56,8 +58,14 @@ def validate_prepared_binding(binding: Mapping[str, Any]) -> dict:
               "resume_iteration", "resume_checkpoint", "resume_env_config", "resume_agent_config",
               "correction_source_contract", "action_scale", "rsl_rl_version", "isaaclab_commit",
               "num_steps_per_env"}
-    if not isinstance(binding, Mapping) or set(binding) != fields or binding["schema"] != SCHEMA:
+    schema = binding.get("schema") if isinstance(binding, Mapping) else None
+    if schema == SCHEMA_V2:
+        fields.add("namespace_profile")
+    if (not isinstance(binding, Mapping) or set(binding) != fields
+            or schema not in {SCHEMA, SCHEMA_V2}):
         raise ValueError("actuator recovery binding fields")
+    if schema == SCHEMA_V2 and binding["namespace_profile"] != NAMESPACE_PROFILE:
+        raise ValueError("actuator recovery namespace profile")
     if binding["max_iterations"] != 300 or binding["resume_iteration"] != 299:
         raise ValueError("actuator recovery iteration binding")
     if binding["task"] != V1.TASK or type(binding["seed"]) is not int or type(binding["num_envs"]) is not int:
@@ -132,7 +140,8 @@ class _Host:
             raise ValueError("manifest path differs")
         manifest = _read(self.manifest_path)
         expected = manifest_for(self.manifest_path.parent, self.binding,
-                                Path(manifest["isaaclab_root"]), manifest["run_name"])
+                                Path(manifest["isaaclab_root"]), manifest["run_name"],
+                                original_run_name=manifest.get("original_run_name"))
         if manifest != expected:
             raise ValueError("manifest differs from registered actuator binding")
         protocol = {"correction_source_contract": self.binding["correction_source_contract"],
@@ -168,9 +177,38 @@ def _read_yaml(path: Path) -> dict:
     return LEGACY.load_config(path)
 
 
-def manifest_for(stage: Path, binding: Mapping[str, Any], isaaclab: Path, run_name: str) -> dict:
+def training_run_name(request_id: str, seed: int, binding: Mapping[str, Any]) -> str:
+    """Return the historical request name or a V2 source-bound namespace."""
+    if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,63}", request_id):
+        raise ValueError("registered actuator request identity")
+    if type(seed) is not int or seed != binding.get("seed"):
+        raise ValueError("actuator recovery seed differs from binding")
+    schema = binding.get("schema")
+    if schema == SCHEMA:
+        return request_id
+    if schema != SCHEMA_V2 or binding.get("namespace_profile") != NAMESPACE_PROFILE:
+        raise ValueError("actuator recovery namespace binding")
+    checkpoint = binding.get("resume_checkpoint")
+    if not isinstance(checkpoint, Mapping) or not isinstance(checkpoint.get("sha256"), str):
+        raise TypeError("actuator recovery checkpoint namespace binding")
+    identity = {
+        "namespace_profile": NAMESPACE_PROFILE,
+        "request_id": request_id,
+        "seed": seed,
+        "source_checkpoint_sha256": checkpoint["sha256"],
+        "source_commit_sha": binding.get("source_commit_sha"),
+    }
+    digest = hashlib.sha256(json.dumps(
+        identity, sort_keys=True, separators=(",", ":"), allow_nan=False,
+    ).encode("utf-8")).hexdigest()[:24]
+    prefix = request_id[:32].rstrip("_-")
+    return f"{prefix}_ns_{digest}"
+
+
+def manifest_for(stage: Path, binding: Mapping[str, Any], isaaclab: Path, run_name: str,
+                 *, original_run_name: str | None = None) -> dict:
     checkpoint = Path(binding["resume_checkpoint"]["path"]).resolve()
-    return {
+    manifest = {
         "schema": "training_correction_manifest_v1", "tag": run_name, "case": "case_02",
         "arm": "corrected", "source_commit_sha": binding["source_commit_sha"],
         "protocol_sha256_lf": _sha(Path(__file__), True), "isaaclab_root": str(isaaclab.resolve()),
@@ -185,6 +223,18 @@ def manifest_for(stage: Path, binding: Mapping[str, Any], isaaclab: Path, run_na
         "resume_env_config_path": str(Path(binding["resume_env_config"]["path"]).resolve()),
         "resume_agent_config_path": str(Path(binding["resume_agent_config"]["path"]).resolve()),
     }
+    if binding["schema"] == SCHEMA_V2:
+        if original_run_name is None or run_name != training_run_name(
+                original_run_name, binding["seed"], binding):
+            raise ValueError("v2 actuator manifest namespace differs")
+        manifest.update({
+            "namespace_profile": binding["namespace_profile"],
+            "original_run_name": original_run_name,
+            "effective_run_name": run_name,
+        })
+    elif original_run_name is not None:
+        raise ValueError("v1 actuator manifest forbids namespace identity")
+    return manifest
 
 
 def child_main(manifest_path: Path, binding_path: Path) -> dict:
@@ -199,11 +249,15 @@ def train(stage: Path, isaaclab: Path, arm: str, seed: int, run_name: str,
     bound = validate_host_binding(binding, Path(isaaclab).resolve())
     if seed != bound["seed"] or Path(stage).exists():
         raise ValueError("actuator recovery seed or fresh stage differs")
+    effective_run_name = training_run_name(run_name, seed, bound)
     Path(stage).mkdir(parents=True, exist_ok=False)
     binding_path = Path(stage) / "binding.json"
     manifest_path = Path(stage) / "manifest.json"
     _write_new(binding_path, bound)
-    manifest = manifest_for(Path(stage), bound, Path(isaaclab), run_name)
+    manifest = manifest_for(
+        Path(stage), bound, Path(isaaclab), effective_run_name,
+        original_run_name=run_name if bound["schema"] == SCHEMA_V2 else None,
+    )
     _write_new(manifest_path, manifest)
     runner = V2._prepared_owned(owned)
     execution = runner(Path(stage) / "owned", [str(Path(isaaclab) / "_isaac_sim/python.bat"), "-B",
@@ -218,9 +272,17 @@ def train(stage: Path, isaaclab: Path, arm: str, seed: int, run_name: str,
     checkpoint = receipt["checkpoint"]
     if _sha(Path(checkpoint["path"])) != checkpoint["sha256"]:
         raise ValueError("actuator recovery checkpoint changed")
-    return {"arm": arm, "checkpoint": checkpoint, "readback": readback, "execution": dict(execution),
-            "receipt": receipt, "configuration": {"source_checkpoint_consumed": True,
-                                                     "optimizer_state_resumed": True}}
+    configuration: dict[str, Any] = {
+        "source_checkpoint_consumed": True, "optimizer_state_resumed": True,
+    }
+    if bound["schema"] == SCHEMA_V2:
+        configuration.update({
+            "namespace_profile": bound["namespace_profile"],
+            "original_run_name": run_name,
+            "effective_run_name": effective_run_name,
+        })
+    return {"arm": arm, "checkpoint": checkpoint, "readback": readback,
+            "execution": dict(execution), "receipt": receipt, "configuration": configuration}
 
 
 fixed_evaluate = V2.fixed_evaluate

@@ -9,19 +9,21 @@ from evals import summarize_balanced_recovery_resources_v1 as summary
 from rl_triage import investigation_session as io
 
 
-def _plan() -> dict:
+def _plan(*, schema: str | None = None) -> dict:
+    selected_schema = schema or summary.controller.PLAN_SCHEMA_V8
+    profile = summary.PLAN_PROFILES[selected_schema]
     methods = list(summary.controller.METHODS)
     cases = []
     for index, case_id in enumerate(summary.controller.SUPPORTED_CASES):
         cases.append({"case_id": case_id, "rotation": methods[index:] + methods[:index]})
     return {
-        "schema": summary.PLAN_SCHEMA,
+        "schema": selected_schema,
         "cases": cases,
         "inputs": [{"role": "diagnostic_plan", "path": "bench/protocols/diagnostic.json",
                     "sha256": "d" * 64}],
         "limits": {"gpu_sdk_launch_cap": 32},
         "resource_remeasurement": {
-            "profile_id": summary.PROFILE, "imports_allowed": False, "no_model_requery": True,
+            "profile_id": profile, "imports_allowed": False, "no_model_requery": True,
             "accounting": {"prior_whole_study_sdk_launches": 33,
                            "cumulative_gpu_sdk_launch_cap": 65},
             "known_primary_outcomes": {"path": "evals/results/old/summary.json",
@@ -139,9 +141,19 @@ def test_terminal_sha_and_success_are_required(tmp_path: Path) -> None:
     path = tmp_path / "terminal.json"
     ref = _write(path, {"mode": "recovery_v14", "exit_code": 0, "natural_exit": True,
         "cleanup_verified": True, "supervisor_call_wall_s": 12.0, "config_sha256": "b" * 64})
-    assert summary._terminal(path, ref["sha256"])["supervisor_call_wall_s"] == 12.0
+    assert summary._terminal(path, ref["sha256"], expected_mode="recovery_v14")[
+        "supervisor_call_wall_s"] == 12.0
     with pytest.raises(summary.ExportError, match="SHA"):
-        summary._terminal(path, "0" * 64)
+        summary._terminal(path, "0" * 64, expected_mode="recovery_v14")
+    with pytest.raises(summary.ExportError, match="registered exit"):
+        summary._terminal(path, ref["sha256"], expected_mode="recovery_v15")
+
+
+def test_v9_namespaced_profile_is_accepted_without_changing_denominators() -> None:
+    plan = _plan(schema="registered_recovery_comparison_plan_v9")
+    manifest = _manifest(plan)
+    status = _status(manifest, plan)
+    summary._validate_batch(manifest, plan, status, _timing(plan))
 
 
 def test_export_calls_production_base_and_preserves_measured_outcomes(

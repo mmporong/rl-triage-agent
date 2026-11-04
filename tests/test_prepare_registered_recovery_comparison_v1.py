@@ -1042,6 +1042,49 @@ def test_v8_factory_builds_fifteen_fresh_arms_and_one_registered_hold(
     assert all("continuation_import" not in row for row in job["arms"])
 
 
+def test_v9_templates_opt_in_to_namespaced_actuator_binding_only(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    project_root = Path(__file__).resolve().parents[1]
+    _write(tmp_path / prepare.RESOURCE_REMEASUREMENT_PREREGISTRATION_V14, b"v14\n")
+    _write(tmp_path / prepare.COMPARISON.V15_NOTE, b"v15\n")
+    public_summary = project_root / prepare.COMPARISON.V13_PUBLIC_SUMMARY
+    _write(tmp_path / prepare.COMPARISON.V13_PUBLIC_SUMMARY, public_summary.read_bytes())
+    for relative in (
+        prepare._CONTINUATION_RETRY_SOURCE_FILES
+        | prepare.COMPARISON.BALANCED_ADMISSION_SOURCES
+        | prepare.COMPARISON.BALANCED_RESOURCE_SUMMARY_SOURCES
+        | (prepare.COMPARISON.BALANCED_NAMESPACE_SOURCES - {prepare.COMPARISON.V15_NOTE})
+    ):
+        _write(tmp_path / relative, (project_root / relative).read_bytes())
+    isaaclab = tmp_path / "IsaacLab"
+    (isaaclab / "logs").mkdir(parents=True)
+    templates = tmp_path / "templates-v15"
+    prepare.prepare_templates(
+        source_index=index, metadata=metadata, diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+        output=templates, actor="operator", isaaclab_commit="c" * 40,
+        resource_remeasurement_profile=prepare.RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,
+        restart_seed_overrides=prepare.REGISTERED_RESTART_SEED_OVERRIDES_V14,
+        isaaclab_root=isaaclab, gpu_admission_profile=prepare.GPU_ADMISSION_PROFILE_RETRY,
+        require_committed=False,
+    )
+    plan = json.loads((templates / "registered-plan.json").read_text(encoding="utf-8"))
+    assert plan["schema"] == prepare.COMPARISON.PLAN_SCHEMA_V9
+    assert plan["resource_remeasurement"]["profile_id"] == (
+        prepare.RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE)
+    assert prepare.COMPARISON.BALANCED_NAMESPACE_SOURCES <= set(plan["source_closure"])
+    actuator = json.loads((templates / "templates/case-05/actuator/training-binding.json")
+                          .read_text(encoding="utf-8"))
+    optimizer = json.loads((templates / "templates/case-07/optimizer_update_count/training-binding.json")
+                           .read_text(encoding="utf-8"))
+    assert actuator["schema"] == prepare.ACTUATOR.SCHEMA_V2
+    assert actuator["namespace_profile"] == prepare.ACTUATOR.NAMESPACE_PROFILE
+    assert "namespace_profile" not in optimizer
+
+
 def test_templates_v3_reject_cross_method_training_proof(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
