@@ -303,3 +303,74 @@ def test_prior_training_cost_is_included_once_and_separate_from_new_fixed_dispat
     assert result["methods"][0]["costs"]["current_dispatch_simulator_owned_wall_s"]["known_sum"] == 5.0
     text = (tmp_path / "summary/public/summary.json").read_text(encoding="utf-8")
     assert str(tmp_path) not in text and '"path"' not in text
+
+
+def test_completed_effect_import_preserves_the_negative_endpoint_and_historical_cost_once(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from evals import registered_recovery_continuation_v3 as continuation
+
+    prepared, status = _fixture(tmp_path, monkeypatch)
+    manifest = summary.controller._load(prepared)
+    source_arm = manifest["arms"][0]
+    historical_folder = source_arm["recovery_folder"]
+    source_arm["recovery_folder"] = None
+    old = _resource(tmp_path, "prior-training", status="failed", training=12.0, fixed=None, checkpoint=None)
+    old_raw = summary.io.read_ref(old["recovery_resource_ref"])
+    fixed = _resource(tmp_path, "prior-fixed", status="complete", training=None, fixed=5.0, checkpoint=None)
+    fixed_raw = summary.io.read_ref(fixed["recovery_resource_ref"])
+    training_proof = _write(tmp_path / "training-proof.json", {"stage_files": {
+        "execution.json": old_raw["execution_refs"]["training"]}})
+    backend_receipt = _write(tmp_path / "prior-effect-receipt.json", {
+        "training_stage": old_raw["execution_refs"]["training"], "costs": {"training_s": 12.0},
+        "training_reuse": {"new_training_launched": False, "proof_ref": training_proof,
+            "prior_owned_execution_ref": old_raw["execution_refs"]["training"],
+            "prior_dispatch_resource_ref": old["recovery_resource_ref"]}})
+    fixed_raw["raw_receipt_ref"] = backend_receipt
+    prior_resource_ref = _write(tmp_path / "prior-fixed-with-training.json", fixed_raw)
+    effect_proof = _write(tmp_path / "completed-effect-proof.json", {"fixture": "verified immutable effect"})
+    scope = {"kind": "completed_effect", "case_id": "case-05", "method": "fixed_sequence",
+             "proof_sha256": effect_proof["sha256"], "prior_plan_sha256": "a" * 64,
+             "diagnostic_manifest_sha256": source_arm["diagnostic_manifest"]["sha256"],
+             "source_checkpoint_sha256": "b" * 64}
+    plan = summary.io.read_ref(manifest["plan"])
+    manifest["plan"] = _write(tmp_path / "import-plan.json", {**plan,
+        "continuation": {"stage_imports": [scope]}})
+    imported = {"schema": "registered_recovery_imported_resource_v1",
+                "prior_effect_proof_ref": effect_proof, "prior_resource_ref": prior_resource_ref,
+                "prior_admission_ref": fixed["admission_ref"],
+                "historical_recovery_folder": historical_folder,
+                "new_dispatch_costs": {"simulator_sdk_launches": 0, "owned_gpu_s": None}}
+    imported_ref = _write(tmp_path / "imported-resource.json", imported)
+    status["arms"][0].update({"outcome": "not_recovered", "execution_origin": "verified_prior_effect",
+        "completed_effect_proof": effect_proof,
+        "source_arm": {"historical_recovery_folder": historical_folder},
+        "resource_cost": {**imported, "receipt_ref": imported_ref}})
+
+    def verify(ref, **expected):
+        assert ref == effect_proof
+        assert expected["expected_case_id"] == "case-05" and expected["expected_method"] == "fixed_sequence"
+        assert expected["expected_diagnostic_manifest_sha256"] == source_arm["diagnostic_manifest"]["sha256"]
+        return {"prior_resource_ref": prior_resource_ref, "prior_admission_ref": fixed["admission_ref"],
+                "recovery_folder": historical_folder}
+
+    monkeypatch.setattr(continuation, "verify_completed_effect", verify)
+    post = summary.investigation_recovery.verified_post_observation(Path(historical_folder), "unused")
+    monkeypatch.setattr(summary.investigation_recovery, "verified_post_observation",
+                        lambda *_args: {**post, "behavior_outcome": "failed"})
+    result = summary.summarize(prepared, tmp_path / "summary")
+    row, costs = result["arms"][0], result["arms"][0]["costs"]
+    assert row["recovery_outcome"] == "not_recovered" and row["endpoint"] is not None
+    assert row["execution_origin"] == "verified_prior_effect"
+    assert costs["simulator_owned_wall_s"] == 17.0
+    assert costs["current_dispatch_simulator_owned_wall_s"] is None
+    assert costs["current_dispatch_sdk_launches"] == 0
+    assert costs["reused_training_owned_wall_s"] == 12.0
+    assert costs["reused_completed_dispatch_owned_wall_s"] == 5.0
+    assert costs["whole_effect_active_phase_s"] == 50.0
+    assert costs["phase_elapsed_s"] is None
+    current = result["methods"][0]["costs"]["current_dispatch_simulator_owned_wall_s"]
+    assert current == {"known_sum": None, "known_arms": 0, "unknown_arms": 0, "not_applicable_arms": 1}
+    assert costs["device_energy_scope"] == "historical_completed_dispatch_only"
+    scope["method"] = "static_rule"
+    with pytest.raises(summary.SummaryError, match="registered import"):
+        summary._resource(status["arms"][0]["resource_cost"], "case-05:fixed_sequence", [], import_scope=scope)

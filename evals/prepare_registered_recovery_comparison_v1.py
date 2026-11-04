@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import json
 import re
 import subprocess
@@ -108,7 +109,23 @@ _CONTINUATION_SOURCE_FILES = {
     "tests/test_registered_recovery_continuation_v2.py",
     "bench/protocols/diagnostic_recovery_comparison_20261104_v5.md",
 }
+_CONTINUATION_V3_SOURCE_FILES = _CONTINUATION_SOURCE_FILES | {
+    "evals/registered_desktop_gpu_wait_v1.py",
+    "tests/test_registered_desktop_gpu_wait_v1.py",
+    "bench/protocols/registered_desktop_gpu_wait_v1.json",
+    "evals/registered_recovery_continuation_v3.py",
+    "tests/test_registered_recovery_continuation_v3.py",
+    "tests/test_registered_recovery_continuation_v2.py",
+    "bench/protocols/diagnostic_recovery_comparison_20261104_v6.md",
+    "evals/summarize_mechanism_resource_comparison_v1.py",
+    "tests/test_mechanism_resource_comparison_v1.py",
+    "evals/aggregate_recovery_attempt_timing_v1.py",
+    "tests/test_aggregate_recovery_attempt_timing_v1.py",
+}
 GPU_ADMISSION_PROFILE = "registered_desktop_shared_v2"
+GPU_ADMISSION_PROFILE_V3 = "registered_desktop_shared_wait_v1"
+PRIOR_V5_SOURCE_ANCHOR = "f9d5fea93cce406a325f578bc6f4597cc0bc35c5"
+PRIOR_V5_REGISTRATION_ANCHOR = "bf1632ee6770e681e9e8c4c5b1df890ebaed12a6"
 
 
 class PreparationError(ValueError):
@@ -149,11 +166,16 @@ def _git_blob(anchor: str, relative: str) -> bytes:
     return result.stdout.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
 
 
-def _source_closure(anchor: str, *, include_continuation: bool = False) -> dict[str, str]:
+def _source_closure(anchor: str, *, include_continuation: bool = False,
+                    include_continuation_v3: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
-    source_files = _SOURCE_FILES | (_CONTINUATION_SOURCE_FILES if include_continuation else set())
+    source_files = set(_SOURCE_FILES)
+    if include_continuation_v3:
+        source_files |= _CONTINUATION_V3_SOURCE_FILES
+    elif include_continuation:
+        source_files |= _CONTINUATION_SOURCE_FILES
     for relative in sorted(source_files):
         current = ROOT / relative
         if not current.is_file() or current.is_symlink():
@@ -163,6 +185,121 @@ def _source_closure(anchor: str, *, include_continuation: bool = False) -> dict[
             raise PreparationError(f"source closure differs from anchor: {relative}")
         closure[relative] = digest
     return closure
+
+
+def _continuation_module():
+    try:
+        return importlib.import_module("evals.registered_recovery_continuation_v3")
+    except (ImportError, AttributeError) as exc:
+        raise PreparationError("continuation proof verifier unavailable") from exc
+
+
+def _proof_identity(proof_ref: dict, *, kind: str, method: str,
+                    prior_plan_sha256: str | None = None) -> dict:
+    proof = _read(Path(proof_ref["path"]))
+    identity = proof.get("identity")
+    effect_fields = {
+        "prior_plan_sha256", "diagnostic_manifest_sha256", "source_checkpoint_sha256",
+        "final_checkpoint_sha256", "seed", "task", "correction_id", "source_anchor",
+        "registration_anchor",
+    }
+    training_fields = {
+        "diagnostic_manifest_sha256", "source_checkpoint_sha256", "final_checkpoint_sha256",
+        "seed", "task", "correction_id", "source_anchor", "case_id", "method",
+    }
+    expected_fields = effect_fields if kind == "completed effect" else training_fields
+    if (
+        not isinstance(identity, dict)
+        or set(identity) != expected_fields
+        or (kind == "completed training" and identity["case_id"] != "case-05")
+        or (kind == "completed training" and identity["method"] != method)
+        or any(
+            _HEX64.fullmatch(str(identity[field])) is None
+            for field in (
+                *(("prior_plan_sha256",) if kind == "completed effect" else ()),
+                "diagnostic_manifest_sha256", "source_checkpoint_sha256",
+                "final_checkpoint_sha256",
+            )
+        )
+        or type(identity["seed"]) is not int
+        or not isinstance(identity["task"], str)
+        or not identity["task"]
+        or identity["correction_id"] != "restore_motor_torque_speed"
+        or identity["source_anchor"] != PRIOR_V5_SOURCE_ANCHOR
+        or (kind == "completed effect"
+            and identity["registration_anchor"] != PRIOR_V5_REGISTRATION_ANCHOR)
+    ):
+        raise PreparationError(f"{kind} proof logical identity differs")
+    if kind == "completed training" and _HEX64.fullmatch(str(prior_plan_sha256)) is None:
+        raise PreparationError("completed training prior plan binding missing")
+    return {
+        "case_id": "case-05",
+        "method": method,
+        "prior_plan_sha256": (
+            identity["prior_plan_sha256"] if kind == "completed effect" else prior_plan_sha256
+        ),
+        "diagnostic_manifest_sha256": identity["diagnostic_manifest_sha256"],
+        "source_checkpoint_sha256": identity["source_checkpoint_sha256"],
+        "completed_checkpoint_sha256": identity["final_checkpoint_sha256"],
+        "seed": identity["seed"],
+        "task": identity["task"],
+        "correction_id": identity["correction_id"],
+        "source_anchor": identity["source_anchor"],
+        "registration_anchor": (
+            identity["registration_anchor"]
+            if kind == "completed effect"
+            else PRIOR_V5_REGISTRATION_ANCHOR
+        ),
+    }
+
+
+def _v3_imports(completed_effect_proof: Path, static_training_proof: Path,
+                isaaclab_root: Path) -> tuple[list[dict], dict[str, dict]]:
+    effect_ref = _ref(completed_effect_proof)
+    training_ref = _ref(static_training_proof)
+    effect_identity = _proof_identity(effect_ref, kind="completed effect", method="fixed_sequence")
+    training_identity = _proof_identity(
+        training_ref,
+        kind="completed training",
+        method="static_rule",
+        prior_plan_sha256=effect_identity["prior_plan_sha256"],
+    )
+    module = _continuation_module()
+    effect = module.verify_completed_effect(
+        effect_ref,
+        expected_case_id="case-05",
+        expected_method="fixed_sequence",
+        expected_prior_plan_sha256=effect_identity["prior_plan_sha256"],
+        expected_diagnostic_manifest_sha256=effect_identity["diagnostic_manifest_sha256"],
+        expected_source_checkpoint_sha256=effect_identity["source_checkpoint_sha256"],
+        repo=ROOT,
+    )
+    training = module.load_completed_training(
+        training_ref,
+        expected_source_checkpoint_sha256=training_identity["source_checkpoint_sha256"],
+        expected_seed=training_identity["seed"],
+        expected_correction_id=training_identity["correction_id"],
+        expected_task=training_identity["task"],
+        expected_diagnostic_manifest_sha256=training_identity["diagnostic_manifest_sha256"],
+        repo=ROOT,
+        isaaclab=Path(isaaclab_root).resolve(strict=True),
+    )
+    if effect.get("execution_origin") != "verified_prior_effect":
+        raise PreparationError("completed effect verification origin differs")
+    if training.get("new_training_launched") is not False:
+        raise PreparationError("completed training verification launch state differs")
+    rows = []
+    for artifact_id, kind, proof_ref, identity in (
+        ("prior_effect", "completed_effect", effect_ref, effect_identity),
+        ("prior_training", "completed_training", training_ref, training_identity),
+    ):
+        rows.append({
+            "artifact_id": artifact_id,
+            "kind": kind,
+            "proof_sha256": proof_ref["sha256"],
+            **identity,
+        })
+    return rows, {"prior_effect": effect_ref, "prior_training": training_ref}
 
 
 def _prior_training(proof_path: Path, isaaclab_root: Path) -> tuple[dict, dict]:
@@ -417,6 +554,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                       sdk_contract: Path, recipe_code_contract: Path, output: Path, actor: str,
                       isaaclab_commit: str,
                       prior_training_proof: Path | None = None,
+                      prior_completed_effect_proof: Path | None = None,
+                      prior_static_training_proof: Path | None = None,
                       isaaclab_root: Path | None = None,
                       require_committed: bool = True) -> dict:
     out = Path(output).resolve()
@@ -431,20 +570,43 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     phase_cases = {row["case_id"]: row for row in phase_plan["cases"]}
     if not {f"case-{int(case[-2:]):02d}" for case in CASES} <= set(phase_cases):
         raise PreparationError("phase-A selected cases missing")
-    if (prior_training_proof is None) != (isaaclab_root is None):
+    v3_requested = prior_completed_effect_proof is not None or prior_static_training_proof is not None
+    if v3_requested and (
+        prior_completed_effect_proof is None
+        or prior_static_training_proof is None
+        or prior_training_proof is not None
+        or isaaclab_root is None
+    ):
+        raise PreparationError("v3 proofs and Isaac Lab root must be supplied together")
+    if not v3_requested and (prior_training_proof is None) != (isaaclab_root is None):
         raise PreparationError("prior proof and Isaac Lab root must be supplied together")
     prior = (
         _prior_training(Path(prior_training_proof), Path(isaaclab_root).resolve(strict=True))
         if prior_training_proof is not None and isaaclab_root is not None
         else None
     )
+    if v3_requested:
+        if (prior_completed_effect_proof is None or prior_static_training_proof is None
+                or isaaclab_root is None):
+            raise PreparationError("v3 proof inputs missing after validation")
+        v3 = _v3_imports(
+            prior_completed_effect_proof,
+            prior_static_training_proof,
+            isaaclab_root,
+        )
+    else:
+        v3 = None
     continuation_sources = prior is not None
     closure = _source_closure(
-        source_anchor, include_continuation=continuation_sources
+        source_anchor,
+        include_continuation=continuation_sources,
+        include_continuation_v3=v3 is not None,
     ) if require_committed else {
         path: _sha(ROOT / path, lf=True)
         for path in sorted(
-            _SOURCE_FILES | (_CONTINUATION_SOURCE_FILES if continuation_sources else set())
+            _SOURCE_FILES
+            | (_CONTINUATION_SOURCE_FILES if continuation_sources else set())
+            | (_CONTINUATION_V3_SOURCE_FILES if v3 is not None else set())
         )
     }
     sdk = _read(sdk_contract)
@@ -517,13 +679,18 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         inputs.append({"role": f"diagnostic_protocol:{case}", "path": row["path"],
                        "sha256": row["sha256"]})
     plan = {
-        "schema": COMPARISON.PLAN_SCHEMA_V2 if prior is not None else COMPARISON.PLAN_SCHEMA,
+        "schema": (
+            COMPARISON.PLAN_SCHEMA_V3
+            if v3 is not None
+            else COMPARISON.PLAN_SCHEMA_V2 if prior is not None else COMPARISON.PLAN_SCHEMA
+        ),
         "source_anchor": source_anchor,
         "source_closure": closure, "methods": list(METHODS),
         "cases": [{"case_id": case, "rotation": _rotation(i)} for i, case in enumerate(CASES)],
-        "limits": {"max_recoveries": 16, "gpu_sdk_launch_cap": 31 if prior is not None else 32,
+        "limits": {"max_recoveries": 16,
+                   "gpu_sdk_launch_cap": 29 if v3 is not None else 31 if prior is not None else 32,
                    "cpu_checkpoint_launch_cap": 16, "cpu_telemetry_launch_cap": 16,
-                   "total_owned_launch_cap": 63 if prior is not None else 64,
+                   "total_owned_launch_cap": 61 if v3 is not None else 63 if prior is not None else 64,
                    "max_parent_wall_s_per_recovery": 5000, "api_cap": 0},
         "inputs": inputs, "backend": investigate.REGISTERED_BACKEND,
         "authorization": {"actor": actor,
@@ -546,6 +713,17 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             "continuation_tag": "v5_fresh",
             "prior_failed_attempt_preserved": True,
         }
+    if v3 is not None:
+        imports, _proof_refs = v3
+        plan["continuation"] = {
+            "gpu_admission_profile": GPU_ADMISSION_PROFILE_V3,
+            "stage_imports": imports,
+            "prior_consumed_gpu_sdk_launches": 3,
+            "expected_new_gpu_sdk_launches": 27,
+            "continuation_tag": "v6_fresh",
+            "prior_v5_registration_anchor": PRIOR_V5_REGISTRATION_ANCHOR,
+            "prior_incomplete_preserved": True,
+        }
     plan_path = out / "registered-plan.json"
     write_new(plan_path, plan)
     COMPARISON.load_plan(plan_path, repo_root=ROOT, registration_anchor=source_anchor,
@@ -559,6 +737,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                 "actual_training_started": False, "api_calls": 0}
     if prior is not None:
         manifest["prior_training_proof"] = prior[0]
+    if v3 is not None:
+        manifest["continuation_proofs"] = v3[1]
     write_new(out / "manifest.json", manifest)
     return manifest
 
@@ -663,7 +843,11 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                                 require_committed=require_committed)
     if _sha(registered_plan) != template_manifest["plan"]["sha256"]:
         raise PreparationError("registered plan differs from prepared template")
-    continuation = plan.get("continuation") if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2 else None
+    continuation = (
+        plan.get("continuation")
+        if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V2, COMPARISON.PLAN_SCHEMA_V3}
+        else None
+    )
     prior_ref = template_manifest.get("prior_training_proof")
     if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2:
         if not isinstance(prior_ref, dict):
@@ -677,6 +861,25 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
             raise PreparationError("v2 prior training proof differs from public plan")
     elif prior_ref is not None:
         raise PreparationError("v1 template must not carry prior training proof")
+    v3_proofs = template_manifest.get("continuation_proofs")
+    v3_proof_refs: dict[str, dict] = {}
+    if plan["schema"] == COMPARISON.PLAN_SCHEMA_V3:
+        if not isinstance(v3_proofs, dict) or set(v3_proofs) != {"prior_effect", "prior_training"}:
+            raise PreparationError("v3 template continuation proofs missing")
+        v3_proof_refs = v3_proofs
+        imports, verified_refs = _v3_imports(
+            Path(v3_proof_refs["prior_effect"]["path"]),
+            Path(v3_proof_refs["prior_training"]["path"]),
+            Path(isaaclab_root),
+        )
+        if (
+            not isinstance(continuation, dict)
+            or imports != continuation.get("stage_imports")
+            or verified_refs != v3_proof_refs
+        ):
+            raise PreparationError("v3 continuation proofs differ from public plan")
+    elif v3_proofs is not None:
+        raise PreparationError("non-v3 template must not carry continuation proofs")
     freshness = SEED_GUARD.assert_fresh_seeds(
         [plan["recovery_policy"]["seeds"][case]["restart"] for case in CASES],
         Path(isaaclab_root), repo=ROOT,
@@ -695,8 +898,15 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 raise PreparationError("diagnostic case mapping differs")
             arm = {"case_id": case, "method": method, "diagnostic_manifest": _ref(manifest_path),
                    "recovery_folder": None, "recovery_payload": None, "approval_ref": None}
+            if plan["schema"] == COMPARISON.PLAN_SCHEMA_V3:
+                arm["continuation_import"] = None
             mechanism = status.get("confirmed_mechanism") if status.get("status") == "confirmed" else None
             if mechanism in MECHANISMS:
+                import_row = next((
+                    row for row in continuation["stage_imports"]
+                    if row["case_id"] == case and row["method"] == method
+                ), None) if plan["schema"] == COMPARISON.PLAN_SCHEMA_V3 \
+                    and isinstance(continuation, dict) else None
                 commitment = plan["template_commitments"][case][mechanism]
                 case_dir = template_root / "templates" / case
                 training = case_dir / mechanism / "training-binding.json"
@@ -704,6 +914,22 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 if _sha(training) != commitment["training_binding_sha256"] or _sha(fixed) != commitment["fixed_binding_sha256"]:
                     raise PreparationError("template commitment changed")
                 source_session = InvestigationSession(session)
+                if import_row is not None and (
+                    source_session._manifest_sha256 != import_row["diagnostic_manifest_sha256"]
+                    or status["source_verification"]["checkpoint_sha256"]
+                    != import_row["source_checkpoint_sha256"]
+                    or mechanism != "actuator"
+                ):
+                    raise PreparationError("v3 import diagnostic/source binding differs")
+                if import_row is not None:
+                    arm["continuation_import"] = {
+                        "kind": import_row["kind"],
+                        "artifact_id": import_row["artifact_id"],
+                        "proof": deepcopy(v3_proof_refs[import_row["artifact_id"]]),
+                    }
+                    if import_row["kind"] == "completed_effect":
+                        arms.append(arm)
+                        continue
                 request, _intent, diagnostic = RECOVERY._diagnostic(source_session, mechanism)
                 mode = REGISTRY[mechanism]["recovery_modes"][0]
                 operation = {"correction_id": REGISTRY[mechanism]["correction_id"],
@@ -722,10 +948,17 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                     and method == "fixed_sequence"
                     and mechanism == "actuator"
                 )
-                if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2:
+                use_prior_v3 = import_row is not None and import_row["kind"] == "completed_training"
+                if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V2, COMPARISON.PLAN_SCHEMA_V3}:
                     operation.update({
-                        "gpu_admission_profile": GPU_ADMISSION_PROFILE,
-                        "prior_training_artifact_id": "prior_training" if use_prior else None,
+                        "gpu_admission_profile": (
+                            GPU_ADMISSION_PROFILE_V3
+                            if plan["schema"] == COMPARISON.PLAN_SCHEMA_V3
+                            else GPU_ADMISSION_PROFILE
+                        ),
+                        "prior_training_artifact_id": (
+                            "prior_training" if use_prior or use_prior_v3 else None
+                        ),
                     })
                 if use_prior:
                     if not isinstance(continuation, dict) or not isinstance(prior_ref, dict):
@@ -739,7 +972,9 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                     ):
                         raise PreparationError("prior training diagnostic/source binding differs")
                 protocol = {"schema": (
-                                "registered_recovery_protocol_v2"
+                                "registered_recovery_protocol_v3"
+                                if plan["schema"] == COMPARISON.PLAN_SCHEMA_V3
+                                else "registered_recovery_protocol_v2"
                                 if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2
                                 else "registered_recovery_protocol_v1"
                             ),
@@ -763,6 +998,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                     if not isinstance(prior_ref, dict):
                         raise PreparationError("v2 prior training proof missing")
                     artifacts["prior_training"] = deepcopy(prior_ref)
+                if use_prior_v3:
+                    artifacts["prior_training"] = deepcopy(v3_proof_refs["prior_training"])
                 write_new(resolver_path, {"schema": "registered_recovery_resolver_v1",
                                           "artifacts": artifacts})
                 payload = {"protocol": _ref(protocol_path), "artifact_resolver": _ref(resolver_path),
@@ -807,6 +1044,8 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("--actor", required=True)
     t.add_argument("--isaaclab-commit", required=True)
     t.add_argument("--prior-training-proof", type=Path)
+    t.add_argument("--prior-completed-effect-proof", type=Path)
+    t.add_argument("--prior-static-training-proof", type=Path)
     t.add_argument("--isaaclab-root", type=Path)
     t.add_argument("--allow-uncommitted-fixture", action="store_true")
     j = sub.add_parser("jobs")
@@ -827,6 +1066,8 @@ def main(argv: list[str] | None = None) -> int:
                 recipe_code_contract=args.recipe_code_contract,
                 actor=args.actor, isaaclab_commit=args.isaaclab_commit,
                 prior_training_proof=args.prior_training_proof,
+                prior_completed_effect_proof=args.prior_completed_effect_proof,
+                prior_static_training_proof=args.prior_static_training_proof,
                 isaaclab_root=args.isaaclab_root,
                 require_committed=not args.allow_uncommitted_fixture)
         else:

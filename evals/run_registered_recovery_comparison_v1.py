@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import json
 import math
 import re
@@ -28,6 +29,7 @@ from rl_triage.investigation_session import (
 
 PLAN_SCHEMA = "registered_recovery_comparison_plan_v1"
 PLAN_SCHEMA_V2 = "registered_recovery_comparison_plan_v2"
+PLAN_SCHEMA_V3 = "registered_recovery_comparison_plan_v3"
 JOB_SCHEMA = "registered_recovery_comparison_job_v1"
 RESULT_SCHEMA = "registered_recovery_comparison_result_v1"
 METHODS = ("fixed_sequence", "static_rule", "one_shot_llm", "iterative_agent")
@@ -117,9 +119,9 @@ def _validate_plan(plan: dict) -> None:
     fields = {"schema", "source_anchor", "source_closure", "methods", "cases", "limits", "inputs",
               "backend", "authorization", "recovery_policy", "template_commitments"}
     schema = plan.get("schema")
-    if schema == PLAN_SCHEMA_V2:
+    if schema in {PLAN_SCHEMA_V2, PLAN_SCHEMA_V3}:
         fields.add("continuation")
-    if set(plan) != fields or schema not in {PLAN_SCHEMA, PLAN_SCHEMA_V2}:
+    if set(plan) != fields or schema not in {PLAN_SCHEMA, PLAN_SCHEMA_V2, PLAN_SCHEMA_V3}:
         raise ComparisonContractError("plan fields differ")
     if _COMMIT.fullmatch(str(plan["source_anchor"])) is None:
         raise ComparisonContractError("source anchor differs")
@@ -141,8 +143,16 @@ def _validate_plan(plan: dict) -> None:
                 or len(row["rotation"]) != 4 or set(row["rotation"]) != set(METHODS)):
             raise ComparisonContractError("four-arm case rotation differs")
     limits = plan["limits"]
-    expected_sdk_cap = len(case_ids) * 8 if schema == PLAN_SCHEMA else len(case_ids) * 8 - 1
-    expected_total_cap = len(case_ids) * 16 if schema == PLAN_SCHEMA else len(case_ids) * 16 - 1
+    expected_sdk_cap = {
+        PLAN_SCHEMA: len(case_ids) * 8,
+        PLAN_SCHEMA_V2: len(case_ids) * 8 - 1,
+        PLAN_SCHEMA_V3: len(case_ids) * 8 - 3,
+    }[schema]
+    expected_total_cap = {
+        PLAN_SCHEMA: len(case_ids) * 16,
+        PLAN_SCHEMA_V2: len(case_ids) * 16 - 1,
+        PLAN_SCHEMA_V3: len(case_ids) * 16 - 3,
+    }[schema]
     if limits != {"max_recoveries": len(case_ids) * 4,
                   "gpu_sdk_launch_cap": expected_sdk_cap,
                   "cpu_checkpoint_launch_cap": len(case_ids) * 4,
@@ -191,6 +201,72 @@ def _validate_plan(plan: dict) -> None:
             or not prior["task"]
         ):
             raise ComparisonContractError("prior training logical identity differs")
+    if schema == PLAN_SCHEMA_V3:
+        continuation = plan["continuation"]
+        required = {
+            "gpu_admission_profile", "stage_imports", "prior_consumed_gpu_sdk_launches",
+            "expected_new_gpu_sdk_launches", "continuation_tag",
+            "prior_v5_registration_anchor", "prior_incomplete_preserved",
+        }
+        if (
+            not isinstance(continuation, dict)
+            or set(continuation) != required
+            or continuation["gpu_admission_profile"] != "registered_desktop_shared_wait_v1"
+            or continuation["prior_consumed_gpu_sdk_launches"] != 3
+            or continuation["expected_new_gpu_sdk_launches"] != 27
+            or continuation["continuation_tag"] != "v6_fresh"
+            or _COMMIT.fullmatch(str(continuation["prior_v5_registration_anchor"])) is None
+            or continuation["prior_incomplete_preserved"] is not True
+            or case_ids != set(SUPPORTED_CASES)
+        ):
+            raise ComparisonContractError("v3 continuation accounting/profile differs")
+        imports = continuation["stage_imports"]
+        if not isinstance(imports, list) or len(imports) != 2:
+            raise ComparisonContractError("v3 stage import coverage differs")
+        expected_imports = {
+            ("case-05", "fixed_sequence"): ("completed_effect", "prior_effect"),
+            ("case-05", "static_rule"): ("completed_training", "prior_training"),
+        }
+        seen_imports: set[tuple[str, str]] = set()
+        import_fields = {
+            "artifact_id", "kind", "case_id", "method", "proof_sha256",
+            "prior_plan_sha256",
+            "source_checkpoint_sha256", "completed_checkpoint_sha256", "seed", "task",
+            "correction_id", "diagnostic_manifest_sha256", "source_anchor",
+            "registration_anchor",
+        }
+        for row in imports:
+            if not isinstance(row, dict):
+                raise ComparisonContractError("v3 stage import identity differs")
+            case_id, method = row.get("case_id"), row.get("method")
+            if not isinstance(case_id, str) or not isinstance(method, str):
+                raise ComparisonContractError("v3 stage import identity differs")
+            key = (case_id, method)
+            expected = expected_imports.get(key)
+            if (
+                set(row) != import_fields
+                or expected is None
+                or key in seen_imports
+                or (row["kind"], row["artifact_id"]) != expected
+                or any(
+                    not isinstance(row[field], str) or _SHA.fullmatch(row[field]) is None
+                    for field in (
+                        "proof_sha256", "prior_plan_sha256", "source_checkpoint_sha256",
+                        "completed_checkpoint_sha256", "diagnostic_manifest_sha256",
+                    )
+                )
+                or _COMMIT.fullmatch(str(row["source_anchor"])) is None
+                or _COMMIT.fullmatch(str(row["registration_anchor"])) is None
+                or row["registration_anchor"] != continuation["prior_v5_registration_anchor"]
+                or type(row["seed"]) is not int
+                or row["correction_id"] != "restore_motor_torque_speed"
+                or not isinstance(row["task"], str)
+                or not row["task"]
+            ):
+                raise ComparisonContractError("v3 stage import identity differs")
+            seen_imports.add(key)
+        if seen_imports != set(expected_imports):
+            raise ComparisonContractError("v3 stage import matrix differs")
     policy = plan["recovery_policy"]
     if (not isinstance(policy, dict)
             or set(policy) != {"training_iterations", "seeds", "same_case_same_template", "source_cost_policy"}
@@ -287,9 +363,15 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
     seen = set()
     normalized = []
     seeds = plan["recovery_policy"]["seeds"]
+    stage_imports = {
+        (row["case_id"], row["method"]): row
+        for row in plan.get("continuation", {}).get("stage_imports", [])
+    }
     for row in rows:
         fields = {"case_id", "method", "diagnostic_manifest", "recovery_folder",
                   "recovery_payload", "approval_ref"}
+        if plan["schema"] == PLAN_SCHEMA_V3:
+            fields.add("continuation_import")
         if not isinstance(row, dict) or set(row) != fields:
             raise ComparisonContractError("job arm fields differ")
         key = (row["case_id"], row["method"])
@@ -308,12 +390,33 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
         if not isinstance(source_checkpoint, str) or _SHA.fullmatch(source_checkpoint) is None:
             raise ComparisonContractError("diagnostic source checkpoint binding missing")
         session = manifest_path.parent
+        continuation_import = row.get("continuation_import")
+        expected_import = stage_imports.get(key)
+        if plan["schema"] == PLAN_SCHEMA_V3:
+            if expected_import is None:
+                if continuation_import is not None:
+                    raise ComparisonContractError("unexpected continuation import")
+            elif (
+                not isinstance(continuation_import, dict)
+                or set(continuation_import) != {"kind", "artifact_id", "proof"}
+                or continuation_import["kind"] != expected_import["kind"]
+                or continuation_import["artifact_id"] != expected_import["artifact_id"]
+            ):
+                raise ComparisonContractError("continuation import binding differs")
+            else:
+                proof_path, _proof = _ref(continuation_import["proof"], "continuation proof")
+                if file_sha(proof_path) != expected_import["proof_sha256"]:
+                    raise ComparisonContractError("continuation proof differs from plan")
         optional = (row["recovery_folder"], row["recovery_payload"], row["approval_ref"])
         if any(value is None for value in optional):
             if not all(value is None for value in optional):
                 raise ComparisonContractError("recovery folder/payload/approval must be jointly null")
+            if expected_import is not None and expected_import["kind"] != "completed_effect":
+                raise ComparisonContractError("completed training import requires fresh recovery authority")
             normalized.append({**deepcopy(row), "session_path": str(session)})
             continue
+        if expected_import is not None and expected_import["kind"] == "completed_effect":
+            raise ComparisonContractError("completed effect import must not carry recovery authority")
         folder = Path(row["recovery_folder"])
         expected_folder = (job_path.parent / "prepared-recoveries" / row["case_id"]
                            / row["method"]).resolve()
@@ -338,10 +441,15 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
             "training_binding_artifact_id", "fixed_binding_artifact_id",
             "gpu_admission_profile", "prior_training_artifact_id",
         }
+        continuation_schema = plan["schema"] in {PLAN_SCHEMA_V2, PLAN_SCHEMA_V3}
         if (not isinstance(protocol, dict)
-                or (plan["schema"] == PLAN_SCHEMA_V2
-                    and protocol.get("schema") != "registered_recovery_protocol_v2")
-                or (plan["schema"] == PLAN_SCHEMA_V2 and set(operation) != operation_v2_fields)
+                or (continuation_schema
+                    and protocol.get("schema") != (
+                        "registered_recovery_protocol_v3"
+                        if plan["schema"] == PLAN_SCHEMA_V3
+                        else "registered_recovery_protocol_v2"
+                    ))
+                or (continuation_schema and set(operation) != operation_v2_fields)
                 or diagnostic.get("case_id") != row["case_id"]
                 or entry is None or operation.get("correction_id") != entry["correction_id"]
                 or mode not in entry["recovery_modes"]
@@ -381,6 +489,28 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
                 )
             ):
                 raise ComparisonContractError("prior training arm/profile binding differs")
+        if plan["schema"] == PLAN_SCHEMA_V3:
+            expected_prior_id = (
+                "prior_training"
+                if expected_import is not None and expected_import["kind"] == "completed_training"
+                else None
+            )
+            if (
+                operation.get("gpu_admission_profile")
+                != plan["continuation"]["gpu_admission_profile"]
+                or prior_id != expected_prior_id
+                or (
+                    expected_import is not None
+                    and (
+                        diagnostic.get("session_manifest_sha256")
+                        != expected_import["diagnostic_manifest_sha256"]
+                        or source_checkpoint != expected_import["source_checkpoint_sha256"]
+                        or operation.get("training_seed") != expected_import["seed"]
+                        or operation.get("correction_id") != expected_import["correction_id"]
+                    )
+                )
+            ):
+                raise ComparisonContractError("v3 prior arm/profile binding differs")
         _, resolver = _ref(payload["artifact_resolver"], "artifact resolver")
         training_id = operation.get("training_binding_artifact_id")
         fixed_id = operation.get("fixed_binding_artifact_id")
@@ -395,7 +525,12 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
             if set(artifacts) != {training_id, fixed_id, prior_id}:
                 raise ComparisonContractError("prior training resolver artifacts differ")
             prior_path, _prior_proof = _ref(artifacts[prior_id], "prior training proof")
-            if file_sha(prior_path) != plan["continuation"]["prior_training"]["proof_sha256"]:
+            expected_proof_sha = (
+                plan["continuation"]["prior_training"]["proof_sha256"]
+                if plan["schema"] == PLAN_SCHEMA_V2
+                else expected_import["proof_sha256"] if expected_import is not None else None
+            )
+            if expected_proof_sha is None or file_sha(prior_path) != expected_proof_sha:
                 raise ComparisonContractError("prior training proof differs from plan")
         elif set(artifacts) != {training_id, fixed_id}:
             raise ComparisonContractError("unexpected resolver artifact")
@@ -426,6 +561,15 @@ def prepare(plan_path: Path, job_path: Path, output: Path, *, repo_root: Path,
     write_new(target / "manifest.json", manifest)
     write_new(target / "anchor.json", {"schema": RESULT_SCHEMA + "_anchor",
                                         "manifest_sha256": file_sha(target / "manifest.json")})
+    if plan["schema"] == PLAN_SCHEMA_V3:
+        imported = [
+            row for row in arms
+            if isinstance(row.get("continuation_import"), dict)
+            and row["continuation_import"].get("kind") == "completed_effect"
+        ]
+        if len(imported) != 1:
+            raise ComparisonContractError("v3 completed effect import coverage differs")
+        _materialize_completed_effect(target, manifest, imported[0], plan, Path(repo_root))
     return status(target)
 
 
@@ -448,6 +592,107 @@ def _record(root: Path, arm: dict, value: dict) -> None:
     value = {"schema": RESULT_SCHEMA + "_arm", "case_id": arm["case_id"],
              "method": arm["method"], "source_cost_accounting": "phase_a_shared_not_repeated", **value}
     write_new(_arm_result_path(root, arm), value)
+
+
+def _stage_import(plan: dict, arm: dict) -> dict:
+    rows = [
+        row for row in plan.get("continuation", {}).get("stage_imports", [])
+        if row["case_id"] == arm["case_id"] and row["method"] == arm["method"]
+    ]
+    if len(rows) != 1:
+        raise ComparisonContractError("continuation stage import lookup differs")
+    return rows[0]
+
+
+def _continuation_module():
+    try:
+        return importlib.import_module("evals.registered_recovery_continuation_v3")
+    except (ImportError, AttributeError) as exc:
+        raise ComparisonContractError("continuation proof verifier unavailable") from exc
+
+
+def _materialize_completed_effect(root: Path, manifest: dict, arm: dict, plan: dict,
+                                  repo_root: Path) -> None:
+    binding = _stage_import(plan, arm)
+    proof_ref = arm["continuation_import"]["proof"]
+    verified = _continuation_module().verify_completed_effect(
+        proof_ref,
+        expected_case_id=arm["case_id"],
+        expected_method=arm["method"],
+        expected_prior_plan_sha256=binding["prior_plan_sha256"],
+        expected_diagnostic_manifest_sha256=binding["diagnostic_manifest_sha256"],
+        expected_source_checkpoint_sha256=binding["source_checkpoint_sha256"],
+        repo=Path(repo_root).resolve(strict=True),
+    )
+    required = {
+        "execution_origin", "result", "prior_resource_ref", "prior_admission_ref",
+        "recovery_folder", "post_observation", "proof_ref", "historical_costs",
+        "new_dispatch_costs",
+    }
+    if not isinstance(verified, dict) or not required <= set(verified):
+        raise ComparisonContractError("completed effect proof result fields differ")
+    if verified["execution_origin"] != "verified_prior_effect" or verified["proof_ref"] != proof_ref:
+        raise ComparisonContractError("completed effect proof identity differs")
+    historical = verified["historical_costs"]
+    current = verified["new_dispatch_costs"]
+    current_sdk = current.get("simulator_sdk_launches", current.get("sdk_launches")) \
+        if isinstance(current, dict) else None
+    if (
+        not isinstance(historical, dict)
+        or historical.get("simulator_sdk_launches") != 2
+        or not isinstance(current, dict)
+        or current_sdk != 0
+    ):
+        raise ComparisonContractError("completed effect resource accounting differs")
+    current_costs = {
+        "simulator_sdk_launches": 0,
+        "cpu_checkpoint_launches": 0,
+        "cpu_telemetry_launches": 0,
+        "total_owned_children": 0,
+        "phase_wall_s": None,
+        "owned_gpu_s": current.get("owned_gpu_s"),
+    }
+    resource = {
+        "schema": "registered_recovery_imported_resource_v1",
+        "case_id": arm["case_id"],
+        "method": arm["method"],
+        "plan_sha256": manifest["plan"]["sha256"],
+        "status": "complete",
+        "execution_origin": "verified_prior_effect",
+        "prior_effect_proof_ref": deepcopy(proof_ref),
+        "prior_resource_ref": deepcopy(verified["prior_resource_ref"]),
+        "prior_admission_ref": deepcopy(verified["prior_admission_ref"]),
+        "historical_recovery_folder": verified["recovery_folder"],
+        "new_dispatch_costs": current_costs,
+        "historical_effect_costs": deepcopy(historical),
+    }
+    resource_path = root / "resources" / arm["case_id"] / f"{arm['method']}.json"
+    write_new(resource_path, resource)
+    old_result = verified["result"]
+    if not isinstance(old_result, dict):
+        raise ComparisonContractError("completed effect result missing")
+    preserved = {
+        key: deepcopy(value)
+        for key, value in old_result.items()
+        if key not in {"schema", "case_id", "method", "source_cost_accounting", "resource_cost"}
+    }
+    _record(root, arm, {
+        **preserved,
+        "execution_origin": "verified_prior_effect",
+        "recovery_started": True,
+        "completed_effect_proof": deepcopy(proof_ref),
+        "source_arm": {
+            "historical_recovery_folder": verified["recovery_folder"],
+            "prior_resource_ref": deepcopy(verified["prior_resource_ref"]),
+            "prior_admission_ref": deepcopy(verified["prior_admission_ref"]),
+            "post_observation": deepcopy(verified["post_observation"]),
+        },
+        "resource_cost_scope": {
+            "new_dispatch": deepcopy(current_costs),
+            "historical_effect": deepcopy(historical),
+            "whole_effect": deepcopy(historical),
+        },
+    })
 
 
 def _request_id(state: dict) -> str | None:
@@ -496,6 +741,30 @@ def _resource_cost(root: Path, arm: dict, manifest: dict) -> dict | None:
     if not path.exists():
         return None
     row = _read(path)
+    if row.get("schema") == "registered_recovery_imported_resource_v1":
+        fields = {
+            "schema", "case_id", "method", "plan_sha256", "status", "execution_origin",
+            "prior_effect_proof_ref", "prior_resource_ref", "prior_admission_ref",
+            "historical_recovery_folder", "new_dispatch_costs", "historical_effect_costs",
+        }
+        current = row.get("new_dispatch_costs")
+        historical = row.get("historical_effect_costs")
+        if (
+            set(row) != fields
+            or row["case_id"] != arm["case_id"]
+            or row["method"] != arm["method"]
+            or row["plan_sha256"] != manifest["plan"]["sha256"]
+            or row["status"] != "complete"
+            or row["execution_origin"] != "verified_prior_effect"
+            or not isinstance(current, dict)
+            or current.get("simulator_sdk_launches") != 0
+            or not isinstance(historical, dict)
+            or historical.get("simulator_sdk_launches") != 2
+        ):
+            raise ComparisonContractError("imported resource receipt binding differs")
+        for label in ("prior_effect_proof_ref", "prior_resource_ref", "prior_admission_ref"):
+            _ref(row[label], label)
+        return {**row, "receipt_ref": {"path": str(path.resolve()), "sha256": file_sha(path)}}
     fields = {"schema", "case_id", "method", "plan_sha256", "status", "phase_wall_s",
               "lease_await_s", "locked_wall_s", "owned_gpu_s", "owned_gpu_s_complete",
               "simulator_sdk_launches", "cpu_checkpoint_launches", "cpu_telemetry_launches", "total_owned_children",

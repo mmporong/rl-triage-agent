@@ -178,6 +178,87 @@ def _upgrade_to_v2(plan_path: Path, job_path: Path, tmp_path: Path) -> dict:
     return plan
 
 
+def _upgrade_to_v3(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dict, dict]:
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    proofs = {
+        "prior_effect": _write(tmp_path / "prior-effect.json", {"schema": "effect-fixture"}),
+        "prior_training": _write(tmp_path / "prior-static-training.json", {"schema": "training-fixture"}),
+    }
+    by_method = {row["method"]: row for row in job["arms"] if row["case_id"] == "case-05"}
+    imports = []
+    for method, kind, artifact_id in (
+        ("fixed_sequence", "completed_effect", "prior_effect"),
+        ("static_rule", "completed_training", "prior_training"),
+    ):
+        imports.append({
+            "artifact_id": artifact_id,
+            "kind": kind,
+            "case_id": "case-05",
+            "method": method,
+            "proof_sha256": proofs[artifact_id]["sha256"],
+            "prior_plan_sha256": "e" * 64,
+            "source_checkpoint_sha256": "c" * 64,
+            "completed_checkpoint_sha256": "d" * 64,
+            "seed": plan["recovery_policy"]["seeds"]["case-05"]["resume"],
+            "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+            "correction_id": "restore_motor_torque_speed",
+            "diagnostic_manifest_sha256": by_method[method]["diagnostic_manifest"]["sha256"],
+            "source_anchor": "f9d5fea93cce406a325f578bc6f4597cc0bc35c5",
+            "registration_anchor": "bf1632ee6770e681e9e8c4c5b1df890ebaed12a6",
+        })
+    plan["schema"] = comparison.PLAN_SCHEMA_V3
+    plan["limits"]["gpu_sdk_launch_cap"] = 29
+    plan["limits"]["total_owned_launch_cap"] = 61
+    plan["continuation"] = {
+        "gpu_admission_profile": "registered_desktop_shared_wait_v1",
+        "stage_imports": imports,
+        "prior_consumed_gpu_sdk_launches": 3,
+        "expected_new_gpu_sdk_launches": 27,
+        "continuation_tag": "v6_fresh",
+        "prior_v5_registration_anchor": "bf1632ee6770e681e9e8c4c5b1df890ebaed12a6",
+        "prior_incomplete_preserved": True,
+    }
+    plan_ref = _write(plan_path, plan)
+    for row in job["arms"]:
+        row["continuation_import"] = None
+        if row is by_method["fixed_sequence"]:
+            row["recovery_folder"] = None
+            row["recovery_payload"] = None
+            row["approval_ref"] = None
+            row["continuation_import"] = {
+                "kind": "completed_effect", "artifact_id": "prior_effect",
+                "proof": proofs["prior_effect"],
+            }
+            continue
+        protocol_path = Path(row["recovery_payload"]["protocol"]["path"])
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol["schema"] = "registered_recovery_protocol_v3"
+        protocol["diagnostic"]["session_manifest_sha256"] = row["diagnostic_manifest"]["sha256"]
+        operation = protocol["operation"]
+        operation.update({
+            "runner_id": "actuator_resume_v1", "gpu_budget_s": 3600,
+            "source_checkpoint_consumed": True,
+            "gpu_admission_profile": "registered_desktop_shared_wait_v1",
+            "prior_training_artifact_id": None,
+        })
+        if row is by_method["static_rule"]:
+            operation["prior_training_artifact_id"] = "prior_training"
+            row["continuation_import"] = {
+                "kind": "completed_training", "artifact_id": "prior_training",
+                "proof": proofs["prior_training"],
+            }
+        row["recovery_payload"]["protocol"] = _write(protocol_path, protocol)
+        resolver_path = Path(row["recovery_payload"]["artifact_resolver"]["path"])
+        resolver = json.loads(resolver_path.read_text(encoding="utf-8"))
+        if row is by_method["static_rule"]:
+            resolver["artifacts"]["prior_training"] = proofs["prior_training"]
+        row["recovery_payload"]["artifact_resolver"] = _write(resolver_path, resolver)
+    job["plan"] = plan_ref
+    _write(job_path, job)
+    return plan, proofs
+
+
 def _make_recovery_null(job_path: Path) -> None:
     job = json.loads(job_path.read_text(encoding="utf-8"))
     for arm in job["arms"]:
@@ -258,6 +339,83 @@ def test_v2_rejects_prior_training_on_different_diagnostic_session(tmp_path: Pat
             out,
             repo_root=repo,
             registration_anchor="b" * 40,
+            require_committed=False,
+        )
+
+
+def test_v3_materializes_completed_effect_and_preserves_new_dispatch_budget(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo, plan_path, job_path, out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08")
+    )
+    plan, proofs = _upgrade_to_v3(plan_path, job_path, tmp_path)
+    prior_resource = _write(tmp_path / "old/resource.json", {"schema": "old-resource"})
+    prior_admission = _write(tmp_path / "old/admission.json", {"schema": "old-admission"})
+    historical_folder = tmp_path / "old/recovery"
+    historical_folder.mkdir(parents=True)
+
+    class ProofModule:
+        @staticmethod
+        def verify_completed_effect(*_args, **_kwargs):
+            return {
+                "execution_origin": "verified_prior_effect",
+                "result": {
+                    "outcome": "not_recovered", "diagnostic_status": "confirmed",
+                    "confirmed_mechanism": "actuator", "recovery_started": True,
+                    "new_checkpoint": {"sha256": "d" * 64},
+                    "fixed_report": {"sha256": "f" * 64},
+                    "behavior_outcome": "failed",
+                    "costs": {"training_s": 515.3279999999795,
+                              "fixed_s": 47.07799999997951, "api_calls": 0},
+                },
+                "prior_resource_ref": prior_resource,
+                "prior_admission_ref": prior_admission,
+                "recovery_folder": str(historical_folder.resolve()),
+                "post_observation": {"behavior_outcome": "failed", "healthy_declared": False},
+                "proof_ref": proofs["prior_effect"],
+                "historical_costs": {
+                    "simulator_sdk_launches": 2,
+                    "owned_gpu_s": 562.405999999959,
+                    "training_wall_s": 515.3279999999795,
+                    "fixed_wall_s": 47.07799999997951,
+                },
+                "new_dispatch_costs": {"sdk_launches": 0, "owned_gpu_s": None},
+                "historical_source_validation": {"status": "verified"},
+                "backend_receipt_validation": {"status": "verified"},
+                "old_refs": {},
+            }
+
+    monkeypatch.setattr(comparison, "_continuation_module", lambda: ProofModule)
+    result = comparison.prepare(
+        plan_path, job_path, out, repo_root=repo, registration_anchor="b" * 40,
+        require_committed=False,
+    )
+    assert result["completed_arms"] == 1 and result["total_arms"] == 16
+    arm = next(row for row in result["arms"] if row["method"] == "fixed_sequence")
+    assert arm["execution_origin"] == "verified_prior_effect"
+    assert arm["outcome"] == "not_recovered"
+    assert arm["resource_cost"]["new_dispatch_costs"]["simulator_sdk_launches"] == 0
+    assert arm["resource_cost"]["historical_effect_costs"]["simulator_sdk_launches"] == 2
+    assert result["limits"]["gpu_sdk_launch_cap"] == 29
+    assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 27
+
+
+def test_v3_rejects_completed_effect_with_fresh_recovery_authority(tmp_path: Path) -> None:
+    repo, plan_path, job_path, out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08")
+    )
+    _plan, _proofs = _upgrade_to_v3(plan_path, job_path, tmp_path)
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    effect = next(row for row in job["arms"] if row["method"] == "fixed_sequence")
+    donor = next(row for row in job["arms"] if row["method"] == "one_shot_llm")
+    effect["recovery_folder"] = donor["recovery_folder"]
+    effect["recovery_payload"] = donor["recovery_payload"]
+    effect["approval_ref"] = donor["approval_ref"]
+    _write(job_path, job)
+    with pytest.raises(comparison.ComparisonContractError, match="must not carry recovery authority"):
+        comparison.prepare(
+            plan_path, job_path, out, repo_root=repo, registration_anchor="b" * 40,
             require_committed=False,
         )
 

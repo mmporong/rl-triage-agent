@@ -257,6 +257,202 @@ def test_templates_reject_source_index_and_checkpoint_substitution(
             isaaclab_commit="c" * 40, require_committed=False)
 
 
+def test_templates_v3_bind_two_imports_and_separate_historical_sdk_budget(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    metadata_body = json.loads(metadata.read_text(encoding="utf-8"))
+    source_checkpoint = metadata_body["sources"]["fault-s2554"]["binding"]["checkpoint_sha256"]
+    common = {
+        "diagnostic_manifest_sha256": "c" * 64,
+        "source_checkpoint_sha256": source_checkpoint,
+        "final_checkpoint_sha256": "d" * 64,
+        "seed": 2664,
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "correction_id": "restore_motor_torque_speed",
+        "source_anchor": prepare.PRIOR_V5_SOURCE_ANCHOR,
+    }
+    effect = _write(tmp_path / "effect-proof.json", {
+        "schema": "registered_completed_effect_proof_v1",
+        "identity": {
+            "prior_plan_sha256": "e" * 64,
+            **common,
+            "registration_anchor": prepare.PRIOR_V5_REGISTRATION_ANCHOR,
+        },
+    })
+    training = _write(tmp_path / "training-proof.json", {
+        "schema": "registered_completed_training_proof_v1",
+        "identity": {**common, "case_id": "case-05", "method": "static_rule"},
+    })
+
+    class ProofModule:
+        @staticmethod
+        def verify_completed_effect(*_args, **_kwargs):
+            return {"execution_origin": "verified_prior_effect"}
+
+        @staticmethod
+        def load_completed_training(*_args, **_kwargs):
+            return {"new_training_launched": False}
+
+    monkeypatch.setattr(prepare, "_continuation_module", lambda: ProofModule)
+    monkeypatch.setattr(prepare, "_CONTINUATION_V3_SOURCE_FILES", {"source.py"})
+    isaaclab = tmp_path / "IsaacLab"
+    isaaclab.mkdir()
+    out = tmp_path / "templates-v3"
+    result = prepare.prepare_templates(
+        source_index=index,
+        metadata=metadata,
+        diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40,
+        source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json",
+        recipe_code_contract=tmp_path / "recipe-code.json",
+        output=out,
+        actor="operator",
+        isaaclab_commit="c" * 40,
+        prior_completed_effect_proof=effect,
+        prior_static_training_proof=training,
+        isaaclab_root=isaaclab,
+        require_committed=False,
+    )
+    plan = json.loads((out / "registered-plan.json").read_text(encoding="utf-8"))
+    assert plan["schema"] == prepare.COMPARISON.PLAN_SCHEMA_V3
+    assert plan["limits"]["gpu_sdk_launch_cap"] == 29
+    assert plan["limits"]["total_owned_launch_cap"] == 61
+    assert plan["continuation"]["prior_consumed_gpu_sdk_launches"] == 3
+    assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 27
+    assert [(row["method"], row["kind"]) for row in plan["continuation"]["stage_imports"]] == [
+        ("fixed_sequence", "completed_effect"),
+        ("static_rule", "completed_training"),
+    ]
+    assert result["continuation_proofs"] == {
+        "prior_effect": {"path": str(effect.resolve()), "sha256": _sha(effect)},
+        "prior_training": {"path": str(training.resolve()), "sha256": _sha(training)},
+    }
+    public = (out / "registered-plan.json").read_text(encoding="utf-8")
+    assert str(tmp_path) not in public
+
+    monkeypatch.setattr(prepare.COMPARISON, "load_plan", lambda *_args, **_kwargs: plan)
+    monkeypatch.setattr(
+        prepare.SEED_GUARD,
+        "assert_fresh_seeds",
+        lambda seeds, *_args, **_kwargs: {
+            "schema": "core_seed_freshness_v1", "status": "fresh", "seeds": list(seeds),
+        },
+    )
+    diagnostic_root = tmp_path / "diagnostics-v3"
+    for case in prepare.CASES:
+        checkpoint = plan["template_commitments"][case]["actuator"]["source_checkpoint_sha256"]
+        for method in prepare.METHODS:
+            source = _write(
+                diagnostic_root / "bound" / case / method / "source.json",
+                {"case_id": case, "checkpoint_sha256": checkpoint},
+            )
+            _write(
+                diagnostic_root / "bound" / case / method / "session/manifest.json",
+                {
+                    "method": method, "execution_class": "actual",
+                    "source": {"path": str(source), "sha256": _sha(source)},
+                    "source_verification": {"case_id": case, "checkpoint_sha256": checkpoint},
+                },
+            )
+    statuses: dict[tuple[str, str], dict] = {
+        (case, method): {"status": "unidentifiable", "case_id": case}
+        for case in prepare.CASES for method in prepare.METHODS
+    }
+    for method in ("fixed_sequence", "static_rule"):
+        statuses[("case-05", method)] = {
+            "status": "confirmed", "confirmed_mechanism": "actuator", "case_id": "case-05",
+            "source_verification": {"checkpoint_sha256": source_checkpoint},
+        }
+    monkeypatch.setattr(
+        prepare, "_diagnostic_status",
+        lambda session: statuses[(session.parent.parent.name, session.parent.name)],
+    )
+
+    class FakeSession:
+        def __init__(self, path: Path):
+            self.folder = Path(path).resolve(strict=True)
+            body = json.loads((self.folder / "manifest.json").read_text(encoding="utf-8"))
+            self._manifest_sha256 = (
+                "c" * 64
+                if self.folder.parent.parent.name == "case-05"
+                and self.folder.parent.name in {"fixed_sequence", "static_rule"}
+                else _sha(self.folder / "manifest.json")
+            )
+            self.manifest = body
+            self.source = json.loads(Path(body["source"]["path"]).read_text(encoding="utf-8"))
+
+    monkeypatch.setattr(prepare, "InvestigationSession", FakeSession)
+    monkeypatch.setattr(
+        prepare.RECOVERY, "_diagnostic",
+        lambda _session, _mechanism: (
+            {"probe": "P_actuator_mapping", "request_id": "diag-1"}, {},
+            {"receipt_ref": {"path": str(tmp_path / "diag.json"), "sha256": "f" * 64}},
+        ),
+    )
+
+    def run(command, _session, payload, **_kwargs):
+        if command == "recovery-prepare":
+            Path(payload["folder"]).mkdir(parents=True)
+            return {"mechanism": "actuator"}
+        if command == "recovery-propose":
+            return {"status": {"pending": {"request_id": "req-v3", "effect_key": "effect-v3"}}}
+        raise AssertionError(command)
+
+    monkeypatch.setattr(prepare.investigate, "run", run)
+    jobs = tmp_path / "jobs-v3"
+    job_result = prepare.prepare_jobs(
+        templates=out, registered_plan=out / "registered-plan.json",
+        registration_anchor="d" * 40, diagnostic_root=diagnostic_root,
+        isaaclab_root=isaaclab, output=jobs, require_committed=False,
+    )
+    job = json.loads((jobs / "job.json").read_text(encoding="utf-8"))
+    fixed_arm = next(row for row in job["arms"] if row["case_id"] == "case-05"
+                     and row["method"] == "fixed_sequence")
+    static_arm = next(row for row in job["arms"] if row["case_id"] == "case-05"
+                      and row["method"] == "static_rule")
+    assert job_result["recovery_prepared"] == 1
+    assert fixed_arm["recovery_payload"] is None
+    assert fixed_arm["continuation_import"]["kind"] == "completed_effect"
+    assert static_arm["continuation_import"]["kind"] == "completed_training"
+    static_protocol = json.loads(Path(static_arm["recovery_payload"]["protocol"]["path"]).read_text())
+    assert static_protocol["schema"] == "registered_recovery_protocol_v3"
+    assert static_protocol["operation"]["gpu_admission_profile"] == prepare.GPU_ADMISSION_PROFILE_V3
+    assert static_protocol["operation"]["prior_training_artifact_id"] == "prior_training"
+
+
+def test_templates_v3_reject_cross_method_training_proof(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    common = {
+        "diagnostic_manifest_sha256": "c" * 64,
+        "source_checkpoint_sha256": "a" * 64,
+        "final_checkpoint_sha256": "d" * 64,
+        "seed": 2664, "task": "task", "correction_id": "restore_motor_torque_speed",
+        "source_anchor": prepare.PRIOR_V5_SOURCE_ANCHOR,
+    }
+    effect = _write(tmp_path / "effect.json", {"identity": {
+        "prior_plan_sha256": "e" * 64, **common,
+        "registration_anchor": prepare.PRIOR_V5_REGISTRATION_ANCHOR,
+    }})
+    training = _write(tmp_path / "training.json", {"identity": {
+        **common, "case_id": "case-05", "method": "fixed_sequence",
+    }})
+    isaaclab = tmp_path / "IsaacLab"
+    isaaclab.mkdir()
+    with pytest.raises(prepare.PreparationError, match="completed training proof logical identity"):
+        prepare.prepare_templates(
+            source_index=index, metadata=metadata, diagnostic_plan=phase,
+            diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+            sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+            output=tmp_path / "bad-v3", actor="operator", isaaclab_commit="c" * 40,
+            prior_completed_effect_proof=effect, prior_static_training_proof=training,
+            isaaclab_root=isaaclab, require_committed=False,
+        )
+
+
 def test_templates_reject_source_manifest_or_code_contract_substitution(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)

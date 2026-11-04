@@ -183,3 +183,45 @@ def test_operational_gpu_scope_has_no_fixture_callback_forwarding(monkeypatch: p
     with pytest.raises(RuntimeError, match="fixed failure"), B._gpu_scope(context):
         raise RuntimeError("fixed failure")
     assert calls == ["enter", "exit"]
+
+
+def test_v3_static_training_import_uses_the_new_loader_without_retraining(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from evals import registered_recovery_continuation_v3 as continuation
+
+    intent, runner, lease, _prior, calls = _fixture(tmp_path, monkeypatch)
+    protocol = intent["context"]["protocol_body"]
+    protocol["schema"] = B.SCHEMA_V3
+    protocol["operation"]["gpu_admission_profile"] = B.WAIT_PROFILE
+    protocol["source_closure"].update({key: "d" * 64
+        for key in B._WAIT_SOURCES | B._CONTINUATION_SOURCES})
+    monkeypatch.setattr(continuation, "load_completed_training", PRIOR.load_completed_actuator_training)
+    raw = B.execute(intent, runner=runner, lease_reader=lease)
+    assert calls == ["verify-prior", "fixed"]
+    assert raw["training_reuse"]["new_training_launched"] is False
+    assert B.verify_receipt(raw, intent)["verdict"] == "recovered"
+
+
+def test_v3_wait_scope_is_explicit_and_keeps_v2_profile_separate(monkeypatch: pytest.MonkeyPatch) -> None:
+    from evals import registered_desktop_gpu_wait_v1 as wait
+
+    events = []
+
+    @contextmanager
+    def scope():
+        events.append("enter")
+        try:
+            yield
+        finally:
+            events.append("exit")
+
+    monkeypatch.setattr(wait, "snapshot_scope", scope)
+    context = {"protocol_body": {"schema": B.SCHEMA_V3,
+        "source_closure": {key: "a" * 64 for key in B._DESKTOP_SOURCES | B._WAIT_SOURCES},
+        "operation": {"gpu_admission_profile": B.WAIT_PROFILE, "prior_training_artifact_id": None}}}
+    with B._gpu_scope(context):
+        assert events == ["enter"]
+    assert events == ["enter", "exit"]
+    context["protocol_body"]["schema"] = B.SCHEMA_V2
+    with pytest.raises(ValueError, match="unregistered desktop"):
+        B._extensions(context["protocol_body"])

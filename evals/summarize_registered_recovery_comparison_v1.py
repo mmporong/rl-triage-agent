@@ -56,16 +56,56 @@ def _execution_wall(ref: object, logical_id: str, private: list[dict]) -> tuple[
     return float(value), public
 
 
-def _resource(row: dict | None, logical_prefix: str, private: list[dict]) -> tuple[dict, list[dict]]:
+def _imported_resource(row: dict, logical_prefix: str, private: list[dict], scope: dict) -> tuple[dict, list[dict]]:
+    from evals import registered_recovery_continuation_v3 as continuation
+
+    case_id, method = logical_prefix.split(":")
+    if (scope.get("kind") != "completed_effect" or scope.get("case_id") != case_id
+            or scope.get("method") != method
+            or row["prior_effect_proof_ref"]["sha256"] != scope["proof_sha256"]):
+        raise SummaryError("completed effect differs from registered import")
+    verified = continuation.verify_completed_effect(row["prior_effect_proof_ref"],
+        expected_case_id=case_id, expected_method=method,
+        expected_prior_plan_sha256=scope["prior_plan_sha256"],
+        expected_diagnostic_manifest_sha256=scope["diagnostic_manifest_sha256"],
+        expected_source_checkpoint_sha256=scope["source_checkpoint_sha256"], repo=ROOT)
+    if (row["prior_resource_ref"] != verified["prior_resource_ref"]
+            or row["prior_admission_ref"] != verified["prior_admission_ref"]
+            or row["historical_recovery_folder"] != verified["recovery_folder"]):
+        raise SummaryError("completed effect historical references differ")
+    pseudo = {"receipt_ref": row["receipt_ref"], "recovery_resource_ref": verified["prior_resource_ref"],
+              "admission_ref": verified["prior_admission_ref"]}
+    costs, refs = _resource(pseudo, logical_prefix + ":historical", private)
+    refs.append(_generic_ref(row["prior_effect_proof_ref"], logical_prefix + ":completed-effect-proof", private))
+    historical_dispatch = costs["current_dispatch_simulator_owned_wall_s"]
+    historical_sdk = costs["current_dispatch_sdk_launches"]
+    costs.update({"execution_origin": "verified_prior_effect", "phase_elapsed_s": None,
+        "locked_wall_s": None, "lease_wait_s": None,
+        "current_dispatch_simulator_owned_wall_s": None, "current_dispatch_sdk_launches": 0,
+        "reused_completed_dispatch_owned_wall_s": historical_dispatch,
+        "reused_completed_dispatch_sdk_launches": historical_sdk,
+        "device_energy_scope": "historical_completed_dispatch_only"})
+    return costs, refs
+
+
+def _resource(row: dict | None, logical_prefix: str, private: list[dict], *,
+              import_scope: dict | None = None) -> tuple[dict, list[dict]]:
     if row is None:
         return {"status": "not_applicable", "phase_elapsed_s": None, "locked_wall_s": None,
                 "simulator_owned_wall_s": None, "checkpoint_cpu_owned_wall_s": None,
                 "current_dispatch_simulator_owned_wall_s": None,
                 "reused_training_owned_wall_s": None, "whole_effect_active_phase_s": None,
                 "current_dispatch_sdk_launches": None, "reused_training_sdk_launches": None,
+                "reused_completed_dispatch_owned_wall_s": None, "reused_completed_dispatch_sdk_launches": None,
+                "execution_origin": "not_applicable", "device_energy_scope": None,
+                "reused_training_device_energy": None,
                 "telemetry_cpu_owned_wall_s": None,
                 "lease_wait_s": None, "api_calls": 0, "device_energy": None,
                 "owned_cost_complete": None}, []
+    if row.get("schema") == "registered_recovery_imported_resource_v1":
+        if import_scope is None:
+            raise SummaryError("completed effect lacks registered import scope")
+        return _imported_resource(row, logical_prefix, private, import_scope)
     projected_ref = row.get("receipt_ref")
     public_refs = [_generic_ref(projected_ref, logical_prefix + ":projected-resource", private)]
     admission = io.read_ref(row["admission_ref"])
@@ -91,6 +131,7 @@ def _resource(row: dict | None, logical_prefix: str, private: list[dict]) -> tup
     reused_wall = 0.0
     reused_phase = 0.0
     reused_launches = 0
+    reused_device_energy = None
     if raw["raw_receipt_ref"] is not None:
         receipt = io.read_ref(raw["raw_receipt_ref"])
         reuse = receipt.get("training_reuse")
@@ -124,6 +165,15 @@ def _resource(row: dict | None, logical_prefix: str, private: list[dict]) -> tup
                     or receipt["costs"]["training_s"] != prior_wall):
                 raise SummaryError("prior dispatch does not contain exactly the reused training")
             reused_wall, reused_phase, reused_launches = prior_wall, float(verified_prior["phase_wall_s"]), 1
+            prior_sampler_ref = verified_prior["sampler_ref"]
+            if prior_sampler_ref is not None:
+                public_refs.append(_generic_ref(prior_sampler_ref,
+                    logical_prefix + ":prior-training-device-sampler", private))
+                prior_sampler = io.read_ref(prior_sampler_ref)
+                reused_device_energy = {"scope": prior_sampler.get("scope"),
+                    "energy": deepcopy(prior_sampler.get("energy")),
+                    "process_gpu_seconds": prior_sampler.get("process_gpu_seconds"),
+                    "provider_gpu_seconds": prior_sampler.get("provider_gpu_seconds")}
     device_energy = None
     if raw["sampler_ref"] is not None:
         public_refs.append(_generic_ref(raw["sampler_ref"], logical_prefix + ":device-sampler", private))
@@ -132,11 +182,14 @@ def _resource(row: dict | None, logical_prefix: str, private: list[dict]) -> tup
                          "process_gpu_seconds": sampler.get("process_gpu_seconds"),
                          "provider_gpu_seconds": sampler.get("provider_gpu_seconds")}
     return {"status": raw["status"], "phase_elapsed_s": float(raw["phase_wall_s"]),
+            "execution_origin": "continuation_dispatch", "device_energy_scope": "current_dispatch_only",
             "locked_wall_s": float(raw["locked_wall_s"]),
             "simulator_owned_wall_s": (float(raw["owned_gpu_s"]) + reused_wall
                                        if raw["owned_gpu_s"] is not None else None),
             "current_dispatch_simulator_owned_wall_s": raw["owned_gpu_s"],
             "reused_training_owned_wall_s": reused_wall,
+            "reused_completed_dispatch_owned_wall_s": 0.0,
+            "reused_completed_dispatch_sdk_launches": 0,
             "whole_effect_active_phase_s": float(raw["phase_wall_s"]) + reused_phase,
             "current_dispatch_sdk_launches": raw["simulator_sdk_launches"],
             "reused_training_sdk_launches": reused_launches,
@@ -144,6 +197,7 @@ def _resource(row: dict | None, logical_prefix: str, private: list[dict]) -> tup
             "telemetry_cpu_owned_wall_s": telemetry_wall,
             "lease_wait_s": raw["lease_await_s"], "api_calls": 0,
             "device_energy": device_energy,
+            "reused_training_device_energy": reused_device_energy,
             "owned_cost_complete": bool(raw["owned_gpu_s_complete"]
                                         and (raw["cpu_checkpoint_launches"] == 0
                                              or checkpoint_wall is not None)
@@ -153,11 +207,16 @@ def _resource(row: dict | None, logical_prefix: str, private: list[dict]) -> tup
 
 def _cost_aggregate(arms: list[dict], field: str) -> dict:
     attempted = [row for row in arms if row["recovery_attempted"]]
+    current_fields = {"phase_elapsed_s", "locked_wall_s", "lease_wait_s",
+                      "current_dispatch_simulator_owned_wall_s", "current_dispatch_sdk_launches"}
+    not_applicable = ([row for row in attempted if row["costs"].get("execution_origin") == "verified_prior_effect"]
+                      if field in current_fields else [])
+    attempted = [row for row in attempted if row not in not_applicable]
     values = [row["costs"][field] for row in attempted]
     known = [float(value) for value in values
              if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)]
     return {"known_sum": sum(known) if known else None, "known_arms": len(known),
-            "unknown_arms": len(attempted) - len(known)}
+            "unknown_arms": len(attempted) - len(known), "not_applicable_arms": len(not_applicable)}
 
 
 def _method_summary(method: str, arms: list[dict]) -> dict:
@@ -173,6 +232,7 @@ def _method_summary(method: str, arms: list[dict]) -> dict:
                 "phase_elapsed_s", "locked_wall_s", "simulator_owned_wall_s",
                 "current_dispatch_simulator_owned_wall_s", "reused_training_owned_wall_s",
                 "whole_effect_active_phase_s", "current_dispatch_sdk_launches", "reused_training_sdk_launches",
+                "reused_completed_dispatch_owned_wall_s", "reused_completed_dispatch_sdk_launches",
                 "checkpoint_cpu_owned_wall_s", "telemetry_cpu_owned_wall_s", "lease_wait_s")},
             "api_calls": sum(row["costs"]["api_calls"] for row in rows)}
 
@@ -232,6 +292,9 @@ def summarize(prepared: Path, out: Path) -> dict:
         raise FileExistsError("summary output must be fresh")
     status = controller.status(root)
     manifest = controller._load(root)
+    plan = io.read_ref(manifest["plan"])
+    imported_scopes = {(row["case_id"], row["method"]): row for row in
+                       plan.get("continuation", {}).get("stage_imports", [])}
     if status["total_arms"] != 16 or len(manifest["arms"]) != 16:
         raise SummaryError("production recovery summary requires the registered 16-arm denominator")
     private_refs: list[dict] = []
@@ -249,7 +312,8 @@ def summarize(prepared: Path, out: Path) -> dict:
         recorded_diagnostic = result.get("diagnostic_status")
         if recorded_diagnostic is not None and recorded_diagnostic != diagnostic_status:
             raise SummaryError("recorded diagnostic status differs from the reverified Phase A session")
-        costs, resource_refs = _resource(result.get("resource_cost"), logical, private_refs)
+        costs, resource_refs = _resource(result.get("resource_cost"), logical, private_refs,
+            import_scope=imported_scopes.get((case_id, method)))
         refs.extend(resource_refs)
         outcome = result.get("outcome", "not_started")
         if (halt is not None and halt.get("case_id") == case_id and halt.get("method") == method
@@ -257,6 +321,14 @@ def summarize(prepared: Path, out: Path) -> dict:
             outcome = "infrastructure_failure"
         recovery_status = None
         recovery_folder = source_arm.get("recovery_folder")
+        imported = result.get("execution_origin") == "verified_prior_effect"
+        if imported:
+            resource = result["resource_cost"]
+            if (result.get("completed_effect_proof") != resource["prior_effect_proof_ref"]
+                    or result.get("source_arm", {}).get("historical_recovery_folder")
+                    != resource["historical_recovery_folder"]):
+                raise SummaryError("imported result differs from verified resource scope")
+            recovery_folder = resource["historical_recovery_folder"]
         if recovery_folder is not None and Path(recovery_folder).is_dir():
             recovery_status = investigation_recovery.status(Path(recovery_folder))
         consumed = bool(recovery_status is not None and any(
@@ -267,14 +339,14 @@ def summarize(prepared: Path, out: Path) -> dict:
         endpoint = None
         post_review = None
         if outcome in {"recovered", "not_recovered", "unknown"} and attempted:
-            if recovery_status is None:
+            if recovery_status is None or not isinstance(recovery_folder, str):
                 raise SummaryError("attempted recovery folder is unavailable")
             done = [row for row in recovery_status["requests"].values() if row["state"] == "done"]
             if len(done) != 1:
                 raise SummaryError("one completed recovery receipt required")
             ledger_receipt = done[0].get("receipt", {})
             if ledger_receipt.get("result_sha") is not None:
-                post = investigation_recovery.verified_post_observation(Path(source_arm["recovery_folder"]),
+                post = investigation_recovery.verified_post_observation(Path(recovery_folder),
                                                                         done[0]["request_id"])
                 expected = {"normal": "recovered", "failed": "not_recovered",
                             "unknown": "unknown"}.get(post["behavior_outcome"])
@@ -287,13 +359,14 @@ def summarize(prepared: Path, out: Path) -> dict:
                     endpoint = {"fixed_report_sha256": fixed["sha256"],
                                 "checkpoint_sha256": checkpoint["sha256"]}
                 post_review, review_evidence = _post_review(result.get("post_review"), manifest,
-                                                            Path(source_arm["recovery_folder"]),
+                                                            Path(recovery_folder),
                                                             done[0]["request_id"], logical, private_refs)
                 if review_evidence:
                     refs.append(review_evidence)
             elif outcome != "unknown":
                 raise SummaryError("recovery endpoint lacks a verified receipt")
         arms.append({"case_id": case_id, "method": method,
+                     "execution_origin": costs["execution_origin"],
                      "diagnostic_status": diagnostic_status,
                      "diagnostic_confirmed": diagnostic_status == "confirmed",
                      "recovery_attempted": attempted, "recovery_outcome": outcome,

@@ -1,0 +1,25 @@
+{
+  "schema": "registered_desktop_gpu_wait_v1",
+  "profile_id": "registered_desktop_shared_wait_v1",
+  "base_profile_id": "registered_desktop_shared_v2",
+  "base_policy_reference": {
+    "path": "bench/protocols/registered_desktop_gpu_admission_v1.json",
+    "sha256_lf": "9915856b055a888435fc9560bb883474e8311d903341a3462e532ff0a7304416"
+  },
+  "max_wait_s": 60,
+  "max_queries": 12,
+  "query_interval_s": 2,
+  "retry_busy_reasons": [
+    "gpu_utilization_above_registered_limit"
+  ],
+  "threshold_relaxation": false,
+  "gpu_owned_s": 0,
+  "preserve_each_snapshot": true,
+  "lease_and_identity_revalidated_per_query": true,
+  "source_closure_sha256_lf": {
+    "bench/protocols/registered_desktop_gpu_admission_v1.json": "9915856b055a888435fc9560bb883474e8311d903341a3462e532ff0a7304416",
+    "evals/registered_desktop_gpu_admission_v1.py": "7cd5b7c28020318686c83a4c7128f1a10165c59d7aac3dfd437ddf6ec463f2ac",
+    "evals/registered_desktop_gpu_wait_v1.py": "830c3d7769bbf63e4b53ce1dfdd5eeb5d57727eebb048a9bcbb4e0fa0915c0ce"
+  },
+  "status": "registered_before_gpu_execution_not_actual_admission_evidence"
+}
