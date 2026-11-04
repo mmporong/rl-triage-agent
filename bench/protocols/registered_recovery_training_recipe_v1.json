@@ -1,0 +1,28 @@
+{
+  "schema": "registered_recovery_training_recipe_v1",
+  "scope": "static_recipe_not_an_execution_approval_or_experiment_registration",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "num_envs": 4096,
+  "training_iterations": 300,
+  "configured_learning_epochs": 5,
+  "configured_mini_batches": 4,
+  "runtime_updates_to_observe": 3,
+  "mechanisms": {
+    "actuator": {
+      "correction_id": "restore_motor_torque_speed",
+      "recovery_mode": "resume",
+      "source_checkpoint_consumed": true
+    },
+    "optimizer_update_count": {
+      "correction_id": "restore_configured_ppo_epochs",
+      "recovery_mode": "restart",
+      "source_checkpoint_consumed": false
+    },
+    "optimizer_surrogate": {
+      "correction_id": "restore_clipped_ppo_surrogate",
+      "recovery_mode": "restart",
+      "source_checkpoint_consumed": false
+    }
+  },
+  "authority": "The separately committed comparison plan fixes cases, seeds, source/runtime hashes, templates, budgets and actor. A verified cause and a consumed scoped approval are required before any training."
+}

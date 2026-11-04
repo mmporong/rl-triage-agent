@@ -20,6 +20,7 @@ from rl_triage import investigation_session as SESSION
 from rl_triage import mechanism_confirmation as CONFIRMATION
 from rl_triage import mechanism_registry as REGISTRY_TOOLS
 from rl_triage import nim_transport
+from rl_triage import observable_behavior_v1 as BEHAVIOR
 
 BACKEND_ID = "registered_diagnostic_v1"
 PROTOCOL_SCHEMA = "registered_diagnostic_protocol_v1"
@@ -245,8 +246,7 @@ def _model_binding(protocol: dict, protocol_ref: dict, method: str, api_root: ob
             "api_root": str(root.resolve(strict=False))}
 
 
-def _source_value(case_id: str, execution_class: str, protocol: dict, protocol_ref: dict,
-                  resolver: dict) -> dict:
+def _source_observation(case_id: str, protocol: dict, resolver: dict):
     registration = protocol["source_registration"]
     artifact_id = registration.get("collection_artifact_id")
     if artifact_id is None:
@@ -257,8 +257,14 @@ def _source_value(case_id: str, execution_class: str, protocol: dict, protocol_r
             raise ValueError("registered collection artifact must be manifest.json")
         collection = manifest.parent
     evidence_registration = {key: registration[key] for key in _source_registration()}
-    observation = EVIDENCE.verify_public_fixed26_pair(
+    return EVIDENCE.verify_public_fixed26_pair(
         collection, case_id=case_id, registration=evidence_registration)
+
+
+def _source_value(case_id: str, execution_class: str, protocol: dict, protocol_ref: dict,
+                  resolver: dict) -> dict:
+    registration = protocol["source_registration"]
+    observation = _source_observation(case_id, protocol, resolver)
     payload = observation._payload
     candidate, reference = payload["candidate"], payload["reference"]
     facts = {}
@@ -486,25 +492,301 @@ def _admission_snapshot(stage: Path, live: dict) -> dict:
     return {"ref": ref, "lease_id": live["leaseId"], "owner_pid": live["childPid"]}
 
 
-def _actual_observation(output: Path, manifest_sha: str, selected_probe: str) -> tuple[str, dict]:
+def _git_source_sha(commit: str, relative: str) -> str:
+    if (_COMMIT.fullmatch(commit) is None or not isinstance(relative, str) or not relative
+            or "\\" in relative or Path(relative).is_absolute() or ".." in Path(relative).parts):
+        raise BackendBlocked("recorded actuator source binding is malformed")
+    result = subprocess.run(
+        ["git", "show", f"{commit}:{relative}"], cwd=Path(__file__).resolve().parents[2],
+        check=False, capture_output=True,
+    )
+    if result.returncode != 0:
+        raise BackendBlocked("recorded actuator source blob is unavailable")
+    return hashlib.sha256(result.stdout).hexdigest()
+
+
+def _actuator_observation_reasons(
+    raw: object,
+    source_receipt: object,
+    manifest_path: Path,
+    execution: Mapping[str, Any],
+    isaaclab_root: Path,
+) -> list[str]:
+    """Revalidate the child runtime body without inventing the parent-only body header."""
+    from bench import actuator_envelope_runtime as runtime
+    from bench import diagnostic_observer_child_v1 as child
+    from bench import run_actuator_envelope_runtime as parent
+
+    reasons: list[str] = []
+    manifest_path = manifest_path.resolve(strict=True)
+    manifest = SESSION.read_ref(SESSION.reference(manifest_path))
+    protocol_ref = manifest.get("protocol")
+    try:
+        _protocol_path, child_protocol = _read_ref(
+            protocol_ref, "recorded actuator child protocol", public=True)
+    except (OSError, TypeError, ValueError) as error:
+        raise BackendBlocked("recorded actuator child protocol differs") from error
+    base_ref = child_protocol.get("actuator_base_protocol")
+    if (not isinstance(base_ref, Mapping) or set(base_ref) != {"path", "sha256"}
+            or not isinstance(base_ref.get("path"), str)
+            or Path(base_ref["path"]).is_absolute() or ".." in Path(base_ref["path"]).parts):
+        raise BackendBlocked("recorded actuator base protocol binding differs")
+    root = Path(__file__).resolve().parents[2]
+    base_path = (root / base_ref["path"]).resolve(strict=True)
+    if root not in base_path.parents or _file_sha(base_path) != base_ref.get("sha256"):
+        raise BackendBlocked("recorded actuator base protocol changed")
+    base_protocol = SESSION.read_ref(SESSION.reference(base_path))
+
+    try:
+        fresh_receipt = parent.validate_protocol(
+            base_protocol, repo_root=root, isaaclab_root=isaaclab_root.resolve(strict=True))
+    except (OSError, TypeError, ValueError) as error:
+        raise BackendBlocked("actuator base protocol no longer validates") from error
+    if not isinstance(source_receipt, Mapping):
+        reasons.append("source_receipt_not_object")
+    else:
+        if set(source_receipt) != set(fresh_receipt):
+            reasons.append("source_receipt_keyset_mismatch")
+        source_commit = source_receipt.get("project_commit_sha")
+        if not isinstance(source_commit, str) or _COMMIT.fullmatch(source_commit) is None:
+            reasons.append("source_receipt_commit_mismatch")
+        else:
+            recorded_anchor = manifest.get("source_anchor")
+            if (not isinstance(recorded_anchor, str) or _COMMIT.fullmatch(recorded_anchor) is None
+                    or subprocess.run(
+                        ["git", "merge-base", "--is-ancestor", recorded_anchor, source_commit],
+                        cwd=root, check=False, capture_output=True,
+                    ).returncode != 0):
+                reasons.append("source_receipt_commit_not_after_anchor")
+        for key in (
+            "project_source_files", "isaaclab_source_files", "rsl_rl_source_files",
+            "asset_binding", "prepared_source_commit_sha",
+        ):
+            if source_receipt.get(key) != fresh_receipt.get(key):
+                reasons.append(f"source_receipt_{key}_mismatch")
+        if isinstance(source_commit, str) and _COMMIT.fullmatch(source_commit):
+            source_map = source_receipt.get("project_source_files", {})
+            if not isinstance(source_map, Mapping):
+                reasons.append("source_receipt_project_source_files_invalid")
+            else:
+                for relative, expected_sha in source_map.items():
+                    if not isinstance(relative, str) or not isinstance(expected_sha, str):
+                        reasons.append("source_receipt_project_source_entry_invalid")
+                        continue
+                    try:
+                        if _git_source_sha(source_commit, relative) != expected_sha:
+                            reasons.append(f"source_blob_changed:{relative}")
+                    except BackendBlocked:
+                        reasons.append(f"source_blob_unavailable:{relative}")
+    source_anchor = manifest.get("source_anchor")
+    closure = manifest.get("source_closure")
+    if not isinstance(closure, Mapping) or not isinstance(source_anchor, str):
+        reasons.append("manifest_source_closure_invalid")
+    else:
+        for relative, expected_sha in closure.items():
+            if not isinstance(relative, str) or not isinstance(expected_sha, str):
+                reasons.append("manifest_source_closure_entry_invalid")
+                continue
+            try:
+                if _git_source_sha(source_anchor, relative) != expected_sha:
+                    reasons.append(f"manifest_source_blob_changed:{relative}")
+            except BackendBlocked:
+                reasons.append(f"manifest_source_blob_unavailable:{relative}")
+    runtime_pins = manifest.get("runtime_pins")
+    runtime_sha = runtime_pins.get("sha256") if isinstance(runtime_pins, Mapping) else None
+    try:
+        child._verify_hash_map(
+            isaaclab_root.resolve(strict=True), runtime_sha,
+            "recorded runtime pins", normalize_lf=False, allow_isaac_sdk_alias=True,
+        )
+    except (OSError, TypeError, ValueError) as error:
+        reasons.append(f"runtime_pins_invalid:{type(error).__name__}")
+    if parent._owned_execution_reasons(execution):
+        reasons.append("owned_execution_invalid")
+
+    expected_keys = {
+        "sdk_versions", "fault_method_bindings", "actuator_binding", "state_before",
+        "state_after", "state_restoration", "helper_result", "measurement_validation_reasons",
+        "measurement_status", "curve_assessment", "protocol_status",
+    }
+    if not isinstance(raw, Mapping):
+        return [*reasons, "observation_not_object"]
+    if set(raw) != expected_keys:
+        reasons.append("observation_keyset_mismatch")
+    condition_value = manifest.get("condition")
+    if not isinstance(condition_value, str) or condition_value not in runtime.CONDITIONS:
+        reasons.append("condition_invalid")
+        condition = "INVALID"
+    else:
+        condition = condition_value
+
+    binding = raw.get("actuator_binding")
+    if not isinstance(binding, Mapping) or set(binding) != parent.ACTUATOR_BINDING_KEYS:
+        reasons.append("actuator_binding_invalid")
+    else:
+        expected_binding = {
+            "class_name": "DCMotor", "class_module": "isaaclab.actuators.actuator_pd",
+            "joint_count": 12, "joint_velocity_shape": [1, 12],
+            "device": base_protocol["device"], "runtime_config": base_protocol["expected_config"],
+            "asset_source": {"path": runtime.GO2_SOURCE,
+                             "sha256": base_protocol["asset_binding"]["source_sha256"]},
+        }
+        for key, expected in expected_binding.items():
+            if binding.get(key) != expected:
+                reasons.append(f"actuator_{key}_mismatch")
+        names = binding.get("joint_names")
+        if (not isinstance(names, list) or len(names) != 12
+                or any(type(name) is not str for name in names)
+                or set(names) != runtime.GO2_JOINT_NAMES):
+            reasons.append("actuator_joint_names_invalid")
+        for key, expected_keys_for_ref in (
+            ("clip_effort_source", parent.SOURCE_REF_KEYS),
+            ("class_source", parent.FILE_REF_KEYS),
+        ):
+            reference = binding.get(key)
+            if not isinstance(reference, Mapping) or set(reference) != expected_keys_for_ref:
+                reasons.append(f"actuator_{key}_invalid")
+            else:
+                try:
+                    if _file_sha(Path(reference["path"]).resolve(strict=True)) != reference["sha256"]:
+                        reasons.append(f"actuator_{key}_changed")
+                except (OSError, TypeError, ValueError):
+                    reasons.append(f"actuator_{key}_unavailable")
+    binding_map: Mapping[str, Any] = binding if isinstance(binding, Mapping) else {}
+
+    helper = raw.get("helper_result")
+    helper_map: Mapping[str, Any] = helper if isinstance(helper, Mapping) else {}
+    curve_reasons = runtime.validate_curve(helper, base_protocol["expected_config"])
+    reasons.extend(curve_reasons)
+    if raw.get("measurement_validation_reasons") != curve_reasons:
+        reasons.append("measurement_validation_receipt_mismatch")
+    helper_valid = (isinstance(helper, Mapping) and helper.get("status") == "valid"
+                    and not curve_reasons)
+    expected_measurement = "valid" if helper_valid else "invalid"
+    expected_assessment = None if not helper_valid else (
+        "normal" if helper_map.get("curve_matches_expected") else "curve_difference")
+    expected_protocol = "invalid" if not helper_valid else (
+        "expected" if helper_map.get("curve_matches_expected")
+        is base_protocol["development_expectations"].get(condition) else "unexpected")
+    if raw.get("measurement_status") != expected_measurement:
+        reasons.append("measurement_status_mismatch")
+    if raw.get("curve_assessment") != expected_assessment:
+        reasons.append("curve_assessment_mismatch")
+    if raw.get("protocol_status") != expected_protocol:
+        reasons.append("protocol_status_mismatch")
+    if not helper_valid:
+        reasons.append("helper_measurement_invalid")
+    provenance = helper_map.get("config_provenance", {})
+    provenance_map: Mapping[str, Any] = provenance if isinstance(provenance, Mapping) else {}
+    if provenance_map.get("caller_asserted_source_sha256") != base_protocol["asset_binding"]["source_sha256"]:
+        reasons.append("helper_asset_source_assertion_mismatch")
+
+    before, after = raw.get("state_before"), raw.get("state_after")
+    reasons.extend(f"before_{reason}" for reason in runtime.validate_state_snapshot(before))
+    reasons.extend(f"after_{reason}" for reason in runtime.validate_state_snapshot(after))
+    if (isinstance(before, Mapping) and isinstance(after, Mapping)
+            and not runtime.validate_state_snapshot(before)
+            and not runtime.validate_state_snapshot(after)):
+        expected_restoration = runtime._restoration(before, after)
+        if raw.get("state_restoration") != expected_restoration:
+            reasons.append("state_restoration_receipt_mismatch")
+        if expected_restoration["all_restored"] is not True:
+            reasons.append("state_not_restored")
+
+    methods = raw.get("fault_method_bindings")
+    if not isinstance(methods, Mapping) or set(methods) != {"before", "after", "changed"}:
+        reasons.append("fault_method_receipt_invalid")
+    else:
+        changes = methods.get("changed")
+        if (not isinstance(changes, Mapping) or set(changes) != set(runtime.TARGET_METHODS)
+                or any(type(value) is not bool for value in changes.values())
+                or changes != {key: key == condition for key in runtime.TARGET_METHODS}):
+            reasons.append("fault_method_cross_signal")
+        reasons.extend(runtime.validate_method_transition(
+            methods.get("before"), methods.get("after"), condition,
+            base_protocol["method_binding_contract"],
+        ))
+        clip_source = binding_map.get("clip_effort_source")
+        f2_after = methods.get("after", {}).get("F2") if isinstance(methods.get("after"), Mapping) else None
+        if (not isinstance(clip_source, Mapping) or not isinstance(f2_after, Mapping)
+                or {key: clip_source.get(key) for key in ("path", "sha256", "code_sha256")}
+                != {key: f2_after.get(key) for key in ("path", "sha256", "code_sha256")}):
+            reasons.append("actuator_clip_method_binding_mismatch")
+        before_methods, after_methods = methods.get("before"), methods.get("after")
+        if isinstance(before_methods, Mapping) and isinstance(after_methods, Mapping):
+            for key in runtime.TARGET_METHODS:
+                for phase, row in (("before", before_methods.get(key)),
+                                   ("after", after_methods.get(key))):
+                    try:
+                        if (not isinstance(row, Mapping)
+                                or _file_sha(Path(row["path"]).resolve(strict=True))
+                                != row.get("sha256")):
+                            reasons.append(f"fault_method_{key}_{phase}_source_changed")
+                    except (OSError, TypeError, ValueError):
+                        reasons.append(f"fault_method_{key}_{phase}_source_invalid")
+
+    sdk = raw.get("sdk_versions")
+    sdk_map: Mapping[str, Any] = sdk if isinstance(sdk, Mapping) else {}
+    if (not isinstance(sdk, Mapping)
+            or set(sdk_map) != {"isaaclab_commit", "isaacsim", "isaacsim_raw_components", "runtime_binding"}
+            or sdk_map.get("isaaclab_commit") != runtime.ISAACLAB_COMMIT
+            or sdk_map.get("isaacsim") != base_protocol["isaacsim_version"]
+            or not runtime.validate_isaacsim_raw_components(
+                sdk_map.get("isaacsim_raw_components"), base_protocol["isaacsim_version"])
+            or sdk_map.get("runtime_binding") != base_protocol["runtime_binding"]):
+        reasons.append("sdk_version_mismatch")
+    return reasons
+
+
+def _actual_observation(
+    output: Path,
+    manifest_sha: str,
+    selected_probe: str,
+    *,
+    manifest_path: Path | None = None,
+    execution: Mapping[str, Any] | None = None,
+    isaaclab_root: Path | None = None,
+) -> tuple[str, dict]:
     failure = output / "failure.json"
     if failure.exists():
         raise BackendBlocked("diagnostic child recorded a failure")
     if selected_probe == CONFIRMATION.ACTUATOR_PROBE:
-        observation = SESSION.read_ref(SESSION.reference(output / "observation.json"))
+        observation_path = output / "observation.json"
+        observation = SESSION.read_ref(SESSION.reference(observation_path))
         close = SESSION.read_ref(SESSION.reference(output / "close_ready.json"))
-        if (observation.get("status") != "complete"
+        if (set(observation) != {"schema", "status", "manifest_sha256", "source_receipt",
+                                 "observation", "data_binding"}
+                or observation.get("schema") != "diagnostic_actuator_mapping_v1"
+                or observation.get("status") != "complete"
                 or observation.get("manifest_sha256") != manifest_sha
+                or set(close) != {"schema", "manifest_sha256", "observation_sha256",
+                                  "environment_closed", "app_close_pending"}
+                or close.get("schema") != "diagnostic_actuator_close_ready_v1"
                 or close.get("manifest_sha256") != manifest_sha
+                or close.get("observation_sha256") != SESSION.file_sha(observation_path)
                 or close.get("environment_closed") is not True
                 or close.get("app_close_pending") is not True):
             raise BackendBlocked("actuator child close/evidence binding differs")
         raw = observation.get("observation", {})
-        outcome = ("normal" if raw.get("status") == "valid"
-                   and raw.get("curve_matches_expected") is True
-                   else "abnormal" if raw.get("status") == "valid"
-                   and raw.get("curve_matches_expected") is False else "unknown")
-        measurement = {"component": "actuator_mapping", "observation": raw}
+        if manifest_path is None or execution is None or isaaclab_root is None:
+            raise BackendBlocked("actuator observation validation context is missing")
+        manifest = SESSION.read_ref(SESSION.reference(manifest_path))
+        expected_binding = {
+            "request_id": manifest.get("request_id"), "effect_key": manifest.get("effect_key"),
+            "case": manifest.get("case"), "source": manifest.get("source"),
+            "checkpoint": manifest.get("checkpoint"), "reference": manifest.get("reference"),
+            "checkpoint_consumed": False, "condition_model_visible": False,
+        }
+        if observation.get("data_binding") != expected_binding:
+            raise BackendBlocked("actuator observation data binding differs")
+        reasons = _actuator_observation_reasons(
+            raw, observation.get("source_receipt"), manifest_path, execution, isaaclab_root)
+        helper = raw.get("helper_result", {}) if isinstance(raw, Mapping) else {}
+        outcome = ("normal" if not reasons and helper.get("curve_matches_expected") is True
+                   else "abnormal" if not reasons and helper.get("curve_matches_expected") is False
+                   else "unknown")
+        measurement = {"component": "actuator_mapping", "observation": raw,
+                       "validation_reasons": reasons}
         measurement["evidence_refs"] = {
             "observation": SESSION.reference(output / "observation.json"),
             "close_ready": SESSION.reference(output / "close_ready.json"),
@@ -597,7 +879,9 @@ def _execute_actual(intent: dict, component: dict, proof: dict) -> tuple[str, di
         raise BackendBlocked("owned diagnostic child exit/cleanup was not verified")
     execution_ref = _write_stage_ref(stage / "execution.json", execution)
     outcome, measurement = _actual_observation(
-        output, SESSION.file_sha(manifest_path), intent["request"]["probe"])
+        output, SESSION.file_sha(manifest_path), intent["request"]["probe"],
+        manifest_path=manifest_path, execution=execution, isaaclab_root=isaaclab,
+    )
     wall = execution.get("wall_s")
     if isinstance(wall, bool) or not isinstance(wall, (int, float)) or not math.isfinite(wall):
         raise BackendBlocked("owned diagnostic child wall time is invalid")
@@ -669,7 +953,10 @@ def _verify_actual_stage(intent: dict, component: dict, artifact: dict) -> None:
     if manifest != expected_manifest:
         raise ValueError("stored actual child manifest differs")
     outcome, observed = _actual_observation(
-        stage / "output", measurement["manifest_ref"]["sha256"], request["probe"])
+        stage / "output", measurement["manifest_ref"]["sha256"], request["probe"],
+        manifest_path=stage / "manifest.json", execution=execution,
+        isaaclab_root=Path(config["isaaclab_root"]),
+    )
     expected_measurement = {**observed, "manifest_ref": measurement["manifest_ref"],
                             "execution_ref": measurement["execution_ref"],
                             "gpu_s_scope": "lease_held_owned_child_wall_not_kernel_busy_time"}
@@ -737,11 +1024,19 @@ def observation_gate(context: dict) -> dict:
     if not isinstance(source, dict) or source.get("schema") != SOURCE_SCHEMA:
         raise ValueError("observation gate requires a registered source")
     binding = source["binding"]
-    observation = EVIDENCE.verify_public_fixed26_pair(
-        EVIDENCE.SOURCE_COLLECTION, case_id=binding["case_id"])
-    decision = "host_no_intervention" if observation._payload["behavior_outcome"] == "normal" else "allow"
-    return {"decision": decision, "gate_id": "recorded_fixed26_behavior_gate_v1",
+    protocol, protocol_ref = _protocol(binding["protocol"])
+    resolver = _resolver(binding["artifact_resolver"], protocol)
+    if source != _source_value(source["case_id"], binding["execution_class"],
+                               protocol, protocol_ref, resolver):
+        raise ValueError("observation gate source differs from registered collection")
+    observation = BEHAVIOR.qualify_source_observation(
+        _source_observation(source["case_id"], protocol, resolver))
+    outcome = observation._payload["behavior_outcome"]
+    decision = {"normal": "host_no_intervention", "unknown": "host_hold",
+                "failed": "allow", "below_reference": "allow"}[outcome]
+    return {"decision": decision, "gate_id": "registered_qualified_fixed26_behavior_gate_v2",
             "reason": "verified_normal_behavior_bundle" if decision == "host_no_intervention"
+            else observation._payload["qualification_reason_code"] if decision == "host_hold"
             else "registered_investigation_may_continue"}
 
 

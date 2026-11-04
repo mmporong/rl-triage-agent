@@ -19,6 +19,51 @@ import model_decision_journal_v1 as MODEL_JOURNAL
 import run_diagnostic_comparison_v1 as RUNNER
 
 
+def test_comparison_entry_bootstraps_registered_backend_outside_repo(tmp_path: Path) -> None:
+    script_file = RUNNER.__file__
+    assert isinstance(script_file, str)
+    script = str(Path(script_file).resolve())
+    check = (
+        "import runpy; "
+        f"runpy.run_path({script!r}, run_name='entry_probe'); "
+        "from rl_triage import investigate; "
+        "backend, reason=investigate._load_backend(investigate.REGISTERED_BACKEND, False); "
+        "assert reason is None, reason; "
+        "assert backend['backend_id']==investigate.REGISTERED_BACKEND"
+    )
+    result = subprocess.run([sys.executable, "-I", "-B", "-c", check], cwd=tmp_path,
+                            capture_output=True, text=True, encoding="utf-8", errors="replace",
+                            timeout=30, check=False)
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize(("options", "has_sampler"), [
+    ([], True), (["--fixture"], False), (["--no-device-sampling"], False),
+])
+def test_cli_forwards_lazy_actual_sampler_and_keeps_fixture_gpu_free(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys, options: list[str], has_sampler: bool,
+) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    plan = repo / "plan.json"
+    plan.write_text("{}", encoding="utf-8")
+    binding = tmp_path / "binding.json"
+    binding.write_text("{}", encoding="utf-8")
+    output = tmp_path / "output"
+    seen = []
+
+    def run(*_args, **kwargs):
+        seen.append(kwargs["gpu_sampler"])
+        return {"status": "completed"}
+
+    monkeypatch.setattr(RUNNER, "run_comparison", run)
+    assert RUNNER.main(["--plan", str(plan), "--binding", str(binding),
+                        "--output", str(output), "--repo", str(repo), *options]) == 0
+    capsys.readouterr()
+    assert len(seen) == 1 and (seen[0] is not None) is has_sampler
+    assert output.exists() is False
+
+
 def _registry() -> dict:
     return {
         "mechanisms": ["m1", "m2"],
@@ -600,13 +645,14 @@ def test_resume_settlement_zero_does_not_erase_or_double_actual_spend(tmp_path: 
 
 
 def _cpu_model_journal_session(
-    tmp_path: Path, *, pending: bool = False, failed: bool = False
+    tmp_path: Path, *, pending: bool = False, failed: bool = False,
+    transport_result: dict | None = None, model_params: dict | None = None,
 ) -> Path:
     label = "pending" if pending else "failed" if failed else "completed"
     session = tmp_path / f"{label}-session"
     session.mkdir()
     api_root = tmp_path / f"{label}-api"
-    params = {"temperature": 0}
+    params = {"temperature": 0} if model_params is None else model_params
     source_anchor = "1" * 40
     protocol_sha = "2" * 64
     checkpoint_sha = "a" * 64
@@ -651,6 +697,8 @@ def _cpu_model_journal_session(
             raise KeyboardInterrupt
         if failed:
             raise ConnectionError("sanitized fixture transport failure")
+        if transport_result is not None:
+            return transport_result
         return {
             "content": '{"action":"hold"}',
             "status": "ok",
@@ -670,6 +718,50 @@ def _cpu_model_journal_session(
     else:
         decision.advance(engine, complete, lambda: datetime.now(UTC))
     return session
+
+
+def test_actual_transport_status_code_is_counted_by_audited_cost_reader(tmp_path: Path) -> None:
+    from rl_triage import nim_transport
+
+    class Response:
+        status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def read(self):
+            return json.dumps({"model": "fixture-returned-alias",
+                               "choices": [{"message": {"content": '{"action":"hold"}'},
+                                            "finish_reason": "stop"}],
+                               "usage": {"prompt_tokens": 11, "completion_tokens": 3,
+                                         "total_tokens": 14}}).encode()
+
+    produced = nim_transport.complete_local(
+        [{"role": "user", "content": "sanitized CPU fixture"}], nim_transport.PARAMS,
+        environ={"NVIDIA_API_KEY": "fixture-only"}, opener=lambda *_args, **_kwargs: Response(),
+    )
+    assert produced["status_code"] == 200
+    session = _cpu_model_journal_session(tmp_path, transport_result=produced,
+                                         model_params=nim_transport.PARAMS)
+    raw = RUNNER._raw_refs(session, 1, case_id="case-model", method="one_shot_llm")
+    api = raw["resource_cost"]["events"][0]["model_api"]
+    assert api["confirmed_http_response"] == 1
+    assert api["http_response_evidence_scope"] == "safe_result.status_code"
+    assert api["model_requested"] == nim_transport.MODEL
+    assert api["model_returned"] == "fixture-returned-alias"
+    assert api["finish_reason"] == "stop"
+    assert raw["resource_cost"]["model_api_summary"]["confirmed_http_responses"] == 1
+
+
+def test_conflicting_transport_status_fields_are_rejected(tmp_path: Path) -> None:
+    session = _cpu_model_journal_session(tmp_path, transport_result={
+        "status": "ok", "content": '{}', "http_status": 200, "status_code": 503,
+    })
+    with pytest.raises(RUNNER.ComparisonContractError, match="HTTP status fields disagree"):
+        RUNNER._raw_refs(session, 1, case_id="case-model", method="one_shot_llm")
 
 
 def test_cpu_fixture_model_journal_cost_uses_audited_transport_once(tmp_path: Path) -> None:

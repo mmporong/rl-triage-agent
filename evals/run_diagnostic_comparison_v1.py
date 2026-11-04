@@ -9,11 +9,15 @@ import math
 import os
 import re
 import subprocess
+import sys
 import time
 from collections.abc import Callable, Mapping
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Protocol
+
+_ENTRY_ROOT = Path(__file__).resolve().parents[1]
+sys.path[:0] = [str(_ENTRY_ROOT), *(str(_ENTRY_ROOT / name) for name in ("src", "bench", "evals"))]
 
 from rl_triage import investigate
 from rl_triage.investigation_session import _journal_module as _decision_journal_module
@@ -31,6 +35,7 @@ TERMINAL = {
     "hold_unknown",
     "hold_budget_exhausted",
     "host_no_intervention",
+    "hold_observation_unqualified",
     "hold_no_registered_probe",
     "model_hold",
     "hold_blocked_pending",
@@ -515,6 +520,25 @@ def _token_or_none(value: object) -> int | None:
     return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else None
 
 
+def _http_response_evidence(result: object) -> tuple[int | None, str | None]:
+    if not isinstance(result, dict):
+        return None, None
+    fields = [key for key in ("http_status", "status_code") if key in result]
+    known = [key for key in fields if result[key] is not None]
+    if len(known) == 2 and result[known[0]] != result[known[1]]:
+        raise ComparisonContractError("transport HTTP status fields disagree")
+    if not fields:
+        return None, None
+    key = known[0] if known else fields[0]
+    value = result[key]
+    evidence_scope = f"safe_result.{key}"
+    if value is None:
+        return 0, evidence_scope
+    if type(value) is int and 100 <= value <= 599:
+        return 1, evidence_scope
+    return None, evidence_scope
+
+
 def _readonly_model_journal(
     root: Path,
     api_root: Path,
@@ -662,19 +686,7 @@ def _model_costs(
                 if isinstance(result, dict) and "wall_s" in result
                 else None
             )
-            if isinstance(result, dict) and "http_status" in result:
-                http_status = result["http_status"]
-                confirmed_http_response = (
-                    1
-                    if isinstance(http_status, int)
-                    and not isinstance(http_status, bool)
-                    and 100 <= http_status <= 599
-                    else 0
-                    if http_status is None
-                    else None
-                )
-            else:
-                confirmed_http_response = None
+            confirmed_http_response, http_evidence_scope = _http_response_evidence(result)
             safe_result = result if isinstance(result, dict) else {}
             result_class = (
                 "unconfirmed"
@@ -711,6 +723,9 @@ def _model_costs(
                         "simulator_steps": 0,
                     },
                     "model_api": {
+                        "model_requested": session_manifest["model_binding"]["params"].get("model"),
+                        "model_returned": safe_result.get("model_returned"),
+                        "finish_reason": safe_result.get("finish_reason"),
                         "global_index": reservation["index"],
                         "decision_manifest_sha256": file_sha(manifest_path),
                         "reservation_sha256": reservation_sha,
@@ -723,7 +738,7 @@ def _model_costs(
                             else "unconfirmed_after_reservation"
                         ),
                         "confirmed_http_response": confirmed_http_response,
-                        "http_response_evidence_scope": "safe_result.http_status",
+                        "http_response_evidence_scope": http_evidence_scope,
                         "response_wall_s": response_wall,
                         "response_wall_scope": "nim_transport.result.wall_s" if response_wall is not None else None,
                         "usage": raw_usage,
@@ -1549,12 +1564,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--anchor")
     parser.add_argument("--fixture", action="store_true")
+    parser.add_argument("--no-device-sampling", action="store_true",
+                        help="장치 계측을 생략하고 사용률·전력·메모리를 미측정으로 남긴다")
     args = parser.parse_args(argv)
     try:
         repo = args.repo.resolve(strict=True)
         relative_plan = args.plan.resolve(strict=True).relative_to(repo).as_posix()
         plan_ref = {"path": relative_plan, "sha256": _lf_sha(args.plan.resolve(strict=True))}
         binding = json.loads(args.binding.read_text(encoding="utf-8"))
+        sampler = None
+        if not args.fixture and not args.no_device_sampling:
+            from rl_triage.gpu_resource_sampler import PeriodicDeviceSampler
+
+            sampler = PeriodicDeviceSampler(args.output.resolve() / "device-samples")
         result = run_comparison(
             plan_ref,
             binding,
@@ -1562,6 +1584,7 @@ def main(argv: list[str] | None = None) -> int:
             output_root=args.output,
             registration_anchor=args.anchor,
             fixture=args.fixture,
+            gpu_sampler=sampler,
         )
     except Exception as error:  # noqa: BLE001 - CLI는 실패를 구조화하고 backend를 재실행하지 않는다.
         result = {"status": "rejected", "error_type": type(error).__name__, "reason": str(error)}

@@ -1,0 +1,318 @@
+import hashlib
+import json
+from pathlib import Path
+
+import pytest
+
+from evals import prepare_registered_recovery_comparison_v1 as prepare
+
+
+def _write(path: Path, value: object) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if isinstance(value, bytes):
+        path.write_bytes(value)
+    else:
+        path.write_text(json.dumps(value, sort_keys=True, separators=(",", ":")), encoding="utf-8")
+    return path
+
+
+def _sha(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def test_fixed_binding_is_consumed_by_stock_runtime_verifier_before_launch(tmp_path: Path) -> None:
+    from evals import r1_repair_execution as stock
+    runtime_file = _write(tmp_path / "runtime.py", b"frozen runtime source\n")
+    runtime = {"runtime.py": _sha(runtime_file)}
+    report = {"task": stock.TASK, "action_scale": 0.25, "protocol_sha256_lf": "a" * 64}
+    binding = prepare._fixed_binding({"path": "reference", "sha256": "b" * 64}, report, {}, runtime)
+    stock._verify_runtime(tmp_path, binding)
+    runtime_file.write_bytes(b"different runtime source\n")
+    with pytest.raises(ValueError, match="runtime source"):
+        stock._verify_runtime(tmp_path, binding)
+
+
+def _source_fixture(tmp_path: Path) -> tuple[Path, Path]:
+    sources = {}
+    index_sources = {}
+    cases = []
+    for offset, case in enumerate(prepare.CASES):
+        old = f"case-{int(case[-2:]):02d}"
+        seed = prepare.SOURCE_SEEDS[case] - 110
+        source_id, reference_id = f"fault-s{seed}", f"none-s{seed}"
+        cases.append({"case_id": old, "seed": seed, "source_job": source_id,
+                      "reference_job": reference_id, "hidden_label": "ignored"})
+        source_arm = "F2" if case in {"case-05", "case-06"} else "COMPOUND"
+        for arm, job in ((source_arm, source_id), ("NONE", reference_id)):
+            log = tmp_path / "logs" / job
+            event = _write(log / "events.out.tfevents.test", b"events")
+            checkpoint = _write(log / "model_299.pt", (job + "-checkpoint").encode())
+            _write(log / "params/env.yaml", b"rewards:\n  track_lin_vel_xy_exp:\n    weight: 1.0\n")
+            _write(log / "params/agent.yaml", b"agent: true\nnum_steps_per_env: 24\n")
+            stage = tmp_path / "stages" / job
+            report = {
+                "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+                "action_scale": 0.25,
+                "protocol_sha256_lf": "a" * 64,
+                "versions": {"rsl-rl-lib": "2.3.3", "isaaclab": "deadbeef"},
+                "metrics": {"survival": 1.0},
+            }
+            fixed = _write(stage / "fixed-result.json", {"report": report, "execution": {}})
+            hidden_sha = prepare._sha(prepare.EPOCH_CHILD.ROOT / "bench/hidden_faults.py", lf=True)
+            manifest = {"schema": "source-child-manifest-v1", "arm": arm,
+                        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0", "seed": seed,
+                        "source_commit_sha": "a" * 40,
+                        "source_sha256_lf": {"bench/hidden_faults.py": hidden_sha},
+                        "runtime_source_sha256_lf": {
+                            "runtime.py": "b" * 64,
+                            "source/isaaclab/isaaclab/envs/mdp/rewards.py": "c" * 64,
+                            "source/isaaclab/isaaclab/actuators/actuator_pd.py": "d" * 64}}
+            manifest_path = _write(stage / "manifest.json", manifest)
+            public_id = f"source-{len(sources) + 1:02d}"
+            binding = {"checkpoint_sha256": _sha(checkpoint), "fixed_result_sha256": _sha(fixed),
+                       "manifest_sha256": _sha(manifest_path)}
+            sources[job] = {
+                "public_id": public_id, "binding": binding,
+                "material": {"event": {"path": str(event), "sha256": _sha(event)},
+                             "stage": str(stage)},
+                "manifest": manifest,
+            }
+            index_sources[public_id] = binding
+    metadata = _write(tmp_path / "metadata.json", {
+        "schema": "lineage_source_inputs_metadata_v2", "cases": cases, "sources": sources})
+    index = _write(tmp_path / "collected.json", {
+        "schema": "lineage_source_inputs_v2", "sources": index_sources,
+        "metadata_ref": {"file": metadata.name, "sha256": _sha(metadata)}})
+    return index, metadata
+
+
+def _phase_plan(tmp_path: Path) -> tuple[Path, dict]:
+    inputs = []
+    for case in prepare.CASES:
+        old = f"case-{int(case[-2:]):02d}"
+        path = _write(tmp_path / f"{old}.json", {"case_id": old})
+        inputs.append({"role": f"protocol:{old}", "path": path.name, "sha256": _sha(path)})
+    plan = _write(tmp_path / "phase-plan.json", {"phase": "A"})
+    return plan, {"cases": [{"case_id": f"case-{i:02d}"} for i in range(5, 9)], "inputs": inputs}
+
+
+def _patch_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path, Path, dict]:
+    index, metadata = _source_fixture(tmp_path)
+    phase_path, phase_body = _phase_plan(tmp_path)
+    recipe = _write(tmp_path / "recipe.json", {"schema": "recipe"})
+    p0c = _write(tmp_path / "p0c.json", {"bands": {"survival_ratio_min": 0.9,
+        "fall_frac_max": 0.05, "err_xy_ratio_max": 1.1513, "err_yaw_ratio_max": 1.1719}})
+    sdk = _write(tmp_path / "sdk.json", {"schema": "correction_source_contract_v1",
+        "runtime": {"implementation": "CPython", "version": [3, 10, 15], "cache_tag": "cpython-310"},
+        "targets": {}})
+    hidden_sha = prepare._sha(prepare.EPOCH_CHILD.ROOT / "bench/hidden_faults.py", lf=True)
+    reward_nominal = {"module": "isaaclab.envs.mdp.rewards", "qualname": "track_lin_vel_xy_exp",
+        "source": "source/isaaclab/isaaclab/envs/mdp/rewards.py", "source_sha256_lf": "c" * 64,
+        "clean_fingerprint": "1" * 64, "expected_runtime_fingerprint": "1" * 64}
+    reward_world = {**reward_nominal, "expected_runtime_fingerprint": "2" * 64}
+    motor_nominal = {"module": "isaaclab.actuators.actuator_pd", "qualname": "DCMotor._clip_effort",
+        "source": "source/isaaclab/isaaclab/actuators/actuator_pd.py", "source_sha256_lf": "d" * 64,
+        "clean_fingerprint": "3" * 64, "expected_runtime_fingerprint": "3" * 64}
+    motor_f2 = {**motor_nominal, "expected_runtime_fingerprint": "4" * 64}
+    recipe_code = _write(tmp_path / "recipe-code.json", {
+        "schema": "registered_environment_recipe_code_contract_v1",
+        "provenance_kind": "compiled_code_contract_not_historical_runtime_observation",
+        "runtime": {"implementation": "CPython", "version": [3, 10, 15], "cache_tag": "cpython-310"},
+        "reward_targets": {"nominal_body_frame": reward_nominal,
+                           "world_frame_reward": reward_world},
+        "motor_targets": {"nominal": motor_nominal, "preserve_source_envelope": motor_f2},
+        "module_imports": {"carb": False, "isaaclab": False, "omni": False, "torch": False},
+        "gpu_launches": 0, "model_api_calls": 0,
+        "hidden_recipe_source_sha256_lf": hidden_sha})
+    source = _write(tmp_path / "source.py", b"source\n")
+    for relative in (prepare.COMPARISON.REVIEW_POLICY_RELATIVE,
+                     "bench/protocols/diagnostic_recovery_comparison_20261104_v1.md"):
+        _write(tmp_path / relative, (prepare.ROOT / relative).read_bytes())
+    monkeypatch.setattr(prepare, "ROOT", tmp_path)
+    monkeypatch.setattr(prepare, "RECIPE", recipe)
+    monkeypatch.setattr(prepare, "_SOURCE_FILES", {source.name})
+    monkeypatch.setattr(prepare, "SDK_CONTRACT_SHA256", _sha(sdk))
+    monkeypatch.setattr(prepare, "RECIPE_CODE_CONTRACT_SHA256", _sha(recipe_code))
+    monkeypatch.setattr(prepare.UPSTREAM, "P0C_SUMMARY", p0c)
+    monkeypatch.setattr(prepare.PHASE_A, "load_plan", lambda *_args, **_kwargs: phase_body)
+    monkeypatch.setattr(prepare.COMPARISON, "load_plan", lambda path, **_kwargs: json.loads(Path(path).read_text()))
+    monkeypatch.setattr(prepare.ACTUATOR, "validate_prepared_binding", lambda body: body)
+    monkeypatch.setattr(prepare, "_optimizer_binding",
+        lambda anchor, cp, runtime, mechanism, closure, environment_preservation=None: {
+        "task": "task", "num_envs": 4096, "max_iterations": 300,
+        "configured_learning_epochs": 5, "configured_mini_batches": 4,
+        "runtime_updates_to_observe": 3, "source_commit_sha": anchor,
+        "protocol_path": recipe.name, "protocol_sha256_lf": _sha(recipe),
+        "source_sha256_lf": closure, "runtime_source_sha256_lf": runtime,
+        "source_checkpoint_sha256": cp,
+        **({"environment_preservation": environment_preservation}
+           if environment_preservation is not None else {})})
+    return index, metadata, phase_path, phase_body
+
+
+def test_templates_bind_all_cases_mechanisms_and_ignore_hidden_eligibility(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    sdk = tmp_path / "sdk.json"
+    out = tmp_path / "templates-out"
+    result = prepare.prepare_templates(source_index=index, metadata=metadata,
+        diagnostic_plan=phase, diagnostic_registration_anchor="b" * 40,
+        source_anchor="a" * 40, sdk_contract=sdk,
+        recipe_code_contract=tmp_path / "recipe-code.json", output=out, actor="operator",
+        isaaclab_commit="c" * 40,
+        require_committed=False)
+    plan = json.loads((out / "registered-plan.json").read_text())
+    assert result["actual_training_started"] is False
+    assert [row["case_id"] for row in plan["cases"]] == list(prepare.CASES)
+    assert set(plan["template_commitments"]) == set(prepare.CASES)
+    assert all(set(rows) == set(prepare.MECHANISMS)
+               for rows in plan["template_commitments"].values())
+    assert plan["recovery_policy"]["seeds"]["case-05"] == {"resume": 2664, "restart": 5664}
+    f2 = json.loads((out / "templates/case-05/optimizer_update_count/training-binding.json").read_text())
+    compound = json.loads((out / "templates/case-07/optimizer_update_count/training-binding.json").read_text())
+    assert f2["environment_preservation"]["mode"] == "nominal_body_frame"
+    assert (json.loads(Path(f2["environment_preservation"]["expected_reward"]["path"]).read_text())
+            ["source_arm"] == "F2")
+    assert f2["environment_preservation"]["secondary_target"]["expected_runtime_fingerprint"] == "4" * 64
+    assert compound["environment_preservation"]["mode"] == "world_frame_reward"
+    assert (json.loads(Path(compound["environment_preservation"]["expected_reward"]["path"]).read_text())
+            ["source_arm"] == "COMPOUND")
+    assert compound["environment_preservation"]["target"]["expected_runtime_fingerprint"] == "2" * 64
+    serialized = (out / "registered-plan.json").read_text()
+    assert "hidden_label" not in serialized and "eligible" not in serialized
+
+
+def test_templates_reject_source_index_and_checkpoint_substitution(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    sdk = tmp_path / "sdk.json"
+    changed = json.loads(index.read_text())
+    changed["sources"]["source-01"]["checkpoint_sha256"] = "f" * 64
+    index.write_text(json.dumps(changed), encoding="utf-8")
+    with pytest.raises(prepare.PreparationError, match="source index binding"):
+        prepare.prepare_templates(source_index=index, metadata=metadata,
+            diagnostic_plan=phase, diagnostic_registration_anchor="b" * 40,
+            source_anchor="a" * 40, sdk_contract=sdk,
+            recipe_code_contract=tmp_path / "recipe-code.json", output=tmp_path / "bad-index",
+            actor="operator", isaaclab_commit="c" * 40, require_committed=False)
+
+    checkpoint_root = tmp_path / "checkpoint"
+    index, metadata, phase, _ = _patch_environment(checkpoint_root, monkeypatch)
+    source = json.loads(metadata.read_text())["sources"]["fault-s2554"]
+    Path(source["material"]["event"]["path"]).parent.joinpath("model_299.pt").write_bytes(b"swapped")
+    with pytest.raises(prepare.PreparationError, match="source checkpoint lineage"):
+        prepare.prepare_templates(source_index=index, metadata=metadata,
+            diagnostic_plan=phase, diagnostic_registration_anchor="b" * 40,
+            source_anchor="a" * 40, sdk_contract=checkpoint_root / "sdk.json",
+            recipe_code_contract=checkpoint_root / "recipe-code.json",
+            output=checkpoint_root / "bad-checkpoint", actor="operator",
+            isaaclab_commit="c" * 40, require_committed=False)
+
+
+def test_templates_reject_source_manifest_or_code_contract_substitution(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    metadata_body = json.loads(metadata.read_text())
+    source = metadata_body["sources"]["fault-s2554"]
+    manifest_path = Path(source["material"]["stage"]) / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["arm"] = "NONE"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    with pytest.raises(prepare.PreparationError, match="source setup manifest reference"):
+        prepare.prepare_templates(source_index=index, metadata=metadata, diagnostic_plan=phase,
+            diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+            sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+            output=tmp_path / "bad-source-manifest", actor="operator",
+            isaaclab_commit="c" * 40, require_committed=False)
+
+    second = tmp_path / "second"
+    index, metadata, phase, _ = _patch_environment(second, monkeypatch)
+    contract = second / "recipe-code.json"
+    contract.write_text("{}", encoding="utf-8")
+    with pytest.raises(prepare.PreparationError, match="code contract changed"):
+        prepare.prepare_templates(source_index=index, metadata=metadata, diagnostic_plan=phase,
+            diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+            sdk_contract=second / "sdk.json", recipe_code_contract=contract,
+            output=second / "bad-code-contract", actor="operator",
+            isaaclab_commit="c" * 40, require_committed=False)
+
+def test_jobs_preserve_all_arms_and_prepare_only_confirmed_registered_mechanism(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    template_root = tmp_path / "templates-out"
+    prepare.prepare_templates(source_index=index, metadata=metadata, diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+        output=template_root, actor="operator",
+        isaaclab_commit="c" * 40,
+        require_committed=False)
+    plan_path = template_root / "registered-plan.json"
+    plan = json.loads(plan_path.read_text())
+    monkeypatch.setattr(prepare.COMPARISON, "load_plan", lambda *_args, **_kwargs: plan)
+    monkeypatch.setattr(prepare.SEED_GUARD, "assert_fresh_seeds", lambda seeds, *_args, **_kwargs: {
+        "schema": "core_seed_freshness_v1", "status": "fresh", "seeds": list(seeds)})
+    diagnostic_root = tmp_path / "diagnostics"
+    for case in prepare.CASES:
+        checkpoint = plan["template_commitments"][case]["actuator"]["source_checkpoint_sha256"]
+        for method in prepare.METHODS:
+            source = _write(diagnostic_root / case / method / "source.json", {
+                "case_id": case, "checkpoint_sha256": checkpoint})
+            _write(diagnostic_root / case / method / "manifest.json", {
+                "method": method, "execution_class": "actual",
+                "source": {"path": str(source), "sha256": _sha(source)},
+                "source_verification": {"case_id": case, "checkpoint_sha256": checkpoint}})
+    statuses: dict[tuple[str, str], dict] = {
+        (case, method): {"status": "unidentifiable", "case_id": case}
+        for case in prepare.CASES for method in prepare.METHODS
+    }
+    statuses[("case-05", "fixed_sequence")] = {
+        "status": "confirmed", "confirmed_mechanism": "optimizer_update_count",
+        "case_id": "case-05",
+        "source_verification": {"checkpoint_sha256":
+            plan["template_commitments"]["case-05"]["actuator"]["source_checkpoint_sha256"]}}
+    monkeypatch.setattr(prepare, "_diagnostic_status",
+                        lambda session: statuses[(session.parent.name, session.name)])
+
+    class FakeSession:
+        def __init__(self, path: Path):
+            self.folder = Path(path)
+            self._manifest_sha256 = _sha(self.folder / "manifest.json")
+            body = json.loads((self.folder / "manifest.json").read_text())
+            self.manifest = {"source": body["source"]}
+
+    monkeypatch.setattr(prepare, "InvestigationSession", FakeSession)
+    monkeypatch.setattr(prepare.RECOVERY, "_diagnostic", lambda _session, _mechanism: (
+        {"probe": "P_optimizer_updates", "request_id": "diag-1"}, {},
+        {"receipt_ref": {"path": str(tmp_path / "diag.json"), "sha256": "f" * 64}}))
+    calls = []
+
+    def run(command, session, payload, **_kwargs):
+        calls.append((command, Path(session), payload))
+        if command == "recovery-prepare":
+            Path(payload["folder"]).mkdir(parents=True)
+            return {"mechanism": "optimizer_update_count"}
+        if command == "recovery-propose":
+            return {"status": {"pending": {"request_id": "req-1", "effect_key": "effect-1"}}}
+        raise AssertionError(command)
+
+    monkeypatch.setattr(prepare.investigate, "run", run)
+    isaaclab = tmp_path / "IsaacLab"
+    (isaaclab / "logs").mkdir(parents=True)
+    result = prepare.prepare_jobs(templates=template_root, registered_plan=plan_path,
+        registration_anchor="c" * 40, diagnostic_root=diagnostic_root,
+        isaaclab_root=isaaclab, output=tmp_path / "jobs", require_committed=False)
+    job = json.loads((tmp_path / "jobs/job.json").read_text())
+    assert result["arms"] == 16 and result["recovery_prepared"] == 1
+    assert len(job["arms"]) == 16
+    active = next(row for row in job["arms"] if row["recovery_payload"] is not None)
+    assert active["case_id"] == "case-05" and active["method"] == "fixed_sequence"
+    protocol = json.loads(Path(active["recovery_payload"]["protocol"]["path"]).read_text())
+    assert protocol["operation"]["runner_id"] == "r1_epochs_preserving_environment_v1"
+    assert "prepared-recoveries" in active["recovery_folder"]
+    assert [row[0] for row in calls] == ["recovery-prepare", "recovery-propose"]
+    assert all(row["recovery_payload"] is None for row in job["arms"] if row is not active)
+    assert json.loads((tmp_path / "jobs/restart-seed-freshness.json").read_text())["status"] == "fresh"
+    approval = Path(active["approval_ref"]["path"])
+    approval.write_text("{}", encoding="utf-8")
+    with pytest.raises(prepare.COMPARISON.ComparisonContractError, match="approval reference changed"):
+        prepare.COMPARISON._validate_job(job, job["plan"], plan, tmp_path / "jobs/job.json")

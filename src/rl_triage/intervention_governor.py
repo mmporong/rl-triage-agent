@@ -390,6 +390,11 @@ def decide_intervention(observation: VerifiedObservation, raw_model_proposal: ob
                                          "post_correction_reference_only_gap")
             investigation_need, correctability = "not_needed", "reference_review_only"
             additional = ["review_reference_and_evaluation_criteria"]
+            if (value.get("post_confirmation_scope") is not None
+                    and value.get("confirmation_catalog_complete") is not True):
+                reason = "post_correction_relative_gap_with_scoped_checks"
+                investigation_need, correctability = "undetermined", "reference_review_first"
+                additional.append("verify_unobserved_registered_components")
         elif value["behavior_outcome"] == "normal" and all_normal:
             pass
         elif value["behavior_outcome"] == "unknown":

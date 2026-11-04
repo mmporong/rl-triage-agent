@@ -285,9 +285,10 @@ class InvestigationSession:
             status = "hold_unknown"
         gate_path = self.folder / "host_gate.json"
         if gate_path.exists():
-            gate = json.loads(gate_path.read_text(encoding="utf-8"))
-            require(gate.get("decision") == "host_no_intervention", "host gate changed")
-            status = "host_no_intervention"
+            gate = self._gate(json.loads(gate_path.read_text(encoding="utf-8")))
+            require(gate["decision"] in {"host_no_intervention", "host_hold"}, "host gate changed")
+            status = ("host_no_intervention" if gate["decision"] == "host_no_intervention"
+                      else "hold_observation_unqualified")
         if live:
             status = {"pending": "approval_pending", "approved": "ready_to_dispatch",
                       "running": "pending_result"}[live[0]["state"]]
@@ -402,7 +403,7 @@ class InvestigationSession:
         if not isinstance(gate, dict):
             raise TypeError("observation gate result")
         require(set(gate) == {"decision", "gate_id", "reason"}
-                and gate["decision"] in {"allow", "host_no_intervention"}
+                and gate["decision"] in {"allow", "host_no_intervention", "host_hold"}
                 and isinstance(gate["gate_id"], str) and bool(gate["gate_id"])
                 and isinstance(gate["reason"], str), "observation gate result")
         return deepcopy(gate)
@@ -423,11 +424,11 @@ class InvestigationSession:
                     "state": deepcopy(state), "source": deepcopy(self.source),
                     "source_verification": deepcopy(self.manifest["source_verification"]),
                 }))
-                if gate["decision"] == "host_no_intervention":
+                if gate["decision"] in {"host_no_intervention", "host_hold"}:
                     write_new(self.folder / "host_gate.json", gate)
                     result = self._state()
                     if metrics_collector:
-                        metrics_collector({"event": "host_no_intervention", "model_called": False})
+                        metrics_collector({"event": gate["decision"], "model_called": False})
                     return result
             method = self.manifest["method"]
             model = None

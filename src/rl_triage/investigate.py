@@ -21,6 +21,10 @@ _REQUIRED = {
     "backend_id", "prepare_source", "verify_source", "authorize", "execute", "verify_receipt",
 }
 _OPTIONAL = {"complete", "observation_gate", "collect_metrics"}
+RECOVERY_COMMANDS = (
+    "recovery-prepare", "recovery-propose", "recovery-approve", "recovery-dispatch",
+    "recovery-settle", "recovery-status", "recovery-post", "recovery-review",
+)
 
 
 def _fixture_backend() -> dict[str, Any]:
@@ -128,8 +132,44 @@ def _blocked(reason: str) -> dict:
     return {"status": "blocked_backend", "reason": reason, "completed": False}
 
 
+def _run_recovery(command: str, session_path: Path, payload: dict, *, backend_name: str,
+                  fixture: bool) -> dict:
+    if fixture or backend_name != REGISTERED_BACKEND:
+        return _blocked("recovery_requires_registered_host")
+    from rl_triage import investigation_recovery as recovery
+
+    operation = command.removeprefix("recovery-")
+    expected_fields = {
+        "prepare": {"recovery_payload", "folder"}, "propose": set(),
+        "approve": {"request_id", "actor", "approval_ref"}, "dispatch": {"request_id"},
+        "settle": {"request_id", "receipt"}, "status": set(), "post": {"request_id"},
+        "review": {"request_id", "host_gate_sources"},
+    }
+    if operation not in expected_fields or set(payload) != expected_fields[operation]:
+        raise ValueError("recovery command input fields differ")
+    if operation == "prepare":
+        return recovery.prepare(session_path, payload["recovery_payload"], Path(payload["folder"]))
+    if operation == "propose":
+        return recovery.propose(session_path)
+    if operation == "approve":
+        return recovery.approve(session_path, payload["request_id"], payload["actor"],
+                                payload["approval_ref"])
+    if operation == "dispatch":
+        return recovery.dispatch(session_path, payload["request_id"])
+    if operation == "settle":
+        return recovery.settle(session_path, payload["request_id"], payload["receipt"])
+    if operation == "status":
+        return recovery.status(session_path)
+    if operation == "review":
+        return recovery.review(session_path, payload["request_id"], payload["host_gate_sources"])
+    return recovery.verified_post_observation(session_path, payload["request_id"])
+
+
 def run(command: str, session_path: Path, payload: dict, *, backend_name: str,
         fixture: bool) -> dict:
+    if command in RECOVERY_COMMANDS:
+        return _run_recovery(command, session_path, payload, backend_name=backend_name,
+                             fixture=fixture)
     if command in {"status", "export"}:
         session = InvestigationSession(session_path)
         if command == "status":
@@ -185,7 +225,8 @@ def run(command: str, session_path: Path, payload: dict, *, backend_name: str,
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("prepare", "next", "approve", "dispatch", "settle", "status", "export"))
+    parser.add_argument("command", choices=("prepare", "next", "approve", "dispatch", "settle",
+                                          "status", "export", *RECOVERY_COMMANDS))
     parser.add_argument("--session", type=Path, required=True)
     parser.add_argument("--backend", default=REGISTERED_BACKEND)
     parser.add_argument("--fixture", action="store_true")

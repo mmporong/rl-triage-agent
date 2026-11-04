@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -119,6 +120,71 @@ def test_build_backend_has_registered_exact_contract():
     assert reason is None and loaded == backend
 
 
+@pytest.mark.parametrize(
+    ("curve_matches", "reasons", "expected"),
+    [(True, [], "normal"), (False, [], "abnormal"), (True, ["curve_changed"], "unknown")],
+)
+def test_actual_actuator_observation_uses_verified_nested_helper(
+    tmp_path, monkeypatch, curve_matches, reasons, expected,
+):
+    manifest_sha = "a" * 64
+    output = tmp_path / "output"
+    output.mkdir()
+    manifest_value = {
+        "request_id": "request-1", "effect_key": "effect-1",
+        "case": {"case_id": "case-1"}, "source": {"source_id": "source-1"},
+        "checkpoint": {"sha256": "b" * 64}, "reference": {"case_id": "reference-1"},
+    }
+    manifest_path = tmp_path / "manifest.json"
+    _write(manifest_path, manifest_value)
+    data_binding = {
+        **manifest_value, "checkpoint_consumed": False, "condition_model_visible": False,
+    }
+    raw = {
+        "status": "invalid",
+        "curve_matches_expected": not curve_matches,
+        "helper_result": {"status": "valid", "curve_matches_expected": curve_matches},
+    }
+    _write(output / "observation.json", {
+        "schema": "diagnostic_actuator_mapping_v1", "status": "complete",
+        "manifest_sha256": manifest_sha, "source_receipt": {}, "observation": raw,
+        "data_binding": data_binding,
+    })
+    observation_sha = _sha(output / "observation.json")
+    _write(output / "close_ready.json", {
+        "schema": "diagnostic_actuator_close_ready_v1", "manifest_sha256": manifest_sha,
+        "observation_sha256": observation_sha, "environment_closed": True,
+        "app_close_pending": True,
+    })
+    monkeypatch.setattr(B, "_actuator_observation_reasons", lambda *_args: list(reasons))
+    outcome, measurement = B._actual_observation(
+        output, manifest_sha, CONFIRMATION.ACTUATOR_PROBE,
+        manifest_path=manifest_path, execution={}, isaaclab_root=tmp_path,
+    )
+    assert outcome == expected
+    assert measurement["validation_reasons"] == reasons
+    assert measurement["observation"] == raw
+
+
+def test_actual_actuator_observation_requires_validation_context(tmp_path):
+    output = tmp_path / "output"
+    output.mkdir()
+    manifest_sha = "a" * 64
+    _write(output / "observation.json", {
+        "schema": "diagnostic_actuator_mapping_v1", "status": "complete",
+        "manifest_sha256": manifest_sha, "source_receipt": {}, "observation": {},
+        "data_binding": {},
+    })
+    observation_sha = _sha(output / "observation.json")
+    _write(output / "close_ready.json", {
+        "schema": "diagnostic_actuator_close_ready_v1", "manifest_sha256": manifest_sha,
+        "observation_sha256": observation_sha, "environment_closed": True,
+        "app_close_pending": True,
+    })
+    with pytest.raises(B.BackendBlocked, match="validation context"):
+        B._actual_observation(output, manifest_sha, CONFIRMATION.ACTUATOR_PROBE)
+
+
 def test_prepare_revalidates_actual_public_source_without_hidden_truth(tmp_path):
     protocol = _protocol(tmp_path)
     prepared = B.prepare_source(_prepare_payload(tmp_path, protocol))
@@ -180,6 +246,27 @@ def test_parent_protocol_resolves_registered_collection_manifest(tmp_path):
     assert B.verify_source(Path(prepared["source_path"]))["status"] == "verified"
 
 
+def test_gate_uses_registered_collection_instead_of_historical_default(tmp_path, monkeypatch):
+    copied = tmp_path / "registered-export"
+    shutil.copytree(B.EVIDENCE.SOURCE_COLLECTION, copied)
+    protocol = _protocol(tmp_path)
+    value = json.loads(Path(protocol["path"]).read_text(encoding="utf-8"))
+    value["source_registration"]["collection_artifact_id"] = "source-export-manifest"
+    protocol = _write(tmp_path / "source-registered-protocol.json", value)
+    payload = _prepare_payload(tmp_path, protocol, case_id="case-01")
+    payload["artifact_resolver"] = {"source-export-manifest": {
+        "path": str((copied / "manifest.json").resolve()),
+        "sha256": B.EVIDENCE.SOURCE_MANIFEST_SHA256,
+    }}
+    prepared = B.prepare_source(payload)
+    source = json.loads(Path(prepared["source_path"]).read_text(encoding="utf-8"))
+    monkeypatch.setattr(B.EVIDENCE, "SOURCE_COLLECTION", tmp_path / "unavailable-historical-export")
+    assert B.observation_gate({"source": source})["decision"] == "host_no_intervention"
+    source["checkpoint_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="gate source differs"):
+        B.observation_gate({"source": source})
+
+
 @pytest.mark.parametrize(
     "method", ["fixed_sequence", "static_rule", "one_shot_llm", "iterative_agent"],
 )
@@ -210,6 +297,30 @@ def test_model_binding_uses_verified_protocol_sha_and_private_root_only(tmp_path
     public_protocol = json.loads(Path(protocol["path"]).read_text(encoding="utf-8"))
     assert "protocol_sha256" not in public_protocol["model"]
     assert "api_root" not in public_protocol["model"]
+
+
+@pytest.mark.parametrize("method", ["fixed_sequence", "static_rule", "one_shot_llm", "iterative_agent"])
+def test_unqualified_reference_holds_every_method_without_request_or_model(tmp_path, monkeypatch, method):
+    from rl_triage import intervention_governor as governor
+
+    original = B.BEHAVIOR.qualify_source_observation
+
+    def unqualified(observation):
+        payload = governor.build_model_packet(original(observation))["observation"]
+        payload["behavior_outcome"] = "unknown"
+        payload["qualification_reason_code"] = "reference_unqualified"
+        return governor._verified_observation(payload)
+
+    monkeypatch.setattr(B.BEHAVIOR, "qualify_source_observation", unqualified)
+    protocol = _protocol(tmp_path)
+    session_path = tmp_path / "held-session"
+    investigate.run("prepare", session_path, _prepare_payload(tmp_path, protocol, method=method),
+                    backend_name=B.BACKEND_ID, fixture=False)
+    result = investigate.run("next", session_path, {}, backend_name=B.BACKEND_ID, fixture=False)
+    assert result["status"] == "hold_observation_unqualified"
+    assert result["pending"] is None and result["observed"] == {}
+    assert not (session_path / "model").exists()
+    assert SESSION.InvestigationSession(session_path).status()["status"] == result["status"]
 
 
 def test_authorization_binds_actor_protocol_source_checkpoint_probe_and_effect(tmp_path):
@@ -343,7 +454,7 @@ def test_actual_dispatch_derives_manifest_from_registered_artifacts_without_inte
     monkeypatch.setattr(B, "_run_owned", run_owned)
     monkeypatch.setattr(
         B, "_actual_observation",
-        lambda output, manifest_sha, selected: (
+        lambda output, manifest_sha, selected, **_context: (
             "normal", {"output": str(output), "manifest": manifest_sha, "selected": selected}),
     )
     outcome, measurement, wall_s, exit_code = B._execute_actual(

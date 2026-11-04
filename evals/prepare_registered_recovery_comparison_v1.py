@@ -1,0 +1,627 @@
+"""Prepare immutable recovery templates, then bind them to verified phase-A sessions."""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import re
+import subprocess
+import sys
+from copy import deepcopy
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+for _folder in (ROOT, ROOT / "bench", ROOT / "evals", ROOT / "src"):
+    if str(_folder) not in sys.path:
+        sys.path.insert(0, str(_folder))
+
+from bench import registered_epoch_recovery_training_v1 as EPOCH_CHILD
+from bench import registered_recovery_training_v1 as ACTUATOR
+from evals import core_seed_guard_v1 as SEED_GUARD
+from evals import ppo_ratio_repair_demo_v2 as RATIO_DEMO
+from evals import r1_repair_demo_v2 as R1_DEMO
+from evals import run_diagnostic_comparison_v1 as PHASE_A
+from evals import run_registered_recovery_comparison_v1 as COMPARISON
+from evals import run_upstream_r1_smoke as UPSTREAM
+from rl_triage import investigate
+from rl_triage import investigation_recovery as RECOVERY
+from rl_triage.correction_registry_v2 import REGISTRY, registry_digest
+from rl_triage.investigation_session import InvestigationSession, write_new
+
+TEMPLATE_SCHEMA = "registered_recovery_comparison_templates_v1"
+JOB_SCHEMA = COMPARISON.JOB_SCHEMA
+CASES = ("case-05", "case-06", "case-07", "case-08")
+SOURCE_SEEDS = {case: 2664 + index for index, case in enumerate(CASES)}
+METHODS = COMPARISON.METHODS
+MECHANISMS = ("actuator", "optimizer_update_count", "optimizer_surrogate")
+RECIPE = ROOT / "bench/protocols/registered_recovery_training_recipe_v1.json"
+SDK_CONTRACT_SHA256 = "6e038778c9f7d9a7c03ef22d9eb71b2510cbe89b98b0efaff77b94423c30f8fa"
+RECIPE_CODE_CONTRACT_SHA256 = "15320cd87313b28b6f4b873a3c6c6db63db32a7182499e6c4df46bfdebcb96a9"
+OPTIMIZER_TRAINING_FIELDS = frozenset({
+    "task", "num_envs", "max_iterations", "configured_learning_epochs",
+    "configured_mini_batches", "runtime_updates_to_observe", "source_commit_sha",
+    "protocol_path", "protocol_sha256_lf", "source_sha256_lf",
+    "runtime_source_sha256_lf", "source_checkpoint_sha256",
+})
+_HEX40 = re.compile(r"[0-9a-f]{40}\Z")
+_HEX64 = re.compile(r"[0-9a-f]{64}\Z")
+_SOURCE_FILES = {
+    "evals/prepare_registered_recovery_comparison_v1.py",
+    "evals/run_registered_recovery_comparison_v1.py",
+    "evals/registered_recovery_backend_v1.py",
+    "evals/registered_recovery_resources_v1.py",
+    "evals/registered_recovery_timing_v1.py",
+    "tests/test_registered_recovery_timing_v1.py",
+    "evals/registered_recovery_confirmation_v1.py",
+    "evals/summarize_registered_recovery_comparison_v1.py",
+    "tests/test_registered_recovery_confirmation_v1.py",
+    "tests/test_summarize_registered_recovery_comparison_v1.py",
+    "bench/protocols/diagnostic_recovery_comparison_20261104_v1.md",
+    "bench/protocols/registered_recovery_review_host_policy_v1.json",
+    "bench/registered_recovery_training_v1.py",
+    "bench/registered_epoch_recovery_training_v1.py",
+    "evals/registered_epoch_recovery_execution_v1.py",
+    "tests/test_registered_epoch_recovery_training_v1.py",
+    "tests/test_registered_epoch_recovery_execution_v1.py",
+    "bench/train_with_correction.py",
+    "bench/correction_adapter.py",
+    "evals/run_training_correction.py",
+    "src/rl_triage/correction_registry_v2.py",
+    "src/rl_triage/investigation_recovery.py",
+    "src/rl_triage/investigation_session.py",
+    "src/rl_triage/intervention_governor.py",
+    "src/rl_triage/intervention_evidence.py",
+    "src/rl_triage/registered_diagnostic_backend.py",
+    "src/rl_triage/mechanism_confirmation.py",
+    "src/rl_triage/mechanism_registry.py",
+    "src/rl_triage/correction_ledger.py",
+    "src/rl_triage/correction_registry.py",
+    "src/rl_triage/grounded_recovery.py",
+    "src/rl_triage/recovery.py",
+    "evals/model_decision_journal_v1.py",
+    "evals/lineage_source_batch_v1.py",
+    "src/rl_triage/gpu_resource_sampler.py",
+    "src/rl_triage/observable_behavior_v1.py",
+    "bench/protocols/observable_behavior_qualification_v1.json",
+    "tests/test_registered_recovery_resources_v1.py",
+    "tests/test_observable_behavior_v1.py",
+    "src/rl_triage/investigate.py",
+    "bench/protocols/registered_recovery_training_recipe_v1.json",
+} | set(R1_DEMO.CODE) | set(RATIO_DEMO.CODE)
+
+
+class PreparationError(ValueError):
+    """An immutable input or recovery-template binding is invalid."""
+
+
+def _canonical(value: object) -> bytes:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+                      allow_nan=False).encode("utf-8")
+
+
+def _read(path: Path) -> dict:
+    value = json.loads(Path(path).read_text(encoding="utf-8"),
+                       parse_constant=lambda token: (_ for _ in ()).throw(ValueError(token)))
+    if not isinstance(value, dict):
+        raise PreparationError("JSON object required")
+    _canonical(value)
+    return value
+
+
+def _sha(path: Path, *, lf: bool = False) -> str:
+    raw = Path(path).read_bytes()
+    if lf:
+        raw = raw.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _ref(path: Path) -> dict:
+    path = Path(path).resolve(strict=True)
+    if path.is_symlink():
+        raise PreparationError("symlink input forbidden")
+    return {"path": str(path), "sha256": _sha(path)}
+
+
+def _git_blob(anchor: str, relative: str) -> bytes:
+    result = subprocess.run(["git", "-C", str(ROOT), "show", f"{anchor}:{relative}"],
+                            check=True, capture_output=True)
+    return result.stdout.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+
+
+def _source_closure(anchor: str) -> dict[str, str]:
+    if _HEX40.fullmatch(anchor) is None:
+        raise PreparationError("source anchor format")
+    closure = {}
+    for relative in sorted(_SOURCE_FILES):
+        current = ROOT / relative
+        if not current.is_file() or current.is_symlink():
+            raise PreparationError(f"source closure missing: {relative}")
+        digest = _sha(current, lf=True)
+        if hashlib.sha256(_git_blob(anchor, relative)).hexdigest() != digest:
+            raise PreparationError(f"source closure differs from anchor: {relative}")
+        closure[relative] = digest
+    return closure
+
+
+def _validate_source_index(index_path: Path, metadata_path: Path) -> tuple[dict, dict]:
+    index, metadata = _read(index_path), _read(metadata_path)
+    if index.get("schema") != "lineage_source_inputs_v2" or metadata.get("schema") != "lineage_source_inputs_metadata_v2":
+        raise PreparationError("lineage source input schema")
+    ref = index.get("metadata_ref")
+    if not isinstance(ref, dict) or set(ref) != {"file", "sha256"} or ref["file"] != Path(metadata_path).name:
+        raise PreparationError("source index metadata reference")
+    if _sha(metadata_path) != ref["sha256"]:
+        raise PreparationError("source metadata changed")
+    sources = metadata.get("sources")
+    if not isinstance(sources, dict) or not isinstance(index.get("sources"), dict):
+        raise PreparationError("source maps missing")
+    by_public = {row.get("public_id"): row for row in sources.values() if isinstance(row, dict)}
+    if set(by_public) != set(index["sources"]):
+        raise PreparationError("source index coverage differs")
+    for public_id, recorded in index["sources"].items():
+        binding = by_public[public_id].get("binding")
+        if not isinstance(binding, dict) or any(binding.get(key) != value for key, value in recorded.items()):
+            raise PreparationError(f"source index binding differs: {public_id}")
+    return index, metadata
+
+
+def _case_material(metadata: dict, case: str) -> tuple[dict, dict, int]:
+    old = case
+    rows = [row for row in metadata["cases"] if isinstance(row, dict) and row.get("case_id") == old]
+    if len(rows) != 1:
+        raise PreparationError(f"case material missing: {case}")
+    row = rows[0]
+    # These two private names select original/reference material only; eligibility and labels are ignored.
+    source = metadata["sources"].get(row.get("source_job"))
+    reference = metadata["sources"].get(row.get("reference_job"))
+    if not isinstance(source, dict) or not isinstance(reference, dict):
+        raise PreparationError(f"case source/reference material missing: {case}")
+    seed = row.get("seed")
+    expected = SOURCE_SEEDS[case]
+    if seed not in {expected, expected - 110}:
+        raise PreparationError(f"case seed is neither registered nor development predecessor: {case}")
+    return source, reference, int(seed)
+
+
+def _source_artifacts(source: dict) -> tuple[Path, dict[str, dict]]:
+    event = source.get("material", {}).get("event")
+    if not isinstance(event, dict) or set(event) != {"path", "sha256"}:
+        raise PreparationError("source event reference")
+    event_path = Path(event["path"]).resolve(strict=True)
+    if _sha(event_path) != event["sha256"]:
+        raise PreparationError("source event changed")
+    log_dir = event_path.parent
+    paths = {
+        "checkpoint": log_dir / "model_299.pt",
+        "env": log_dir / "params/env.yaml",
+        "agent": log_dir / "params/agent.yaml",
+    }
+    refs = {name: _ref(path) for name, path in paths.items()}
+    if refs["checkpoint"]["sha256"] != source.get("binding", {}).get("checkpoint_sha256"):
+        raise PreparationError("source checkpoint lineage differs")
+    return log_dir, refs
+
+
+def _source_setup(source: dict) -> tuple[dict, dict]:
+    stage = Path(source.get("material", {}).get("stage", "")).resolve(strict=True)
+    manifest_path = stage / "manifest.json"
+    binding = source.get("binding")
+    recorded = source.get("manifest")
+    if (not manifest_path.is_file() or not isinstance(binding, dict) or not isinstance(recorded, dict)
+            or binding.get("manifest_sha256") != _sha(manifest_path)):
+        raise PreparationError("source setup manifest reference differs")
+    body = _read(manifest_path)
+    if body != recorded:
+        raise PreparationError("source setup manifest body differs")
+    return body, _ref(manifest_path)
+
+
+def _reference_report(reference: dict, output: Path) -> tuple[dict, dict]:
+    stage = Path(reference.get("material", {}).get("stage", "")).resolve(strict=True)
+    fixed = stage / "fixed-result.json"
+    if _sha(fixed) != reference.get("binding", {}).get("fixed_result_sha256"):
+        raise PreparationError("reference fixed result changed")
+    report = _read(fixed).get("report")
+    if not isinstance(report, dict):
+        raise PreparationError("reference report missing")
+    write_new(output, report)
+    return report, _ref(output)
+
+
+def _runtime_sources(source: dict) -> dict:
+    value = source.get("manifest", {}).get("runtime_source_sha256_lf")
+    if not isinstance(value, dict) or not value or any(_HEX64.fullmatch(str(v)) is None for v in value.values()):
+        raise PreparationError("runtime source binding missing")
+    return deepcopy(value)
+
+
+def _optimizer_binding(anchor: str, checkpoint_sha: str, runtime: dict, mechanism: str,
+                       closure: dict, environment_preservation: dict | None = None) -> dict:
+    code = set(R1_DEMO.CODE if mechanism == "optimizer_update_count" else RATIO_DEMO.CODE)
+    code |= {"evals/prepare_registered_recovery_comparison_v1.py",
+             "evals/registered_recovery_backend_v1.py", "evals/run_registered_recovery_comparison_v1.py"}
+    if mechanism == "optimizer_update_count":
+        code |= {"bench/registered_epoch_recovery_training_v1.py",
+                 "evals/registered_epoch_recovery_execution_v1.py"}
+    binding = {
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0", "num_envs": 4096,
+        "max_iterations": 300, "configured_learning_epochs": 5,
+        "configured_mini_batches": 4, "runtime_updates_to_observe": 3,
+        "source_commit_sha": anchor,
+        "protocol_path": RECIPE.relative_to(ROOT).as_posix(),
+        "protocol_sha256_lf": _sha(RECIPE, lf=True),
+        "source_sha256_lf": {path: closure[path] for path in sorted(code)},
+        "runtime_source_sha256_lf": runtime,
+        "source_checkpoint_sha256": checkpoint_sha,
+    }
+    expected_fields = set(OPTIMIZER_TRAINING_FIELDS)
+    if mechanism == "optimizer_update_count":
+        if environment_preservation is None:
+            raise PreparationError("count correction environment preservation missing")
+        binding["environment_preservation"] = deepcopy(environment_preservation)
+        expected_fields.add("environment_preservation")
+    elif environment_preservation is not None:
+        raise PreparationError("surrogate binding must not carry environment preservation")
+    if set(binding) != expected_fields:
+        raise AssertionError("optimizer training fields drifted")
+    return binding
+
+
+def _environment_preservation(*, source: dict, source_seed: int, training_seed: int,
+                              refs: dict[str, dict], code_contract_path: Path,
+                              code_contract: dict, output: Path) -> dict:
+    setup, setup_ref = _source_setup(source)
+    arm = setup.get("arm")
+    mode = "world_frame_reward" if arm in {"F1", "COMPOUND"} else "nominal_body_frame"
+    if arm not in {"NONE", "F1", "F2", "COMPOUND"}:
+        raise PreparationError("source environment arm is unsupported")
+    motor_key = "preserve_source_envelope" if arm == "F2" else "nominal"
+    target = deepcopy(code_contract.get("reward_targets", {}).get(mode))
+    secondary = deepcopy(code_contract.get("motor_targets", {}).get(motor_key))
+    if not isinstance(target, dict) or not isinstance(secondary, dict):
+        raise PreparationError("environment code contract target missing")
+    code_ref = _ref(code_contract_path)
+    recipe = {
+        "schema": EPOCH_CHILD.EXPECTED_SCHEMA,
+        "provenance_kind": EPOCH_CHILD.PROVENANCE_KIND,
+        "task": setup.get("task"), "source_arm": arm, "source_seed": source_seed,
+        "training_seed": training_seed, "source_checkpoint_sha256": refs["checkpoint"]["sha256"],
+        "source_setup_sha256": setup_ref["sha256"],
+        "source_env_config_sha256": refs["env"]["sha256"],
+        "code_contract_sha256": code_ref["sha256"], "mode": mode,
+        "target": target, "secondary_target": secondary,
+    }
+    recipe_path = output / "environment-recipe.json"
+    write_new(recipe_path, recipe)
+    binding = {
+        "schema": EPOCH_CHILD.SCHEMA, "mode": mode, "source_setup": setup_ref,
+        "source_env_config": refs["env"], "code_contract": code_ref,
+        "expected_reward": _ref(recipe_path), "target": target, "secondary_target": secondary,
+    }
+    try:
+        EPOCH_CHILD.validate_environment_binding(binding)
+    except (ValueError, TypeError, FileNotFoundError) as error:
+        raise PreparationError(f"environment preservation binding rejected: {error}") from error
+    return binding
+
+
+def _actuator_binding(anchor: str, seed: int, refs: dict, report: dict, sdk_contract: dict,
+                      isaaclab_commit: str) -> dict:
+    if _HEX40.fullmatch(isaaclab_commit) is None:
+        raise PreparationError("Isaac Lab commit format")
+    agent = ACTUATOR._read_yaml(Path(refs["agent"]["path"]))
+    num_steps = agent.get("num_steps_per_env")
+    if type(num_steps) is not int or num_steps <= 0:
+        raise PreparationError("source num_steps_per_env missing")
+    return {
+        "schema": ACTUATOR.SCHEMA, "source_commit_sha": anchor,
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0", "seed": seed,
+        "num_envs": 4096, "max_iterations": 300, "resume_iteration": 299,
+        "resume_checkpoint": refs["checkpoint"], "resume_env_config": refs["env"],
+        "resume_agent_config": refs["agent"], "correction_source_contract": sdk_contract,
+        "action_scale": report["action_scale"],
+        "rsl_rl_version": report["versions"]["rsl-rl-lib"],
+        "isaaclab_commit": isaaclab_commit,
+        "num_steps_per_env": num_steps,
+    }
+
+
+def _fixed_binding(report_ref: dict, report: dict, bands: dict, runtime: dict) -> dict:
+    return {"task": report["task"], "runtime_source_sha256_lf": deepcopy(runtime),
+            "action_scale": report["action_scale"],
+            "protocol_sha256_lf": report["protocol_sha256_lf"],
+            "reference_report": report_ref, "bands": deepcopy(bands)}
+
+
+def _rotation(index: int) -> list[str]:
+    methods: list[str] = list(METHODS)
+    return methods[index:] + methods[:index]
+
+
+def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Path,
+                      diagnostic_registration_anchor: str, source_anchor: str,
+                      sdk_contract: Path, recipe_code_contract: Path, output: Path, actor: str,
+                      isaaclab_commit: str,
+                      require_committed: bool = True) -> dict:
+    out = Path(output).resolve()
+    if out.exists():
+        raise FileExistsError("template output must be fresh")
+    _index, source_meta = _validate_source_index(source_index, metadata)
+    plan_rel = Path(diagnostic_plan).resolve(strict=True).relative_to(ROOT).as_posix()
+    phase_ref = {"path": plan_rel, "sha256": _sha(diagnostic_plan, lf=True)}
+    phase_plan = PHASE_A.load_plan(phase_ref, repo_root=ROOT,
+                                   registration_anchor=diagnostic_registration_anchor,
+                                   require_committed=require_committed)
+    phase_cases = {row["case_id"]: row for row in phase_plan["cases"]}
+    if not {f"case-{int(case[-2:]):02d}" for case in CASES} <= set(phase_cases):
+        raise PreparationError("phase-A selected cases missing")
+    closure = _source_closure(source_anchor) if require_committed else {
+        path: _sha(ROOT / path, lf=True) for path in sorted(_SOURCE_FILES)
+    }
+    sdk = _read(sdk_contract)
+    if _sha(sdk_contract) != SDK_CONTRACT_SHA256:
+        raise PreparationError("SDK source contract changed")
+    recipe_code = _read(recipe_code_contract)
+    if _sha(recipe_code_contract) != RECIPE_CODE_CONTRACT_SHA256:
+        raise PreparationError("environment recipe code contract changed")
+    bands = _read(UPSTREAM.P0C_SUMMARY).get("bands")
+    if not isinstance(bands, dict):
+        raise PreparationError("p0c recovery bands missing")
+    out.mkdir(parents=True)
+    commitments: dict[str, dict] = {}
+    development_sources: dict[str, int] = {}
+    for case_index, case in enumerate(CASES):
+        source, reference, material_seed = _case_material(source_meta, case)
+        development_sources[case] = material_seed
+        _log, refs = _source_artifacts(source)
+        case_dir = out / "templates" / case
+        report, report_ref = _reference_report(reference, case_dir / "reference-report.json")
+        runtime = _runtime_sources(source)
+        fixed = _fixed_binding(report_ref, report, bands, runtime)
+        fixed_path = case_dir / "fixed-binding.json"
+        write_new(fixed_path, fixed)
+        environment = _environment_preservation(
+            source=source, source_seed=material_seed, training_seed=SOURCE_SEEDS[case] + 3000,
+            refs=refs, code_contract_path=recipe_code_contract, code_contract=recipe_code,
+            output=case_dir / "optimizer_update_count")
+        training = {
+            "actuator": _actuator_binding(source_anchor, SOURCE_SEEDS[case], refs, report, sdk,
+                                           isaaclab_commit),
+            "optimizer_update_count": _optimizer_binding(source_anchor, refs["checkpoint"]["sha256"],
+                                                          runtime, "optimizer_update_count", closure,
+                                                          environment),
+            "optimizer_surrogate": _optimizer_binding(source_anchor, refs["checkpoint"]["sha256"],
+                                                       runtime, "optimizer_surrogate", closure),
+        }
+        commitments[case] = {}
+        for mechanism, body in training.items():
+            path = case_dir / mechanism / "training-binding.json"
+            write_new(path, body)
+            if mechanism == "actuator":
+                ACTUATOR.validate_prepared_binding(body)
+            commitments[case][mechanism] = {
+                "training_binding_sha256": _sha(path), "fixed_binding_sha256": _sha(fixed_path),
+                "source_checkpoint_sha256": refs["checkpoint"]["sha256"],
+            }
+    phase_inputs = {row["role"]: row for row in phase_plan["inputs"]}
+    inputs = [
+        {"role": "recovery_review_policy", "path": COMPARISON.REVIEW_POLICY_RELATIVE,
+         "sha256": _sha(ROOT / COMPARISON.REVIEW_POLICY_RELATIVE, lf=True)},
+        {"role": "measurement_preregistration",
+         "path": "bench/protocols/diagnostic_recovery_comparison_20261104_v1.md",
+         "sha256": _sha(ROOT / "bench/protocols/diagnostic_recovery_comparison_20261104_v1.md", lf=True)},
+        {"role": "diagnostic_plan", "path": plan_rel, "sha256": phase_ref["sha256"]},
+        {"role": "recovery_bands_summary", "path": UPSTREAM.P0C_SUMMARY.relative_to(ROOT).as_posix(),
+         "sha256": _sha(UPSTREAM.P0C_SUMMARY, lf=True)},
+    ]
+    for case in CASES:
+        old = case
+        row = phase_inputs.get(f"protocol:{old}")
+        if row is None:
+            raise PreparationError(f"phase-A protocol input missing: {old}")
+        inputs.append({"role": f"diagnostic_protocol:{case}", "path": row["path"],
+                       "sha256": row["sha256"]})
+    plan = {
+        "schema": COMPARISON.PLAN_SCHEMA, "source_anchor": source_anchor,
+        "source_closure": closure, "methods": list(METHODS),
+        "cases": [{"case_id": case, "rotation": _rotation(i)} for i, case in enumerate(CASES)],
+        "limits": {"max_recoveries": 16, "gpu_sdk_launch_cap": 32,
+                   "cpu_checkpoint_launch_cap": 16, "cpu_telemetry_launch_cap": 16,
+                   "total_owned_launch_cap": 64,
+                   "max_parent_wall_s_per_recovery": 5000, "api_cap": 0},
+        "inputs": inputs, "backend": investigate.REGISTERED_BACKEND,
+        "authorization": {"actor": actor,
+                          "ambiguous_consumed_policy": "settle_unknown_without_reexecution"},
+        "recovery_policy": {"training_iterations": 300,
+                            "seeds": {case: {"resume": SOURCE_SEEDS[case],
+                                             "restart": SOURCE_SEEDS[case] + 3000} for case in CASES},
+                            "same_case_same_template": True,
+                            "source_cost_policy": "phase_a_shared_count_once"},
+        "template_commitments": commitments,
+    }
+    plan_path = out / "registered-plan.json"
+    write_new(plan_path, plan)
+    COMPARISON.load_plan(plan_path, repo_root=ROOT, registration_anchor=source_anchor,
+                         require_committed=False)
+    manifest = {"schema": TEMPLATE_SCHEMA, "plan": _ref(plan_path),
+                "diagnostic_plan": phase_ref, "source_index": _ref(source_index),
+                "metadata": _ref(metadata), "sdk_contract": _ref(sdk_contract),
+                "recipe_code_contract": _ref(recipe_code_contract),
+                "development_source_seeds": development_sources,
+                "registered_source_seeds": SOURCE_SEEDS,
+                "actual_training_started": False, "api_calls": 0}
+    write_new(out / "manifest.json", manifest)
+    return manifest
+
+
+def _diagnostic_status(session: Path) -> dict:
+    current = InvestigationSession(session)
+    current._verify_operation(__import__("rl_triage.registered_diagnostic_backend", fromlist=["verify_source"]).verify_source)
+    if current.manifest.get("execution_class") != "actual":
+        raise PreparationError("diagnostic session is not actual")
+    return investigate.run("status", session, {}, backend_name=investigate.REGISTERED_BACKEND,
+                           fixture=False)
+
+
+def _approval(protocol_ref: dict, protocol: dict, proposal: dict, actor: str) -> dict:
+    request = proposal.get("status", {}).get("pending")
+    if not isinstance(request, dict):
+        raise PreparationError("recovery proposal missing pending request")
+    diagnostic, operation = protocol["diagnostic"], protocol["operation"]
+    return {"schema": "registered_recovery_approval_v1", "actor": actor,
+            "request_id": request["request_id"], "effect_key": request["effect_key"],
+            "protocol_sha256": protocol_ref["sha256"], "registry_sha256": registry_digest(),
+            "source_sha256": diagnostic["source_sha256"],
+            "checkpoint_sha256": diagnostic["checkpoint_sha256"],
+            "mechanism": diagnostic["mechanism"], "correction_id": operation["correction_id"],
+            "recovery_mode": operation["recovery_mode"], "gpu_budget_s": operation["gpu_budget_s"]}
+
+
+def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor: str,
+                 diagnostic_root: Path, isaaclab_root: Path, output: Path,
+                 require_committed: bool = True) -> dict:
+    out = Path(output).resolve()
+    if out.exists():
+        raise FileExistsError("job output must be fresh")
+    template_root = Path(templates).resolve(strict=True)
+    template_manifest = _read(template_root / "manifest.json")
+    if template_manifest.get("schema") != TEMPLATE_SCHEMA:
+        raise PreparationError("template manifest schema")
+    plan = COMPARISON.load_plan(registered_plan, repo_root=ROOT,
+                                registration_anchor=registration_anchor,
+                                require_committed=require_committed)
+    if _sha(registered_plan) != template_manifest["plan"]["sha256"]:
+        raise PreparationError("registered plan differs from prepared template")
+    freshness = SEED_GUARD.assert_fresh_seeds(
+        [plan["recovery_policy"]["seeds"][case]["restart"] for case in CASES],
+        Path(isaaclab_root), repo=ROOT,
+    )
+    out.mkdir(parents=True)
+    write_new(out / "restart-seed-freshness.json", freshness)
+    arms = []
+    for case in CASES:
+        for method in METHODS:
+            session = Path(diagnostic_root) / case / method
+            manifest_path = session / "manifest.json"
+            if not manifest_path.is_file():
+                raise PreparationError(f"diagnostic manifest missing: {case}/{method}")
+            status = _diagnostic_status(session)
+            expected_session_case = case
+            if status.get("case_id") != expected_session_case:
+                raise PreparationError("diagnostic case mapping differs")
+            arm = {"case_id": case, "method": method, "diagnostic_manifest": _ref(manifest_path),
+                   "recovery_folder": None, "recovery_payload": None, "approval_ref": None}
+            mechanism = status.get("confirmed_mechanism") if status.get("status") == "confirmed" else None
+            if mechanism in MECHANISMS:
+                commitment = plan["template_commitments"][case][mechanism]
+                case_dir = template_root / "templates" / case
+                training = case_dir / mechanism / "training-binding.json"
+                fixed = case_dir / "fixed-binding.json"
+                if _sha(training) != commitment["training_binding_sha256"] or _sha(fixed) != commitment["fixed_binding_sha256"]:
+                    raise PreparationError("template commitment changed")
+                source_session = InvestigationSession(session)
+                request, _intent, diagnostic = RECOVERY._diagnostic(source_session, mechanism)
+                mode = REGISTRY[mechanism]["recovery_modes"][0]
+                operation = {"correction_id": REGISTRY[mechanism]["correction_id"],
+                             "recovery_mode": mode,
+                             "runner_id": {"actuator": "actuator_resume_v1",
+                                           "optimizer_update_count": "r1_epochs_preserving_environment_v1",
+                                           "optimizer_surrogate": "ppo_ratio_v1"}[mechanism],
+                             "training_seed": plan["recovery_policy"]["seeds"][case][mode],
+                             "training_iterations": 300, "gpu_budget_s": 3600,
+                             "source_checkpoint_consumed": mechanism == "actuator",
+                             "training_binding_artifact_id": "training",
+                             "fixed_binding_artifact_id": "fixed"}
+                protocol = {"schema": "registered_recovery_protocol_v1",
+                            "backend_id": "registered_recovery_v1",
+                            "source_anchor": plan["source_anchor"], "source_closure": plan["source_closure"],
+                            "diagnostic": {"session_manifest_sha256": source_session._manifest_sha256,
+                                           "source_sha256": source_session.manifest["source"]["sha256"],
+                                           "checkpoint_sha256": status["source_verification"]["checkpoint_sha256"],
+                                           "case_id": expected_session_case, "mechanism": mechanism,
+                                           "probe": request["probe"],
+                                           "diagnostic_receipt_sha256": diagnostic["receipt_ref"]["sha256"]},
+                            "operation": operation, "registry_sha256": registry_digest(),
+                            "actors": [plan["authorization"]["actor"]],
+                            "limits": {"training_watchdog_s": 2700.0, "fixed_watchdog_s": 900.0}}
+                arm_dir = out / "artifacts" / case / method
+                protocol_path = arm_dir / "recovery-protocol.json"
+                resolver_path = arm_dir / "resolver.json"
+                write_new(protocol_path, protocol)
+                write_new(resolver_path, {"schema": "registered_recovery_resolver_v1",
+                                          "artifacts": {"training": _ref(training), "fixed": _ref(fixed)}})
+                payload = {"protocol": _ref(protocol_path), "artifact_resolver": _ref(resolver_path),
+                           "isaaclab_root": str(Path(isaaclab_root).resolve(strict=True)),
+                           "output_root": str((arm_dir / "execution").resolve())}
+                recovery_folder = out / "prepared-recoveries" / case / method
+                prepared = investigate.run("recovery-prepare", session,
+                                           {"recovery_payload": payload, "folder": str(recovery_folder)},
+                                           backend_name=investigate.REGISTERED_BACKEND, fixture=False)
+                if prepared.get("mechanism") != mechanism:
+                    raise PreparationError("recovery prepare mechanism mismatch")
+                proposed = investigate.run("recovery-propose", recovery_folder, {},
+                                           backend_name=investigate.REGISTERED_BACKEND, fixture=False)
+                approval_path = arm_dir / "approval.json"
+                write_new(approval_path, _approval(payload["protocol"], protocol, proposed,
+                                                   plan["authorization"]["actor"]))
+                arm.update({"recovery_folder": str(recovery_folder.resolve()),
+                            "recovery_payload": payload, "approval_ref": _ref(approval_path)})
+            arms.append(arm)
+    job = {"schema": JOB_SCHEMA, "plan": _ref(registered_plan), "arms": arms}
+    job_path = out / "job.json"
+    write_new(job_path, job)
+    # Validate the producer output, including every protocol, resolver, template, and approval.
+    COMPARISON._validate_job(job, job["plan"], plan, job_path)
+    return {"schema": "registered_recovery_comparison_job_preparation_v1", "job": _ref(job_path),
+            "arms": len(arms), "recovery_prepared": sum(row["recovery_payload"] is not None for row in arms),
+            "approval_consumed": False, "dispatch_started": False, "api_calls": 0}
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    t = sub.add_parser("templates")
+    t.add_argument("--source-index", required=True, type=Path)
+    t.add_argument("--metadata", required=True, type=Path)
+    t.add_argument("--diagnostic-plan", required=True, type=Path)
+    t.add_argument("--diagnostic-registration-anchor", required=True)
+    t.add_argument("--source-anchor", required=True)
+    t.add_argument("--sdk-contract", required=True, type=Path)
+    t.add_argument("--recipe-code-contract", required=True, type=Path)
+    t.add_argument("--out", required=True, type=Path)
+    t.add_argument("--actor", required=True)
+    t.add_argument("--isaaclab-commit", required=True)
+    t.add_argument("--allow-uncommitted-fixture", action="store_true")
+    j = sub.add_parser("jobs")
+    j.add_argument("--templates", required=True, type=Path)
+    j.add_argument("--registered-plan", required=True, type=Path)
+    j.add_argument("--registration-anchor", required=True)
+    j.add_argument("--diagnostic-root", required=True, type=Path)
+    j.add_argument("--isaaclab-root", required=True, type=Path)
+    j.add_argument("--out", required=True, type=Path)
+    j.add_argument("--allow-uncommitted-fixture", action="store_true")
+    args = parser.parse_args(argv)
+    try:
+        if args.command == "templates":
+            result = prepare_templates(source_index=args.source_index, metadata=args.metadata,
+                diagnostic_plan=args.diagnostic_plan,
+                diagnostic_registration_anchor=args.diagnostic_registration_anchor,
+                source_anchor=args.source_anchor, sdk_contract=args.sdk_contract, output=args.out,
+                recipe_code_contract=args.recipe_code_contract,
+                actor=args.actor, isaaclab_commit=args.isaaclab_commit,
+                require_committed=not args.allow_uncommitted_fixture)
+        else:
+            result = prepare_jobs(templates=args.templates, registered_plan=args.registered_plan,
+                registration_anchor=args.registration_anchor, diagnostic_root=args.diagnostic_root,
+                isaaclab_root=args.isaaclab_root, output=args.out,
+                require_committed=not args.allow_uncommitted_fixture)
+    except Exception as error:  # noqa: BLE001 - CLI emits a bounded failure record.
+        result = {"status": "rejected", "error_type": type(error).__name__, "reason": str(error)}
+        print(_canonical(result).decode())
+        return 2
+    print(_canonical(result).decode())
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

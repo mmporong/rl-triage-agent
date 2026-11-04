@@ -1,0 +1,58 @@
+{
+  "schema": "observable_behavior_qualification_v1",
+  "rule_id": "fixed26_walks_then_p0c_relative_bands_v1",
+  "scope": "이미 검증된 fixed_eval_v1 26조건 report의 절대 보행 자격과 동일 계보 기준 대비 상대 행동 판정",
+  "absolute_qualification": {
+    "function": "evals.run_upstream_smoke.walks",
+    "source": {
+      "path": "evals/run_upstream_smoke.py",
+      "sha256_lf": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+      "function_lines": [254, 257],
+      "function_sha256_lf": "7ce6710373bbe3aa12ae7a3f58567e3d6d985cfc318fd3d5c5a5fdd5dbd39084"
+    },
+    "implementation_source": {
+      "path": "src/rl_triage/grounded_recovery.py",
+      "sha256_lf": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e"
+    },
+    "lin_error_vs_standstill_strict_max": 0.5,
+    "fall_frac_max": 0.05
+  },
+  "relative_qualification": {
+    "summary": {
+      "path": "evals/results/p0c_fixed_eval_20261009/summary.json",
+      "sha256": "7589a132d4e1a55e159527389a8b635a1766472ecde558da0a1a704c286f3f23",
+      "sha256_lf": "85c51c4b618370d3fc7926893db60f34f72f5617f8744f1440eb1bf288cfdf24"
+    },
+    "fixed26_protocol": {
+      "path": "bench/protocols/fixed_eval_v1.json",
+      "sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46"
+    },
+    "bands": {
+      "survival_ratio_min": 0.9,
+      "fall_frac_max": 0.05,
+      "err_xy_ratio_max": 1.1513,
+      "err_yaw_ratio_max": 1.1719
+    }
+  },
+  "development_evidence": {
+    "collection_manifest": {
+      "path": "evals/results/five_type_sources_s2550_s2559_20261101_v1/manifest.json",
+      "sha256": "141a72f9b7c15e7a684a70811ddcf03f1c813981be8e8b356a0bceff69b4ce60"
+    },
+    "measurement_kind": "seen_development_fixed26",
+    "hidden_labels_consumed": false
+  },
+  "outcomes": {
+    "reference_unqualified": "unknown",
+    "candidate_unqualified": "failed",
+    "relative_band_failed": "below_reference",
+    "absolute_and_relative_passed": "normal",
+    "missing_or_unverifiable": "unknown"
+  },
+  "claims": {
+    "reference_is_cause": false,
+    "correction_recovered": false,
+    "execution_authority": false,
+    "criteria_review_only": true
+  }
+}

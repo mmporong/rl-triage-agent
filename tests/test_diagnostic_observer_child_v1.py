@@ -205,9 +205,40 @@ def test_inspector_uses_the_exact_manifest_installed_on_the_observer() -> None:
     assert inspection["primitives"]["ppo_surrogate_gradient"]["status"] == "unknown"
 
 
-def test_registered_protocol_allowlist_is_versioned_and_closed() -> None:
-    assert C.REGISTERED_PROTOCOLS == (C.REGISTERED_PROTOCOL_V1, C.REGISTERED_PROTOCOL_V2)
-    assert C.REGISTERED_PROTOCOL == C.REGISTERED_PROTOCOL_V1
+@pytest.mark.parametrize("version", [1, 2, 3])
+def test_registered_protocol_routes_to_the_exact_verified_version(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, version: int,
+) -> None:
+    protocol = ROOT / f"bench/protocols/registered_diagnostic_observer_v{version}.json"
+    manifest = write(tmp_path / "manifest.json", {"protocol": {"path": str(protocol)}})
+    verified = []
+    checked = {"output": tmp_path / "output", "manifest": {"component": "actuator_mapping"}}
+
+    def verify(path, *, repo_root, isaaclab_root, expected_protocol_path):
+        verified.append((path, repo_root, expected_protocol_path))
+        return checked
+
+    monkeypatch.setattr(C, "verify_manifest", verify)
+    monkeypatch.setattr(C, "_live_lease", lambda value: None)
+    monkeypatch.setattr(C, "_actuator_run", lambda value: {"status": "complete"})
+    assert C.child_main(manifest) == 0
+    assert verified == [(manifest.resolve(), ROOT, protocol.resolve())]
+
+
+def test_unregistered_protocol_never_reaches_manifest_verification_or_sdk(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest = write(tmp_path / "manifest.json", {
+        "protocol": {"path": str(ROOT / "bench/protocols/unregistered-v4.json")},
+    })
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("unregistered protocol crossed the execution boundary")
+
+    monkeypatch.setattr(C, "verify_manifest", forbidden)
+    monkeypatch.setattr(C, "_actuator_run", forbidden)
+    with pytest.raises(ValueError, match="registered parent protocol"):
+        C.child_main(manifest)
 
 
 def _directory_alias(link: Path, target: Path) -> None:
