@@ -466,8 +466,266 @@ def _approval(
             "authorization": authorization}, approval_ref
 
 
-def _raw_refs(session: Path, max_checks: int) -> dict:
-    refs: dict[str, list[dict]] = {"host_receipts": [], "api_journals": []}
+def _json_file(path: Path, label: str) -> dict:
+    value = json.loads(
+        path.read_text(encoding="utf-8"),
+        parse_constant=lambda token: (_ for _ in ()).throw(ValueError(f"nonfinite JSON: {token}")),
+    )
+    if not isinstance(value, dict):
+        raise ComparisonContractError(f"{label} must be a JSON object")
+    canonical(value)
+    return value
+
+
+def _session_events(session: Path) -> list[dict]:
+    path = session / "execution.jsonl"
+    if not path.is_file() or path.is_symlink():
+        return []
+    events: list[dict] = []
+    for index, line in enumerate(path.read_text(encoding="utf-8").splitlines()):
+        if not line.strip():
+            continue
+        value = json.loads(
+            line,
+            parse_constant=lambda token: (_ for _ in ()).throw(
+                ValueError(f"nonfinite JSON: {token}")
+            ),
+        )
+        if not isinstance(value, dict):
+            raise ComparisonContractError(f"execution event {index} is not an object")
+        canonical(value)
+        events.append(value)
+    return events
+
+
+def _number_or_none(value: object, label: str) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ComparisonContractError(f"{label} is not a finite non-negative number")
+    number = float(value)
+    if not math.isfinite(number) or number < 0:
+        raise ComparisonContractError(f"{label} is not a finite non-negative number")
+    return number
+
+
+def _request_cost(
+    session: Path,
+    session_manifest: dict,
+    request: dict,
+    logical_receipt: dict | None,
+) -> tuple[dict, dict | None]:
+    request_id = request["request_id"]
+    effect_key = request["effect_key"]
+    source_ref = session_manifest.get("source")
+    source_sha = source_ref.get("sha256") if isinstance(source_ref, dict) else None
+    if not isinstance(source_sha, str) or _SHA.fullmatch(source_sha) is None:
+        raise ComparisonContractError("session source SHA is invalid")
+    stage = session / "actual_stages" / request_id
+    host_path = session / "host_receipts" / f"{request_id}.json"
+    host = _json_file(host_path, "host receipt") if host_path.is_file() and not host_path.is_symlink() else None
+    host_ref = reference(host_path) if host is not None else None
+    if host is not None and (
+        host.get("request_id") != request_id
+        or host.get("effect_key") != effect_key
+        or host.get("source_sha256") != source_sha
+    ):
+        raise ComparisonContractError("host receipt request/effect/source binding differs")
+    logical_gpu_s = _number_or_none(
+        logical_receipt.get("gpu_s") if logical_receipt is not None else None,
+        "logical settlement gpu_s",
+    )
+    if logical_receipt is not None and logical_receipt.get("effect_key") != effect_key:
+        raise ComparisonContractError("logical settlement effect binding differs")
+    logical = {
+        "receipt_present": host is not None,
+        "receipt_ref": host_ref,
+        "ledger_settlement_present": logical_receipt is not None,
+        "ledger_settlement_gpu_s": logical_gpu_s,
+        "ledger_outcome": logical_receipt.get("outcome") if logical_receipt else None,
+    }
+
+    if not stage.exists():
+        execution_class = session_manifest.get("execution_class")
+        if host is not None:
+            assert host_ref is not None
+            gpu_wall = _number_or_none(host.get("gpu_s"), "host receipt gpu_s")
+            execution_wall = _number_or_none(
+                host.get("execution_wall_s"), "host receipt execution_wall_s"
+            )
+            event_status = "completed"
+            receipt_id = f"{request_id}:{host_ref['sha256']}"
+            missing: list[str] = []
+        else:
+            gpu_wall = None
+            execution_wall = None
+            event_status = "unknown"
+            receipt_id = f"missing:{request_id}"
+            missing = ["actual_stage_and_host_receipt_missing"]
+        owned_count: int | None = 0 if execution_class in {"fixture", "recorded"} else None
+        resource = {
+            "schema": "diagnostic_request_resource_cost_v1",
+            "phase_id": f"request:{request_id}:{effect_key}",
+            "request_id": request_id,
+            "effect_key": effect_key,
+            "source_sha256": source_sha,
+            "logical_settlement": logical,
+            "actual_owned": {
+                "stage_present": False,
+                "owned_sdk_execution_count": owned_count,
+                "owned_wall_s": None if owned_count is None else 0.0,
+                "natural_exit_count": None if owned_count is None else 0,
+                "non_natural_exit_count": None if owned_count is None else 0,
+                "failure_count": None if owned_count is None else 0,
+                "incomplete_count": None if owned_count is None else 0,
+                "missing_reasons": missing,
+            },
+            "effective_cost_source": "host_receipt" if host is not None else None,
+            "double_count_prevented": True,
+            "raw_refs": {"host_receipt": host_ref, "stage": None},
+        }
+        return resource, {
+            "schema": "diagnostic_resource_cost_event_v1",
+            "phase_id": resource["phase_id"],
+            "attempt_id": request_id,
+            "receipt_id": receipt_id,
+            "status": event_status,
+            "costs": {
+                "model_calls": None,
+                "input_tokens": None,
+                "output_tokens": None,
+                "gpu_wall_s": gpu_wall,
+                "cpu_s": None,
+                "human_review_s": None,
+                "execution_wall_s": execution_wall,
+                "simulator_steps": None,
+            },
+        }
+    if not stage.is_dir() or stage.is_symlink():
+        raise ComparisonContractError("actual stage is not a real directory")
+
+    selected = {
+        "manifest": stage / "manifest.json",
+        "execution": stage / "execution.json",
+        "failure": stage / "output" / "failure.json",
+        "training_failure": stage / "output" / "training_failure.json",
+        "training_evidence": stage / "output" / "training_evidence.json",
+        "records": stage / "output" / "records.jsonl",
+    }
+    stage_refs = {
+        name: reference(path)
+        for name, path in selected.items()
+        if path.is_file() and not path.is_symlink()
+    }
+    request_path = stage / "request.json"
+    if not request_path.is_file() or request_path.is_symlink():
+        raise ComparisonContractError("actual stage request binding is missing")
+    stage_request = _json_file(request_path, "actual stage request")
+    nested = stage_request.get("request")
+    if (
+        stage_request.get("request_id") != request_id
+        or stage_request.get("effect_key") != effect_key
+        or not isinstance(nested, dict)
+        or nested.get("request_id") != request_id
+        or nested.get("effect_key") != effect_key
+    ):
+        raise ComparisonContractError("actual stage request/effect binding differs")
+    stage_refs["request"] = reference(request_path)
+
+    missing_reasons: list[str] = []
+    stage_manifest = None
+    manifest_path = selected["manifest"]
+    if manifest_path.is_file() and not manifest_path.is_symlink():
+        stage_manifest = _json_file(manifest_path, "actual stage manifest")
+        source = stage_manifest.get("source")
+        if (
+            stage_manifest.get("request_id") != request_id
+            or stage_manifest.get("effect_key") != effect_key
+            or not isinstance(source, dict)
+            or source.get("source_sha256") != source_sha
+        ):
+            raise ComparisonContractError("actual stage manifest request/effect/source differs")
+    else:
+        missing_reasons.append("stage_manifest_missing")
+
+    execution = None
+    execution_path = selected["execution"]
+    if execution_path.is_file() and not execution_path.is_symlink():
+        execution = _json_file(execution_path, "actual stage execution")
+    else:
+        missing_reasons.append("stage_execution_missing")
+
+    failure_artifacts = [name for name in ("failure", "training_failure") if name in stage_refs]
+    if execution is None:
+        owned_count = owned_wall = natural_count = non_natural_count = None
+        failure_count = incomplete_count = None
+        effective_gpu = effective_execution = None
+        receipt_id = f"missing-execution:{request_id}"
+        event_status = "unknown"
+    else:
+        owned_wall = _number_or_none(execution.get("wall_s"), "owned execution wall_s")
+        natural = execution.get("natural_exit")
+        if not isinstance(natural, bool):
+            raise ComparisonContractError("owned execution natural_exit is not bool")
+        owned_count = 1
+        natural_count = int(natural)
+        non_natural_count = int(not natural)
+        failure_count = int(bool(failure_artifacts))
+        incomplete_count = int(bool(failure_artifacts) or host is None)
+        effective_gpu = owned_wall
+        effective_execution = owned_wall
+        receipt_id = f"{request_id}:{stage_refs['execution']['sha256']}"
+        event_status = "failed" if failure_count else "completed" if host is not None else "unknown"
+        if host is not None:
+            host_gpu = _number_or_none(host.get("gpu_s"), "host receipt gpu_s")
+            host_wall = _number_or_none(host.get("execution_wall_s"), "host receipt execution_wall_s")
+            if host_gpu != owned_wall or host_wall != owned_wall:
+                raise ComparisonContractError("host receipt and actual owned wall differ")
+
+    resource = {
+        "schema": "diagnostic_request_resource_cost_v1",
+        "phase_id": f"request:{request_id}:{effect_key}",
+        "request_id": request_id,
+        "effect_key": effect_key,
+        "source_sha256": source_sha,
+        "logical_settlement": logical,
+        "actual_owned": {
+            "stage_present": True,
+            "owned_sdk_execution_count": owned_count,
+            "owned_wall_s": owned_wall,
+            "natural_exit_count": natural_count,
+            "non_natural_exit_count": non_natural_count,
+            "failure_count": failure_count,
+            "incomplete_count": incomplete_count,
+            "failure_artifact_count": len(failure_artifacts),
+            "missing_reasons": missing_reasons,
+        },
+        "effective_cost_source": "actual_stage_execution" if execution is not None else None,
+        "double_count_prevented": True,
+        "raw_refs": {"host_receipt": host_ref, "stage": stage_refs},
+    }
+    event = {
+        "schema": "diagnostic_resource_cost_event_v1",
+        "phase_id": resource["phase_id"],
+        "attempt_id": request_id,
+        "receipt_id": receipt_id,
+        "status": event_status,
+        "costs": {
+            "model_calls": None,
+            "input_tokens": None,
+            "output_tokens": None,
+            "gpu_wall_s": effective_gpu,
+            "cpu_s": None,
+            "human_review_s": None,
+            "execution_wall_s": effective_execution,
+            "simulator_steps": None,
+        },
+    }
+    return resource, event
+
+
+def _raw_refs(session: Path, max_checks: int, *, case_id: str, method: str) -> dict:
+    refs: dict[str, Any] = {"host_receipts": [], "api_journals": [], "actual_stages": []}
     receipt_dir = session / "host_receipts"
     if receipt_dir.is_dir() and not receipt_dir.is_symlink():
         for path in sorted(receipt_dir.glob("*.json")):
@@ -478,6 +736,68 @@ def _raw_refs(session: Path, max_checks: int) -> dict:
             path = session / "model" / f"{ordinal:04d}" / name
             if path.is_file() and not path.is_symlink():
                 refs["api_journals"].append(reference(path))
+    manifest_path = session / "manifest.json"
+    if not manifest_path.is_file() or manifest_path.is_symlink():
+        refs["resource_cost"] = {
+            "schema": "diagnostic_arm_resource_cost_v1",
+            "phase_id": f"arm:{case_id}:{method}",
+            "events": [],
+            "missing_reasons": ["session_manifest_missing"],
+        }
+        return refs
+    session_manifest = _json_file(manifest_path, "session manifest")
+    events = _session_events(session)
+    requests: dict[str, dict] = {}
+    receipts: dict[str, dict] = {}
+    for event in events:
+        request_id = event.get("request_id")
+        if not isinstance(request_id, str):
+            continue
+        if event.get("event") == "proposed":
+            requests[request_id] = event
+        elif event.get("event") == "receipt":
+            receipts[request_id] = event
+    cost_events: list[dict] = []
+    for request_id, request in requests.items():
+        resource, cost_event = _request_cost(
+            session, session_manifest, request, receipts.get(request_id)
+        )
+        refs["actual_stages"].append(resource)
+        if cost_event is not None:
+            cost_event["attempt_id"] = f"{case_id}:{method}:{cost_event['attempt_id']}"
+            cost_event["receipt_id"] = f"{case_id}:{method}:{cost_event['receipt_id']}"
+            cost_events.append(cost_event)
+    actual_owned = [row["actual_owned"] for row in refs["actual_stages"]]
+
+    def total(field: str) -> int | float | None:
+        values = [row[field] for row in actual_owned]
+        return None if any(value is None for value in values) else sum(values)
+
+    def known_total(field: str) -> int | float:
+        return sum(row[field] for row in actual_owned if row[field] is not None)
+
+    refs["resource_cost"] = {
+        "schema": "diagnostic_arm_resource_cost_v1",
+        "phase_id": f"arm:{case_id}:{method}",
+        "events": cost_events,
+        "request_costs": refs["actual_stages"],
+        "actual_owned_summary": {
+            "owned_sdk_execution_count": total("owned_sdk_execution_count"),
+            "whole_owned_wall_s": total("owned_wall_s"),
+            "failure_count": total("failure_count"),
+            "incomplete_count": total("incomplete_count"),
+            "known_owned_sdk_execution_count": known_total("owned_sdk_execution_count"),
+            "known_owned_wall_s": known_total("owned_wall_s"),
+            "missing_request_count": sum(
+                any(value is None for value in (
+                    row["owned_sdk_execution_count"], row["owned_wall_s"],
+                    row["failure_count"], row["incomplete_count"],
+                ))
+                for row in actual_owned
+            ),
+        },
+        "aggregation": "one_effective_event_per_request_stage_preferred_over_host_receipt",
+    }
     return refs
 
 
@@ -814,7 +1134,15 @@ def _run_arm(
                 result["export"] = reference(export_path)
         elif export_path.is_file():
             result["export"] = reference(export_path)
-        result["raw_refs"] = _raw_refs(session, plan["limits"]["max_checks"]) if session.exists() else {}
+        if session.exists():
+            raw = _raw_refs(
+                session,
+                plan["limits"]["max_checks"],
+                case_id=arm["case_id"],
+                method=arm["method"],
+            )
+            result["raw_refs"] = raw
+            result["resource_cost"] = raw["resource_cost"]
         return result
     finally:
         if gpu_sampler is not None and sampler_start is not None:
@@ -830,7 +1158,14 @@ def _run_arm(
         if journal.is_file():
             result["controller_timing"] = reference(journal)
         if session.exists():
-            result["raw_refs"] = _raw_refs(session, plan["limits"]["max_checks"])
+            raw = _raw_refs(
+                session,
+                plan["limits"]["max_checks"],
+                case_id=arm["case_id"],
+                method=arm["method"],
+            )
+            result["raw_refs"] = raw
+            result["resource_cost"] = raw["resource_cost"]
         result["gpu_sampling"] = {"start": sampler_start, "stop": sampler_stop,
                                   "scope": "device_wide" if sampler_start else None}
 

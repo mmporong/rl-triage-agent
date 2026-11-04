@@ -147,6 +147,14 @@ def test_cpu_fixture_runs_all_four_arms_in_preregistered_rotation(tmp_path: Path
     approvals = sorted(output.glob("case-01/*/runner_approvals/*.json"))
     assert approvals
     assert all(json.loads(path.read_text(encoding="utf-8"))["approved"] is True for path in approvals)
+    fixture_cost = report["arms"][0]["resource_cost"]
+    assert len(fixture_cost["events"]) == 1
+    assert fixture_cost["events"][0]["costs"]["gpu_wall_s"] == 0.0
+    request_cost = fixture_cost["request_costs"][0]
+    assert request_cost["actual_owned"]["owned_sdk_execution_count"] == 0
+    assert request_cost["effective_cost_source"] == "host_receipt"
+    assert request_cost["double_count_prevented"] is True
+    assert fixture_cost["actual_owned_summary"]["owned_sdk_execution_count"] == 0
 
 
 def test_scope_rejection_writes_no_backend_approval_or_dispatch(tmp_path: Path) -> None:
@@ -454,6 +462,137 @@ def test_each_case_requires_a_registered_protocol_role(tmp_path: Path) -> None:
     )
     RUNNER._validate_plan(plan)
     assert RUNNER._protocol_input(plan, "case-02")["path"] == "protocol-02.json"
+
+
+def test_sanitized_cpu_fixture_matches_actual_failure_cost_shape(tmp_path: Path) -> None:
+    """Public regression uses sanitized local files; private evidence is validated separately."""
+    session = _synthetic_actual_session(
+        tmp_path, execution=True, settled=False, wall_s=61.125, failure_artifacts=2
+    )
+    raw = RUNNER._raw_refs(session, 1, case_id="case-03", method="fixed_sequence")
+    cost = raw["resource_cost"]
+    assert len(cost["events"]) == 1
+    event = cost["events"][0]
+    assert event["status"] == "failed"
+    assert event["costs"]["gpu_wall_s"] == 61.125
+    assert event["costs"]["execution_wall_s"] == 61.125
+    request = cost["request_costs"][0]
+    assert request["request_id"] == "request-1"
+    assert request["effect_key"] == "effect-1"
+    assert request["actual_owned"] == {
+        "stage_present": True,
+        "owned_sdk_execution_count": 1,
+        "owned_wall_s": 61.125,
+        "natural_exit_count": 1,
+        "non_natural_exit_count": 0,
+        "failure_count": 1,
+        "incomplete_count": 1,
+        "failure_artifact_count": 2,
+        "missing_reasons": [],
+    }
+    refs = request["raw_refs"]["stage"]
+    assert set(refs) == {"request", "manifest", "execution", "failure", "training_failure", "records"}
+    assert refs["execution"]["sha256"] == RUNNER.file_sha(
+        session / "actual_stages/request-1/execution.json"
+    )
+    assert request["logical_settlement"]["ledger_settlement_gpu_s"] is None
+    assert cost["actual_owned_summary"] == {
+        "owned_sdk_execution_count": 1,
+        "whole_owned_wall_s": 61.125,
+        "failure_count": 1,
+        "incomplete_count": 1,
+        "known_owned_sdk_execution_count": 1,
+        "known_owned_wall_s": 61.125,
+        "missing_request_count": 0,
+    }
+    assert "condition" not in json.dumps(request, sort_keys=True)
+
+
+def _synthetic_actual_session(
+    tmp_path: Path,
+    *,
+    execution: bool,
+    settled: bool,
+    wall_s: float = 12.5,
+    failure_artifacts: int = 1,
+) -> Path:
+    session = tmp_path / "session"
+    stage = session / "actual_stages/request-1"
+    (stage / "output").mkdir(parents=True)
+    source_sha = "a" * 64
+    write_new(
+        session / "manifest.json",
+        {"source": {"path": "private-source", "sha256": source_sha}, "execution_class": "actual"},
+    )
+    events: list[dict[str, object]] = [
+        {"event": "proposed", "request_id": "request-1", "effect_key": "effect-1"},
+        {"event": "consumed", "request_id": "request-1", "effect_key": "effect-1"},
+    ]
+    if settled:
+        events.append(
+            {
+                "event": "receipt",
+                "request_id": "request-1",
+                "effect_key": "effect-1",
+                "outcome": "unknown",
+                "gpu_s": 0.0,
+            }
+        )
+    (session / "execution.jsonl").write_text(
+        "".join(json.dumps(row) + "\n" for row in events), encoding="utf-8"
+    )
+    write_new(
+        stage / "request.json",
+        {
+            "request_id": "request-1",
+            "effect_key": "effect-1",
+            "request": {"request_id": "request-1", "effect_key": "effect-1"},
+        },
+    )
+    write_new(
+        stage / "manifest.json",
+        {
+            "request_id": "request-1",
+            "effect_key": "effect-1",
+            "source": {"source_sha256": source_sha},
+        },
+    )
+    if execution:
+        write_new(stage / "execution.json", {"wall_s": wall_s, "natural_exit": True})
+        if failure_artifacts >= 1:
+            write_new(stage / "output/failure.json", {"status": "invalid"})
+        if failure_artifacts >= 2:
+            write_new(stage / "output/training_failure.json", {"status": "invalid"})
+        (stage / "output/records.jsonl").write_text('{"sanitized":true}\n', encoding="utf-8")
+    return session
+
+
+def test_missing_execution_cost_is_null_with_reason_not_zero(tmp_path: Path) -> None:
+    session = _synthetic_actual_session(tmp_path, execution=False, settled=False)
+    raw = RUNNER._raw_refs(session, 1, case_id="case-01", method="fixed_sequence")
+    event = raw["resource_cost"]["events"][0]
+    request = raw["resource_cost"]["request_costs"][0]
+    assert event["costs"]["gpu_wall_s"] is None
+    assert event["costs"]["execution_wall_s"] is None
+    assert request["actual_owned"]["owned_sdk_execution_count"] is None
+    assert request["actual_owned"]["owned_wall_s"] is None
+    assert request["actual_owned"]["missing_reasons"] == ["stage_execution_missing"]
+    assert raw["resource_cost"]["actual_owned_summary"]["whole_owned_wall_s"] is None
+    assert raw["resource_cost"]["actual_owned_summary"]["known_owned_wall_s"] == 0
+
+
+def test_resume_settlement_zero_does_not_erase_or_double_actual_spend(tmp_path: Path) -> None:
+    session = _synthetic_actual_session(tmp_path, execution=True, settled=True)
+    first = RUNNER._raw_refs(session, 1, case_id="case-01", method="fixed_sequence")
+    second = RUNNER._raw_refs(session, 1, case_id="case-01", method="fixed_sequence")
+    for raw in (first, second):
+        cost = raw["resource_cost"]
+        assert len(cost["events"]) == 1
+        assert cost["events"][0]["costs"]["gpu_wall_s"] == 12.5
+        request = cost["request_costs"][0]
+        assert request["logical_settlement"]["ledger_settlement_gpu_s"] == 0.0
+        assert request["actual_owned"]["owned_wall_s"] == 12.5
+        assert request["double_count_prevented"] is True
 
 
 def test_actual_source_integrity_failure_stops_batch_and_sampler_in_finally(tmp_path: Path) -> None:
