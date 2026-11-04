@@ -1,0 +1,118 @@
+{
+  "actual": {
+    "api_calls": 0,
+    "checkpoint_cpu_children": 0,
+    "fixed_evaluations": 0,
+    "learning_iterations": 0,
+    "new_checkpoint": false,
+    "registered_sdk_attempts": 1,
+    "simulator_apps_started": 0,
+    "telemetry_cpu_children": 0,
+    "trained_policy_recovery_measured": false
+  },
+  "cleanup": {
+    "lease_completed": true,
+    "parent_cleanup_verified": true,
+    "parent_exit_code": 1,
+    "parent_natural_exit": true,
+    "sdk_cleanup_verified": true,
+    "sdk_exit_code": 1,
+    "sdk_natural_exit": true
+  },
+  "completed_arms": 1,
+  "confirmed_failure": {
+    "exception": "ValueError",
+    "extra_fields": [
+      "effective_run_name",
+      "namespace_profile",
+      "original_run_name"
+    ],
+    "frozen_consumer": "bench/train_with_correction.py:305",
+    "missing_fields": [],
+    "reason": "training correction manifest fields differ from the fixed schema",
+    "stage": "frozen_training_manifest_validation"
+  },
+  "costs": {
+    "billing_cost": null,
+    "device_energy": {
+      "devices": {
+        "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+          "coverage_fraction": 0.995948396308086,
+          "covered_s": 11.616564989089966,
+          "energy_wh": 0.12947398097217083,
+          "gaps": [
+            {
+              "end_s": 1793829090.914377,
+              "reason": "window_boundary_uncovered",
+              "start_s": 1793829090.868384
+            },
+            {
+              "end_s": 1793829102.532206,
+              "reason": "window_boundary_uncovered",
+              "start_s": 1793829102.530942
+            }
+          ],
+          "max_gap_s": 6.0,
+          "process_attribution": null,
+          "sample_count": 7,
+          "scope": "device_wide_estimate",
+          "window_s": 11.663822174072266
+        }
+      },
+      "unsupported_devices_remain_null": true,
+      "window_end_s": 1793829102.532206,
+      "window_start_s": 1793829090.868384
+    },
+    "device_scope": "device_wide",
+    "device_summary": {
+      "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+        "metrics": {
+          "gpu_util_percent_sample_mean": {
+            "missing_or_invalid_samples": 0,
+            "valid_samples": 7,
+            "value": 12.285714285714286
+          },
+          "memory_used_mib_peak": {
+            "missing_or_invalid_samples": 0,
+            "valid_samples": 7,
+            "value": 1358.0
+          },
+          "power_draw_w_peak": {
+            "missing_or_invalid_samples": 0,
+            "valid_samples": 7,
+            "value": 40.22
+          }
+        },
+        "scope": "whole_device_including_other_loads"
+      }
+    },
+    "nested_intervals_not_added": true,
+    "outer_owned_wall_s": 57.57800000000134,
+    "outer_parent_process_cpu_s": 0.65625,
+    "outer_parent_wall_s": 63.49291870000161,
+    "provider_gpu_seconds": null,
+    "resource_locked_wall_s": 14.159277899998415,
+    "resource_phase_wall_s": 14.159277899998415,
+    "sdk_owned_wall_s": 0.6100000000005821
+  },
+  "first_arm": {
+    "case_id": "case-05",
+    "controller_reason": "ambiguous_consumed_side_effect",
+    "method": "fixed_sequence",
+    "outcome": "unknown"
+  },
+  "interpretation": {
+    "new_registered_attempt_still_counts": true,
+    "no_claim_of_recovery_or_savings": true,
+    "not_a_behavioral_not_recovered_result": true,
+    "old_results_not_overwritten": true,
+    "original_HOLD_not_requeried": true,
+    "original_unknown_preserved": true
+  },
+  "not_started_arms": 15,
+  "planned_arms": 16,
+  "registration_commit": "88cb8fb357442167da0eefbbd89da7c5ca5976cc",
+  "schema": "balanced_recovery_manifest_failure_public_v1",
+  "source_commit": "b469d5c500d4430e66ee22496a39710ca99e31c7",
+  "status": "infrastructure_failure_before_learning"
+}
