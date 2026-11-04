@@ -22,6 +22,8 @@ from evals import r1_repair_execution_v2 as V2
 RUNNER_ID = "r1_epochs_preserving_environment_v1"
 ENVIRONMENT_FIELD = "environment_preservation"
 PRESERVATION_SCHEMA = "registered_epoch_environment_evidence_v1"
+RUN_NAMESPACE_SCHEMA = "registered_epoch_training_run_namespace_v1"
+RUN_NAME_LIMIT = 80
 
 
 def _write_new(path: Path, value: Mapping[str, Any]) -> None:
@@ -76,6 +78,41 @@ def _owned_adapter(owned: Callable[..., Mapping[str, Any]] | None,
     return execute
 
 
+def training_run_name(request_id: str, seed: int,
+                      environment_binding: Mapping[str, Any]) -> str:
+    """Bind a reusable request id to one verified training environment."""
+    V1._name(request_id)
+    environment = CHILD.validate_environment_binding(environment_binding)
+    provenance = environment["source_provenance"]
+    if seed != provenance["training_seed"]:
+        raise ValueError("training seed differs from source environment")
+    namespace = {
+        "schema": RUN_NAMESPACE_SCHEMA,
+        "request_id": request_id,
+        "training_seed": seed,
+        "mode": environment["mode"],
+        "source_arm": provenance["source_arm"],
+        "source_seed": provenance["source_seed"],
+        "source_checkpoint_sha256": provenance["source_checkpoint_sha256"],
+        "source_setup_sha256": environment["source_setup"]["sha256"],
+        "source_env_config_sha256": environment["source_env_config"]["sha256"],
+        "expected_reward_sha256": environment["expected_reward"]["sha256"],
+        "code_contract_sha256": environment["code_contract"]["sha256"],
+        "reward_runtime_fingerprint": environment["target"]["expected_runtime_fingerprint"],
+        "motor_runtime_fingerprint":
+            environment["secondary_target"]["expected_runtime_fingerprint"],
+    }
+    encoded = json.dumps(namespace, sort_keys=True, separators=(",", ":"),
+                         allow_nan=False).encode("utf-8")
+    digest = hashlib.sha256(encoded).hexdigest()[:16]
+    suffix = f"s{seed}_{digest}"
+    prefix_limit = RUN_NAME_LIMIT - len(suffix) - 1
+    if prefix_limit < 1:
+        raise ValueError("training seed is too long for bounded run_name")
+    value = f"{request_id[:prefix_limit]}_{suffix}"
+    return V1._name(value)
+
+
 def train(stage: Path, isaaclab: Path, arm: str, seed: int, run_name: str,
           binding: Mapping[str, Any], owned=None) -> dict[str, Any]:
     if arm != "CORRECTED" or not isinstance(binding, Mapping) or ENVIRONMENT_FIELD not in binding:
@@ -94,7 +131,8 @@ def train(stage: Path, isaaclab: Path, arm: str, seed: int, run_name: str,
         "schema", "mode", "source_setup", "source_env_config", "expected_reward", "target",
         "secondary_target", "code_contract")})
     state = {"training_replacements": 0}
-    result = V1.train(stage, isaaclab, arm, seed, run_name, base_binding,
+    namespaced_run = training_run_name(run_name, seed, binding[ENVIRONMENT_FIELD])
+    result = V1.train(stage, isaaclab, arm, seed, namespaced_run, base_binding,
                       _owned_adapter(owned, binding_path, state))
     if state["training_replacements"] != 1:
         raise RuntimeError("corrected training child was not replaced exactly once")

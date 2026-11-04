@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -21,9 +22,11 @@ def _write(path: Path, value: dict) -> dict[str, str]:
     return {"path": str(path.resolve()), "sha256": _sha(path)}
 
 
-def _environment(tmp_path: Path) -> dict:
+def _environment(tmp_path: Path, *, training_seed: int = 5556,
+                 reward_fingerprint: str = "3" * 64) -> dict:
     target = {**CHILD.TARGET, "source_sha256_lf": "1" * 64,
-              "clean_fingerprint": "2" * 64, "expected_runtime_fingerprint": "3" * 64}
+              "clean_fingerprint": "2" * 64,
+              "expected_runtime_fingerprint": reward_fingerprint}
     secondary_target = {**CHILD.SECONDARY_TARGET, "source_sha256_lf": "6" * 64,
                         "clean_fingerprint": "7" * 64, "expected_runtime_fingerprint": "7" * 64}
     hidden_sha = CHILD._sha(CHILD.ROOT / "bench/hidden_faults.py", lf=True)
@@ -48,7 +51,8 @@ def _environment(tmp_path: Path) -> dict:
         "hidden_recipe_source_sha256_lf": hidden_sha})
     recipe_ref = _write(tmp_path / "recipe.json", {
         "schema": CHILD.EXPECTED_SCHEMA, "provenance_kind": CHILD.PROVENANCE_KIND,
-        "task": CHILD.BASE.TASK, "source_arm": "COMPOUND", "source_seed": 2556, "training_seed": 5556,
+        "task": CHILD.BASE.TASK, "source_arm": "COMPOUND", "source_seed": 2556,
+        "training_seed": training_seed,
         "source_checkpoint_sha256": "5" * 64, "source_setup_sha256": setup_ref["sha256"],
         "source_env_config_sha256": env_ref["sha256"], "mode": "world_frame_reward",
         "code_contract_sha256": contract_ref["sha256"], "target": target,
@@ -66,7 +70,10 @@ def test_train_replaces_only_training_child_and_preserves_other_children(monkeyp
         seen.append(list(argv))
         return {"exit_code": 0}
 
+    names = []
+
     def base_train(stage_arg, isaaclab, arm, seed, run_name, binding, owned_adapter):
+        names.append(run_name)
         stage_arg.mkdir()
         base = str((SUBJECT.ROOT / "bench/r1_repair_training.py").resolve())
         owned_adapter(stage_arg / "owned", [sys.executable, "-B", base, "--manifest", "m.json"], isaaclab, 1)
@@ -107,6 +114,8 @@ def test_train_replaces_only_training_child_and_preserves_other_children(monkeyp
     result = SUBJECT.train(stage, tmp_path, "CORRECTED", 5556, "run", binding_full, owned)
 
     assert Path(seen[0][2]).name == "registered_epoch_recovery_training_v1.py"
+    assert names == [SUBJECT.training_run_name("run", 5556,
+                                               binding_full["environment_preservation"])]
     assert seen[0][-2] == "--environment-binding"
     assert seen[1][2].endswith("r1_repair_training.py")
     verified = SUBJECT.verify_preservation(result["environment_preservation"], result["checkpoint"])
@@ -128,6 +137,88 @@ def test_train_rejects_seed_or_noncorrected_arm(tmp_path: Path):
         SUBJECT.train(tmp_path / "a", tmp_path, "CORRECTED", 5557, "run", binding)
     with pytest.raises(ValueError, match="corrected"):
         SUBJECT.train(tmp_path / "b", tmp_path, "R1", 5556, "run", binding)
+
+
+def test_training_run_name_binds_request_seed_and_environment(tmp_path: Path):
+    request_id = "785427445a0a"
+    first = _environment(tmp_path / "first")
+    same = SUBJECT.training_run_name(request_id, 5556, first)
+    assert same == SUBJECT.training_run_name(request_id, 5556, first)
+    assert same.startswith(request_id + "_s5556_") and len(same) <= SUBJECT.RUN_NAME_LIMIT
+
+    other_seed = _environment(tmp_path / "other-seed", training_seed=5557)
+    other_recipe = _environment(tmp_path / "other-recipe", reward_fingerprint="8" * 64)
+    assert SUBJECT.training_run_name(request_id, 5557, other_seed) != same
+    assert SUBJECT.training_run_name(request_id, 5556, other_recipe) != same
+
+
+def _repository_bound_training(tmp_path: Path, isaaclab: Path) -> dict:
+    protocol = SUBJECT.ROOT / "bench/protocols/r1_repair_demo_v1.json"
+    sources = {
+        relative: CHILD.BASE.sha256_lf(SUBJECT.ROOT / relative)
+        for relative in CHILD.BASE.MINIMUM_BOUND_SOURCES
+    }
+    runtime_relative = "scripts/reinforcement_learning/rsl_rl/train.py"
+    runtime = isaaclab / runtime_relative
+    runtime.parent.mkdir(parents=True, exist_ok=True)
+    runtime.write_text("# namespace regression runtime\n", encoding="utf-8")
+    return {
+        "source_commit_sha": subprocess.run(
+            ["git", "-C", str(SUBJECT.ROOT), "rev-parse", "HEAD"], check=True,
+            capture_output=True, text=True, encoding="utf-8").stdout.strip(),
+        "protocol_path": protocol.relative_to(SUBJECT.ROOT).as_posix(),
+        "protocol_sha256_lf": CHILD.BASE.sha256_lf(protocol),
+        "source_sha256_lf": sources,
+        "runtime_source_sha256_lf": {
+            runtime_relative: CHILD.BASE.sha256_lf(runtime),
+        },
+        "source_checkpoint_sha256": "9" * 64,
+        "task": SUBJECT.V1.TASK,
+        "num_envs": 4096,
+        "max_iterations": 300,
+        "configured_learning_epochs": 5,
+        "configured_mini_batches": 4,
+        "runtime_updates_to_observe": 3,
+    }
+
+
+def test_real_v1_training_collision_uses_verified_namespace_before_sdk(monkeypatch,
+                                                                      tmp_path: Path):
+    class SdkBoundaryReached(RuntimeError):
+        pass
+
+    request_id = "785427445a0a"
+    isaaclab = tmp_path / "IsaacLab"
+    python_entry = isaaclab / "_isaac_sim/python.bat"
+    python_entry.parent.mkdir(parents=True)
+    python_entry.write_text("@exit /b 99\n", encoding="utf-8")
+    binding = {"environment_preservation": _environment(tmp_path / "environment"),
+               **_repository_bound_training(tmp_path, isaaclab)}
+    log_root = isaaclab / "logs/rsl_rl/unitree_go2_flat"
+    (log_root / f"2026-11-04_12-00-00_{request_id}").mkdir(parents=True)
+    monkeypatch.setattr(SUBJECT.V1, "_query_gpu", lambda: {"busy": False})
+    reached = []
+
+    def stop_before_sdk(folder, argv, cwd, watchdog):
+        reached.append((Path(folder), list(argv), Path(cwd), watchdog))
+        raise SdkBoundaryReached("SDK process was not started")
+
+    stage = tmp_path / "attempt-one" / "training"
+    with pytest.raises(SdkBoundaryReached, match="not started"):
+        SUBJECT.train(stage, isaaclab, "CORRECTED", 5556, request_id, binding,
+                      stop_before_sdk)
+    manifest = json.loads((stage / "manifest.json").read_text(encoding="utf-8"))
+    namespaced = SUBJECT.training_run_name(request_id, 5556,
+                                           binding["environment_preservation"])
+    assert manifest["run_name"] == namespaced != request_id
+    assert len(reached) == 1 and reached[0][1][2].endswith(
+        "registered_epoch_recovery_training_v1.py")
+
+    (log_root / f"2026-11-04_12-01-00_{namespaced}").mkdir()
+    with pytest.raises(FileExistsError, match="같은 run_name"):
+        SUBJECT.train(tmp_path / "attempt-two" / "training", isaaclab, "CORRECTED",
+                      5556, request_id, binding, stop_before_sdk)
+    assert len(reached) == 1
 
 
 def test_owned_adapter_rejects_different_manifest_entry(tmp_path: Path):
