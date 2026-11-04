@@ -116,3 +116,46 @@ def test_host_312_preserves_sdk_310_contract_and_builds_fixed_child_argv(
     written = json.loads((stage / "binding.json").read_text(encoding="utf-8"))
     assert written["correction_source_contract"]["runtime"]["version"] == [3, 10, 15]
     assert written == binding
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows Job ownership boundary")
+@pytest.mark.parametrize("injected", [False, True])
+def test_training_prepares_owned_directory_before_real_cpu_worker(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, injected: bool) -> None:
+    binding = _binding(tmp_path)
+    launcher = tmp_path / "_isaac_sim/python.bat"
+    launcher.parent.mkdir(parents=True, exist_ok=True)
+    launcher.write_text("@echo off\n", encoding="utf-8")
+    stage = tmp_path / "stage"
+    marker = tmp_path / "cpu-worker-finished.txt"
+    real_owned = training.V1.OWNED.run_owned
+    calls = []
+
+    def cpu_owned(folder, args, cwd, watchdog):
+        calls.append((folder, args, cwd, watchdog))
+        execution = real_owned(folder, [sys.executable, "-I", "-c",
+            "from pathlib import Path; Path(" + repr(str(marker)) + ").write_text('cpu-only', encoding='utf-8')"],
+            cwd, 20)
+        assert execution["exit_code"] == 0 and execution["natural_exit"] is True
+        assert execution["job_assigned_before_release"] is True
+        assert execution["cleanup_verified"] is True
+        checkpoint = stage / "model_598.pt"
+        checkpoint.write_bytes(b"synthetic checkpoint for owned-contract CPU fixture")
+        (stage / "correction.json").write_text(json.dumps({
+            "schema": "correction_readback_v1", "selected_correction": training.CORRECTION}), encoding="utf-8")
+        (stage / "receipt.json").write_text(json.dumps({"checkpoint": {
+            "path": str(checkpoint), "sha256": hashlib.sha256(checkpoint.read_bytes()).hexdigest()}}), encoding="utf-8")
+        return execution
+
+    monkeypatch.setattr(training.LEGACY, "validate_readback", lambda *_: None)
+    if injected:
+        result = training.train(stage, tmp_path, "CORRECTED", 2552, "owned_cpu_contract", binding,
+                                owned=cpu_owned)
+    else:
+        monkeypatch.setattr(training.V1.OWNED, "run_owned", cpu_owned)
+        result = training.train(stage, tmp_path, "CORRECTED", 2552, "owned_cpu_contract", binding)
+    assert marker.read_text(encoding="utf-8") == "cpu-only"
+    assert len(calls) == 1 and calls[0][0] == stage / "owned"
+    assert (stage / "owned/launch.json").is_file()
+    assert result["execution"]["cleanup_verified"] is True
+    assert result["configuration"]["source_checkpoint_consumed"] is True

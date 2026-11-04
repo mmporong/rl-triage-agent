@@ -205,7 +205,7 @@ def train(stage: Path, isaaclab: Path, arm: str, seed: int, run_name: str,
     _write_new(binding_path, bound)
     manifest = manifest_for(Path(stage), bound, Path(isaaclab), run_name)
     _write_new(manifest_path, manifest)
-    runner = owned or V1.OWNED.run_owned
+    runner = V2._prepared_owned(owned)
     execution = runner(Path(stage) / "owned", [str(Path(isaaclab) / "_isaac_sim/python.bat"), "-B",
         str(Path(__file__).resolve()), "--manifest", str(manifest_path), "--binding", str(binding_path)],
         Path(isaaclab), V1.WATCHDOG["train"])
