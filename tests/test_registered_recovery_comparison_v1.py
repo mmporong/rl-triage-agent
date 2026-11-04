@@ -455,6 +455,61 @@ def _upgrade_to_v5(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dic
     return plan, proofs, registry
 
 
+def _upgrade_to_v6(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dict, dict, dict]:
+    plan, proofs, registry = _upgrade_to_v5(plan_path, job_path, tmp_path)
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    plan["schema"] = comparison.PLAN_SCHEMA_V6
+    plan["limits"].update(gpu_sdk_launch_cap=14, total_owned_launch_cap=28)
+    plan["recovery_policy"]["seeds"]["case-07"]["restart"] = 6066
+    plan["recovery_policy"]["seeds"]["case-08"]["restart"] = 6067
+    continuation = plan["continuation"]
+    continuation.pop("prior_v9_registration_anchor")
+    continuation.pop("v9_failed_epoch_sdk_launches")
+    continuation.update({
+        "completed_import_profile": "motor_completed_epoch_close_retry_v1",
+        "epoch_shutdown_retry_policy_sha256_lf": (
+            comparison.EPOCH_SHUTDOWN_RETRY_POLICY_SHA256_LF),
+        "failure_proof_sha256": comparison.EPOCH_SHUTDOWN_FAILURE_PROOF_SHA256,
+        "prior_consumed_gpu_sdk_launches": 18,
+        "new_gpu_sdk_launch_cap": 14,
+        "continuation_tag": "v12_epoch_close_retry",
+        "prior_v11_registration_anchor": "389b3ae0c85257b5548a24926584917abbc12ccb",
+        "v11_failed_epoch_sdk_launches": 1,
+    })
+    for relative, role in (
+        (comparison.V12_NOTE, "epoch_close_retry_preregistration"),
+        (comparison.EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE,
+         "epoch_shutdown_retry_policy"),
+    ):
+        sha = (comparison.EPOCH_SHUTDOWN_RETRY_POLICY_SHA256_LF
+               if relative == comparison.EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE
+               else "7" * 64)
+        plan["source_closure"][relative] = sha
+        plan["inputs"].append({"role": role, "path": relative, "sha256": sha})
+    plan["source_closure"].update({
+        "evals/registered_epoch_shutdown_failure_v1.py": "8" * 64,
+        "tests/test_registered_epoch_shutdown_failure_v1.py": "8" * 64,
+    })
+    for row in job["arms"]:
+        payload = row.get("recovery_payload")
+        if payload is None:
+            continue
+        protocol_path = Path(payload["protocol"]["path"])
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol["source_closure"] = plan["source_closure"]
+        if row["case_id"] in {"case-07", "case-08"}:
+            protocol["operation"]["training_seed"] = plan["recovery_policy"]["seeds"][
+                row["case_id"]
+            ][protocol["operation"]["recovery_mode"]]
+        payload["protocol"] = _write(protocol_path, protocol)
+    failure_proof = _write(tmp_path / "v11-failure-proof.json", {"schema": "proof-fixture"})
+    job["epoch_shutdown_failure_proof"] = failure_proof
+    plan_ref = _write(plan_path, plan)
+    job["plan"] = plan_ref
+    _write(job_path, job)
+    return plan, proofs, registry
+
+
 def _make_recovery_null(job_path: Path) -> None:
     job = json.loads(job_path.read_text(encoding="utf-8"))
     for arm in job["arms"]:
@@ -737,6 +792,74 @@ def test_v5_rejects_registry_and_cap_forgery(
     changed = json.loads(json.dumps(plan))
     changed["limits"]["gpu_sdk_launch_cap"] = 14
     with pytest.raises(comparison.ComparisonContractError, match="cap differs"):
+        comparison._validate_plan(changed)
+
+
+def test_v6_validates_retry_accounting_seeds_rotation_and_imports(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, _proofs, registry = _upgrade_to_v6(plan_path, job_path, tmp_path)
+    monkeypatch.setattr(comparison, "_completed_effect_registry", lambda: registry)
+    monkeypatch.setattr(comparison.epoch_failure, "verify_failure_proof",
+        lambda reference, **_kwargs: {"proof_ref": {
+            "path": reference["path"],
+            "sha256": comparison.EPOCH_SHUTDOWN_FAILURE_PROOF_SHA256,
+        }})
+    comparison._validate_plan(plan)
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    normalized = comparison._validate_job(job, job["plan"], plan, job_path)
+    assert len(normalized) == 16
+    assert len([row for row in normalized if row["continuation_import"]]) == 8
+    assert plan["limits"] == {"max_recoveries": 16, "gpu_sdk_launch_cap": 14,
+        "cpu_checkpoint_launch_cap": 7, "cpu_telemetry_launch_cap": 7,
+        "total_owned_launch_cap": 28, "max_parent_wall_s_per_recovery": 5000,
+        "api_cap": 0}
+    assert plan["continuation"]["prior_consumed_gpu_sdk_launches"] == 18
+    assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 14
+    assert plan["recovery_policy"]["seeds"]["case-07"]["restart"] == 6066
+    assert plan["recovery_policy"]["seeds"]["case-08"]["restart"] == 6067
+    assert [(row["case_id"], row["method"]) for row in job["arms"]] == [
+        (case["case_id"], method) for case in plan["cases"] for method in case["rotation"]]
+
+
+def test_v6_rejects_job_without_failure_proof_before_output(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo, plan_path, job_path, out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, _proofs, registry = _upgrade_to_v6(plan_path, job_path, tmp_path)
+    monkeypatch.setattr(comparison, "_completed_effect_registry", lambda: registry)
+    monkeypatch.setattr(comparison, "load_plan", lambda *_args, **_kwargs: plan)
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    job.pop("epoch_shutdown_failure_proof")
+    _write(job_path, job)
+    with pytest.raises(comparison.ComparisonContractError, match="job fields"):
+        comparison.prepare(
+            plan_path, job_path, out, repo_root=repo,
+            registration_anchor="b" * 40, require_committed=False)
+    assert not out.exists()
+
+
+@pytest.mark.parametrize("mutation", ["proof", "cap", "seed", "import"])
+def test_v6_rejects_failure_proof_cap_seed_and_import_forgery(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation: str
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, _proofs, registry = _upgrade_to_v6(plan_path, job_path, tmp_path)
+    monkeypatch.setattr(comparison, "_completed_effect_registry", lambda: registry)
+    changed = json.loads(json.dumps(plan))
+    if mutation == "proof":
+        changed["continuation"]["failure_proof_sha256"] = "0" * 64
+    elif mutation == "cap":
+        changed["limits"]["gpu_sdk_launch_cap"] = 15
+    elif mutation == "seed":
+        changed["recovery_policy"]["seeds"]["case-07"]["restart"] = 5866
+    else:
+        changed["continuation"]["stage_imports"][0]["proof_sha256"] = "0" * 64
+    with pytest.raises(comparison.ComparisonContractError):
         comparison._validate_plan(changed)
 
 

@@ -22,6 +22,7 @@ from bench import registered_recovery_training_v1 as ACTUATOR
 from evals import core_seed_guard_v1 as SEED_GUARD
 from evals import ppo_ratio_repair_demo_v2 as RATIO_DEMO
 from evals import r1_repair_demo_v2 as R1_DEMO
+from evals import registered_epoch_shutdown_failure_v1 as EPOCH_FAILURE
 from evals import registered_prior_training_v1 as PRIOR
 from evals import run_diagnostic_comparison_v1 as PHASE_A
 from evals import run_registered_recovery_comparison_v1 as COMPARISON
@@ -153,6 +154,7 @@ _CONTINUATION_RETRY_SOURCE_FILES = {
     "bench/protocols/diagnostic_recovery_comparison_20261104_v9.md",
 }
 COMPLETED_IMPORT_PROFILE_MOTOR = "motor_completed_v1"
+COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY = "motor_completed_epoch_close_retry_v1"
 COMPLETED_EFFECT_REGISTRY_RELATIVE = (
     "bench/protocols/registered_completed_motor_effects_v1.json"
 )
@@ -168,6 +170,25 @@ RESTART_SEED_PREREGISTRATION_V11 = (
 )
 REGISTERED_RESTART_SEED_OVERRIDES_V11 = {"case-07": 5866, "case-08": 5867}
 _CONTINUATION_V11_SOURCE_FILES = {RESTART_SEED_PREREGISTRATION_V11}
+EPOCH_CLOSE_RETRY_PREREGISTRATION_V12 = (
+    "bench/protocols/diagnostic_recovery_comparison_20261105_v12.md"
+)
+EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE = (
+    EPOCH_FAILURE.POLICY_RELATIVE
+)
+EPOCH_SHUTDOWN_RETRY_POLICY_SHA256_LF = (
+    EPOCH_FAILURE.POLICY_SHA256_LF
+)
+EPOCH_SHUTDOWN_FAILURE_PROOF_SHA256 = (
+    EPOCH_FAILURE.FAILURE_PROOF_SHA256
+)
+REGISTERED_RESTART_SEED_OVERRIDES_V12 = {"case-07": 6066, "case-08": 6067}
+_CONTINUATION_V12_SOURCE_FILES = {
+    "evals/registered_epoch_shutdown_failure_v1.py",
+    "tests/test_registered_epoch_shutdown_failure_v1.py",
+    EPOCH_CLOSE_RETRY_PREREGISTRATION_V12,
+    EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE,
+}
 PRIOR_V5_SOURCE_ANCHOR = "f9d5fea93cce406a325f578bc6f4597cc0bc35c5"
 PRIOR_V5_REGISTRATION_ANCHOR = "bf1632ee6770e681e9e8c4c5b1df890ebaed12a6"
 PRIOR_V7_REGISTRATION_ANCHOR = "47fec9fc6107e6efde09950d52e64f5465751252"
@@ -246,7 +267,8 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
                     include_continuation_v4: bool = False,
                     include_observation_retry: bool = False,
                     include_completed_v5: bool = False,
-                    include_restart_seed_v11: bool = False) -> dict[str, str]:
+                    include_restart_seed_v11: bool = False,
+                    include_epoch_close_retry_v12: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
@@ -259,6 +281,10 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
         if not include_completed_v5:
             raise PreparationError("v11 restart seeds require v5 completed imports")
         source_files |= _CONTINUATION_V11_SOURCE_FILES
+    if include_epoch_close_retry_v12:
+        if not include_completed_v5:
+            raise PreparationError("v12 epoch-close retry requires v5 completed imports")
+        source_files |= _CONTINUATION_V12_SOURCE_FILES
     if include_observation_retry:
         if not include_continuation_v4:
             raise PreparationError("observation retry requires v4 completed-effect imports")
@@ -373,6 +399,22 @@ def _v5_registry() -> tuple[dict, dict[str, dict]]:
         if not isinstance(row, dict) or row.get("artifact_id") != artifact_id:
             raise PreparationError("v5 completed effect registry artifact differs")
     return registry, entries
+
+
+def _epoch_shutdown_retry_policy() -> dict:
+    try:
+        return EPOCH_FAILURE.load_policy(repo=ROOT)
+    except EPOCH_FAILURE.ShutdownFailureError as exc:
+        raise PreparationError(str(exc)) from exc
+
+
+def _v12_failure_proof(path: Path) -> tuple[dict, dict]:
+    reference = _ref(Path(path))
+    try:
+        verified = EPOCH_FAILURE.verify_failure_proof(reference, repo=ROOT)
+    except EPOCH_FAILURE.ShutdownFailureError as exc:
+        raise PreparationError(str(exc)) from exc
+    return verified["proof_ref"], verified
 
 
 def _v5_imports(completed_effect_proofs: Mapping[str, Path]) -> tuple[list[dict], dict[str, dict]]:
@@ -757,7 +799,11 @@ def _restart_seed_map(
     seeds = {case: SOURCE_SEEDS[case] + 3000 for case in CASES}
     if restart_seed_overrides is None:
         return seeds
-    if completed_import_profile != COMPLETED_IMPORT_PROFILE_MOTOR:
+    registered = {
+        COMPLETED_IMPORT_PROFILE_MOTOR: REGISTERED_RESTART_SEED_OVERRIDES_V11,
+        COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY: REGISTERED_RESTART_SEED_OVERRIDES_V12,
+    }
+    if completed_import_profile not in registered:
         raise PreparationError("restart seed overrides require motor completed imports")
     if set(restart_seed_overrides) != {"case-07", "case-08"}:
         raise PreparationError("restart seed overrides must cover case-07 and case-08")
@@ -768,8 +814,8 @@ def _restart_seed_map(
         raise PreparationError("restart seed overrides must be distinct")
     if set(values) & set(SOURCE_SEEDS.values()):
         raise PreparationError("restart seed overrides collide with resume seeds")
-    if dict(restart_seed_overrides) != REGISTERED_RESTART_SEED_OVERRIDES_V11:
-        raise PreparationError("restart seed overrides differ from v11 registration")
+    if dict(restart_seed_overrides) != registered[completed_import_profile]:
+        raise PreparationError("restart seed overrides differ from profile registration")
     seeds.update(restart_seed_overrides)
     return seeds
 
@@ -783,7 +829,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                       prior_static_training_proof: Path | None = None,
                       completed_effect_proofs: Mapping[str, Path] | None = None,
                       completed_import_profile: str | None = None,
-                       restart_seed_overrides: Mapping[str, int] | None = None,
+                      restart_seed_overrides: Mapping[str, int] | None = None,
+                      epoch_shutdown_failure_proof: Path | None = None,
                       isaaclab_root: Path | None = None,
                       gpu_admission_profile: str | None = None,
                       require_committed: bool = True) -> dict:
@@ -799,7 +846,11 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     phase_cases = {row["case_id"]: row for row in phase_plan["cases"]}
     if not {f"case-{int(case[-2:]):02d}" for case in CASES} <= set(phase_cases):
         raise PreparationError("phase-A selected cases missing")
-    v5_requested = completed_import_profile is not None
+    v6_requested = completed_import_profile == COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY
+    v5_requested = completed_import_profile in {
+        COMPLETED_IMPORT_PROFILE_MOTOR,
+        COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY,
+    }
     restart_seeds = _restart_seed_map(completed_import_profile, restart_seed_overrides)
     v4_requested = completed_effect_proofs is not None and not v5_requested
     v3_requested = prior_completed_effect_proof is not None or prior_static_training_proof is not None
@@ -824,14 +875,22 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     ):
         raise PreparationError("v4 proofs and Isaac Lab root must be supplied alone")
     if v5_requested and (
-        completed_import_profile != COMPLETED_IMPORT_PROFILE_MOTOR
-        or completed_effect_proofs is None
+        completed_effect_proofs is None
         or v3_requested
         or prior_training_proof is not None
         or isaaclab_root is None
         or selected_v4_profile != GPU_ADMISSION_PROFILE_RETRY
     ):
         raise PreparationError("v5 completed import profile inputs differ")
+    if v6_requested:
+        if (restart_seed_overrides != REGISTERED_RESTART_SEED_OVERRIDES_V12
+                or epoch_shutdown_failure_proof is None):
+            raise PreparationError("v12 restart seeds are required by retry profile")
+        failure_proof = _v12_failure_proof(epoch_shutdown_failure_proof)
+    else:
+        failure_proof = None
+        if epoch_shutdown_failure_proof is not None:
+            raise PreparationError("epoch shutdown failure proof requires v12 profile")
     if not (v3_requested or v4_requested or v5_requested) and (
         prior_training_proof is None
     ) != (isaaclab_root is None):
@@ -868,7 +927,10 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             or v5 is not None
         ),
         include_completed_v5=v5 is not None,
-        include_restart_seed_v11=restart_seed_overrides is not None,
+        include_restart_seed_v11=(
+            restart_seed_overrides is not None and not v6_requested
+        ),
+        include_epoch_close_retry_v12=v6_requested,
     ) if require_committed else {
         path: _sha(ROOT / path, lf=True)
         for path in sorted(
@@ -885,7 +947,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                or v5 is not None else set())
             | (_CONTINUATION_V5_SOURCE_FILES if v5 is not None else set())
              | (_CONTINUATION_V11_SOURCE_FILES
-                if restart_seed_overrides is not None else set())
+                if restart_seed_overrides is not None and not v6_requested else set())
+            | (_CONTINUATION_V12_SOURCE_FILES if v6_requested else set())
         )
     }
     sdk = _read(sdk_contract)
@@ -965,12 +1028,25 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         inputs.append({"role": "completed_motor_effect_registry",
                        "path": COMPLETED_EFFECT_REGISTRY_RELATIVE,
                        "sha256": COMPLETED_EFFECT_REGISTRY_SHA256_LF})
-    if restart_seed_overrides is not None:
+    if restart_seed_overrides is not None and not v6_requested:
         inputs.append({
             "role": "restart_seed_preregistration",
             "path": RESTART_SEED_PREREGISTRATION_V11,
             "sha256": closure[RESTART_SEED_PREREGISTRATION_V11],
         })
+    if v6_requested:
+        inputs.extend([
+            {
+                "role": "epoch_close_retry_preregistration",
+                "path": EPOCH_CLOSE_RETRY_PREREGISTRATION_V12,
+                "sha256": closure[EPOCH_CLOSE_RETRY_PREREGISTRATION_V12],
+            },
+            {
+                "role": "epoch_shutdown_retry_policy",
+                "path": EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE,
+                "sha256": EPOCH_SHUTDOWN_RETRY_POLICY_SHA256_LF,
+            },
+        ])
     for case in CASES:
         old = case
         row = phase_inputs.get(f"protocol:{old}")
@@ -980,8 +1056,9 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                        "sha256": row["sha256"]})
     plan = {
         "schema": (
-            COMPARISON.PLAN_SCHEMA_V5
-            if v5 is not None
+            COMPARISON.PLAN_SCHEMA_V6
+            if v6_requested
+            else COMPARISON.PLAN_SCHEMA_V5 if v5 is not None
             else COMPARISON.PLAN_SCHEMA_V4 if v4 is not None
             else COMPARISON.PLAN_SCHEMA_V3
             if v3 is not None
@@ -991,10 +1068,10 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         "source_closure": closure, "methods": list(METHODS),
         "cases": [{"case_id": case, "rotation": _rotation(i)} for i, case in enumerate(CASES)],
         "limits": {"max_recoveries": 16,
-                   "gpu_sdk_launch_cap": 15 if v5 is not None else 27 if v4 is not None else 29 if v3 is not None else 31 if prior is not None else 32,
+                   "gpu_sdk_launch_cap": 14 if v6_requested else 15 if v5 is not None else 27 if v4 is not None else 29 if v3 is not None else 31 if prior is not None else 32,
                    "cpu_checkpoint_launch_cap": 7 if v5 is not None else 16,
                    "cpu_telemetry_launch_cap": 7 if v5 is not None else 16,
-                   "total_owned_launch_cap": 29 if v5 is not None else 59 if v4 is not None else 61 if v3 is not None else 63 if prior is not None else 64,
+                   "total_owned_launch_cap": 28 if v6_requested else 29 if v5 is not None else 59 if v4 is not None else 61 if v3 is not None else 63 if prior is not None else 64,
                    "max_parent_wall_s_per_recovery": 5000, "api_cap": 0},
         "inputs": inputs, "backend": investigate.REGISTERED_BACKEND,
         "authorization": {"actor": actor,
@@ -1057,6 +1134,29 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             "prior_incomplete_preserved": True,
             "v9_failed_epoch_sdk_launches": 0,
         }
+    if v6_requested:
+        if v5 is None:
+            raise PreparationError("v12 completed imports missing")
+        imports, _proof_refs = v5
+        policy = _epoch_shutdown_retry_policy()
+        plan["continuation"] = {
+            "gpu_admission_profile": GPU_ADMISSION_PROFILE_RETRY,
+            "completed_import_profile": COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY,
+            "completed_effect_registry_sha256_lf": COMPLETED_EFFECT_REGISTRY_SHA256_LF,
+            "epoch_shutdown_retry_policy_sha256_lf": EPOCH_SHUTDOWN_RETRY_POLICY_SHA256_LF,
+            "failure_proof_sha256": policy["failure_proof_sha256"],
+            "stage_imports": imports,
+            "prior_consumed_gpu_sdk_launches": 18,
+            "expected_new_gpu_sdk_launches": 14,
+            "new_gpu_sdk_launch_cap": 14,
+            "cumulative_gpu_sdk_launches": 32,
+            "continuation_tag": "v12_epoch_close_retry",
+            "prior_v11_registration_anchor": policy["v11_failure"]["identity"][
+                "registration_anchor"
+            ],
+            "prior_incomplete_preserved": True,
+            "v11_failed_epoch_sdk_launches": 1,
+        }
     plan_path = out / "registered-plan.json"
     write_new(plan_path, plan)
     COMPARISON.load_plan(plan_path, repo_root=ROOT, registration_anchor=source_anchor,
@@ -1076,6 +1176,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         manifest["continuation_proofs"] = v4[1]
     if v5 is not None:
         manifest["continuation_proofs"] = v5[1]
+    if failure_proof is not None:
+        manifest["epoch_shutdown_failure_proof"] = failure_proof[0]
     write_new(out / "manifest.json", manifest)
     return manifest
 
@@ -1183,7 +1285,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
     continuation = (
         plan.get("continuation")
         if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V2, COMPARISON.PLAN_SCHEMA_V3,
-                              COMPARISON.PLAN_SCHEMA_V4, COMPARISON.PLAN_SCHEMA_V5}
+                              COMPARISON.PLAN_SCHEMA_V4, COMPARISON.PLAN_SCHEMA_V5,
+                              COMPARISON.PLAN_SCHEMA_V6}
         else None
     )
     prior_ref = template_manifest.get("prior_training_proof")
@@ -1228,9 +1331,9 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 or imports != continuation.get("stage_imports")
                 or verified_refs != v3_proof_refs):
             raise PreparationError("v4 continuation proofs differ from public plan")
-    elif plan["schema"] == COMPARISON.PLAN_SCHEMA_V5:
+    elif plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6}:
         if not isinstance(v3_proofs, dict):
-            raise PreparationError("v5 template continuation proofs missing")
+            raise PreparationError("completed-import template continuation proofs missing")
         v3_proof_refs = v3_proofs
         imports, verified_refs = _v5_imports({
             artifact_id: Path(reference["path"])
@@ -1239,10 +1342,23 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
         if (not isinstance(continuation, dict)
                 or imports != continuation.get("stage_imports")
                 or verified_refs != v3_proof_refs):
-            raise PreparationError("v5 continuation proofs differ from public plan")
+            raise PreparationError("completed-import proofs differ from public plan")
     elif v3_proofs is not None:
         raise PreparationError("non-v3 template must not carry continuation proofs")
-    freshness_cases = ("case-07", "case-08") if plan["schema"] == COMPARISON.PLAN_SCHEMA_V5 else CASES
+    failure_ref = template_manifest.get("epoch_shutdown_failure_proof")
+    if plan["schema"] == COMPARISON.PLAN_SCHEMA_V6:
+        if not isinstance(failure_ref, dict):
+            raise PreparationError("v6 epoch shutdown failure proof missing")
+        verified_failure_ref, _proof = _v12_failure_proof(Path(str(failure_ref.get("path"))))
+        if verified_failure_ref != failure_ref:
+            raise PreparationError("v6 epoch shutdown failure proof reference differs")
+    elif failure_ref is not None:
+        raise PreparationError("non-v6 template must not carry epoch shutdown failure proof")
+    freshness_cases = (
+        ("case-07", "case-08")
+        if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6}
+        else CASES
+    )
     freshness = SEED_GUARD.assert_fresh_seeds(
         [plan["recovery_policy"]["seeds"][case]["restart"] for case in freshness_cases],
         Path(isaaclab_root), repo=ROOT,
@@ -1255,7 +1371,7 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
     for case in CASES:
         ordered_methods = (
             tuple(case_rows[case]["rotation"])
-            if plan["schema"] == COMPARISON.PLAN_SCHEMA_V5
+            if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6}
             else METHODS
         )
         for method in ordered_methods:
@@ -1268,7 +1384,7 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
             arm = {"case_id": case, "method": method, "diagnostic_manifest": _ref(manifest_path),
                    "recovery_folder": None, "recovery_payload": None, "approval_ref": None}
             if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3, COMPARISON.PLAN_SCHEMA_V4,
-                                  COMPARISON.PLAN_SCHEMA_V5}:
+                                  COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6}:
                 arm["continuation_import"] = None
             mechanism = status.get("confirmed_mechanism") if status.get("status") == "confirmed" else None
             if mechanism in MECHANISMS:
@@ -1277,7 +1393,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                     if row["case_id"] == case and row["method"] == method
                 ), None) if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3,
                                                 COMPARISON.PLAN_SCHEMA_V4,
-                                                COMPARISON.PLAN_SCHEMA_V5} \
+                                                COMPARISON.PLAN_SCHEMA_V5,
+                                                COMPARISON.PLAN_SCHEMA_V6} \
                     and isinstance(continuation, dict) else None
                 commitment = plan["template_commitments"][case][mechanism]
                 case_dir = template_root / "templates" / case
@@ -1322,13 +1439,15 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 )
                 use_prior_v3 = import_row is not None and import_row["kind"] == "completed_training"
                 if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V2, COMPARISON.PLAN_SCHEMA_V3,
-                                      COMPARISON.PLAN_SCHEMA_V4, COMPARISON.PLAN_SCHEMA_V5}:
+                                      COMPARISON.PLAN_SCHEMA_V4, COMPARISON.PLAN_SCHEMA_V5,
+                                      COMPARISON.PLAN_SCHEMA_V6}:
                     operation.update({
                         "gpu_admission_profile": (
                             plan["continuation"]["gpu_admission_profile"]
                             if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3,
                                                   COMPARISON.PLAN_SCHEMA_V4,
-                                                  COMPARISON.PLAN_SCHEMA_V5}
+                                                  COMPARISON.PLAN_SCHEMA_V5,
+                                                  COMPARISON.PLAN_SCHEMA_V6}
                             else GPU_ADMISSION_PROFILE
                         ),
                         "prior_training_artifact_id": (
@@ -1350,7 +1469,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                                 "registered_recovery_protocol_v3"
                                 if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3,
                                                       COMPARISON.PLAN_SCHEMA_V4,
-                                                      COMPARISON.PLAN_SCHEMA_V5}
+                                                      COMPARISON.PLAN_SCHEMA_V5,
+                                                      COMPARISON.PLAN_SCHEMA_V6}
                                 else "registered_recovery_protocol_v2"
                                 if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2
                                 else "registered_recovery_protocol_v1"
@@ -1397,6 +1517,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                             "recovery_payload": payload, "approval_ref": _ref(approval_path)})
             arms.append(arm)
     job = {"schema": JOB_SCHEMA, "plan": _ref(registered_plan), "arms": arms}
+    if plan["schema"] == COMPARISON.PLAN_SCHEMA_V6:
+        job["epoch_shutdown_failure_proof"] = failure_ref
     job_path = out / "job.json"
     write_new(job_path, job)
     # Validate the producer output, including every protocol, resolver, template, and approval.
@@ -1426,9 +1548,13 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("--prior-static-training-proof", type=Path)
     t.add_argument("--isaaclab-root", type=Path)
     t.add_argument("--gpu-admission-profile", choices=tuple(dict.fromkeys((*_V3_PROFILE_TAGS, *_V4_PROFILE_TAGS))))
-    t.add_argument("--completed-import-profile", choices=(COMPLETED_IMPORT_PROFILE_MOTOR,))
+    t.add_argument("--completed-import-profile", choices=(
+        COMPLETED_IMPORT_PROFILE_MOTOR,
+        COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY,
+    ))
     t.add_argument("--completed-effect-proof", action="append", default=[],
                    metavar="ARTIFACT_ID=PATH")
+    t.add_argument("--epoch-shutdown-failure-proof", type=Path)
     t.add_argument("--allow-uncommitted-fixture", action="store_true")
     j = sub.add_parser("jobs")
     j.add_argument("--templates", required=True, type=Path)
@@ -1477,6 +1603,7 @@ def main(argv: list[str] | None = None) -> int:
                 prior_static_training_proof=args.prior_static_training_proof,
                 completed_effect_proofs=completed_effect_proofs,
                 completed_import_profile=args.completed_import_profile,
+                epoch_shutdown_failure_proof=args.epoch_shutdown_failure_proof,
                 isaaclab_root=args.isaaclab_root,
                 gpu_admission_profile=args.gpu_admission_profile,
                 require_committed=not args.allow_uncommitted_fixture)

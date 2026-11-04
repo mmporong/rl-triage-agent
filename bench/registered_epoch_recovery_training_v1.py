@@ -172,8 +172,103 @@ def _reward_term(env: Any) -> Any:
     return function
 
 
+def _seal_final_readback(
+        state: dict[str, Any], binding: Mapping[str, Any], readback_path: Path,
+        final_readback_path: Path) -> None:
+    """Seal the preserved recipe before Isaac application shutdown can end the process."""
+    if state.get("final_readback_written") is True:
+        return
+    function, motor_class = state.get("function"), state.get("motor_class")
+    if (function is None or motor_class is None or state.get("term_function") is None
+            or state.get("readback_written") is not True):
+        raise ValueError("training environment was not initialized")
+    if state.get("learn_calls") != 1 or state.get("learn_returned") is not True:
+        raise ValueError("training did not return successfully exactly once")
+    final = {
+        "schema": "registered_epoch_environment_final_readback_v1",
+        "mode": binding["mode"],
+        "runtime_fingerprint": ADAPTER.fingerprint(function),
+        "target_identity_preserved": state["term_function"] is function,
+        "motor_runtime_fingerprint": ADAPTER.fingerprint(motor_class._clip_effort),
+        "motor_target_identity_preserved": motor_class._clip_effort is state["original_motor"],
+        "initial_readback": {"path": str(readback_path.resolve()), "sha256": _sha(readback_path)},
+    }
+    expected_motor_identity = binding["source_provenance"]["source_arm"] != "F2"
+    if (final["runtime_fingerprint"] != binding["target"]["expected_runtime_fingerprint"]
+            or final["target_identity_preserved"] is not True
+            or final["motor_runtime_fingerprint"]
+            != binding["secondary_target"]["expected_runtime_fingerprint"]
+            or final["motor_target_identity_preserved"] is not expected_motor_identity):
+        raise ValueError("environment recipe changed during training")
+    _write_new(final_readback_path, final)
+    state["final_readback_written"] = True
+    state["final_readback"] = final
+
+
+def _install_close_seal(
+        env: Any, state: dict[str, Any], binding: Mapping[str, Any], readback_path: Path,
+        final_readback_path: Path) -> None:
+    """Seal once immediately before delegating to the environment's original close method."""
+    original_close = getattr(env, "close", None)
+    if not callable(original_close):
+        raise TypeError("training environment close is unavailable")
+    namespace = getattr(env, "__dict__", None)
+    if isinstance(namespace, dict):
+        had_instance_close = "close" in namespace
+        instance_close = namespace.get("close")
+    else:
+        had_instance_close = False
+        instance_close = None
+
+    def close(*args, **kwargs):
+        if state["close_calls"] != 0:
+            raise ValueError("training environment closed more than once")
+        state["close_calls"] += 1
+        _seal_final_readback(state, binding, readback_path, final_readback_path)
+        return original_close(*args, **kwargs)
+
+    env.close = close
+    state.update({"environment": env, "original_close": original_close,
+                  "had_instance_close": had_instance_close, "instance_close": instance_close})
+
+
+def _install_learn_observer(state: dict[str, Any]) -> None:
+    runners = importlib.import_module("rsl_rl.runners")
+    runner_class = runners.OnPolicyRunner
+    original_learn = runner_class.learn
+
+    def learn(self, *args, **kwargs):
+        if state["learn_calls"] != 0:
+            raise ValueError("training learn called more than once")
+        state["learn_calls"] += 1
+        result = original_learn(self, *args, **kwargs)
+        state["learn_returned"] = True
+        return result
+
+    runner_class.learn = learn
+    state.update({"runner_class": runner_class, "original_learn": original_learn})
+
+
+def _restore_close(state: Mapping[str, Any]) -> None:
+    env = state.get("environment")
+    if env is None:
+        return
+    if state.get("had_instance_close"):
+        env.close = state["instance_close"]
+    else:
+        delattr(env, "close")
+
+
+def _restore_learn(state: Mapping[str, Any]) -> None:
+    runner_class = state.get("runner_class")
+    if runner_class is not None:
+        runner_class.learn = state["original_learn"]
+
+
 @contextmanager
-def environment_scope(binding: Mapping[str, Any], readback_path: Path) -> Iterator[dict[str, Any]]:
+def environment_scope(
+        binding: Mapping[str, Any], readback_path: Path,
+        final_readback_path: Path | None = None) -> Iterator[dict[str, Any]]:
     """Keep the registered body/world reward implementation active for the whole child run."""
     checked = validate_environment_binding(binding)
     source = (Path.cwd() / checked["target"]["source"]).resolve()
@@ -195,7 +290,10 @@ def environment_scope(binding: Mapping[str, Any], readback_path: Path) -> Iterat
     source_arm = checked["source_provenance"]["source_arm"]
     state: dict[str, Any] = {"make_calls": 0, "readback_written": False, "recipe_applied": False,
                              "function": None, "original_code": None,
-                             "motor_class": None, "original_motor": None, "term_function": None}
+                             "motor_class": None, "original_motor": None, "term_function": None,
+                             "close_calls": 0, "final_readback_written": False,
+                             "environment": None, "learn_calls": 0, "learn_returned": False,
+                             "runner_class": None}
 
     def make(*args, **kwargs):
         if state["recipe_applied"]:
@@ -256,6 +354,9 @@ def environment_scope(binding: Mapping[str, Any], readback_path: Path) -> Iterat
         _write_new(readback_path, row)
         state["readback_written"] = True
         state["readback"] = row
+        if final_readback_path is not None:
+            _install_learn_observer(state)
+            _install_close_seal(env, state, checked, readback_path, final_readback_path)
         return env
 
     try:
@@ -264,6 +365,8 @@ def environment_scope(binding: Mapping[str, Any], readback_path: Path) -> Iterat
         if state["make_calls"] != 1 or state["readback_written"] is not True:
             raise ValueError("training environment readback was not sealed exactly once")
     finally:
+        _restore_close(state)
+        _restore_learn(state)
         gymnasium.__dict__["make"] = original_make
         if state["function"] is not None:
             state["function"].__code__ = state["original_code"]
@@ -292,29 +395,10 @@ def execute(manifest_path: Path, environment_binding_path: Path) -> dict[str, An
     final_readback_path = manifest_path.parent / "environment-final-readback.json"
     if final_readback_path.exists():
         raise FileExistsError("environment final readback already exists")
-    with environment_scope(raw_binding, readback_path) as state:
+    with environment_scope(raw_binding, readback_path, final_readback_path) as state:
         BASE.execute(manifest_path)
-        function, motor_class = state["function"], state["motor_class"]
-        if function is None or motor_class is None:
-            raise ValueError("training environment was not initialized")
-        final = {
-            "schema": "registered_epoch_environment_final_readback_v1",
-            "mode": binding["mode"],
-            "runtime_fingerprint": ADAPTER.fingerprint(function),
-            "target_identity_preserved": state["term_function"] is function,
-            "motor_runtime_fingerprint": ADAPTER.fingerprint(motor_class._clip_effort),
-            "motor_target_identity_preserved": (
-                motor_class._clip_effort is state["original_motor"]),
-            "initial_readback": {"path": str(readback_path.resolve()), "sha256": _sha(readback_path)},
-        }
-        expected_motor_identity = binding["source_provenance"]["source_arm"] != "F2"
-        if (final["runtime_fingerprint"] != binding["target"]["expected_runtime_fingerprint"]
-                or final["target_identity_preserved"] is not True
-                or final["motor_runtime_fingerprint"]
-                != binding["secondary_target"]["expected_runtime_fingerprint"]
-                or final["motor_target_identity_preserved"] is not expected_motor_identity):
-            raise ValueError("environment recipe changed during training")
-        _write_new(final_readback_path, final)
+        # CPU fixtures and alternate launchers may return without calling env.close().
+        _seal_final_readback(state, binding, readback_path, final_readback_path)
     return dict(state["readback"])
 
 

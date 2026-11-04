@@ -632,6 +632,12 @@ def test_v5_generator_imports_eight_prepares_seven_and_preserves_rotation(
     _write(tmp_path / "bench/protocols/diagnostic_recovery_comparison_20261104_v9.md", b"v9\n")
     _write(tmp_path / "bench/protocols/diagnostic_recovery_comparison_20261104_v10.md", b"v10\n")
     _write(tmp_path / "bench/protocols/diagnostic_recovery_comparison_20261105_v11.md", b"v11\n")
+    _write(tmp_path / prepare.EPOCH_CLOSE_RETRY_PREREGISTRATION_V12, b"v12\n")
+    _write(tmp_path / "evals/registered_epoch_shutdown_failure_v1.py", b"verifier\n")
+    _write(tmp_path / "tests/test_registered_epoch_shutdown_failure_v1.py", b"tests\n")
+    policy_source = Path(__file__).resolve().parents[1] / prepare.EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE
+    _write(tmp_path / prepare.EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE,
+           policy_source.read_bytes())
     _write(tmp_path / prepare.COMPLETED_EFFECT_REGISTRY_RELATIVE, b"registry\n")
     monkeypatch.setattr(prepare, "_CONTINUATION_V3_SOURCE_FILES", {"source.py"})
     monkeypatch.setattr(prepare, "_CONTINUATION_V4_SOURCE_FILES", {"source.py"})
@@ -639,6 +645,12 @@ def test_v5_generator_imports_eight_prepares_seven_and_preserves_rotation(
     monkeypatch.setattr(prepare, "_CONTINUATION_V5_SOURCE_FILES", {"source.py"})
     monkeypatch.setattr(prepare, "_CONTINUATION_V11_SOURCE_FILES", {
         "bench/protocols/diagnostic_recovery_comparison_20261105_v11.md"})
+    monkeypatch.setattr(prepare, "_CONTINUATION_V12_SOURCE_FILES", {
+        "evals/registered_epoch_shutdown_failure_v1.py",
+        "tests/test_registered_epoch_shutdown_failure_v1.py",
+        prepare.EPOCH_CLOSE_RETRY_PREREGISTRATION_V12,
+        prepare.EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE,
+    })
     _index, source_meta = prepare._validate_source_index(index, metadata)
     checkpoints = {}
     for case in prepare.CASES:
@@ -673,6 +685,19 @@ def test_v5_generator_imports_eight_prepares_seven_and_preserves_rotation(
     monkeypatch.setattr(prepare, "_v5_registry", lambda: (registry, entries))
     monkeypatch.setattr(prepare.COMPARISON, "_completed_effect_registry", lambda: {
         "entries": entries})
+    policy = json.loads(policy_source.read_text(encoding="utf-8"))
+    monkeypatch.setattr(prepare, "_epoch_shutdown_retry_policy", lambda: policy)
+    failure_proof = _write(tmp_path / "failure-proof.json", {"schema": "proof-fixture"})
+    monkeypatch.setattr(prepare, "_v12_failure_proof", lambda path: (
+        prepare._ref(path), {"schema": "proof-fixture"}))
+    monkeypatch.setattr(
+        prepare.COMPARISON.epoch_failure,
+        "verify_failure_proof",
+        lambda reference, **_kwargs: {"proof_ref": {
+            "path": reference["path"],
+            "sha256": prepare.EPOCH_SHUTDOWN_FAILURE_PROOF_SHA256,
+        }},
+    )
 
     class ProofModule:
         @staticmethod
@@ -732,12 +757,44 @@ def test_v5_generator_imports_eight_prepares_seven_and_preserves_rotation(
     assert recipe["training_seed"] == 5866
     actuator = json.loads((templates_v11 / "templates/case-07/actuator/training-binding.json").read_text())
     assert actuator["seed"] == 2666
-    templates = templates_v11
+    templates_v12 = tmp_path / "templates-v12"
+    prepare.prepare_templates(
+        source_index=index, metadata=metadata, diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+        output=templates_v12, actor="operator", isaaclab_commit="c" * 40,
+        completed_effect_proofs=proofs,
+        completed_import_profile=prepare.COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY,
+        restart_seed_overrides=prepare.REGISTERED_RESTART_SEED_OVERRIDES_V12,
+        epoch_shutdown_failure_proof=failure_proof,
+        isaaclab_root=isaaclab, gpu_admission_profile=prepare.GPU_ADMISSION_PROFILE_RETRY,
+        require_committed=False)
+    plan = json.loads((templates_v12 / "registered-plan.json").read_text(encoding="utf-8"))
+    assert plan["schema"] == prepare.COMPARISON.PLAN_SCHEMA_V6
+    assert plan["limits"] == {"max_recoveries": 16, "gpu_sdk_launch_cap": 14,
+        "cpu_checkpoint_launch_cap": 7, "cpu_telemetry_launch_cap": 7,
+        "total_owned_launch_cap": 28, "max_parent_wall_s_per_recovery": 5000,
+        "api_cap": 0}
+    assert plan["recovery_policy"]["seeds"]["case-07"]["restart"] == 6066
+    assert plan["recovery_policy"]["seeds"]["case-08"]["restart"] == 6067
+    assert plan["continuation"]["prior_consumed_gpu_sdk_launches"] == 18
+    assert plan["continuation"]["new_gpu_sdk_launch_cap"] == 14
+    assert plan["continuation"]["failure_proof_sha256"] == (
+        prepare.EPOCH_SHUTDOWN_FAILURE_PROOF_SHA256)
+    assert {row["role"] for row in plan["inputs"]} >= {
+        "epoch_close_retry_preregistration", "epoch_shutdown_retry_policy"}
+    assert {"evals/registered_epoch_shutdown_failure_v1.py",
+            "tests/test_registered_epoch_shutdown_failure_v1.py"} <= set(
+                plan["source_closure"])
+    v12_binding = json.loads((templates_v12 / "templates/case-07/optimizer_update_count/training-binding.json").read_text())
+    v12_recipe = json.loads(Path(v12_binding["environment_preservation"]["expected_reward"]["path"]).read_text())
+    assert v12_recipe["training_seed"] == 6066
+    templates = templates_v12
     monkeypatch.setattr(prepare.COMPARISON, "load_plan", lambda *_args, **_kwargs: plan)
     fresh_seen = []
     monkeypatch.setattr(prepare.SEED_GUARD, "assert_fresh_seeds",
         lambda seeds, *_args, **_kwargs: fresh_seen.extend(seeds) or {"status": "fresh"})
-    diagnostic_root = tmp_path / "diagnostics-v5"
+    diagnostic_root = tmp_path / "diagnostics-v6"
     for case in prepare.CASES:
         for method in prepare.METHODS:
             source = _write(diagnostic_root / "bound" / case / method / "source.json",
@@ -804,6 +861,10 @@ def test_v5_generator_imports_eight_prepares_seven_and_preserves_rotation(
     (prepare.COMPLETED_IMPORT_PROFILE_MOTOR, {"case-07": 5866, "case-08": 5866}),
     (prepare.COMPLETED_IMPORT_PROFILE_MOTOR, {"case-07": 2666, "case-08": 5867}),
     (prepare.COMPLETED_IMPORT_PROFILE_MOTOR, {"case-07": 5966, "case-08": 5967}),
+    (prepare.COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY,
+     {"case-07": 5866, "case-08": 5867}),
+    (prepare.COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY,
+     {"case-07": 6066, "case-08": 6066}),
 ])
 def test_v11_restart_seed_override_rejects_unregistered_values(
     profile: str | None, overrides: dict[str, int]
@@ -815,6 +876,15 @@ def test_v11_restart_seed_override_rejects_unregistered_values(
 def test_default_restart_seed_map_remains_unchanged() -> None:
     assert prepare._restart_seed_map(prepare.COMPLETED_IMPORT_PROFILE_MOTOR, None) == {
         case: prepare.SOURCE_SEEDS[case] + 3000 for case in prepare.CASES}
+
+
+def test_v12_restart_seed_map_is_exact() -> None:
+    assert prepare._restart_seed_map(
+        prepare.COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY,
+        prepare.REGISTERED_RESTART_SEED_OVERRIDES_V12,
+    ) == {
+        "case-05": 5664, "case-06": 5665, "case-07": 6066, "case-08": 6067,
+    }
 
 
 def test_templates_v3_reject_cross_method_training_proof(

@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 import sys
+import textwrap
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 
@@ -104,13 +106,24 @@ def _install_fake_runtime(monkeypatch):
     actuators.__dict__["actuator_pd"] = actuator_pd
     isaaclab.__dict__["actuators"] = actuators
     term = SimpleNamespace(func=_body_reward)
+    close = lambda: "closed"
     environment = SimpleNamespace(unwrapped=SimpleNamespace(
-        cfg=SimpleNamespace(rewards=SimpleNamespace(track_lin_vel_xy_exp=term))))
+        cfg=SimpleNamespace(rewards=SimpleNamespace(track_lin_vel_xy_exp=term))), close=close)
     gym.__dict__["make"] = lambda *args, **kwargs: environment
+    runners = ModuleType("rsl_rl.runners")
+
+    class OnPolicyRunner:
+        def learn(self, *args, **kwargs):
+            return args, kwargs
+
+    runners.__dict__["OnPolicyRunner"] = OnPolicyRunner
+    rsl_rl = ModuleType("rsl_rl")
+    rsl_rl.__dict__["runners"] = runners
     for name, module in {"gymnasium": gym, "isaaclab": isaaclab, "isaaclab.envs": envs,
                          "isaaclab.envs.mdp": mdp,
                          "isaaclab.envs.mdp.rewards": rewards, "isaaclab.actuators": actuators,
-                         "isaaclab.actuators.actuator_pd": actuator_pd}.items():
+                         "isaaclab.actuators.actuator_pd": actuator_pd, "rsl_rl": rsl_rl,
+                         "rsl_rl.runners": runners}.items():
         monkeypatch.setitem(sys.modules, name, module)
     return gym, rewards, environment
 
@@ -213,6 +226,7 @@ def test_execute_wraps_frozen_r1_flow_and_seals_live_readback(monkeypatch, tmp_p
     def frozen_execute(path):
         assert path == manifest_path.resolve()
         gym.make("task")
+        sys.modules["rsl_rl.runners"].OnPolicyRunner().learn(300, reset=False)
         assert ADAPTER.fingerprint(rewards.track_lin_vel_xy_exp) == binding["target"]["expected_runtime_fingerprint"]
 
     monkeypatch.setattr(SUBJECT.BASE, "execute", frozen_execute)
@@ -220,6 +234,144 @@ def test_execute_wraps_frozen_r1_flow_and_seals_live_readback(monkeypatch, tmp_p
     assert row["mode"] == "world_frame_reward"
     assert (stage / "environment-readback.json").is_file()
     assert (stage / "environment-final-readback.json").is_file()
+
+
+def test_environment_close_seals_before_delegating_and_restores(monkeypatch, tmp_path: Path):
+    runtime = tmp_path / "runtime"
+    binding = _binding(tmp_path / "inputs", runtime)
+    gym, _, environment = _install_fake_runtime(monkeypatch)
+    original_close = environment.close
+    runner_class = sys.modules["rsl_rl.runners"].OnPolicyRunner
+    original_learn = runner_class.learn
+    monkeypatch.chdir(runtime)
+    readback = tmp_path / "readback.json"
+    final = tmp_path / "final.json"
+
+    with SUBJECT.environment_scope(binding, readback, final):
+        assert gym.make("task") is environment
+        assert runner_class().learn(300, reset=False) == ((300,), {"reset": False})
+        assert environment.close() == "closed"
+        assert final.is_file()
+        with pytest.raises(ValueError, match="more than once"):
+            environment.close()
+
+    assert environment.close is original_close
+    assert runner_class.learn is original_learn
+    assert json.loads(final.read_text(encoding="utf-8"))["initial_readback"]["sha256"] == _sha(
+        readback)
+
+
+def test_environment_close_rejects_changed_recipe_before_original_close(monkeypatch, tmp_path: Path):
+    runtime = tmp_path / "runtime"
+    binding = _binding(tmp_path / "inputs", runtime)
+    gym, rewards, environment = _install_fake_runtime(monkeypatch)
+    calls: list[str] = []
+    environment.close = lambda: calls.append("closed")
+    monkeypatch.chdir(runtime)
+    final = tmp_path / "final.json"
+    clean_code = rewards.track_lin_vel_xy_exp.__code__
+
+    with SUBJECT.environment_scope(binding, tmp_path / "readback.json", final):
+        gym.make("task")
+        sys.modules["rsl_rl.runners"].OnPolicyRunner().learn()
+        rewards.track_lin_vel_xy_exp.__code__ = clean_code
+        with pytest.raises(ValueError, match="changed during training"):
+            environment.close()
+
+    assert calls == []
+    assert not final.exists()
+
+
+def test_environment_close_before_learn_return_is_not_final(monkeypatch, tmp_path: Path):
+    runtime = tmp_path / "runtime"
+    binding = _binding(tmp_path / "inputs", runtime)
+    gym, _, environment = _install_fake_runtime(monkeypatch)
+    calls: list[str] = []
+    environment.close = lambda: calls.append("closed")
+    monkeypatch.chdir(runtime)
+    final = tmp_path / "final.json"
+
+    with SUBJECT.environment_scope(binding, tmp_path / "readback.json", final):
+        gym.make("task")
+        with pytest.raises(ValueError, match="did not return"):
+            environment.close()
+
+    assert calls == []
+    assert not final.exists()
+
+
+def test_learn_exception_is_preserved_and_does_not_seal(monkeypatch, tmp_path: Path):
+    runtime = tmp_path / "runtime"
+    binding = _binding(tmp_path / "inputs", runtime)
+    gym, _, environment = _install_fake_runtime(monkeypatch)
+    runner_class = sys.modules["rsl_rl.runners"].OnPolicyRunner
+
+    def failed_learn(_self, *_args, **_kwargs):
+        raise RuntimeError("learning failed")
+
+    runner_class.learn = failed_learn
+    monkeypatch.chdir(runtime)
+    final = tmp_path / "final.json"
+    with SUBJECT.environment_scope(binding, tmp_path / "readback.json", final):
+        gym.make("task")
+        with pytest.raises(RuntimeError, match="learning failed"):
+            runner_class().learn(300)
+        with pytest.raises(ValueError, match="did not return"):
+            environment.close()
+
+    assert runner_class.learn is failed_learn
+    assert not final.exists()
+
+
+def test_close_seal_survives_immediate_process_exit(tmp_path: Path):
+    readback = tmp_path / "readback.json"
+    final = tmp_path / "final.json"
+    readback.write_text('{"sealed":true}\n', encoding="utf-8")
+    script = textwrap.dedent(
+        f"""
+        import os
+        from pathlib import Path
+        from types import SimpleNamespace
+        from bench import registered_epoch_recovery_training_v1 as subject
+
+        def reward():
+            pass
+        def motor(self, value):
+            return value
+        class Motor:
+            _clip_effort = motor
+        class Environment:
+            def close(self):
+                os._exit(0)
+
+        subject.ADAPTER.fingerprint = lambda value: (
+            "reward" if value is reward else "motor" if value is Motor._clip_effort else "other")
+        state = {{
+            "function": reward, "motor_class": Motor, "term_function": reward,
+            "original_motor": Motor._clip_effort, "readback_written": True,
+            "final_readback_written": False, "close_calls": 0,
+            "learn_calls": 1, "learn_returned": True,
+        }}
+        binding = {{
+            "mode": "nominal_body_frame",
+            "target": {{"expected_runtime_fingerprint": "reward"}},
+            "secondary_target": {{"expected_runtime_fingerprint": "motor"}},
+            "source_provenance": {{"source_arm": "R1"}},
+        }}
+        environment = Environment()
+        subject._install_close_seal(
+            environment, state, binding, Path({str(readback)!r}), Path({str(final)!r}))
+        environment.close()
+        raise RuntimeError("unreachable after application close")
+        """
+    )
+    completed = subprocess.run(
+        [sys.executable, "-c", script], cwd=SUBJECT.ROOT, check=False,
+        capture_output=True, text=True, encoding="utf-8", errors="replace")
+
+    assert completed.returncode == 0, completed.stderr
+    assert final.is_file()
+    assert json.loads(final.read_text(encoding="utf-8"))["runtime_fingerprint"] == "reward"
 
 
 def test_execute_rejects_environment_binding_path_swap(tmp_path: Path):
@@ -251,6 +403,7 @@ def test_execute_rejects_recipe_change_during_training(monkeypatch, tmp_path: Pa
 
     def changed_during_training(_path):
         gym.make("task")
+        sys.modules["rsl_rl.runners"].OnPolicyRunner().learn()
         rewards.track_lin_vel_xy_exp.__code__ = clean_code
 
     monkeypatch.setattr(SUBJECT.BASE, "execute", changed_during_training)
@@ -286,7 +439,11 @@ def test_execution_adapter_invokes_real_child_with_registered_sibling(
     gym, _, _ = _install_fake_runtime(monkeypatch)
     monkeypatch.chdir(runtime)
     monkeypatch.setattr(SUBJECT.BASE, "validate_manifest", lambda value: dict(value))
-    monkeypatch.setattr(SUBJECT.BASE, "execute", lambda _path: gym.make("task"))
+    def execute_with_learn(_path):
+        gym.make("task")
+        sys.modules["rsl_rl.runners"].OnPolicyRunner().learn()
+
+    monkeypatch.setattr(SUBJECT.BASE, "execute", execute_with_learn)
 
     def owned(_folder, argv, _cwd, _watchdog):
         assert Path(argv[2]).resolve() == Path(SUBJECT.__file__).resolve()
@@ -299,7 +456,7 @@ def test_execution_adapter_invokes_real_child_with_registered_sibling(
         manifest.write_text(json.dumps({"task": SUBJECT.BASE.TASK, "seed": seed,
             "source_checkpoint_sha256": "b" * 64, "arm": arm, "mode": "train"}), encoding="utf-8")
         base = str((EXECUTION.ROOT / "bench/r1_repair_training.py").resolve())
-        owned_adapter(stage / "owned", ["python", "-B", base, "--manifest", str(manifest)],
+        owned_adapter(stage / "owned", [sys.executable, "-B", base, "--manifest", str(manifest)],
                       isaaclab, 1)
         run_dir = tmp_path / "run"
         (run_dir / "params").mkdir(parents=True)

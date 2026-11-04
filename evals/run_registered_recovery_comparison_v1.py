@@ -15,6 +15,7 @@ from pathlib import Path
 _ENTRY_ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(_ENTRY_ROOT), *(str(_ENTRY_ROOT / name) for name in ("src", "bench", "evals"))]
 
+from evals import registered_epoch_shutdown_failure_v1 as epoch_failure
 from evals import registered_recovery_resources_v1 as recovery_resources
 from evals import registered_recovery_timing_v1 as recovery_timing
 from evals.diagnostic_terminal_status_v1 import terminal_aware_status
@@ -32,6 +33,7 @@ PLAN_SCHEMA_V2 = "registered_recovery_comparison_plan_v2"
 PLAN_SCHEMA_V3 = "registered_recovery_comparison_plan_v3"
 PLAN_SCHEMA_V4 = "registered_recovery_comparison_plan_v4"
 PLAN_SCHEMA_V5 = "registered_recovery_comparison_plan_v5"
+PLAN_SCHEMA_V6 = "registered_recovery_comparison_plan_v6"
 CONSISTENT_OBSERVATION_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261104_v9.md"
 CONSISTENT_OBSERVATION_SOURCES = {
     "evals/registered_desktop_gpu_retry_v1.py", "tests/test_registered_desktop_gpu_retry_v1.py",
@@ -44,6 +46,16 @@ COMPLETED_EFFECT_REGISTRY_SHA256_LF = (
     "1c8a2fdd9e2e44f5af4c22f7b671e36f1604d1c268aefc885079ae3c7d3cc4a8"
 )
 V10_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261104_v10.md"
+V12_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v12.md"
+EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE = (
+    epoch_failure.POLICY_RELATIVE
+)
+EPOCH_SHUTDOWN_RETRY_POLICY_SHA256_LF = (
+    epoch_failure.POLICY_SHA256_LF
+)
+EPOCH_SHUTDOWN_FAILURE_PROOF_SHA256 = (
+    epoch_failure.FAILURE_PROOF_SHA256
+)
 JOB_SCHEMA = "registered_recovery_comparison_job_v1"
 RESULT_SCHEMA = "registered_recovery_comparison_result_v1"
 METHODS = ("fixed_sequence", "static_rule", "one_shot_llm", "iterative_agent")
@@ -177,14 +189,23 @@ def _completed_effect_registry() -> dict:
     return registry
 
 
+def _epoch_shutdown_retry_policy() -> dict:
+    try:
+        return epoch_failure.load_policy(repo=_ENTRY_ROOT)
+    except epoch_failure.ShutdownFailureError as exc:
+        raise ComparisonContractError(str(exc)) from exc
+
+
 def _validate_plan(plan: dict) -> None:
     fields = {"schema", "source_anchor", "source_closure", "methods", "cases", "limits", "inputs",
               "backend", "authorization", "recovery_policy", "template_commitments"}
     schema = plan.get("schema")
-    if schema in {PLAN_SCHEMA_V2, PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5}:
+    if schema in {PLAN_SCHEMA_V2, PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5,
+                  PLAN_SCHEMA_V6}:
         fields.add("continuation")
     if set(plan) != fields or schema not in {PLAN_SCHEMA, PLAN_SCHEMA_V2, PLAN_SCHEMA_V3,
-                                             PLAN_SCHEMA_V4, PLAN_SCHEMA_V5}:
+                                             PLAN_SCHEMA_V4, PLAN_SCHEMA_V5,
+                                             PLAN_SCHEMA_V6}:
         raise ComparisonContractError("plan fields differ")
     if _COMMIT.fullmatch(str(plan["source_anchor"])) is None:
         raise ComparisonContractError("source anchor differs")
@@ -212,6 +233,7 @@ def _validate_plan(plan: dict) -> None:
         PLAN_SCHEMA_V3: len(case_ids) * 8 - 3,
         PLAN_SCHEMA_V4: len(case_ids) * 8 - 5,
         PLAN_SCHEMA_V5: 15,
+        PLAN_SCHEMA_V6: 14,
     }[schema]
     expected_total_cap = {
         PLAN_SCHEMA: len(case_ids) * 16,
@@ -219,8 +241,9 @@ def _validate_plan(plan: dict) -> None:
         PLAN_SCHEMA_V3: len(case_ids) * 16 - 3,
         PLAN_SCHEMA_V4: len(case_ids) * 16 - 5,
         PLAN_SCHEMA_V5: 29,
+        PLAN_SCHEMA_V6: 28,
     }[schema]
-    expected_cpu_cap = 7 if schema == PLAN_SCHEMA_V5 else len(case_ids) * 4
+    expected_cpu_cap = 7 if schema in {PLAN_SCHEMA_V5, PLAN_SCHEMA_V6} else len(case_ids) * 4
     if limits != {"max_recoveries": len(case_ids) * 4,
                   "gpu_sdk_launch_cap": expected_sdk_cap,
                   "cpu_checkpoint_launch_cap": expected_cpu_cap,
@@ -437,6 +460,54 @@ def _validate_plan(plan: dict) -> None:
         }
         if len(by_artifact) != 8 or by_artifact != entries:
             raise ComparisonContractError("v5 completed effect registry binding differs")
+    if schema == PLAN_SCHEMA_V6:
+        continuation = plan["continuation"]
+        required = {
+            "gpu_admission_profile", "completed_import_profile",
+            "completed_effect_registry_sha256_lf",
+            "epoch_shutdown_retry_policy_sha256_lf", "failure_proof_sha256",
+            "stage_imports", "prior_consumed_gpu_sdk_launches",
+            "expected_new_gpu_sdk_launches", "new_gpu_sdk_launch_cap",
+            "cumulative_gpu_sdk_launches", "continuation_tag",
+            "prior_v11_registration_anchor", "prior_incomplete_preserved",
+            "v11_failed_epoch_sdk_launches",
+        }
+        registry = _completed_effect_registry()
+        policy = _epoch_shutdown_retry_policy()
+        entries = registry["entries"]
+        imports = continuation.get("stage_imports") if isinstance(continuation, dict) else None
+        if (
+            not isinstance(continuation, dict)
+            or set(continuation) != required
+            or continuation["gpu_admission_profile"]
+            != "registered_desktop_shared_retry_v1"
+            or continuation["completed_import_profile"]
+            != "motor_completed_epoch_close_retry_v1"
+            or continuation["completed_effect_registry_sha256_lf"]
+            != COMPLETED_EFFECT_REGISTRY_SHA256_LF
+            or continuation["epoch_shutdown_retry_policy_sha256_lf"]
+            != EPOCH_SHUTDOWN_RETRY_POLICY_SHA256_LF
+            or continuation["failure_proof_sha256"]
+            != EPOCH_SHUTDOWN_FAILURE_PROOF_SHA256
+            or continuation["prior_consumed_gpu_sdk_launches"] != 18
+            or continuation["expected_new_gpu_sdk_launches"] != 14
+            or continuation["new_gpu_sdk_launch_cap"] != 14
+            or continuation["cumulative_gpu_sdk_launches"] != 32
+            or continuation["continuation_tag"] != "v12_epoch_close_retry"
+            or continuation["prior_v11_registration_anchor"]
+            != policy["v11_failure"]["identity"]["registration_anchor"]
+            or continuation["prior_incomplete_preserved"] is not True
+            or continuation["v11_failed_epoch_sdk_launches"] != 1
+            or case_ids != set(SUPPORTED_CASES)
+            or not isinstance(imports, list)
+            or len(imports) != 8
+        ):
+            raise ComparisonContractError("v6 continuation accounting/profile differs")
+        by_artifact = {
+            row.get("artifact_id"): row for row in imports if isinstance(row, dict)
+        }
+        if len(by_artifact) != 8 or by_artifact != entries:
+            raise ComparisonContractError("v6 completed effect registry binding differs")
     policy = plan["recovery_policy"]
     if (not isinstance(policy, dict)
             or set(policy) != {"training_iterations", "seeds", "same_case_same_template", "source_cost_policy"}
@@ -448,6 +519,13 @@ def _validate_plan(plan: dict) -> None:
             or policy["same_case_same_template"] is not True
             or policy["source_cost_policy"] != "phase_a_shared_count_once"):
         raise ComparisonContractError("recovery seed/template/source-cost policy differs")
+    if schema == PLAN_SCHEMA_V6 and policy["seeds"] != {
+        "case-05": {"resume": 2664, "restart": 5664},
+        "case-06": {"resume": 2665, "restart": 5665},
+        "case-07": {"resume": 2666, "restart": 6066},
+        "case-08": {"resume": 2667, "restart": 6067},
+    }:
+        raise ComparisonContractError("v6 registered restart seed map differs")
     commitments = plan["template_commitments"]
     mechanisms = {"actuator", "optimizer_update_count", "optimizer_surrogate"}
     if not isinstance(commitments, dict) or set(commitments) != case_ids:
@@ -508,6 +586,36 @@ def _validate_plan(plan: dict) -> None:
                 "sha256": COMPLETED_EFFECT_REGISTRY_SHA256_LF}
         ):
             raise ComparisonContractError("v5 preregistration/registry closure missing")
+    if schema == PLAN_SCHEMA_V6:
+        required_sources = CONSISTENT_OBSERVATION_SOURCES | {
+            V10_NOTE, COMPLETED_EFFECT_REGISTRY_RELATIVE, V12_NOTE,
+            EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE,
+            "evals/registered_epoch_shutdown_failure_v1.py",
+            "tests/test_registered_epoch_shutdown_failure_v1.py",
+        }
+        notes = {row["role"]: row for row in inputs}
+        if (
+            not required_sources <= set(closure)
+            or closure.get(COMPLETED_EFFECT_REGISTRY_RELATIVE)
+            != COMPLETED_EFFECT_REGISTRY_SHA256_LF
+            or closure.get(EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE)
+            != EPOCH_SHUTDOWN_RETRY_POLICY_SHA256_LF
+            or notes.get("completed_motor_effects_preregistration")
+            != {"role": "completed_motor_effects_preregistration", "path": V10_NOTE,
+                "sha256": closure.get(V10_NOTE)}
+            or notes.get("completed_motor_effect_registry")
+            != {"role": "completed_motor_effect_registry",
+                "path": COMPLETED_EFFECT_REGISTRY_RELATIVE,
+                "sha256": COMPLETED_EFFECT_REGISTRY_SHA256_LF}
+            or notes.get("epoch_close_retry_preregistration")
+            != {"role": "epoch_close_retry_preregistration", "path": V12_NOTE,
+                "sha256": closure.get(V12_NOTE)}
+            or notes.get("epoch_shutdown_retry_policy")
+            != {"role": "epoch_shutdown_retry_policy",
+                "path": EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE,
+                "sha256": EPOCH_SHUTDOWN_RETRY_POLICY_SHA256_LF}
+        ):
+            raise ComparisonContractError("v6 retry preregistration/policy closure missing")
 
 
 def load_plan(plan_path: Path, *, repo_root: Path, registration_anchor: str,
@@ -549,13 +657,25 @@ def load_plan(plan_path: Path, *, repo_root: Path, registration_anchor: str,
 
 
 def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list[dict]:
-    if set(job) != {"schema", "plan", "arms"} or job["schema"] != JOB_SCHEMA or job["plan"] != plan_ref:
+    fields = {"schema", "plan", "arms"}
+    if plan["schema"] == PLAN_SCHEMA_V6:
+        fields.add("epoch_shutdown_failure_proof")
+    if set(job) != fields or job["schema"] != JOB_SCHEMA or job["plan"] != plan_ref:
         raise ComparisonContractError("job fields/plan binding differ")
+    if plan["schema"] == PLAN_SCHEMA_V6:
+        try:
+            verified_failure = epoch_failure.verify_failure_proof(
+                job["epoch_shutdown_failure_proof"], repo=_ENTRY_ROOT)
+        except epoch_failure.ShutdownFailureError as exc:
+            raise ComparisonContractError(str(exc)) from exc
+        if (verified_failure["proof_ref"]["sha256"]
+                != plan["continuation"]["failure_proof_sha256"]):
+            raise ComparisonContractError("job epoch shutdown failure proof differs from plan")
     rows = job["arms"]
     case_ids = tuple(row["case_id"] for row in plan["cases"])
     if not isinstance(rows, list) or len(rows) != len(case_ids) * 4:
         raise ComparisonContractError("complete recovery arm matrix required")
-    if plan["schema"] == PLAN_SCHEMA_V5:
+    if plan["schema"] in {PLAN_SCHEMA_V5, PLAN_SCHEMA_V6}:
         expected_order = [
             (case["case_id"], method)
             for case in plan["cases"]
@@ -567,7 +687,7 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
             for row in rows
         ]
         if actual_order != expected_order:
-            raise ComparisonContractError("v5 recovery arm rotation order differs")
+            raise ComparisonContractError("completed-import recovery arm rotation order differs")
     expected = {(case, method) for case in case_ids for method in METHODS}
     seen = set()
     normalized = []
@@ -579,7 +699,8 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
     for row in rows:
         fields = {"case_id", "method", "diagnostic_manifest", "recovery_folder",
                   "recovery_payload", "approval_ref"}
-        if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5}:
+        if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5,
+                              PLAN_SCHEMA_V6}:
             fields.add("continuation_import")
         if not isinstance(row, dict) or set(row) != fields:
             raise ComparisonContractError("job arm fields differ")
@@ -601,7 +722,8 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
         session = manifest_path.parent
         continuation_import = row.get("continuation_import")
         expected_import = stage_imports.get(key)
-        if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5}:
+        if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5,
+                              PLAN_SCHEMA_V6}:
             if expected_import is None:
                 if continuation_import is not None:
                     raise ComparisonContractError("unexpected continuation import")
@@ -652,12 +774,14 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
         }
         continuation_schema = plan["schema"] in {
             PLAN_SCHEMA_V2, PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5,
+            PLAN_SCHEMA_V6,
         }
         if (not isinstance(protocol, dict)
                 or (continuation_schema
                     and protocol.get("schema") != (
                         "registered_recovery_protocol_v3"
-                        if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5}
+                        if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4,
+                                              PLAN_SCHEMA_V5, PLAN_SCHEMA_V6}
                         else "registered_recovery_protocol_v2"
                     ))
                 or (continuation_schema and set(operation) != operation_v2_fields)
@@ -734,7 +858,7 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
                          or operation.get("correction_id") != expected_import["correction_id"]
                      )))):
             raise ComparisonContractError("v4 prior arm/profile binding differs")
-        if (plan["schema"] == PLAN_SCHEMA_V5
+        if (plan["schema"] in {PLAN_SCHEMA_V5, PLAN_SCHEMA_V6}
                 and (operation.get("gpu_admission_profile")
                      != plan["continuation"]["gpu_admission_profile"]
                      or prior_id is not None
@@ -745,7 +869,7 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
                          or operation.get("training_seed") != expected_import["seed"]
                          or operation.get("correction_id") != expected_import["correction_id"]
                      )))):
-            raise ComparisonContractError("v5 prior arm/profile binding differs")
+            raise ComparisonContractError("completed-import prior arm/profile binding differs")
         _, resolver = _ref(payload["artifact_resolver"], "artifact resolver")
         training_id = operation.get("training_binding_artifact_id")
         fixed_id = operation.get("fixed_binding_artifact_id")
@@ -796,13 +920,17 @@ def prepare(plan_path: Path, job_path: Path, output: Path, *, repo_root: Path,
     write_new(target / "manifest.json", manifest)
     write_new(target / "anchor.json", {"schema": RESULT_SCHEMA + "_anchor",
                                         "manifest_sha256": file_sha(target / "manifest.json")})
-    if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5}:
+    if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4, PLAN_SCHEMA_V5,
+                          PLAN_SCHEMA_V6}:
         imported = [
             row for row in arms
             if isinstance(row.get("continuation_import"), dict)
             and row["continuation_import"].get("kind") == "completed_effect"
         ]
-        expected_count = 8 if plan["schema"] == PLAN_SCHEMA_V5 else 2 if plan["schema"] == PLAN_SCHEMA_V4 else 1
+        expected_count = (
+            8 if plan["schema"] in {PLAN_SCHEMA_V5, PLAN_SCHEMA_V6}
+            else 2 if plan["schema"] == PLAN_SCHEMA_V4 else 1
+        )
         if len(imported) != expected_count:
             raise ComparisonContractError("completed effect import coverage differs")
         for arm in imported:
@@ -864,7 +992,7 @@ def _stage_import(plan: dict, arm: dict) -> dict:
 def _continuation_module(plan: dict):
     try:
         name = ("evals.registered_recovery_continuation_v4"
-                if plan.get("schema") in {PLAN_SCHEMA_V4, PLAN_SCHEMA_V5}
+                if plan.get("schema") in {PLAN_SCHEMA_V4, PLAN_SCHEMA_V5, PLAN_SCHEMA_V6}
                 else "evals.registered_recovery_continuation_v3")
         return importlib.import_module(name)
     except (ImportError, AttributeError) as exc:
@@ -876,7 +1004,7 @@ def _materialize_completed_effect(root: Path, manifest: dict, arm: dict, plan: d
     binding = _stage_import(plan, arm)
     proof_ref = arm["continuation_import"]["proof"]
     module = _continuation_module(plan)
-    if plan["schema"] in {PLAN_SCHEMA_V4, PLAN_SCHEMA_V5}:
+    if plan["schema"] in {PLAN_SCHEMA_V4, PLAN_SCHEMA_V5, PLAN_SCHEMA_V6}:
         verified = module.verify_completed_effect(
             proof_ref, expected_import=binding, repo=Path(repo_root).resolve(strict=True))
     else:
