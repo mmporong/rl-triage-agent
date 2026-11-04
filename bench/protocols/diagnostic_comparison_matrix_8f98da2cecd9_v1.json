@@ -1,0 +1,202 @@
+{
+  "authorization": {
+    "actor": "registered-host",
+    "probe_scope": [
+      "P_optimizer_count",
+      "P_optimizer_gradient",
+      "P_actuator_mapping"
+    ]
+  },
+  "backend": "registered_diagnostic_v1",
+  "cases": [
+    {
+      "case_id": "case-01",
+      "rotation": [
+        "fixed_sequence",
+        "static_rule",
+        "one_shot_llm",
+        "iterative_agent"
+      ]
+    },
+    {
+      "case_id": "case-02",
+      "rotation": [
+        "static_rule",
+        "one_shot_llm",
+        "iterative_agent",
+        "fixed_sequence"
+      ]
+    },
+    {
+      "case_id": "case-03",
+      "rotation": [
+        "one_shot_llm",
+        "iterative_agent",
+        "fixed_sequence",
+        "static_rule"
+      ]
+    },
+    {
+      "case_id": "case-04",
+      "rotation": [
+        "iterative_agent",
+        "fixed_sequence",
+        "static_rule",
+        "one_shot_llm"
+      ]
+    },
+    {
+      "case_id": "case-05",
+      "rotation": [
+        "fixed_sequence",
+        "static_rule",
+        "one_shot_llm",
+        "iterative_agent"
+      ]
+    },
+    {
+      "case_id": "case-06",
+      "rotation": [
+        "static_rule",
+        "one_shot_llm",
+        "iterative_agent",
+        "fixed_sequence"
+      ]
+    },
+    {
+      "case_id": "case-07",
+      "rotation": [
+        "one_shot_llm",
+        "iterative_agent",
+        "fixed_sequence",
+        "static_rule"
+      ]
+    },
+    {
+      "case_id": "case-08",
+      "rotation": [
+        "iterative_agent",
+        "fixed_sequence",
+        "static_rule",
+        "one_shot_llm"
+      ]
+    },
+    {
+      "case_id": "case-09",
+      "rotation": [
+        "fixed_sequence",
+        "static_rule",
+        "one_shot_llm",
+        "iterative_agent"
+      ]
+    },
+    {
+      "case_id": "case-10",
+      "rotation": [
+        "static_rule",
+        "one_shot_llm",
+        "iterative_agent",
+        "fixed_sequence"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "path": "bench/protocols/diagnostic_recovery_comparison_20261104_v1.md",
+      "role": "measurement-preregistration",
+      "sha256": "8fe4c7a9513941bab34a3960c71b8cc6e5c0bb1e4248c42dc8d4dbf665b1c39e"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_observer_v3.json",
+      "role": "child-protocol",
+      "sha256": "226adc2fa4e7682e55c75ca212655a5cf72dde1ac446b4f6cdf5a2d1aa98c6b5"
+    },
+    {
+      "path": "evals/results/lineage_source_s2660_s2669_20261104_v1/manifest.json",
+      "role": "source-export-manifest",
+      "sha256": "8f98da2cecd9dfd922225c758dbd6de55737fba36ebdb08d9381e5368e591c64"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-01_8f98da2cecd9_v1.json",
+      "role": "protocol:case-01",
+      "sha256": "084c801b94aae1d667b17b418955ae6ea185cccdf80fa668237e96956aa08501"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-02_8f98da2cecd9_v1.json",
+      "role": "protocol:case-02",
+      "sha256": "a75df2c5c10319c51f1492943d23c4de7e1359d9b70b5ed3c18517eae972758e"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-03_8f98da2cecd9_v1.json",
+      "role": "protocol:case-03",
+      "sha256": "e68f6ac6a3c96197f50cc5f8ce3509b11fc3ad9e221691b348ad3f8187fb363b"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-04_8f98da2cecd9_v1.json",
+      "role": "protocol:case-04",
+      "sha256": "d31667f3064ea1224ce9085890511f6e21be5e8190b3564e0cc7aa1bfca89a91"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-05_8f98da2cecd9_v1.json",
+      "role": "protocol:case-05",
+      "sha256": "f5f7a001ba984b35ff4d49f1bbf1a47461732cd99010302dc540d35acc87793d"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-06_8f98da2cecd9_v1.json",
+      "role": "protocol:case-06",
+      "sha256": "6814197cdc9c337e808d87b2628c8554e3f3994b5d7f91f93356893db440ce43"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-07_8f98da2cecd9_v1.json",
+      "role": "protocol:case-07",
+      "sha256": "2f16988d0a26448ff41ec0b82a6caa3ed405e8e8088a10c3d2728605d1d1aee4"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-08_8f98da2cecd9_v1.json",
+      "role": "protocol:case-08",
+      "sha256": "c08f29965577ab45a4e2bf402778cc4707395785720e6957fd75669ddca8c768"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-09_8f98da2cecd9_v1.json",
+      "role": "protocol:case-09",
+      "sha256": "3dbe26278562da832a31b5fbbdbfb8f056cb301618e8743660e61715e56d5d69"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-10_8f98da2cecd9_v1.json",
+      "role": "protocol:case-10",
+      "sha256": "1f16243a3f6ea0452912e9ba006092ad20be9fda20ea1c0747fbdff2df854d6a"
+    }
+  ],
+  "limits": {
+    "api_cap": 40,
+    "max_checks": 3,
+    "watchdog_s": 2400
+  },
+  "methods": [
+    "fixed_sequence",
+    "static_rule",
+    "one_shot_llm",
+    "iterative_agent"
+  ],
+  "schema": "diagnostic_comparison_plan_v1",
+  "source_anchor": "635557cc064da1b3eb9d0b3fb9ca19d06978d07a",
+  "source_closure": {
+    "bench/protocols/observable_behavior_qualification_v1.json": "ec45ff0b8b68a563a6000e815f45c9691d55abfaf0b88210edfc40ba07c50860",
+    "evals/model_decision_journal_v1.py": "255b8ed9c0de88a26aadc2f1b4a90b0b01f57b2417aab05ac295031061d23ac2",
+    "evals/run_diagnostic_comparison_v1.py": "a0105adca9f7387dcb90516c4c77e4bc914d087437a7c9f7d2da9f5accf11288",
+    "evals/summarize_diagnostic_comparison_v1.py": "65367cd58d48b0362952c7a8a96195a2b5793a172e17f61fb97682ecda8d25df",
+    "src/rl_triage/gpu_resource_sampler.py": "143a3e68f38a1774dae03a30a4a5def81d7cae461a3adfb31fa3aaf2e0898187",
+    "src/rl_triage/intervention_evidence.py": "7b5c6c874b7de3f080ccb9cdaf6040dc15cdb414e11b42db519b948132c2970d",
+    "src/rl_triage/intervention_governor.py": "51a15bda641c82b7ed5c5be436eab0c34b9de75e136bdfedc8310363dbefb3c8",
+    "src/rl_triage/investigate.py": "777ce6ce6d0a82c8db587117041ffbf752107e5230100eac7950e0feafcceddd",
+    "src/rl_triage/investigation_session.py": "1756c704f9ff616178a3154fdc134e827311a26074b3d3355bf7052f7c782492",
+    "src/rl_triage/mechanism_confirmation.py": "067a52eeaeaafd9f4b54d2255314c9a82d95af8be720f03511b8e7f5213187d0",
+    "src/rl_triage/mechanism_registry.py": "0bc3c47e52bdb6eb511cad5f6b76d047edfdfd1ca3c09d52fd637c47909d75d0",
+    "src/rl_triage/nim_transport.py": "71f373ea2243cc11810cd8cf5164615484e61261f637232cc1ec4e7b9bef2da6",
+    "src/rl_triage/observable_behavior_v1.py": "1ea6681f36cb8d9bd66c1192190b812afb6cbf55f7b2be353bfe414dfb77268e",
+    "src/rl_triage/registered_diagnostic_backend.py": "fb8196697d67363583930d1c5e61b0b1320119e581ad88f78171cd4d0d498b8e",
+    "src/rl_triage/resource_comparison.py": "a6c668584422a28476ae9d108ce9e4d85c0c196845f75e3ab182ce217981deec",
+    "tests/test_observable_behavior_v1.py": "d1dcb743c56d6f8dd12187561b3c7b1a5616ae13da526547dcbe4f74471a425e",
+    "tests/test_summarize_diagnostic_comparison_v1.py": "615134a355a50de1c73380599676d437611b352a1625671ede472b44d42dc2cc"
+  }
+}
