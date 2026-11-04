@@ -631,11 +631,14 @@ def test_v5_generator_imports_eight_prepares_seven_and_preserves_rotation(
     _write(tmp_path / "bench/protocols/diagnostic_recovery_comparison_20261104_v8.md", b"v8\n")
     _write(tmp_path / "bench/protocols/diagnostic_recovery_comparison_20261104_v9.md", b"v9\n")
     _write(tmp_path / "bench/protocols/diagnostic_recovery_comparison_20261104_v10.md", b"v10\n")
+    _write(tmp_path / "bench/protocols/diagnostic_recovery_comparison_20261105_v11.md", b"v11\n")
     _write(tmp_path / prepare.COMPLETED_EFFECT_REGISTRY_RELATIVE, b"registry\n")
     monkeypatch.setattr(prepare, "_CONTINUATION_V3_SOURCE_FILES", {"source.py"})
     monkeypatch.setattr(prepare, "_CONTINUATION_V4_SOURCE_FILES", {"source.py"})
     monkeypatch.setattr(prepare, "_CONTINUATION_RETRY_SOURCE_FILES", {"source.py"})
     monkeypatch.setattr(prepare, "_CONTINUATION_V5_SOURCE_FILES", {"source.py"})
+    monkeypatch.setattr(prepare, "_CONTINUATION_V11_SOURCE_FILES", {
+        "bench/protocols/diagnostic_recovery_comparison_20261105_v11.md"})
     _index, source_meta = prepare._validate_source_index(index, metadata)
     checkpoints = {}
     for case in prepare.CASES:
@@ -695,6 +698,41 @@ def test_v5_generator_imports_eight_prepares_seven_and_preserves_rotation(
         "cpu_checkpoint_launch_cap": 7, "cpu_telemetry_launch_cap": 7,
         "total_owned_launch_cap": 29, "max_parent_wall_s_per_recovery": 5000,
         "api_cap": 0}
+    assert plan["recovery_policy"]["seeds"]["case-07"]["restart"] == 5666
+    assert plan["recovery_policy"]["seeds"]["case-08"]["restart"] == 5667
+    assert prepare.RESTART_SEED_PREREGISTRATION_V11 not in plan["source_closure"]
+    assert not any(row["role"] == "restart_seed_preregistration" for row in plan["inputs"])
+
+    templates_v11 = tmp_path / "templates-v11"
+    prepare.prepare_templates(
+        source_index=index, metadata=metadata, diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+        output=templates_v11, actor="operator", isaaclab_commit="c" * 40,
+        completed_effect_proofs=proofs,
+        completed_import_profile=prepare.COMPLETED_IMPORT_PROFILE_MOTOR,
+        restart_seed_overrides=prepare.REGISTERED_RESTART_SEED_OVERRIDES_V11,
+        isaaclab_root=isaaclab, gpu_admission_profile=prepare.GPU_ADMISSION_PROFILE_RETRY,
+        require_committed=False)
+    plan = json.loads((templates_v11 / "registered-plan.json").read_text(encoding="utf-8"))
+    assert plan["recovery_policy"]["seeds"]["case-07"] == {
+        "resume": 2666, "restart": 5866}
+    assert plan["recovery_policy"]["seeds"]["case-08"] == {
+        "resume": 2667, "restart": 5867}
+    assert plan["source_closure"][prepare.RESTART_SEED_PREREGISTRATION_V11] == _sha(
+        tmp_path / prepare.RESTART_SEED_PREREGISTRATION_V11)
+    assert [row for row in plan["inputs"] if row["role"] == "restart_seed_preregistration"] == [{
+        "role": "restart_seed_preregistration",
+        "path": prepare.RESTART_SEED_PREREGISTRATION_V11,
+        "sha256": plan["source_closure"][prepare.RESTART_SEED_PREREGISTRATION_V11],
+    }]
+    binding = json.loads((templates_v11 / "templates/case-07/optimizer_update_count/training-binding.json").read_text())
+    recipe = json.loads(Path(binding["environment_preservation"]["expected_reward"]["path"]).read_text())
+    assert recipe["source_seed"] == prepare.SOURCE_SEEDS["case-07"] - 110
+    assert recipe["training_seed"] == 5866
+    actuator = json.loads((templates_v11 / "templates/case-07/actuator/training-binding.json").read_text())
+    assert actuator["seed"] == 2666
+    templates = templates_v11
     monkeypatch.setattr(prepare.COMPARISON, "load_plan", lambda *_args, **_kwargs: plan)
     fresh_seen = []
     monkeypatch.setattr(prepare.SEED_GUARD, "assert_fresh_seeds",
@@ -757,6 +795,26 @@ def test_v5_generator_imports_eight_prepares_seven_and_preserves_rotation(
                           for case in ("case-07", "case-08")]
     assert [(row["case_id"], row["method"]) for row in job["arms"]] == [
         (case["case_id"], method) for case in plan["cases"] for method in case["rotation"]]
+
+
+@pytest.mark.parametrize("profile,overrides", [
+    (None, {"case-07": 5866, "case-08": 5867}),
+    (prepare.COMPLETED_IMPORT_PROFILE_MOTOR, {"case-07": 5866}),
+    (prepare.COMPLETED_IMPORT_PROFILE_MOTOR, {"case-07": -1, "case-08": 5867}),
+    (prepare.COMPLETED_IMPORT_PROFILE_MOTOR, {"case-07": 5866, "case-08": 5866}),
+    (prepare.COMPLETED_IMPORT_PROFILE_MOTOR, {"case-07": 2666, "case-08": 5867}),
+    (prepare.COMPLETED_IMPORT_PROFILE_MOTOR, {"case-07": 5966, "case-08": 5967}),
+])
+def test_v11_restart_seed_override_rejects_unregistered_values(
+    profile: str | None, overrides: dict[str, int]
+) -> None:
+    with pytest.raises(prepare.PreparationError):
+        prepare._restart_seed_map(profile, overrides)
+
+
+def test_default_restart_seed_map_remains_unchanged() -> None:
+    assert prepare._restart_seed_map(prepare.COMPLETED_IMPORT_PROFILE_MOTOR, None) == {
+        case: prepare.SOURCE_SEEDS[case] + 3000 for case in prepare.CASES}
 
 
 def test_templates_v3_reject_cross_method_training_proof(

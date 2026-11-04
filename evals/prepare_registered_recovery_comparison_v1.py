@@ -163,6 +163,11 @@ _CONTINUATION_V5_SOURCE_FILES = {
     "bench/protocols/diagnostic_recovery_comparison_20261104_v10.md",
     COMPLETED_EFFECT_REGISTRY_RELATIVE,
 }
+RESTART_SEED_PREREGISTRATION_V11 = (
+    "bench/protocols/diagnostic_recovery_comparison_20261105_v11.md"
+)
+REGISTERED_RESTART_SEED_OVERRIDES_V11 = {"case-07": 5866, "case-08": 5867}
+_CONTINUATION_V11_SOURCE_FILES = {RESTART_SEED_PREREGISTRATION_V11}
 PRIOR_V5_SOURCE_ANCHOR = "f9d5fea93cce406a325f578bc6f4597cc0bc35c5"
 PRIOR_V5_REGISTRATION_ANCHOR = "bf1632ee6770e681e9e8c4c5b1df890ebaed12a6"
 PRIOR_V7_REGISTRATION_ANCHOR = "47fec9fc6107e6efde09950d52e64f5465751252"
@@ -240,7 +245,8 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
                     include_continuation_v7: bool = False,
                     include_continuation_v4: bool = False,
                     include_observation_retry: bool = False,
-                    include_completed_v5: bool = False) -> dict[str, str]:
+                    include_completed_v5: bool = False,
+                    include_restart_seed_v11: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
@@ -249,6 +255,10 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
         if not include_continuation_v4 or not include_observation_retry:
             raise PreparationError("v5 completed imports require retry continuation sources")
         source_files |= _CONTINUATION_V5_SOURCE_FILES
+    if include_restart_seed_v11:
+        if not include_completed_v5:
+            raise PreparationError("v11 restart seeds require v5 completed imports")
+        source_files |= _CONTINUATION_V11_SOURCE_FILES
     if include_observation_retry:
         if not include_continuation_v4:
             raise PreparationError("observation retry requires v4 completed-effect imports")
@@ -740,6 +750,30 @@ def _rotation(index: int) -> list[str]:
     return methods[index:] + methods[:index]
 
 
+def _restart_seed_map(
+    completed_import_profile: str | None,
+    restart_seed_overrides: Mapping[str, int] | None,
+) -> dict[str, int]:
+    seeds = {case: SOURCE_SEEDS[case] + 3000 for case in CASES}
+    if restart_seed_overrides is None:
+        return seeds
+    if completed_import_profile != COMPLETED_IMPORT_PROFILE_MOTOR:
+        raise PreparationError("restart seed overrides require motor completed imports")
+    if set(restart_seed_overrides) != {"case-07", "case-08"}:
+        raise PreparationError("restart seed overrides must cover case-07 and case-08")
+    values = list(restart_seed_overrides.values())
+    if any(type(value) is not int or value < 0 for value in values):
+        raise PreparationError("restart seed overrides must be nonnegative integers")
+    if len(set(values)) != len(values):
+        raise PreparationError("restart seed overrides must be distinct")
+    if set(values) & set(SOURCE_SEEDS.values()):
+        raise PreparationError("restart seed overrides collide with resume seeds")
+    if dict(restart_seed_overrides) != REGISTERED_RESTART_SEED_OVERRIDES_V11:
+        raise PreparationError("restart seed overrides differ from v11 registration")
+    seeds.update(restart_seed_overrides)
+    return seeds
+
+
 def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Path,
                       diagnostic_registration_anchor: str, source_anchor: str,
                       sdk_contract: Path, recipe_code_contract: Path, output: Path, actor: str,
@@ -749,6 +783,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                       prior_static_training_proof: Path | None = None,
                       completed_effect_proofs: Mapping[str, Path] | None = None,
                       completed_import_profile: str | None = None,
+                       restart_seed_overrides: Mapping[str, int] | None = None,
                       isaaclab_root: Path | None = None,
                       gpu_admission_profile: str | None = None,
                       require_committed: bool = True) -> dict:
@@ -765,6 +800,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     if not {f"case-{int(case[-2:]):02d}" for case in CASES} <= set(phase_cases):
         raise PreparationError("phase-A selected cases missing")
     v5_requested = completed_import_profile is not None
+    restart_seeds = _restart_seed_map(completed_import_profile, restart_seed_overrides)
     v4_requested = completed_effect_proofs is not None and not v5_requested
     v3_requested = prior_completed_effect_proof is not None or prior_static_training_proof is not None
     if gpu_admission_profile is not None and not (v3_requested or v4_requested or v5_requested):
@@ -832,6 +868,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             or v5 is not None
         ),
         include_completed_v5=v5 is not None,
+        include_restart_seed_v11=restart_seed_overrides is not None,
     ) if require_committed else {
         path: _sha(ROOT / path, lf=True)
         for path in sorted(
@@ -847,6 +884,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                if (v4 is not None and selected_v4_profile == GPU_ADMISSION_PROFILE_RETRY)
                or v5 is not None else set())
             | (_CONTINUATION_V5_SOURCE_FILES if v5 is not None else set())
+             | (_CONTINUATION_V11_SOURCE_FILES
+                if restart_seed_overrides is not None else set())
         )
     }
     sdk = _read(sdk_contract)
@@ -872,7 +911,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         fixed_path = case_dir / "fixed-binding.json"
         write_new(fixed_path, fixed)
         environment = _environment_preservation(
-            source=source, source_seed=material_seed, training_seed=SOURCE_SEEDS[case] + 3000,
+            source=source, source_seed=material_seed, training_seed=restart_seeds[case],
             refs=refs, code_contract_path=recipe_code_contract, code_contract=recipe_code,
             output=case_dir / "optimizer_update_count")
         training = {
@@ -926,6 +965,12 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         inputs.append({"role": "completed_motor_effect_registry",
                        "path": COMPLETED_EFFECT_REGISTRY_RELATIVE,
                        "sha256": COMPLETED_EFFECT_REGISTRY_SHA256_LF})
+    if restart_seed_overrides is not None:
+        inputs.append({
+            "role": "restart_seed_preregistration",
+            "path": RESTART_SEED_PREREGISTRATION_V11,
+            "sha256": closure[RESTART_SEED_PREREGISTRATION_V11],
+        })
     for case in CASES:
         old = case
         row = phase_inputs.get(f"protocol:{old}")
@@ -956,7 +1001,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                           "ambiguous_consumed_policy": "settle_unknown_without_reexecution"},
         "recovery_policy": {"training_iterations": 300,
                             "seeds": {case: {"resume": SOURCE_SEEDS[case],
-                                             "restart": SOURCE_SEEDS[case] + 3000} for case in CASES},
+                                             "restart": restart_seeds[case]} for case in CASES},
                             "same_case_same_template": True,
                             "source_cost_policy": "phase_a_shared_count_once"},
         "template_commitments": commitments,
