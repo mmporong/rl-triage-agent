@@ -319,16 +319,24 @@ class InvestigationSession:
         initial = (deepcopy(self.manifest["model_initial_state"])
                    if method == "one_shot_llm" else deepcopy(state))
         facts = self._facts(initial)
+        field_contract: dict[str, Any] = {
+            "required_fields": ["action", "probe", "probes", "fact_ids"],
+            "fact_ids": {"minItems": 1, "allowed_ids": sorted(facts)},
+        }
         prompt = ("Select a fixed ordered plan of at most three distinct registered probe IDs, or hold. "
                   if method == "one_shot_llm" else "Select one next registered probe ID, or hold. ")
         messages = [{
             "role": "system",
-            "content": prompt + "Use only fact IDs in the input. Output JSON: "
-            '{"action":"run_probe|hold|plan","probe":null,"probes":[],"fact_ids":[]}. '
+            "content": prompt + "Return one JSON object with exactly action, probe, probes, fact_ids. "
+            "For every action, including hold, fact_ids must contain at least one supplied fact ID; "
+            "an empty array is invalid. Follow field_contract in the input. "
+            "Use probe=null and probes=[] for hold; use probe=null for plan; "
+            "use probes=[] for run_probe. "
             "Do not create arguments, permissions, or causes.",
         }, {
             "role": "user",
-            "content": canonical({"facts": facts, "catalog": self.registry["probes"],
+            "content": canonical({"facts": facts, "field_contract": field_contract,
+                                  "catalog": self.registry["probes"],
                                   "observed": initial["observed"],
                                   "budget": self.manifest["max_checks"]}).decode(),
         }]
@@ -356,10 +364,12 @@ class InvestigationSession:
                 choice = json.loads(content) if isinstance(content, str) else None
                 if not isinstance(choice, dict):
                     raise TypeError("model output fields")
-                require(set(choice) == {"action", "probe", "probes", "fact_ids"},
+                require(set(choice) == set(field_contract["required_fields"]),
                         "model output fields")
-                require(isinstance(choice["fact_ids"], list) and choice["fact_ids"]
-                        and all(item in facts for item in choice["fact_ids"]), "model fact citations")
+                require(isinstance(choice["fact_ids"], list)
+                        and len(choice["fact_ids"]) >= field_contract["fact_ids"]["minItems"]
+                        and all(item in field_contract["fact_ids"]["allowed_ids"]
+                                for item in choice["fact_ids"]), "model fact citations")
                 action = choice["action"]
                 if method == "one_shot_llm" and action == "plan":
                     plan = choice["probes"]

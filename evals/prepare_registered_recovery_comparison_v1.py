@@ -50,13 +50,14 @@ _SOURCE_FILES = {
     "evals/run_registered_recovery_comparison_v1.py",
     "evals/registered_recovery_backend_v1.py",
     "evals/registered_recovery_resources_v1.py",
+    "evals/lease_read_retry_v1.py",
     "evals/registered_recovery_timing_v1.py",
     "tests/test_registered_recovery_timing_v1.py",
     "evals/registered_recovery_confirmation_v1.py",
     "evals/summarize_registered_recovery_comparison_v1.py",
     "tests/test_registered_recovery_confirmation_v1.py",
     "tests/test_summarize_registered_recovery_comparison_v1.py",
-    "bench/protocols/diagnostic_recovery_comparison_20261104_v1.md",
+    "bench/protocols/diagnostic_recovery_comparison_20261104_v2.md",
     "bench/protocols/registered_recovery_review_host_policy_v1.json",
     "bench/registered_recovery_training_v1.py",
     "bench/registered_epoch_recovery_training_v1.py",
@@ -84,6 +85,7 @@ _SOURCE_FILES = {
     "src/rl_triage/observable_behavior_v1.py",
     "bench/protocols/observable_behavior_qualification_v1.json",
     "tests/test_registered_recovery_resources_v1.py",
+    "tests/test_lease_read_retry_v1.py",
     "tests/test_observable_behavior_v1.py",
     "src/rl_triage/investigate.py",
     "bench/protocols/registered_recovery_training_recipe_v1.json",
@@ -408,8 +410,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         {"role": "recovery_review_policy", "path": COMPARISON.REVIEW_POLICY_RELATIVE,
          "sha256": _sha(ROOT / COMPARISON.REVIEW_POLICY_RELATIVE, lf=True)},
         {"role": "measurement_preregistration",
-         "path": "bench/protocols/diagnostic_recovery_comparison_20261104_v1.md",
-         "sha256": _sha(ROOT / "bench/protocols/diagnostic_recovery_comparison_20261104_v1.md", lf=True)},
+         "path": "bench/protocols/diagnostic_recovery_comparison_20261104_v2.md",
+         "sha256": _sha(ROOT / "bench/protocols/diagnostic_recovery_comparison_20261104_v2.md", lf=True)},
         {"role": "diagnostic_plan", "path": plan_rel, "sha256": phase_ref["sha256"]},
         {"role": "recovery_bands_summary", "path": UPSTREAM.P0C_SUMMARY.relative_to(ROOT).as_posix(),
          "sha256": _sha(UPSTREAM.P0C_SUMMARY, lf=True)},
@@ -463,6 +465,69 @@ def _diagnostic_status(session: Path) -> dict:
                            fixture=False)
 
 
+def _bound_diagnostic_sessions(diagnostic_root: Path, plan: dict) -> dict[tuple[str, str], Path]:
+    """Resolve the exact phase-A bound session layout and recheck its immutable binding."""
+    root_input = Path(diagnostic_root)
+    root = root_input.resolve(strict=True)
+    if root_input.is_symlink() or not root.is_dir():
+        raise PreparationError("diagnostic comparison root is not a real directory")
+    bound = root / "bound"
+    if not bound.is_dir() or bound.is_symlink() or bound.resolve(strict=True) != bound:
+        raise PreparationError("diagnostic bound root is missing or aliased")
+    sessions: dict[tuple[str, str], Path] = {}
+    resolved_paths: set[Path] = set()
+    for case in CASES:
+        commitments = plan["template_commitments"][case]
+        checkpoints = {row["source_checkpoint_sha256"] for row in commitments.values()}
+        if len(checkpoints) != 1:
+            raise PreparationError("case template commitments disagree on source checkpoint")
+        checkpoint = checkpoints.pop()
+        for method in METHODS:
+            legacy_manifest = root / case / method / "manifest.json"
+            if legacy_manifest.exists():
+                raise PreparationError("legacy diagnostic session layout is forbidden")
+            base = bound / case / method
+            source_path = base / "source.json"
+            session = base / "session"
+            manifest_path = session / "manifest.json"
+            for path, kind in ((base, "directory"), (source_path, "file"),
+                               (session, "directory"), (manifest_path, "file")):
+                if path.is_symlink():
+                    raise PreparationError("diagnostic arm path is aliased")
+                if kind == "directory" and not path.is_dir():
+                    raise PreparationError(f"diagnostic session missing: {case}/{method}")
+                if kind == "file" and not path.is_file():
+                    raise PreparationError(f"diagnostic manifest or source missing: {case}/{method}")
+                resolved = path.resolve(strict=True)
+                if resolved != path or resolved in resolved_paths:
+                    raise PreparationError("diagnostic arm paths overlap or are aliased")
+                resolved_paths.add(resolved)
+            source = _read(source_path)
+            if source.get("case_id") != case or source.get("checkpoint_sha256") != checkpoint:
+                raise PreparationError("diagnostic source case or checkpoint differs")
+            try:
+                current = InvestigationSession(session)
+            except (OSError, ValueError, json.JSONDecodeError) as exc:
+                raise PreparationError("diagnostic session binding differs from phase-A arm") from exc
+            source_ref = current.manifest.get("source")
+            verification = current.manifest.get("source_verification")
+            if (current.folder != session
+                    or current.manifest.get("method") != method
+                    or current.manifest.get("execution_class") != "actual"
+                    or not isinstance(source_ref, dict)
+                    or set(source_ref) != {"path", "sha256"}
+                    or Path(source_ref["path"]).resolve(strict=True) != source_path
+                    or source_ref["sha256"] != _sha(source_path)
+                    or not isinstance(verification, dict)
+                    or verification.get("case_id") != case
+                    or verification.get("checkpoint_sha256") != checkpoint
+                    or current.source.get("case_id") != case
+                    or current.source.get("checkpoint_sha256") != checkpoint):
+                raise PreparationError("diagnostic session binding differs from phase-A arm")
+            sessions[(case, method)] = session
+    return sessions
+
+
 def _approval(protocol_ref: dict, protocol: dict, proposal: dict, actor: str) -> dict:
     request = proposal.get("status", {}).get("pending")
     if not isinstance(request, dict):
@@ -498,13 +563,12 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
     )
     out.mkdir(parents=True)
     write_new(out / "restart-seed-freshness.json", freshness)
+    diagnostic_sessions = _bound_diagnostic_sessions(diagnostic_root, plan)
     arms = []
     for case in CASES:
         for method in METHODS:
-            session = Path(diagnostic_root) / case / method
+            session = diagnostic_sessions[(case, method)]
             manifest_path = session / "manifest.json"
-            if not manifest_path.is_file():
-                raise PreparationError(f"diagnostic manifest missing: {case}/{method}")
             status = _diagnostic_status(session)
             expected_session_case = case
             if status.get("case_id") != expected_session_case:

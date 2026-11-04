@@ -151,8 +151,12 @@ def _diagnostic_outcome(arm: Mapping[str, Any], scoring: dict) -> str:
     if scoring["case_kind"] == "normal":
         if group == "host_blocked":
             return "normal_host_blocked"
-        if method in MODEL_METHODS and arm.get("status") in {"model_hold", "none_supported"} and not observed:
-            return "normal_model_success"
+        if method in MODEL_METHODS and arm.get("status") == "model_hold" and not observed:
+            state = arm.get("state")
+            model = state.get("model") if isinstance(state, Mapping) else None
+            if isinstance(model, Mapping) and model.get("model_status") == "valid":
+                return "normal_model_success"
+            return "hold"
         if group == "hold":
             return "hold"
         return "normal_other_terminal"

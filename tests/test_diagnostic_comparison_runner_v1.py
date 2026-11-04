@@ -64,6 +64,22 @@ def test_cli_forwards_lazy_actual_sampler_and_keeps_fixture_gpu_free(
     assert output.exists() is False
 
 
+@pytest.mark.parametrize(("status", "exit_code"), [
+    ("completed", 0), ("stopped_integrity_failure", 1), ("rejected", 2),
+])
+def test_cli_does_not_return_success_for_integrity_stop(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys,
+        status: str, exit_code: int) -> None:
+    plan, binding = tmp_path / "plan.json", tmp_path / "binding.json"
+    plan.write_text("{}", encoding="utf-8")
+    binding.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(RUNNER, "run_comparison", lambda *_args, **_kwargs: {"status": status})
+    actual = RUNNER.main(["--plan", str(plan), "--binding", str(binding),
+                          "--output", str(tmp_path / "output"), "--repo", str(tmp_path), "--fixture"])
+    assert actual == exit_code
+    assert json.loads(capsys.readouterr().out)["status"] == status
+
+
 def _registry() -> dict:
     return {
         "mechanisms": ["m1", "m2"],
@@ -564,8 +580,9 @@ def _synthetic_actual_session(
     settled: bool,
     wall_s: float = 12.5,
     failure_artifacts: int = 1,
+    session_path: Path | None = None,
 ) -> Path:
-    session = tmp_path / "session"
+    session = tmp_path / "session" if session_path is None else Path(session_path)
     stage = session / "actual_stages/request-1"
     (stage / "output").mkdir(parents=True)
     source_sha = "a" * 64
@@ -627,7 +644,7 @@ def test_missing_execution_cost_is_null_with_reason_not_zero(tmp_path: Path) -> 
     assert request["actual_owned"]["owned_wall_s"] is None
     assert request["actual_owned"]["missing_reasons"] == ["stage_execution_missing"]
     assert raw["resource_cost"]["actual_owned_summary"]["whole_owned_wall_s"] is None
-    assert raw["resource_cost"]["actual_owned_summary"]["known_owned_wall_s"] == 0
+    assert raw["resource_cost"]["actual_owned_summary"]["known_owned_wall_s"] is None
 
 
 def test_resume_settlement_zero_does_not_erase_or_double_actual_spend(tmp_path: Path) -> None:
@@ -937,6 +954,10 @@ def test_actual_source_integrity_failure_stops_batch_and_sampler_in_finally(tmp_
 
     def invoke(command, _session, _payload, **_kwargs):
         if command == "prepare":
+            session = _synthetic_actual_session(
+                tmp_path, execution=False, settled=False, session_path=Path(_session))
+            write_new(session / "actual_stages/request-1/output/failure.json",
+                      {"status": "invalid", "type": "PermissionError"})
             return {"status": "open"}
         raise ValueError("verified source changed")
 
@@ -968,5 +989,18 @@ def test_actual_source_integrity_failure_stops_batch_and_sampler_in_finally(tmp_
 
     assert report["status"] == "stopped_integrity_failure"
     assert len(report["arms"]) == 1
-    assert report["arms"][0]["status"] == "integrity_failure"
+    failed = report["arms"][0]
+    assert failed["status"] == "integrity_failure"
+    assert failed["failure_evidence"]["sha256"] == RUNNER.file_sha(
+        output / "case-01/00-fixed_sequence/integrity-failure-evidence.json")
+    assert failed["gpu_sampling"] == {
+        "start": {"scope": "device_wide", "receipt": "start"},
+        "stop": {"scope": "device_wide", "receipt": "stop"},
+        "scope": "device_wide",
+    }
+    actual = failed["resource_cost"]["request_costs"][0]["actual_owned"]
+    assert actual["owned_sdk_execution_count"] == 1
+    assert actual["owned_wall_s"] is None
+    assert actual["failure_count"] == 1
+    assert failed["timing"]["end_to_end_end_s"] >= failed["timing"]["end_to_end_start_s"]
     assert sampler.started == sampler.stopped == 1

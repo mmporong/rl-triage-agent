@@ -451,8 +451,9 @@ def _actual_config(intent: dict, component: dict) -> tuple[dict, dict, dict]:
 
 
 def _lease_context() -> dict:
+    from evals import lease_read_retry_v1
     from evals import lineage_source_batch_v1 as lease
-    return lease.lease_context()
+    return lease_read_retry_v1.read_live_lease(lease.lease_context)
 
 
 def _run_owned(folder: Path, args: list[str], cwd: Path, watchdog_s: float) -> dict:
@@ -869,6 +870,7 @@ def _execute_actual(intent: dict, component: dict, proof: dict) -> tuple[str, di
     command = [str(isaaclab / "_isaac_sim" / "python.bat"),
                str(Path(child.__file__).resolve()), "--manifest", str(manifest_path)]
     execution = _run_owned(owned, command, isaaclab, float(config["watchdog_s"]))
+    execution_ref = _write_stage_ref(stage / "execution.json", execution)
     current = _lease_context()
     if current.get("leaseId") != live.get("leaseId"):
         raise BackendBlocked("GPU lease changed during diagnostic child execution")
@@ -877,7 +879,6 @@ def _execute_actual(intent: dict, component: dict, proof: dict) -> tuple[str, di
             or execution.get("job_assigned_before_release") is not True
             or execution.get("timed_out") is not False or execution.get("error_type") is not None):
         raise BackendBlocked("owned diagnostic child exit/cleanup was not verified")
-    execution_ref = _write_stage_ref(stage / "execution.json", execution)
     outcome, measurement = _actual_observation(
         output, SESSION.file_sha(manifest_path), intent["request"]["probe"],
         manifest_path=manifest_path, execution=execution, isaaclab_root=isaaclab,

@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "HTTP_status": 200,
+    "actual_HTTP_responses": 4,
+    "baseline_unidentifiable": 4,
+    "host_contract_invalid_model_outputs": 4,
+    "host_no_intervention": 8,
+    "integrity_failure": 1,
+    "recorded_arms": 17,
+    "unstarted_arms": 23
+  },
+  "actual_billing_usd": null,
+  "infrastructure_failure": {
+    "failed_attempt_in_original_report_costs": false,
+    "failure_artifact_sha256": "a64ca95d2cf016965d16a15d69e676da88967aff43b8e9e11bc24b14e2d90c4b",
+    "operation": "shared_lease_metadata_read_before_Application",
+    "owned_attempts": 1,
+    "owned_wall_s": null,
+    "stage": "case-05/fixed_sequence",
+    "type": "PermissionError"
+  },
+  "model_contract_issue": {
+    "empty_fact_ids_example_sent": true,
+    "facts_equal_across_four_methods": true,
+    "facts_transmitted": 12,
+    "model_quality_comparison_valid": false,
+    "nonempty_rule_not_sent_but_host_required": true,
+    "root_cause": "prompt_validator_contract_mismatch",
+    "semantic_retries": 0
+  },
+  "original_plan": {
+    "arms": 40,
+    "cases": 10
+  },
+  "provider_GPU_seconds": null,
+  "raw_run_sha256": "fb93343e022d945b26ec553f8aaa3e043b0934d43ef93130ec252070b387824d",
+  "recovery_executions": 0,
+  "schema": "diagnostic_failure_interpretation_v1",
+  "scope": "pipeline_failure_record_not_model_quality_or_superiority_measurement",
+  "scoring_format_adapter": {
+    "denominator": 40,
+    "original_modified": false,
+    "scope": "format_only_post_execution_analysis",
+    "source_schema": "diagnostic_matrix_private_score_key_v1",
+    "target_schema": "diagnostic_comparison_scoring_key_v1"
+  }
+}

@@ -286,7 +286,8 @@ def authorize(context: Mapping[str, Any], request: Mapping[str, Any], actor: str
 def _lease(lease_reader=None) -> dict:
     if lease_reader is None:
         module = importlib.import_module("evals.lineage_source_batch_v1")
-        value, owner = module.lease_context(), module.OWNER
+        retry = importlib.import_module("evals.lease_read_retry_v1")
+        value, owner = retry.read_live_lease(module.lease_context), module.OWNER
     else:
         value, owner = lease_reader(), "rl-triage-lineage-sources-v1"
     if (not isinstance(value, dict) or value.get("owner") != owner

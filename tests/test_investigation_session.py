@@ -31,7 +31,7 @@ def registry() -> dict:
 
 def source(tmp_path: Path, *, fixture: bool = False) -> Path:
     path = tmp_path / "source.json"
-    facts = {"visible_metric": 1}
+    facts: dict[str, object] = {"visible_metric": 1}
     if fixture:
         facts["fixture_outcomes"] = {"p1": "normal", "p2": "abnormal"}
     write_new(path, {"schema": "test_source_v1", "case_id": "case-1",
@@ -341,3 +341,39 @@ def test_hidden_label_cannot_enter_source_facts(tmp_path: Path) -> None:
         InvestigationSession.prepare(path, tmp_path / "session", registry=registry(),
             method="fixed_sequence", max_checks=1, gpu_budget_per_check_s=0,
             source_verifier=verifier)
+
+
+@pytest.mark.parametrize(("method", "action"), [
+    ("one_shot_llm", "plan"), ("one_shot_llm", "hold"),
+    ("iterative_agent", "run_probe"), ("iterative_agent", "hold"),
+])
+@pytest.mark.parametrize("citations", ["valid", "empty", "invented"])
+def test_model_receives_the_same_citation_constraints_used_by_host(
+        tmp_path: Path, method: str, action: str, citations: str) -> None:
+    session = InvestigationSession.prepare(source(tmp_path), tmp_path / "session",
+        registry=registry(), method=method, max_checks=2, gpu_budget_per_check_s=1,
+        model_binding=binding(), source_verifier=verifier)
+    calls = []
+
+    def complete(messages, _params):
+        payload = json.loads(messages[1]["content"])
+        contract = payload["field_contract"]
+        citation_rule = contract["fact_ids"]
+        assert citation_rule["minItems"] == 1
+        assert citation_rule["allowed_ids"] == sorted(payload["facts"])
+        selected = [citation_rule["allowed_ids"][0]]
+        if citations == "empty":
+            selected = []
+        elif citations == "invented":
+            selected = ["not-a-supplied-fact"]
+        choice = {"action": action, "probe": "p1" if action == "run_probe" else None,
+                  "probes": ["p1"] if action == "plan" else [], "fact_ids": selected}
+        assert set(choice) == set(contract["required_fields"])
+        calls.append(choice)
+        return {"content": json.dumps(choice)}
+
+    result = session.next(complete=complete, source_verifier=verifier)
+    assert len(calls) == 1
+    assert result["model"]["model_status"] == ("valid" if citations == "valid" else "contract_invalid")
+    expected = "approval_pending" if citations == "valid" and action != "hold" else "model_hold"
+    assert result["status"] == expected

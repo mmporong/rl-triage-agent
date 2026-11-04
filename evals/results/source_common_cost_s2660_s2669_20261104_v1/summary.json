@@ -1,0 +1,106 @@
+{
+  "allocation": {
+    "charged_once": true,
+    "per_method": false,
+    "rule": "shared source acquisition is not added to each comparison method"
+  },
+  "bindings": {
+    "metering_result_sha256": "1c5bb8a5427ef49df7ad6f9f16ecaebbe538827952873af8bc66d14650b72a77",
+    "source_export_file_count": 63,
+    "source_export_manifest_sha256": "8f98da2cecd9dfd922225c758dbd6de55737fba36ebdb08d9381e5368e591c64",
+    "source_index_sha256": "fd570c5deea701355ad839f51472d2c6a98741cd8082de3e0cfaaf8b16156502",
+    "source_metadata_sha256": "22337ca40caa35824d5247ef41efc01fe803106feec73fdd9139fcb34cd7dd12",
+    "source_protocol_sha256": "72bff0b0e77bf94df545af554d4740120a455a84c08fdd27b71e3a8530051a3b",
+    "source_result_sha256": "13b820b3dd22c1b1b6cc5515e6793afa6fd81e03cf4f60da6114c8346253923b"
+  },
+  "counts": {
+    "fixed_evaluations": 20,
+    "model_api_calls": 0,
+    "telemetry_extractions": 20,
+    "training_jobs": 20
+  },
+  "exclusions": [
+    {
+      "classification": "includes_failures; exact validity breakdown not counted in this scope",
+      "count": 7,
+      "included": false,
+      "item": "prior_development_and_smoke_sdk_jobs",
+      "reason": "outside_this_registered_source_scope"
+    }
+  ],
+  "gpu_measurement": {
+    "devices": [
+      {
+        "coverage_fraction": 0.9999948008935207,
+        "covered_s": 11163.563544034958,
+        "device_uuid_sha256": "8cc12d5421d505001ab416f3d3a9744a53a720b84be7f9c26d27b766a7515d7d",
+        "energy_wh": 228.92011877575626,
+        "gpu_util_percent_sample_mean": {
+          "missing_or_invalid_samples": 0,
+          "valid_samples": 5399,
+          "value": 40.79403593258011
+        },
+        "logical_id": "device-01",
+        "memory_used_mib_peak": {
+          "missing_or_invalid_samples": 0,
+          "valid_samples": 5399,
+          "value": 5439.0
+        },
+        "power_draw_w_peak": {
+          "missing_or_invalid_samples": 0,
+          "valid_samples": 5399,
+          "value": 85.88
+        },
+        "process_attribution": null,
+        "sample_count": 5399,
+        "scope": "whole_device_including_other_loads",
+        "window_s": 11163.621584892273
+      }
+    ],
+    "process_gpu_seconds": null,
+    "provider_gpu_seconds": null,
+    "sample_count": 5399,
+    "scope": "device_wide_including_other_loads_not_attributable_to_source_jobs",
+    "unavailable_batches": 0
+  },
+  "provider_cost": {
+    "actual_billing_usd": null,
+    "provider_gpu_seconds": null,
+    "provider_price_usd": null,
+    "reason": "not_recorded"
+  },
+  "schema": "registered_source_costs_v1",
+  "scope": "shared_common_source_cost",
+  "status": "complete",
+  "telemetry_extraction": {
+    "cpu_only_receipts": 20,
+    "cpu_wall_s": null,
+    "jobs": 20,
+    "wall_measurement": "not_recorded_in_receipts"
+  },
+  "wall_clock": {
+    "aggregation_rule": "parent span and owned simulator sum are separate views and are not added",
+    "by_role": {
+      "case": {
+        "cpu_telemetry_extractions": 10,
+        "cpu_telemetry_wall_s": null,
+        "fixed_owned_wall_s": 460.22099999990314,
+        "gpu_simulator_owned_wall_s": 5326.391999999993,
+        "jobs": 10,
+        "simulator_owned_wall_s": 5326.391999999993,
+        "training_owned_wall_s": 4866.171000000089
+      },
+      "reference": {
+        "cpu_telemetry_extractions": 10,
+        "cpu_telemetry_wall_s": null,
+        "fixed_owned_wall_s": 466.23300000012387,
+        "gpu_simulator_owned_wall_s": 5364.935000000172,
+        "jobs": 10,
+        "simulator_owned_wall_s": 5364.935000000172,
+        "training_owned_wall_s": 4898.702000000048
+      }
+    },
+    "simulator_owned_wall_s": 10691.327000000165,
+    "source_parent_span_s": 11065.07799999998
+  }
+}

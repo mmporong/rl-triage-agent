@@ -27,7 +27,9 @@ PROTOCOL_SCHEMA = "diagnostic_observer_protocol_v1"
 REGISTERED_PROTOCOL_V1 = ROOT / "bench/protocols/registered_diagnostic_observer_v1.json"
 REGISTERED_PROTOCOL_V2 = ROOT / "bench/protocols/registered_diagnostic_observer_v2.json"
 REGISTERED_PROTOCOL_V3 = ROOT / "bench/protocols/registered_diagnostic_observer_v3.json"
-REGISTERED_PROTOCOLS = (REGISTERED_PROTOCOL_V1, REGISTERED_PROTOCOL_V2, REGISTERED_PROTOCOL_V3)
+REGISTERED_PROTOCOL_V4 = ROOT / "bench/protocols/registered_diagnostic_observer_v4.json"
+REGISTERED_PROTOCOLS = (REGISTERED_PROTOCOL_V1, REGISTERED_PROTOCOL_V2, REGISTERED_PROTOCOL_V3,
+                        REGISTERED_PROTOCOL_V4)
 REGISTERED_PROTOCOL = REGISTERED_PROTOCOL_V1
 COMPONENTS = ("actuator_mapping", "optimizer_update_bundle")
 CONDITIONS = ("NONE", "F2", "R1", "inverse_ratio")
@@ -388,7 +390,8 @@ def verify_manifest(
 def _live_lease(validated: Mapping[str, Any]) -> None:
     expected = validated["outer_lease"]
     lineage = importlib.import_module("lineage_source_batch_v1")
-    current = lineage.lease_context()
+    retry = importlib.import_module("lease_read_retry_v1")
+    current = retry.read_live_lease(lineage.lease_context)
     if (current.get("owner") != lineage.OWNER
             or current.get("leaseId") != expected["lease_id"]
             or current.get("state") != "running"

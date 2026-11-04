@@ -479,6 +479,61 @@ def test_actual_dispatch_derives_manifest_from_registered_artifacts_without_inte
         B._verify_actual_stage(intent, component, artifact)
 
 
+def test_actual_dispatch_seals_failed_owned_execution_before_exit_validation(
+        tmp_path, monkeypatch,
+):
+    from bench import diagnostic_observer_child_v1 as child
+
+    child_protocol = tmp_path / "child-protocol.json"
+    child_protocol.write_text("{}", encoding="utf-8")
+    host_receipt = tmp_path / "session/host_receipts/request-1.json"
+    host_receipt.parent.mkdir(parents=True)
+    intent = {
+        "request": {"request_id": "request-1", "effect_key": "effect-1", "probe": "p1"},
+        "consumption": {}, "preregistration": {"source_sha256": "a" * 64},
+        "host_receipt_path": str(host_receipt),
+    }
+    config = {
+        "operation": "fixture", "component": "fixture", "probe": "p1",
+        "case_binding": {}, "source_binding": {}, "reference_binding": {},
+        "checkpoint_role": "identity_only", "source_anchor": "b" * 40,
+        "source_closure": {}, "runtime_pins": {}, "seed": 1, "device": "cuda:0",
+        "num_envs": 1, "condition": "NONE", "isaaclab_root": str(tmp_path),
+        "watchdog_s": 30,
+    }
+    failed = {"exit_code": 1, "natural_exit": True, "cleanup_verified": True,
+              "job_assigned_before_release": True, "timed_out": False,
+              "error_type": "ChildFailure", "wall_s": 2.75}
+    lease = {"owner": "fixture", "leaseId": "1" * 36, "state": "running",
+             "childPid": 42, "wrapperPid": 41, "completedUtc": None}
+    calls = 0
+
+    def lease_context():
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            execution = (tmp_path / "session/actual_stages/request-1/execution.json")
+            assert json.loads(execution.read_text(encoding="utf-8")) == failed
+        return dict(lease)
+
+    monkeypatch.setattr(B, "_actual_config", lambda *_args: (
+        config, {"path": str(child_protocol.resolve()), "sha256": _sha(child_protocol)},
+        {"path": str((tmp_path / "checkpoint.pt").resolve()), "sha256": "c" * 64},
+    ))
+    monkeypatch.setattr(child, "REGISTERED_PROTOCOL", child_protocol)
+    monkeypatch.setattr(child, "REGISTERED_PROTOCOLS", ())
+    monkeypatch.setattr(child, "build_manifest", lambda **_kwargs: {"schema": "fixture"})
+    monkeypatch.setattr(child, "verify_manifest", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(B, "_approval_lineage", lambda *_args: {})
+    monkeypatch.setattr(B, "_admission_snapshot", lambda *_args: {})
+    monkeypatch.setattr(B, "_lease_context", lease_context)
+    monkeypatch.setattr(B, "_run_owned", lambda *_args: dict(failed))
+
+    with pytest.raises(B.BackendBlocked, match="exit/cleanup"):
+        B._execute_actual(intent, {}, {"status": "authorized"})
+    assert calls == 2
+
+
 def test_prepare_rejects_caller_truth_and_non_finite_limits(tmp_path):
     protocol = _protocol(tmp_path)
     payload = _prepare_payload(tmp_path, protocol)

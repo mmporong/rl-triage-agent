@@ -516,6 +516,19 @@ def _number_or_none(value: object, label: str) -> float | None:
     return number
 
 
+def _owned_execution_failed(execution: Mapping[str, object]) -> bool:
+    """Classify only explicit owned-child failure fields; absent fields stay unknown."""
+    exit_code = execution.get("exit_code")
+    return bool(
+        (type(exit_code) is int and exit_code != 0)
+        or execution.get("natural_exit") is False
+        or execution.get("cleanup_verified") is False
+        or execution.get("job_assigned_before_release") is False
+        or execution.get("timed_out") is True
+        or execution.get("error_type") is not None
+    )
+
+
 def _token_or_none(value: object) -> int | None:
     return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else None
 
@@ -911,11 +924,13 @@ def _request_cost(
 
     failure_artifacts = [name for name in ("failure", "training_failure") if name in stage_refs]
     if execution is None:
-        owned_count = owned_wall = natural_count = non_natural_count = None
-        failure_count = incomplete_count = None
+        known_failed_attempt = bool(failure_artifacts)
+        owned_count = 1 if known_failed_attempt else None
+        owned_wall = natural_count = non_natural_count = None
+        failure_count = incomplete_count = 1 if known_failed_attempt else None
         effective_gpu = effective_execution = None
         receipt_id = f"missing-execution:{request_id}"
-        event_status = "unknown"
+        event_status = "failed" if known_failed_attempt else "unknown"
     else:
         owned_wall = _number_or_none(execution.get("wall_s"), "owned execution wall_s")
         natural = execution.get("natural_exit")
@@ -924,8 +939,9 @@ def _request_cost(
         owned_count = 1
         natural_count = int(natural)
         non_natural_count = int(not natural)
-        failure_count = int(bool(failure_artifacts))
-        incomplete_count = int(bool(failure_artifacts) or host is None)
+        execution_failed = _owned_execution_failed(execution)
+        failure_count = int(bool(failure_artifacts) or execution_failed)
+        incomplete_count = int(bool(failure_artifacts) or execution_failed or host is None)
         effective_gpu = owned_wall
         effective_execution = owned_wall
         receipt_id = f"{request_id}:{stage_refs['execution']['sha256']}"
@@ -1030,8 +1046,9 @@ def _raw_refs(session: Path, max_checks: int, *, case_id: str, method: str) -> d
         values = [row[field] for row in actual_owned]
         return None if any(value is None for value in values) else sum(values)
 
-    def known_total(field: str) -> int | float:
-        return sum(row[field] for row in actual_owned if row[field] is not None)
+    def known_total(field: str) -> int | float | None:
+        values = [row[field] for row in actual_owned if row[field] is not None]
+        return sum(values) if values else None
 
     refs["resource_cost"] = {
         "schema": "diagnostic_arm_resource_cost_v1",
@@ -1196,6 +1213,7 @@ def _run_arm(
         if not isinstance(sampler_start, dict) or sampler_start.get("scope") != "device_wide":
             raise ComparisonContractError("GPU sampler start scope differs")
     result: dict[str, Any] = {"method": arm["method"], "status": "not_started"}
+    integrity_error: ComparisonContractError | None = None
     try:
         if clock() > deadline:
             result = {**result, "status": "hold_watchdog", "deadline_s": deadline}
@@ -1451,6 +1469,9 @@ def _run_arm(
             result["raw_refs"] = raw
             result["resource_cost"] = raw["resource_cost"]
         return result
+    except ComparisonContractError as error:
+        integrity_error = error
+        raise
     finally:
         if gpu_sampler is not None and sampler_start is not None:
             sampler_stop = gpu_sampler.stop()
@@ -1475,6 +1496,20 @@ def _run_arm(
             result["resource_cost"] = raw["resource_cost"]
         result["gpu_sampling"] = {"start": sampler_start, "stop": sampler_stop,
                                   "scope": "device_wide" if sampler_start else None}
+        if integrity_error is not None:
+            failure = {
+                "schema": "diagnostic_arm_integrity_failure_v1",
+                "case_id": arm["case_id"],
+                "method": arm["method"],
+                "status": "integrity_failure",
+                "reason": str(integrity_error),
+                "raw_refs": result.get("raw_refs"),
+                "resource_cost": result.get("resource_cost"),
+                "timing": result["timing"],
+                "controller_timing": result.get("controller_timing"),
+                "gpu_sampling": result["gpu_sampling"],
+            }
+            _write_once_or_match(stage / "integrity-failure-evidence.json", failure)
 
 
 def run_comparison(
@@ -1527,8 +1562,32 @@ def run_comparison(
                     gpu_sampler=gpu_sampler,
                 )
             except ComparisonContractError as error:
-                results.append({"case_id": case_id, "method": method,
-                                "status": "integrity_failure", "reason": str(error)})
+                failed = {"case_id": case_id, "method": method,
+                          "status": "integrity_failure", "reason": str(error)}
+                evidence_path = stage / "integrity-failure-evidence.json"
+                if evidence_path.is_file() and not evidence_path.is_symlink():
+                    evidence = _json_file(evidence_path, "arm integrity failure evidence")
+                    required = {
+                        "schema", "case_id", "method", "status", "reason", "raw_refs",
+                        "resource_cost", "timing", "controller_timing", "gpu_sampling",
+                    }
+                    if (set(evidence) != required
+                            or evidence["schema"] != "diagnostic_arm_integrity_failure_v1"
+                            or evidence["case_id"] != case_id
+                            or evidence["method"] != method
+                            or evidence["status"] != "integrity_failure"
+                            or evidence["reason"] != str(error)):
+                        raise ComparisonContractError(
+                            "arm integrity failure evidence binding differs") from error
+                    failed.update({
+                        "failure_evidence": reference(evidence_path),
+                        "raw_refs": evidence["raw_refs"],
+                        "resource_cost": evidence["resource_cost"],
+                        "timing": evidence["timing"],
+                        "controller_timing": evidence["controller_timing"],
+                        "gpu_sampling": evidence["gpu_sampling"],
+                    })
+                results.append(failed)
                 batch_status = "stopped_integrity_failure"
                 break
             results.append({"case_id": case_id, **arm_result})
@@ -1589,7 +1648,9 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as error:  # noqa: BLE001 - CLI는 실패를 구조화하고 backend를 재실행하지 않는다.
         result = {"status": "rejected", "error_type": type(error).__name__, "reason": str(error)}
     print(canonical(result).decode("utf-8"))
-    return 0 if result.get("status") != "rejected" else 2
+    if result.get("status") == "rejected":
+        return 2
+    return 1 if result.get("status") == "stopped_integrity_failure" else 0
 
 
 if __name__ == "__main__":

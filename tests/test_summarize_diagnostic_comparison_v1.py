@@ -124,6 +124,8 @@ def test_classifies_normal_host_model_and_compound_without_forcing_positive() ->
         _arm("compound", "one_shot_llm", "confirmed", observed={"p9": "abnormal"}),
         _arm("compound", "iterative_agent", "none_supported"),
     ]
+    for arm in arms[2:4]:
+        arm["state"]["model"] = {"model_status": "valid"}
     raw = {"schema": "diagnostic_comparison_result_v1", "plan": plan_ref,
            "registration_anchor": "2" * 40, "execution_class": "registered",
            "status": "completed", "arms": arms}
@@ -137,6 +139,15 @@ def test_classifies_normal_host_model_and_compound_without_forcing_positive() ->
     assert summary["comparison"] == {"descriptive_only": True, "positive_effect_forced": False,
                                       "superiority_claimed": False, "preferred_method": None}
     assert summary["recovery"]["outcome"] is None
+
+
+@pytest.mark.parametrize("model_status", [None, "contract_invalid", "infrastructure_error"])
+def test_unverified_or_invalid_normal_hold_is_not_model_normal_success(model_status: str | None) -> None:
+    arm = _arm("normal", "one_shot_llm", "model_hold")
+    if model_status is not None:
+        arm["state"]["model"] = {"model_status": model_status}
+    scoring = {"case_id": "normal", "case_kind": "normal", "injected_probes": [], "expected_probes": []}
+    assert SUMMARY._diagnostic_outcome(arm, scoring) == "hold"
 
 
 def test_missing_and_pending_keep_denominator_and_mark_incomplete() -> None:

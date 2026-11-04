@@ -126,7 +126,7 @@ def _patch_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple
         "hidden_recipe_source_sha256_lf": hidden_sha})
     source = _write(tmp_path / "source.py", b"source\n")
     for relative in (prepare.COMPARISON.REVIEW_POLICY_RELATIVE,
-                     "bench/protocols/diagnostic_recovery_comparison_20261104_v1.md"):
+                     "bench/protocols/diagnostic_recovery_comparison_20261104_v2.md"):
         _write(tmp_path / relative, (prepare.ROOT / relative).read_bytes())
     monkeypatch.setattr(prepare, "ROOT", tmp_path)
     monkeypatch.setattr(prepare, "RECIPE", recipe)
@@ -255,9 +255,9 @@ def test_jobs_preserve_all_arms_and_prepare_only_confirmed_registered_mechanism(
     for case in prepare.CASES:
         checkpoint = plan["template_commitments"][case]["actuator"]["source_checkpoint_sha256"]
         for method in prepare.METHODS:
-            source = _write(diagnostic_root / case / method / "source.json", {
+            source = _write(diagnostic_root / "bound" / case / method / "source.json", {
                 "case_id": case, "checkpoint_sha256": checkpoint})
-            _write(diagnostic_root / case / method / "manifest.json", {
+            _write(diagnostic_root / "bound" / case / method / "session" / "manifest.json", {
                 "method": method, "execution_class": "actual",
                 "source": {"path": str(source), "sha256": _sha(source)},
                 "source_verification": {"case_id": case, "checkpoint_sha256": checkpoint}})
@@ -271,14 +271,15 @@ def test_jobs_preserve_all_arms_and_prepare_only_confirmed_registered_mechanism(
         "source_verification": {"checkpoint_sha256":
             plan["template_commitments"]["case-05"]["actuator"]["source_checkpoint_sha256"]}}
     monkeypatch.setattr(prepare, "_diagnostic_status",
-                        lambda session: statuses[(session.parent.name, session.name)])
+                        lambda session: statuses[(session.parent.parent.name, session.parent.name)])
 
     class FakeSession:
         def __init__(self, path: Path):
-            self.folder = Path(path)
+            self.folder = Path(path).resolve(strict=True)
             self._manifest_sha256 = _sha(self.folder / "manifest.json")
             body = json.loads((self.folder / "manifest.json").read_text())
-            self.manifest = {"source": body["source"]}
+            self.manifest = body
+            self.source = json.loads(Path(body["source"]["path"]).read_text())
 
     monkeypatch.setattr(prepare, "InvestigationSession", FakeSession)
     monkeypatch.setattr(prepare.RECOVERY, "_diagnostic", lambda _session, _mechanism: (
@@ -316,3 +317,101 @@ def test_jobs_preserve_all_arms_and_prepare_only_confirmed_registered_mechanism(
     approval.write_text("{}", encoding="utf-8")
     with pytest.raises(prepare.COMPARISON.ComparisonContractError, match="approval reference changed"):
         prepare.COMPARISON._validate_job(job, job["plan"], plan, tmp_path / "jobs/job.json")
+
+
+def test_bound_diagnostic_sessions_use_phase_a_layout_and_reject_substitution(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    cases = [{"case_id": case, "rotation": list(prepare.PHASE_A.METHODS)}
+             for case in prepare.CASES]
+    phase_plan = {
+        "cases": cases,
+        "limits": {"max_checks": 3},
+        "inputs": [],
+    }
+    plan_ref = {"path": "phase-plan.json", "sha256": "a" * 64}
+    root = (tmp_path / "comparison").resolve()
+    api_root = str((root / "api").resolve())
+    rows = []
+    for case in prepare.CASES:
+        arms = []
+        for method in prepare.METHODS:
+            base = root / "bound" / case / method
+            source = _write(base / "source.json", {
+                "schema": "registered_diagnostic_source_fixture_v1",
+                "case_id": case, "checkpoint_sha256": "b" * 64,
+                "facts": {}, "binding": {}})
+            session = base / "session"
+            arms.append({
+                "method": method,
+                "source_path": str(source.resolve()),
+                "session_path": str(session.resolve()),
+                "prepare_payload": {
+                    "source_path": str(source.resolve()), "method": method,
+                    "case_id": case, "max_checks": 3, "execution_class": "fixture",
+                    "protocol": None,
+                    "api_root": api_root if method in {"one_shot_llm", "iterative_agent"} else None,
+                },
+            })
+        rows.append({"case_id": case, "arms": arms})
+    binding = {"schema": prepare.PHASE_A.JOB_SCHEMA, "plan": plan_ref,
+               "api_root": api_root, "cases": rows}
+    normalized = prepare.PHASE_A._validate_binding(binding, plan_ref, phase_plan, root, tmp_path)
+    assert set(normalized) == set(prepare.CASES)
+    commitments = {
+        case: {mechanism: {"source_checkpoint_sha256": "b" * 64}
+               for mechanism in prepare.MECHANISMS}
+        for case in prepare.CASES
+    }
+    recovery_plan = {"template_commitments": commitments}
+    registry = {
+        "mechanisms": ["m1"], "outcomes": ["abnormal", "normal", "unknown"],
+        "probes": {"p1": {"measures": "fixture", "cost_gpu_s": 0, "args": {},
+                           "expect": {"m1": "abnormal"}}},
+        "fixed_order": ["p1"],
+    }
+    for case in prepare.CASES:
+        for method in prepare.METHODS:
+            base = root / "bound" / case / method
+            source = base / "source.json"
+            model_binding = ({"source_anchor": "c" * 40, "protocol_sha256": "d" * 64,
+                              "params": {}, "api_cap": 4, "api_root": api_root}
+                             if method in {"one_shot_llm", "iterative_agent"} else None)
+            prepare.InvestigationSession.prepare(
+                source, base / "session", registry=registry, method=method, max_checks=3,
+                gpu_budget_per_check_s=0, model_binding=model_binding, execution_class="actual",
+                source_verifier=lambda path, current_case=case: {
+                    "status": "verified", "execution_class": "actual",
+                    "verifier_id": "phase_a_fixture_v1", "source_sha256": _sha(path),
+                    "checkpoint_sha256": "b" * 64, "case_id": current_case,
+                },
+            )
+    sessions = prepare._bound_diagnostic_sessions(root, recovery_plan)
+    assert sessions[("case-05", "fixed_sequence")] == (
+        root / "bound/case-05/fixed_sequence/session")
+
+    wrong = root / "bound/case-05/fixed_sequence/session/manifest.json"
+    original = wrong.read_bytes()
+    body = json.loads(wrong.read_text())
+    body["method"] = "iterative_agent"
+    wrong.write_text(json.dumps(body), encoding="utf-8")
+    with pytest.raises(prepare.PreparationError, match="session binding differs"):
+        prepare._bound_diagnostic_sessions(root, recovery_plan)
+
+    wrong.write_bytes(original)
+    wrong.unlink()
+    _write(root / "case-05/fixed_sequence/manifest.json", body)
+    with pytest.raises(prepare.PreparationError, match="legacy diagnostic session layout"):
+        prepare._bound_diagnostic_sessions(root, recovery_plan)
+
+    (root / "case-05/fixed_sequence/manifest.json").unlink()
+    wrong.write_bytes(original)
+    body = json.loads(original)
+    other_source = root / "bound/case-05/one_shot_llm/source.json"
+    body["source"] = {"path": str(other_source), "sha256": _sha(other_source)}
+    wrong.write_text(json.dumps(body, sort_keys=True, separators=(",", ":")), encoding="utf-8")
+    anchor = wrong.parent / "anchor.json"
+    anchor.write_text(json.dumps({"schema": "triage_investigation_session_v1_anchor",
+                                  "manifest_sha256": _sha(wrong)},
+                                 sort_keys=True, separators=(",", ":")), encoding="utf-8")
+    with pytest.raises(prepare.PreparationError, match="session binding differs"):
+        prepare._bound_diagnostic_sessions(root, recovery_plan)
