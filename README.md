@@ -97,7 +97,7 @@ uv run python -m rl_triage.nemotron35_entry_v1 \
   --prepare-only
 ```
 
-The command reports `ready_for_execute` but still performs no model call. To request the registered Nemotron 3.5 assessment, load the NVIDIA key from your existing local secret store and choose `--execute` explicitly. Use a new output directory because entry outputs are write-once.
+For probe approvals, correction and status queries, use the [registered CLI](docs/REGISTERED-DIAGNOSTIC-RUNTIME.md): `uv run python -m rl_triage.investigate_v3 --help`. The preparation command reports `ready_for_execute` but still performs no model call. To request the registered Nemotron 3.5 assessment, load the NVIDIA key from your existing local secret store and choose `--execute` explicitly. Use a new output directory because entry outputs are write-once.
 
 ```bash
 . "$HOME/.config/nvidia/env"

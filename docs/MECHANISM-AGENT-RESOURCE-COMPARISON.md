@@ -74,12 +74,14 @@
 
 ```powershell
 cd "$HOME/rl-triage-agent"
-.\.venv\Scripts\python.exe -m rl_triage.investigate_v2 --help
+.\.venv\Scripts\python.exe -m rl_triage.investigate_v3 --help
 ```
 
 조사 명령은 `prepare`, `next`, `approve`, `dispatch`, `settle`, `status`, `export`다. 같은 진입점의 `recovery-*` 명령으로 교정 요청, 별도 승인, 학습·평가, 후속 검토를 다룬다. 모델은 검사 ID와 fact ID를 고르고, host가 인자와 권한을 검증한다. 승인된 요청은 한 번만 소비하며 중단된 요청은 원래 실행 증거로 접수하거나 unknown으로 닫는다.
 
 `status`는 모델의 HOLD와 실행 원장의 미접수 요청을 구분한다. 조사 export와 회복 결과 조회는 같은 CLI의 서로 다른 명령이며, 모든 기존 실행기가 하나의 export 형식으로 바뀐 것은 아니다. 새 runtime 세 검사와 기존 여섯 검사의 지원 범위도 구분한다.
+
+`post-status --session evals/results/post_actuator_confirmation_s2664_20261105_v1`은 같은 진입점에서 커밋된 모터 후속 확인을 조회한다. 파일·manifest SHA와 Git HEAD blob을 검증하며 API·SDK 실행 없이 저장 결과를 반환한다. 새 측정으로 표시하지 않는다.
 
 사용법과 승인 경계: [등록 조사 CLI](REGISTERED-DIAGNOSTIC-RUNTIME.md).
 

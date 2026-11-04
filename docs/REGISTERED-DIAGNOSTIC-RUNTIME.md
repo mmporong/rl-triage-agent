@@ -24,12 +24,20 @@
 
 ```powershell
 cd "$HOME/rl-triage-agent"
-.\.venv\Scripts\python.exe -m rl_triage.investigate_v2 --help
+.\.venv\Scripts\python.exe -m rl_triage.investigate_v3 --help
 ```
 
-명령은 `prepare`, `next`, `approve`, `dispatch`, `settle`, `status`, `export`다. `--session`은 세션 폴더, `--input`은 해당 명령의 JSON 입력이다. 기본 backend는 `registered_diagnostic_v1`이며 임의 Python 모듈이나 셸 명령을 입력받지 않는다. `investigate_v2`는 기존 실행 함수를 재사용하면서 모델 HOLD와 아직 접수하지 못한 도구 실행 상태를 구분한다.
+명령은 `prepare`, `next`, `approve`, `dispatch`, `settle`, `status`, `export`다. `--session`은 세션 폴더, `--input`은 해당 명령의 JSON 입력이다. 기본 backend는 `registered_diagnostic_v1`이며 임의 Python 모듈이나 셸 명령을 입력받지 않는다. `investigate_v3`는 기존 실행 함수를 재사용하면서 모델 HOLD와 아직 접수하지 못한 도구 실행 상태를 구분한다. `post-status`는 커밋된 별도 후속 확인 결과를 읽기 전용으로 조회한다.
 
 `prepare`는 등록된 case/reference의 고정 26조건 평가, source manifest, 기준·프로토콜 SHA, 검사 registry, 실제 artifact resolver를 재검증한다. `next`는 제안만 남기며 실행하지 않는다. `approve`는 검사·사례·원천·체크포인트·request·effect·registry에 결합된 호스트 승인 파일을 요구한다. `dispatch`는 그 승인을 한 번 소비한 뒤에만 등록된 자식 실행기로 넘어간다.
+
+커밋된 별도 모터 확인은 같은 CLI에서 조회할 수 있다. 다음 명령의 `--session`은 조사 원장이 아닌 공개 결과 폴더다.
+
+```powershell
+.\.venv\Scripts\python.exe -m rl_triage.investigate_v3 post-status --session evals/results/post_actuator_confirmation_s2664_20261105_v1
+```
+
+`post-status`는 manifest와 세 데이터 파일의 SHA, 현재 Git HEAD blob을 대조한다. 미커밋·변조·다른 폴더는 거부한다. 반환의 `evidence_mode=committed_public_result_replay`와 `fresh_measurement=false`는 저장 결과 조회임을 뜻한다. 저장된 SDK 1회와 새 조회의 SDK/API 0회를 구분하며 원래 실행·승인·원장은 바꾸지 않는다.
 
 입력은 등록된 공개 export와 호스트 resolver를 사용한다. 임의 사용자 로그를 자동으로 이 스키마에 맞추는 importer는 포함하지 않는다. 실제 artifact 경로와 승인 파일은 비공개 실행 입력에 두고, 공개 등록에는 논리 ID와 SHA를 남긴다.
 
