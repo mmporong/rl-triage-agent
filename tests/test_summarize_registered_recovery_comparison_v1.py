@@ -374,3 +374,34 @@ def test_completed_effect_import_preserves_the_negative_endpoint_and_historical_
     scope["method"] = "static_rule"
     with pytest.raises(summary.SummaryError, match="registered import"):
         summary._resource(status["arms"][0]["resource_cost"], "case-05:fixed_sequence", [], import_scope=scope)
+
+
+@pytest.mark.parametrize("ledger_state", ["running", "done"])
+def test_consumed_without_resource_receipt_is_unsettled_and_cost_unknown(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, ledger_state: str) -> None:
+    prepared, status = _fixture(tmp_path, monkeypatch)
+    status["arms"][1] = {"case_id": "case-05", "method": "static_rule"}
+    original_status = summary.investigation_recovery.status
+
+    def recovery_status(folder: Path) -> dict:
+        if folder.name == "static_rule" and folder.parent.name == "case-05":
+            return {"requests": {"lost": {"request_id": "lost", "state": ledger_state,
+                                           "receipt": {"result_sha": None}}}}
+        return original_status(folder)
+
+    monkeypatch.setattr(summary.investigation_recovery, "status", recovery_status)
+    result = summary.summarize(prepared, tmp_path / "unsettled")
+    row = next(arm for arm in result["arms"] if arm["case_id"] == "case-05"
+               and arm["method"] == "static_rule")
+    assert row["recovery_attempted"] is True
+    assert row["recovery_outcome"] == "execution_unsettled"
+    assert row["endpoint"] is None
+    assert row["costs"]["status"] == "incomplete"
+    assert row["costs"]["execution_origin"] == "current_dispatch_without_resource_receipt"
+    assert row["costs"]["owned_cost_complete"] is False
+    assert row["costs"]["simulator_owned_wall_s"] is None
+    assert row["costs"]["current_dispatch_sdk_launches"] is None
+    method = next(item for item in result["methods"] if item["method"] == "static_rule")
+    assert method["outcomes"]["execution_unsettled"] == 1
+    assert method["outcomes"]["not_started"] == 0
+    assert method["costs"]["simulator_owned_wall_s"]["unknown_arms"] == 1

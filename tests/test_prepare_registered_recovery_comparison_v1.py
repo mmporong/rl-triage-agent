@@ -444,6 +444,174 @@ def test_templates_v3_bind_two_imports_and_separate_historical_sdk_budget(
     assert static_protocol["operation"]["prior_training_artifact_id"] == "prior_training"
 
 
+def test_templates_and_jobs_v4_import_two_completed_effects(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    source_checkpoint = json.loads(metadata.read_text(encoding="utf-8"))[
+        "sources"]["fault-s2554"]["binding"]["checkpoint_sha256"]
+    common = {"source_checkpoint_sha256": source_checkpoint,
+              "final_checkpoint_sha256": "d" * 64, "seed": 2664,
+              "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+              "correction_id": "restore_motor_torque_speed"}
+    proofs = {
+        "prior_effect": _write(tmp_path / "effect-v1.json", {
+            "schema": "registered_completed_effect_proof_v1", "status": "completed_effect",
+            "case_id": "case-05", "method": "fixed_sequence",
+            "identity": {"prior_plan_sha256": "e" * 64,
+                "diagnostic_manifest_sha256": "c" * 64, **common,
+                "source_anchor": prepare.PRIOR_V5_SOURCE_ANCHOR,
+                "registration_anchor": prepare.PRIOR_V5_REGISTRATION_ANCHOR}}),
+        "prior_static_effect": _write(tmp_path / "static-effect-v2.json", {
+            "schema": "registered_completed_effect_proof_v2", "status": "completed_effect",
+            "case_id": "case-05", "method": "static_rule",
+            "identity": {"prior_plan_sha256": "f" * 64,
+                "diagnostic_manifest_sha256": "9" * 64, **common,
+                "source_anchor": "a" * 40,
+                "registration_anchor": prepare.PRIOR_V7_REGISTRATION_ANCHOR}}),
+    }
+    fixture_expected = {}
+    for artifact_id, proof_path in proofs.items():
+        proof = json.loads(proof_path.read_text(encoding="utf-8"))
+        identity = proof["identity"]
+        fixture_expected[artifact_id] = {
+            "artifact_id": artifact_id, "kind": "completed_effect",
+            "case_id": proof["case_id"], "method": proof["method"],
+            "proof_sha256": _sha(proof_path),
+            "prior_plan_sha256": identity["prior_plan_sha256"],
+            "diagnostic_manifest_sha256": identity["diagnostic_manifest_sha256"],
+            "source_checkpoint_sha256": identity["source_checkpoint_sha256"],
+            "completed_checkpoint_sha256": identity["final_checkpoint_sha256"],
+            "seed": identity["seed"], "task": identity["task"],
+            "correction_id": identity["correction_id"],
+            "source_anchor": identity["source_anchor"],
+            "registration_anchor": identity["registration_anchor"],
+        }
+    monkeypatch.setattr(prepare, "V4_EXPECTED_IMPORTS", fixture_expected)
+
+    class ProofModule:
+        @staticmethod
+        def verify_completed_effect(*_args, **_kwargs):
+            return {"execution_origin": "verified_prior_effect"}
+
+    monkeypatch.setattr(prepare, "_continuation_module_v4", lambda: ProofModule)
+    monkeypatch.setattr(prepare, "_CONTINUATION_V3_SOURCE_FILES", {"source.py"})
+    monkeypatch.setattr(prepare, "_CONTINUATION_V4_SOURCE_FILES", {"source.py"})
+    _write(tmp_path / "bench/protocols/diagnostic_recovery_comparison_20261104_v8.md", b"v8\n")
+    isaaclab = tmp_path / "IsaacLab"
+    isaaclab.mkdir()
+    templates = tmp_path / "templates-v4"
+    result = prepare.prepare_templates(
+        source_index=index, metadata=metadata, diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+        output=templates, actor="operator", isaaclab_commit="c" * 40,
+        completed_effect_proofs=proofs, isaaclab_root=isaaclab, require_committed=False)
+    plan = json.loads((templates / "registered-plan.json").read_text(encoding="utf-8"))
+    assert plan["schema"] == prepare.COMPARISON.PLAN_SCHEMA_V4
+    assert plan["limits"]["gpu_sdk_launch_cap"] == 27
+    assert plan["limits"]["total_owned_launch_cap"] == 59
+    assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 26
+    assert plan["continuation"]["cumulative_gpu_sdk_launches"] == 32
+    assert result["continuation_proofs"] == {
+        key: {"path": str(path.resolve()), "sha256": _sha(path)} for key, path in proofs.items()}
+
+    monkeypatch.setattr(prepare.COMPARISON, "load_plan", lambda *_args, **_kwargs: plan)
+    monkeypatch.setattr(prepare.SEED_GUARD, "assert_fresh_seeds",
+                        lambda seeds, *_args, **_kwargs: {"status": "fresh", "seeds": list(seeds)})
+    diagnostic_root = tmp_path / "diagnostics-v4"
+    for case in prepare.CASES:
+        checkpoint = plan["template_commitments"][case]["actuator"]["source_checkpoint_sha256"]
+        for method in prepare.METHODS:
+            source = _write(diagnostic_root / "bound" / case / method / "source.json",
+                            {"case_id": case, "checkpoint_sha256": checkpoint})
+            _write(diagnostic_root / "bound" / case / method / "session/manifest.json", {
+                "method": method, "execution_class": "actual",
+                "source": {"path": str(source), "sha256": _sha(source)},
+                "source_verification": {"case_id": case, "checkpoint_sha256": checkpoint}})
+    statuses: dict[tuple[str, str], dict[str, object]] = {
+        (case, method): {"status": "unidentifiable", "case_id": case}
+        for case in prepare.CASES for method in prepare.METHODS}
+    for method in ("fixed_sequence", "static_rule"):
+        statuses[("case-05", method)] = {"status": "confirmed",
+            "confirmed_mechanism": "actuator", "case_id": "case-05",
+            "source_verification": {"checkpoint_sha256": source_checkpoint}}
+    monkeypatch.setattr(prepare, "_diagnostic_status",
+        lambda session: statuses[(session.parent.parent.name, session.parent.name)])
+
+    class FakeSession:
+        def __init__(self, path: Path):
+            self.folder = Path(path).resolve(strict=True)
+            body = json.loads((self.folder / "manifest.json").read_text(encoding="utf-8"))
+            key = (self.folder.parent.parent.name, self.folder.parent.name)
+            self._manifest_sha256 = ({("case-05", "fixed_sequence"): "c" * 64,
+                                      ("case-05", "static_rule"): "9" * 64}
+                                     .get(key, _sha(self.folder / "manifest.json")))
+            self.manifest = body
+            self.source = json.loads(Path(body["source"]["path"]).read_text(encoding="utf-8"))
+
+    monkeypatch.setattr(prepare, "InvestigationSession", FakeSession)
+    jobs = tmp_path / "jobs-v4"
+    job_result = prepare.prepare_jobs(
+        templates=templates, registered_plan=templates / "registered-plan.json",
+        registration_anchor="d" * 40, diagnostic_root=diagnostic_root,
+        isaaclab_root=isaaclab, output=jobs, require_committed=False)
+    job = json.loads((jobs / "job.json").read_text(encoding="utf-8"))
+    imported = [row for row in job["arms"] if row["continuation_import"] is not None]
+    assert job_result["recovery_prepared"] == 0
+    assert [(row["method"], row["continuation_import"]["kind"]) for row in imported] == [
+        ("fixed_sequence", "completed_effect"), ("static_rule", "completed_effect")]
+    assert all(row["recovery_payload"] is None and row["approval_ref"] is None
+               for row in imported)
+
+
+def test_v4_rejects_self_consistent_unregistered_completed_effect(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def proof(method: str, prior_plan: str, source_anchor: str, registration: str) -> dict:
+        return {"status": "completed_effect", "case_id": "case-05", "method": method,
+                "identity": {"prior_plan_sha256": prior_plan,
+                    "diagnostic_manifest_sha256": "c" * 64,
+                    "source_checkpoint_sha256": "d" * 64,
+                    "final_checkpoint_sha256": "e" * 64, "seed": 2664, "task": "task",
+                    "correction_id": "restore_motor_torque_speed",
+                    "source_anchor": source_anchor, "registration_anchor": registration}}
+
+    paths = {
+        "prior_effect": _write(tmp_path / "fixed.json", proof(
+            "fixed_sequence", "1" * 64, "a" * 40, "b" * 40)),
+        "prior_static_effect": _write(tmp_path / "static.json", proof(
+            "static_rule", "2" * 64, "f" * 40, "9" * 40)),
+    }
+    expected = {}
+    for artifact_id, path in paths.items():
+        body = json.loads(path.read_text(encoding="utf-8"))
+        identity = body["identity"]
+        expected[artifact_id] = {"artifact_id": artifact_id, "kind": "completed_effect",
+            "case_id": body["case_id"], "method": body["method"],
+            "proof_sha256": _sha(path), "prior_plan_sha256": identity["prior_plan_sha256"],
+            "diagnostic_manifest_sha256": identity["diagnostic_manifest_sha256"],
+            "source_checkpoint_sha256": identity["source_checkpoint_sha256"],
+            "completed_checkpoint_sha256": identity["final_checkpoint_sha256"],
+            "seed": identity["seed"], "task": identity["task"],
+            "correction_id": identity["correction_id"],
+            "source_anchor": identity["source_anchor"],
+            "registration_anchor": identity["registration_anchor"]}
+    monkeypatch.setattr(prepare, "V4_EXPECTED_IMPORTS", expected)
+
+    class ProofModule:
+        @staticmethod
+        def verify_completed_effect(*_args, **_kwargs):
+            return {"execution_origin": "verified_prior_effect"}
+
+    monkeypatch.setattr(prepare, "_continuation_module_v4", lambda: ProofModule)
+    changed = json.loads(paths["prior_static_effect"].read_text(encoding="utf-8"))
+    changed["identity"]["prior_plan_sha256"] = "3" * 64
+    _write(paths["prior_static_effect"], changed)
+    with pytest.raises(prepare.PreparationError, match="registered basis"):
+        prepare._v4_imports(paths)
+
+
 def test_templates_v3_reject_cross_method_training_proof(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

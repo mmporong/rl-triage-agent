@@ -1,0 +1,40 @@
+{
+  "schema": "registered_post_actuator_confirmation_protocol_v1",
+  "status": "not_registered_not_executable",
+  "profile_id": "registered_post_actuator_confirmation_v1",
+  "max_sdk_launches": 1,
+  "cases": [
+    "case-05"
+  ],
+  "condition": "NONE",
+  "producer": {
+    "callable": "bench.actuator_envelope_runtime.run_sdk",
+    "semantics": "policy_free_runtime_config_readback",
+    "checkpoint_consumed": false,
+    "runtime_updates": 0
+  },
+  "validators": [
+    "bench.run_actuator_envelope_runtime.validate_manifest",
+    "bench.run_actuator_envelope_runtime.verify_body"
+  ],
+  "source_sha256": {
+    "bench/actuator_envelope_runtime.py": "214bc957f303584c4af45453cd506f7db823532707d7d76e8c76506327c2a9c1",
+    "bench/run_actuator_envelope_runtime.py": "91215416650d88e9eb628cfecc22b01d35ceb6b9954288e969ab2a6f62c6e73e",
+    "bench/registered_mechanism_observer_v1.py": "7b8eb1f36300959ef21a3f96c0901105bcbfd66fcecd47ed575d0c2103a259b3",
+    "evals/registered_recovery_confirmation_v1.py": "2b917aef841cea4cb99399cd2c69a8af57edb8d4734a3a79bb2ecdd6086759d4",
+    "src/rl_triage/investigation_recovery.py": "e63b5604cd35a2c89ee87ed884234affcbde0f87f878e485849392490ae61511",
+    "src/rl_triage/intervention_governor.py": "51a15bda641c82b7ed5c5be436eab0c34b9de75e136bdfedc8310363dbefb3c8"
+  },
+  "limitations": [
+    "The SDK producer does not load the associated checkpoint.",
+    "The observation confirms live stock Go2 DCMotor envelope and state restoration only.",
+    "The result is not trained-policy validation and does not alter fixed evaluation criteria.",
+    "Other optimizer checks remain unobserved and catalog coverage remains incomplete.",
+    "A second-seed actuator post-check has not been measured."
+  ],
+  "predictions": {
+    "normal_mapping_below_reference_behavior": "scoped_reference_review_no_more_correction",
+    "normal_mapping_normal_behavior": "no_intervention",
+    "abnormal_or_unknown_mapping": "hold"
+  }
+}

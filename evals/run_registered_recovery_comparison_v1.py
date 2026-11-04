@@ -30,6 +30,7 @@ from rl_triage.investigation_session import (
 PLAN_SCHEMA = "registered_recovery_comparison_plan_v1"
 PLAN_SCHEMA_V2 = "registered_recovery_comparison_plan_v2"
 PLAN_SCHEMA_V3 = "registered_recovery_comparison_plan_v3"
+PLAN_SCHEMA_V4 = "registered_recovery_comparison_plan_v4"
 JOB_SCHEMA = "registered_recovery_comparison_job_v1"
 RESULT_SCHEMA = "registered_recovery_comparison_result_v1"
 METHODS = ("fixed_sequence", "static_rule", "one_shot_llm", "iterative_agent")
@@ -119,9 +120,10 @@ def _validate_plan(plan: dict) -> None:
     fields = {"schema", "source_anchor", "source_closure", "methods", "cases", "limits", "inputs",
               "backend", "authorization", "recovery_policy", "template_commitments"}
     schema = plan.get("schema")
-    if schema in {PLAN_SCHEMA_V2, PLAN_SCHEMA_V3}:
+    if schema in {PLAN_SCHEMA_V2, PLAN_SCHEMA_V3, PLAN_SCHEMA_V4}:
         fields.add("continuation")
-    if set(plan) != fields or schema not in {PLAN_SCHEMA, PLAN_SCHEMA_V2, PLAN_SCHEMA_V3}:
+    if set(plan) != fields or schema not in {PLAN_SCHEMA, PLAN_SCHEMA_V2, PLAN_SCHEMA_V3,
+                                             PLAN_SCHEMA_V4}:
         raise ComparisonContractError("plan fields differ")
     if _COMMIT.fullmatch(str(plan["source_anchor"])) is None:
         raise ComparisonContractError("source anchor differs")
@@ -147,11 +149,13 @@ def _validate_plan(plan: dict) -> None:
         PLAN_SCHEMA: len(case_ids) * 8,
         PLAN_SCHEMA_V2: len(case_ids) * 8 - 1,
         PLAN_SCHEMA_V3: len(case_ids) * 8 - 3,
+        PLAN_SCHEMA_V4: len(case_ids) * 8 - 5,
     }[schema]
     expected_total_cap = {
         PLAN_SCHEMA: len(case_ids) * 16,
         PLAN_SCHEMA_V2: len(case_ids) * 16 - 1,
         PLAN_SCHEMA_V3: len(case_ids) * 16 - 3,
+        PLAN_SCHEMA_V4: len(case_ids) * 16 - 5,
     }[schema]
     if limits != {"max_recoveries": len(case_ids) * 4,
                   "gpu_sdk_launch_cap": expected_sdk_cap,
@@ -272,6 +276,60 @@ def _validate_plan(plan: dict) -> None:
             seen_imports.add(key)
         if seen_imports != set(expected_imports):
             raise ComparisonContractError("v3 stage import matrix differs")
+    if schema == PLAN_SCHEMA_V4:
+        continuation = plan["continuation"]
+        required = {
+            "gpu_admission_profile", "stage_imports", "prior_consumed_gpu_sdk_launches",
+            "expected_new_gpu_sdk_launches", "cumulative_gpu_sdk_launches",
+            "continuation_tag", "prior_v7_registration_anchor", "prior_incomplete_preserved",
+        }
+        if (not isinstance(continuation, dict) or set(continuation) != required
+                or continuation["gpu_admission_profile"] != "registered_desktop_shared_baseline_v1"
+                or continuation["prior_consumed_gpu_sdk_launches"] != 5
+                or continuation["expected_new_gpu_sdk_launches"] != 26
+                or continuation["cumulative_gpu_sdk_launches"] != 32
+                or continuation["continuation_tag"] != "v8_resumable"
+                or _COMMIT.fullmatch(str(continuation["prior_v7_registration_anchor"])) is None
+                or continuation["prior_incomplete_preserved"] is not True
+                or case_ids != set(SUPPORTED_CASES)):
+            raise ComparisonContractError("v4 continuation accounting/profile differs")
+        imports = continuation["stage_imports"]
+        expected_imports = {
+            ("case-05", "fixed_sequence"): ("completed_effect", "prior_effect"),
+            ("case-05", "static_rule"): ("completed_effect", "prior_static_effect"),
+        }
+        import_fields = {
+            "artifact_id", "kind", "case_id", "method", "proof_sha256",
+            "prior_plan_sha256", "source_checkpoint_sha256", "completed_checkpoint_sha256",
+            "seed", "task", "correction_id", "diagnostic_manifest_sha256", "source_anchor",
+            "registration_anchor",
+        }
+        if not isinstance(imports, list) or len(imports) != 2:
+            raise ComparisonContractError("v4 stage import coverage differs")
+        seen_imports: set[tuple[str, str]] = set()
+        for row in imports:
+            if not isinstance(row, dict):
+                raise ComparisonContractError("v4 stage import identity differs")
+            case_id, method = row.get("case_id"), row.get("method")
+            if not isinstance(case_id, str) or not isinstance(method, str):
+                raise ComparisonContractError("v4 stage import identity differs")
+            key = (case_id, method)
+            expected = expected_imports.get(key)
+            if (set(row) != import_fields or expected is None or key in seen_imports
+                    or (row["kind"], row["artifact_id"]) != expected
+                    or any(not isinstance(row[field], str) or _SHA.fullmatch(row[field]) is None
+                           for field in ("proof_sha256", "prior_plan_sha256",
+                                         "source_checkpoint_sha256", "completed_checkpoint_sha256",
+                                         "diagnostic_manifest_sha256"))
+                    or _COMMIT.fullmatch(str(row["source_anchor"])) is None
+                    or _COMMIT.fullmatch(str(row["registration_anchor"])) is None
+                    or type(row["seed"]) is not int
+                    or row["correction_id"] != "restore_motor_torque_speed"
+                    or not isinstance(row["task"], str) or not row["task"]):
+                raise ComparisonContractError("v4 stage import identity differs")
+            seen_imports.add(key)
+        if seen_imports != set(expected_imports):
+            raise ComparisonContractError("v4 stage import matrix differs")
     policy = plan["recovery_policy"]
     if (not isinstance(policy, dict)
             or set(policy) != {"training_iterations", "seeds", "same_case_same_template", "source_cost_policy"}
@@ -375,7 +433,7 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
     for row in rows:
         fields = {"case_id", "method", "diagnostic_manifest", "recovery_folder",
                   "recovery_payload", "approval_ref"}
-        if plan["schema"] == PLAN_SCHEMA_V3:
+        if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4}:
             fields.add("continuation_import")
         if not isinstance(row, dict) or set(row) != fields:
             raise ComparisonContractError("job arm fields differ")
@@ -397,7 +455,7 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
         session = manifest_path.parent
         continuation_import = row.get("continuation_import")
         expected_import = stage_imports.get(key)
-        if plan["schema"] == PLAN_SCHEMA_V3:
+        if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4}:
             if expected_import is None:
                 if continuation_import is not None:
                     raise ComparisonContractError("unexpected continuation import")
@@ -446,12 +504,12 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
             "training_binding_artifact_id", "fixed_binding_artifact_id",
             "gpu_admission_profile", "prior_training_artifact_id",
         }
-        continuation_schema = plan["schema"] in {PLAN_SCHEMA_V2, PLAN_SCHEMA_V3}
+        continuation_schema = plan["schema"] in {PLAN_SCHEMA_V2, PLAN_SCHEMA_V3, PLAN_SCHEMA_V4}
         if (not isinstance(protocol, dict)
                 or (continuation_schema
                     and protocol.get("schema") != (
                         "registered_recovery_protocol_v3"
-                        if plan["schema"] == PLAN_SCHEMA_V3
+                        if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4}
                         else "registered_recovery_protocol_v2"
                     ))
                 or (continuation_schema and set(operation) != operation_v2_fields)
@@ -516,6 +574,18 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
                 )
             ):
                 raise ComparisonContractError("v3 prior arm/profile binding differs")
+        if (plan["schema"] == PLAN_SCHEMA_V4
+                and (operation.get("gpu_admission_profile")
+                     != plan["continuation"]["gpu_admission_profile"]
+                     or prior_id is not None
+                     or (expected_import is not None and (
+                         diagnostic.get("session_manifest_sha256")
+                         != expected_import["diagnostic_manifest_sha256"]
+                         or source_checkpoint != expected_import["source_checkpoint_sha256"]
+                         or operation.get("training_seed") != expected_import["seed"]
+                         or operation.get("correction_id") != expected_import["correction_id"]
+                     )))):
+            raise ComparisonContractError("v4 prior arm/profile binding differs")
         _, resolver = _ref(payload["artifact_resolver"], "artifact resolver")
         training_id = operation.get("training_binding_artifact_id")
         fixed_id = operation.get("fixed_binding_artifact_id")
@@ -566,15 +636,17 @@ def prepare(plan_path: Path, job_path: Path, output: Path, *, repo_root: Path,
     write_new(target / "manifest.json", manifest)
     write_new(target / "anchor.json", {"schema": RESULT_SCHEMA + "_anchor",
                                         "manifest_sha256": file_sha(target / "manifest.json")})
-    if plan["schema"] == PLAN_SCHEMA_V3:
+    if plan["schema"] in {PLAN_SCHEMA_V3, PLAN_SCHEMA_V4}:
         imported = [
             row for row in arms
             if isinstance(row.get("continuation_import"), dict)
             and row["continuation_import"].get("kind") == "completed_effect"
         ]
-        if len(imported) != 1:
-            raise ComparisonContractError("v3 completed effect import coverage differs")
-        _materialize_completed_effect(target, manifest, imported[0], plan, Path(repo_root))
+        expected_count = 2 if plan["schema"] == PLAN_SCHEMA_V4 else 1
+        if len(imported) != expected_count:
+            raise ComparisonContractError("completed effect import coverage differs")
+        for arm in imported:
+            _materialize_completed_effect(target, manifest, arm, plan, Path(repo_root))
     return status(target)
 
 
@@ -609,9 +681,12 @@ def _stage_import(plan: dict, arm: dict) -> dict:
     return rows[0]
 
 
-def _continuation_module():
+def _continuation_module(plan: dict):
     try:
-        return importlib.import_module("evals.registered_recovery_continuation_v3")
+        name = ("evals.registered_recovery_continuation_v4"
+                if plan.get("schema") == PLAN_SCHEMA_V4
+                else "evals.registered_recovery_continuation_v3")
+        return importlib.import_module(name)
     except (ImportError, AttributeError) as exc:
         raise ComparisonContractError("continuation proof verifier unavailable") from exc
 
@@ -620,15 +695,20 @@ def _materialize_completed_effect(root: Path, manifest: dict, arm: dict, plan: d
                                   repo_root: Path) -> None:
     binding = _stage_import(plan, arm)
     proof_ref = arm["continuation_import"]["proof"]
-    verified = _continuation_module().verify_completed_effect(
-        proof_ref,
-        expected_case_id=arm["case_id"],
-        expected_method=arm["method"],
-        expected_prior_plan_sha256=binding["prior_plan_sha256"],
-        expected_diagnostic_manifest_sha256=binding["diagnostic_manifest_sha256"],
-        expected_source_checkpoint_sha256=binding["source_checkpoint_sha256"],
-        repo=Path(repo_root).resolve(strict=True),
-    )
+    module = _continuation_module(plan)
+    if plan["schema"] == PLAN_SCHEMA_V4:
+        verified = module.verify_completed_effect(
+            proof_ref, expected_import=binding, repo=Path(repo_root).resolve(strict=True))
+    else:
+        verified = module.verify_completed_effect(
+            proof_ref,
+            expected_case_id=arm["case_id"],
+            expected_method=arm["method"],
+            expected_prior_plan_sha256=binding["prior_plan_sha256"],
+            expected_diagnostic_manifest_sha256=binding["diagnostic_manifest_sha256"],
+            expected_source_checkpoint_sha256=binding["source_checkpoint_sha256"],
+            repo=Path(repo_root).resolve(strict=True),
+        )
     required = {
         "execution_origin", "result", "prior_resource_ref", "prior_admission_ref",
         "recovery_folder", "post_observation", "proof_ref", "historical_costs",

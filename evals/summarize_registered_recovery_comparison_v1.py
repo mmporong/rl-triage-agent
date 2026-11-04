@@ -21,7 +21,7 @@ SCHEMA = "registered_recovery_comparison_public_summary_v1"
 METHODS = controller.METHODS
 CASES = controller.SUPPORTED_CASES
 OUTCOMES = ("recovered", "not_recovered", "unknown", "hold", "unsupported",
-            "normal_or_host_gate", "infrastructure_failure", "not_started")
+            "normal_or_host_gate", "infrastructure_failure", "execution_unsettled", "not_started")
 
 
 class SummaryError(ValueError):
@@ -56,7 +56,8 @@ def _execution_wall(ref: object, logical_id: str, private: list[dict]) -> tuple[
     return float(value), public
 
 
-def _imported_resource(row: dict, logical_prefix: str, private: list[dict], scope: dict) -> tuple[dict, list[dict]]:
+def _imported_resource(row: dict, logical_prefix: str, private: list[dict], scope: dict,
+                       plan_schema: str | None = None) -> tuple[dict, list[dict]]:
     from evals import registered_recovery_continuation_v3 as continuation
 
     case_id, method = logical_prefix.split(":")
@@ -64,11 +65,17 @@ def _imported_resource(row: dict, logical_prefix: str, private: list[dict], scop
             or scope.get("method") != method
             or row["prior_effect_proof_ref"]["sha256"] != scope["proof_sha256"]):
         raise SummaryError("completed effect differs from registered import")
-    verified = continuation.verify_completed_effect(row["prior_effect_proof_ref"],
-        expected_case_id=case_id, expected_method=method,
-        expected_prior_plan_sha256=scope["prior_plan_sha256"],
-        expected_diagnostic_manifest_sha256=scope["diagnostic_manifest_sha256"],
-        expected_source_checkpoint_sha256=scope["source_checkpoint_sha256"], repo=ROOT)
+    if plan_schema == "registered_recovery_comparison_plan_v4":
+        from evals import registered_recovery_continuation_v4 as continuation_v4
+
+        verified = continuation_v4.verify_completed_effect(
+            row["prior_effect_proof_ref"], expected_import=scope, repo=ROOT)
+    else:
+        verified = continuation.verify_completed_effect(row["prior_effect_proof_ref"],
+            expected_case_id=case_id, expected_method=method,
+            expected_prior_plan_sha256=scope["prior_plan_sha256"],
+            expected_diagnostic_manifest_sha256=scope["diagnostic_manifest_sha256"],
+            expected_source_checkpoint_sha256=scope["source_checkpoint_sha256"], repo=ROOT)
     if (row["prior_resource_ref"] != verified["prior_resource_ref"]
             or row["prior_admission_ref"] != verified["prior_admission_ref"]
             or row["historical_recovery_folder"] != verified["recovery_folder"]):
@@ -89,7 +96,8 @@ def _imported_resource(row: dict, logical_prefix: str, private: list[dict], scop
 
 
 def _resource(row: dict | None, logical_prefix: str, private: list[dict], *,
-              import_scope: dict | None = None) -> tuple[dict, list[dict]]:
+               import_scope: dict | None = None,
+               import_plan_schema: str | None = None) -> tuple[dict, list[dict]]:
     if row is None:
         return {"status": "not_applicable", "phase_elapsed_s": None, "locked_wall_s": None,
                 "simulator_owned_wall_s": None, "checkpoint_cpu_owned_wall_s": None,
@@ -105,7 +113,7 @@ def _resource(row: dict | None, logical_prefix: str, private: list[dict], *,
     if row.get("schema") == "registered_recovery_imported_resource_v1":
         if import_scope is None:
             raise SummaryError("completed effect lacks registered import scope")
-        return _imported_resource(row, logical_prefix, private, import_scope)
+        return _imported_resource(row, logical_prefix, private, import_scope, import_plan_schema)
     projected_ref = row.get("receipt_ref")
     public_refs = [_generic_ref(projected_ref, logical_prefix + ":projected-resource", private)]
     admission = io.read_ref(row["admission_ref"])
@@ -313,7 +321,7 @@ def summarize(prepared: Path, out: Path) -> dict:
         if recorded_diagnostic is not None and recorded_diagnostic != diagnostic_status:
             raise SummaryError("recorded diagnostic status differs from the reverified Phase A session")
         costs, resource_refs = _resource(result.get("resource_cost"), logical, private_refs,
-            import_scope=imported_scopes.get((case_id, method)))
+            import_scope=imported_scopes.get((case_id, method)), import_plan_schema=plan.get("schema"))
         refs.extend(resource_refs)
         outcome = result.get("outcome", "not_started")
         if (halt is not None and halt.get("case_id") == case_id and halt.get("method") == method
@@ -334,6 +342,11 @@ def summarize(prepared: Path, out: Path) -> dict:
         consumed = bool(recovery_status is not None and any(
             row.get("state") in {"running", "done"} for row in recovery_status["requests"].values()))
         attempted = result.get("resource_cost") is not None or consumed
+        if consumed and result.get("resource_cost") is None:
+            costs.update({"status": "incomplete", "owned_cost_complete": False,
+                          "execution_origin": "current_dispatch_without_resource_receipt"})
+            if outcome == "not_started":
+                outcome = "execution_unsettled"
         if result.get("recovery_started") is True and not attempted:
             raise SummaryError("recorded recovery start lacks resource or consumed-ledger evidence")
         endpoint = None

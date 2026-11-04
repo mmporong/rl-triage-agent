@@ -259,6 +259,57 @@ def _upgrade_to_v3(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dic
     return plan, proofs
 
 
+def _upgrade_to_v4(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dict, dict]:
+    plan, old_proofs = _upgrade_to_v3(plan_path, job_path, tmp_path)
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    proofs = {
+        "prior_effect": old_proofs["prior_effect"],
+        "prior_static_effect": _write(
+            tmp_path / "prior-static-effect.json", {"schema": "effect-fixture"}),
+    }
+    plan["schema"] = comparison.PLAN_SCHEMA_V4
+    plan["limits"]["gpu_sdk_launch_cap"] = 27
+    plan["limits"]["total_owned_launch_cap"] = 59
+    plan["continuation"].update({
+        "gpu_admission_profile": "registered_desktop_shared_baseline_v1",
+        "prior_consumed_gpu_sdk_launches": 5,
+        "expected_new_gpu_sdk_launches": 26,
+        "cumulative_gpu_sdk_launches": 32,
+        "continuation_tag": "v8_resumable",
+        "prior_v7_registration_anchor": "1" * 40,
+    })
+    del plan["continuation"]["prior_v5_registration_anchor"]
+    static_import = plan["continuation"]["stage_imports"][1]
+    static_import.update({
+        "artifact_id": "prior_static_effect",
+        "kind": "completed_effect",
+        "proof_sha256": proofs["prior_static_effect"]["sha256"],
+        "registration_anchor": "1" * 40,
+    })
+    plan_ref = _write(plan_path, plan)
+    for row in job["arms"]:
+        if row["case_id"] == "case-05" and row["method"] == "static_rule":
+            row.update({
+                "recovery_folder": None, "recovery_payload": None, "approval_ref": None,
+                "continuation_import": {
+                    "kind": "completed_effect", "artifact_id": "prior_static_effect",
+                    "proof": proofs["prior_static_effect"],
+                },
+            })
+            continue
+        payload = row.get("recovery_payload")
+        if payload is None:
+            continue
+        protocol_path = Path(payload["protocol"]["path"])
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol["operation"]["gpu_admission_profile"] = (
+            "registered_desktop_shared_baseline_v1")
+        payload["protocol"] = _write(protocol_path, protocol)
+    job["plan"] = plan_ref
+    _write(job_path, job)
+    return plan, proofs
+
+
 def _make_recovery_null(job_path: Path) -> None:
     job = json.loads(job_path.read_text(encoding="utf-8"))
     for arm in job["arms"]:
@@ -386,7 +437,7 @@ def test_v3_materializes_completed_effect_and_preserves_new_dispatch_budget(
                 "old_refs": {},
             }
 
-    monkeypatch.setattr(comparison, "_continuation_module", lambda: ProofModule)
+    monkeypatch.setattr(comparison, "_continuation_module", lambda _plan: ProofModule)
     result = comparison.prepare(
         plan_path, job_path, out, repo_root=repo, registration_anchor="b" * 40,
         require_committed=False,
@@ -399,6 +450,50 @@ def test_v3_materializes_completed_effect_and_preserves_new_dispatch_budget(
     assert arm["resource_cost"]["historical_effect_costs"]["simulator_sdk_launches"] == 2
     assert result["limits"]["gpu_sdk_launch_cap"] == 29
     assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 27
+
+
+def test_v4_materializes_two_completed_effects_without_recovery_authority(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo, plan_path, job_path, out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, proofs = _upgrade_to_v4(plan_path, job_path, tmp_path)
+    prior_resource = _write(tmp_path / "old/resource.json", {"schema": "old-resource"})
+    prior_admission = _write(tmp_path / "old/admission.json", {"schema": "old-admission"})
+    historical_folder = tmp_path / "old/recovery"
+    historical_folder.mkdir(parents=True)
+
+    class ProofModule:
+        @staticmethod
+        def verify_completed_effect(proof_ref, *, expected_import, repo):
+            assert proof_ref == proofs[expected_import["artifact_id"]]
+            assert repo.resolve() == Path(repo).resolve()
+            return {
+                "execution_origin": "verified_prior_effect",
+                "result": {"outcome": "not_recovered", "diagnostic_status": "confirmed",
+                    "confirmed_mechanism": "actuator", "recovery_started": True,
+                    "new_checkpoint": {"sha256": "d" * 64},
+                    "fixed_report": {"sha256": "f" * 64}, "behavior_outcome": "failed",
+                    "costs": {"training_s": 1.0, "fixed_s": 1.0, "api_calls": 0}},
+                "prior_resource_ref": prior_resource, "prior_admission_ref": prior_admission,
+                "recovery_folder": str(historical_folder.resolve()),
+                "post_observation": {"behavior_outcome": "failed", "healthy_declared": False},
+                "proof_ref": proof_ref,
+                "historical_costs": {"simulator_sdk_launches": 2, "owned_gpu_s": 2.0,
+                                     "training_wall_s": 1.0, "fixed_wall_s": 1.0},
+                "new_dispatch_costs": {"sdk_launches": 0, "owned_gpu_s": None},
+            }
+
+    monkeypatch.setattr(comparison, "_continuation_module", lambda _plan: ProofModule)
+    result = comparison.prepare(plan_path, job_path, out, repo_root=repo,
+                                registration_anchor="b" * 40, require_committed=False)
+    imported = [row for row in result["arms"]
+                if row.get("execution_origin") == "verified_prior_effect"]
+    assert [(row["case_id"], row["method"]) for row in imported] == [
+        ("case-05", "fixed_sequence"), ("case-05", "static_rule")]
+    assert result["limits"]["gpu_sdk_launch_cap"] == 27
+    assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 26
+    assert plan["continuation"]["cumulative_gpu_sdk_launches"] == 32
 
 
 def test_v3_rejects_completed_effect_with_fresh_recovery_authority(tmp_path: Path) -> None:
