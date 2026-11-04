@@ -510,6 +510,95 @@ def _upgrade_to_v6(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dic
     return plan, proofs, registry
 
 
+def _upgrade_to_v7(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dict, dict, dict]:
+    plan, proofs, registry = _upgrade_to_v6(plan_path, job_path, tmp_path)
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    plan["schema"] = comparison.PLAN_SCHEMA_V7
+    plan["recovery_policy"]["seeds"]["case-07"]["restart"] = 6266
+    plan["recovery_policy"]["seeds"]["case-08"]["restart"] = 6267
+    plan["continuation"].update({
+        "completed_import_profile": "motor_completed_epoch_namespace_retry_v1",
+        "namespace_failure_context_sha256": comparison.namespace_failure.CONTEXT_SHA256,
+        "continuation_tag": "v13_epoch_namespace_retry",
+    })
+    plan["source_closure"].update({
+        comparison.V13_NOTE: "9" * 64,
+        "evals/registered_epoch_namespace_failure_v1.py": "9" * 64,
+        "tests/test_registered_epoch_namespace_failure_v1.py": "9" * 64,
+    })
+    plan["inputs"].append({
+        "role": "epoch_namespace_retry_preregistration", "path": comparison.V13_NOTE,
+        "sha256": "9" * 64,
+    })
+    for row in job["arms"]:
+        payload = row.get("recovery_payload")
+        if payload is None:
+            continue
+        protocol_path = Path(payload["protocol"]["path"])
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol["source_closure"] = plan["source_closure"]
+        if row["case_id"] in {"case-07", "case-08"}:
+            protocol["operation"]["training_seed"] = plan["recovery_policy"]["seeds"][
+                row["case_id"]][protocol["operation"]["recovery_mode"]]
+        payload["protocol"] = _write(protocol_path, protocol)
+    context = _write(tmp_path / "v12-namespace-context.json", {"schema": "fixture"})
+    job["epoch_namespace_failure_context"] = context
+    plan_ref = _write(plan_path, plan)
+    job["plan"] = plan_ref
+    _write(job_path, job)
+    return plan, proofs, registry
+
+
+def _prepared_v7_for_advance(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> tuple[Path, dict]:
+    repo, plan_path, job_path, out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, proofs, registry = _upgrade_to_v7(plan_path, job_path, tmp_path)
+    project = Path(comparison.__file__).resolve().parents[1]
+    private = (project / "bench/private/claude_reward_track_20261013/codex_main_20261025"
+               / "vision_goal/ri_upgrade_451_20261104")
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    proof_path = private / "v11_shutdown_failure_522/failure-proof.json"
+    context_path = private / "v12_run_name_failure_528/context.json"
+    job["epoch_shutdown_failure_proof"] = {
+        "path": str(proof_path.resolve()), "sha256": comparison.EPOCH_SHUTDOWN_FAILURE_PROOF_SHA256}
+    job["epoch_namespace_failure_context"] = {
+        "path": str(context_path.resolve()), "sha256": comparison.namespace_failure.CONTEXT_SHA256}
+    _write(job_path, job)
+    monkeypatch.setattr(comparison, "_completed_effect_registry", lambda: registry)
+    monkeypatch.setattr(comparison, "load_plan", lambda *_args, **_kwargs: plan)
+    prior_resource = _write(tmp_path / "old/resource.json", {"schema": "old-resource"})
+    prior_admission = _write(tmp_path / "old/admission.json", {"schema": "old-admission"})
+    historical_folder = tmp_path / "old/recovery"
+    historical_folder.mkdir(parents=True)
+
+    class ProofModule:
+        @staticmethod
+        def verify_completed_effect(proof_ref, *, expected_import, repo):
+            assert proof_ref == proofs[expected_import["artifact_id"]]
+            return {
+                "execution_origin": "verified_prior_effect",
+                "result": {"outcome": "not_recovered", "diagnostic_status": "confirmed",
+                    "confirmed_mechanism": "actuator", "recovery_started": True,
+                    "new_checkpoint": {"sha256": "d" * 64},
+                    "fixed_report": {"sha256": "f" * 64}, "behavior_outcome": "failed",
+                    "costs": {"training_s": 1.0, "fixed_s": 1.0, "api_calls": 0}},
+                "prior_resource_ref": prior_resource, "prior_admission_ref": prior_admission,
+                "recovery_folder": str(historical_folder.resolve()),
+                "post_observation": {"behavior_outcome": "failed", "healthy_declared": False},
+                "proof_ref": proof_ref,
+                "historical_costs": {"simulator_sdk_launches": 2, "owned_gpu_s": 2.0,
+                                     "training_wall_s": 1.0, "fixed_wall_s": 1.0},
+                "new_dispatch_costs": {"sdk_launches": 0, "owned_gpu_s": None},
+            }
+
+    monkeypatch.setattr(comparison, "_continuation_module", lambda _plan: ProofModule)
+    comparison.prepare(plan_path, job_path, out, repo_root=repo,
+                       registration_anchor="b" * 40, require_committed=False)
+    return out, plan
+
+
 def _make_recovery_null(job_path: Path) -> None:
     job = json.loads(job_path.read_text(encoding="utf-8"))
     for arm in job["arms"]:
@@ -822,6 +911,124 @@ def test_v6_validates_retry_accounting_seeds_rotation_and_imports(
     assert plan["recovery_policy"]["seeds"]["case-08"]["restart"] == 6067
     assert [(row["case_id"], row["method"]) for row in job["arms"]] == [
         (case["case_id"], method) for case in plan["cases"] for method in case["rotation"]]
+
+
+def test_v7_validates_namespace_failure_new_seeds_and_preserves_matrix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, _proofs, registry = _upgrade_to_v7(plan_path, job_path, tmp_path)
+    monkeypatch.setattr(comparison, "_completed_effect_registry", lambda: registry)
+    monkeypatch.setattr(comparison.epoch_failure, "verify_failure_proof",
+        lambda reference, **_kwargs: {"proof_ref": {
+            "path": reference["path"],
+            "sha256": comparison.EPOCH_SHUTDOWN_FAILURE_PROOF_SHA256,
+        }})
+    monkeypatch.setattr(comparison.namespace_failure, "verify_failure_context",
+        lambda reference: {"context_ref": {
+            "path": reference["path"],
+            "sha256": comparison.namespace_failure.CONTEXT_SHA256,
+        }, "context": {"SDK": 0}})
+    comparison._validate_plan(plan)
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    normalized = comparison._validate_job(job, job["plan"], plan, job_path)
+    assert len(normalized) == 16
+    assert len([row for row in normalized if row["continuation_import"]]) == 8
+    assert plan["recovery_policy"]["seeds"]["case-07"]["restart"] == 6266
+    assert plan["recovery_policy"]["seeds"]["case-08"]["restart"] == 6267
+    assert plan["continuation"]["prior_consumed_gpu_sdk_launches"] == 18
+
+
+def test_v7_rejects_missing_namespace_failure_before_output(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo, plan_path, job_path, out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, _proofs, registry = _upgrade_to_v7(plan_path, job_path, tmp_path)
+    monkeypatch.setattr(comparison, "_completed_effect_registry", lambda: registry)
+    monkeypatch.setattr(comparison, "load_plan", lambda *_args, **_kwargs: plan)
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    job.pop("epoch_namespace_failure_context")
+    _write(job_path, job)
+    with pytest.raises(comparison.ComparisonContractError, match="job fields"):
+        comparison.prepare(plan_path, job_path, out, repo_root=repo,
+                           registration_anchor="b" * 40, require_committed=False)
+    assert not out.exists()
+
+
+def test_v7_advance_revalidates_canonical_manifest_before_transition(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    out, _plan = _prepared_v7_for_advance(tmp_path, monkeypatch)
+    calls = []
+    original = comparison.verify_prepared_manifest
+
+    def verified(*args, **kwargs):
+        calls.append(True)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(comparison, "verify_prepared_manifest", verified)
+    monkeypatch.setattr(comparison, "_verified_diagnostic_status",
+        lambda _session: {"status": "confirmed", "case_id": "case-07",
+                          "confirmed_mechanism": "actuator"})
+    backend_calls = []
+    monkeypatch.setattr(comparison.investigate, "run",
+        lambda command, *_args, **_kwargs: backend_calls.append(command) or {
+            "mechanism": "actuator"})
+    result = comparison.advance(out)
+    assert calls == [True]
+    assert result["halted"] is False and result["completed_arms"] == 8
+    assert backend_calls == ["recovery-prepare"]
+
+
+@pytest.mark.parametrize("evidence", ["namespace_raw", "v11_raw"])
+def test_v7_advance_rejects_raw_evidence_change_before_backend(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, evidence: str
+) -> None:
+    out, _plan = _prepared_v7_for_advance(tmp_path, monkeypatch)
+    backend_calls = []
+    monkeypatch.setattr(comparison.investigate, "run",
+        lambda *_args, **_kwargs: backend_calls.append(True))
+    if evidence == "namespace_raw":
+        context = json.loads((Path(__file__).resolve().parents[1]
+            / "bench/private/claude_reward_track_20261013/codex_main_20261025/vision_goal"
+            / "ri_upgrade_451_20261104/v12_run_name_failure_528/context.json").read_text(
+                encoding="utf-8"))
+        changed = Path(context["references"]["error"]["path"]).resolve()
+        original = comparison.namespace_failure._sha
+        monkeypatch.setattr(comparison.namespace_failure, "_sha",
+            lambda path: "0" * 64 if Path(path).resolve() == changed else original(path))
+    else:
+        proof = json.loads((Path(__file__).resolve().parents[1]
+            / "bench/private/claude_reward_track_20261013/codex_main_20261025/vision_goal"
+            / "ri_upgrade_451_20261104/v11_shutdown_failure_522/failure-proof.json").read_text(
+                encoding="utf-8"))
+        changed = Path(next(iter(proof["refs"].values()))["path"]).resolve()
+        original = comparison.epoch_failure._sha
+        monkeypatch.setattr(comparison.epoch_failure, "_sha",
+            lambda path, *, lf=False: "0" * 64
+            if Path(path).resolve() == changed else original(path, lf=lf))
+    result = comparison.advance(out)
+    assert result["halted"] is True
+    assert backend_calls == []
+
+
+def test_v7_advance_rejects_resealed_manifest_arm_before_backend(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    out, _plan = _prepared_v7_for_advance(tmp_path, monkeypatch)
+    manifest = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
+    manifest["arms"][8]["approval_ref"] = {"path": "replaced", "sha256": "0" * 64}
+    changed = _write(out / "manifest.json", manifest)
+    _write(out / "anchor.json", {"schema": comparison.RESULT_SCHEMA + "_anchor",
+                                  "manifest_sha256": changed["sha256"]})
+    backend_calls = []
+    monkeypatch.setattr(comparison.investigate, "run",
+        lambda *_args, **_kwargs: backend_calls.append(True))
+    result = comparison.advance(out)
+    assert result["halted"] is True
+    assert backend_calls == []
 
 
 def test_v6_rejects_job_without_failure_proof_before_output(

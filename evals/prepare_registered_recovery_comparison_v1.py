@@ -22,6 +22,7 @@ from bench import registered_recovery_training_v1 as ACTUATOR
 from evals import core_seed_guard_v1 as SEED_GUARD
 from evals import ppo_ratio_repair_demo_v2 as RATIO_DEMO
 from evals import r1_repair_demo_v2 as R1_DEMO
+from evals import registered_epoch_namespace_failure_v1 as EPOCH_NAMESPACE_FAILURE
 from evals import registered_epoch_shutdown_failure_v1 as EPOCH_FAILURE
 from evals import registered_prior_training_v1 as PRIOR
 from evals import run_diagnostic_comparison_v1 as PHASE_A
@@ -155,6 +156,7 @@ _CONTINUATION_RETRY_SOURCE_FILES = {
 }
 COMPLETED_IMPORT_PROFILE_MOTOR = "motor_completed_v1"
 COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY = "motor_completed_epoch_close_retry_v1"
+COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY = "motor_completed_epoch_namespace_retry_v1"
 COMPLETED_EFFECT_REGISTRY_RELATIVE = (
     "bench/protocols/registered_completed_motor_effects_v1.json"
 )
@@ -188,6 +190,15 @@ _CONTINUATION_V12_SOURCE_FILES = {
     "tests/test_registered_epoch_shutdown_failure_v1.py",
     EPOCH_CLOSE_RETRY_PREREGISTRATION_V12,
     EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE,
+}
+EPOCH_NAMESPACE_RETRY_PREREGISTRATION_V13 = (
+    "bench/protocols/diagnostic_recovery_comparison_20261105_v13.md"
+)
+REGISTERED_RESTART_SEED_OVERRIDES_V13 = {"case-07": 6266, "case-08": 6267}
+_CONTINUATION_V13_SOURCE_FILES = {
+    "evals/registered_epoch_namespace_failure_v1.py",
+    "tests/test_registered_epoch_namespace_failure_v1.py",
+    EPOCH_NAMESPACE_RETRY_PREREGISTRATION_V13,
 }
 PRIOR_V5_SOURCE_ANCHOR = "f9d5fea93cce406a325f578bc6f4597cc0bc35c5"
 PRIOR_V5_REGISTRATION_ANCHOR = "bf1632ee6770e681e9e8c4c5b1df890ebaed12a6"
@@ -268,7 +279,8 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
                     include_observation_retry: bool = False,
                     include_completed_v5: bool = False,
                     include_restart_seed_v11: bool = False,
-                    include_epoch_close_retry_v12: bool = False) -> dict[str, str]:
+                    include_epoch_close_retry_v12: bool = False,
+                    include_epoch_namespace_retry_v13: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
@@ -285,6 +297,10 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
         if not include_completed_v5:
             raise PreparationError("v12 epoch-close retry requires v5 completed imports")
         source_files |= _CONTINUATION_V12_SOURCE_FILES
+    if include_epoch_namespace_retry_v13:
+        if not include_epoch_close_retry_v12:
+            raise PreparationError("v13 namespace retry requires v12 failure sources")
+        source_files |= _CONTINUATION_V13_SOURCE_FILES
     if include_observation_retry:
         if not include_continuation_v4:
             raise PreparationError("observation retry requires v4 completed-effect imports")
@@ -802,6 +818,7 @@ def _restart_seed_map(
     registered = {
         COMPLETED_IMPORT_PROFILE_MOTOR: REGISTERED_RESTART_SEED_OVERRIDES_V11,
         COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY: REGISTERED_RESTART_SEED_OVERRIDES_V12,
+        COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY: REGISTERED_RESTART_SEED_OVERRIDES_V13,
     }
     if completed_import_profile not in registered:
         raise PreparationError("restart seed overrides require motor completed imports")
@@ -831,6 +848,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                       completed_import_profile: str | None = None,
                       restart_seed_overrides: Mapping[str, int] | None = None,
                       epoch_shutdown_failure_proof: Path | None = None,
+                      epoch_namespace_failure_context: Path | None = None,
                       isaaclab_root: Path | None = None,
                       gpu_admission_profile: str | None = None,
                       require_committed: bool = True) -> dict:
@@ -846,10 +864,15 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     phase_cases = {row["case_id"]: row for row in phase_plan["cases"]}
     if not {f"case-{int(case[-2:]):02d}" for case in CASES} <= set(phase_cases):
         raise PreparationError("phase-A selected cases missing")
-    v6_requested = completed_import_profile == COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY
+    v7_requested = completed_import_profile == COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY
+    v6_requested = completed_import_profile in {
+        COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY,
+        COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY,
+    }
     v5_requested = completed_import_profile in {
         COMPLETED_IMPORT_PROFILE_MOTOR,
         COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY,
+        COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY,
     }
     restart_seeds = _restart_seed_map(completed_import_profile, restart_seed_overrides)
     v4_requested = completed_effect_proofs is not None and not v5_requested
@@ -883,14 +906,30 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     ):
         raise PreparationError("v5 completed import profile inputs differ")
     if v6_requested:
-        if (restart_seed_overrides != REGISTERED_RESTART_SEED_OVERRIDES_V12
+        expected_seeds = (REGISTERED_RESTART_SEED_OVERRIDES_V13 if v7_requested
+                          else REGISTERED_RESTART_SEED_OVERRIDES_V12)
+        if (restart_seed_overrides != expected_seeds
                 or epoch_shutdown_failure_proof is None):
-            raise PreparationError("v12 restart seeds are required by retry profile")
+            raise PreparationError("registered restart seeds are required by retry profile")
         failure_proof = _v12_failure_proof(epoch_shutdown_failure_proof)
+        if v7_requested:
+            if epoch_namespace_failure_context is None:
+                raise PreparationError("v13 namespace failure context is required")
+            namespace_failure = EPOCH_NAMESPACE_FAILURE.verify_failure_context({
+                "path": str(Path(epoch_namespace_failure_context).resolve(strict=True)),
+                "sha256": EPOCH_NAMESPACE_FAILURE.CONTEXT_SHA256,
+            })
+        else:
+            if epoch_namespace_failure_context is not None:
+                raise PreparationError("namespace failure context requires v13 profile")
+            namespace_failure = None
     else:
         failure_proof = None
+        namespace_failure = None
         if epoch_shutdown_failure_proof is not None:
             raise PreparationError("epoch shutdown failure proof requires v12 profile")
+        if epoch_namespace_failure_context is not None:
+            raise PreparationError("namespace failure context requires v13 profile")
     if not (v3_requested or v4_requested or v5_requested) and (
         prior_training_proof is None
     ) != (isaaclab_root is None):
@@ -931,6 +970,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             restart_seed_overrides is not None and not v6_requested
         ),
         include_epoch_close_retry_v12=v6_requested,
+        include_epoch_namespace_retry_v13=v7_requested,
     ) if require_committed else {
         path: _sha(ROOT / path, lf=True)
         for path in sorted(
@@ -949,6 +989,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
              | (_CONTINUATION_V11_SOURCE_FILES
                 if restart_seed_overrides is not None and not v6_requested else set())
             | (_CONTINUATION_V12_SOURCE_FILES if v6_requested else set())
+            | (_CONTINUATION_V13_SOURCE_FILES if v7_requested else set())
+            | (_CONTINUATION_V13_SOURCE_FILES if v7_requested else set())
         )
     }
     sdk = _read(sdk_contract)
@@ -1047,6 +1089,12 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                 "sha256": EPOCH_SHUTDOWN_RETRY_POLICY_SHA256_LF,
             },
         ])
+    if v7_requested:
+        inputs.append({
+            "role": "epoch_namespace_retry_preregistration",
+            "path": EPOCH_NAMESPACE_RETRY_PREREGISTRATION_V13,
+            "sha256": closure[EPOCH_NAMESPACE_RETRY_PREREGISTRATION_V13],
+        })
     for case in CASES:
         old = case
         row = phase_inputs.get(f"protocol:{old}")
@@ -1056,8 +1104,9 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                        "sha256": row["sha256"]})
     plan = {
         "schema": (
-            COMPARISON.PLAN_SCHEMA_V6
-            if v6_requested
+            COMPARISON.PLAN_SCHEMA_V7
+            if v7_requested
+            else COMPARISON.PLAN_SCHEMA_V6 if v6_requested
             else COMPARISON.PLAN_SCHEMA_V5 if v5 is not None
             else COMPARISON.PLAN_SCHEMA_V4 if v4 is not None
             else COMPARISON.PLAN_SCHEMA_V3
@@ -1157,6 +1206,12 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             "prior_incomplete_preserved": True,
             "v11_failed_epoch_sdk_launches": 1,
         }
+    if v7_requested:
+        plan["continuation"].update({
+            "completed_import_profile": COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY,
+            "namespace_failure_context_sha256": EPOCH_NAMESPACE_FAILURE.CONTEXT_SHA256,
+            "continuation_tag": "v13_epoch_namespace_retry",
+        })
     plan_path = out / "registered-plan.json"
     write_new(plan_path, plan)
     COMPARISON.load_plan(plan_path, repo_root=ROOT, registration_anchor=source_anchor,
@@ -1178,6 +1233,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         manifest["continuation_proofs"] = v5[1]
     if failure_proof is not None:
         manifest["epoch_shutdown_failure_proof"] = failure_proof[0]
+    if namespace_failure is not None:
+        manifest["epoch_namespace_failure_context"] = namespace_failure["context_ref"]
     write_new(out / "manifest.json", manifest)
     return manifest
 
@@ -1286,7 +1343,7 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
         plan.get("continuation")
         if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V2, COMPARISON.PLAN_SCHEMA_V3,
                               COMPARISON.PLAN_SCHEMA_V4, COMPARISON.PLAN_SCHEMA_V5,
-                              COMPARISON.PLAN_SCHEMA_V6}
+                              COMPARISON.PLAN_SCHEMA_V6, COMPARISON.PLAN_SCHEMA_V7}
         else None
     )
     prior_ref = template_manifest.get("prior_training_proof")
@@ -1331,7 +1388,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 or imports != continuation.get("stage_imports")
                 or verified_refs != v3_proof_refs):
             raise PreparationError("v4 continuation proofs differ from public plan")
-    elif plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6}:
+    elif plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6,
+                             COMPARISON.PLAN_SCHEMA_V7}:
         if not isinstance(v3_proofs, dict):
             raise PreparationError("completed-import template continuation proofs missing")
         v3_proof_refs = v3_proofs
@@ -1346,7 +1404,7 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
     elif v3_proofs is not None:
         raise PreparationError("non-v3 template must not carry continuation proofs")
     failure_ref = template_manifest.get("epoch_shutdown_failure_proof")
-    if plan["schema"] == COMPARISON.PLAN_SCHEMA_V6:
+    if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V6, COMPARISON.PLAN_SCHEMA_V7}:
         if not isinstance(failure_ref, dict):
             raise PreparationError("v6 epoch shutdown failure proof missing")
         verified_failure_ref, _proof = _v12_failure_proof(Path(str(failure_ref.get("path"))))
@@ -1354,9 +1412,19 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
             raise PreparationError("v6 epoch shutdown failure proof reference differs")
     elif failure_ref is not None:
         raise PreparationError("non-v6 template must not carry epoch shutdown failure proof")
+    namespace_ref = template_manifest.get("epoch_namespace_failure_context")
+    if plan["schema"] == COMPARISON.PLAN_SCHEMA_V7:
+        if not isinstance(namespace_ref, dict):
+            raise PreparationError("v7 epoch namespace failure context missing")
+        verified_namespace = EPOCH_NAMESPACE_FAILURE.verify_failure_context(namespace_ref)
+        if verified_namespace["context_ref"] != namespace_ref:
+            raise PreparationError("v7 namespace failure context reference differs")
+    elif namespace_ref is not None:
+        raise PreparationError("non-v7 template must not carry namespace failure context")
     freshness_cases = (
         ("case-07", "case-08")
-        if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6}
+        if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6,
+                              COMPARISON.PLAN_SCHEMA_V7}
         else CASES
     )
     freshness = SEED_GUARD.assert_fresh_seeds(
@@ -1371,7 +1439,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
     for case in CASES:
         ordered_methods = (
             tuple(case_rows[case]["rotation"])
-            if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6}
+            if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6,
+                                  COMPARISON.PLAN_SCHEMA_V7}
             else METHODS
         )
         for method in ordered_methods:
@@ -1384,7 +1453,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
             arm = {"case_id": case, "method": method, "diagnostic_manifest": _ref(manifest_path),
                    "recovery_folder": None, "recovery_payload": None, "approval_ref": None}
             if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3, COMPARISON.PLAN_SCHEMA_V4,
-                                  COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6}:
+                                  COMPARISON.PLAN_SCHEMA_V5, COMPARISON.PLAN_SCHEMA_V6,
+                                  COMPARISON.PLAN_SCHEMA_V7}:
                 arm["continuation_import"] = None
             mechanism = status.get("confirmed_mechanism") if status.get("status") == "confirmed" else None
             if mechanism in MECHANISMS:
@@ -1394,7 +1464,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 ), None) if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3,
                                                 COMPARISON.PLAN_SCHEMA_V4,
                                                 COMPARISON.PLAN_SCHEMA_V5,
-                                                COMPARISON.PLAN_SCHEMA_V6} \
+                                                COMPARISON.PLAN_SCHEMA_V6,
+                                                COMPARISON.PLAN_SCHEMA_V7} \
                     and isinstance(continuation, dict) else None
                 commitment = plan["template_commitments"][case][mechanism]
                 case_dir = template_root / "templates" / case
@@ -1440,14 +1511,15 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 use_prior_v3 = import_row is not None and import_row["kind"] == "completed_training"
                 if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V2, COMPARISON.PLAN_SCHEMA_V3,
                                       COMPARISON.PLAN_SCHEMA_V4, COMPARISON.PLAN_SCHEMA_V5,
-                                      COMPARISON.PLAN_SCHEMA_V6}:
+                                      COMPARISON.PLAN_SCHEMA_V6, COMPARISON.PLAN_SCHEMA_V7}:
                     operation.update({
                         "gpu_admission_profile": (
                             plan["continuation"]["gpu_admission_profile"]
                             if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3,
                                                   COMPARISON.PLAN_SCHEMA_V4,
                                                   COMPARISON.PLAN_SCHEMA_V5,
-                                                  COMPARISON.PLAN_SCHEMA_V6}
+                                                  COMPARISON.PLAN_SCHEMA_V6,
+                                                  COMPARISON.PLAN_SCHEMA_V7}
                             else GPU_ADMISSION_PROFILE
                         ),
                         "prior_training_artifact_id": (
@@ -1470,7 +1542,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                                 if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3,
                                                       COMPARISON.PLAN_SCHEMA_V4,
                                                       COMPARISON.PLAN_SCHEMA_V5,
-                                                      COMPARISON.PLAN_SCHEMA_V6}
+                                                      COMPARISON.PLAN_SCHEMA_V6,
+                                                      COMPARISON.PLAN_SCHEMA_V7}
                                 else "registered_recovery_protocol_v2"
                                 if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2
                                 else "registered_recovery_protocol_v1"
@@ -1517,8 +1590,10 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                             "recovery_payload": payload, "approval_ref": _ref(approval_path)})
             arms.append(arm)
     job = {"schema": JOB_SCHEMA, "plan": _ref(registered_plan), "arms": arms}
-    if plan["schema"] == COMPARISON.PLAN_SCHEMA_V6:
+    if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V6, COMPARISON.PLAN_SCHEMA_V7}:
         job["epoch_shutdown_failure_proof"] = failure_ref
+    if plan["schema"] == COMPARISON.PLAN_SCHEMA_V7:
+        job["epoch_namespace_failure_context"] = namespace_ref
     job_path = out / "job.json"
     write_new(job_path, job)
     # Validate the producer output, including every protocol, resolver, template, and approval.
@@ -1551,10 +1626,12 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("--completed-import-profile", choices=(
         COMPLETED_IMPORT_PROFILE_MOTOR,
         COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY,
+        COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY,
     ))
     t.add_argument("--completed-effect-proof", action="append", default=[],
                    metavar="ARTIFACT_ID=PATH")
     t.add_argument("--epoch-shutdown-failure-proof", type=Path)
+    t.add_argument("--epoch-namespace-failure-context", type=Path)
     t.add_argument("--allow-uncommitted-fixture", action="store_true")
     j = sub.add_parser("jobs")
     j.add_argument("--templates", required=True, type=Path)
@@ -1603,7 +1680,17 @@ def main(argv: list[str] | None = None) -> int:
                 prior_static_training_proof=args.prior_static_training_proof,
                 completed_effect_proofs=completed_effect_proofs,
                 completed_import_profile=args.completed_import_profile,
+                restart_seed_overrides=(
+                    REGISTERED_RESTART_SEED_OVERRIDES_V13
+                    if args.completed_import_profile
+                    == COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY
+                    else REGISTERED_RESTART_SEED_OVERRIDES_V12
+                    if args.completed_import_profile
+                    == COMPLETED_IMPORT_PROFILE_EPOCH_CLOSE_RETRY
+                    else None
+                ),
                 epoch_shutdown_failure_proof=args.epoch_shutdown_failure_proof,
+                epoch_namespace_failure_context=args.epoch_namespace_failure_context,
                 isaaclab_root=args.isaaclab_root,
                 gpu_admission_profile=args.gpu_admission_profile,
                 require_committed=not args.allow_uncommitted_fixture)

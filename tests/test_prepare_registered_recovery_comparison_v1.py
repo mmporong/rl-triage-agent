@@ -635,6 +635,9 @@ def test_v5_generator_imports_eight_prepares_seven_and_preserves_rotation(
     _write(tmp_path / prepare.EPOCH_CLOSE_RETRY_PREREGISTRATION_V12, b"v12\n")
     _write(tmp_path / "evals/registered_epoch_shutdown_failure_v1.py", b"verifier\n")
     _write(tmp_path / "tests/test_registered_epoch_shutdown_failure_v1.py", b"tests\n")
+    _write(tmp_path / prepare.EPOCH_NAMESPACE_RETRY_PREREGISTRATION_V13, b"v13\n")
+    _write(tmp_path / "evals/registered_epoch_namespace_failure_v1.py", b"verifier\n")
+    _write(tmp_path / "tests/test_registered_epoch_namespace_failure_v1.py", b"tests\n")
     policy_source = Path(__file__).resolve().parents[1] / prepare.EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE
     _write(tmp_path / prepare.EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE,
            policy_source.read_bytes())
@@ -650,6 +653,11 @@ def test_v5_generator_imports_eight_prepares_seven_and_preserves_rotation(
         "tests/test_registered_epoch_shutdown_failure_v1.py",
         prepare.EPOCH_CLOSE_RETRY_PREREGISTRATION_V12,
         prepare.EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE,
+    })
+    monkeypatch.setattr(prepare, "_CONTINUATION_V13_SOURCE_FILES", {
+        "evals/registered_epoch_namespace_failure_v1.py",
+        "tests/test_registered_epoch_namespace_failure_v1.py",
+        prepare.EPOCH_NAMESPACE_RETRY_PREREGISTRATION_V13,
     })
     _index, source_meta = prepare._validate_source_index(index, metadata)
     checkpoints = {}
@@ -789,6 +797,37 @@ def test_v5_generator_imports_eight_prepares_seven_and_preserves_rotation(
     v12_binding = json.loads((templates_v12 / "templates/case-07/optimizer_update_count/training-binding.json").read_text())
     v12_recipe = json.loads(Path(v12_binding["environment_preservation"]["expected_reward"]["path"]).read_text())
     assert v12_recipe["training_seed"] == 6066
+    namespace_context = _write(tmp_path / "namespace-context.json", {"schema": "fixture"})
+    monkeypatch.setattr(prepare.EPOCH_NAMESPACE_FAILURE, "verify_failure_context",
+        lambda reference: {"context_ref": {
+            "path": reference["path"],
+            "sha256": prepare.EPOCH_NAMESPACE_FAILURE.CONTEXT_SHA256,
+        }, "context": {"schema": "fixture"}})
+    templates_v13 = tmp_path / "templates-v13"
+    prepare.prepare_templates(
+        source_index=index, metadata=metadata, diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+        output=templates_v13, actor="operator", isaaclab_commit="c" * 40,
+        completed_effect_proofs=proofs,
+        completed_import_profile=prepare.COMPLETED_IMPORT_PROFILE_EPOCH_NAMESPACE_RETRY,
+        restart_seed_overrides=prepare.REGISTERED_RESTART_SEED_OVERRIDES_V13,
+        epoch_shutdown_failure_proof=failure_proof,
+        epoch_namespace_failure_context=namespace_context,
+        isaaclab_root=isaaclab, gpu_admission_profile=prepare.GPU_ADMISSION_PROFILE_RETRY,
+        require_committed=False)
+    v13_plan = json.loads((templates_v13 / "registered-plan.json").read_text(encoding="utf-8"))
+    assert v13_plan["schema"] == prepare.COMPARISON.PLAN_SCHEMA_V7
+    assert v13_plan["recovery_policy"]["seeds"]["case-07"]["restart"] == 6266
+    assert v13_plan["recovery_policy"]["seeds"]["case-08"]["restart"] == 6267
+    assert v13_plan["continuation"]["namespace_failure_context_sha256"] == (
+        prepare.EPOCH_NAMESPACE_FAILURE.CONTEXT_SHA256)
+    assert v13_plan["continuation"]["prior_consumed_gpu_sdk_launches"] == 18
+    assert any(row["role"] == "epoch_namespace_retry_preregistration"
+               for row in v13_plan["inputs"])
+    v13_binding = json.loads((templates_v13 / "templates/case-07/optimizer_update_count/training-binding.json").read_text())
+    v13_recipe = json.loads(Path(v13_binding["environment_preservation"]["expected_reward"]["path"]).read_text())
+    assert v13_recipe["training_seed"] == 6266
     templates = templates_v12
     monkeypatch.setattr(prepare.COMPARISON, "load_plan", lambda *_args, **_kwargs: plan)
     fresh_seen = []
