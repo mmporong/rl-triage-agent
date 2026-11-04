@@ -14,6 +14,29 @@ from rl_triage.investigation_session import file_sha
 r1_runner = backend._runner_module("r1_epochs_v2")
 
 
+def test_retry_admission_requires_both_policy_closures_and_routes_exact_scope(monkeypatch):
+    closure = backend._DESKTOP_SOURCES | backend._RETRY_SOURCES
+    protocol = {"schema": backend.SCHEMA_V3, "source_closure": dict.fromkeys(closure, "a" * 64),
+                "operation": {"gpu_admission_profile": backend.RETRY_PROFILE,
+                              "prior_training_artifact_id": None}}
+    assert backend._extensions(protocol) is None
+    calls = []
+    scope = object()
+    module = SimpleNamespace(snapshot_scope=lambda: scope)
+    monkeypatch.setattr(backend.importlib, "import_module",
+                        lambda name: calls.append(name) or module)
+    assert backend._gpu_scope({"protocol_body": protocol}) is scope
+    assert calls == ["evals.registered_desktop_gpu_retry_v1"]
+    for relative in backend._RETRY_SOURCES:
+        altered = deepcopy(protocol)
+        del altered["source_closure"][relative]
+        with pytest.raises(ValueError, match="policy source missing"):
+            backend._extensions(altered)
+    protocol["schema"] = backend.SCHEMA_V2
+    with pytest.raises(ValueError, match="unregistered desktop GPU"):
+        backend._extensions(protocol)
+
+
 def _write(path: Path, value: dict) -> dict:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, sort_keys=True), encoding="utf-8")

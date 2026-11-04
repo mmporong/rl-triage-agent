@@ -1,0 +1,35 @@
+{
+  "schema": "registered_desktop_gpu_retry_v1",
+  "profile_id": "registered_desktop_shared_retry_v1",
+  "base_profile_id": "registered_desktop_shared_baseline_v1",
+  "base_policy_reference": {
+    "path": "bench/protocols/registered_desktop_gpu_shared_v1.json",
+    "sha256_lf": "312958b45820c349aacfb467ae8285171815e0c7bd00623f1ead540cf775ca48"
+  },
+  "max_wait_s": 60,
+  "max_queries": 12,
+  "query_interval_s": 1,
+  "retry_conditions": [
+    "base_identity_pid_disappeared_between_xml_and_cim",
+    "active_engine_pid_disappeared_from_same_snapshot_process_inventory"
+  ],
+  "final_predicate": "registered_desktop_shared_baseline_v1_unchanged",
+  "threshold_relaxation": false,
+  "gpu_owned_s": 0,
+  "unclassified_activity": "block",
+  "preserve_each_observation_or_exception": true,
+  "lease_and_identity_revalidated_per_query": true,
+  "performance_measurement": false,
+  "nonexclusive_cost_observation": true,
+  "source_closure_sha256_lf": {
+    "bench/protocols/registered_desktop_gpu_admission_v1.json": "9915856b055a888435fc9560bb883474e8311d903341a3462e532ff0a7304416",
+    "bench/protocols/registered_desktop_gpu_shared_v1.json": "312958b45820c349aacfb467ae8285171815e0c7bd00623f1ead540cf775ca48",
+    "evals/registered_desktop_gpu_admission_v1.py": "7cd5b7c28020318686c83a4c7128f1a10165c59d7aac3dfd437ddf6ec463f2ac",
+    "evals/registered_desktop_gpu_retry_v1.py": "6a77f6a3d97560eaf967f1b547afb9c4c0af9d21c164ce917f412956397b3051",
+    "evals/registered_desktop_gpu_shared_v1.py": "79d8c1a6abe5e0f35e31460228703543983e393a6361fc70d10c2bcb93dcaa63",
+    "tests/test_registered_desktop_gpu_admission_v1.py": "4b8a88e38d3c1f216ef5c62ceef89e2fbf1d819534779d81144431d96c48e81b",
+    "tests/test_registered_desktop_gpu_retry_v1.py": "2b22ac1c364f71d7d419f511aeddd5ce27c98651c18e0c03491f6a7fb69f9d1e",
+    "tests/test_registered_desktop_gpu_shared_v1.py": "d20117b0a2c0cc514c0ff2160776018c93b0b288e119eaa9c235aab426ad3c96"
+  },
+  "status": "registered_before_gpu_execution_not_actual_admission_evidence"
+}

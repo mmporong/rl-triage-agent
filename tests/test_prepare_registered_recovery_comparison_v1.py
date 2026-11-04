@@ -444,8 +444,9 @@ def test_templates_v3_bind_two_imports_and_separate_historical_sdk_budget(
     assert static_protocol["operation"]["prior_training_artifact_id"] == "prior_training"
 
 
+@pytest.mark.parametrize("retry_observation", [False, True])
 def test_templates_and_jobs_v4_import_two_completed_effects(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, retry_observation: bool
 ) -> None:
     index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
     source_checkpoint = json.loads(metadata.read_text(encoding="utf-8"))[
@@ -497,7 +498,13 @@ def test_templates_and_jobs_v4_import_two_completed_effects(
     monkeypatch.setattr(prepare, "_continuation_module_v4", lambda: ProofModule)
     monkeypatch.setattr(prepare, "_CONTINUATION_V3_SOURCE_FILES", {"source.py"})
     monkeypatch.setattr(prepare, "_CONTINUATION_V4_SOURCE_FILES", {"source.py"})
+    monkeypatch.setattr(prepare, "_CONTINUATION_RETRY_SOURCE_FILES",
+                        prepare.COMPARISON.CONSISTENT_OBSERVATION_SOURCES)
     _write(tmp_path / "bench/protocols/diagnostic_recovery_comparison_20261104_v8.md", b"v8\n")
+    if retry_observation:
+        for relative in prepare.COMPARISON.CONSISTENT_OBSERVATION_SOURCES:
+            _write(tmp_path / relative, b"retry fixture\n")
+        _write(tmp_path / "bench/protocols/diagnostic_recovery_comparison_20261104_v9.md", b"v9\n")
     isaaclab = tmp_path / "IsaacLab"
     isaaclab.mkdir()
     templates = tmp_path / "templates-v4"
@@ -506,13 +513,18 @@ def test_templates_and_jobs_v4_import_two_completed_effects(
         diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
         sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
         output=templates, actor="operator", isaaclab_commit="c" * 40,
-        completed_effect_proofs=proofs, isaaclab_root=isaaclab, require_committed=False)
+        completed_effect_proofs=proofs, isaaclab_root=isaaclab, require_committed=False,
+        gpu_admission_profile=prepare.GPU_ADMISSION_PROFILE_RETRY if retry_observation else None)
     plan = json.loads((templates / "registered-plan.json").read_text(encoding="utf-8"))
     assert plan["schema"] == prepare.COMPARISON.PLAN_SCHEMA_V4
     assert plan["limits"]["gpu_sdk_launch_cap"] == 27
     assert plan["limits"]["total_owned_launch_cap"] == 59
     assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 26
     assert plan["continuation"]["cumulative_gpu_sdk_launches"] == 32
+    assert plan["continuation"]["gpu_admission_profile"] == (
+        prepare.GPU_ADMISSION_PROFILE_RETRY if retry_observation else prepare.GPU_ADMISSION_PROFILE_V3_SHARED)
+    assert plan["continuation"]["continuation_tag"] == (
+        "v9_consistent_observation" if retry_observation else "v8_resumable")
     assert result["continuation_proofs"] == {
         key: {"path": str(path.resolve()), "sha256": _sha(path)} for key, path in proofs.items()}
 

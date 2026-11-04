@@ -126,6 +126,11 @@ _CONTINUATION_V3_SOURCE_FILES = _CONTINUATION_SOURCE_FILES | {
 GPU_ADMISSION_PROFILE = "registered_desktop_shared_v2"
 GPU_ADMISSION_PROFILE_V3 = "registered_desktop_shared_wait_v1"
 GPU_ADMISSION_PROFILE_V3_SHARED = "registered_desktop_shared_baseline_v1"
+GPU_ADMISSION_PROFILE_RETRY = "registered_desktop_shared_retry_v1"
+_V4_PROFILE_TAGS = {
+    GPU_ADMISSION_PROFILE_V3_SHARED: "v8_resumable",
+    GPU_ADMISSION_PROFILE_RETRY: "v9_consistent_observation",
+}
 _V3_PROFILE_TAGS = {
     GPU_ADMISSION_PROFILE_V3: "v6_fresh",
     GPU_ADMISSION_PROFILE_V3_SHARED: "v7_shared_desktop",
@@ -140,6 +145,12 @@ _CONTINUATION_V4_SOURCE_FILES = _CONTINUATION_V7_SOURCE_FILES | {
     "evals/registered_recovery_continuation_v4.py",
     "tests/test_registered_recovery_continuation_v4.py",
     "bench/protocols/diagnostic_recovery_comparison_20261104_v8.md",
+}
+_CONTINUATION_RETRY_SOURCE_FILES = {
+    "evals/registered_desktop_gpu_retry_v1.py",
+    "tests/test_registered_desktop_gpu_retry_v1.py",
+    "bench/protocols/registered_desktop_gpu_retry_v1.json",
+    "bench/protocols/diagnostic_recovery_comparison_20261104_v9.md",
 }
 PRIOR_V5_SOURCE_ANCHOR = "f9d5fea93cce406a325f578bc6f4597cc0bc35c5"
 PRIOR_V5_REGISTRATION_ANCHOR = "bf1632ee6770e681e9e8c4c5b1df890ebaed12a6"
@@ -216,11 +227,16 @@ def _git_blob(anchor: str, relative: str) -> bytes:
 def _source_closure(anchor: str, *, include_continuation: bool = False,
                     include_continuation_v3: bool = False,
                     include_continuation_v7: bool = False,
-                    include_continuation_v4: bool = False) -> dict[str, str]:
+                    include_continuation_v4: bool = False,
+                    include_observation_retry: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
     source_files = set(_SOURCE_FILES)
+    if include_observation_retry:
+        if not include_continuation_v4:
+            raise PreparationError("observation retry requires v4 completed-effect imports")
+        source_files |= _CONTINUATION_RETRY_SOURCE_FILES
     if include_continuation_v4:
         source_files |= _CONTINUATION_V3_SOURCE_FILES | _CONTINUATION_V4_SOURCE_FILES
     elif include_continuation_v3:
@@ -673,7 +689,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     if gpu_admission_profile is not None and not (v3_requested or v4_requested):
         raise PreparationError("explicit GPU admission profile requires v3 continuation proofs")
     selected_v3_profile = gpu_admission_profile or GPU_ADMISSION_PROFILE_V3
-    if selected_v3_profile not in _V3_PROFILE_TAGS:
+    selected_v4_profile = gpu_admission_profile or GPU_ADMISSION_PROFILE_V3_SHARED
+    if not v4_requested and selected_v3_profile not in _V3_PROFILE_TAGS:
         raise PreparationError("unsupported v3 GPU admission profile")
     if v3_requested and (
         prior_completed_effect_proof is None
@@ -684,7 +701,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         raise PreparationError("v3 proofs and Isaac Lab root must be supplied together")
     if v4_requested and (
         v3_requested or prior_training_proof is not None or isaaclab_root is None
-        or gpu_admission_profile not in {None, GPU_ADMISSION_PROFILE_V3_SHARED}
+        or selected_v4_profile not in _V4_PROFILE_TAGS
     ):
         raise PreparationError("v4 proofs and Isaac Lab root must be supplied alone")
     if not (v3_requested or v4_requested) and (prior_training_proof is None) != (isaaclab_root is None):
@@ -715,6 +732,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             v3 is not None and selected_v3_profile == GPU_ADMISSION_PROFILE_V3_SHARED
         ),
         include_continuation_v4=v4 is not None,
+        include_observation_retry=(v4 is not None and selected_v4_profile == GPU_ADMISSION_PROFILE_RETRY),
     ) if require_committed else {
         path: _sha(ROOT / path, lf=True)
         for path in sorted(
@@ -726,6 +744,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                else set())
             | (_CONTINUATION_V3_SOURCE_FILES | _CONTINUATION_V4_SOURCE_FILES
                if v4 is not None else set())
+            | (_CONTINUATION_RETRY_SOURCE_FILES
+               if v4 is not None and selected_v4_profile == GPU_ADMISSION_PROFILE_RETRY else set())
         )
     }
     sdk = _read(sdk_contract)
@@ -794,6 +814,10 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         inputs.append({"role": "completed_effect_continuation_preregistration",
                        "path": "bench/protocols/diagnostic_recovery_comparison_20261104_v8.md",
                        "sha256": _sha(ROOT / "bench/protocols/diagnostic_recovery_comparison_20261104_v8.md", lf=True)})
+        if selected_v4_profile == GPU_ADMISSION_PROFILE_RETRY:
+            note = "bench/protocols/diagnostic_recovery_comparison_20261104_v9.md"
+            inputs.append({"role": "consistent_gpu_observation_preregistration", "path": note,
+                           "sha256": _sha(ROOT / note, lf=True)})
     for case in CASES:
         old = case
         row = phase_inputs.get(f"protocol:{old}")
@@ -852,12 +876,12 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     if v4 is not None:
         imports, _proof_refs = v4
         plan["continuation"] = {
-            "gpu_admission_profile": GPU_ADMISSION_PROFILE_V3_SHARED,
+            "gpu_admission_profile": selected_v4_profile,
             "stage_imports": imports,
             "prior_consumed_gpu_sdk_launches": 5,
             "expected_new_gpu_sdk_launches": 26,
             "cumulative_gpu_sdk_launches": 32,
-            "continuation_tag": "v8_resumable",
+            "continuation_tag": _V4_PROFILE_TAGS[selected_v4_profile],
             "prior_v7_registration_anchor": PRIOR_V7_REGISTRATION_ANCHOR,
             "prior_incomplete_preserved": True,
         }
@@ -1204,7 +1228,7 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("--prior-static-completed-effect-proof", type=Path)
     t.add_argument("--prior-static-training-proof", type=Path)
     t.add_argument("--isaaclab-root", type=Path)
-    t.add_argument("--gpu-admission-profile", choices=tuple(_V3_PROFILE_TAGS))
+    t.add_argument("--gpu-admission-profile", choices=tuple(dict.fromkeys((*_V3_PROFILE_TAGS, *_V4_PROFILE_TAGS))))
     t.add_argument("--allow-uncommitted-fixture", action="store_true")
     j = sub.add_parser("jobs")
     j.add_argument("--templates", required=True, type=Path)

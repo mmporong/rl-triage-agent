@@ -31,6 +31,11 @@ PLAN_SCHEMA = "registered_recovery_comparison_plan_v1"
 PLAN_SCHEMA_V2 = "registered_recovery_comparison_plan_v2"
 PLAN_SCHEMA_V3 = "registered_recovery_comparison_plan_v3"
 PLAN_SCHEMA_V4 = "registered_recovery_comparison_plan_v4"
+CONSISTENT_OBSERVATION_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261104_v9.md"
+CONSISTENT_OBSERVATION_SOURCES = {
+    "evals/registered_desktop_gpu_retry_v1.py", "tests/test_registered_desktop_gpu_retry_v1.py",
+    "bench/protocols/registered_desktop_gpu_retry_v1.json", CONSISTENT_OBSERVATION_NOTE,
+}
 JOB_SCHEMA = "registered_recovery_comparison_job_v1"
 RESULT_SCHEMA = "registered_recovery_comparison_result_v1"
 METHODS = ("fixed_sequence", "static_rule", "one_shot_llm", "iterative_agent")
@@ -278,17 +283,21 @@ def _validate_plan(plan: dict) -> None:
             raise ComparisonContractError("v3 stage import matrix differs")
     if schema == PLAN_SCHEMA_V4:
         continuation = plan["continuation"]
+        profile_tags = {
+            "registered_desktop_shared_baseline_v1": "v8_resumable",
+            "registered_desktop_shared_retry_v1": "v9_consistent_observation",
+        }
         required = {
             "gpu_admission_profile", "stage_imports", "prior_consumed_gpu_sdk_launches",
             "expected_new_gpu_sdk_launches", "cumulative_gpu_sdk_launches",
             "continuation_tag", "prior_v7_registration_anchor", "prior_incomplete_preserved",
         }
         if (not isinstance(continuation, dict) or set(continuation) != required
-                or continuation["gpu_admission_profile"] != "registered_desktop_shared_baseline_v1"
+                or continuation["gpu_admission_profile"] not in profile_tags
                 or continuation["prior_consumed_gpu_sdk_launches"] != 5
                 or continuation["expected_new_gpu_sdk_launches"] != 26
                 or continuation["cumulative_gpu_sdk_launches"] != 32
-                or continuation["continuation_tag"] != "v8_resumable"
+                or continuation["continuation_tag"] != profile_tags.get(continuation["gpu_admission_profile"])
                 or _COMMIT.fullmatch(str(continuation["prior_v7_registration_anchor"])) is None
                 or continuation["prior_incomplete_preserved"] is not True
                 or case_ids != set(SUPPORTED_CASES)):
@@ -375,6 +384,14 @@ def _validate_plan(plan: dict) -> None:
     if not {"diagnostic_plan", "recovery_review_policy",
             *(f"diagnostic_protocol:{case}" for case in case_ids)} <= roles:
         raise ComparisonContractError("diagnostic preregistration inputs missing")
+    if (schema == PLAN_SCHEMA_V4
+            and plan["continuation"]["gpu_admission_profile"] == "registered_desktop_shared_retry_v1"):
+        note = next((row for row in inputs
+                     if row["role"] == "consistent_gpu_observation_preregistration"), None)
+        if (not CONSISTENT_OBSERVATION_SOURCES <= set(closure) or note is None
+                or note["path"] != CONSISTENT_OBSERVATION_NOTE
+                or note["sha256"] != closure[CONSISTENT_OBSERVATION_NOTE]):
+            raise ComparisonContractError("consistent GPU observation preregistration/closure missing")
 
 
 def load_plan(plan_path: Path, *, repo_root: Path, registration_anchor: str,

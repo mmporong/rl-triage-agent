@@ -1,0 +1,1420 @@
+{
+  "api_calls": 0,
+  "arms": [
+    {
+      "case_id": "case-05",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": 0,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": {
+          "energy": {
+            "devices": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "coverage_fraction": 0.9990270895365145,
+                "covered_s": 61.9493989944458,
+                "energy_wh": 0.827709046705564,
+                "gaps": [
+                  {
+                    "end_s": 1793779028.222555,
+                    "reason": "window_boundary_uncovered",
+                    "start_s": 1793779028.163258
+                  },
+                  {
+                    "end_s": 1793779090.172987,
+                    "reason": "window_boundary_uncovered",
+                    "start_s": 1793779090.171954
+                  }
+                ],
+                "max_gap_s": 6.0,
+                "process_attribution": null,
+                "sample_count": 31,
+                "scope": "device_wide_estimate",
+                "window_s": 62.00972890853882
+              }
+            },
+            "unsupported_devices_remain_null": true,
+            "window_end_s": 1793779090.172987,
+            "window_start_s": 1793779028.163258
+          },
+          "process_gpu_seconds": null,
+          "provider_gpu_seconds": null,
+          "scope": "device_wide"
+        },
+        "device_energy_scope": "historical_completed_dispatch_only",
+        "execution_origin": "verified_prior_effect",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": true,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": 47.07799999997951,
+        "reused_completed_dispatch_sdk_launches": 1,
+        "reused_training_device_energy": {
+          "energy": {
+            "devices": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "coverage_fraction": 0.9998994263072671,
+                "covered_s": 523.0550999641418,
+                "energy_wh": 11.484543094700243,
+                "gaps": [
+                  {
+                    "end_s": 1793775050.157569,
+                    "reason": "window_boundary_uncovered",
+                    "start_s": 1793775050.107495
+                  },
+                  {
+                    "end_s": 1793775573.215206,
+                    "reason": "window_boundary_uncovered",
+                    "start_s": 1793775573.212669
+                  }
+                ],
+                "max_gap_s": 6.0,
+                "process_attribution": null,
+                "sample_count": 255,
+                "scope": "device_wide_estimate",
+                "window_s": 523.1077108383179
+              }
+            },
+            "unsupported_devices_remain_null": true,
+            "window_end_s": 1793775573.215206,
+            "window_start_s": 1793775050.107495
+          },
+          "process_gpu_seconds": null,
+          "provider_gpu_seconds": null,
+          "scope": "device_wide"
+        },
+        "reused_training_owned_wall_s": 515.3279999999795,
+        "reused_training_sdk_launches": 1,
+        "simulator_owned_wall_s": 562.405999999959,
+        "status": "complete",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": 593.656861999887
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": {
+        "checkpoint_sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7",
+        "fixed_report_sha256": "8e553408c55053c64e97e83902f806d06586ee388ceb4a3a93be4a73355ee825"
+      },
+      "evidence": [
+        {
+          "logical_id": "case-05:fixed_sequence:diagnostic-manifest",
+          "sha256": "4c2045d49162d7ee54f79b4e719a5888fdce520c80c76d1d0d2a3a0277fc4ce4"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:historical:projected-resource",
+          "sha256": "c2e7eaa7ca4351269b51d84da02d7020afda5b6eaca0bc2b1cfccb56f042a136"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:historical:raw-resource",
+          "sha256": "0d85ac34b83f74b9255d29f42589ad2776c25220dd20474d7602de96335fb8be"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:historical:lease-admission",
+          "sha256": "bd4e00ae90c02075446a0da4193c07febceb5c0475c6ca590c622e783cd359ca"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:historical:fixed-execution",
+          "sha256": "c491ead1cec1bc9f267c17f22862a96a539fb9c91b3605b0496784fdabbf124c"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:historical:recovery-receipt",
+          "sha256": "1774de2d8fed9c37cd736277ad40bc4b594b15787c927b972693996620f9353a"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:historical:prior-training-proof",
+          "sha256": "d4eb6862fc788486f167053bbdbb0d77961b1e097834e3fbd264b283c6a7a879"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:historical:prior-training-execution",
+          "sha256": "e352ae15444d8dd835b623d89c44b3fdad2c685e2d22b27723d70ea82fd01142"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:historical:prior-dispatch-resource",
+          "sha256": "0a969f754731cba0aa419f1727ee785eb209bab3227b7b65869bb416e8b43f6c"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:historical:prior-training-device-sampler",
+          "sha256": "f848fc86718d2827f1aae90e9823d038bdc0c2504de7187acaac4400bafc179a"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:historical:device-sampler",
+          "sha256": "457c09ba56c7e4df75a829f556aa05bf209b179b4bb31e81be63f00997ae466a"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:completed-effect-proof",
+          "sha256": "66fe289e5e8cd7e2057247adfce385a8e2ff37f47b7ba2f77a5e9e4681c1a961"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:fixed-report",
+          "sha256": "8e553408c55053c64e97e83902f806d06586ee388ceb4a3a93be4a73355ee825"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:new-checkpoint",
+          "sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7"
+        },
+        {
+          "logical_id": "case-05:fixed_sequence:recovery-review-policy",
+          "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+        }
+      ],
+      "execution_origin": "verified_prior_effect",
+      "method": "fixed_sequence",
+      "post_review": {
+        "api_calls": 0,
+        "behavior_outcome": "below_reference",
+        "confirmation_catalog_complete": false,
+        "confirmation_scope": "correction_readback_without_registered_post_mapping",
+        "cpu_review_wall_s": 10.79727570002433,
+        "effective_action": "hold",
+        "gpu_launches": 0,
+        "reason_code": "confirmation_check_unknown",
+        "status": "hold",
+        "unobserved_components": [
+          "actuator_mapping",
+          "optimizer_update_count",
+          "ppo_surrogate_gradient"
+        ]
+      },
+      "recovery_attempted": true,
+      "recovery_outcome": "not_recovered"
+    },
+    {
+      "case_id": "case-05",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": 1,
+        "current_dispatch_simulator_owned_wall_s": 60.90600000007544,
+        "device_energy": {
+          "energy": {
+            "devices": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "coverage_fraction": 0.9993432977261001,
+                "covered_s": 85.86545586585999,
+                "energy_wh": 1.2319788619842793,
+                "gaps": [
+                  {
+                    "end_s": 1793788076.804999,
+                    "reason": "window_boundary_uncovered",
+                    "start_s": 1793788076.749583
+                  },
+                  {
+                    "end_s": 1793788162.671464,
+                    "reason": "window_boundary_uncovered",
+                    "start_s": 1793788162.670455
+                  }
+                ],
+                "max_gap_s": 6.0,
+                "process_attribution": null,
+                "sample_count": 43,
+                "scope": "device_wide_estimate",
+                "window_s": 85.92188096046448
+              }
+            },
+            "unsupported_devices_remain_null": true,
+            "window_end_s": 1793788162.671464,
+            "window_start_s": 1793788076.749583
+          },
+          "process_gpu_seconds": null,
+          "provider_gpu_seconds": null,
+          "scope": "device_wide"
+        },
+        "device_energy_scope": "current_dispatch_only",
+        "execution_origin": "continuation_dispatch",
+        "lease_wait_s": null,
+        "locked_wall_s": 91.10147210001014,
+        "owned_cost_complete": true,
+        "phase_elapsed_s": 91.10147210001014,
+        "reused_completed_dispatch_owned_wall_s": 0.0,
+        "reused_completed_dispatch_sdk_launches": 0,
+        "reused_training_device_energy": {
+          "energy": {
+            "devices": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "coverage_fraction": 0.99991385862346,
+                "covered_s": 530.4894349575043,
+                "energy_wh": 11.595451656749516,
+                "gaps": [
+                  {
+                    "end_s": 1793779123.753195,
+                    "reason": "window_boundary_uncovered",
+                    "start_s": 1793779123.707494
+                  }
+                ],
+                "max_gap_s": 6.0,
+                "process_attribution": null,
+                "sample_count": 258,
+                "scope": "device_wide_estimate",
+                "window_s": 530.5351359844208
+              }
+            },
+            "unsupported_devices_remain_null": true,
+            "window_end_s": 1793779654.24263,
+            "window_start_s": 1793779123.707494
+          },
+          "process_gpu_seconds": null,
+          "provider_gpu_seconds": null,
+          "scope": "device_wide"
+        },
+        "reused_training_owned_wall_s": 518.5160000000615,
+        "reused_training_sdk_launches": 1,
+        "simulator_owned_wall_s": 579.4220000001369,
+        "status": "complete",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": 625.4491057000123
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": {
+        "checkpoint_sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7",
+        "fixed_report_sha256": "abccacdd6d48a249624dcf6bdf2474a743f8755ad64d55dbae2b51dfe396dd44"
+      },
+      "evidence": [
+        {
+          "logical_id": "case-05:static_rule:diagnostic-manifest",
+          "sha256": "9d1060753255b69372884d3ba33506f2f350e596b0bf9f794f508582219cd5fa"
+        },
+        {
+          "logical_id": "case-05:static_rule:projected-resource",
+          "sha256": "289114627b1c46b40a1dc244c3a6aa4351c4f4a91ebc46c4195fa018c80fe37f"
+        },
+        {
+          "logical_id": "case-05:static_rule:raw-resource",
+          "sha256": "b27912d86195ca5bc02fbe44444b64228feda420804d67862076b89a450a9c5d"
+        },
+        {
+          "logical_id": "case-05:static_rule:lease-admission",
+          "sha256": "d20204dde5176dc91c6055e2f9771fd50e8d897258b26fb040492fd5f48dd814"
+        },
+        {
+          "logical_id": "case-05:static_rule:fixed-execution",
+          "sha256": "613bdfd31e15feff9b5ec74bf989ace373c7753e368c851b0a0603e7eaa315a4"
+        },
+        {
+          "logical_id": "case-05:static_rule:recovery-receipt",
+          "sha256": "769e727313648c77d0056dc41de399b213c08e3d1b4d73632b2a1d77b5445ccb"
+        },
+        {
+          "logical_id": "case-05:static_rule:prior-training-proof",
+          "sha256": "c98d87d32c1598629614d6c005bc14a5a85595d172c3ceaf7c5096a22d2cdecb"
+        },
+        {
+          "logical_id": "case-05:static_rule:prior-training-execution",
+          "sha256": "e9f83d3b040650d4b8757b4f4d882c2bab9f7b2eec0497880cda233ac833b390"
+        },
+        {
+          "logical_id": "case-05:static_rule:prior-dispatch-resource",
+          "sha256": "d2aa8faf01888f01df567f610365fba1fdefce0459d21913ee6c2d143425265a"
+        },
+        {
+          "logical_id": "case-05:static_rule:prior-training-device-sampler",
+          "sha256": "da5b513732e4d7cd782a8f6d7b2a9ac767bd3a2071e7d85b39e1aae92db7c5a1"
+        },
+        {
+          "logical_id": "case-05:static_rule:device-sampler",
+          "sha256": "b0d38f54890a98cb6424f0c795a4633559377ce3e8ba59d2d8a3ff93a511b41d"
+        },
+        {
+          "logical_id": "case-05:static_rule:fixed-report",
+          "sha256": "abccacdd6d48a249624dcf6bdf2474a743f8755ad64d55dbae2b51dfe396dd44"
+        },
+        {
+          "logical_id": "case-05:static_rule:new-checkpoint",
+          "sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7"
+        },
+        {
+          "logical_id": "case-05:static_rule:recovery-review-policy",
+          "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+        }
+      ],
+      "execution_origin": "continuation_dispatch",
+      "method": "static_rule",
+      "post_review": {
+        "api_calls": 0,
+        "behavior_outcome": "below_reference",
+        "confirmation_catalog_complete": false,
+        "confirmation_scope": "correction_readback_without_registered_post_mapping",
+        "cpu_review_wall_s": 14.813529999926686,
+        "effective_action": "hold",
+        "gpu_launches": 0,
+        "reason_code": "confirmation_check_unknown",
+        "status": "hold",
+        "unobserved_components": [
+          "actuator_mapping",
+          "optimizer_update_count",
+          "ppo_surrogate_gradient"
+        ]
+      },
+      "recovery_attempted": true,
+      "recovery_outcome": "not_recovered"
+    },
+    {
+      "case_id": "case-05",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "current_dispatch_without_resource_receipt",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": false,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "incomplete",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-05:one_shot_llm:diagnostic-manifest",
+          "sha256": "f011a3a1f0777e70d053a9f13c2ba97c4587bf88f02b276f80c646af82af8af8"
+        }
+      ],
+      "execution_origin": "current_dispatch_without_resource_receipt",
+      "method": "one_shot_llm",
+      "post_review": null,
+      "recovery_attempted": true,
+      "recovery_outcome": "execution_unsettled"
+    },
+    {
+      "case_id": "case-05",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-05:iterative_agent:diagnostic-manifest",
+          "sha256": "74d9ed1f5a396c10e5ad7d1a5d5657893ca788f7ffd2649f64c11bd25d669c22"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "iterative_agent",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-06",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-06:fixed_sequence:diagnostic-manifest",
+          "sha256": "addf61276628fbadf69e73913c37f3a3dd86817f107bdd770f5af4ded0ae1912"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "fixed_sequence",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-06",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-06:static_rule:diagnostic-manifest",
+          "sha256": "b13ecd31c4881dae570c45108580fc19d25d49761f17902ea14684d29897434b"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "static_rule",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-06",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-06:one_shot_llm:diagnostic-manifest",
+          "sha256": "f98a168e7dc643e322584e0e4c9d8bb33bf6063f5992e46bae7d5209bcc83518"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "one_shot_llm",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-06",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-06:iterative_agent:diagnostic-manifest",
+          "sha256": "15a6a9979d28ebf760cd6829c753c96e0bb0ca7644af9bb72a3f09c4179f5f09"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "iterative_agent",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-07",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-07:fixed_sequence:diagnostic-manifest",
+          "sha256": "1ee1e7625449f22f5adaaa3737bc2a395ecec2a7be85c541d001597ad3f5e97a"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "fixed_sequence",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-07",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-07:static_rule:diagnostic-manifest",
+          "sha256": "437004ee95e13e660b77b27b6954858ce5947266986976400be07d3bec8f9b0d"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "static_rule",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-07",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-07:one_shot_llm:diagnostic-manifest",
+          "sha256": "77abe991524e642f183714fa319bf9372ee34e94eba5cab3f528936938094dfb"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "one_shot_llm",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-07",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": false,
+      "diagnostic_status": "model_hold",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-07:iterative_agent:diagnostic-manifest",
+          "sha256": "c05fba0993dac562e62f5d5afc39dcc9e9c29c00e5e0aa5c32b95ba2045046c1"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "iterative_agent",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-08",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-08:fixed_sequence:diagnostic-manifest",
+          "sha256": "dd8ef5e9ec9a11ec155df1b414da7ab1d04f37ae9ab9bae007c7d753e1e9e4de"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "fixed_sequence",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-08",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-08:static_rule:diagnostic-manifest",
+          "sha256": "5dd750440837d60ac87fdd74283a50343da1959a30b84e8938c8c23d0bf5498c"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "static_rule",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-08",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-08:one_shot_llm:diagnostic-manifest",
+          "sha256": "ee918dab6bf74929e96814c06e467af1ec38f3cb2156928e7fd11f39f47a9fe2"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "one_shot_llm",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    },
+    {
+      "case_id": "case-08",
+      "costs": {
+        "api_calls": 0,
+        "checkpoint_cpu_owned_wall_s": null,
+        "current_dispatch_sdk_launches": null,
+        "current_dispatch_simulator_owned_wall_s": null,
+        "device_energy": null,
+        "device_energy_scope": null,
+        "execution_origin": "not_applicable",
+        "lease_wait_s": null,
+        "locked_wall_s": null,
+        "owned_cost_complete": null,
+        "phase_elapsed_s": null,
+        "reused_completed_dispatch_owned_wall_s": null,
+        "reused_completed_dispatch_sdk_launches": null,
+        "reused_training_device_energy": null,
+        "reused_training_owned_wall_s": null,
+        "reused_training_sdk_launches": null,
+        "simulator_owned_wall_s": null,
+        "status": "not_applicable",
+        "telemetry_cpu_owned_wall_s": null,
+        "whole_effect_active_phase_s": null
+      },
+      "diagnostic_confirmed": true,
+      "diagnostic_status": "confirmed",
+      "endpoint": null,
+      "evidence": [
+        {
+          "logical_id": "case-08:iterative_agent:diagnostic-manifest",
+          "sha256": "522372c8ad1ab11d6d35b27ae03de914d211bbd72edc13de1ff784d9a5dcbbfb"
+        }
+      ],
+      "execution_origin": "not_applicable",
+      "method": "iterative_agent",
+      "post_review": null,
+      "recovery_attempted": false,
+      "recovery_outcome": "not_started"
+    }
+  ],
+  "common_cost_note": "not present in the registered controller result; not repeated per arm",
+  "common_source_and_diagnostic_costs": null,
+  "completed_arms": 2,
+  "controller_halted": false,
+  "methods": [
+    {
+      "api_calls": 0,
+      "costs": {
+        "checkpoint_cpu_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "current_dispatch_sdk_launches": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 1,
+          "unknown_arms": 0
+        },
+        "current_dispatch_simulator_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 1,
+          "unknown_arms": 0
+        },
+        "lease_wait_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 1,
+          "unknown_arms": 0
+        },
+        "locked_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 1,
+          "unknown_arms": 0
+        },
+        "phase_elapsed_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 1,
+          "unknown_arms": 0
+        },
+        "reused_completed_dispatch_owned_wall_s": {
+          "known_arms": 1,
+          "known_sum": 47.07799999997951,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "reused_completed_dispatch_sdk_launches": {
+          "known_arms": 1,
+          "known_sum": 1.0,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "reused_training_owned_wall_s": {
+          "known_arms": 1,
+          "known_sum": 515.3279999999795,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "reused_training_sdk_launches": {
+          "known_arms": 1,
+          "known_sum": 1.0,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "simulator_owned_wall_s": {
+          "known_arms": 1,
+          "known_sum": 562.405999999959,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "telemetry_cpu_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "whole_effect_active_phase_s": {
+          "known_arms": 1,
+          "known_sum": 593.656861999887,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        }
+      },
+      "diagnostic_confirmed": 4,
+      "method": "fixed_sequence",
+      "outcomes": {
+        "execution_unsettled": 0,
+        "hold": 0,
+        "infrastructure_failure": 0,
+        "normal_or_host_gate": 0,
+        "not_recovered": 1,
+        "not_started": 3,
+        "recovered": 0,
+        "unknown": 0,
+        "unsupported": 0
+      },
+      "planned_arms": 4,
+      "recovery_attempted": 1
+    },
+    {
+      "api_calls": 0,
+      "costs": {
+        "checkpoint_cpu_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "current_dispatch_sdk_launches": {
+          "known_arms": 1,
+          "known_sum": 1.0,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "current_dispatch_simulator_owned_wall_s": {
+          "known_arms": 1,
+          "known_sum": 60.90600000007544,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "lease_wait_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "locked_wall_s": {
+          "known_arms": 1,
+          "known_sum": 91.10147210001014,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "phase_elapsed_s": {
+          "known_arms": 1,
+          "known_sum": 91.10147210001014,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "reused_completed_dispatch_owned_wall_s": {
+          "known_arms": 1,
+          "known_sum": 0.0,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "reused_completed_dispatch_sdk_launches": {
+          "known_arms": 1,
+          "known_sum": 0.0,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "reused_training_owned_wall_s": {
+          "known_arms": 1,
+          "known_sum": 518.5160000000615,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "reused_training_sdk_launches": {
+          "known_arms": 1,
+          "known_sum": 1.0,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "simulator_owned_wall_s": {
+          "known_arms": 1,
+          "known_sum": 579.4220000001369,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "telemetry_cpu_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "whole_effect_active_phase_s": {
+          "known_arms": 1,
+          "known_sum": 625.4491057000123,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        }
+      },
+      "diagnostic_confirmed": 4,
+      "method": "static_rule",
+      "outcomes": {
+        "execution_unsettled": 0,
+        "hold": 0,
+        "infrastructure_failure": 0,
+        "normal_or_host_gate": 0,
+        "not_recovered": 1,
+        "not_started": 3,
+        "recovered": 0,
+        "unknown": 0,
+        "unsupported": 0
+      },
+      "planned_arms": 4,
+      "recovery_attempted": 1
+    },
+    {
+      "api_calls": 0,
+      "costs": {
+        "checkpoint_cpu_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "current_dispatch_sdk_launches": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "current_dispatch_simulator_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "lease_wait_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "locked_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "phase_elapsed_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "reused_completed_dispatch_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "reused_completed_dispatch_sdk_launches": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "reused_training_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "reused_training_sdk_launches": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "simulator_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "telemetry_cpu_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        },
+        "whole_effect_active_phase_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 1
+        }
+      },
+      "diagnostic_confirmed": 4,
+      "method": "one_shot_llm",
+      "outcomes": {
+        "execution_unsettled": 1,
+        "hold": 0,
+        "infrastructure_failure": 0,
+        "normal_or_host_gate": 0,
+        "not_recovered": 0,
+        "not_started": 3,
+        "recovered": 0,
+        "unknown": 0,
+        "unsupported": 0
+      },
+      "planned_arms": 4,
+      "recovery_attempted": 1
+    },
+    {
+      "api_calls": 0,
+      "costs": {
+        "checkpoint_cpu_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "current_dispatch_sdk_launches": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "current_dispatch_simulator_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "lease_wait_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "locked_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "phase_elapsed_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "reused_completed_dispatch_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "reused_completed_dispatch_sdk_launches": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "reused_training_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "reused_training_sdk_launches": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "simulator_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "telemetry_cpu_owned_wall_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        },
+        "whole_effect_active_phase_s": {
+          "known_arms": 0,
+          "known_sum": null,
+          "not_applicable_arms": 0,
+          "unknown_arms": 0
+        }
+      },
+      "diagnostic_confirmed": 3,
+      "method": "iterative_agent",
+      "outcomes": {
+        "execution_unsettled": 0,
+        "hold": 0,
+        "infrastructure_failure": 0,
+        "normal_or_host_gate": 0,
+        "not_recovered": 0,
+        "not_started": 4,
+        "recovered": 0,
+        "unknown": 0,
+        "unsupported": 0
+      },
+      "planned_arms": 4,
+      "recovery_attempted": 0
+    }
+  ],
+  "planned_arms": 16,
+  "planned_cases": [
+    "case-05",
+    "case-06",
+    "case-07",
+    "case-08"
+  ],
+  "planned_methods": [
+    "fixed_sequence",
+    "static_rule",
+    "one_shot_llm",
+    "iterative_agent"
+  ],
+  "recovered_endpoint_comparison": [],
+  "schema": "registered_recovery_comparison_public_summary_v1",
+  "timing": {
+    "active_command_wall_s": null,
+    "known_active_command_wall_s": 135.99692290000002,
+    "known_window_span_s": 136.089299,
+    "per_arm": [
+      {
+        "active_wall_s": 130.1863284,
+        "case_id": "case-05",
+        "completed_transitions": 3,
+        "known_active_wall_s": 130.1863284,
+        "method": "static_rule",
+        "unknown_transitions": 0
+      },
+      {
+        "active_wall_s": null,
+        "case_id": "case-05",
+        "completed_transitions": 1,
+        "known_active_wall_s": 5.8105945,
+        "method": "one_shot_llm",
+        "unknown_transitions": 1
+      }
+    ],
+    "schema": "registered_recovery_timing_v1",
+    "transition_count": 5,
+    "transitions": [
+      {
+        "active_wall_s": 6.2154739,
+        "begin": {
+          "logical_id": "transition:1:begin",
+          "sha256": "e29c0c75242e6d0a53f86c92944a7825e1bbea31842d9e7770740423e1a08158"
+        },
+        "case_id": "case-05",
+        "end": {
+          "logical_id": "transition:1:end",
+          "sha256": "b91ddb4247093483a3c5460fe449bc586612b7cc57bfe9a5e07c653d5affec46"
+        },
+        "method": "static_rule",
+        "sequence": 1,
+        "status": "complete",
+        "transition_id": "5efd7056ce693f28b6ffeefcb91def85fca7f9e703ce6927342cb6d867577eb4"
+      },
+      {
+        "active_wall_s": 99.8076899,
+        "begin": {
+          "logical_id": "transition:2:begin",
+          "sha256": "e1bcd01c7e03121e256ab8c19a674a6fc0909f324765ceffbd5b41ec18e9659c"
+        },
+        "case_id": "case-05",
+        "end": {
+          "logical_id": "transition:2:end",
+          "sha256": "f2d57d92fe7a5ac7724850921dbb9def006409b7edc2720a8d1b0c9aac7d1352"
+        },
+        "method": "static_rule",
+        "sequence": 2,
+        "status": "complete",
+        "transition_id": "9dc1b8146efeb045302e4a5fc06d7e1bef2b57b707588cdef226e628137a434b"
+      },
+      {
+        "active_wall_s": 24.1631646,
+        "begin": {
+          "logical_id": "transition:3:begin",
+          "sha256": "5d827f3ebabca7e6023bc5b0d4853fcfd2bb4f525c1ef10241f719aa95188b47"
+        },
+        "case_id": "case-05",
+        "end": {
+          "logical_id": "transition:3:end",
+          "sha256": "b0910b2745759ecce658f0d0f259cc5481f3ce205554600611bb7e5603fc9fe4"
+        },
+        "method": "static_rule",
+        "sequence": 3,
+        "status": "complete",
+        "transition_id": "b6849c24984d1c1d2e76864862887c15980c97e3f802ebb51c747ac79caf301d"
+      },
+      {
+        "active_wall_s": 5.8105945,
+        "begin": {
+          "logical_id": "transition:4:begin",
+          "sha256": "5a849e88be758052cbe961d1399e32074fa2c8e901133c3f5dd9ba6d9fd7aa61"
+        },
+        "case_id": "case-05",
+        "end": {
+          "logical_id": "transition:4:end",
+          "sha256": "78e29880e8e4a2c8593f3a9052063a2c07d5c7685b1d68e0190e9a34f17ece09"
+        },
+        "method": "one_shot_llm",
+        "sequence": 4,
+        "status": "complete",
+        "transition_id": "cb85c83a0ad4572ba2888dca8d87714fabd1bf5957ec8fc32952bbccf07e0555"
+      },
+      {
+        "active_wall_s": null,
+        "begin": {
+          "logical_id": "transition:5:begin",
+          "sha256": "e57d77ccacbfe0a7dff3be2f59ef4fb8e66fa77d38cbb9ec855cc51fd8fd6221"
+        },
+        "case_id": "case-05",
+        "end": null,
+        "method": "one_shot_llm",
+        "sequence": 5,
+        "status": "unknown_crash",
+        "transition_id": "7fb3b2f272ca800defed7c755d17fff79dfca40bd437bc8666d8fd4c9868a433"
+      }
+    ],
+    "unknown_transition_count": 1,
+    "window_span_s": null
+  },
+  "unknown_values_are_not_zero": true
+}

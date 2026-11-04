@@ -319,6 +319,19 @@ def _make_recovery_null(job_path: Path) -> None:
     job_path.write_text(json.dumps(job, sort_keys=True), encoding="utf-8")
 
 
+def _enable_retry_fixture(repo: Path, plan: dict) -> None:
+    plan["continuation"].update(gpu_admission_profile="registered_desktop_shared_retry_v1",
+                                continuation_tag="v9_consistent_observation")
+    for relative in comparison.CONSISTENT_OBSERVATION_SOURCES:
+        path = repo / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("retry fixture\n", encoding="utf-8")
+        plan["source_closure"][relative] = comparison._lf_sha(path)
+    plan["inputs"].append({"role": "consistent_gpu_observation_preregistration",
+                           "path": comparison.CONSISTENT_OBSERVATION_NOTE,
+                           "sha256": plan["source_closure"][comparison.CONSISTENT_OBSERVATION_NOTE]})
+
+
 def _write_projected_resource(out: Path, plan_sha: str, *, phase_wall_s: float) -> None:
     admission = _write(out / "raw/admission.json", {
         "schema": "registered_recovery_lease_admission_v1", "request_id": "r1",
@@ -452,12 +465,26 @@ def test_v3_materializes_completed_effect_and_preserves_new_dispatch_budget(
     assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 27
 
 
+@pytest.mark.parametrize("retry_observation", [False, True])
 def test_v4_materializes_two_completed_effects_without_recovery_authority(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, retry_observation: bool
 ) -> None:
     repo, plan_path, job_path, out = _fixture(
         tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
     plan, proofs = _upgrade_to_v4(plan_path, job_path, tmp_path)
+    if retry_observation:
+        _enable_retry_fixture(repo, plan)
+        job = json.loads(job_path.read_text(encoding="utf-8"))
+        job["plan"] = _write(plan_path, plan)
+        for arm in job["arms"]:
+            payload = arm.get("recovery_payload")
+            if payload is not None:
+                path = Path(payload["protocol"]["path"])
+                protocol = json.loads(path.read_text(encoding="utf-8"))
+                protocol["operation"]["gpu_admission_profile"] = "registered_desktop_shared_retry_v1"
+                protocol["source_closure"] = plan["source_closure"]
+                payload["protocol"] = _write(path, protocol)
+        _write(job_path, job)
     prior_resource = _write(tmp_path / "old/resource.json", {"schema": "old-resource"})
     prior_admission = _write(tmp_path / "old/admission.json", {"schema": "old-admission"})
     historical_folder = tmp_path / "old/recovery"
@@ -494,6 +521,43 @@ def test_v4_materializes_two_completed_effects_without_recovery_authority(
     assert result["limits"]["gpu_sdk_launch_cap"] == 27
     assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 26
     assert plan["continuation"]["cumulative_gpu_sdk_launches"] == 32
+
+
+@pytest.mark.parametrize("profile,tag", [
+    ("registered_desktop_shared_retry_v1", "v8_resumable"),
+    ("registered_desktop_shared_baseline_v1", "v9_consistent_observation"),
+])
+def test_v4_rejects_crossed_observation_profile_and_tag(tmp_path: Path, profile: str, tag: str):
+    repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, _proofs = _upgrade_to_v4(plan_path, job_path, tmp_path)
+    plan["continuation"].update(gpu_admission_profile=profile, continuation_tag=tag)
+    _write(plan_path, plan)
+    with pytest.raises(comparison.ComparisonContractError, match="v4 continuation"):
+        comparison.load_plan(plan_path,
+                             repo_root=repo, registration_anchor="b" * 40,
+                             require_committed=False)
+
+
+@pytest.mark.parametrize("missing", sorted(comparison.CONSISTENT_OBSERVATION_SOURCES) + [
+    "note_role", "note_path", "note_sha",
+])
+def test_retry_plan_requires_note_role_and_entire_source_closure(tmp_path: Path, missing: str):
+    repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, _proofs = _upgrade_to_v4(plan_path, job_path, tmp_path)
+    _enable_retry_fixture(repo, plan)
+    comparison._validate_plan(plan)
+    if missing in comparison.CONSISTENT_OBSERVATION_SOURCES:
+        del plan["source_closure"][missing]
+    elif missing == "note_role":
+        plan["inputs"].pop()
+    elif missing == "note_path":
+        plan["inputs"][-1]["path"] = "bench/protocols/unregistered-note.md"
+    else:
+        plan["inputs"][-1]["sha256"] = "0" * 64
+    with pytest.raises(comparison.ComparisonContractError, match="consistent GPU observation"):
+        comparison._validate_plan(plan)
 
 
 def test_v3_rejects_completed_effect_with_fresh_recovery_authority(tmp_path: Path) -> None:
