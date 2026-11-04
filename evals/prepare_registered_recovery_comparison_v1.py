@@ -23,6 +23,7 @@ from evals import r1_repair_demo_v2 as R1_DEMO
 from evals import run_diagnostic_comparison_v1 as PHASE_A
 from evals import run_registered_recovery_comparison_v1 as COMPARISON
 from evals import run_upstream_r1_smoke as UPSTREAM
+from evals.diagnostic_terminal_status_v1 import terminal_aware_status
 from rl_triage import investigate
 from rl_triage import investigation_recovery as RECOVERY
 from rl_triage.correction_registry_v2 import REGISTRY, registry_digest
@@ -47,6 +48,12 @@ _HEX40 = re.compile(r"[0-9a-f]{40}\Z")
 _HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 _SOURCE_FILES = {
     "evals/prepare_registered_recovery_comparison_v1.py",
+    "evals/diagnostic_terminal_status_v1.py",
+    "tests/test_diagnostic_terminal_status_v1.py",
+    "tests/test_investigation_session.py",
+    "evals/core_seed_guard_v1.py",
+    "tests/test_core_seed_guard_v1.py",
+    "bench/protocols/diagnostic_recovery_comparison_20261104_v3.md",
     "evals/run_registered_recovery_comparison_v1.py",
     "evals/registered_recovery_backend_v1.py",
     "evals/registered_recovery_resources_v1.py",
@@ -416,6 +423,9 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         {"role": "recovery_bands_summary", "path": UPSTREAM.P0C_SUMMARY.relative_to(ROOT).as_posix(),
          "sha256": _sha(UPSTREAM.P0C_SUMMARY, lf=True)},
     ]
+    inputs.append({"role": "terminal_hold_integration_preregistration",
+                   "path": "bench/protocols/diagnostic_recovery_comparison_20261104_v3.md",
+                   "sha256": _sha(ROOT / "bench/protocols/diagnostic_recovery_comparison_20261104_v3.md", lf=True)})
     for case in CASES:
         old = case
         row = phase_inputs.get(f"protocol:{old}")
@@ -461,8 +471,7 @@ def _diagnostic_status(session: Path) -> dict:
     current._verify_operation(__import__("rl_triage.registered_diagnostic_backend", fromlist=["verify_source"]).verify_source)
     if current.manifest.get("execution_class") != "actual":
         raise PreparationError("diagnostic session is not actual")
-    return investigate.run("status", session, {}, backend_name=investigate.REGISTERED_BACKEND,
-                           fixture=False)
+    return terminal_aware_status(current)
 
 
 def _bound_diagnostic_sessions(diagnostic_root: Path, plan: dict) -> dict[tuple[str, str], Path]:

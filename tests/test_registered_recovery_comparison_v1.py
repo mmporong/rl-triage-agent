@@ -411,12 +411,17 @@ def test_phase_a_status_revalidates_actual_registered_source(
         def _verify_operation(verifier):
             calls.append(("verify", verifier))
 
+        @staticmethod
+        def status():
+            calls.append(("status", None))
+            return {"status": "confirmed"}
+
     monkeypatch.setattr(comparison, "InvestigationSession", Session)
-    monkeypatch.setattr(comparison.investigate, "run", lambda *args, **kwargs: {"status": "confirmed"})
     result = comparison._verified_diagnostic_status(tmp_path)
     assert result["status"] == "confirmed"
     assert calls[0] == ("session", tmp_path)
     assert calls[1][0] == "verify"
+    assert calls[2][0] == "status"
 
 
 def test_infrastructure_failure_halts_remaining_arms_without_retry(

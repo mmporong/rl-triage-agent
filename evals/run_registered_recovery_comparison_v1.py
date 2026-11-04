@@ -16,6 +16,7 @@ sys.path[:0] = [str(_ENTRY_ROOT), *(str(_ENTRY_ROOT / name) for name in ("src", 
 
 from evals import registered_recovery_resources_v1 as recovery_resources
 from evals import registered_recovery_timing_v1 as recovery_timing
+from evals.diagnostic_terminal_status_v1 import terminal_aware_status
 from rl_triage import investigate, registered_diagnostic_backend
 from rl_triage.correction_registry_v2 import REGISTRY, registry_digest
 from rl_triage.investigation_session import (
@@ -373,7 +374,7 @@ def _verified_diagnostic_status(session_path: Path) -> dict:
     session._verify_operation(registered_diagnostic_backend.verify_source)
     if session.manifest.get("execution_class") != "actual":
         raise ComparisonContractError("phase-A session is not an actual registered execution")
-    return investigate.run("status", session_path, {}, backend_name=BACKEND, fixture=False)
+    return terminal_aware_status(session)
 
 
 def _ambiguous_costs(recovery_folder: Path, request_id: str) -> dict:
