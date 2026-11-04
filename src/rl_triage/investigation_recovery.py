@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib
 import time
+import traceback
 from collections.abc import Mapping
 from copy import deepcopy
 from pathlib import Path
@@ -182,6 +183,7 @@ def dispatch(folder: Path, request_id: str) -> dict:
         error = exc
         _write_or_match(Path(folder) / "dispatch_errors" / f"{request_id}.json",
                         {"schema": SCHEMA + "_dispatch_error", "error_type": type(exc).__name__,
+                         "error_message": str(exc), "traceback": traceback.format_exc(),
                          "reexecute_allowed": False})
     finally:
         measurement.finish(raw=raw, error=error)
@@ -207,7 +209,8 @@ def settle(folder: Path, request_id: str, receipt: Mapping[str, Any] | None) -> 
     return status(folder)
 
 
-def verified_post_observation(folder: Path, request_id: str) -> dict:
+def verified_post_observation(folder: Path, request_id: str, *,
+                              historical_validation_anchor: str | None = None) -> dict:
     """Expose only reverified fixed metrics and correction evidence; it does not declare health."""
     manifest, ledger = _load(folder)
     request = ledger.requests().get(request_id)
@@ -215,7 +218,9 @@ def verified_post_observation(folder: Path, request_id: str) -> dict:
         raise ValueError("completed recovery required")
     raw = _read(Path(folder) / "receipts" / f"{request_id}.json")
     intent = _read(Path(folder) / "intents" / f"{request_id}.json")
-    verified = _backend()["verify_receipt"](raw, intent)
+    historical = ({"historical_validation_anchor": historical_validation_anchor}
+                  if historical_validation_anchor is not None else {})
+    verified = _backend()["verify_receipt"](raw, intent, **historical)
     return {"schema": "verified_recovery_post_observation_v1", "case_id": manifest["recovery_context"]
             ["protocol_body"]["diagnostic"]["case_id"], "mechanism": manifest["mechanism"],
             "correction_id": verified["correction_id"], "correction_readback": verified["correction_readback"],

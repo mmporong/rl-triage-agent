@@ -92,9 +92,16 @@ def _git(repo: Path, *args: str) -> bytes:
     return result.stdout
 
 
-def _historical_closure(repo: Path, anchor: str, closure: Mapping[str, Any]) -> dict[str, Any]:
+def _historical_closure(repo: Path, anchor: str, closure: Mapping[str, Any], *,
+                        observed_anchor: str | None = None) -> dict[str, Any]:
     repo = repo.resolve(strict=True)
     _git(repo, "merge-base", "--is-ancestor", anchor, "HEAD")
+    if observed_anchor is not None:
+        if (not isinstance(observed_anchor, str) or len(observed_anchor) != 40
+                or any(char not in "0123456789abcdef" for char in observed_anchor)):
+            raise ContinuationProofError("historical observation anchor format")
+        _git(repo, "merge-base", "--is-ancestor", anchor, observed_anchor)
+        _git(repo, "merge-base", "--is-ancestor", observed_anchor, "HEAD")
     current_differences: list[str] = []
     for relative, expected in sorted(closure.items()):
         if not isinstance(relative, str) or not isinstance(expected, str):
@@ -103,8 +110,15 @@ def _historical_closure(repo: Path, anchor: str, closure: Mapping[str, Any]) -> 
         actual = hashlib.sha256(historical.replace(b"\r\n", b"\n")).hexdigest()
         if actual != expected:
             raise ContinuationProofError(f"historical source differs: {relative}")
-        current = repo / relative
-        if not current.is_file() or _sha(current, lf=True) != expected:
+        if observed_anchor is None:
+            current = repo / relative
+            differs = not current.is_file() or _sha(current, lf=True) != expected
+        else:
+            present = bool(_git(repo, "ls-tree", observed_anchor, "--", relative))
+            differs = not present or hashlib.sha256(
+                _git(repo, "show", f"{observed_anchor}:{relative}").replace(b"\r\n", b"\n")
+            ).hexdigest() != expected
+        if differs:
             current_differences.append(relative)
     return {
         "source_anchor": anchor,
@@ -406,6 +420,7 @@ def _validate_completed_training(
     expected_correction_id: str, expected_task: str,
     expected_diagnostic_manifest_sha256: str,
     expected_binding: Mapping[str, Any] | None,
+    observed_anchor: str | None = None,
 ) -> dict[str, Any]:
     if (proof.get("schema") != TRAINING_SCHEMA or proof.get("status") != "completed_training_only"
             or proof.get("case_id") != CASE_ID or proof.get("method") != TRAINING_METHOD
@@ -501,7 +516,8 @@ def _validate_completed_training(
     if (not isinstance(closure, Mapping)
             or closure.get("bench/registered_recovery_training_v1.py") != manifest.get("protocol_sha256_lf")):
         raise ContinuationProofError("static recovery closure differs")
-    history = _historical_closure(Path(repo), SOURCE_ANCHOR, closure)
+    history = _historical_closure(Path(repo), SOURCE_ANCHOR, closure,
+                                  observed_anchor=observed_anchor)
     request_id = str(proof["request_id"])
     rows = [row for row in _jsonl(recovery / "recovery.jsonl") if row.get("request_id") == request_id]
     if ([row.get("event") for row in rows] != ["proposed", "approved", "consumed", "receipt"]
@@ -536,6 +552,7 @@ def load_completed_training(
     expected_seed: int, expected_correction_id: str, expected_task: str,
     expected_diagnostic_manifest_sha256: str, repo: Path, isaaclab: Path,
     expected_binding: Mapping[str, Any] | None = None,
+    observed_anchor: str | None = None,
 ) -> dict[str, Any]:
     """Return the verified static-rule training result without launching a process."""
     proof_path, proof = _load_ref(proof_ref, label="completed training proof")
@@ -546,6 +563,7 @@ def load_completed_training(
         expected_task=expected_task,
         expected_diagnostic_manifest_sha256=expected_diagnostic_manifest_sha256,
         expected_binding=expected_binding,
+        observed_anchor=observed_anchor,
     )
     receipt, execution = validated["receipt"], validated["execution"]
     return {

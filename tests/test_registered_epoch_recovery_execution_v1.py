@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -68,8 +69,8 @@ def test_train_replaces_only_training_child_and_preserves_other_children(monkeyp
     def base_train(stage_arg, isaaclab, arm, seed, run_name, binding, owned_adapter):
         stage_arg.mkdir()
         base = str((SUBJECT.ROOT / "bench/r1_repair_training.py").resolve())
-        owned_adapter(stage_arg / "owned", ["python", "-B", base, "--manifest", "m.json"], isaaclab, 1)
-        owned_adapter(stage_arg / "checkpoint", ["python", "-B", base, "--inspect-checkpoint", "cp"], isaaclab, 1)
+        owned_adapter(stage_arg / "owned", [sys.executable, "-B", base, "--manifest", "m.json"], isaaclab, 1)
+        owned_adapter(stage_arg / "checkpoint", [sys.executable, "-B", base, "--inspect-checkpoint", "cp"], isaaclab, 1)
         environment = CHILD.validate_environment_binding(binding_full["environment_preservation"])
         (stage_arg / "environment-readback.json").write_text(json.dumps({
             "schema": "registered_epoch_environment_readback_v1", "mode": environment["mode"],
@@ -134,3 +135,40 @@ def test_owned_adapter_rejects_different_manifest_entry(tmp_path: Path):
     adapter = SUBJECT._owned_adapter(lambda *args: {}, tmp_path / "binding.json", state)
     with pytest.raises(ValueError, match="unexpected"):
         adapter(tmp_path, ["python", "-B", "other.py", "--manifest", "m.json"], tmp_path, 1)
+
+
+def test_default_owned_adapter_prepares_directory_before_production_runner(monkeypatch, tmp_path: Path):
+    class LaunchBoundaryReached(RuntimeError):
+        pass
+
+    binding = tmp_path / "binding.json"
+    state = {"training_replacements": 0}
+    work = tmp_path / "training" / "owned"
+    work.parent.mkdir()
+    base = str((SUBJECT.ROOT / "bench/r1_repair_training.py").resolve())
+    seen = []
+
+    def production_runner(folder, argv, cwd, watchdog):
+        # The owned runner opens launch.json before starting its child.
+        with (folder / "launch.json").open("x", encoding="utf-8") as stream:
+            json.dump({"argv": argv}, stream)
+        seen.append((folder, argv, cwd, watchdog))
+        raise LaunchBoundaryReached("SDK child not started")
+
+    monkeypatch.setattr(SUBJECT.V1.OWNED, "run_owned", production_runner)
+    adapter = SUBJECT._owned_adapter(None, binding, state)
+    with pytest.raises(LaunchBoundaryReached, match="SDK child not started"):
+        adapter(work, [sys.executable, "-B", base, "--manifest", "m.json"], tmp_path, 10)
+    assert work.is_dir()
+    assert state == {"training_replacements": 1}
+    assert seen[0][1] == [sys.executable, "-B", str(Path(CHILD.__file__).resolve()),
+                           "--manifest", "m.json", "--environment-binding", str(binding)]
+
+
+def test_default_owned_adapter_runs_real_cpu_child_in_fresh_directory(tmp_path: Path):
+    work = tmp_path / "owned"
+    adapter = SUBJECT._owned_adapter(None, tmp_path / "binding.json", {"training_replacements": 0})
+    result = adapter(work, [sys.executable, "-c", "print('epoch-owned-cpu-boundary')"], tmp_path, 15)
+    assert result["exit_code"] == 0
+    assert result["cleanup_verified"] is True
+    assert "epoch-owned-cpu-boundary" in (work / "stdout.log").read_text(encoding="utf-8")

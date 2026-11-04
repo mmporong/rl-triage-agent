@@ -132,8 +132,9 @@ def test_dispatch_lease_admission_failure_keeps_request_approved(
     assert ledger.requests()[request_id]["state"] == "approved"
 
 
+@pytest.mark.parametrize("execution_fails", [False, True])
 def test_dispatch_measures_sampler_boundary_and_owned_execution(
-        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, execution_fails: bool) -> None:
     ledger = CorrectionLedger(tmp_path / "recovery.jsonl", registry=REGISTRY)
     proposal = ledger.propose("state", "optimizer_update_count", "receipt",
                               "restore_configured_ppo_epochs", "restart",
@@ -168,6 +169,8 @@ def test_dispatch_measures_sampler_boundary_and_owned_execution(
 
     def execute(_intent):
         output.mkdir()
+        if execution_fails:
+            raise FileNotFoundError(f"missing owned launch folder: {output / 'training/owned/launch.json'}")
         training = output / "training/execution.json"
         training.parent.mkdir()
         training.write_text(json.dumps({"wall_s": 2.0}), encoding="utf-8")
@@ -186,8 +189,22 @@ def test_dispatch_measures_sampler_boundary_and_owned_execution(
     monkeypatch.setattr(recovery, "status", lambda _folder: {"requests": ledger.requests()})
     monkeypatch.setattr(resources, "PeriodicDeviceSampler", Sampler)
     result = recovery.dispatch(tmp_path, request_id)
-    assert result["requests"][request_id]["state"] == "done"
     assert events == ["start", "stop"]
+    if execution_fails:
+        error = json.loads((tmp_path / "dispatch_errors" / f"{request_id}.json").read_text(encoding="utf-8"))
+        assert error["error_type"] == "FileNotFoundError"
+        assert str(output / "training/owned/launch.json") in error["error_message"]
+        assert "Traceback (most recent call last)" in error["traceback"]
+        assert "raise FileNotFoundError" in error["traceback"]
+        assert error["reexecute_allowed"] is False
+        assert result["requests"][request_id]["state"] == "running"
+        recovery.settle(tmp_path, request_id, None)
+        assert ledger.requests()[request_id]["receipt"]["reason"] == "orphan_without_artifact"
+        with pytest.raises(ValueError, match="approved unused"):
+            recovery.dispatch(tmp_path, request_id)
+        assert events == ["start", "stop"]
+        return
+    assert result["requests"][request_id]["state"] == "done"
     resource_ref = {"path": str((tmp_path / f"resources/{request_id}.json").resolve()),
                     "sha256": file_sha(tmp_path / f"resources/{request_id}.json")}
     measured = resources.verify(resource_ref, request_id=request_id,

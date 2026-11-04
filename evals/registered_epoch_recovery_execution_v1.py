@@ -58,7 +58,7 @@ def _read_ref(value: Any, label: str, *, json_body: bool = True) -> tuple[Path, 
 
 def _owned_adapter(owned: Callable[..., Mapping[str, Any]] | None,
                    binding_path: Path, state: dict[str, int]):
-    runner = owned or V1.OWNED.run_owned
+    runner = V2._prepared_owned(owned)
 
     def execute(folder: Path, args: list[str], cwd: Path, watchdog_s: float):
         argv = list(args)

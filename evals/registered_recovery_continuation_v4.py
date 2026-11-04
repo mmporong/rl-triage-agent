@@ -392,9 +392,11 @@ def verify_completed_effect(
     backend_verified = backend.verify_receipt(
         {**loaded["backend_receipt"], "receipt_ref": refs["backend_receipt"]},
         loaded["intent"],
+        historical_validation_anchor=str(expected_import["source_anchor"]),
     )
     post = investigation_recovery.verified_post_observation(
-        Path(str(proof["recovery_folder"])), request_id
+        Path(str(proof["recovery_folder"])), request_id,
+        historical_validation_anchor=str(expected_import["source_anchor"]),
     )
     if post.get("new_checkpoint") != refs["new_checkpoint"] or post.get("fixed_report") != refs["fixed_report"]:
         _fail("verified post observation differs")

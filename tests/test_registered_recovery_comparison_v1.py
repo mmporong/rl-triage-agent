@@ -119,6 +119,53 @@ def _fixture(tmp_path: Path, cases: tuple[str, ...] = ("case-05",)) -> tuple[Pat
     return repo, plan_path, job_path, out
 
 
+def test_registered_job_reconstructs_prepared_manifest_without_execution(tmp_path: Path) -> None:
+    repo, plan, job, out = _fixture(tmp_path)
+    comparison.prepare(plan, job, out, repo_root=repo, registration_anchor="b" * 40,
+                       require_committed=False)
+    verified = comparison.verify_prepared_manifest(
+        out, repo_root=repo, registration_anchor="b" * 40, require_committed=False)
+    assert len(verified["arms"]) == 4
+    assert not (out / "resources").exists()
+
+
+@pytest.mark.parametrize("field", ["session_path", "recovery_folder", "recovery_payload", "approval_ref"])
+def test_resealed_manifest_arm_cannot_replace_registered_job_authority(tmp_path: Path, field: str) -> None:
+    repo, plan, job, out = _fixture(tmp_path)
+    comparison.prepare(plan, job, out, repo_root=repo, registration_anchor="b" * 40,
+                       require_committed=False)
+    manifest = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
+    arm = manifest["arms"][0]
+    if field in {"recovery_payload", "approval_ref"}:
+        arm[field] = {"replaced": True}
+    else:
+        arm[field] = str(tmp_path / "replacement")
+    changed = _write(out / "manifest.json", manifest)
+    _write(out / "anchor.json", {"schema": comparison.RESULT_SCHEMA + "_anchor",
+                                  "manifest_sha256": changed["sha256"]})
+    with pytest.raises(comparison.ComparisonContractError, match="manifest authority differs"):
+        comparison.verify_prepared_manifest(
+            out, repo_root=repo, registration_anchor="b" * 40, require_committed=False)
+
+
+def test_resealed_job_and_manifest_still_require_registered_recovery_layout(tmp_path: Path) -> None:
+    repo, plan, job, out = _fixture(tmp_path)
+    comparison.prepare(plan, job, out, repo_root=repo, registration_anchor="b" * 40,
+                       require_committed=False)
+    job_body = json.loads(job.read_text(encoding="utf-8"))
+    manifest = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
+    other = str(tmp_path / "other-prepared-authority")
+    job_body["arms"][0]["recovery_folder"] = other
+    manifest["arms"][0]["recovery_folder"] = other
+    manifest["job"] = _write(job, job_body)
+    changed = _write(out / "manifest.json", manifest)
+    _write(out / "anchor.json", {"schema": comparison.RESULT_SCHEMA + "_anchor",
+                                  "manifest_sha256": changed["sha256"]})
+    with pytest.raises(comparison.ComparisonContractError, match="recovery folder layout differs"):
+        comparison.verify_prepared_manifest(
+            out, repo_root=repo, registration_anchor="b" * 40, require_committed=False)
+
+
 def _upgrade_to_v2(plan_path: Path, job_path: Path, tmp_path: Path) -> dict:
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     job = json.loads(job_path.read_text(encoding="utf-8"))
@@ -308,6 +355,104 @@ def _upgrade_to_v4(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dic
     job["plan"] = plan_ref
     _write(job_path, job)
     return plan, proofs
+
+
+def _upgrade_to_v5(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dict, dict, dict]:
+    plan, _old = _upgrade_to_v4(plan_path, job_path, tmp_path)
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    entries = {}
+    proofs = {}
+    for case in ("case-05", "case-06"):
+        for method in comparison.METHODS:
+            artifact_id = (
+                "prior_effect" if (case, method) == ("case-05", "fixed_sequence")
+                else "prior_static_effect" if (case, method) == ("case-05", "static_rule")
+                else f"prior_{case.replace('-', '')}_{method}"
+            )
+            proof = _write(tmp_path / f"{artifact_id}.json", {"schema": "effect-fixture"})
+            proofs[artifact_id] = proof
+            source_arm = next(
+                row for row in job["arms"]
+                if row["case_id"] == case and row["method"] == method
+            )
+            diagnostic = json.loads(
+                Path(source_arm["diagnostic_manifest"]["path"]).read_text(encoding="utf-8")
+            )
+            entries[artifact_id] = {
+                "artifact_id": artifact_id, "kind": "completed_effect",
+                "case_id": case, "method": method, "proof_sha256": proof["sha256"],
+                "prior_plan_sha256": "1" * 64,
+                "diagnostic_manifest_sha256": source_arm["diagnostic_manifest"]["sha256"],
+                "source_checkpoint_sha256": diagnostic["source_verification"]["checkpoint_sha256"],
+                "completed_checkpoint_sha256": "2" * 64,
+                "seed": 2664 if case == "case-05" else 2665,
+                "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+                "correction_id": "restore_motor_torque_speed",
+                "source_anchor": "3" * 40, "registration_anchor": "4" * 40,
+            }
+            source_arm.update({
+                "recovery_folder": None, "recovery_payload": None, "approval_ref": None,
+                "continuation_import": {
+                    "kind": "completed_effect", "artifact_id": artifact_id, "proof": proof,
+                },
+            })
+    plan["schema"] = comparison.PLAN_SCHEMA_V5
+    plan["limits"].update(gpu_sdk_launch_cap=15, cpu_checkpoint_launch_cap=7,
+                          cpu_telemetry_launch_cap=7, total_owned_launch_cap=29)
+    plan["continuation"] = {
+        "gpu_admission_profile": "registered_desktop_shared_retry_v1",
+        "completed_import_profile": "motor_completed_v1",
+        "completed_effect_registry_sha256_lf": comparison.COMPLETED_EFFECT_REGISTRY_SHA256_LF,
+        "stage_imports": [entries[key] for key in sorted(entries)],
+        "prior_consumed_gpu_sdk_launches": 17,
+        "expected_new_gpu_sdk_launches": 14, "new_gpu_sdk_launch_cap": 15,
+        "cumulative_gpu_sdk_launches": 32, "continuation_tag": "v10_epoch_repair",
+        "prior_v9_registration_anchor": "fbd0bdd929e68933fdd2d8d354f7d5447625b101",
+        "prior_incomplete_preserved": True, "v9_failed_epoch_sdk_launches": 0,
+    }
+    for relative, role in (
+        (comparison.V10_NOTE, "completed_motor_effects_preregistration"),
+        (comparison.COMPLETED_EFFECT_REGISTRY_RELATIVE, "completed_motor_effect_registry"),
+    ):
+        plan["source_closure"][relative] = (
+            comparison.COMPLETED_EFFECT_REGISTRY_SHA256_LF
+            if relative == comparison.COMPLETED_EFFECT_REGISTRY_RELATIVE else "5" * 64
+        )
+        plan["inputs"].append({
+            "role": role, "path": relative, "sha256": plan["source_closure"][relative],
+        })
+    for relative in comparison.CONSISTENT_OBSERVATION_SOURCES:
+        plan["source_closure"].setdefault(relative, "6" * 64)
+    for row in job["arms"]:
+        payload = row.get("recovery_payload")
+        if payload is None:
+            continue
+        protocol_path = Path(payload["protocol"]["path"])
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol["source_closure"] = plan["source_closure"]
+        protocol["operation"]["gpu_admission_profile"] = "registered_desktop_shared_retry_v1"
+        payload["protocol"] = _write(protocol_path, protocol)
+    ordered = []
+    for case in plan["cases"]:
+        for method in case["rotation"]:
+            ordered.append(next(row for row in job["arms"]
+                                if row["case_id"] == case["case_id"]
+                                and row["method"] == method))
+    plan_ref = _write(plan_path, plan)
+    job["plan"] = plan_ref
+    job["arms"] = ordered
+    _write(job_path, job)
+    registry = {
+        "schema": "registered_completed_effect_whitelist_v1",
+        "profile_id": "all_completed_motor_effects_before_epoch_v1",
+        "completed_cases": ["case-05", "case-06"],
+        "methods": list(comparison.METHODS), "entries": entries,
+        "prior_consumed_gpu_sdk_launches": 17, "expected_new_gpu_sdk_launches": 14,
+        "new_gpu_sdk_launch_cap": 15, "cumulative_gpu_sdk_launch_cap": 32,
+        "new_recovery_arms": 7, "v9_failed_epoch_sdk_launches": 0,
+        "outcome_selection": "all_completed_effects_of_first_two_cases_regardless_of_outcome",
+    }
+    return plan, proofs, registry
 
 
 def _make_recovery_null(job_path: Path) -> None:
@@ -521,6 +666,78 @@ def test_v4_materializes_two_completed_effects_without_recovery_authority(
     assert result["limits"]["gpu_sdk_launch_cap"] == 27
     assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 26
     assert plan["continuation"]["cumulative_gpu_sdk_launches"] == 32
+
+
+def test_v5_requires_rotation_and_materializes_eight_completed_effects(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo, plan_path, job_path, out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, proofs, registry = _upgrade_to_v5(plan_path, job_path, tmp_path)
+    monkeypatch.setattr(comparison, "_completed_effect_registry", lambda: registry)
+    comparison._validate_plan(plan)
+    prior_resource = _write(tmp_path / "old/resource.json", {"schema": "old-resource"})
+    prior_admission = _write(tmp_path / "old/admission.json", {"schema": "old-admission"})
+    historical_folder = tmp_path / "old/recovery"
+    historical_folder.mkdir(parents=True)
+
+    class ProofModule:
+        @staticmethod
+        def verify_completed_effect(proof_ref, *, expected_import, repo):
+            assert proof_ref == proofs[expected_import["artifact_id"]]
+            return {
+                "execution_origin": "verified_prior_effect",
+                "result": {"outcome": "not_recovered", "diagnostic_status": "confirmed",
+                    "confirmed_mechanism": "actuator", "recovery_started": True,
+                    "new_checkpoint": {"sha256": "d" * 64},
+                    "fixed_report": {"sha256": "f" * 64}, "behavior_outcome": "failed",
+                    "costs": {"training_s": 1.0, "fixed_s": 1.0, "api_calls": 0}},
+                "prior_resource_ref": prior_resource, "prior_admission_ref": prior_admission,
+                "recovery_folder": str(historical_folder.resolve()),
+                "post_observation": {"behavior_outcome": "failed", "healthy_declared": False},
+                "proof_ref": proof_ref,
+                "historical_costs": {"simulator_sdk_launches": 2, "owned_gpu_s": 2.0,
+                                     "training_wall_s": 1.0, "fixed_wall_s": 1.0},
+                "new_dispatch_costs": {"sdk_launches": 0, "owned_gpu_s": None},
+            }
+
+    monkeypatch.setattr(comparison, "_continuation_module", lambda _plan: ProofModule)
+    monkeypatch.setattr(comparison, "load_plan", lambda *_args, **_kwargs: plan)
+    result = comparison.prepare(plan_path, job_path, out, repo_root=repo,
+                                registration_anchor="b" * 40, require_committed=False)
+    imported = [row for row in result["arms"]
+                if row.get("execution_origin") == "verified_prior_effect"]
+    assert len(imported) == 8
+    assert result["completed_arms"] == 8 and result["total_arms"] == 16
+    assert result["limits"] == {"max_recoveries": 16, "gpu_sdk_launch_cap": 15,
+        "cpu_checkpoint_launch_cap": 7, "cpu_telemetry_launch_cap": 7,
+        "total_owned_launch_cap": 29, "max_parent_wall_s_per_recovery": 5000,
+        "api_cap": 0}
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    assert [(row["case_id"], row["method"]) for row in job["arms"]] == [
+        (case["case_id"], method) for case in plan["cases"] for method in case["rotation"]]
+
+    reordered = json.loads(job_path.read_text(encoding="utf-8"))
+    reordered["arms"][0], reordered["arms"][1] = reordered["arms"][1], reordered["arms"][0]
+    with pytest.raises(comparison.ComparisonContractError, match="rotation order"):
+        comparison._validate_job(reordered, reordered["plan"], plan, job_path)
+
+
+def test_v5_rejects_registry_and_cap_forgery(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, _proofs, registry = _upgrade_to_v5(plan_path, job_path, tmp_path)
+    monkeypatch.setattr(comparison, "_completed_effect_registry", lambda: registry)
+    changed = json.loads(json.dumps(plan))
+    changed["continuation"]["stage_imports"][0]["proof_sha256"] = "0" * 64
+    with pytest.raises(comparison.ComparisonContractError, match="registry binding"):
+        comparison._validate_plan(changed)
+    changed = json.loads(json.dumps(plan))
+    changed["limits"]["gpu_sdk_launch_cap"] = 14
+    with pytest.raises(comparison.ComparisonContractError, match="cap differs"):
+        comparison._validate_plan(changed)
 
 
 @pytest.mark.parametrize("profile,tag", [

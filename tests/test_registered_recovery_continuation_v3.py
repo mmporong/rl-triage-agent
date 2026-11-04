@@ -40,6 +40,40 @@ def test_historical_closure_uses_committed_blob_when_current_file_changed(tmp_pa
     assert result["current_difference_paths"] == ["source.py"]
 
 
+def test_historical_observation_replays_registered_snapshot_after_worktree_revert(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init")
+    _git(repo, "config", "user.email", "fixture@example.test")
+    _git(repo, "config", "user.name", "fixture")
+    source = repo / "source.py"
+    source.write_text("old = True\n", encoding="utf-8")
+    old_sha = continuation._sha(source, lf=True)
+    _git(repo, "add", "--", "source.py")
+    _git(repo, "commit", "-m", "fixture source")
+    original = _git(repo, "rev-parse", "HEAD")
+    source.write_text("old = False\n", encoding="utf-8")
+    _git(repo, "add", "--", "source.py")
+    _git(repo, "commit", "-m", "fixture receipt snapshot")
+    observation = _git(repo, "rev-parse", "HEAD")
+    source.write_text("old = True\n", encoding="utf-8")
+
+    assert continuation._historical_closure(repo, original, {"source.py": old_sha})[
+        "current_difference_paths"] == []
+    historical = continuation._historical_closure(
+        repo, original, {"source.py": old_sha}, observed_anchor=observation)
+    assert historical["current_difference_paths"] == ["source.py"]
+    with pytest.raises(continuation.ContinuationProofError, match="git validation failed"):
+        continuation._historical_closure(repo, observation, {"source.py": old_sha},
+                                          observed_anchor=original)
+    with pytest.raises(continuation.ContinuationProofError, match="historical source differs"):
+        continuation._historical_closure(repo, original, {"source.py": "0" * 64},
+                                          observed_anchor=observation)
+    with pytest.raises(continuation.ContinuationProofError, match="observation anchor format"):
+        continuation._historical_closure(repo, original, {"source.py": old_sha},
+                                          observed_anchor="HEAD")
+
+
 def test_reference_mutation_and_write_once_are_rejected(tmp_path: Path) -> None:
     source = tmp_path / "source.json"
     _write(source, {"value": 1})

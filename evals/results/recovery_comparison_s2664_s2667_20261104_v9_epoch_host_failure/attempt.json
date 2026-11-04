@@ -1,0 +1,94 @@
+{
+  "schema": "registered_epoch_host_failure_preserved_v1",
+  "status": "halted_before_epoch_SDK",
+  "source_anchor": "4506454a42780ce730ea0ed8a1e222ea6ca4dc23",
+  "registration_anchor": "fbd0bdd929e68933fdd2d8d354f7d5447625b101",
+  "plan": "bench/protocols/registered_recovery_comparison_s2664_s2667_20261104_v9.json",
+  "plan_sha256": "d78834a0deee49818147a82cd324cd5371cc5c2402124b9e53606159533aa93b",
+  "completed_motor_results": [
+    {
+      "case_id": "case-05",
+      "method": "fixed_sequence",
+      "outcome": "not_recovered"
+    },
+    {
+      "case_id": "case-05",
+      "method": "static_rule",
+      "outcome": "not_recovered"
+    },
+    {
+      "case_id": "case-05",
+      "method": "one_shot_llm",
+      "outcome": "not_recovered"
+    },
+    {
+      "case_id": "case-05",
+      "method": "iterative_agent",
+      "outcome": "not_recovered"
+    },
+    {
+      "case_id": "case-06",
+      "method": "fixed_sequence",
+      "outcome": "not_recovered"
+    },
+    {
+      "case_id": "case-06",
+      "method": "static_rule",
+      "outcome": "not_recovered"
+    },
+    {
+      "case_id": "case-06",
+      "method": "one_shot_llm",
+      "outcome": "not_recovered"
+    },
+    {
+      "case_id": "case-06",
+      "method": "iterative_agent",
+      "outcome": "not_recovered"
+    }
+  ],
+  "motor_complete": 8,
+  "motor_recovered": 0,
+  "controller_completed_arms": 9,
+  "controller_total_arms": 16,
+  "new_motor_training_and_fixed_SDK": 12,
+  "prior_recovery_SDK": 5,
+  "cumulative_recovery_SDK_started": 17,
+  "new_API": 0,
+  "failed_case": "case-07",
+  "failed_method": "fixed_sequence",
+  "error_type": "FileNotFoundError",
+  "failed_epoch_SDK": 0,
+  "failed_epoch_CPU_children": 0,
+  "consumed_request_id": "e2e789010fee",
+  "request_outcome": "unknown",
+  "same_request_reexecution_allowed": false,
+  "cause": "환경 보존 epoch wrapper의 owned 작업 폴더 준비 누락",
+  "verified_fix": "V2._prepared_owned(owned) 재사용",
+  "outer_controller_wall_s": 4284.2339999999995,
+  "outer_exit_code": 1,
+  "outer_natural_exit": true,
+  "outer_cleanup_verified": true,
+  "new_comparison_requires_registration": true,
+  "method_rotation_deviation": true,
+  "controlled_latency_or_energy_superiority_claim": false,
+  "device_costs_are_nonexclusive_descriptive": true,
+  "raw_refs": [
+    {
+      "role": "outer_exit",
+      "sha256": "2075ec9f7b64f6853c22a7865f479759ffd766c3f8a2967c12a7795d308ce06d"
+    },
+    {
+      "role": "controller_result",
+      "sha256": "98feb08f87573f900ada0329226c5dd8e7759b902091776a2f0157dab1c01baa"
+    },
+    {
+      "role": "CPU_reproduction",
+      "sha256": "7b6263a84583ad08957c1265a9be9d89568ce082534e3b6a422f4d7b04ccbcf7"
+    },
+    {
+      "role": "CPU_candidate_validation",
+      "sha256": "263e737ad75589a0b946c75ae679158f56571cbdd54be849bec48ff2ee166fc9"
+    }
+  ]
+}

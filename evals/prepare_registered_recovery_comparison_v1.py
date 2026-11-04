@@ -152,6 +152,17 @@ _CONTINUATION_RETRY_SOURCE_FILES = {
     "bench/protocols/registered_desktop_gpu_retry_v1.json",
     "bench/protocols/diagnostic_recovery_comparison_20261104_v9.md",
 }
+COMPLETED_IMPORT_PROFILE_MOTOR = "motor_completed_v1"
+COMPLETED_EFFECT_REGISTRY_RELATIVE = (
+    "bench/protocols/registered_completed_motor_effects_v1.json"
+)
+COMPLETED_EFFECT_REGISTRY_SHA256_LF = (
+    "1c8a2fdd9e2e44f5af4c22f7b671e36f1604d1c268aefc885079ae3c7d3cc4a8"
+)
+_CONTINUATION_V5_SOURCE_FILES = {
+    "bench/protocols/diagnostic_recovery_comparison_20261104_v10.md",
+    COMPLETED_EFFECT_REGISTRY_RELATIVE,
+}
 PRIOR_V5_SOURCE_ANCHOR = "f9d5fea93cce406a325f578bc6f4597cc0bc35c5"
 PRIOR_V5_REGISTRATION_ANCHOR = "bf1632ee6770e681e9e8c4c5b1df890ebaed12a6"
 PRIOR_V7_REGISTRATION_ANCHOR = "47fec9fc6107e6efde09950d52e64f5465751252"
@@ -228,11 +239,16 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
                     include_continuation_v3: bool = False,
                     include_continuation_v7: bool = False,
                     include_continuation_v4: bool = False,
-                    include_observation_retry: bool = False) -> dict[str, str]:
+                    include_observation_retry: bool = False,
+                    include_completed_v5: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
     source_files = set(_SOURCE_FILES)
+    if include_completed_v5:
+        if not include_continuation_v4 or not include_observation_retry:
+            raise PreparationError("v5 completed imports require retry continuation sources")
+        source_files |= _CONTINUATION_V5_SOURCE_FILES
     if include_observation_retry:
         if not include_continuation_v4:
             raise PreparationError("observation retry requires v4 completed-effect imports")
@@ -301,6 +317,69 @@ def _v4_imports(completed_effect_proofs: Mapping[str, Path]) -> tuple[list[dict]
         verified = module.verify_completed_effect(proof_ref, expected_import=row, repo=ROOT)
         if verified.get("execution_origin") != "verified_prior_effect":
             raise PreparationError("v4 completed effect verification origin differs")
+        rows.append(row)
+        refs[artifact_id] = proof_ref
+    return rows, refs
+
+
+def _v5_registry() -> tuple[dict, dict[str, dict]]:
+    path = ROOT / COMPLETED_EFFECT_REGISTRY_RELATIVE
+    if _sha(path, lf=True) != COMPLETED_EFFECT_REGISTRY_SHA256_LF:
+        raise PreparationError("v5 completed effect registry changed")
+    registry = _read(path)
+    expected_fields = {
+        "schema", "profile_id", "completed_cases", "methods", "entries",
+        "prior_consumed_gpu_sdk_launches", "expected_new_gpu_sdk_launches",
+        "new_gpu_sdk_launch_cap", "cumulative_gpu_sdk_launch_cap",
+        "new_recovery_arms", "v9_failed_epoch_sdk_launches", "outcome_selection",
+    }
+    if (
+        set(registry) != expected_fields
+        or registry["schema"] != "registered_completed_effect_whitelist_v1"
+        or registry["profile_id"] != "all_completed_motor_effects_before_epoch_v1"
+        or registry["completed_cases"] != ["case-05", "case-06"]
+        or registry["methods"] != list(METHODS)
+        or registry["prior_consumed_gpu_sdk_launches"] != 17
+        or registry["expected_new_gpu_sdk_launches"] != 14
+        or registry["new_gpu_sdk_launch_cap"] != 15
+        or registry["cumulative_gpu_sdk_launch_cap"] != 32
+        or registry["new_recovery_arms"] != 7
+        or registry["v9_failed_epoch_sdk_launches"] != 0
+        or registry["outcome_selection"]
+        != "all_completed_effects_of_first_two_cases_regardless_of_outcome"
+        or not isinstance(registry["entries"], dict)
+    ):
+        raise PreparationError("v5 completed effect registry contract differs")
+    entries = registry["entries"]
+    expected_matrix = {
+        (case, method) for case in ("case-05", "case-06") for method in METHODS
+    }
+    if len(entries) != 8 or {
+        (row.get("case_id"), row.get("method"))
+        for row in entries.values() if isinstance(row, dict)
+    } != expected_matrix:
+        raise PreparationError("v5 completed effect registry matrix differs")
+    for artifact_id, row in entries.items():
+        if not isinstance(row, dict) or row.get("artifact_id") != artifact_id:
+            raise PreparationError("v5 completed effect registry artifact differs")
+    return registry, entries
+
+
+def _v5_imports(completed_effect_proofs: Mapping[str, Path]) -> tuple[list[dict], dict[str, dict]]:
+    _registry, expected = _v5_registry()
+    if set(completed_effect_proofs) != set(expected):
+        raise PreparationError("v5 requires exactly eight registered completed effect proofs")
+    module = _continuation_module_v4()
+    rows: list[dict] = []
+    refs: dict[str, dict] = {}
+    for artifact_id in sorted(expected):
+        proof_ref = _ref(Path(completed_effect_proofs[artifact_id]))
+        row = deepcopy(expected[artifact_id])
+        if proof_ref["sha256"] != row["proof_sha256"]:
+            raise PreparationError("v5 completed effect proof differs from registry")
+        verified = module.verify_completed_effect(proof_ref, expected_import=row, repo=ROOT)
+        if verified.get("execution_origin") != "verified_prior_effect":
+            raise PreparationError("v5 completed effect verification origin differs")
         rows.append(row)
         refs[artifact_id] = proof_ref
     return rows, refs
@@ -669,6 +748,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                       prior_completed_effect_proof: Path | None = None,
                       prior_static_training_proof: Path | None = None,
                       completed_effect_proofs: Mapping[str, Path] | None = None,
+                      completed_import_profile: str | None = None,
                       isaaclab_root: Path | None = None,
                       gpu_admission_profile: str | None = None,
                       require_committed: bool = True) -> dict:
@@ -684,13 +764,16 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     phase_cases = {row["case_id"]: row for row in phase_plan["cases"]}
     if not {f"case-{int(case[-2:]):02d}" for case in CASES} <= set(phase_cases):
         raise PreparationError("phase-A selected cases missing")
-    v4_requested = completed_effect_proofs is not None
+    v5_requested = completed_import_profile is not None
+    v4_requested = completed_effect_proofs is not None and not v5_requested
     v3_requested = prior_completed_effect_proof is not None or prior_static_training_proof is not None
-    if gpu_admission_profile is not None and not (v3_requested or v4_requested):
+    if gpu_admission_profile is not None and not (v3_requested or v4_requested or v5_requested):
         raise PreparationError("explicit GPU admission profile requires v3 continuation proofs")
     selected_v3_profile = gpu_admission_profile or GPU_ADMISSION_PROFILE_V3
-    selected_v4_profile = gpu_admission_profile or GPU_ADMISSION_PROFILE_V3_SHARED
-    if not v4_requested and selected_v3_profile not in _V3_PROFILE_TAGS:
+    selected_v4_profile = gpu_admission_profile or (
+        GPU_ADMISSION_PROFILE_RETRY if v5_requested else GPU_ADMISSION_PROFILE_V3_SHARED
+    )
+    if not (v4_requested or v5_requested) and selected_v3_profile not in _V3_PROFILE_TAGS:
         raise PreparationError("unsupported v3 GPU admission profile")
     if v3_requested and (
         prior_completed_effect_proof is None
@@ -704,7 +787,18 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         or selected_v4_profile not in _V4_PROFILE_TAGS
     ):
         raise PreparationError("v4 proofs and Isaac Lab root must be supplied alone")
-    if not (v3_requested or v4_requested) and (prior_training_proof is None) != (isaaclab_root is None):
+    if v5_requested and (
+        completed_import_profile != COMPLETED_IMPORT_PROFILE_MOTOR
+        or completed_effect_proofs is None
+        or v3_requested
+        or prior_training_proof is not None
+        or isaaclab_root is None
+        or selected_v4_profile != GPU_ADMISSION_PROFILE_RETRY
+    ):
+        raise PreparationError("v5 completed import profile inputs differ")
+    if not (v3_requested or v4_requested or v5_requested) and (
+        prior_training_proof is None
+    ) != (isaaclab_root is None):
         raise PreparationError("prior proof and Isaac Lab root must be supplied together")
     prior = (
         _prior_training(Path(prior_training_proof), Path(isaaclab_root).resolve(strict=True))
@@ -722,7 +816,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         )
     else:
         v3 = None
-    v4 = _v4_imports(completed_effect_proofs) if completed_effect_proofs is not None else None
+    v4 = _v4_imports(completed_effect_proofs) if v4_requested and completed_effect_proofs else None
+    v5 = _v5_imports(completed_effect_proofs) if v5_requested and completed_effect_proofs else None
     continuation_sources = prior is not None
     closure = _source_closure(
         source_anchor,
@@ -731,8 +826,12 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         include_continuation_v7=(
             v3 is not None and selected_v3_profile == GPU_ADMISSION_PROFILE_V3_SHARED
         ),
-        include_continuation_v4=v4 is not None,
-        include_observation_retry=(v4 is not None and selected_v4_profile == GPU_ADMISSION_PROFILE_RETRY),
+        include_continuation_v4=v4 is not None or v5 is not None,
+        include_observation_retry=(
+            (v4 is not None and selected_v4_profile == GPU_ADMISSION_PROFILE_RETRY)
+            or v5 is not None
+        ),
+        include_completed_v5=v5 is not None,
     ) if require_committed else {
         path: _sha(ROOT / path, lf=True)
         for path in sorted(
@@ -743,9 +842,11 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                if v3 is not None and selected_v3_profile == GPU_ADMISSION_PROFILE_V3_SHARED
                else set())
             | (_CONTINUATION_V3_SOURCE_FILES | _CONTINUATION_V4_SOURCE_FILES
-               if v4 is not None else set())
+               if v4 is not None or v5 is not None else set())
             | (_CONTINUATION_RETRY_SOURCE_FILES
-               if v4 is not None and selected_v4_profile == GPU_ADMISSION_PROFILE_RETRY else set())
+               if (v4 is not None and selected_v4_profile == GPU_ADMISSION_PROFILE_RETRY)
+               or v5 is not None else set())
+            | (_CONTINUATION_V5_SOURCE_FILES if v5 is not None else set())
         )
     }
     sdk = _read(sdk_contract)
@@ -810,7 +911,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     inputs.append({"role": "owned_stage_infrastructure_preregistration",
                    "path": "bench/protocols/diagnostic_recovery_comparison_20261104_v4.md",
                    "sha256": _sha(ROOT / "bench/protocols/diagnostic_recovery_comparison_20261104_v4.md", lf=True)})
-    if v4 is not None:
+    if v4 is not None or v5 is not None:
         inputs.append({"role": "completed_effect_continuation_preregistration",
                        "path": "bench/protocols/diagnostic_recovery_comparison_20261104_v8.md",
                        "sha256": _sha(ROOT / "bench/protocols/diagnostic_recovery_comparison_20261104_v8.md", lf=True)})
@@ -818,6 +919,13 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             note = "bench/protocols/diagnostic_recovery_comparison_20261104_v9.md"
             inputs.append({"role": "consistent_gpu_observation_preregistration", "path": note,
                            "sha256": _sha(ROOT / note, lf=True)})
+    if v5 is not None:
+        note = "bench/protocols/diagnostic_recovery_comparison_20261104_v10.md"
+        inputs.append({"role": "completed_motor_effects_preregistration", "path": note,
+                       "sha256": _sha(ROOT / note, lf=True)})
+        inputs.append({"role": "completed_motor_effect_registry",
+                       "path": COMPLETED_EFFECT_REGISTRY_RELATIVE,
+                       "sha256": COMPLETED_EFFECT_REGISTRY_SHA256_LF})
     for case in CASES:
         old = case
         row = phase_inputs.get(f"protocol:{old}")
@@ -827,8 +935,9 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                        "sha256": row["sha256"]})
     plan = {
         "schema": (
-            COMPARISON.PLAN_SCHEMA_V4
-            if v4 is not None
+            COMPARISON.PLAN_SCHEMA_V5
+            if v5 is not None
+            else COMPARISON.PLAN_SCHEMA_V4 if v4 is not None
             else COMPARISON.PLAN_SCHEMA_V3
             if v3 is not None
             else COMPARISON.PLAN_SCHEMA_V2 if prior is not None else COMPARISON.PLAN_SCHEMA
@@ -837,9 +946,10 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         "source_closure": closure, "methods": list(METHODS),
         "cases": [{"case_id": case, "rotation": _rotation(i)} for i, case in enumerate(CASES)],
         "limits": {"max_recoveries": 16,
-                   "gpu_sdk_launch_cap": 27 if v4 is not None else 29 if v3 is not None else 31 if prior is not None else 32,
-                   "cpu_checkpoint_launch_cap": 16, "cpu_telemetry_launch_cap": 16,
-                   "total_owned_launch_cap": 59 if v4 is not None else 61 if v3 is not None else 63 if prior is not None else 64,
+                   "gpu_sdk_launch_cap": 15 if v5 is not None else 27 if v4 is not None else 29 if v3 is not None else 31 if prior is not None else 32,
+                   "cpu_checkpoint_launch_cap": 7 if v5 is not None else 16,
+                   "cpu_telemetry_launch_cap": 7 if v5 is not None else 16,
+                   "total_owned_launch_cap": 29 if v5 is not None else 59 if v4 is not None else 61 if v3 is not None else 63 if prior is not None else 64,
                    "max_parent_wall_s_per_recovery": 5000, "api_cap": 0},
         "inputs": inputs, "backend": investigate.REGISTERED_BACKEND,
         "authorization": {"actor": actor,
@@ -885,6 +995,23 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             "prior_v7_registration_anchor": PRIOR_V7_REGISTRATION_ANCHOR,
             "prior_incomplete_preserved": True,
         }
+    if v5 is not None:
+        imports, _proof_refs = v5
+        _registry, _entries = _v5_registry()
+        plan["continuation"] = {
+            "gpu_admission_profile": GPU_ADMISSION_PROFILE_RETRY,
+            "completed_import_profile": COMPLETED_IMPORT_PROFILE_MOTOR,
+            "completed_effect_registry_sha256_lf": COMPLETED_EFFECT_REGISTRY_SHA256_LF,
+            "stage_imports": imports,
+            "prior_consumed_gpu_sdk_launches": 17,
+            "expected_new_gpu_sdk_launches": 14,
+            "new_gpu_sdk_launch_cap": 15,
+            "cumulative_gpu_sdk_launches": 32,
+            "continuation_tag": "v10_epoch_repair",
+            "prior_v9_registration_anchor": "fbd0bdd929e68933fdd2d8d354f7d5447625b101",
+            "prior_incomplete_preserved": True,
+            "v9_failed_epoch_sdk_launches": 0,
+        }
     plan_path = out / "registered-plan.json"
     write_new(plan_path, plan)
     COMPARISON.load_plan(plan_path, repo_root=ROOT, registration_anchor=source_anchor,
@@ -902,6 +1029,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         manifest["continuation_proofs"] = v3[1]
     if v4 is not None:
         manifest["continuation_proofs"] = v4[1]
+    if v5 is not None:
+        manifest["continuation_proofs"] = v5[1]
     write_new(out / "manifest.json", manifest)
     return manifest
 
@@ -1009,7 +1138,7 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
     continuation = (
         plan.get("continuation")
         if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V2, COMPARISON.PLAN_SCHEMA_V3,
-                              COMPARISON.PLAN_SCHEMA_V4}
+                              COMPARISON.PLAN_SCHEMA_V4, COMPARISON.PLAN_SCHEMA_V5}
         else None
     )
     prior_ref = template_manifest.get("prior_training_proof")
@@ -1054,18 +1183,37 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 or imports != continuation.get("stage_imports")
                 or verified_refs != v3_proof_refs):
             raise PreparationError("v4 continuation proofs differ from public plan")
+    elif plan["schema"] == COMPARISON.PLAN_SCHEMA_V5:
+        if not isinstance(v3_proofs, dict):
+            raise PreparationError("v5 template continuation proofs missing")
+        v3_proof_refs = v3_proofs
+        imports, verified_refs = _v5_imports({
+            artifact_id: Path(reference["path"])
+            for artifact_id, reference in v3_proof_refs.items()
+        })
+        if (not isinstance(continuation, dict)
+                or imports != continuation.get("stage_imports")
+                or verified_refs != v3_proof_refs):
+            raise PreparationError("v5 continuation proofs differ from public plan")
     elif v3_proofs is not None:
         raise PreparationError("non-v3 template must not carry continuation proofs")
+    freshness_cases = ("case-07", "case-08") if plan["schema"] == COMPARISON.PLAN_SCHEMA_V5 else CASES
     freshness = SEED_GUARD.assert_fresh_seeds(
-        [plan["recovery_policy"]["seeds"][case]["restart"] for case in CASES],
+        [plan["recovery_policy"]["seeds"][case]["restart"] for case in freshness_cases],
         Path(isaaclab_root), repo=ROOT,
     )
     out.mkdir(parents=True)
     write_new(out / "restart-seed-freshness.json", freshness)
     diagnostic_sessions = _bound_diagnostic_sessions(diagnostic_root, plan)
     arms = []
+    case_rows = {row["case_id"]: row for row in plan["cases"]}
     for case in CASES:
-        for method in METHODS:
+        ordered_methods = (
+            tuple(case_rows[case]["rotation"])
+            if plan["schema"] == COMPARISON.PLAN_SCHEMA_V5
+            else METHODS
+        )
+        for method in ordered_methods:
             session = diagnostic_sessions[(case, method)]
             manifest_path = session / "manifest.json"
             status = _diagnostic_status(session)
@@ -1074,7 +1222,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 raise PreparationError("diagnostic case mapping differs")
             arm = {"case_id": case, "method": method, "diagnostic_manifest": _ref(manifest_path),
                    "recovery_folder": None, "recovery_payload": None, "approval_ref": None}
-            if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3, COMPARISON.PLAN_SCHEMA_V4}:
+            if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3, COMPARISON.PLAN_SCHEMA_V4,
+                                  COMPARISON.PLAN_SCHEMA_V5}:
                 arm["continuation_import"] = None
             mechanism = status.get("confirmed_mechanism") if status.get("status") == "confirmed" else None
             if mechanism in MECHANISMS:
@@ -1082,7 +1231,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                     row for row in continuation["stage_imports"]
                     if row["case_id"] == case and row["method"] == method
                 ), None) if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3,
-                                                COMPARISON.PLAN_SCHEMA_V4} \
+                                                COMPARISON.PLAN_SCHEMA_V4,
+                                                COMPARISON.PLAN_SCHEMA_V5} \
                     and isinstance(continuation, dict) else None
                 commitment = plan["template_commitments"][case][mechanism]
                 case_dir = template_root / "templates" / case
@@ -1127,12 +1277,13 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 )
                 use_prior_v3 = import_row is not None and import_row["kind"] == "completed_training"
                 if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V2, COMPARISON.PLAN_SCHEMA_V3,
-                                      COMPARISON.PLAN_SCHEMA_V4}:
+                                      COMPARISON.PLAN_SCHEMA_V4, COMPARISON.PLAN_SCHEMA_V5}:
                     operation.update({
                         "gpu_admission_profile": (
                             plan["continuation"]["gpu_admission_profile"]
                             if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3,
-                                                  COMPARISON.PLAN_SCHEMA_V4}
+                                                  COMPARISON.PLAN_SCHEMA_V4,
+                                                  COMPARISON.PLAN_SCHEMA_V5}
                             else GPU_ADMISSION_PROFILE
                         ),
                         "prior_training_artifact_id": (
@@ -1153,7 +1304,8 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 protocol = {"schema": (
                                 "registered_recovery_protocol_v3"
                                 if plan["schema"] in {COMPARISON.PLAN_SCHEMA_V3,
-                                                      COMPARISON.PLAN_SCHEMA_V4}
+                                                      COMPARISON.PLAN_SCHEMA_V4,
+                                                      COMPARISON.PLAN_SCHEMA_V5}
                                 else "registered_recovery_protocol_v2"
                                 if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2
                                 else "registered_recovery_protocol_v1"
@@ -1229,6 +1381,9 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("--prior-static-training-proof", type=Path)
     t.add_argument("--isaaclab-root", type=Path)
     t.add_argument("--gpu-admission-profile", choices=tuple(dict.fromkeys((*_V3_PROFILE_TAGS, *_V4_PROFILE_TAGS))))
+    t.add_argument("--completed-import-profile", choices=(COMPLETED_IMPORT_PROFILE_MOTOR,))
+    t.add_argument("--completed-effect-proof", action="append", default=[],
+                   metavar="ARTIFACT_ID=PATH")
     t.add_argument("--allow-uncommitted-fixture", action="store_true")
     j = sub.add_parser("jobs")
     j.add_argument("--templates", required=True, type=Path)
@@ -1241,11 +1396,22 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         if args.command == "templates":
+            profile_proofs: dict[str, Path] = {}
+            for value in args.completed_effect_proof:
+                artifact_id, separator, raw_path = value.partition("=")
+                if not separator or not artifact_id or artifact_id in profile_proofs or not raw_path:
+                    raise PreparationError("completed effect proof argument differs")
+                profile_proofs[artifact_id] = Path(raw_path)
+            if profile_proofs and args.completed_import_profile is None:
+                raise PreparationError("completed effect proof profile missing")
             if ((args.prior_static_completed_effect_proof is None)
                     != (args.prior_completed_effect_proof is None)
                     and args.prior_static_training_proof is None):
                 raise PreparationError("v4 completed effect proofs must be supplied together")
             completed_effect_proofs = (
+                profile_proofs
+                if args.completed_import_profile is not None
+                else
                 {"prior_effect": args.prior_completed_effect_proof,
                  "prior_static_effect": args.prior_static_completed_effect_proof}
                 if args.prior_static_completed_effect_proof is not None
@@ -1265,6 +1431,7 @@ def main(argv: list[str] | None = None) -> int:
                 ),
                 prior_static_training_proof=args.prior_static_training_proof,
                 completed_effect_proofs=completed_effect_proofs,
+                completed_import_profile=args.completed_import_profile,
                 isaaclab_root=args.isaaclab_root,
                 gpu_admission_profile=args.gpu_admission_profile,
                 require_committed=not args.allow_uncommitted_fixture)

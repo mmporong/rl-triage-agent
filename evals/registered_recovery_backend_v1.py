@@ -197,7 +197,8 @@ def _extensions(protocol: Mapping[str, Any]) -> str | None:
     return prior_id
 
 
-def _prior_training(context: Mapping[str, Any]) -> dict | None:
+def _prior_training(context: Mapping[str, Any], *,
+                    historical_validation_anchor: str | None = None) -> dict | None:
     protocol = context["protocol_body"]
     prior_id = _extensions(protocol)
     if prior_id is None:
@@ -209,13 +210,16 @@ def _prior_training(context: Mapping[str, Any]) -> dict | None:
     load = (module.load_completed_training if protocol.get("schema") == SCHEMA_V3
             else module.load_completed_actuator_training)
     binding = context["artifacts"][operation["training_binding_artifact_id"]]["body"]
+    historical = ({"observed_anchor": historical_validation_anchor}
+                  if protocol.get("schema") == SCHEMA_V3 and historical_validation_anchor is not None
+                  else {})
     return load(
         context["artifacts"][prior_id]["ref"],
         expected_source_checkpoint_sha256=diagnostic["checkpoint_sha256"],
         expected_seed=operation["training_seed"], expected_correction_id=operation["correction_id"],
         expected_task=binding["task"],
         expected_diagnostic_manifest_sha256=diagnostic["session_manifest_sha256"],
-        repo=_ROOT, isaaclab=Path(context["isaaclab_root"]), expected_binding=binding)
+        repo=_ROOT, isaaclab=Path(context["isaaclab_root"]), expected_binding=binding, **historical)
 
 
 def _reuse_evidence(prior: dict) -> dict:
@@ -609,15 +613,22 @@ def _execute_phases(intent: Mapping[str, Any], *, runner: Any | None = None, lea
     return {**receipt, "receipt_ref": session_io.reference(receipt_path)}
 
 
-def verify_receipt(raw: Mapping[str, Any], intent: Mapping[str, Any]) -> dict:
+def verify_receipt(raw: Mapping[str, Any], intent: Mapping[str, Any], *,
+                   historical_validation_anchor: str | None = None) -> dict:
     _require(isinstance(raw, Mapping) and isinstance(raw.get("receipt_ref"), dict), "receipt ref")
     _, artifact = _ref(raw["receipt_ref"], "receipt")
     _require(dict(raw) == {**artifact, "receipt_ref": raw["receipt_ref"]}, "receipt body differs")
     protocol, request = intent["context"]["protocol_body"], intent["request"]
+    if historical_validation_anchor is not None:
+        _require(isinstance(historical_validation_anchor, str)
+                 and _HEX40.fullmatch(historical_validation_anchor) is not None
+                 and historical_validation_anchor == protocol["source_anchor"],
+                 "historical validation anchor differs from executed protocol")
     admission_ref = _verify_admission(intent, require_live=False)
     _require(artifact.get("lease_admission") == admission_ref, "historical lease admission differs")
     diagnostic, operation = protocol["diagnostic"], protocol["operation"]
-    prior = _prior_training(intent["context"])
+    prior = (_prior_training(intent["context"], historical_validation_anchor=historical_validation_anchor)
+             if historical_validation_anchor is not None else _prior_training(intent["context"]))
     if prior is None:
         _require("training_reuse" not in artifact, "unregistered prior training receipt")
     else:
