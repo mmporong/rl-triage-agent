@@ -1,0 +1,149 @@
+{
+  "authorization": {
+    "actor": "registered-host",
+    "probe_scope": [
+      "P_optimizer_count",
+      "P_optimizer_gradient",
+      "P_actuator_mapping"
+    ]
+  },
+  "backend": "registered_diagnostic_v1",
+  "cases": [
+    {
+      "case_id": "case-05",
+      "rotation": [
+        "fixed_sequence",
+        "static_rule",
+        "one_shot_llm",
+        "iterative_agent"
+      ]
+    },
+    {
+      "case_id": "case-06",
+      "rotation": [
+        "static_rule",
+        "one_shot_llm",
+        "iterative_agent",
+        "fixed_sequence"
+      ]
+    },
+    {
+      "case_id": "case-07",
+      "rotation": [
+        "one_shot_llm",
+        "iterative_agent",
+        "fixed_sequence",
+        "static_rule"
+      ]
+    },
+    {
+      "case_id": "case-08",
+      "rotation": [
+        "iterative_agent",
+        "fixed_sequence",
+        "static_rule",
+        "one_shot_llm"
+      ]
+    },
+    {
+      "case_id": "case-09",
+      "rotation": [
+        "fixed_sequence",
+        "static_rule",
+        "one_shot_llm",
+        "iterative_agent"
+      ]
+    },
+    {
+      "case_id": "case-10",
+      "rotation": [
+        "static_rule",
+        "one_shot_llm",
+        "iterative_agent",
+        "fixed_sequence"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "path": "bench/protocols/diagnostic_recovery_comparison_20261104_v2.md",
+      "role": "measurement-preregistration",
+      "sha256": "9955b42b95c03046619cf37c0ee91d1984890185730a59fbc5c4e5b5c3092c76"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_observer_v4.json",
+      "role": "child-protocol",
+      "sha256": "c0a3006b123e0c7f1abcbe81c6d2d157133cad35e4f7ed64422ad7e16bec879d"
+    },
+    {
+      "path": "evals/results/lineage_source_s2660_s2669_20261104_v1/manifest.json",
+      "role": "source-export-manifest",
+      "sha256": "8f98da2cecd9dfd922225c758dbd6de55737fba36ebdb08d9381e5368e591c64"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-05_8f98da2cecd9_prospective_v2.json",
+      "role": "protocol:case-05",
+      "sha256": "61bef4f754f37dee0a3541fd7fc4b002cfc8e6fb56e9a7ca346a49429a3b8070"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-06_8f98da2cecd9_prospective_v2.json",
+      "role": "protocol:case-06",
+      "sha256": "2e9a54a2ef4b4e3276e8ae503dda8f7a6c86ae1e069165319ca9a0bbc638893d"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-07_8f98da2cecd9_prospective_v2.json",
+      "role": "protocol:case-07",
+      "sha256": "c17128dadb4f7c10ee91391913e25ea70733054c0e3e2f149670500eb802ae33"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-08_8f98da2cecd9_prospective_v2.json",
+      "role": "protocol:case-08",
+      "sha256": "b7577bd44c14a3787cec88f9733006c04887eb405e25d5d22b302cd940e84232"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-09_8f98da2cecd9_prospective_v2.json",
+      "role": "protocol:case-09",
+      "sha256": "a2ae3e031ab985a0ca406425b1b364c489eaf2b683fc5c41af387c21e84a4ae0"
+    },
+    {
+      "path": "bench/protocols/registered_diagnostic_matrix_case-10_8f98da2cecd9_prospective_v2.json",
+      "role": "protocol:case-10",
+      "sha256": "14054c2ee3b890656df4a399e58098a1bdddc034231f6b808925aed7be0576bc"
+    }
+  ],
+  "limits": {
+    "api_cap": 36,
+    "max_checks": 3,
+    "watchdog_s": 2400
+  },
+  "methods": [
+    "fixed_sequence",
+    "static_rule",
+    "one_shot_llm",
+    "iterative_agent"
+  ],
+  "schema": "diagnostic_comparison_plan_v1",
+  "source_anchor": "4c344aed9e600ce6332203b553fa011f71f8b844",
+  "source_closure": {
+    "bench/protocols/observable_behavior_qualification_v1.json": "ec45ff0b8b68a563a6000e815f45c9691d55abfaf0b88210edfc40ba07c50860",
+    "evals/lease_read_retry_v1.py": "2e793b3697b7da901b839527fa138ad09c6c19362c875f896dc6fcae22c2a57f",
+    "evals/model_decision_journal_v1.py": "255b8ed9c0de88a26aadc2f1b4a90b0b01f57b2417aab05ac295031061d23ac2",
+    "evals/run_diagnostic_comparison_v1.py": "3b117efade47deba3b91181235d78cc94a42b0bbd2db0190fd8a2256c13f5ce5",
+    "evals/summarize_diagnostic_comparison_v1.py": "c795357435b951f496401f6c92d82f8c7b05021e00c7e2db3bb195a60ac04dae",
+    "src/rl_triage/gpu_resource_sampler.py": "143a3e68f38a1774dae03a30a4a5def81d7cae461a3adfb31fa3aaf2e0898187",
+    "src/rl_triage/intervention_evidence.py": "7b5c6c874b7de3f080ccb9cdaf6040dc15cdb414e11b42db519b948132c2970d",
+    "src/rl_triage/intervention_governor.py": "51a15bda641c82b7ed5c5be436eab0c34b9de75e136bdfedc8310363dbefb3c8",
+    "src/rl_triage/investigate.py": "777ce6ce6d0a82c8db587117041ffbf752107e5230100eac7950e0feafcceddd",
+    "src/rl_triage/investigation_session.py": "9006c2be0ca325d3110ab1a618b681dd4772f1db51f7fb0f63ed0b057ff6dec2",
+    "src/rl_triage/mechanism_confirmation.py": "067a52eeaeaafd9f4b54d2255314c9a82d95af8be720f03511b8e7f5213187d0",
+    "src/rl_triage/mechanism_registry.py": "0bc3c47e52bdb6eb511cad5f6b76d047edfdfd1ca3c09d52fd637c47909d75d0",
+    "src/rl_triage/nim_transport.py": "71f373ea2243cc11810cd8cf5164615484e61261f637232cc1ec4e7b9bef2da6",
+    "src/rl_triage/observable_behavior_v1.py": "1ea6681f36cb8d9bd66c1192190b812afb6cbf55f7b2be353bfe414dfb77268e",
+    "src/rl_triage/registered_diagnostic_backend.py": "2537e89d40efaa08b718c9fa6e7256b3c04fa9205dface3830dfa15dbd7da4a3",
+    "src/rl_triage/resource_comparison.py": "a6c668584422a28476ae9d108ce9e4d85c0c196845f75e3ab182ce217981deec",
+    "tests/test_investigation_session.py": "dbfba2b794e334b2a985016a3c3ab3dac26194d384862b76c10a8ae8a94756c4",
+    "tests/test_lease_read_retry_v1.py": "792a9cdf1f0ef0dc95518912b9f3687a6765855ac9e491c668c3cf42fa925a25",
+    "tests/test_observable_behavior_v1.py": "d1dcb743c56d6f8dd12187561b3c7b1a5616ae13da526547dcbe4f74471a425e",
+    "tests/test_summarize_diagnostic_comparison_v1.py": "f9332caf0cdd71a5e14ba8bf61920b41e21c3097728e103dcc3001c0b8b80f7c"
+  }
+}
