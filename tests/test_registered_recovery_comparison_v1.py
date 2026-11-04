@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+from evals import registered_recovery_backend_v1 as recovery_backend
 from evals import registered_recovery_resources_v1 as recovery_resources
 from evals import run_registered_recovery_comparison_v1 as comparison
 from rl_triage.investigation_session import file_sha
@@ -553,6 +554,129 @@ def _upgrade_to_v7(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dic
     return plan, proofs, registry
 
 
+def _upgrade_to_v8(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dict, dict]:
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    repo = plan_path.parent
+    note = repo / comparison.V14_NOTE
+    note.parent.mkdir(parents=True, exist_ok=True)
+    note.write_text("registered balanced resource remeasurement fixture\n", encoding="utf-8")
+    summary = repo / comparison.V13_PUBLIC_SUMMARY
+    summary.parent.mkdir(parents=True, exist_ok=True)
+    public_summary = Path(comparison.__file__).resolve().parents[1] / comparison.V13_PUBLIC_SUMMARY
+    summary.write_bytes(public_summary.read_bytes())
+    project_root = Path(comparison.__file__).resolve().parents[1]
+    retry_sources = {}
+    for relative in (
+        comparison.CONSISTENT_OBSERVATION_SOURCES
+        | comparison.BALANCED_ADMISSION_SOURCES
+        | comparison.BALANCED_RESOURCE_SUMMARY_SOURCES
+    ):
+        path = repo / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes((project_root / relative).read_bytes())
+        retry_sources[relative] = comparison._lf_sha(path)
+    plan["schema"] = comparison.PLAN_SCHEMA_V8
+    plan["limits"] = {
+        "max_recoveries": 16, "gpu_sdk_launch_cap": 32,
+        "cpu_checkpoint_launch_cap": 16, "cpu_telemetry_launch_cap": 16,
+        "total_owned_launch_cap": 64, "max_parent_wall_s_per_recovery": 5000,
+        "api_cap": 0,
+    }
+    plan["cases"] = [
+        {"case_id": case, "rotation": list(comparison.METHODS[index:]
+                                             + comparison.METHODS[:index])}
+        for index, case in enumerate(("case-05", "case-06", "case-07", "case-08"))
+    ]
+    plan["recovery_policy"]["seeds"] = {
+        "case-05": {"resume": 2664, "restart": 5664},
+        "case-06": {"resume": 2665, "restart": 5665},
+        "case-07": {"resume": 2666, "restart": 6466},
+        "case-08": {"resume": 2667, "restart": 6467},
+    }
+    plan["source_closure"].update({
+        comparison.V14_NOTE: comparison._lf_sha(note),
+        comparison.V13_PUBLIC_SUMMARY: comparison.V13_PUBLIC_SUMMARY_SHA256,
+        **retry_sources,
+    })
+    plan["inputs"].extend([
+        {"role": "balanced_resource_remeasurement_preregistration",
+         "path": comparison.V14_NOTE, "sha256": comparison._lf_sha(note)},
+        {"role": "known_primary_outcomes", "path": comparison.V13_PUBLIC_SUMMARY,
+         "sha256": comparison.V13_PUBLIC_SUMMARY_SHA256},
+    ])
+    plan["resource_remeasurement"] = {
+        "profile_id": comparison.RESOURCE_REMEASUREMENT_PROFILE,
+        "scope": "already_seen_development_resource_check",
+        "imports_allowed": False,
+        "known_primary_outcomes": {"path": comparison.V13_PUBLIC_SUMMARY,
+                                   "sha256": comparison.V13_PUBLIC_SUMMARY_SHA256},
+        "expected": {"planned_arms": 16, "fresh_effects": 15, "diagnostic_hold": 1},
+        "accounting": {"prior_primary_sdk_launches": 32, "prior_post_sdk_launches": 1,
+                       "prior_whole_study_sdk_launches": 33,
+                       "new_gpu_sdk_launch_cap": 32,
+                       "cumulative_gpu_sdk_launch_cap": 65},
+        "no_model_requery": True,
+    }
+    mechanisms = {"case-05": "actuator", "case-06": "actuator",
+                  "case-07": "optimizer_update_count", "case-08": "optimizer_surrogate"}
+    runner = {"actuator": "actuator_resume_v1",
+              "optimizer_update_count": "r1_epochs_preserving_environment_v1",
+              "optimizer_surrogate": "ppo_ratio_v1"}
+    mode = {"actuator": "resume", "optimizer_update_count": "restart",
+            "optimizer_surrogate": "restart"}
+    by_key = {(row["case_id"], row["method"]): row for row in job["arms"]}
+    ordered = []
+    for case_row in plan["cases"]:
+        case = case_row["case_id"]
+        for method in case_row["rotation"]:
+            row = by_key[(case, method)]
+            if (case, method) == ("case-07", "iterative_agent"):
+                row.update(recovery_folder=None, recovery_payload=None, approval_ref=None)
+                ordered.append(row)
+                continue
+            mechanism = mechanisms[case]
+            protocol_path = Path(row["recovery_payload"]["protocol"]["path"])
+            protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+            protocol["schema"] = "registered_recovery_protocol_v3"
+            protocol["source_closure"] = plan["source_closure"]
+            protocol["diagnostic"].update({
+                "mechanism": mechanism,
+                "session_manifest_sha256": row["diagnostic_manifest"]["sha256"],
+            })
+            recovery_mode = mode[mechanism]
+            protocol["operation"] = {
+                "correction_id": comparison.REGISTRY[mechanism]["correction_id"],
+                "recovery_mode": recovery_mode, "runner_id": runner[mechanism],
+                "training_seed": plan["recovery_policy"]["seeds"][case][recovery_mode],
+                "training_iterations": 300, "gpu_budget_s": 3600,
+                "source_checkpoint_consumed": mechanism == "actuator",
+                "training_binding_artifact_id": "training",
+                "fixed_binding_artifact_id": "fixed",
+                "gpu_admission_profile": "registered_desktop_shared_retry_v1",
+                "prior_training_artifact_id": None,
+            }
+            row["recovery_payload"]["protocol"] = _write(protocol_path, protocol)
+            resolver_path = Path(row["recovery_payload"]["artifact_resolver"]["path"])
+            training = _write(tmp_path / "templates" / case / mechanism / "training.json",
+                              {"schema": "training-template", "case_id": case,
+                               "mechanism": mechanism})
+            fixed = _write(tmp_path / "templates" / case / mechanism / "fixed.json",
+                           {"schema": "fixed-template", "case_id": case})
+            plan["template_commitments"][case][mechanism].update({
+                "training_binding_sha256": training["sha256"],
+                "fixed_binding_sha256": fixed["sha256"],
+            })
+            row["recovery_payload"]["artifact_resolver"] = _write(
+                resolver_path, {"artifacts": {"training": training, "fixed": fixed}})
+            ordered.append(row)
+    plan_ref = _write(plan_path, plan)
+    job["plan"] = plan_ref
+    job["arms"] = ordered
+    _write(job_path, job)
+    return plan, job
+
+
 def _prepared_v7_for_advance(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> tuple[Path, dict, dict[str, str], dict[str, str]]:
@@ -940,6 +1064,96 @@ def test_v7_validates_namespace_failure_new_seeds_and_preserves_matrix(
     assert plan["recovery_policy"]["seeds"]["case-07"]["restart"] == 6266
     assert plan["recovery_policy"]["seeds"]["case-08"]["restart"] == 6267
     assert plan["continuation"]["prior_consumed_gpu_sdk_launches"] == 18
+
+
+def test_v8_validates_balanced_fresh_matrix_without_imports(
+    tmp_path: Path,
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, job = _upgrade_to_v8(plan_path, job_path, tmp_path)
+    comparison._validate_plan(plan)
+    normalized = comparison._validate_job(job, job["plan"], plan, job_path)
+    assert len(normalized) == 16
+    assert sum(row["recovery_payload"] is not None for row in normalized) == 15
+    assert [(row["case_id"], row["method"]) for row in normalized
+            if row["recovery_payload"] is None] == [("case-07", "iterative_agent")]
+    assert all("continuation_import" not in row for row in normalized)
+    assert plan["limits"]["gpu_sdk_launch_cap"] == 32
+    assert plan["resource_remeasurement"]["accounting"] == {
+        "prior_primary_sdk_launches": 32, "prior_post_sdk_launches": 1,
+        "prior_whole_study_sdk_launches": 33, "new_gpu_sdk_launch_cap": 32,
+        "cumulative_gpu_sdk_launch_cap": 65,
+    }
+    assert comparison.BALANCED_RESOURCE_SUMMARY_SOURCES <= set(plan["source_closure"])
+    assert comparison.BALANCED_ADMISSION_SOURCES <= set(plan["source_closure"])
+
+
+@pytest.mark.parametrize("missing", sorted(comparison.BALANCED_ADMISSION_SOURCES))
+def test_v8_production_backend_requires_every_desktop_admission_source(
+    tmp_path: Path, missing: str,
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, _job = _upgrade_to_v8(plan_path, job_path, tmp_path)
+    protocol = {
+        "schema": recovery_backend.SCHEMA_V3,
+        "source_closure": plan["source_closure"],
+        "operation": {
+            "gpu_admission_profile": recovery_backend.RETRY_PROFILE,
+            "prior_training_artifact_id": None,
+            "runner_id": "actuator_resume_v1",
+            "training_binding_artifact_id": "training",
+            "fixed_binding_artifact_id": "fixed",
+        },
+    }
+    assert recovery_backend._extensions(protocol) is None
+    changed = json.loads(json.dumps(plan))
+    changed["source_closure"].pop(missing)
+    protocol["source_closure"] = changed["source_closure"]
+    with pytest.raises(ValueError, match="desktop .*policy source missing"):
+        recovery_backend._extensions(protocol)
+    with pytest.raises(comparison.ComparisonContractError,
+                       match="resource remeasurement preregistration/closure"):
+        comparison._validate_plan(changed)
+
+
+@pytest.mark.parametrize("mutation,match", [
+    ("order", "rotation order"),
+    ("import", "job arm fields"),
+    ("prior_authority", "v8 fresh arm/profile"),
+    ("wrong_seed", "registered restart seed map"),
+    ("wrong_cap", "recovery/GPU/API cap differs"),
+    ("second_hold", "expected fresh/hold matrix"),
+])
+def test_v8_rejects_unbalanced_or_historical_authority(
+    tmp_path: Path, mutation: str, match: str,
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, job = _upgrade_to_v8(plan_path, job_path, tmp_path)
+    if mutation == "order":
+        job["arms"][0], job["arms"][1] = job["arms"][1], job["arms"][0]
+    elif mutation == "import":
+        job["arms"][0]["continuation_import"] = None
+    elif mutation == "prior_authority":
+        donor = next(row for row in job["arms"] if row["recovery_payload"] is not None)
+        protocol_path = Path(donor["recovery_payload"]["protocol"]["path"])
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol["operation"]["prior_training_artifact_id"] = "prior_training"
+        donor["recovery_payload"]["protocol"] = _write(protocol_path, protocol)
+    elif mutation == "wrong_seed":
+        plan["recovery_policy"]["seeds"]["case-07"]["restart"] = 6266
+    elif mutation == "wrong_cap":
+        plan["limits"]["gpu_sdk_launch_cap"] = 31
+    else:
+        donor = next(row for row in job["arms"] if row["recovery_payload"] is not None)
+        donor.update(recovery_folder=None, recovery_payload=None, approval_ref=None)
+    with pytest.raises(comparison.ComparisonContractError, match=match):
+        if mutation in {"wrong_seed", "wrong_cap"}:
+            comparison._validate_plan(plan)
+        else:
+            comparison._validate_job(job, job["plan"], plan, job_path)
 
 
 def test_v7_rejects_missing_namespace_failure_before_output(

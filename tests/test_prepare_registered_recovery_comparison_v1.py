@@ -926,6 +926,122 @@ def test_v12_restart_seed_map_is_exact() -> None:
     }
 
 
+def test_v8_factory_builds_fifteen_fresh_arms_and_one_registered_hold(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    _write(tmp_path / prepare.RESOURCE_REMEASUREMENT_PREREGISTRATION_V14, b"v14\n")
+    public_summary = Path(__file__).resolve().parents[1] / prepare.COMPARISON.V13_PUBLIC_SUMMARY
+    _write(tmp_path / prepare.COMPARISON.V13_PUBLIC_SUMMARY, public_summary.read_bytes())
+    project_root = Path(__file__).resolve().parents[1]
+    for relative in prepare._CONTINUATION_RETRY_SOURCE_FILES:
+        _write(tmp_path / relative, (project_root / relative).read_bytes())
+    for relative in prepare.COMPARISON.BALANCED_ADMISSION_SOURCES:
+        _write(tmp_path / relative, (project_root / relative).read_bytes())
+    for relative in prepare.COMPARISON.BALANCED_RESOURCE_SUMMARY_SOURCES:
+        _write(tmp_path / relative, (project_root / relative).read_bytes())
+    isaaclab = tmp_path / "IsaacLab"
+    (isaaclab / "logs").mkdir(parents=True)
+    templates = tmp_path / "templates-v14"
+    prepare.prepare_templates(
+        source_index=index, metadata=metadata, diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+        output=templates, actor="operator", isaaclab_commit="c" * 40,
+        resource_remeasurement_profile=prepare.RESOURCE_REMEASUREMENT_PROFILE,
+        restart_seed_overrides=prepare.REGISTERED_RESTART_SEED_OVERRIDES_V14,
+        isaaclab_root=isaaclab, gpu_admission_profile=prepare.GPU_ADMISSION_PROFILE_RETRY,
+        require_committed=False,
+    )
+    plan_path = templates / "registered-plan.json"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    assert plan["schema"] == prepare.COMPARISON.PLAN_SCHEMA_V8
+    assert "continuation" not in plan
+    assert plan["limits"] == {
+        "max_recoveries": 16, "gpu_sdk_launch_cap": 32,
+        "cpu_checkpoint_launch_cap": 16, "cpu_telemetry_launch_cap": 16,
+        "total_owned_launch_cap": 64, "max_parent_wall_s_per_recovery": 5000,
+        "api_cap": 0,
+    }
+    assert plan["recovery_policy"]["seeds"]["case-07"]["restart"] == 6466
+    assert plan["recovery_policy"]["seeds"]["case-08"]["restart"] == 6467
+    assert plan["resource_remeasurement"]["expected"] == {
+        "planned_arms": 16, "fresh_effects": 15, "diagnostic_hold": 1}
+    assert plan["resource_remeasurement"]["no_model_requery"] is True
+    assert prepare.COMPARISON.BALANCED_RESOURCE_SUMMARY_SOURCES <= set(plan["source_closure"])
+    assert prepare.COMPARISON.BALANCED_ADMISSION_SOURCES <= set(plan["source_closure"])
+    assert prepare.COMPLETED_EFFECT_REGISTRY_RELATIVE not in plan["source_closure"]
+    assert prepare.RESTART_SEED_PREREGISTRATION_V11 not in plan["source_closure"]
+    assert not any(row["role"].startswith("completed_") for row in plan["inputs"])
+
+    monkeypatch.setattr(prepare.COMPARISON, "load_plan", lambda *_args, **_kwargs: plan)
+    fresh_seen = []
+    monkeypatch.setattr(prepare.SEED_GUARD, "assert_fresh_seeds",
+        lambda seeds, *_args, **_kwargs: fresh_seen.extend(seeds) or {"status": "fresh"})
+    diagnostic_root = tmp_path / "diagnostics-v14"
+    checkpoints = {}
+    for case in prepare.CASES:
+        checkpoint = plan["template_commitments"][case]["actuator"]["source_checkpoint_sha256"]
+        checkpoints[case] = checkpoint
+        for method in prepare.METHODS:
+            source = _write(diagnostic_root / "bound" / case / method / "source.json",
+                            {"case_id": case, "checkpoint_sha256": checkpoint})
+            _write(diagnostic_root / "bound" / case / method / "session/manifest.json", {
+                "method": method, "execution_class": "actual",
+                "source": {"path": str(source), "sha256": _sha(source)},
+                "source_verification": {"case_id": case,
+                                        "checkpoint_sha256": checkpoint}})
+    mechanisms = {"case-05": "actuator", "case-06": "actuator",
+                  "case-07": "optimizer_update_count", "case-08": "optimizer_surrogate"}
+    statuses = {
+        (case, method): {
+            "status": "confirmed", "confirmed_mechanism": mechanisms[case],
+            "case_id": case,
+            "source_verification": {"checkpoint_sha256": checkpoints[case]},
+        }
+        for case in prepare.CASES for method in prepare.METHODS
+    }
+    statuses[("case-07", "iterative_agent")] = {
+        "status": "model_hold", "case_id": "case-07"}
+    monkeypatch.setattr(prepare, "_diagnostic_status",
+        lambda session: statuses[(session.parent.parent.name, session.parent.name)])
+
+    class FakeSession:
+        def __init__(self, path: Path):
+            self.folder = Path(path).resolve(strict=True)
+            self._manifest_sha256 = _sha(self.folder / "manifest.json")
+            self.manifest = json.loads((self.folder / "manifest.json").read_text())
+            self.source = json.loads(Path(self.manifest["source"]["path"]).read_text())
+
+    monkeypatch.setattr(prepare, "InvestigationSession", FakeSession)
+    monkeypatch.setattr(prepare.RECOVERY, "_diagnostic", lambda _session, mechanism: (
+        {"probe": f"P_{mechanism}", "request_id": "diag"}, {},
+        {"receipt_ref": {"path": str(tmp_path / "diag.json"), "sha256": "f" * 64}}))
+
+    def run(command, session, payload, **_kwargs):
+        if command == "recovery-prepare":
+            Path(payload["folder"]).mkdir(parents=True)
+            return {"mechanism": mechanisms[Path(session).parent.parent.name]}
+        if command == "recovery-propose":
+            return {"status": {"pending": {"request_id": "req", "effect_key": "effect"}}}
+        raise AssertionError(command)
+
+    monkeypatch.setattr(prepare.investigate, "run", run)
+    jobs = tmp_path / "jobs-v14"
+    result = prepare.prepare_jobs(
+        templates=templates, registered_plan=plan_path, registration_anchor="d" * 40,
+        diagnostic_root=diagnostic_root, isaaclab_root=isaaclab, output=jobs,
+        require_committed=False)
+    job = json.loads((jobs / "job.json").read_text(encoding="utf-8"))
+    assert result["recovery_prepared"] == 15
+    assert fresh_seen == [6466, 6467]
+    assert [(row["case_id"], row["method"]) for row in job["arms"]] == [
+        (case["case_id"], method) for case in plan["cases"] for method in case["rotation"]]
+    assert [(row["case_id"], row["method"]) for row in job["arms"]
+            if row["recovery_payload"] is None] == [("case-07", "iterative_agent")]
+    assert all("continuation_import" not in row for row in job["arms"])
+
+
 def test_templates_v3_reject_cross_method_training_proof(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
