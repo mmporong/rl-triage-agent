@@ -24,7 +24,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "evals"), str(ROOT / "bench")]
 SCHEMA = "diagnostic_observer_child_v1"
 PROTOCOL_SCHEMA = "diagnostic_observer_protocol_v1"
-REGISTERED_PROTOCOL = ROOT / "bench/protocols/registered_diagnostic_observer_v1.json"
+REGISTERED_PROTOCOL_V1 = ROOT / "bench/protocols/registered_diagnostic_observer_v1.json"
+REGISTERED_PROTOCOL_V2 = ROOT / "bench/protocols/registered_diagnostic_observer_v2.json"
+REGISTERED_PROTOCOLS = (REGISTERED_PROTOCOL_V1, REGISTERED_PROTOCOL_V2)
+REGISTERED_PROTOCOL = REGISTERED_PROTOCOL_V1
 COMPONENTS = ("actuator_mapping", "optimizer_update_bundle")
 CONDITIONS = ("NONE", "F2", "R1", "inverse_ratio")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -420,6 +423,17 @@ def _observer_manifest(validated: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _bound_optimizer_manifest(observer_manifest: Mapping[str, Any], condition: str) -> dict[str, Any]:
+    """관측기 설치와 마감 검사에 함께 쓰는 확정 manifest를 만든다."""
+    fixed = dict(observer_manifest)
+    if condition != "R1":
+        fixed.update(
+            arm="INVERSE_RATIO" if condition == "inverse_ratio" else "NONE",
+            observer_enabled=True,
+        )
+    return fixed
+
+
 @contextmanager
 def _optimizer_hooks(validated: Mapping[str, Any], sink):
     manifest = validated["manifest"]
@@ -433,6 +447,7 @@ def _optimizer_hooks(validated: Mapping[str, Any], sink):
     state: dict[str, Any] = {
         "observer": None, "restore_fault": None, "v5_finish": None, "v5_cleanup": None,
         "v5_evidence": None, "learn_completed": False,
+        "inspection_manifest": None,
     }
 
     def init(this, *args, **kwargs):
@@ -440,16 +455,15 @@ def _optimizer_hooks(validated: Mapping[str, Any], sink):
         if state["observer"] is not None:
             raise ValueError("one PPO instance is required")
         condition = manifest["condition"]
+        bound_manifest = _bound_optimizer_manifest(observer_manifest, condition)
+        state["inspection_manifest"] = bound_manifest
         if condition == "R1":
             this.num_learning_epochs = 1
             restore_fault, _ = mutation.install(this, "NONE")
             state["restore_fault"] = restore_fault
-            state["observer"] = gradient.GradientObserver(this, observer_manifest, sink).install()
+            state["observer"] = gradient.GradientObserver(this, bound_manifest, sink).install()
         else:
-            fixed = {**observer_manifest, "arm": (
-                "INVERSE_RATIO" if condition == "inverse_ratio" else "NONE"),
-                "observer_enabled": True}
-            finish, cleanup = v5_training.attach(this, fixed, sink)
+            finish, cleanup = v5_training.attach(this, bound_manifest, sink)
             state["v5_finish"], state["v5_cleanup"] = finish, cleanup
 
     def learn(this, *args, **kwargs):
@@ -490,14 +504,17 @@ def _optimizer_run(validated: Mapping[str, Any]) -> dict[str, Any]:
             stream.write(json.dumps(record, ensure_ascii=False, allow_nan=False) + "\n")
             stream.flush()
 
-        with _optimizer_hooks(validated, sink) as (state, observer_manifest):
+        with _optimizer_hooks(validated, sink) as (state, _observer_manifest):
             def before_close(_app):
                 if not state["learn_completed"]:
                     raise ValueError("three-update learning did not complete")
                 stream.flush()
                 os.fsync(stream.fileno())
                 rows = [json.loads(line) for line in records_path.read_text(encoding="utf-8").splitlines()]
-                inspection = gradient.inspect_records(rows, observer_manifest)
+                inspection_manifest = state["inspection_manifest"]
+                if inspection_manifest is None:
+                    raise ValueError("optimizer observer manifest was not bound")
+                inspection = gradient.inspect_records(rows, inspection_manifest)
                 if len(rows) != OPTIMIZER_UPDATES or inspection.get("records") != OPTIMIZER_UPDATES:
                     raise ValueError("count/gradient records are incomplete")
                 evidence = {
@@ -611,11 +628,18 @@ def _actuator_run(validated: Mapping[str, Any]) -> dict[str, Any]:
 def child_main(manifest_path: Path) -> int:
     """검증된 manifest의 한 component를 실행하고 성공 시에만 0을 반환한다."""
     manifest_path = Path(manifest_path).resolve()
+    manifest = _read(manifest_path)
+    protocol_ref = manifest.get("protocol")
+    if not isinstance(protocol_ref, Mapping) or not isinstance(protocol_ref.get("path"), str):
+        raise TypeError("manifest protocol is not the registered parent protocol")
+    registered_protocol = Path(protocol_ref["path"]).resolve()
+    if registered_protocol not in tuple(path.resolve() for path in REGISTERED_PROTOCOLS):
+        raise ValueError("manifest protocol is not the registered parent protocol")
     validated = verify_manifest(
         manifest_path,
         repo_root=ROOT,
         isaaclab_root=Path.cwd(),
-        expected_protocol_path=REGISTERED_PROTOCOL,
+        expected_protocol_path=registered_protocol,
     )
     output = validated["output"]
     try:

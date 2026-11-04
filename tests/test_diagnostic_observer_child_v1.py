@@ -1,3 +1,4 @@
+# pyright: reportMissingImports=false
 from __future__ import annotations
 
 import hashlib
@@ -158,6 +159,55 @@ def test_build_and_verify_manifest_binds_registered_component(
 def test_import_boundary_does_not_load_sdk_or_torch() -> None:
     assert "torch" not in sys.modules
     assert not any(name.startswith("isaaclab") for name in sys.modules)
+
+
+def test_inspector_uses_the_exact_manifest_installed_on_the_observer() -> None:
+    original = {
+        "schema": "optimizer_observability_manifest_v1",
+        "arm": "NONE", "seed": 2552, "task": "task", "num_envs": 1024,
+        "max_iterations": 3, "configured_learning_epochs": 5,
+        "configured_mini_batches": 4, "expected_optimizer_steps_per_update": 20,
+        "expected_minibatches_per_update": 20, "runtime_updates_to_observe": 3,
+        "source_commit_sha": "a" * 40, "protocol_path": "registered-v2.json",
+        "protocol_sha256_lf": "b" * 64, "source_sha256_lf": {"child.py": "c" * 64},
+        "gradient_invariant": {
+            "schema": "ppo_surrogate_gradient_v1", "atol": 1.0e-6, "rtol": 1.0e-5,
+            "scale": "batch_size", "clip_param": 0.2,
+        },
+        "inspection_primitives": [
+            "optimizer_step_count", "minibatch_count", "ppo_surrogate_gradient",
+        ],
+    }
+    gradient = __import__("ppo_gradient_invariant_v2")
+    observability = __import__("optimizer_observability")
+    bound = C._bound_optimizer_manifest(original, "NONE")
+    records = [{
+        "schema": "optimizer_observability_record_v2",
+        "manifest_sha256": observability.manifest_fingerprint(bound),
+        "binding": observability.manifest_binding(bound),
+        "update_index": index,
+        "expected": {"optimizer_steps": 20, "minibatches": 20},
+        "observed": {
+            "optimizer_steps": 20, "minibatches": 20,
+            "ppo_surrogate_gradient": {
+                "status": "unknown", "batches": [], "reason": "minimized_recorded_fixture",
+            },
+        },
+        "error": None,
+    } for index in range(3)]
+
+    with pytest.raises(ValueError, match="manifest commitment"):
+        gradient.inspect_records(records, original)
+
+    inspection = gradient.inspect_records(records, bound)
+    assert inspection["records"] == 3
+    assert inspection["primitives"]["optimizer_step_count"]["status"] == "normal"
+    assert inspection["primitives"]["ppo_surrogate_gradient"]["status"] == "unknown"
+
+
+def test_registered_protocol_allowlist_is_versioned_and_closed() -> None:
+    assert C.REGISTERED_PROTOCOLS == (C.REGISTERED_PROTOCOL_V1, C.REGISTERED_PROTOCOL_V2)
+    assert C.REGISTERED_PROTOCOL == C.REGISTERED_PROTOCOL_V1
 
 
 def _directory_alias(link: Path, target: Path) -> None:

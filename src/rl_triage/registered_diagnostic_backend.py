@@ -547,7 +547,11 @@ def _execute_actual(intent: dict, component: dict, proof: dict) -> tuple[str, di
     config, child_protocol, checkpoint = _actual_config(intent, component)
     from bench import diagnostic_observer_child_v1 as child
 
-    if Path(child_protocol["path"]).resolve() != child.REGISTERED_PROTOCOL.resolve():
+    registered_protocols = {
+        child.REGISTERED_PROTOCOL.resolve(),
+        *(path.resolve() for path in child.REGISTERED_PROTOCOLS),
+    }
+    if Path(child_protocol["path"]).resolve() not in registered_protocols:
         raise BackendBlocked("actual child protocol is not the fixed registered path")
     live = _lease_context()
     stage = (Path(intent["host_receipt_path"]).parents[1] / "actual_stages"
