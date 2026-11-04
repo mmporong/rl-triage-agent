@@ -60,6 +60,9 @@ def _resource(row: dict | None, logical_prefix: str, private: list[dict]) -> tup
     if row is None:
         return {"status": "not_applicable", "phase_elapsed_s": None, "locked_wall_s": None,
                 "simulator_owned_wall_s": None, "checkpoint_cpu_owned_wall_s": None,
+                "current_dispatch_simulator_owned_wall_s": None,
+                "reused_training_owned_wall_s": None, "whole_effect_active_phase_s": None,
+                "current_dispatch_sdk_launches": None, "reused_training_sdk_launches": None,
                 "telemetry_cpu_owned_wall_s": None,
                 "lease_wait_s": None, "api_calls": 0, "device_energy": None,
                 "owned_cost_complete": None}, []
@@ -85,6 +88,42 @@ def _resource(row: dict | None, logical_prefix: str, private: list[dict]) -> tup
                                            logical_prefix + f":{name}-execution", private)
         if execution_ref is not None:
             public_refs.append(execution_ref)
+    reused_wall = 0.0
+    reused_phase = 0.0
+    reused_launches = 0
+    if raw["raw_receipt_ref"] is not None:
+        receipt = io.read_ref(raw["raw_receipt_ref"])
+        reuse = receipt.get("training_reuse")
+        if reuse is not None:
+            if (not isinstance(reuse, dict) or reuse.get("new_training_launched") is not False
+                    or raw["execution_refs"]["training"] is not None):
+                raise SummaryError("reused training was counted as a new dispatch training")
+            public_refs.append(_generic_ref(raw["raw_receipt_ref"], logical_prefix + ":recovery-receipt", private))
+            public_refs.append(_generic_ref(reuse.get("proof_ref"), logical_prefix + ":prior-training-proof", private))
+            proof = io.read_ref(reuse["proof_ref"])
+            prior_execution = reuse.get("prior_owned_execution_ref")
+            if (receipt.get("training_stage") != prior_execution
+                    or proof.get("stage_files", {}).get("execution.json") != prior_execution):
+                raise SummaryError("prior training execution differs from sealed proof")
+            prior_wall, prior_ref = _execution_wall(prior_execution,
+                logical_prefix + ":prior-training-execution", private)
+            if prior_wall is None or prior_ref is None:
+                raise SummaryError("prior training wall is unknown")
+            public_refs.append(prior_ref)
+            prior_resource_ref = reuse.get("prior_dispatch_resource_ref")
+            public_refs.append(_generic_ref(prior_resource_ref, logical_prefix + ":prior-dispatch-resource", private))
+            if not isinstance(prior_resource_ref, dict):
+                raise SummaryError("prior dispatch resource reference must be an object")
+            prior_raw = io.read_ref(prior_resource_ref)
+            verified_prior = resource_evidence.verify(prior_resource_ref,
+                request_id=prior_raw["request_id"], effect_key=prior_raw["effect_key"])
+            if (verified_prior["execution_refs"]["training"] != prior_execution
+                    or verified_prior["execution_refs"]["fixed"] is not None
+                    or verified_prior["simulator_sdk_launches"] != 1
+                    or verified_prior["owned_gpu_s"] != prior_wall
+                    or receipt["costs"]["training_s"] != prior_wall):
+                raise SummaryError("prior dispatch does not contain exactly the reused training")
+            reused_wall, reused_phase, reused_launches = prior_wall, float(verified_prior["phase_wall_s"]), 1
     device_energy = None
     if raw["sampler_ref"] is not None:
         public_refs.append(_generic_ref(raw["sampler_ref"], logical_prefix + ":device-sampler", private))
@@ -94,7 +133,13 @@ def _resource(row: dict | None, logical_prefix: str, private: list[dict]) -> tup
                          "provider_gpu_seconds": sampler.get("provider_gpu_seconds")}
     return {"status": raw["status"], "phase_elapsed_s": float(raw["phase_wall_s"]),
             "locked_wall_s": float(raw["locked_wall_s"]),
-            "simulator_owned_wall_s": raw["owned_gpu_s"],
+            "simulator_owned_wall_s": (float(raw["owned_gpu_s"]) + reused_wall
+                                       if raw["owned_gpu_s"] is not None else None),
+            "current_dispatch_simulator_owned_wall_s": raw["owned_gpu_s"],
+            "reused_training_owned_wall_s": reused_wall,
+            "whole_effect_active_phase_s": float(raw["phase_wall_s"]) + reused_phase,
+            "current_dispatch_sdk_launches": raw["simulator_sdk_launches"],
+            "reused_training_sdk_launches": reused_launches,
             "checkpoint_cpu_owned_wall_s": checkpoint_wall,
             "telemetry_cpu_owned_wall_s": telemetry_wall,
             "lease_wait_s": raw["lease_await_s"], "api_calls": 0,
@@ -126,6 +171,8 @@ def _method_summary(method: str, arms: list[dict]) -> dict:
             "outcomes": outcomes,
             "costs": {field: _cost_aggregate(rows, field) for field in (
                 "phase_elapsed_s", "locked_wall_s", "simulator_owned_wall_s",
+                "current_dispatch_simulator_owned_wall_s", "reused_training_owned_wall_s",
+                "whole_effect_active_phase_s", "current_dispatch_sdk_launches", "reused_training_sdk_launches",
                 "checkpoint_cpu_owned_wall_s", "telemetry_cpu_owned_wall_s", "lease_wait_s")},
             "api_calls": sum(row["costs"]["api_calls"] for row in rows)}
 

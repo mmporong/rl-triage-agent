@@ -1,0 +1,44 @@
+{
+  "schema": "registered_desktop_gpu_admission_v1",
+  "profile_id": "registered_desktop_shared_v2",
+  "base_profile": "desktop_shared_recording_v1",
+  "purpose": "opt_in_fixed_and_training_snapshot_admission_for_registered_desktop_c_plus_g_clients",
+  "gpu_index": 0,
+  "gpu_exclusive": false,
+  "performance_measurement": false,
+  "memory_used_limit_mib": 4096,
+  "gpu_utilization_percent_max": 1,
+  "active_engine_min_percent": 1,
+  "allowed_process_types": [
+    "C+G",
+    "G"
+  ],
+  "registered_process_type": "C+G",
+  "registered_desktop_process_names": [
+    "applicationframehost.exe",
+    "codex-computer-use.exe",
+    "msedge.exe",
+    "systemsettings.exe"
+  ],
+  "requirements": {
+    "compute_process_count": 0,
+    "known_workload": false,
+    "active_engines": [],
+    "base_reason_allowlist": [
+      "unapproved_gpu_process:<registered-pid>"
+    ],
+    "lease_revalidated_per_query": true,
+    "raw_snapshot_preserved": true,
+    "same_observation_identity_required": true
+  },
+  "unclassified_activity": "block",
+  "source_closure_sha256_lf": {
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "evals/lease_read_retry_v1.py": "2e793b3697b7da901b839527fa138ad09c6c19362c875f896dc6fcae22c2a57f",
+    "evals/lineage_source_batch_v1.py": "cf0ee2c9fb19c2ecc39916a2d88d40a8c81d9bc15bb9235aafd3219db54adf38",
+    "evals/r1_repair_execution.py": "c76f508fb921c642a33a76de3c3ae65bf0ae2624283d4b206a744c715788c1eb",
+    "evals/r1_repair_execution_v2.py": "a16f0c3dd2b9655b2173440879cd8c9cad0f6415752f04944e3a8ce8dc82cd99",
+    "evals/registered_desktop_gpu_admission_v1.py": "7cd5b7c28020318686c83a4c7128f1a10165c59d7aac3dfd437ddf6ec463f2ac"
+  },
+  "status": "registered_before_gpu_execution_not_actual_admission_evidence"
+}

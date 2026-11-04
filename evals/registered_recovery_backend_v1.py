@@ -15,6 +15,7 @@ import subprocess
 import sys
 import time
 from collections.abc import Mapping
+from contextlib import nullcontext
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -25,6 +26,8 @@ from rl_triage.correction_registry_v2 import REGISTRY, registry_digest
 
 BACKEND_ID = "registered_recovery_v1"
 SCHEMA = "registered_recovery_protocol_v1"
+SCHEMA_V2 = "registered_recovery_protocol_v2"
+DESKTOP_PROFILE = "registered_desktop_shared_v2"
 RECEIPT_SCHEMA = "registered_recovery_receipt_v1"
 _HIDDEN = {"scoring", "original_faults", "remaining_faults", "hidden_label", "hidden_labels",
            "answer_key", "correct_any_family"}
@@ -55,6 +58,12 @@ _OPTIMIZER_BINDING_FIELDS = {
 }
 _FIXED_BINDING_FIELDS = {"task", "runtime_source_sha256_lf", "action_scale", "protocol_sha256_lf",
                          "reference_report", "bands"}
+_DESKTOP_SOURCES = {
+    "evals/registered_desktop_gpu_admission_v1.py",
+    "tests/test_registered_desktop_gpu_admission_v1.py",
+    "bench/protocols/registered_desktop_gpu_admission_v1.json",
+}
+_PRIOR_SOURCES = {"evals/registered_prior_training_v1.py", "tests/test_registered_prior_training_v1.py"}
 
 
 def _require(ok: object, reason: str) -> None:
@@ -146,6 +155,56 @@ def _verify_source_closure(anchor: object, closure: object) -> None:
         _require(current == expected == hashlib.sha256(blob).hexdigest(), "source closure blob mismatch")
 
 
+def _extensions(protocol: Mapping[str, Any]) -> str | None:
+    """Return the optional prior artifact after checking the registered v2 boundary."""
+    operation = protocol["operation"]
+    if protocol.get("schema") != SCHEMA_V2:
+        _require(not {"gpu_admission_profile", "prior_training_artifact_id"} & set(operation),
+                 "v2 operation extensions require v2 protocol")
+        return None
+    _require(operation.get("gpu_admission_profile") == DESKTOP_PROFILE,
+             "unregistered desktop GPU admission profile")
+    _require(_DESKTOP_SOURCES <= set(protocol["source_closure"]), "desktop policy source missing")
+    prior_id = operation.get("prior_training_artifact_id")
+    _require(prior_id is None or isinstance(prior_id, str) and bool(prior_id), "prior training artifact id")
+    if prior_id is not None:
+        _require(operation["runner_id"] == "actuator_resume_v1", "prior training runner scope")
+        _require(_PRIOR_SOURCES <= set(protocol["source_closure"]), "prior training source missing")
+        _require(prior_id not in {operation["training_binding_artifact_id"],
+                                 operation["fixed_binding_artifact_id"]}, "prior artifact aliases binding")
+    return prior_id
+
+
+def _prior_training(context: Mapping[str, Any]) -> dict | None:
+    protocol = context["protocol_body"]
+    prior_id = _extensions(protocol)
+    if prior_id is None:
+        return None
+    operation, diagnostic = protocol["operation"], protocol["diagnostic"]
+    module = importlib.import_module("evals.registered_prior_training_v1")
+    binding = context["artifacts"][operation["training_binding_artifact_id"]]["body"]
+    return module.load_completed_actuator_training(
+        context["artifacts"][prior_id]["ref"],
+        expected_source_checkpoint_sha256=diagnostic["checkpoint_sha256"],
+        expected_seed=operation["training_seed"], expected_correction_id=operation["correction_id"],
+        expected_task=binding["task"],
+        expected_diagnostic_manifest_sha256=diagnostic["session_manifest_sha256"],
+        repo=_ROOT, isaaclab=Path(context["isaaclab_root"]), expected_binding=binding)
+
+
+def _reuse_evidence(prior: dict) -> dict:
+    return {key: deepcopy(value) for key, value in prior.items() if key != "training_result"}
+
+
+def _gpu_scope(context: Mapping[str, Any]):
+    protocol = context["protocol_body"]
+    _extensions(protocol)
+    if protocol.get("schema") != SCHEMA_V2:
+        return nullcontext()
+    module = importlib.import_module("evals.registered_desktop_gpu_admission_v1")
+    return module.snapshot_scope()
+
+
 def prepare(payload: Mapping[str, Any]) -> dict:
     """Validate immutable preregistration and physical resolver without starting a process."""
     _require(isinstance(payload, Mapping), "payload mapping required")
@@ -156,7 +215,7 @@ def prepare(payload: Mapping[str, Any]) -> dict:
     _no_hidden(protocol)
     fields = {"schema", "backend_id", "source_anchor", "source_closure", "diagnostic", "operation",
               "registry_sha256", "actors", "limits"}
-    _require(set(protocol) == fields and protocol["schema"] == SCHEMA
+    _require(set(protocol) == fields and protocol["schema"] in {SCHEMA, SCHEMA_V2}
              and protocol["backend_id"] == BACKEND_ID, "protocol fields")
     _require(protocol["registry_sha256"] == registry_digest(), "registry binding changed")
     _verify_source_closure(protocol["source_anchor"], protocol["source_closure"])
@@ -168,7 +227,10 @@ def prepare(payload: Mapping[str, Any]) -> dict:
     ofields = {"correction_id", "recovery_mode", "runner_id", "training_seed", "training_iterations",
                "gpu_budget_s", "source_checkpoint_consumed", "training_binding_artifact_id",
                "fixed_binding_artifact_id"}
+    if protocol["schema"] == SCHEMA_V2:
+        ofields |= {"gpu_admission_profile", "prior_training_artifact_id"}
     _require(isinstance(operation, dict) and set(operation) == ofields, "operation fields")
+    prior_id = _extensions(protocol)
     mechanism = diagnostic["mechanism"]
     _require(mechanism in _MECHANISM_RUNNER, "mechanism has no executable registered recovery")
     entry = REGISTRY[mechanism]
@@ -194,7 +256,10 @@ def prepare(payload: Mapping[str, Any]) -> dict:
     _require(resolver.get("schema") == "registered_recovery_resolver_v1"
              and isinstance(resolver.get("artifacts"), dict), "resolver schema")
     artifacts: dict[str, dict] = {}
-    for key in (operation["training_binding_artifact_id"], operation["fixed_binding_artifact_id"]):
+    artifact_ids = [operation["training_binding_artifact_id"], operation["fixed_binding_artifact_id"]]
+    if prior_id is not None:
+        artifact_ids.append(prior_id)
+    for key in artifact_ids:
         _require(key in resolver["artifacts"], "resolver artifact missing")
         path, body = _ref(resolver["artifacts"][key], key)
         artifacts[key] = {"ref": session_io.reference(path), "body": body}
@@ -253,10 +318,12 @@ def prepare(payload: Mapping[str, Any]) -> dict:
     module.V1._verify_runtime(isaaclab, fixed_body)
     _require({key: float(value) for key, value in limits.items()} == expected_watchdogs,
              "watchdog binding differs from fixed runner")
-    return {"schema": "registered_recovery_prepared_v1", "protocol": session_io.reference(protocol_path),
+    context = {"schema": "registered_recovery_prepared_v1", "protocol": session_io.reference(protocol_path),
             "resolver": session_io.reference(resolver_path), "protocol_body": deepcopy(protocol),
             "artifacts": artifacts, "isaaclab_root": str(isaaclab), "output_root": str(output),
             "processes_started": 0, "api_calls": 0}
+    _prior_training(context)
+    return context
 
 
 def authorize(context: Mapping[str, Any], request: Mapping[str, Any], actor: str,
@@ -365,6 +432,13 @@ def _behavior_verdict(candidate: dict, reference: dict, bands: dict) -> tuple[st
 
 def execute(intent: Mapping[str, Any], *, runner: Any | None = None, lease_reader=None) -> dict:
     """Run one registered correction once. The caller must consume its ledger before this call."""
+    protocol = intent["context"]["protocol_body"]
+    _verify_source_closure(protocol["source_anchor"], protocol["source_closure"])
+    with _gpu_scope(intent["context"]):
+        return _execute_phases(intent, runner=runner, lease_reader=lease_reader)
+
+
+def _execute_phases(intent: Mapping[str, Any], *, runner: Any | None = None, lease_reader=None) -> dict:
     context, request = intent["context"], intent["request"]
     protocol = context["protocol_body"]
     operation, diagnostic = protocol["operation"], protocol["diagnostic"]
@@ -380,8 +454,14 @@ def execute(intent: Mapping[str, Any], *, runner: Any | None = None, lease_reade
     _require(set(fixed_binding) == _FIXED_BINDING_FIELDS,
              "fixed binding fields")
     started = time.perf_counter()
-    training = module.train(output / "training", Path(context["isaaclab_root"]), "CORRECTED",
-                            operation["training_seed"], request["request_id"], binding)
+    prior = _prior_training(context)
+    if prior is None:
+        training_stage = output / "training"
+        training = module.train(training_stage, Path(context["isaaclab_root"]), "CORRECTED",
+                                operation["training_seed"], request["request_id"], binding)
+    else:
+        training_stage = Path(prior["training_stage"]).resolve(strict=True)
+        training = prior["training_result"]
     readback = _validate_readback(operation["runner_id"], module, training.get("readback"))
     checkpoint = training.get("checkpoint")
     _require(isinstance(checkpoint, dict) and set(checkpoint) >= {"path", "sha256"}, "training checkpoint")
@@ -418,12 +498,12 @@ def execute(intent: Mapping[str, Any], *, runner: Any | None = None, lease_reade
              "authority_s": float(intent["costs"]["authority_s"]),
              "queue_s": float(intent["costs"].get("queue_s", 0.0)),
              "training_s": training_wall, "fixed_s": _execution_wall(fixed),
-             "postcheck_s": max(0.0, time.perf_counter() - started - training_wall - _execution_wall(fixed)),
+             "postcheck_s": max(0.0, time.perf_counter() - started
+                                - (training_wall if prior is None else 0.0) - _execution_wall(fixed)),
              "api_calls": 0}
     gpu_s = costs["training_s"] + costs["fixed_s"]
     if gpu_s > operation["gpu_budget_s"]:
         verdict = "unknown"
-    training_stage = output / "training"
     evidence = {"manifest": session_io.reference(training_stage / "manifest.json"),
                 "readback": session_io.reference(training_stage / "readback.json"
                                                   if operation["runner_id"] != "actuator_resume_v1"
@@ -488,6 +568,8 @@ def execute(intent: Mapping[str, Any], *, runner: Any | None = None, lease_reade
                                    "telemetry_extraction_owned_wall_s": telemetry_wall,
                                    "telemetry_included_in_postcheck_s": telemetry_wall is not None},
                "costs": costs, "gpu_s": gpu_s, "exit_code": 0, "verdict": verdict}
+    if prior is not None:
+        receipt["training_reuse"] = _reuse_evidence(prior)
     receipt_path = output / "receipt.json"
     session_io.write_new(receipt_path, receipt)
     return {**receipt, "receipt_ref": session_io.reference(receipt_path)}
@@ -501,6 +583,15 @@ def verify_receipt(raw: Mapping[str, Any], intent: Mapping[str, Any]) -> dict:
     admission_ref = _verify_admission(intent, require_live=False)
     _require(artifact.get("lease_admission") == admission_ref, "historical lease admission differs")
     diagnostic, operation = protocol["diagnostic"], protocol["operation"]
+    prior = _prior_training(intent["context"])
+    if prior is None:
+        _require("training_reuse" not in artifact, "unregistered prior training receipt")
+    else:
+        stage = Path(prior["training_stage"])
+        _require(artifact.get("training_reuse") == _reuse_evidence(prior)
+                 and artifact.get("training_stage") == session_io.reference(stage / "execution.json")
+                 and artifact.get("new_checkpoint") == prior["training_result"]["checkpoint"],
+                 "prior training receipt differs")
     expected = {"request_id": request["request_id"], "effect_key": request["effect_key"],
                 "mechanism": diagnostic["mechanism"], "correction_id": operation["correction_id"],
                 "recovery_mode": operation["recovery_mode"], "source_sha256": diagnostic["source_sha256"],

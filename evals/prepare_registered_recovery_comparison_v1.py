@@ -20,6 +20,7 @@ from bench import registered_recovery_training_v1 as ACTUATOR
 from evals import core_seed_guard_v1 as SEED_GUARD
 from evals import ppo_ratio_repair_demo_v2 as RATIO_DEMO
 from evals import r1_repair_demo_v2 as R1_DEMO
+from evals import registered_prior_training_v1 as PRIOR
 from evals import run_diagnostic_comparison_v1 as PHASE_A
 from evals import run_registered_recovery_comparison_v1 as COMPARISON
 from evals import run_upstream_r1_smoke as UPSTREAM
@@ -98,6 +99,16 @@ _SOURCE_FILES = {
     "src/rl_triage/investigate.py",
     "bench/protocols/registered_recovery_training_recipe_v1.json",
 } | set(R1_DEMO.CODE) | set(RATIO_DEMO.CODE)
+_CONTINUATION_SOURCE_FILES = {
+    "evals/registered_desktop_gpu_admission_v1.py",
+    "tests/test_registered_desktop_gpu_admission_v1.py",
+    "bench/protocols/registered_desktop_gpu_admission_v1.json",
+    "evals/registered_prior_training_v1.py",
+    "tests/test_registered_prior_training_v1.py",
+    "tests/test_registered_recovery_continuation_v2.py",
+    "bench/protocols/diagnostic_recovery_comparison_20261104_v5.md",
+}
+GPU_ADMISSION_PROFILE = "registered_desktop_shared_v2"
 
 
 class PreparationError(ValueError):
@@ -138,11 +149,12 @@ def _git_blob(anchor: str, relative: str) -> bytes:
     return result.stdout.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
 
 
-def _source_closure(anchor: str) -> dict[str, str]:
+def _source_closure(anchor: str, *, include_continuation: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
-    for relative in sorted(_SOURCE_FILES):
+    source_files = _SOURCE_FILES | (_CONTINUATION_SOURCE_FILES if include_continuation else set())
+    for relative in sorted(source_files):
         current = ROOT / relative
         if not current.is_file() or current.is_symlink():
             raise PreparationError(f"source closure missing: {relative}")
@@ -151,6 +163,58 @@ def _source_closure(anchor: str) -> dict[str, str]:
             raise PreparationError(f"source closure differs from anchor: {relative}")
         closure[relative] = digest
     return closure
+
+
+def _prior_training(proof_path: Path, isaaclab_root: Path) -> tuple[dict, dict]:
+    proof_ref = _ref(proof_path)
+    proof = _read(proof_path)
+    stage = Path(str(proof.get("training_stage"))).resolve(strict=True)
+    binding = _read(stage / "binding.json")
+    recovery = Path(str(proof.get("recovery_folder"))).resolve(strict=True)
+    prepared = _read(recovery / "manifest.json")
+    context = prepared.get("recovery_context")
+    if not isinstance(context, dict):
+        raise PreparationError("prior recovery context missing")
+    protocol_ref = context.get("protocol")
+    if not isinstance(protocol_ref, dict) or set(protocol_ref) != {"path", "sha256"}:
+        raise PreparationError("prior recovery protocol reference differs")
+    protocol_path = Path(str(protocol_ref["path"])).resolve(strict=True)
+    if _sha(protocol_path) != protocol_ref["sha256"]:
+        raise PreparationError("prior recovery protocol changed")
+    protocol = _read(protocol_path)
+    diagnostic = protocol.get("diagnostic")
+    if not isinstance(diagnostic, dict):
+        raise PreparationError("prior diagnostic binding missing")
+    loaded = PRIOR.load_completed_actuator_training(
+        proof_ref,
+        expected_source_checkpoint_sha256=binding["resume_checkpoint"]["sha256"],
+        expected_seed=binding["seed"],
+        expected_correction_id=protocol["operation"]["correction_id"],
+        expected_task=binding["task"],
+        expected_diagnostic_manifest_sha256=diagnostic["session_manifest_sha256"],
+        repo=ROOT,
+        isaaclab=isaaclab_root,
+    )
+    recovery_validation = loaded["validation"]["recovery"]
+    if (
+        loaded["new_training_launched"] is not False
+        or recovery_validation["case_id"] != "case-05"
+        or recovery_validation["method"] != "fixed_sequence"
+        or recovery_validation["protocol_case_arm"] != {"arm": "corrected", "case": "case_02"}
+        or recovery_validation["prior_training_gpu_s"] != 515.3279999999795
+    ):
+        raise PreparationError("prior training logical/accounting identity differs")
+    logical = {
+        "logical_id": "case-05/fixed_sequence/case_02/CORRECTED",
+        "proof_sha256": proof_ref["sha256"],
+        "source_checkpoint_sha256": binding["resume_checkpoint"]["sha256"],
+        "completed_checkpoint_sha256": loaded["training_result"]["checkpoint"]["sha256"],
+        "seed": binding["seed"],
+        "task": binding["task"],
+        "correction_id": protocol["operation"]["correction_id"],
+        "diagnostic_manifest_sha256": diagnostic["session_manifest_sha256"],
+    }
+    return proof_ref, logical
 
 
 def _validate_source_index(index_path: Path, metadata_path: Path) -> tuple[dict, dict]:
@@ -352,6 +416,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                       diagnostic_registration_anchor: str, source_anchor: str,
                       sdk_contract: Path, recipe_code_contract: Path, output: Path, actor: str,
                       isaaclab_commit: str,
+                      prior_training_proof: Path | None = None,
+                      isaaclab_root: Path | None = None,
                       require_committed: bool = True) -> dict:
     out = Path(output).resolve()
     if out.exists():
@@ -365,8 +431,21 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     phase_cases = {row["case_id"]: row for row in phase_plan["cases"]}
     if not {f"case-{int(case[-2:]):02d}" for case in CASES} <= set(phase_cases):
         raise PreparationError("phase-A selected cases missing")
-    closure = _source_closure(source_anchor) if require_committed else {
-        path: _sha(ROOT / path, lf=True) for path in sorted(_SOURCE_FILES)
+    if (prior_training_proof is None) != (isaaclab_root is None):
+        raise PreparationError("prior proof and Isaac Lab root must be supplied together")
+    prior = (
+        _prior_training(Path(prior_training_proof), Path(isaaclab_root).resolve(strict=True))
+        if prior_training_proof is not None and isaaclab_root is not None
+        else None
+    )
+    continuation_sources = prior is not None
+    closure = _source_closure(
+        source_anchor, include_continuation=continuation_sources
+    ) if require_committed else {
+        path: _sha(ROOT / path, lf=True)
+        for path in sorted(
+            _SOURCE_FILES | (_CONTINUATION_SOURCE_FILES if continuation_sources else set())
+        )
     }
     sdk = _read(sdk_contract)
     if _sha(sdk_contract) != SDK_CONTRACT_SHA256:
@@ -438,12 +517,13 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         inputs.append({"role": f"diagnostic_protocol:{case}", "path": row["path"],
                        "sha256": row["sha256"]})
     plan = {
-        "schema": COMPARISON.PLAN_SCHEMA, "source_anchor": source_anchor,
+        "schema": COMPARISON.PLAN_SCHEMA_V2 if prior is not None else COMPARISON.PLAN_SCHEMA,
+        "source_anchor": source_anchor,
         "source_closure": closure, "methods": list(METHODS),
         "cases": [{"case_id": case, "rotation": _rotation(i)} for i, case in enumerate(CASES)],
-        "limits": {"max_recoveries": 16, "gpu_sdk_launch_cap": 32,
+        "limits": {"max_recoveries": 16, "gpu_sdk_launch_cap": 31 if prior is not None else 32,
                    "cpu_checkpoint_launch_cap": 16, "cpu_telemetry_launch_cap": 16,
-                   "total_owned_launch_cap": 64,
+                   "total_owned_launch_cap": 63 if prior is not None else 64,
                    "max_parent_wall_s_per_recovery": 5000, "api_cap": 0},
         "inputs": inputs, "backend": investigate.REGISTERED_BACKEND,
         "authorization": {"actor": actor,
@@ -455,6 +535,17 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                             "source_cost_policy": "phase_a_shared_count_once"},
         "template_commitments": commitments,
     }
+    if prior is not None:
+        _proof_ref, logical = prior
+        plan["continuation"] = {
+            "gpu_admission_profile": GPU_ADMISSION_PROFILE,
+            "prior_training": logical,
+            "prior_consumed_gpu_sdk_launches": 1,
+            "prior_training_gpu_s": 515.3279999999795,
+            "expected_new_gpu_sdk_launches": 29,
+            "continuation_tag": "v5_fresh",
+            "prior_failed_attempt_preserved": True,
+        }
     plan_path = out / "registered-plan.json"
     write_new(plan_path, plan)
     COMPARISON.load_plan(plan_path, repo_root=ROOT, registration_anchor=source_anchor,
@@ -466,6 +557,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                 "development_source_seeds": development_sources,
                 "registered_source_seeds": SOURCE_SEEDS,
                 "actual_training_started": False, "api_calls": 0}
+    if prior is not None:
+        manifest["prior_training_proof"] = prior[0]
     write_new(out / "manifest.json", manifest)
     return manifest
 
@@ -570,6 +663,20 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                                 require_committed=require_committed)
     if _sha(registered_plan) != template_manifest["plan"]["sha256"]:
         raise PreparationError("registered plan differs from prepared template")
+    continuation = plan.get("continuation") if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2 else None
+    prior_ref = template_manifest.get("prior_training_proof")
+    if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2:
+        if not isinstance(prior_ref, dict):
+            raise PreparationError("v2 template prior training proof missing")
+        verified_ref, logical = _prior_training(
+            Path(str(prior_ref["path"])), Path(isaaclab_root).resolve(strict=True)
+        )
+        if verified_ref != prior_ref or not isinstance(continuation, dict) or logical != continuation.get(
+            "prior_training"
+        ):
+            raise PreparationError("v2 prior training proof differs from public plan")
+    elif prior_ref is not None:
+        raise PreparationError("v1 template must not carry prior training proof")
     freshness = SEED_GUARD.assert_fresh_seeds(
         [plan["recovery_policy"]["seeds"][case]["restart"] for case in CASES],
         Path(isaaclab_root), repo=ROOT,
@@ -609,7 +716,33 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                              "source_checkpoint_consumed": mechanism == "actuator",
                              "training_binding_artifact_id": "training",
                              "fixed_binding_artifact_id": "fixed"}
-                protocol = {"schema": "registered_recovery_protocol_v1",
+                use_prior = (
+                    plan["schema"] == COMPARISON.PLAN_SCHEMA_V2
+                    and case == "case-05"
+                    and method == "fixed_sequence"
+                    and mechanism == "actuator"
+                )
+                if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2:
+                    operation.update({
+                        "gpu_admission_profile": GPU_ADMISSION_PROFILE,
+                        "prior_training_artifact_id": "prior_training" if use_prior else None,
+                    })
+                if use_prior:
+                    if not isinstance(continuation, dict) or not isinstance(prior_ref, dict):
+                        raise PreparationError("v2 prior training state missing")
+                    prior_logical = continuation["prior_training"]
+                    if (
+                        source_session._manifest_sha256
+                        != prior_logical["diagnostic_manifest_sha256"]
+                        or status["source_verification"]["checkpoint_sha256"]
+                        != prior_logical["source_checkpoint_sha256"]
+                    ):
+                        raise PreparationError("prior training diagnostic/source binding differs")
+                protocol = {"schema": (
+                                "registered_recovery_protocol_v2"
+                                if plan["schema"] == COMPARISON.PLAN_SCHEMA_V2
+                                else "registered_recovery_protocol_v1"
+                            ),
                             "backend_id": "registered_recovery_v1",
                             "source_anchor": plan["source_anchor"], "source_closure": plan["source_closure"],
                             "diagnostic": {"session_manifest_sha256": source_session._manifest_sha256,
@@ -625,8 +758,13 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                 protocol_path = arm_dir / "recovery-protocol.json"
                 resolver_path = arm_dir / "resolver.json"
                 write_new(protocol_path, protocol)
+                artifacts = {"training": _ref(training), "fixed": _ref(fixed)}
+                if use_prior:
+                    if not isinstance(prior_ref, dict):
+                        raise PreparationError("v2 prior training proof missing")
+                    artifacts["prior_training"] = deepcopy(prior_ref)
                 write_new(resolver_path, {"schema": "registered_recovery_resolver_v1",
-                                          "artifacts": {"training": _ref(training), "fixed": _ref(fixed)}})
+                                          "artifacts": artifacts})
                 payload = {"protocol": _ref(protocol_path), "artifact_resolver": _ref(resolver_path),
                            "isaaclab_root": str(Path(isaaclab_root).resolve(strict=True)),
                            "output_root": str((arm_dir / "execution").resolve())}
@@ -668,6 +806,8 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("--out", required=True, type=Path)
     t.add_argument("--actor", required=True)
     t.add_argument("--isaaclab-commit", required=True)
+    t.add_argument("--prior-training-proof", type=Path)
+    t.add_argument("--isaaclab-root", type=Path)
     t.add_argument("--allow-uncommitted-fixture", action="store_true")
     j = sub.add_parser("jobs")
     j.add_argument("--templates", required=True, type=Path)
@@ -686,6 +826,8 @@ def main(argv: list[str] | None = None) -> int:
                 source_anchor=args.source_anchor, sdk_contract=args.sdk_contract, output=args.out,
                 recipe_code_contract=args.recipe_code_contract,
                 actor=args.actor, isaaclab_commit=args.isaaclab_commit,
+                prior_training_proof=args.prior_training_proof,
+                isaaclab_root=args.isaaclab_root,
                 require_committed=not args.allow_uncommitted_fixture)
         else:
             result = prepare_jobs(templates=args.templates, registered_plan=args.registered_plan,

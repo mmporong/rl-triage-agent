@@ -119,6 +119,65 @@ def _fixture(tmp_path: Path, cases: tuple[str, ...] = ("case-05",)) -> tuple[Pat
     return repo, plan_path, job_path, out
 
 
+def _upgrade_to_v2(plan_path: Path, job_path: Path, tmp_path: Path) -> dict:
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    first = next(
+        row for row in job["arms"]
+        if row["case_id"] == "case-05" and row["method"] == "fixed_sequence"
+    )
+    diagnostic_sha = first["diagnostic_manifest"]["sha256"]
+    prior_proof = _write(tmp_path / "prior-proof.json", {"schema": "prior-proof-fixture"})
+    plan["schema"] = comparison.PLAN_SCHEMA_V2
+    plan["limits"]["gpu_sdk_launch_cap"] -= 1
+    plan["limits"]["total_owned_launch_cap"] -= 1
+    plan["continuation"] = {
+        "gpu_admission_profile": "registered_desktop_shared_v2",
+        "prior_training": {
+            "logical_id": "case-05/fixed_sequence/case_02/CORRECTED",
+            "proof_sha256": prior_proof["sha256"],
+            "source_checkpoint_sha256": "c" * 64,
+            "completed_checkpoint_sha256": "d" * 64,
+            "seed": plan["recovery_policy"]["seeds"]["case-05"]["resume"],
+            "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+            "correction_id": "restore_motor_torque_speed",
+            "diagnostic_manifest_sha256": diagnostic_sha,
+        },
+        "prior_consumed_gpu_sdk_launches": 1,
+        "prior_training_gpu_s": 515.3279999999795,
+        "expected_new_gpu_sdk_launches": 29,
+        "continuation_tag": "v5_fresh",
+        "prior_failed_attempt_preserved": True,
+    }
+    plan_ref = _write(plan_path, plan)
+    for row in job["arms"]:
+        protocol_path = Path(row["recovery_payload"]["protocol"]["path"])
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol["schema"] = "registered_recovery_protocol_v2"
+        protocol["diagnostic"]["session_manifest_sha256"] = row["diagnostic_manifest"]["sha256"]
+        operation = protocol["operation"]
+        operation.update({
+            "runner_id": "actuator_resume_v1",
+            "gpu_budget_s": 3600,
+            "source_checkpoint_consumed": True,
+            "gpu_admission_profile": "registered_desktop_shared_v2",
+            "prior_training_artifact_id": (
+                "prior_training"
+                if row["case_id"] == "case-05" and row["method"] == "fixed_sequence"
+                else None
+            ),
+        })
+        row["recovery_payload"]["protocol"] = _write(protocol_path, protocol)
+        resolver_path = Path(row["recovery_payload"]["artifact_resolver"]["path"])
+        resolver = json.loads(resolver_path.read_text(encoding="utf-8"))
+        if operation["prior_training_artifact_id"] is not None:
+            resolver["artifacts"]["prior_training"] = prior_proof
+        row["recovery_payload"]["artifact_resolver"] = _write(resolver_path, resolver)
+    job["plan"] = plan_ref
+    _write(job_path, job)
+    return plan
+
+
 def _make_recovery_null(job_path: Path) -> None:
     job = json.loads(job_path.read_text(encoding="utf-8"))
     for arm in job["arms"]:
@@ -158,6 +217,49 @@ def test_prepare_locks_explicit_case_matrix_without_execution(tmp_path: Path) ->
                                 "total_owned_launch_cap": 64,
                                 "max_parent_wall_s_per_recovery": 5000, "api_cap": 0}
     assert result["api_calls"] == 0
+
+
+def test_v2_plan_accepts_one_prior_training_arm_and_reduced_sdk_cap(tmp_path: Path) -> None:
+    repo, plan_path, job_path, out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08")
+    )
+    plan = _upgrade_to_v2(plan_path, job_path, tmp_path)
+    result = comparison.prepare(
+        plan_path,
+        job_path,
+        out,
+        repo_root=repo,
+        registration_anchor="b" * 40,
+        require_committed=False,
+    )
+    assert result["limits"]["gpu_sdk_launch_cap"] == 31
+    assert result["limits"]["total_owned_launch_cap"] == 63
+    assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 29
+    public = plan_path.read_text(encoding="utf-8")
+    assert str(tmp_path) not in public
+
+
+def test_v2_rejects_prior_training_on_different_diagnostic_session(tmp_path: Path) -> None:
+    repo, plan_path, job_path, out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08")
+    )
+    _upgrade_to_v2(plan_path, job_path, tmp_path)
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    first = next(row for row in job["arms"] if row["method"] == "fixed_sequence")
+    protocol_path = Path(first["recovery_payload"]["protocol"]["path"])
+    protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+    protocol["diagnostic"]["session_manifest_sha256"] = "0" * 64
+    first["recovery_payload"]["protocol"] = _write(protocol_path, protocol)
+    _write(job_path, job)
+    with pytest.raises(comparison.ComparisonContractError, match="prior training arm/profile binding"):
+        comparison.prepare(
+            plan_path,
+            job_path,
+            out,
+            repo_root=repo,
+            registration_anchor="b" * 40,
+            require_committed=False,
+        )
 
 
 def test_prepare_rejects_partially_null_recovery_authority(tmp_path: Path) -> None:

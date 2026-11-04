@@ -27,6 +27,7 @@ from rl_triage.investigation_session import (
 )
 
 PLAN_SCHEMA = "registered_recovery_comparison_plan_v1"
+PLAN_SCHEMA_V2 = "registered_recovery_comparison_plan_v2"
 JOB_SCHEMA = "registered_recovery_comparison_job_v1"
 RESULT_SCHEMA = "registered_recovery_comparison_result_v1"
 METHODS = ("fixed_sequence", "static_rule", "one_shot_llm", "iterative_agent")
@@ -115,7 +116,10 @@ def _relative(value: object, label: str) -> Path:
 def _validate_plan(plan: dict) -> None:
     fields = {"schema", "source_anchor", "source_closure", "methods", "cases", "limits", "inputs",
               "backend", "authorization", "recovery_policy", "template_commitments"}
-    if set(plan) != fields or plan["schema"] != PLAN_SCHEMA:
+    schema = plan.get("schema")
+    if schema == PLAN_SCHEMA_V2:
+        fields.add("continuation")
+    if set(plan) != fields or schema not in {PLAN_SCHEMA, PLAN_SCHEMA_V2}:
         raise ComparisonContractError("plan fields differ")
     if _COMMIT.fullmatch(str(plan["source_anchor"])) is None:
         raise ComparisonContractError("source anchor differs")
@@ -137,13 +141,56 @@ def _validate_plan(plan: dict) -> None:
                 or len(row["rotation"]) != 4 or set(row["rotation"]) != set(METHODS)):
             raise ComparisonContractError("four-arm case rotation differs")
     limits = plan["limits"]
+    expected_sdk_cap = len(case_ids) * 8 if schema == PLAN_SCHEMA else len(case_ids) * 8 - 1
+    expected_total_cap = len(case_ids) * 16 if schema == PLAN_SCHEMA else len(case_ids) * 16 - 1
     if limits != {"max_recoveries": len(case_ids) * 4,
-                  "gpu_sdk_launch_cap": len(case_ids) * 8,
+                  "gpu_sdk_launch_cap": expected_sdk_cap,
                   "cpu_checkpoint_launch_cap": len(case_ids) * 4,
                   "cpu_telemetry_launch_cap": len(case_ids) * 4,
-                  "total_owned_launch_cap": len(case_ids) * 16,
+                  "total_owned_launch_cap": expected_total_cap,
                   "max_parent_wall_s_per_recovery": 5000, "api_cap": 0}:
         raise ComparisonContractError("recovery/GPU/API cap differs")
+    if schema == PLAN_SCHEMA_V2:
+        continuation = plan["continuation"]
+        required = {
+            "gpu_admission_profile", "prior_training", "prior_consumed_gpu_sdk_launches",
+            "prior_training_gpu_s", "expected_new_gpu_sdk_launches", "continuation_tag",
+            "prior_failed_attempt_preserved",
+        }
+        if (
+            not isinstance(continuation, dict)
+            or set(continuation) != required
+            or continuation["gpu_admission_profile"] != "registered_desktop_shared_v2"
+            or continuation["prior_consumed_gpu_sdk_launches"] != 1
+            or continuation["prior_training_gpu_s"] != 515.3279999999795
+            or continuation["expected_new_gpu_sdk_launches"] != 29
+            or continuation["continuation_tag"] != "v5_fresh"
+            or continuation["prior_failed_attempt_preserved"] is not True
+            or case_ids != set(SUPPORTED_CASES)
+        ):
+            raise ComparisonContractError("continuation accounting/profile differs")
+        prior = continuation["prior_training"]
+        if (
+            not isinstance(prior, dict)
+            or set(prior) != {
+                "logical_id", "proof_sha256", "source_checkpoint_sha256",
+                "completed_checkpoint_sha256", "seed", "task", "correction_id",
+                "diagnostic_manifest_sha256",
+            }
+            or prior["logical_id"] != "case-05/fixed_sequence/case_02/CORRECTED"
+            or any(
+                not isinstance(prior[key], str) or _SHA.fullmatch(prior[key]) is None
+                for key in (
+                    "proof_sha256", "source_checkpoint_sha256", "completed_checkpoint_sha256",
+                    "diagnostic_manifest_sha256",
+                )
+            )
+            or type(prior["seed"]) is not int
+            or prior["correction_id"] != "restore_motor_torque_speed"
+            or not isinstance(prior["task"], str)
+            or not prior["task"]
+        ):
+            raise ComparisonContractError("prior training logical identity differs")
     policy = plan["recovery_policy"]
     if (not isinstance(policy, dict)
             or set(policy) != {"training_iterations", "seeds", "same_case_same_template", "source_cost_policy"}
@@ -285,7 +332,17 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
         expected_seed = seeds[row["case_id"]].get(mode) if mode in {"resume", "restart"} else None
         commitment = (plan["template_commitments"].get(row["case_id"], {}).get(mechanism)
                       if isinstance(mechanism, str) else None)
-        if (not isinstance(protocol, dict) or diagnostic.get("case_id") != row["case_id"]
+        operation_v2_fields = {
+            "correction_id", "recovery_mode", "runner_id", "training_seed",
+            "training_iterations", "gpu_budget_s", "source_checkpoint_consumed",
+            "training_binding_artifact_id", "fixed_binding_artifact_id",
+            "gpu_admission_profile", "prior_training_artifact_id",
+        }
+        if (not isinstance(protocol, dict)
+                or (plan["schema"] == PLAN_SCHEMA_V2
+                    and protocol.get("schema") != "registered_recovery_protocol_v2")
+                or (plan["schema"] == PLAN_SCHEMA_V2 and set(operation) != operation_v2_fields)
+                or diagnostic.get("case_id") != row["case_id"]
                 or entry is None or operation.get("correction_id") != entry["correction_id"]
                 or mode not in entry["recovery_modes"]
                 or operation.get("training_seed") != expected_seed
@@ -298,6 +355,32 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
                 or not isinstance(commitment, dict)
                 or commitment.get("source_checkpoint_sha256") != source_checkpoint):
             raise ComparisonContractError("per-arm recovery protocol differs from parent policy")
+        prior_id = operation.get("prior_training_artifact_id")
+        if plan["schema"] == PLAN_SCHEMA_V2:
+            continuation = plan["continuation"]
+            prior = continuation["prior_training"]
+            expected_prior_id = (
+                "prior_training"
+                if row["case_id"] == "case-05"
+                and row["method"] == "fixed_sequence"
+                and mechanism == "actuator"
+                else None
+            )
+            if (
+                operation.get("gpu_admission_profile") != continuation["gpu_admission_profile"]
+                or prior_id != expected_prior_id
+                or (
+                    expected_prior_id is not None
+                    and (
+                        diagnostic.get("session_manifest_sha256")
+                        != prior["diagnostic_manifest_sha256"]
+                        or source_checkpoint != prior["source_checkpoint_sha256"]
+                        or operation.get("training_seed") != prior["seed"]
+                        or operation.get("correction_id") != prior["correction_id"]
+                    )
+                )
+            ):
+                raise ComparisonContractError("prior training arm/profile binding differs")
         _, resolver = _ref(payload["artifact_resolver"], "artifact resolver")
         training_id = operation.get("training_binding_artifact_id")
         fixed_id = operation.get("fixed_binding_artifact_id")
@@ -308,6 +391,14 @@ def _validate_job(job: dict, plan_ref: dict, plan: dict, job_path: Path) -> list
             raise ComparisonContractError("artifact resolver differs from parent template commitment")
         _ref(artifacts[training_id], "training binding")
         _ref(artifacts[fixed_id], "fixed binding")
+        if prior_id is not None:
+            if set(artifacts) != {training_id, fixed_id, prior_id}:
+                raise ComparisonContractError("prior training resolver artifacts differ")
+            prior_path, _prior_proof = _ref(artifacts[prior_id], "prior training proof")
+            if file_sha(prior_path) != plan["continuation"]["prior_training"]["proof_sha256"]:
+                raise ComparisonContractError("prior training proof differs from plan")
+        elif set(artifacts) != {training_id, fixed_id}:
+            raise ComparisonContractError("unexpected resolver artifact")
         approval_path, _ = _ref(row["approval_ref"], "approval")
         normalized.append({**deepcopy(row), "session_path": str(session),
                            "approval_ref": {"path": str(approval_path), "sha256": row["approval_ref"]["sha256"]}})

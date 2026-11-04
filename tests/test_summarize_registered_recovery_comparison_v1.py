@@ -267,3 +267,39 @@ def test_recorded_post_review_is_reverified_but_original_cpu_wall_is_preserved(
     assert review["confirmation_catalog_complete"] is False
     assert review["unobserved_components"] == ["actuator_mapping"]
     assert review["cpu_review_wall_s"] == 0.75
+
+
+def test_prior_training_cost_is_included_once_and_separate_from_new_fixed_dispatch(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    prepared, status = _fixture(tmp_path, monkeypatch)
+    old = _resource(tmp_path, "old", status="failed", training=12.0, fixed=None, checkpoint=None)
+    current = _resource(tmp_path, "new", status="complete", training=None, fixed=5.0, checkpoint=None)
+    old_raw = summary.io.read_ref(old["recovery_resource_ref"])
+    current_raw = summary.io.read_ref(current["recovery_resource_ref"])
+    proof = _write(tmp_path / "prior-proof.json", {"stage_files": {
+        "execution.json": old_raw["execution_refs"]["training"]}})
+    receipt = _write(tmp_path / "continuation-receipt.json", {
+        "training_stage": old_raw["execution_refs"]["training"], "costs": {"training_s": 12.0},
+        "training_reuse": {"new_training_launched": False, "proof_ref": proof,
+                          "prior_owned_execution_ref": old_raw["execution_refs"]["training"],
+                          "prior_dispatch_resource_ref": old["recovery_resource_ref"]}})
+    current_raw["raw_receipt_ref"] = receipt
+    raw_ref = _write(tmp_path / "new-with-reuse.json", current_raw)
+    projected = tmp_path / "new-with-reuse-projected.json"
+    resources.project(raw_ref, projected, case_id="case-05", method="fixed_sequence",
+                      plan_sha256="a" * 64, request_id="new", effect_key="effect-new")
+    status["arms"][0]["resource_cost"] = {
+        **json.loads(projected.read_text(encoding="utf-8")),
+        "receipt_ref": {"path": str(projected.resolve()), "sha256": file_sha(projected)}}
+    result = summary.summarize(prepared, tmp_path / "summary")
+    costs = result["arms"][0]["costs"]
+    assert costs["simulator_owned_wall_s"] == 17.0
+    assert costs["current_dispatch_simulator_owned_wall_s"] == 5.0
+    assert costs["reused_training_owned_wall_s"] == 12.0
+    assert costs["current_dispatch_sdk_launches"] == 1
+    assert costs["reused_training_sdk_launches"] == 1
+    assert costs["phase_elapsed_s"] == 25.0 and costs["whole_effect_active_phase_s"] == 50.0
+    assert result["methods"][0]["costs"]["simulator_owned_wall_s"]["known_sum"] == 17.0
+    assert result["methods"][0]["costs"]["current_dispatch_simulator_owned_wall_s"]["known_sum"] == 5.0
+    text = (tmp_path / "summary/public/summary.json").read_text(encoding="utf-8")
+    assert str(tmp_path) not in text and '"path"' not in text

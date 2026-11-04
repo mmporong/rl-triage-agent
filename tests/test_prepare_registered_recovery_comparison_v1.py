@@ -184,6 +184,52 @@ def test_templates_bind_all_cases_mechanisms_and_ignore_hidden_eligibility(
     assert "hidden_label" not in serialized and "eligible" not in serialized
 
 
+def test_templates_v2_bind_prior_proof_without_private_path_in_public_plan(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    proof = _write(tmp_path / "prior-proof.json", {"schema": "prior-proof-fixture"})
+    proof_ref = {"path": str(proof.resolve()), "sha256": _sha(proof)}
+    logical = {
+        "logical_id": "case-05/fixed_sequence/case_02/CORRECTED",
+        "proof_sha256": proof_ref["sha256"],
+        "source_checkpoint_sha256": "a" * 64,
+        "completed_checkpoint_sha256": "b" * 64,
+        "seed": 2664,
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "correction_id": "restore_motor_torque_speed",
+        "diagnostic_manifest_sha256": "c" * 64,
+    }
+    monkeypatch.setattr(prepare, "_CONTINUATION_SOURCE_FILES", {"source.py"})
+    monkeypatch.setattr(prepare, "_prior_training", lambda *_args: (proof_ref, logical))
+    isaaclab = tmp_path / "IsaacLab"
+    isaaclab.mkdir()
+    out = tmp_path / "templates-v2"
+    result = prepare.prepare_templates(
+        source_index=index,
+        metadata=metadata,
+        diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40,
+        source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json",
+        recipe_code_contract=tmp_path / "recipe-code.json",
+        output=out,
+        actor="operator",
+        isaaclab_commit="c" * 40,
+        prior_training_proof=proof,
+        isaaclab_root=isaaclab,
+        require_committed=False,
+    )
+    plan_path = out / "registered-plan.json"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    assert plan["schema"] == prepare.COMPARISON.PLAN_SCHEMA_V2
+    assert plan["limits"]["gpu_sdk_launch_cap"] == 31
+    assert plan["limits"]["total_owned_launch_cap"] == 63
+    assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 29
+    assert result["prior_training_proof"] == proof_ref
+    assert str(tmp_path) not in plan_path.read_text(encoding="utf-8")
+
+
 def test_templates_reject_source_index_and_checkpoint_substitution(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
@@ -319,6 +365,144 @@ def test_jobs_preserve_all_arms_and_prepare_only_confirmed_registered_mechanism(
     approval.write_text("{}", encoding="utf-8")
     with pytest.raises(prepare.COMPARISON.ComparisonContractError, match="approval reference changed"):
         prepare.COMPARISON._validate_job(job, job["plan"], plan, tmp_path / "jobs/job.json")
+
+
+def test_jobs_v2_emit_prior_proof_only_for_exact_fixed_sequence_actuator(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    metadata_body = json.loads(metadata.read_text(encoding="utf-8"))
+    source_checkpoint = metadata_body["sources"]["fault-s2554"]["binding"]["checkpoint_sha256"]
+    proof = _write(tmp_path / "prior-proof.json", {"schema": "prior-proof-fixture"})
+    proof_ref = {"path": str(proof.resolve()), "sha256": _sha(proof)}
+    logical = {
+        "logical_id": "case-05/fixed_sequence/case_02/CORRECTED",
+        "proof_sha256": proof_ref["sha256"],
+        "source_checkpoint_sha256": source_checkpoint,
+        "completed_checkpoint_sha256": "b" * 64,
+        "seed": 2664,
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "correction_id": "restore_motor_torque_speed",
+        "diagnostic_manifest_sha256": "c" * 64,
+    }
+    monkeypatch.setattr(prepare, "_CONTINUATION_SOURCE_FILES", {"source.py"})
+    monkeypatch.setattr(prepare, "_prior_training", lambda *_args: (proof_ref, logical))
+    isaaclab = tmp_path / "IsaacLab"
+    (isaaclab / "logs").mkdir(parents=True)
+    template_root = tmp_path / "templates-v2"
+    prepare.prepare_templates(
+        source_index=index,
+        metadata=metadata,
+        diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40,
+        source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json",
+        recipe_code_contract=tmp_path / "recipe-code.json",
+        output=template_root,
+        actor="operator",
+        isaaclab_commit="c" * 40,
+        prior_training_proof=proof,
+        isaaclab_root=isaaclab,
+        require_committed=False,
+    )
+    plan_path = template_root / "registered-plan.json"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    monkeypatch.setattr(prepare.COMPARISON, "load_plan", lambda *_args, **_kwargs: plan)
+    monkeypatch.setattr(
+        prepare.SEED_GUARD,
+        "assert_fresh_seeds",
+        lambda seeds, *_args, **_kwargs: {
+            "schema": "core_seed_freshness_v1",
+            "status": "fresh",
+            "seeds": list(seeds),
+        },
+    )
+    diagnostic_root = tmp_path / "diagnostics"
+    for case in prepare.CASES:
+        checkpoint = plan["template_commitments"][case]["actuator"]["source_checkpoint_sha256"]
+        for method in prepare.METHODS:
+            source = _write(
+                diagnostic_root / "bound" / case / method / "source.json",
+                {"case_id": case, "checkpoint_sha256": checkpoint},
+            )
+            _write(
+                diagnostic_root / "bound" / case / method / "session/manifest.json",
+                {
+                    "method": method,
+                    "execution_class": "actual",
+                    "source": {"path": str(source), "sha256": _sha(source)},
+                    "source_verification": {"case_id": case, "checkpoint_sha256": checkpoint},
+                },
+            )
+    statuses: dict[tuple[str, str], dict[str, object]] = {
+        (case, method): {"status": "unidentifiable", "case_id": case}
+        for case in prepare.CASES
+        for method in prepare.METHODS
+    }
+    statuses[("case-05", "fixed_sequence")] = {
+        "status": "confirmed",
+        "confirmed_mechanism": "actuator",
+        "case_id": "case-05",
+        "source_verification": {"checkpoint_sha256": source_checkpoint},
+    }
+    monkeypatch.setattr(
+        prepare,
+        "_diagnostic_status",
+        lambda session: statuses[(session.parent.parent.name, session.parent.name)],
+    )
+
+    class FakeSession:
+        def __init__(self, path: Path):
+            self.folder = Path(path).resolve(strict=True)
+            body = json.loads((self.folder / "manifest.json").read_text(encoding="utf-8"))
+            self._manifest_sha256 = (
+                "c" * 64
+                if self.folder.parent.parent.name == "case-05"
+                and self.folder.parent.name == "fixed_sequence"
+                else _sha(self.folder / "manifest.json")
+            )
+            self.manifest = body
+            self.source = json.loads(Path(body["source"]["path"]).read_text(encoding="utf-8"))
+
+    monkeypatch.setattr(prepare, "InvestigationSession", FakeSession)
+    monkeypatch.setattr(
+        prepare.RECOVERY,
+        "_diagnostic",
+        lambda _session, _mechanism: (
+            {"probe": "P_actuator_mapping", "request_id": "diag-1"},
+            {},
+            {"receipt_ref": {"path": str(tmp_path / "diag.json"), "sha256": "f" * 64}},
+        ),
+    )
+
+    def run(command, _session, payload, **_kwargs):
+        if command == "recovery-prepare":
+            Path(payload["folder"]).mkdir(parents=True)
+            return {"mechanism": "actuator"}
+        if command == "recovery-propose":
+            return {"status": {"pending": {"request_id": "req-1", "effect_key": "effect-1"}}}
+        raise AssertionError(command)
+
+    monkeypatch.setattr(prepare.investigate, "run", run)
+    jobs = tmp_path / "jobs-v2"
+    result = prepare.prepare_jobs(
+        templates=template_root,
+        registered_plan=plan_path,
+        registration_anchor="d" * 40,
+        diagnostic_root=diagnostic_root,
+        isaaclab_root=isaaclab,
+        output=jobs,
+        require_committed=False,
+    )
+    job = json.loads((jobs / "job.json").read_text(encoding="utf-8"))
+    active = next(row for row in job["arms"] if row["recovery_payload"] is not None)
+    protocol = json.loads(Path(active["recovery_payload"]["protocol"]["path"]).read_text())
+    resolver = json.loads(Path(active["recovery_payload"]["artifact_resolver"]["path"]).read_text())
+    assert result["recovery_prepared"] == 1
+    assert protocol["schema"] == "registered_recovery_protocol_v2"
+    assert protocol["operation"]["gpu_admission_profile"] == "registered_desktop_shared_v2"
+    assert protocol["operation"]["prior_training_artifact_id"] == "prior_training"
+    assert resolver["artifacts"]["prior_training"] == proof_ref
 
 
 def test_bound_diagnostic_sessions_use_phase_a_layout_and_reject_substitution(
