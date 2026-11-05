@@ -37,6 +37,57 @@ def test_retry_admission_requires_both_policy_closures_and_routes_exact_scope(mo
         backend._extensions(protocol)
 
 
+def test_v4_requires_actuator_prior_training_and_v5_closure() -> None:
+    closure = (backend._DESKTOP_SOURCES | backend._RETRY_SOURCES | backend._PRIOR_SOURCES
+               | backend._CONTINUATION_V5_SOURCES)
+    protocol = {"schema": backend.SCHEMA_V4, "source_closure": dict.fromkeys(closure, "a" * 64),
+                "operation": {"gpu_admission_profile": backend.RETRY_PROFILE,
+                              "prior_training_artifact_id": "prior_training",
+                              "training_binding_artifact_id": "training",
+                              "fixed_binding_artifact_id": "fixed",
+                              "runner_id": "actuator_resume_v1"}}
+    assert backend._extensions(protocol) == "prior_training"
+    protocol["operation"]["prior_training_artifact_id"] = None
+    with pytest.raises(ValueError, match="v4 requires"):
+        backend._extensions(protocol)
+    protocol["operation"]["prior_training_artifact_id"] = "prior_training"
+    protocol["source_closure"].pop("evals/registered_recovery_continuation_v5.py")
+    with pytest.raises(ValueError, match="v5 continuation"):
+        backend._extensions(protocol)
+
+
+def test_v4_prior_training_routes_to_v5_with_backend_expectations(monkeypatch: pytest.MonkeyPatch) -> None:
+    closure = (backend._DESKTOP_SOURCES | backend._RETRY_SOURCES | backend._PRIOR_SOURCES
+               | backend._CONTINUATION_V5_SOURCES)
+    operation = {"gpu_admission_profile": backend.RETRY_PROFILE,
+                 "prior_training_artifact_id": "prior_training",
+                 "training_binding_artifact_id": "training",
+                 "fixed_binding_artifact_id": "fixed", "runner_id": "actuator_resume_v1",
+                 "training_seed": 2665, "correction_id": "restore_motor_torque_speed"}
+    protocol = {"schema": backend.SCHEMA_V4, "source_closure": dict.fromkeys(closure, "a" * 64),
+                "operation": operation,
+                "diagnostic": {"checkpoint_sha256": "1" * 64,
+                               "session_manifest_sha256": "2" * 64}}
+    binding = {"task": "Isaac-Velocity-Flat-Unitree-Go2-v0"}
+    calls = []
+
+    def load(ref, **kwargs):
+        calls.append((ref, kwargs))
+        return {"new_training_launched": False}
+
+    monkeypatch.setattr(backend.importlib, "import_module",
+                        lambda name: SimpleNamespace(load_completed_training=load))
+    context = {"protocol_body": protocol, "artifacts": {
+        "training": {"body": binding},
+        "prior_training": {"ref": {"path": "proof.json", "sha256": "3" * 64}},
+    }, "isaaclab_root": str(Path.cwd())}
+    assert backend._prior_training(context) == {"new_training_launched": False}
+    assert calls[0][0] == context["artifacts"]["prior_training"]["ref"]
+    assert calls[0][1]["expected_source_checkpoint_sha256"] == "1" * 64
+    assert calls[0][1]["expected_diagnostic_manifest_sha256"] == "2" * 64
+    assert calls[0][1]["expected_binding"] == binding
+
+
 def _write(path: Path, value: dict) -> dict:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, sort_keys=True), encoding="utf-8")
@@ -188,7 +239,8 @@ def test_optimizer_prepare_rejects_placeholder_binding(tmp_path: Path) -> None:
 def test_real_actuator_manifest_producer_is_consumed_as_resume_not_optimizer(tmp_path: Path) -> None:
     module = backend._runner_module("actuator_resume_v1")
     source = _write(tmp_path / "model_299.pt", {"fixture_checkpoint": True})
-    binding = {"source_commit_sha": "a" * 40, "task": module.V1.TASK, "seed": 2664,
+    binding = {"schema": module.SCHEMA, "source_commit_sha": "a" * 40,
+               "task": module.V1.TASK, "seed": 2664,
                "num_envs": 4096, "max_iterations": 300, "resume_iteration": 299,
                "resume_checkpoint": source, "resume_env_config": {"path": str(tmp_path / "env.yaml")},
                "resume_agent_config": {"path": str(tmp_path / "agent.yaml")}}

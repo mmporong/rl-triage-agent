@@ -28,6 +28,7 @@ BACKEND_ID = "registered_recovery_v1"
 SCHEMA = "registered_recovery_protocol_v1"
 SCHEMA_V2 = "registered_recovery_protocol_v2"
 SCHEMA_V3 = "registered_recovery_protocol_v3"
+SCHEMA_V4 = "registered_recovery_protocol_v4"
 DESKTOP_PROFILE = "registered_desktop_shared_v2"
 WAIT_PROFILE = "registered_desktop_shared_wait_v1"
 SHARED_PROFILE = "registered_desktop_shared_baseline_v1"
@@ -78,6 +79,12 @@ _RETRY_SOURCES = _SHARED_SOURCES | {
 }
 _CONTINUATION_SOURCES = {"evals/registered_recovery_continuation_v3.py",
                          "tests/test_registered_recovery_continuation_v3.py"}
+_CONTINUATION_V5_SOURCES = _CONTINUATION_SOURCES | {
+    "evals/registered_recovery_continuation_v4.py",
+    "tests/test_registered_recovery_continuation_v4.py",
+    "evals/registered_recovery_continuation_v5.py",
+    "tests/test_registered_recovery_continuation_v5.py",
+}
 
 
 def _require(ok: object, reason: str) -> None:
@@ -172,11 +179,12 @@ def _verify_source_closure(anchor: object, closure: object) -> None:
 def _extensions(protocol: Mapping[str, Any]) -> str | None:
     """Return the optional prior artifact after checking the registered v2 boundary."""
     operation = protocol["operation"]
-    if protocol.get("schema") not in {SCHEMA_V2, SCHEMA_V3}:
+    if protocol.get("schema") not in {SCHEMA_V2, SCHEMA_V3, SCHEMA_V4}:
         _require(not {"gpu_admission_profile", "prior_training_artifact_id"} & set(operation),
                  "v2 operation extensions require v2 protocol")
         return None
-    v3 = protocol.get("schema") == SCHEMA_V3
+    v3 = protocol.get("schema") in {SCHEMA_V3, SCHEMA_V4}
+    v4 = protocol.get("schema") == SCHEMA_V4
     profile = operation.get("gpu_admission_profile")
     _require(profile in ({WAIT_PROFILE, SHARED_PROFILE, RETRY_PROFILE} if v3 else {DESKTOP_PROFILE}),
              "unregistered desktop GPU admission profile")
@@ -187,11 +195,16 @@ def _extensions(protocol: Mapping[str, Any]) -> str | None:
         _require(required_sources <= set(protocol["source_closure"]), "desktop admission policy source missing")
     prior_id = operation.get("prior_training_artifact_id")
     _require(prior_id is None or isinstance(prior_id, str) and bool(prior_id), "prior training artifact id")
+    if v4:
+        _require(prior_id is not None, "v4 requires prior actuator training")
     if prior_id is not None:
         _require(operation["runner_id"] == "actuator_resume_v1", "prior training runner scope")
         _require(_PRIOR_SOURCES <= set(protocol["source_closure"]), "prior training source missing")
         if v3:
             _require(_CONTINUATION_SOURCES <= set(protocol["source_closure"]), "continuation source missing")
+        if v4:
+            _require(_CONTINUATION_V5_SOURCES <= set(protocol["source_closure"]),
+                     "v5 continuation source missing")
         _require(prior_id not in {operation["training_binding_artifact_id"],
                                  operation["fixed_binding_artifact_id"]}, "prior artifact aliases binding")
     return prior_id
@@ -204,14 +217,16 @@ def _prior_training(context: Mapping[str, Any], *,
     if prior_id is None:
         return None
     operation, diagnostic = protocol["operation"], protocol["diagnostic"]
-    module_name = ("evals.registered_recovery_continuation_v3" if protocol.get("schema") == SCHEMA_V3
-                   else "evals.registered_prior_training_v1")
+    schema = protocol.get("schema")
+    module_name = ("evals.registered_recovery_continuation_v5" if schema == SCHEMA_V4 else
+                   "evals.registered_recovery_continuation_v3" if schema == SCHEMA_V3 else
+                   "evals.registered_prior_training_v1")
     module = importlib.import_module(module_name)
-    load = (module.load_completed_training if protocol.get("schema") == SCHEMA_V3
+    load = (module.load_completed_training if schema in {SCHEMA_V3, SCHEMA_V4}
             else module.load_completed_actuator_training)
     binding = context["artifacts"][operation["training_binding_artifact_id"]]["body"]
     historical = ({"observed_anchor": historical_validation_anchor}
-                  if protocol.get("schema") == SCHEMA_V3 and historical_validation_anchor is not None
+                  if schema in {SCHEMA_V3, SCHEMA_V4} and historical_validation_anchor is not None
                   else {})
     return load(
         context["artifacts"][prior_id]["ref"],
@@ -229,9 +244,9 @@ def _reuse_evidence(prior: dict) -> dict:
 def _gpu_scope(context: Mapping[str, Any]):
     protocol = context["protocol_body"]
     _extensions(protocol)
-    if protocol.get("schema") not in {SCHEMA_V2, SCHEMA_V3}:
+    if protocol.get("schema") not in {SCHEMA_V2, SCHEMA_V3, SCHEMA_V4}:
         return nullcontext()
-    if protocol.get("schema") == SCHEMA_V3:
+    if protocol.get("schema") in {SCHEMA_V3, SCHEMA_V4}:
         name = ("evals.registered_desktop_gpu_retry_v1"
                 if protocol["operation"]["gpu_admission_profile"] == RETRY_PROFILE else
                 "evals.registered_desktop_gpu_shared_v1"
@@ -253,7 +268,7 @@ def prepare(payload: Mapping[str, Any]) -> dict:
     _no_hidden(protocol)
     fields = {"schema", "backend_id", "source_anchor", "source_closure", "diagnostic", "operation",
               "registry_sha256", "actors", "limits"}
-    _require(set(protocol) == fields and protocol["schema"] in {SCHEMA, SCHEMA_V2, SCHEMA_V3}
+    _require(set(protocol) == fields and protocol["schema"] in {SCHEMA, SCHEMA_V2, SCHEMA_V3, SCHEMA_V4}
              and protocol["backend_id"] == BACKEND_ID, "protocol fields")
     _require(protocol["registry_sha256"] == registry_digest(), "registry binding changed")
     _verify_source_closure(protocol["source_anchor"], protocol["source_closure"])
@@ -265,7 +280,7 @@ def prepare(payload: Mapping[str, Any]) -> dict:
     ofields = {"correction_id", "recovery_mode", "runner_id", "training_seed", "training_iterations",
                "gpu_budget_s", "source_checkpoint_consumed", "training_binding_artifact_id",
                "fixed_binding_artifact_id"}
-    if protocol["schema"] in {SCHEMA_V2, SCHEMA_V3}:
+    if protocol["schema"] in {SCHEMA_V2, SCHEMA_V3, SCHEMA_V4}:
         ofields |= {"gpu_admission_profile", "prior_training_artifact_id"}
     _require(isinstance(operation, dict) and set(operation) == ofields, "operation fields")
     prior_id = _extensions(protocol)

@@ -794,6 +794,104 @@ def _upgrade_to_v10(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[di
     return plan, job
 
 
+def _upgrade_to_v11(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[dict, dict]:
+    plan, job = _upgrade_to_v10(plan_path, job_path, tmp_path)
+    repo = plan_path.parent
+    project_root = Path(comparison.__file__).resolve().parents[1]
+    for relative in comparison.BALANCED_CONTINUATION_SOURCES:
+        target = repo / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        source = project_root / relative
+        target.write_bytes(source.read_bytes() if source.is_file() else b"fixture\n")
+        plan["source_closure"][relative] = comparison._lf_sha(target)
+    plan["schema"] = comparison.PLAN_SCHEMA_V11
+    plan["limits"] = {
+        "max_recoveries": 16, "gpu_sdk_launch_cap": 16,
+        "cpu_checkpoint_launch_cap": 8, "cpu_telemetry_launch_cap": 8,
+        "total_owned_launch_cap": 32, "max_parent_wall_s_per_recovery": 5000,
+        "api_cap": 0,
+    }
+    plan["inputs"].append({
+        "role": "balanced_resource_continuation_preregistration",
+        "path": comparison.V17_NOTE,
+        "sha256": plan["source_closure"][comparison.V17_NOTE],
+    })
+    plan["inputs"].append({
+        "role": "prior_recovery_timing_prefix",
+        "path": comparison.V16_PREFIX,
+        "sha256": plan["source_closure"][comparison.V16_PREFIX],
+    })
+    plan.pop("resource_remeasurement")
+    by_key = {(row["case_id"], row["method"]): row for row in job["arms"]}
+    for row in job["arms"]:
+        row["continuation_import"] = None
+    import_keys = (*comparison.V17_EFFECT_KEYS, comparison.V17_TRAINING_KEY)
+    imports = []
+    proof_refs = {}
+    for case_id, method in import_keys:
+        row = by_key[(case_id, method)]
+        kind = "completed_training" if (case_id, method) == comparison.V17_TRAINING_KEY else "completed_effect"
+        artifact_id = ("prior_training" if kind == "completed_training"
+                       else f"prior_effect_{case_id.replace('-', '_')}_{method}")
+        proof_refs[artifact_id] = _write(tmp_path / "proofs" / f"{artifact_id}.json", {"fixture": True})
+        imports.append({
+            "artifact_id": artifact_id, "kind": kind, "case_id": case_id, "method": method,
+            "proof_sha256": proof_refs[artifact_id]["sha256"], "prior_plan_sha256": "e" * 64,
+            "diagnostic_manifest_sha256": row["diagnostic_manifest"]["sha256"],
+            "source_checkpoint_sha256": "c" * 64, "completed_checkpoint_sha256": "d" * 64,
+            "seed": 2664 if case_id == "case-05" else 2665, "task": "task",
+            "correction_id": "restore_motor_torque_speed", "source_anchor": "a" * 40,
+            "registration_anchor": "b" * 40,
+        })
+        row["continuation_import"] = {"kind": kind, "artifact_id": artifact_id,
+                                      "proof": proof_refs[artifact_id]}
+        if kind == "completed_effect":
+            row.update(recovery_folder=None, recovery_payload=None, approval_ref=None)
+    plan["continuation"] = {
+        "profile_id": comparison.RESOURCE_CONTINUATION_PROFILE,
+        "gpu_admission_profile": "registered_desktop_shared_retry_v1",
+        "stage_imports": imports, "prior_plan_sha256": "e" * 64,
+        "prior_registration_anchor": "b" * 40, "prior_source_anchor": "a" * 40,
+        "prior_completed_effects": 7, "prior_completed_training": 1,
+        "prior_consumed_gpu_sdk_launches": 15, "expected_new_gpu_sdk_launches": 15,
+        "new_gpu_sdk_launch_cap": 16, "prior_primary_sdk_launches": 32,
+        "prior_post_sdk_launches": 1, "prior_v15_failed_sdk_launches": 1,
+        "prior_v16_partial_sdk_launches": 15, "prior_whole_study_sdk_launches": 49,
+        "expected_whole_study_sdk_launches": 64, "cumulative_gpu_sdk_launch_cap": 65,
+        "prior_incomplete_preserved": True, "no_model_requery": True,
+    }
+    for row in job["arms"]:
+        payload = row["recovery_payload"]
+        if payload is None:
+            continue
+        protocol_path = Path(payload["protocol"]["path"])
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+        protocol["source_closure"] = plan["source_closure"]
+        payload["protocol"] = _write(protocol_path, protocol)
+    training_row = by_key[comparison.V17_TRAINING_KEY]
+    payload = training_row["recovery_payload"]
+    protocol_path = Path(payload["protocol"]["path"])
+    protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+    protocol["schema"] = "registered_recovery_protocol_v4"
+    protocol["operation"]["prior_training_artifact_id"] = "prior_training"
+    payload["protocol"] = _write(protocol_path, protocol)
+    resolver_path = Path(payload["artifact_resolver"]["path"])
+    resolver = json.loads(resolver_path.read_text(encoding="utf-8"))
+    training_path = Path(resolver["artifacts"]["training"]["path"])
+    training = json.loads(training_path.read_text(encoding="utf-8"))
+    training.update(schema="registered_actuator_recovery_binding_v3",
+                    namespace_profile=comparison.RESOURCE_REMEASUREMENT_PROFILE)
+    training_ref = _write(training_path, training)
+    resolver["artifacts"]["training"] = training_ref
+    resolver["artifacts"]["prior_training"] = proof_refs["prior_training"]
+    payload["artifact_resolver"] = _write(resolver_path, resolver)
+    plan["template_commitments"]["case-06"]["actuator"]["training_binding_sha256"] = training_ref["sha256"]
+    plan_ref = _write(plan_path, plan)
+    job["plan"] = plan_ref
+    _write(job_path, job)
+    return plan, job
+
+
 def _prepared_v7_for_advance(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> tuple[Path, dict, dict[str, str], dict[str, str]]:
@@ -1318,6 +1416,104 @@ def test_v10_rejects_changed_failure_authority_seed_cap_or_note(
         plan["source_closure"].pop(comparison.V16_NOTE)
     with pytest.raises(comparison.ComparisonContractError, match=match):
         comparison._validate_plan(plan)
+
+
+def test_v11_accepts_seven_effects_one_training_and_remaining_matrix(tmp_path: Path) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, job = _upgrade_to_v11(plan_path, job_path, tmp_path)
+    comparison._validate_plan(plan)
+    normalized = comparison._validate_job(job, job["plan"], plan, job_path)
+    assert len(normalized) == 16
+    assert plan["limits"] == {
+        "max_recoveries": 16, "gpu_sdk_launch_cap": 16,
+        "cpu_checkpoint_launch_cap": 8, "cpu_telemetry_launch_cap": 8,
+        "total_owned_launch_cap": 32, "max_parent_wall_s_per_recovery": 5000,
+        "api_cap": 0,
+    }
+    assert plan["source_closure"][comparison.V16_PREFIX] == next(
+        row["sha256"] for row in plan["inputs"]
+        if row["role"] == "prior_recovery_timing_prefix"
+    )
+    imported = [row for row in normalized if row["continuation_import"] is not None]
+    assert [row["continuation_import"]["kind"] for row in imported].count("completed_effect") == 7
+    assert [row["continuation_import"]["kind"] for row in imported].count("completed_training") == 1
+    active = [row for row in normalized if row["recovery_payload"] is not None]
+    assert len(active) == 8
+    assert next(row for row in active if (row["case_id"], row["method"])
+                == comparison.V17_TRAINING_KEY)["continuation_import"]["kind"] == "completed_training"
+    schemas = [
+        json.loads(Path(row["recovery_payload"]["protocol"]["path"]).read_text())["schema"]
+        for row in active
+    ]
+    assert schemas.count("registered_recovery_protocol_v4") == 1
+    assert schemas.count("registered_recovery_protocol_v3") == 7
+
+
+@pytest.mark.parametrize("mutation,match", [
+    ("missing_import", "accounting/profile"),
+    ("wrong_kind", "stage import"),
+    ("wrong_prior", "accounting/profile"),
+    ("wrong_seed", "registered restart seed"),
+    ("wrong_cap", "recovery/GPU/API cap"),
+    ("wrong_order", "rotation order"),
+    ("missing_prefix", "preregistration/closure"),
+])
+def test_v11_rejects_changed_import_authority_or_remaining_contract(
+    tmp_path: Path, mutation: str, match: str,
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, job = _upgrade_to_v11(plan_path, job_path, tmp_path)
+    if mutation == "missing_import":
+        plan["continuation"]["stage_imports"].pop()
+    elif mutation == "wrong_kind":
+        plan["continuation"]["stage_imports"][0]["kind"] = "completed_training"
+    elif mutation == "wrong_prior":
+        plan["continuation"]["prior_v16_partial_sdk_launches"] = 14
+    elif mutation == "wrong_seed":
+        plan["recovery_policy"]["seeds"]["case-07"]["restart"] = 6466
+    elif mutation == "wrong_cap":
+        plan["limits"]["gpu_sdk_launch_cap"] = 15
+    elif mutation == "missing_prefix":
+        plan["inputs"] = [
+            row for row in plan["inputs"]
+            if row["role"] != "prior_recovery_timing_prefix"
+        ]
+    else:
+        job["arms"][0], job["arms"][1] = job["arms"][1], job["arms"][0]
+    with pytest.raises(comparison.ComparisonContractError, match=match):
+        if mutation == "wrong_order":
+            comparison._validate_job(job, job["plan"], plan, job_path)
+        else:
+            comparison._validate_plan(plan)
+
+
+@pytest.mark.parametrize("target_schema", [
+    "fresh_as_v4",
+    "prior_as_v3",
+])
+def test_v11_protocol_v4_is_reserved_for_the_one_prior_training_arm(
+    tmp_path: Path, target_schema: str,
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, job = _upgrade_to_v11(plan_path, job_path, tmp_path)
+    if target_schema == "prior_as_v3":
+        row = next(row for row in job["arms"]
+                   if (row["case_id"], row["method"]) == comparison.V17_TRAINING_KEY)
+        replacement = "registered_recovery_protocol_v3"
+    else:
+        row = next(row for row in job["arms"]
+                   if row["recovery_payload"] is not None
+                   and row["continuation_import"] is None)
+        replacement = "registered_recovery_protocol_v4"
+    path = Path(row["recovery_payload"]["protocol"]["path"])
+    protocol = json.loads(path.read_text(encoding="utf-8"))
+    protocol["schema"] = replacement
+    row["recovery_payload"]["protocol"] = _write(path, protocol)
+    with pytest.raises(comparison.ComparisonContractError, match="per-arm recovery protocol"):
+        comparison._validate_job(job, job["plan"], plan, job_path)
 
 
 @pytest.mark.parametrize("mutation,match", [

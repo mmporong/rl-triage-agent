@@ -940,6 +940,148 @@ def test_v16_restart_seed_map_is_exact_and_profile_bound() -> None:
         )
 
 
+def test_v17_import_factory_verifies_exact_seven_effects_and_one_training(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls = []
+
+    class FakeContinuation:
+        @staticmethod
+        def verify_completed_effect(proof_ref, *, expected_import, repo):
+            calls.append(("effect", expected_import["case_id"], expected_import["method"], repo))
+            return {"execution_origin": "verified_prior_effect", "proof_ref": proof_ref}
+
+        @staticmethod
+        def load_completed_training(proof_ref, *, expected_import, repo, isaaclab):
+            calls.append(("training", expected_import["case_id"], expected_import["method"], repo))
+            assert isaaclab == (tmp_path / "IsaacLab").resolve()
+            return {"new_training_launched": False, "proof_ref": proof_ref}
+
+    monkeypatch.setattr(prepare, "_continuation_module_v5", lambda: FakeContinuation)
+    common = {
+        "prior_plan_sha256": "a" * 64, "diagnostic_manifest_sha256": "b" * 64,
+        "source_checkpoint_sha256": "c" * 64, "final_checkpoint_sha256": "d" * 64,
+        "task": "task", "correction_id": "restore_motor_torque_speed",
+        "source_anchor": "e" * 40, "registration_anchor": "f" * 40,
+    }
+    effects = {}
+    for index, (case_id, method) in enumerate(prepare.V17_EFFECT_KEYS):
+        artifact_id = prepare._v17_artifact_id(case_id, method, "completed_effect")
+        proof = tmp_path / f"{artifact_id}.json"
+        proof.write_text(json.dumps({
+            "status": "completed_effect", "case_id": case_id, "method": method,
+            "identity": {**common, "seed": 2664 if case_id == "case-05" else 2665},
+        }), encoding="utf-8")
+        effects[artifact_id] = proof
+    training = tmp_path / "prior_training.json"
+    training.write_text(json.dumps({
+        "status": "completed_training_only", "case_id": "case-06",
+        "method": "fixed_sequence", "identity": {**common, "seed": 2665},
+    }), encoding="utf-8")
+    isaaclab = tmp_path / "IsaacLab"
+    isaaclab.mkdir()
+    rows, refs = prepare._v17_imports(effects, training, isaaclab)
+    assert len(rows) == len(refs) == 8
+    assert [row["kind"] for row in rows].count("completed_effect") == 7
+    assert rows[-1]["artifact_id"] == "prior_training"
+    assert calls[-1][:3] == ("training", "case-06", "fixed_sequence")
+
+
+def test_v17_import_factory_rejects_cross_lineage_or_incomplete_matrix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(prepare, "_continuation_module_v5", lambda: object())
+    with pytest.raises(prepare.PreparationError, match="exactly seven"):
+        prepare._v17_imports({}, tmp_path / "missing.json", tmp_path)
+    assert prepare._restart_seed_map(
+        prepare.RESOURCE_CONTINUATION_PROFILE,
+        prepare.REGISTERED_RESTART_SEED_OVERRIDES_V16,
+    )["case-08"] == 6667
+
+
+def test_v17_factory_builds_continuation_plan_and_reuses_training_binding_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
+    project_root = Path(__file__).resolve().parents[1]
+    required = (
+        prepare._CONTINUATION_RETRY_SOURCE_FILES
+        | prepare.COMPARISON.BALANCED_ADMISSION_SOURCES
+        | prepare.COMPARISON.BALANCED_RESOURCE_SUMMARY_SOURCES
+        | prepare.COMPARISON.BALANCED_NAMESPACE_SOURCES
+        | prepare._RESOURCE_MANIFEST_RETRY_SOURCE_FILES
+        | prepare._RESOURCE_CONTINUATION_SOURCE_FILES
+        | {
+            prepare.RESOURCE_REMEASUREMENT_PREREGISTRATION_V14,
+            prepare.COMPARISON.V13_PUBLIC_SUMMARY,
+        }
+    )
+    for relative in required:
+        source = project_root / relative
+        _write(tmp_path / relative, source.read_bytes() if source.is_file() else b"fixture\n")
+    isaaclab = tmp_path / "IsaacLab"
+    (isaaclab / "logs").mkdir(parents=True)
+    binding = tmp_path / "prior-stage/binding.json"
+    binding.parent.mkdir(parents=True)
+    binding.write_text(
+        '{\n  "schema": "registered_actuator_recovery_binding_v3",\n'
+        '  "namespace_profile": "balanced_resource_remeasurement_v1"\n}\n',
+        encoding="utf-8",
+    )
+    effects = {}
+    imports = []
+    proof_refs = {}
+    for case_id, method in prepare.V17_EFFECT_KEYS:
+        artifact_id = prepare._v17_artifact_id(case_id, method, "completed_effect")
+        proof = _write(tmp_path / "proofs" / f"{artifact_id}.json", {"fixture": True})
+        effects[artifact_id] = proof
+        proof_refs[artifact_id] = {"path": str(proof.resolve()), "sha256": _sha(proof)}
+        imports.append({
+            "artifact_id": artifact_id, "kind": "completed_effect",
+            "case_id": case_id, "method": method, "proof_sha256": _sha(proof),
+            "prior_plan_sha256": "a" * 64, "diagnostic_manifest_sha256": "b" * 64,
+            "source_checkpoint_sha256": "c" * 64,
+            "completed_checkpoint_sha256": "d" * 64,
+            "seed": 2664 if case_id == "case-05" else 2665, "task": "task",
+            "correction_id": "restore_motor_torque_speed", "source_anchor": "e" * 40,
+            "registration_anchor": "f" * 40,
+        })
+    training = _write(tmp_path / "proofs/prior_training.json", {
+        "stage_files": {"binding.json": {"path": str(binding.resolve()),
+                                           "sha256": _sha(binding)}},
+    })
+    proof_refs["prior_training"] = {"path": str(training.resolve()), "sha256": _sha(training)}
+    imports.append({
+        "artifact_id": "prior_training", "kind": "completed_training",
+        "case_id": "case-06", "method": "fixed_sequence", "proof_sha256": _sha(training),
+        "prior_plan_sha256": "a" * 64, "diagnostic_manifest_sha256": "b" * 64,
+        "source_checkpoint_sha256": "c" * 64, "completed_checkpoint_sha256": "d" * 64,
+        "seed": 2665, "task": "task", "correction_id": "restore_motor_torque_speed",
+        "source_anchor": "e" * 40, "registration_anchor": "f" * 40,
+    })
+    monkeypatch.setattr(prepare, "_v17_imports", lambda *_args: (imports, proof_refs))
+    templates = tmp_path / "templates-v17"
+    manifest = prepare.prepare_templates(
+        source_index=index, metadata=metadata, diagnostic_plan=phase,
+        diagnostic_registration_anchor="b" * 40, source_anchor="a" * 40,
+        sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
+        output=templates, actor="operator", isaaclab_commit="c" * 40,
+        completed_effect_proofs=effects, completed_training_proof=training,
+        resource_remeasurement_profile=prepare.RESOURCE_CONTINUATION_PROFILE,
+        restart_seed_overrides=prepare.REGISTERED_RESTART_SEED_OVERRIDES_V16,
+        isaaclab_root=isaaclab, gpu_admission_profile=prepare.GPU_ADMISSION_PROFILE_RETRY,
+        require_committed=False,
+    )
+    plan = json.loads((templates / "registered-plan.json").read_text(encoding="utf-8"))
+    reused = templates / "templates/case-06/actuator/training-binding.json"
+    assert plan["schema"] == prepare.COMPARISON.PLAN_SCHEMA_V11
+    assert len(plan["continuation"]["stage_imports"]) == 8
+    assert plan["continuation"]["expected_new_gpu_sdk_launches"] == 15
+    assert plan["limits"]["gpu_sdk_launch_cap"] == 16
+    assert reused.read_bytes() == binding.read_bytes()
+    assert manifest["continuation_proofs"] == proof_refs
+
+
 def test_v8_factory_builds_fifteen_fresh_arms_and_one_registered_hold(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:

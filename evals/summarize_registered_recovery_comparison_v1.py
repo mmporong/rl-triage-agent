@@ -65,7 +65,12 @@ def _imported_resource(row: dict, logical_prefix: str, private: list[dict], scop
             or scope.get("method") != method
             or row["prior_effect_proof_ref"]["sha256"] != scope["proof_sha256"]):
         raise SummaryError("completed effect differs from registered import")
-    if plan_schema == "registered_recovery_comparison_plan_v4":
+    if plan_schema == "registered_recovery_comparison_plan_v11":
+        from evals import registered_recovery_continuation_v5 as continuation_v5
+
+        verified = continuation_v5.verify_completed_effect(
+            row["prior_effect_proof_ref"], expected_import=scope, repo=ROOT)
+    elif plan_schema == "registered_recovery_comparison_plan_v4":
         from evals import registered_recovery_continuation_v4 as continuation_v4
 
         verified = continuation_v4.verify_completed_effect(
