@@ -596,6 +596,7 @@ def test_github_pages_links_docs_relative_and_other_files_to_the_repository(tmp_
         "const where = JSON.parse(process.argv[4]);\n"
         "const out = {};\n"
         "for (const [name, loc] of Object.entries(where)) out[name] = data.scenes.map((_, i) => app.renderScene(data, i, loc));\n"
+        "out.gallery = [0, 1, 2].map(i => app.renderScene(data, 0, where.pages, i));\n"
         "const link = app.linker(where.user_site);\n"
         "out.user_site_link = link('evals/x.json', 'file');\n"
         "out.unknown_path = app.linker({protocol: 'https:', hostname: 'mmporong.github.io', pathname: '/other/'})('evals/x.json');\n"
@@ -614,7 +615,7 @@ def test_github_pages_links_docs_relative_and_other_files_to_the_repository(tmp_
         assert out[name] == out["default"], name
     assert "../../evals/results/p0c_fixed_eval_20261009/runs/h02_s2026.json" in out["default"][0]
     assert out["pages"] == out["pages_index"]
-    pages = "".join(out["pages"])
+    pages = "".join(out["pages"] + out["gallery"])
     assert "../../" not in pages
     assert f'href="{BLOB}evals/results/p0c_fixed_eval_20261009/runs/h02_s2026.json"' in out["pages"][0]
     videos = sorted({built["sources"][item["source"]]["path"] for scene in built["scenes"] for block in scene["blocks"]

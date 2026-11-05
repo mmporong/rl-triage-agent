@@ -7,6 +7,8 @@ import subprocess
 from html.parser import HTMLParser
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -23,7 +25,7 @@ class Media(HTMLParser):
             self.links.append(dict(attrs))
 
 
-def render(*, waiting=False):
+def render(*, waiting=False, selected=1):
     script = """
 const fs = require('fs'), vm = require('vm');
 const app = require('./docs/replay/app.js'), context = {window: {}};
@@ -35,17 +37,18 @@ if (process.argv[1] === 'waiting') {
   }
 }
 console.log(app.renderScene(data, 0, {protocol: 'https:', hostname: 'mmporong.github.io',
-                                  pathname: '/rl-triage-agent/replay/'}));
+                                  pathname: '/rl-triage-agent/replay/'}, Number(process.argv[2])));
 """
-    return subprocess.run(["node", "-e", script, "waiting" if waiting else "ready"],
+    return subprocess.run(["node", "-e", script, "waiting" if waiting else "ready", str(selected)],
                           cwd=ROOT, check=True, capture_output=True, text=True,
                           encoding="utf-8", errors="replace").stdout
 
 
-def test_ready_videos_have_local_preview_and_independent_playback_link():
+@pytest.mark.parametrize("selected", [0, 1, 2])
+def test_ready_videos_have_local_preview_and_independent_playback_link(selected):
     media = Media()
-    media.feed(render())
-    assert len(media.videos) == 3
+    media.feed(render(selected=selected))
+    assert len(media.videos) == 1
     for video in media.videos:
         assert video.get("poster", "").startswith("posters/")
         assert (ROOT / "docs/replay" / video["poster"]).is_file()

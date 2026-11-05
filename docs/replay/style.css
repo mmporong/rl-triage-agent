@@ -145,4 +145,73 @@ html.reflow .dots a { width: 32px; height: 32px; background: none; display: grid
 html.reflow .dots a::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--line); }
 html.reflow .dots a.on::before { background: var(--accent); }
 
+/* 첫 장면은 숫자 표보다 실제 동작을 먼저 보여 준다. */
+.media-first h1 { font-size: 44px; word-break: keep-all; }
+.blocks.media-layout { grid-template-columns: minmax(0, 1fr) 420px; gap: 34px; overflow: visible; }
+.media-story { min-width: 0; }
+.media-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.media-toolbar h2 { margin: 0; font-size: 23px; font-weight: 650; }
+.media-toolbar > div { display: flex; align-items: center; gap: 18px; }
+.media-toolbar .video-open { margin: 0; font-size: 16px; white-space: nowrap; }
+.media-expand { min-height: 44px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: var(--ink); font: inherit; font-size: 16px; cursor: pointer; }
+.media-expand:hover { background: #f1f3f6; }
+.media-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.media-tabs button { min-height: 46px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--muted); font: inherit; font-size: 17px; cursor: pointer; }
+.media-tabs button:hover { border-color: #8994a3; color: var(--ink); }
+.media-tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: white; }
+.media-screen { position: relative; aspect-ratio: 8 / 3; border-radius: 12px; overflow: hidden; background: #171c22; }
+.media-screen video { display: block; width: 100%; height: 100%; object-fit: contain; }
+.media-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 15px; min-height: 72px; padding: 16px 25px; border: 1px solid #ffffffaa; border-radius: 50px; background: #ffffffed; color: #172033; font: inherit; font-size: 23px; font-weight: 700; white-space: nowrap; cursor: pointer; box-shadow: 0 8px 24px #0004; }
+.media-play[hidden] { display: none; }
+.media-play > span:first-child { font-size: 28px; }
+.media-play:hover { background: #fff; }
+.media-screen .video-error { position: absolute; left: 12px; right: 12px; bottom: 44px; padding: 10px; border-radius: 6px; background: #fff; }
+.media-unavailable { height: 100%; display: grid; place-content: center; justify-items: center; color: #fff; }
+.media-caption { margin: 13px 0 0; font-size: 17px; color: var(--muted); line-height: 1.5; }
+.media-reading { min-width: 0; border-left: 1px solid var(--line); padding-left: 30px; }
+.media-eyebrow { margin: 0 0 16px; font-size: 17px; color: var(--muted); }
+.media-reading h2 { margin: 0 0 14px; font-size: 33px; line-height: 1.35; letter-spacing: -0.5px; }
+.media-reading-lead { margin: 0 0 26px; max-width: 30ch; font-size: 19px; line-height: 1.6; color: #425067; }
+.media-seed { margin: 0 0 10px; color: var(--muted); font-size: 16px; }
+.media-metrics { background: #f6f7f9; border-radius: 8px; }
+.media-metrics caption { text-align: left; font-size: 17px; font-weight: 650; margin-bottom: 10px; }
+.media-metrics th { padding: 14px 12px 4px; font-size: 16px; border: 0; }
+.media-metrics td { padding: 0 12px 14px; font-size: 36px; font-weight: 650; border: 0; }
+.media-metrics td:last-child { color: var(--ready-ink); }
+.media-hint { margin: 10px 0 20px; color: var(--muted); font-size: 15px; }
+.media-episode th { padding: 12px 0; font-size: 16px; }
+.media-episode td { padding: 10px 0; text-align: right; font-size: 23px; }
+.media-verdict-note { margin: 20px 0; font-size: 17px; line-height: 1.6; color: #425067; }
+.media-details { position: relative; font-size: 16px; }
+.media-details summary, .scene-notes summary { cursor: pointer; padding: 10px 0; min-height: 44px; }
+.media-detail-body { position: absolute; bottom: calc(100% + 8px); right: 0; width: 760px; max-height: 310px; overflow: auto; z-index: 3; background: white; border: 1px solid var(--line); border-radius: 8px; padding: 14px; box-shadow: 0 10px 30px #17203322; }
+.media-detail-body .block { margin-bottom: 12px; }
+.media-detail-body .table-wrap { overflow-x: auto; }
+.media-detail-body table { min-width: 660px; }
+.scene-notes { font-size: 16px; color: var(--muted); }
+.scene-notes .notes { margin: 0 0 12px; font-size: 15px; }
+.media-dialog { width: calc(100vw - 48px); max-width: 1800px; max-height: calc(100vh - 48px); padding: 18px; border: 0; border-radius: 14px; background: #10151b; color: white; }
+.media-dialog::backdrop { background: #10151bdd; }
+.media-dialog-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; font-size: 18px; margin-bottom: 12px; }
+.media-dialog-bar button { min-height: 44px; padding: 8px 16px; border: 1px solid #667080; border-radius: 6px; font: inherit; color: #fff; background: transparent; cursor: pointer; }
+.media-dialog video { display: block; width: 100%; max-height: calc(100vh - 130px); object-fit: contain; }
+html.reflow .media-first h1 { font-size: 27px; }
+html.reflow .blocks.media-layout { grid-template-columns: 1fr; gap: 25px; }
+html.reflow .media-toolbar { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+html.reflow .media-toolbar h2 { font-size: 19px; }
+html.reflow .media-toolbar .video-open { font-size: 14px; }
+html.reflow .media-tabs { flex-wrap: wrap; gap: 6px; }
+html.reflow .media-tabs button { font-size: 14px; padding: 8px 11px; }
+html.reflow .media-play { font-size: 16px; min-height: 52px; padding: 10px 17px; gap: 8px; }
+html.reflow .media-play > span:first-child { font-size: 21px; }
+html.reflow .media-caption { font-size: 14px; }
+html.reflow .media-reading { border-left: 0; border-top: 1px solid var(--line); padding: 22px 0 0; }
+html.reflow .media-reading h2 { font-size: 27px; }
+html.reflow .media-reading-lead { max-width: none; font-size: 16px; margin-bottom: 18px; }
+html.reflow .media-metrics, html.reflow .media-episode { min-width: 0; }
+html.reflow .media-metrics td { font-size: 32px; }
+html.reflow .media-detail-body { position: static; width: auto; max-height: 460px; padding: 10px; }
+html.reflow .media-verdict-note { font-size: 15px; }
+html.reflow .scene-notes { margin-top: 20px; font-size: 14px; }
+@media (max-width: 600px) { .media-dialog { width: calc(100vw - 16px); padding: 10px; } .media-dialog-bar { font-size: 15px; } }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }

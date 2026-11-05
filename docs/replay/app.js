@@ -206,6 +206,60 @@
     if (message) message.hidden = false;
   }
 
+  function mediaTabLabel(item) {
+    var seed = item.label.match(/seed (\d+)/);
+    return (item.label.indexOf("여섯") >= 0 ? "회복 방식 비교" : "이어 학습 비교") +
+      (seed ? " · " + seed[1] : "");
+  }
+
+  function renderFailureMedia(data, scene, link, selected) {
+    var block = scene.blocks.filter(function (item) { return item.type === "video"; })[0];
+    var index = Number.isInteger(selected) && selected >= 0 && selected < block.items.length ? selected : 1;
+    var item = block.items[index] || block.items[0];
+    var row = data.sources[item.source] || { status: "waiting" };
+    var src = row.status === "ready" && row.path ? link(row.path, "video") : null;
+    var poster = src && VIDEO_POSTERS[row.path];
+    var tabs = block.items.map(function (candidate, i) {
+      return '<button type="button" role="tab" id="media-tab-' + i + '" aria-controls="media-panel"' +
+        ' aria-selected="' + (i === index) + '" tabindex="' + (i === index ? "0" : "-1") +
+        '" data-media-tab="' + i + '">' + esc(mediaTabLabel(candidate)) + "</button>";
+    }).join("");
+    var media = src ? '<video id="featured-video" controls preload="metadata" playsinline' +
+      (poster ? ' poster="' + esc(poster) + '"' : '') + ' aria-label="' + esc(item.label) +
+      '" src="' + esc(src) + '"></video>' +
+      '<button type="button" class="media-play" data-media-play aria-label="비교 영상 재생">' +
+      '<span aria-hidden="true">▶</span><span>비교 영상 재생</span></button>' +
+      '<p class="video-error" role="status" hidden>이 화면에서 재생하지 못했습니다. MP4 링크로 열어 주세요.</p>' :
+      '<div class="media-unavailable"><span class="status ' + esc(row.status) + '">' +
+      esc(statusLabel(data, row.status)) + '</span><p>확인된 영상이 아직 없습니다.</p></div>';
+    var tools = src ? '<button type="button" class="media-expand" data-media-expand>영상 확대</button>' +
+      '<a class="video-open" href="' + esc(src) + '" target="_blank" rel="noopener">원본 MP4 열기 ↗</a>' : "";
+    var seed = item.label.match(/seed (\d+)/);
+    var tables = scene.blocks.filter(function (candidate) { return candidate.type === "table"; });
+    var values = tables[0].rows.filter(function (candidate) { return !seed || candidate[0] === seed[1]; })[0];
+    var training = tables[1].rows.filter(function (candidate) { return !seed || candidate[0] === seed[1]; })[0];
+    var ids = collectSources(tables[0]).concat(collectSources(tables[1]));
+    var metrics = values ? '<table class="media-metrics"><caption>선속도 추종 오차 · m/s</caption>' +
+      '<thead><tr><th scope="col">결함 정책</th><th scope="col">정상 정책</th></tr></thead><tbody><tr>' +
+      renderCell(data, ids, values[1], link) + renderCell(data, ids, values[5], link) + '</tr></tbody></table>' : "";
+    var episode = training ? '<table class="media-episode"><tbody><tr><th scope="row">결함 정책의 에피소드 길이</th>' +
+      renderCell(data, ids, training[1], link) + '</tr></tbody></table>' : "";
+    return '<div class="blocks media-layout"><section class="media-story" aria-label="실제 시뮬레이션 비교">' +
+      '<div class="media-toolbar"><h2>같은 재생 조건, 다른 회복 방식</h2><div>' + tools + '</div></div>' +
+      '<div class="media-tabs" role="tablist" aria-label="비교 영상 선택">' + tabs + '</div>' +
+      '<div id="media-panel" role="tabpanel" aria-labelledby="media-tab-' + index + '">' +
+      '<div class="media-screen">' + media + '</div><p class="media-caption">' + esc(item.label) +
+      '</p></div></section><aside class="media-reading" aria-label="영상과 함께 볼 평가 결과">' +
+      '<p class="media-eyebrow">고정 평가 · 26개 속도 명령</p><h2>버티는 것과<br>걷는 것은 다릅니다.</h2>' +
+      '<p class="media-reading-lead">에피소드가 길어도 이동 명령을 제대로 따르는 것은 아닙니다.</p>' +
+      '<p class="media-seed">' + esc(seed ? "seed " + seed[1] : "선택한 실행") + ' 수치 비교</p>' + metrics +
+      '<p class="media-hint">오차가 작을수록 명령을 잘 따라갑니다.</p>' + episode +
+      '<p class="media-verdict-note">영상은 동작 관찰용입니다.<br>회복 판정은 고정 평가 수치로 합니다.</p>' +
+      '<details class="media-details"><summary>전체 수치와 근거 보기</summary><div class="media-detail-body">' +
+      tables.map(function (table) { return renderBlock(data, table, link); }).join("") +
+      renderSources(data, collectSources(block), link) + '</div></details></aside></div>';
+  }
+
   function renderSlot(data, block) {
     var row = data.sources[block.source] || { status: "waiting" };
     return '<div class="slot"><span class="status ' + esc(row.status) + '">' + esc(statusLabel(data, row.status)) + "</span><span>" +
@@ -226,7 +280,7 @@
   }
 
   // location을 주지 않으면(node 렌더 시험 등) 파일로 열 때와 같은 저장소 상대 경로를 쓴다.
-  function renderScene(data, index, location) {
+  function renderScene(data, index, location, selectedVideo) {
     var link = linker(location);
     var scene = data.scenes[index];
     var total = data.scenes.length;
@@ -234,13 +288,17 @@
       return '<a href="#' + (i + 1) + '" class="' + (i === index ? "on" : "") + '" aria-label="장면 ' + (i + 1) + '"' +
         (i === index ? ' aria-current="step"' : "") + "></a>";
     }).join("");
-    return '<div class="topline"><span>RL Triage · 발표 재생</span><span class="counter">' + scene.number + " / " + total + "</span></div>" +
-      "<header><h1>" + esc(scene.title) + '</h1><p class="lead">' + esc(scene.lead) + "</p></header>" +
+    var mediaFirst = scene.id === "failure";
+    var body = mediaFirst ? renderFailureMedia(data, scene, link, selectedVideo) :
       '<div class="blocks' + (scene.blocks.length === 1 ? " single" : "") + (scene.dense ? " dense" : "") + (roomy(scene) ? " roomy" : "") + '">' +
-      scene.blocks.map(function (block) {
-        return renderBlock(data, block, link);
-      }).join("") + "</div>" +
-      '<div><ul class="notes">' + (scene.notes || []).map(function (note) { return "<li>" + esc(note) + "</li>"; }).join("") + "</ul>" +
+      scene.blocks.map(function (block) { return renderBlock(data, block, link); }).join("") + "</div>";
+    var notes = '<ul class="notes">' + (scene.notes || []).map(function (note) { return "<li>" + esc(note) + "</li>"; }).join("") + "</ul>";
+    if (mediaFirst) notes = '<details class="scene-notes"><summary>관찰 범위와 판정 기준</summary>' + notes + '</details>';
+    var title = mediaFirst ? '<h1 aria-label="' + esc(scene.title) + '">' + esc(scene.title.replace(/^실패 입력: /, "")) + '</h1>' :
+      '<h1>' + esc(scene.title) + '</h1>';
+    return '<div class="topline"><span>RL Triage · 발표 재생</span><span class="counter">' + scene.number + " / " + total + "</span></div>" +
+      "<header>" + title + '<p class="lead">' + esc(scene.lead) + "</p></header>" +
+      body + '<div>' + notes +
       "<footer><span>" + esc(scene.scope || data.scope) + "</span>" +
       '<nav aria-label="장면 이동"><button type="button" data-step="-1"' + (index === 0 ? " disabled" : "") + ">이전 장면</button>" +
       '<div class="dots">' + dots + "</div>" +
@@ -256,6 +314,7 @@
   function start(window) {
     var document = window.document, stage = document.getElementById("stage");
     var data = window.REPLAY_DATA;
+    var mediaChoices = {};
     if (!data || !data.scenes) {
       stage.innerHTML = '<p class="boot">data.js가 없다. <code>evals/build_replay_page.py</code>를 실행한다.</p>';
       return;
@@ -274,22 +333,85 @@
       stage.style.top = ((window.innerHeight - 1080 * scale) / 2) + "px";
     }
     function show() {
-      stage.innerHTML = renderScene(data, sceneIndex(data, window.location.hash), window.location);
+      stage.querySelectorAll("video").forEach(function (video) { video.pause(); });
+      var index = sceneIndex(data, window.location.hash);
+      stage.classList.toggle("media-first", data.scenes[index].id === "failure");
+      stage.innerHTML = renderScene(data, index, window.location, mediaChoices[index]);
       // 큰 글자로 그린 장면이 무대를 넘치면 기본 크기로 되돌린다.
       var blocks = stage.querySelector(".blocks.roomy");
       if (blocks && blocks.scrollHeight > blocks.clientHeight + 1) blocks.classList.remove("roomy");
+    }
+    function chooseMedia(index, focus) {
+      mediaChoices[sceneIndex(data, window.location.hash)] = index;
+      show();
+      if (focus) stage.querySelector('[data-media-tab="' + index + '"]').focus();
+    }
+    function expandMedia(video, trigger) {
+      var playing = !video.paused, time = video.currentTime;
+      video.pause();
+      var dialog = document.createElement("dialog");
+      dialog.className = "media-dialog";
+      dialog.setAttribute("aria-label", "비교 영상 확대 재생");
+      dialog.innerHTML = '<div class="media-dialog-bar"><span>실제 시뮬레이션 비교</span><button type="button">닫기 · Esc</button></div>';
+      var expanded = video.cloneNode(true);
+      expanded.removeAttribute("id");
+      dialog.appendChild(expanded);
+      document.body.appendChild(dialog);
+      expanded.addEventListener("loadedmetadata", function () {
+        expanded.currentTime = time;
+        if (playing) expanded.play().catch(function () { /* 재생 권한 거부 시 기본 제어를 유지한다. */ });
+      }, { once: true });
+      dialog.querySelector("button").addEventListener("click", function () { dialog.close(); });
+      dialog.addEventListener("click", function (event) { if (event.target === dialog) dialog.close(); });
+      dialog.addEventListener("close", function () {
+        expanded.pause();
+        if (Number.isFinite(expanded.currentTime)) video.currentTime = expanded.currentTime;
+        dialog.remove();
+        trigger.focus();
+      });
+      dialog.showModal();
     }
     function go(step) {
       var next = Math.max(0, Math.min(data.scenes.length - 1, sceneIndex(data, window.location.hash) + step));
       window.location.hash = "#" + (next + 1);
     }
     stage.addEventListener("click", function (event) {
+      var tab = event.target.closest && event.target.closest("[data-media-tab]");
+      if (tab) { chooseMedia(Number(tab.getAttribute("data-media-tab")), true); return; }
+      var play = event.target.closest && event.target.closest("[data-media-play]");
+      var expand = event.target.closest && event.target.closest("[data-media-expand]");
+      var video = stage.querySelector("#featured-video");
+      if (play && video) {
+        video.play().catch(function () { showVideoError({ target: video }); });
+        return;
+      }
+      if (expand && video) { expandMedia(video, expand); return; }
       var step = event.target.getAttribute && event.target.getAttribute("data-step");
       if (step) go(parseInt(step, 10));
     });
     // error는 버블링하지 않는다. 파일 수용 상태와 브라우저 디코딩 실패를 별도로 표시한다.
     stage.addEventListener("error", showVideoError, true);
+    ["play", "pause", "ended"].forEach(function (name) {
+      stage.addEventListener(name, function (event) {
+        if (event.target.id !== "featured-video") return;
+        var play = stage.querySelector("[data-media-play]");
+        if (play) play.hidden = !event.target.paused;
+      }, true);
+    });
     window.addEventListener("keydown", function (event) {
+      if (document.querySelector(".media-dialog[open]")) return;
+      var target = event.target;
+      var tab = target.closest && target.closest("[data-media-tab]");
+      if (tab && ["ArrowRight", "ArrowLeft", "Home", "End"].indexOf(event.key) >= 0) {
+        event.preventDefault();
+        var tabs = stage.querySelectorAll("[data-media-tab]");
+        var current = Number(tab.getAttribute("data-media-tab"));
+        var next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 :
+          (current + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+        chooseMedia(next, true);
+        return;
+      }
+      if ((target.closest && target.closest("button, a, video, summary, input, select, textarea")) || target.isContentEditable) return;
       if (["ArrowRight", "PageDown", " "].indexOf(event.key) >= 0) { event.preventDefault(); go(1); }
       if (["ArrowLeft", "PageUp"].indexOf(event.key) >= 0) { event.preventDefault(); go(-1); }
       if (event.key === "Home") window.location.hash = "#1";
