@@ -25,6 +25,7 @@ from evals import r1_repair_demo_v2 as R1_DEMO
 from evals import registered_epoch_namespace_failure_v1 as EPOCH_NAMESPACE_FAILURE
 from evals import registered_epoch_shutdown_failure_v1 as EPOCH_FAILURE
 from evals import registered_prior_training_v1 as PRIOR
+from evals import registered_recovery_backend_v1 as RECOVERY_BACKEND
 from evals import run_diagnostic_comparison_v1 as PHASE_A
 from evals import run_registered_recovery_comparison_v1 as COMPARISON
 from evals import run_upstream_r1_smoke as UPSTREAM
@@ -221,6 +222,7 @@ _RESOURCE_MANIFEST_RETRY_SOURCE_FILES = {
 }
 _RESOURCE_CONTINUATION_SOURCE_FILES = COMPARISON.BALANCED_CONTINUATION_SOURCES
 _RESOURCE_CONTINUATION_R2_SOURCE_FILES = COMPARISON.BALANCED_CONTINUATION_R2_SOURCES
+_RESOURCE_CONTINUATION_R3_SOURCE_FILES = COMPARISON.BALANCED_CONTINUATION_R3_SOURCES
 CPU_NONEXECUTION_PROOF_SCHEMA = "registered_epoch_actual_request_cpu_preflight_v2"
 CPU_NONEXECUTION_HELPER_SHA256 = (
     "128fbe1e9478f2da2a152c123e47a840f797f216c88146e2bb69665bd9e40d36"
@@ -321,7 +323,8 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
                     include_resource_namespace_v15: bool = False,
                     include_resource_manifest_retry_v16: bool = False,
                     include_resource_continuation_v17: bool = False,
-                    include_resource_continuation_v17_r2: bool = False) -> dict[str, str]:
+                    include_resource_continuation_v17_r2: bool = False,
+                    include_resource_continuation_v17_r3: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
@@ -360,6 +363,10 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
         if not include_resource_continuation_v17:
             raise PreparationError("v17 r2 seed proof requires v17 continuation sources")
         source_files |= _RESOURCE_CONTINUATION_R2_SOURCE_FILES
+    if include_resource_continuation_v17_r3:
+        if not include_resource_continuation_v17_r2:
+            raise PreparationError("v17 r3 backend preflight requires v17 r2 sources")
+        source_files |= _RESOURCE_CONTINUATION_R3_SOURCE_FILES
     if include_observation_retry:
         if not include_continuation_v4:
             raise PreparationError("observation retry requires v4 completed-effect imports")
@@ -381,6 +388,38 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
             raise PreparationError(f"source closure differs from anchor: {relative}")
         closure[relative] = digest
     return closure
+
+
+def _validate_registered_backend_extensions(closure: Mapping[str, str]) -> dict[str, int]:
+    """Exercise the production backend extension boundary for every pending V17 arm."""
+    protocols = [{
+        "schema": RECOVERY_BACKEND.SCHEMA_V4,
+        "source_closure": closure,
+        "operation": {
+            "gpu_admission_profile": GPU_ADMISSION_PROFILE_RETRY,
+            "prior_training_artifact_id": "prior_training",
+            "runner_id": "actuator_resume_v1",
+            "training_binding_artifact_id": "training-case-06-fixed_sequence",
+            "fixed_binding_artifact_id": "fixed-case-06",
+        },
+    }]
+    protocols.extend({
+        "schema": RECOVERY_BACKEND.SCHEMA_V3,
+        "source_closure": closure,
+        "operation": {
+            "gpu_admission_profile": GPU_ADMISSION_PROFILE_RETRY,
+            "prior_training_artifact_id": None,
+            "runner_id": "r1_epochs_preserving_environment_v1",
+            "training_binding_artifact_id": f"training-{case_id}-{method}",
+            "fixed_binding_artifact_id": f"fixed-{case_id}",
+        },
+    } for case_id, methods in (
+        ("case-07", METHODS[:-1]),
+        ("case-08", METHODS),
+    ) for method in methods)
+    for protocol in protocols:
+        RECOVERY_BACKEND._extensions(protocol)
+    return {"prior_v4": 1, "fresh_v3": len(protocols) - 1}
 
 
 def _continuation_module():
@@ -1106,6 +1145,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     v10_requested = resource_remeasurement_profile == RESOURCE_MANIFEST_RETRY_PROFILE
     v11_requested = resource_remeasurement_profile == RESOURCE_CONTINUATION_PROFILE
     v11_r2_requested = v11_requested and nonexecution_seed_proofs is not None
+    v11_r3_requested = v11_r2_requested
     resource_requested = v8_requested or v9_requested or v10_requested or v11_requested
     if resource_remeasurement_profile not in {
         None, RESOURCE_REMEASUREMENT_PROFILE, RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,
@@ -1272,6 +1312,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         include_resource_manifest_retry_v16=v10_requested or v11_requested,
         include_resource_continuation_v17=v11_requested,
         include_resource_continuation_v17_r2=v11_r2_requested,
+        include_resource_continuation_v17_r3=v11_r3_requested,
     ) if require_committed else {
         path: _sha(ROOT / path, lf=True)
         for path in sorted(
@@ -1300,8 +1341,12 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
             | (_RESOURCE_MANIFEST_RETRY_SOURCE_FILES if v10_requested else set())
             | (_RESOURCE_MANIFEST_RETRY_SOURCE_FILES | _RESOURCE_CONTINUATION_SOURCE_FILES
                if v11_requested else set())
+            | (_RESOURCE_CONTINUATION_R2_SOURCE_FILES if v11_r2_requested else set())
+            | (_RESOURCE_CONTINUATION_R3_SOURCE_FILES if v11_r3_requested else set())
         )
     }
+    if v11_r3_requested:
+        _validate_registered_backend_extensions(closure)
     sdk = _read(sdk_contract)
     if _sha(sdk_contract) != SDK_CONTRACT_SHA256:
         raise PreparationError("SDK source contract changed")
@@ -1466,6 +1511,12 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                     "sha256": closure[COMPARISON.V17_SEED_NONEXECUTION_REGISTRY],
                 },
             ])
+        if v11_r3_requested:
+            inputs.append({
+                "role": "balanced_resource_continuation_r3_preregistration",
+                "path": COMPARISON.V17_R3_NOTE,
+                "sha256": closure[COMPARISON.V17_R3_NOTE],
+            })
     for case in CASES:
         old = case
         row = phase_inputs.get(f"protocol:{old}")

@@ -67,6 +67,7 @@ V15_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v15.md"
 V16_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v16.md"
 V17_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v17.md"
 V17_R2_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v17_r2.md"
+V17_R3_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v17_r3.md"
 V16_PREFIX = "bench/protocols/registered_recovery_v16_prefix_20261105_v1.json"
 V17_SEED_NONEXECUTION_REGISTRY = (
     "bench/protocols/registered_recovery_cpu_seed_nonexecution_20261105_v1.json"
@@ -96,7 +97,7 @@ BALANCED_NAMESPACE_SOURCES = {
     "tests/test_registered_recovery_training_v1.py",
     V15_NOTE,
 }
-BALANCED_CONTINUATION_SOURCES = {
+BALANCED_CONTINUATION_LEGACY_SOURCES = {
     "evals/registered_recovery_continuation_v5.py",
     "tests/test_registered_recovery_continuation_v5.py",
     "evals/registered_recovery_backend_v1.py",
@@ -107,6 +108,25 @@ BALANCED_CONTINUATION_SOURCES = {
     "tests/test_summarize_balanced_recovery_continuation_v1.py",
     V17_NOTE, V16_PREFIX,
 }
+BALANCED_CONTINUATION_BACKEND_SOURCES = {
+    "evals/registered_prior_training_v1.py",
+    "tests/test_registered_prior_training_v1.py",
+    "evals/registered_recovery_continuation_v3.py",
+    "tests/test_registered_recovery_continuation_v3.py",
+    "evals/registered_recovery_continuation_v4.py",
+    "tests/test_registered_recovery_continuation_v4.py",
+}
+BALANCED_CONTINUATION_POSTPROCESSING_SOURCES = {
+    "evals/summarize_balanced_recovery_continuation_v2.py",
+    "tests/test_summarize_balanced_recovery_continuation_v2.py",
+    "bench/protocols/diagnostic_recovery_postprocessing_caps_20261105_v1.md",
+}
+BALANCED_CONTINUATION_SOURCES = (
+    BALANCED_CONTINUATION_LEGACY_SOURCES
+    | BALANCED_CONTINUATION_BACKEND_SOURCES
+    | BALANCED_CONTINUATION_POSTPROCESSING_SOURCES
+)
+BALANCED_CONTINUATION_R3_SOURCES = {V17_R3_NOTE}
 BALANCED_CONTINUATION_R2_SOURCES = {
     "evals/core_seed_guard_v3.py",
     "tests/test_core_seed_guard_v3.py",
@@ -927,7 +947,7 @@ def _validate_plan(plan: dict) -> None:
             | BALANCED_ADMISSION_SOURCES
             | BALANCED_RESOURCE_SUMMARY_SOURCES
             | BALANCED_NAMESPACE_SOURCES
-            | BALANCED_CONTINUATION_SOURCES
+            | BALANCED_CONTINUATION_LEGACY_SOURCES
             | {V14_NOTE, V13_PUBLIC_SUMMARY, V16_NOTE, V15_FAILURE_SUMMARY}
         )
         if (
@@ -989,6 +1009,18 @@ def _validate_plan(plan: dict) -> None:
             }
         ):
             raise ComparisonContractError("v11 r2 seed nonexecution registration differs")
+        r3_note = notes.get("balanced_resource_continuation_r3_preregistration")
+        if r3_note is not None and (
+            r2_note is None
+            or not (BALANCED_CONTINUATION_SOURCES | BALANCED_CONTINUATION_R3_SOURCES)
+            <= set(closure)
+            or r3_note != {
+                "role": "balanced_resource_continuation_r3_preregistration",
+                "path": V17_R3_NOTE,
+                "sha256": closure.get(V17_R3_NOTE),
+            }
+        ):
+            raise ComparisonContractError("v11 r3 backend extension registration differs")
 
 
 def load_plan(plan_path: Path, *, repo_root: Path, registration_anchor: str,

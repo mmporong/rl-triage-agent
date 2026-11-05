@@ -914,6 +914,43 @@ def _upgrade_v11_to_r2(plan: dict, repo: Path) -> dict:
     return plan
 
 
+def _upgrade_v11_r2_to_r3(plan: dict, repo: Path) -> dict:
+    for relative in comparison.BALANCED_CONTINUATION_SOURCES | comparison.BALANCED_CONTINUATION_R3_SOURCES:
+        target = repo / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        source = Path(comparison.__file__).resolve().parents[1] / relative
+        target.write_bytes(source.read_bytes())
+        plan["source_closure"][relative] = comparison._lf_sha(target)
+    plan["inputs"].append({
+        "role": "balanced_resource_continuation_r3_preregistration",
+        "path": comparison.V17_R3_NOTE,
+        "sha256": plan["source_closure"][comparison.V17_R3_NOTE],
+    })
+    return plan
+
+
+def test_v11_r3_plan_requires_backend_and_postprocessing_closure(tmp_path: Path) -> None:
+    repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08")
+    )
+    plan, _job = _upgrade_to_v11(plan_path, job_path, tmp_path)
+    plan = _upgrade_v11_to_r2(plan, repo)
+    plan = _upgrade_v11_r2_to_r3(plan, repo)
+    comparison._validate_plan(plan)
+    required = (
+        comparison.BALANCED_CONTINUATION_BACKEND_SOURCES
+        | comparison.BALANCED_CONTINUATION_POSTPROCESSING_SOURCES
+    )
+    for relative in required:
+        incomplete = json.loads(json.dumps(plan))
+        incomplete["source_closure"].pop(relative)
+        with pytest.raises(
+            comparison.ComparisonContractError,
+            match="v11 r3 backend extension registration differs",
+        ):
+            comparison._validate_plan(incomplete)
+
+
 def _prepared_v7_for_advance(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> tuple[Path, dict, dict[str, str], dict[str, str]]:

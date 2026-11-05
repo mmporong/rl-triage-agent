@@ -1029,7 +1029,31 @@ def test_v17_r2_seed_proof_ref_is_bound_to_public_registry_before_stat_scope(
         prepare._nonexecution_seed_proof_refs({"prior_epoch_cpu_preflight": forbidden})
 
 
-def test_v17_factory_builds_continuation_plan_and_reuses_training_binding_bytes(
+def test_v17_r3_exercises_actual_backend_extensions_for_prior_and_fresh_arms() -> None:
+    required = (
+        prepare._CONTINUATION_RETRY_SOURCE_FILES
+        | prepare.COMPARISON.BALANCED_ADMISSION_SOURCES
+        | prepare._RESOURCE_CONTINUATION_SOURCE_FILES
+    )
+    closure = {relative: "a" * 64 for relative in required}
+    old_r2_closure = {
+        relative: digest for relative, digest in closure.items()
+        if relative not in prepare.COMPARISON.BALANCED_CONTINUATION_BACKEND_SOURCES
+    }
+    with pytest.raises(ValueError, match="prior training source missing"):
+        prepare._validate_registered_backend_extensions(old_r2_closure)
+    assert prepare._validate_registered_backend_extensions(closure) == {
+        "prior_v4": 1,
+        "fresh_v3": 7,
+    }
+    for relative in prepare.COMPARISON.BALANCED_CONTINUATION_BACKEND_SOURCES:
+        incomplete = dict(closure)
+        incomplete.pop(relative)
+        with pytest.raises(ValueError, match="source missing"):
+            prepare._validate_registered_backend_extensions(incomplete)
+
+
+def test_v17_r3_factory_builds_plan_after_actual_backend_preflight(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     index, metadata, phase, _ = _patch_environment(tmp_path, monkeypatch)
@@ -1041,6 +1065,8 @@ def test_v17_factory_builds_continuation_plan_and_reuses_training_binding_bytes(
         | prepare.COMPARISON.BALANCED_NAMESPACE_SOURCES
         | prepare._RESOURCE_MANIFEST_RETRY_SOURCE_FILES
         | prepare._RESOURCE_CONTINUATION_SOURCE_FILES
+        | prepare._RESOURCE_CONTINUATION_R2_SOURCE_FILES
+        | prepare._RESOURCE_CONTINUATION_R3_SOURCE_FILES
         | {
             prepare.RESOURCE_REMEASUREMENT_PREREGISTRATION_V14,
             prepare.COMPARISON.V13_PUBLIC_SUMMARY,
@@ -1090,6 +1116,22 @@ def test_v17_factory_builds_continuation_plan_and_reuses_training_binding_bytes(
         "source_anchor": "e" * 40, "registration_anchor": "f" * 40,
     })
     monkeypatch.setattr(prepare, "_v17_imports", lambda *_args: (imports, proof_refs))
+    seed_proof = _write(tmp_path / "proofs/prior_epoch_cpu_preflight.json", {"fixture": True})
+    seed_proof_ref = {"path": str(seed_proof.resolve()), "sha256": _sha(seed_proof)}
+    monkeypatch.setattr(
+        prepare,
+        "_nonexecution_seed_proof_refs",
+        lambda _proofs: {"prior_epoch_cpu_preflight": seed_proof_ref},
+    )
+    preflight_calls = []
+    actual_preflight = prepare._validate_registered_backend_extensions
+
+    def observe_preflight(closure):
+        result = actual_preflight(closure)
+        preflight_calls.append(result)
+        return result
+
+    monkeypatch.setattr(prepare, "_validate_registered_backend_extensions", observe_preflight)
     templates = tmp_path / "templates-v17"
     manifest = prepare.prepare_templates(
         source_index=index, metadata=metadata, diagnostic_plan=phase,
@@ -1097,6 +1139,7 @@ def test_v17_factory_builds_continuation_plan_and_reuses_training_binding_bytes(
         sdk_contract=tmp_path / "sdk.json", recipe_code_contract=tmp_path / "recipe-code.json",
         output=templates, actor="operator", isaaclab_commit="c" * 40,
         completed_effect_proofs=effects, completed_training_proof=training,
+        nonexecution_seed_proofs={"prior_epoch_cpu_preflight": seed_proof},
         resource_remeasurement_profile=prepare.RESOURCE_CONTINUATION_PROFILE,
         restart_seed_overrides=prepare.REGISTERED_RESTART_SEED_OVERRIDES_V16,
         isaaclab_root=isaaclab, gpu_admission_profile=prepare.GPU_ADMISSION_PROFILE_RETRY,
@@ -1110,6 +1153,13 @@ def test_v17_factory_builds_continuation_plan_and_reuses_training_binding_bytes(
     assert plan["limits"]["gpu_sdk_launch_cap"] == 16
     assert reused.read_bytes() == binding.read_bytes()
     assert manifest["continuation_proofs"] == proof_refs
+    assert manifest["nonexecution_seed_proofs"] == {
+        "prior_epoch_cpu_preflight": seed_proof_ref,
+    }
+    assert preflight_calls == [{"prior_v4": 1, "fresh_v3": 7}]
+    assert {
+        row["role"] for row in plan["inputs"]
+    } >= {"balanced_resource_continuation_r3_preregistration"}
 
 
 def test_v8_factory_builds_fifteen_fresh_arms_and_one_registered_hold(
