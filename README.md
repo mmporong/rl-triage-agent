@@ -1,6 +1,6 @@
 # RL Triage Agent
 
-**Investigate failed robot policies, choose approved checks, and verify registered corrections or policy adaptations in Isaac Lab.**
+**Investigate failed robot policies, use check results to select registered corrections, and verify recovery in Isaac Lab.**
 
 [Watch the replay](https://mmporong.github.io/rl-triage-agent/replay/) · [Architecture](https://mmporong.github.io/rl-triage-agent/?view=single-dark) · [Quickstart](#quickstart) · [한국어 요약](#한국어-요약)
 
@@ -12,9 +12,21 @@
 | OpenShell | 0.1.1 |
 | Collection | Hackathon · Mollet |
 
-## See the result
+## When the first correction is not enough
 
-The original Go2 policy falls while descending stairs. Nemotron 3.5 selects a stability check and proposes a registered 300-update adaptation. The updated policy passes the same 30-second task at the same commanded speed.
+In Go2 development seed 2311, Nemotron 3.5 selected checks for a combined reward-frame and PPO-epoch fault. The reward correction left a tracking failure. A second diagnosis selected an optimizer-update check, which measured **4 steps against an expected 20**. The host applied the registered epoch restoration and verified recovery.
+
+| Policy stage | Tracking RMSE, m/s | Fixed26 outcome |
+| --- | ---: | --- |
+| Compound fault | 1.219 | Not recovered |
+| Reward-frame correction | 1.163 | Follow-up diagnosis required |
+| Reward + PPO-epoch corrections | **0.142** | **Recovered** |
+
+Nemotron chose all four checks across the two diagnosis rounds. The host applied registered corrections, retrained and evaluated; the corrected training recorded 20 optimizer steps per update. [Checks, corrections and evaluation](docs/NEW-LINEAGE-COMPARISON.md#갱신-계측을-연결한-새-복합-사례) · [Original result](evals/results/runtime_observation_compound_s2311_20261031_v1/summary.json).
+
+## Policy adaptation on stairs
+
+This separate case shows Go2 before and after a registered 300-update adaptation proposed by Nemotron 3.5. The updated policy passes the same stair task at the same commanded speed.
 
 <a href="docs/media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-1080p.mp4"><img src="docs/media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-preview.webp" alt="Go2 stair descent before and after agent-proposed adaptation, both at 0.25 m/s" width="100%"></a>
 
@@ -44,9 +56,9 @@ The model selects actions; the host supplies execution arguments and checks auth
 
 | Test | Observed result | Evidence |
 | --- | --- | --- |
+| Follow-up diagnosis and repair | The 3.5 seed 2311 case above recovered after a second diagnosis round and registered correction. Earlier compound-fault seeds 2120/2121 also recovered after two corrections. | [3.5 case](docs/NEW-LINEAGE-COMPARISON.md#갱신-계측을-연결한-새-복합-사례) · [Residual diagnosis](docs/RESIDUAL-DIAGNOSIS-RESULT.md) |
 | Same-command stair adaptation | Development seed 200: inverted samples **888→0**, tracking RMSE **0.233→0.064m/s**; the 30-second task changes from fail to pass. | [Stair adaptation](docs/GO2-STAIRS-AGENT-ADAPTATION.md) |
 | Registered reward and motor faults | Four new-seed runs recovered. In the motor case, three checks overturned the initial reward hypothesis and confirmed the actuator. | [End-to-end repair](docs/E2E-REWARD-DEMO.md) |
-| Failure remaining after correction | Compound faults recovered after two registered corrections on seeds 2120/2121. A separate 3.5 run, seed 2311, used observed optimizer counts before the second correction. | [Residual diagnosis](docs/RESIDUAL-DIAGNOSIS-RESULT.md) · [3.5 run](docs/NEW-LINEAGE-COMPARISON.md) |
 | Robot and correction-scope transfer | ANYmal-C seed 2047 recovered. An expanded U1 correction recovered seeds 2051/2062, evaluated separately from model-selected runs. | [ANYmal-C](docs/ANYMAL-C-PORT.md) · [U1](docs/U1-SCOPE-EXTENSION.md) |
 
 Results are reported per registered task and run. The linked evidence includes protocols, model responses, training receipts and fixed evaluations. See also the [model comparisons](docs/NEMOTRON35-VALUE-COMPARISON.md), [VL checks](docs/VISUAL-INTEGRITY-OBSERVER.md) and [healthy-input tests](docs/T2-NO-INTERVENTION.md).
@@ -121,6 +133,6 @@ These check permission proofs, stored correction records and public replay data.
 
 RL Triage는 Isaac Lab 로봇 정책이 과제에 실패했을 때, 학습 기록과 관측에서 검사 후보를 고르는 에이전트입니다. Nemotron이 검사를 선택하면 호스트가 승인과 근거를 확인해 실행합니다. 원인이 확인되면 등록 교정을, 별도 과제 계약이 있으면 정책 적응을 실행하고 같은 기준으로 다시 평가합니다. 근거가 부족하면 HOLD로 멈춥니다.
 
-현재 대표 영상은 같은 0.25m/s 명령에서 실패 정책과 에이전트가 제안한 추가 학습 정책을 비교합니다. 개발 seed 200의 30초 평가에서 뒤집힘 표본은 888→0으로 줄었고 등록 과제 기준을 통과했습니다.
+대표 수리 사례는 Nemotron 3.5를 사용한 seed 2311입니다. 보상 교정 뒤에도 추종 실패가 남자 두 번째 진단에서 갱신 횟수 검사를 선택했습니다. 검사에서 기대 20회·실제 4회를 확인했고, 등록된 PPO epoch 복원 후 고정 평가를 통과했습니다. 추종 오차는 1.219→1.163→0.142m/s였습니다.
 
-실제 모델 응답, 검사 결과, 학습 기록과 평가 수치를 연결해 공개합니다. 등록 결함의 교정 사례와 계단 과제의 정책 적응은 각각의 실행 근거로 확인할 수 있습니다.
+계단 영상은 별도의 정책 적응 사례입니다. 같은 0.25m/s 명령을 유지한 개발 seed 200에서 뒤집힘 표본은 888→0으로 줄었습니다. 모델의 검사 선택, 호스트의 등록 교정 실행, 학습과 평가 기록을 사례별로 연결해 공개합니다.
