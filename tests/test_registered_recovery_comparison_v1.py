@@ -892,6 +892,28 @@ def _upgrade_to_v11(plan_path: Path, job_path: Path, tmp_path: Path) -> tuple[di
     return plan, job
 
 
+def _upgrade_v11_to_r2(plan: dict, repo: Path) -> dict:
+    for relative in comparison.BALANCED_CONTINUATION_R2_SOURCES:
+        target = repo / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        source = Path(comparison.__file__).resolve().parents[1] / relative
+        target.write_bytes(source.read_bytes())
+        plan["source_closure"][relative] = comparison._lf_sha(target)
+    plan["inputs"].extend([
+        {
+            "role": "balanced_resource_continuation_r2_preregistration",
+            "path": comparison.V17_R2_NOTE,
+            "sha256": plan["source_closure"][comparison.V17_R2_NOTE],
+        },
+        {
+            "role": "restart_seed_nonexecution_registry",
+            "path": comparison.V17_SEED_NONEXECUTION_REGISTRY,
+            "sha256": plan["source_closure"][comparison.V17_SEED_NONEXECUTION_REGISTRY],
+        },
+    ])
+    return plan
+
+
 def _prepared_v7_for_advance(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> tuple[Path, dict, dict[str, str], dict[str, str]]:
@@ -1448,6 +1470,28 @@ def test_v11_accepts_seven_effects_one_training_and_remaining_matrix(tmp_path: P
     ]
     assert schemas.count("registered_recovery_protocol_v4") == 1
     assert schemas.count("registered_recovery_protocol_v3") == 7
+
+
+def test_v11_r2_requires_seed_nonexecution_note_registry_and_source_closure(
+    tmp_path: Path,
+) -> None:
+    _repo, plan_path, job_path, _out = _fixture(
+        tmp_path, cases=("case-05", "case-06", "case-07", "case-08"))
+    plan, _job = _upgrade_to_v11(plan_path, job_path, tmp_path)
+    plan = _upgrade_v11_to_r2(plan, plan_path.parent)
+    comparison._validate_plan(plan)
+    for missing in comparison.BALANCED_CONTINUATION_R2_SOURCES:
+        changed = json.loads(json.dumps(plan))
+        changed["source_closure"].pop(missing)
+        with pytest.raises(comparison.ComparisonContractError, match="r2 seed"):
+            comparison._validate_plan(changed)
+    changed = json.loads(json.dumps(plan))
+    changed["inputs"] = [
+        row for row in changed["inputs"]
+        if row["role"] != "restart_seed_nonexecution_registry"
+    ]
+    with pytest.raises(comparison.ComparisonContractError, match="r2 seed"):
+        comparison._validate_plan(changed)
 
 
 @pytest.mark.parametrize("mutation,match", [

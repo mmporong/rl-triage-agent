@@ -220,6 +220,11 @@ _RESOURCE_MANIFEST_RETRY_SOURCE_FILES = {
     COMPARISON.V16_NOTE, COMPARISON.V15_FAILURE_SUMMARY,
 }
 _RESOURCE_CONTINUATION_SOURCE_FILES = COMPARISON.BALANCED_CONTINUATION_SOURCES
+_RESOURCE_CONTINUATION_R2_SOURCE_FILES = COMPARISON.BALANCED_CONTINUATION_R2_SOURCES
+CPU_NONEXECUTION_PROOF_SCHEMA = "registered_epoch_actual_request_cpu_preflight_v2"
+CPU_NONEXECUTION_HELPER_SHA256 = (
+    "128fbe1e9478f2da2a152c123e47a840f797f216c88146e2bb69665bd9e40d36"
+)
 V17_EFFECT_KEYS = COMPARISON.V17_EFFECT_KEYS
 V17_TRAINING_KEY = COMPARISON.V17_TRAINING_KEY
 PRIOR_V5_SOURCE_ANCHOR = "f9d5fea93cce406a325f578bc6f4597cc0bc35c5"
@@ -315,7 +320,8 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
                     include_resource_remeasurement_v14: bool = False,
                     include_resource_namespace_v15: bool = False,
                     include_resource_manifest_retry_v16: bool = False,
-                    include_resource_continuation_v17: bool = False) -> dict[str, str]:
+                    include_resource_continuation_v17: bool = False,
+                    include_resource_continuation_v17_r2: bool = False) -> dict[str, str]:
     if _HEX40.fullmatch(anchor) is None:
         raise PreparationError("source anchor format")
     closure = {}
@@ -350,6 +356,10 @@ def _source_closure(anchor: str, *, include_continuation: bool = False,
         if not include_resource_manifest_retry_v16:
             raise PreparationError("v17 continuation requires v16 manifest retry sources")
         source_files |= _RESOURCE_CONTINUATION_SOURCE_FILES
+    if include_resource_continuation_v17_r2:
+        if not include_resource_continuation_v17:
+            raise PreparationError("v17 r2 seed proof requires v17 continuation sources")
+        source_files |= _RESOURCE_CONTINUATION_R2_SOURCE_FILES
     if include_observation_retry:
         if not include_continuation_v4:
             raise PreparationError("observation retry requires v4 completed-effect imports")
@@ -392,6 +402,61 @@ def _continuation_module_v5():
         return importlib.import_module("evals.registered_recovery_continuation_v5")
     except (ImportError, AttributeError) as exc:
         raise PreparationError("v5 continuation proof verifier unavailable") from exc
+
+
+def _seed_guard_v3():
+    try:
+        return importlib.import_module("evals.core_seed_guard_v3")
+    except (ImportError, AttributeError) as exc:
+        raise PreparationError("v17 r2 seed guard unavailable") from exc
+
+
+def _nonexecution_seed_proof_refs(
+    values: Mapping[str, Path],
+) -> dict[str, dict[str, str]]:
+    if set(values) != {"prior_epoch_cpu_preflight"}:
+        raise PreparationError("v17 r2 requires the registered CPU preflight proof")
+    registry = _read(ROOT / COMPARISON.V17_SEED_NONEXECUTION_REGISTRY)
+    entries = registry.get("entries")
+    if (
+        registry.get("schema") != "registered_cpu_seed_nonexecution_registry_v1"
+        or not isinstance(entries, dict)
+        or set(entries) != {"prior_epoch_cpu_preflight"}
+    ):
+        raise PreparationError("v17 r2 seed nonexecution registry differs")
+    entry = entries["prior_epoch_cpu_preflight"]
+    if (
+        not isinstance(entry, dict)
+        or entry
+        != {
+            "receipt_sha256": "6f765bfe25e05374d2de05a7ae4ca95e2f25bf0e3b9e30f73295b774f4e55e91",
+            "seed": 6666,
+            "helper_source_sha256": CPU_NONEXECUTION_HELPER_SHA256,
+            "source_schema": CPU_NONEXECUTION_PROOF_SCHEMA,
+        }
+    ):
+        raise PreparationError("v17 r2 seed nonexecution entry differs")
+    candidate = Path(values["prior_epoch_cpu_preflight"])
+    raw_reference = {
+        "path": str(candidate.absolute()),
+        "sha256": entry["receipt_sha256"],
+    }
+    try:
+        verified = _seed_guard_v3().verify_nonexecution_proofs(
+            {"prior_epoch_cpu_preflight": raw_reference}, ROOT
+        )
+    except (OSError, TypeError, ValueError) as exc:
+        raise PreparationError("v17 r2 CPU proof path is not allowed") from exc
+    if (
+        not isinstance(verified, list)
+        or len(verified) != 1
+        or verified[0].get("logical_id") != "prior_epoch_cpu_preflight"
+        or verified[0].get("proof") != raw_reference
+        or verified[0].get("training_seed") != 6666
+        or verified[0].get("helper_sha256") != CPU_NONEXECUTION_HELPER_SHA256
+    ):
+        raise PreparationError("v17 r2 CPU preflight proof differs from registry")
+    return {"prior_epoch_cpu_preflight": raw_reference}
 
 
 def _v4_imports(completed_effect_proofs: Mapping[str, Path]) -> tuple[list[dict], dict[str, dict]]:
@@ -1017,6 +1082,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                        completed_training_proof: Path | None = None,
                       completed_import_profile: str | None = None,
                       resource_remeasurement_profile: str | None = None,
+                      nonexecution_seed_proofs: Mapping[str, Path] | None = None,
                       restart_seed_overrides: Mapping[str, int] | None = None,
                       epoch_shutdown_failure_proof: Path | None = None,
                       epoch_namespace_failure_context: Path | None = None,
@@ -1039,6 +1105,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
     v9_requested = resource_remeasurement_profile == RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE
     v10_requested = resource_remeasurement_profile == RESOURCE_MANIFEST_RETRY_PROFILE
     v11_requested = resource_remeasurement_profile == RESOURCE_CONTINUATION_PROFILE
+    v11_r2_requested = v11_requested and nonexecution_seed_proofs is not None
     resource_requested = v8_requested or v9_requested or v10_requested or v11_requested
     if resource_remeasurement_profile not in {
         None, RESOURCE_REMEASUREMENT_PROFILE, RESOURCE_REMEASUREMENT_NAMESPACED_PROFILE,
@@ -1111,6 +1178,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         raise PreparationError("v8 resource remeasurement inputs differ")
     if not v11_requested and completed_training_proof is not None:
         raise PreparationError("completed training proof requires v17 continuation profile")
+    if not v11_requested and nonexecution_seed_proofs is not None:
+        raise PreparationError("nonexecution seed proofs require v17 continuation profile")
     if v6_requested:
         expected_seeds = (REGISTERED_RESTART_SEED_OVERRIDES_V13 if v7_requested
                           else REGISTERED_RESTART_SEED_OVERRIDES_V12)
@@ -1164,6 +1233,11 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         and completed_training_proof is not None and isaaclab_root is not None
         else None
     )
+    seed_proof_refs = (
+        _nonexecution_seed_proof_refs(nonexecution_seed_proofs)
+        if v11_r2_requested and nonexecution_seed_proofs is not None
+        else None
+    )
     v11_actuator_binding: Path | None = None
     if v11_requested and completed_training_proof is not None:
         training_proof = _read(completed_training_proof)
@@ -1197,6 +1271,7 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         include_resource_namespace_v15=v9_requested or v10_requested or v11_requested,
         include_resource_manifest_retry_v16=v10_requested or v11_requested,
         include_resource_continuation_v17=v11_requested,
+        include_resource_continuation_v17_r2=v11_r2_requested,
     ) if require_committed else {
         path: _sha(ROOT / path, lf=True)
         for path in sorted(
@@ -1378,6 +1453,19 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
                 "sha256": closure[COMPARISON.V16_PREFIX],
             },
         ])
+        if v11_r2_requested:
+            inputs.extend([
+                {
+                    "role": "balanced_resource_continuation_r2_preregistration",
+                    "path": COMPARISON.V17_R2_NOTE,
+                    "sha256": closure[COMPARISON.V17_R2_NOTE],
+                },
+                {
+                    "role": "restart_seed_nonexecution_registry",
+                    "path": COMPARISON.V17_SEED_NONEXECUTION_REGISTRY,
+                    "sha256": closure[COMPARISON.V17_SEED_NONEXECUTION_REGISTRY],
+                },
+            ])
     for case in CASES:
         old = case
         row = phase_inputs.get(f"protocol:{old}")
@@ -1587,6 +1675,8 @@ def prepare_templates(*, source_index: Path, metadata: Path, diagnostic_plan: Pa
         manifest["continuation_proofs"] = v5[1]
     if v11 is not None:
         manifest["continuation_proofs"] = v11[1]
+    if seed_proof_refs is not None:
+        manifest["nonexecution_seed_proofs"] = seed_proof_refs
     if failure_proof is not None:
         manifest["epoch_shutdown_failure_proof"] = failure_proof[0]
     if namespace_failure is not None:
@@ -1807,10 +1897,31 @@ def prepare_jobs(*, templates: Path, registered_plan: Path, registration_anchor:
                               COMPARISON.PLAN_SCHEMA_V11}
         else CASES
     )
-    freshness = SEED_GUARD.assert_fresh_seeds(
-        [plan["recovery_policy"]["seeds"][case]["restart"] for case in freshness_cases],
-        Path(isaaclab_root), repo=ROOT,
+    seed_proof_inputs = template_manifest.get("nonexecution_seed_proofs")
+    r2_requested = any(
+        row.get("role") == "restart_seed_nonexecution_registry" for row in plan["inputs"]
     )
+    if r2_requested:
+        if not isinstance(seed_proof_inputs, dict):
+            raise PreparationError("v17 r2 template seed proof is missing")
+        verified_seed_refs = _nonexecution_seed_proof_refs({
+            logical_id: Path(str(reference.get("path")))
+            for logical_id, reference in seed_proof_inputs.items()
+            if isinstance(reference, dict)
+        })
+        if verified_seed_refs != seed_proof_inputs:
+            raise PreparationError("v17 r2 template seed proof reference differs")
+        freshness = _seed_guard_v3().assert_fresh_seeds(
+            [plan["recovery_policy"]["seeds"][case]["restart"] for case in freshness_cases],
+            Path(isaaclab_root), repo=ROOT, nonexecution_proofs=seed_proof_inputs,
+        )
+    else:
+        if seed_proof_inputs is not None:
+            raise PreparationError("non-r2 template carries a seed proof")
+        freshness = SEED_GUARD.assert_fresh_seeds(
+            [plan["recovery_policy"]["seeds"][case]["restart"] for case in freshness_cases],
+            Path(isaaclab_root), repo=ROOT,
+        )
     out.mkdir(parents=True)
     write_new(out / "restart-seed-freshness.json", freshness)
     diagnostic_sessions = _bound_diagnostic_sessions(diagnostic_root, plan)

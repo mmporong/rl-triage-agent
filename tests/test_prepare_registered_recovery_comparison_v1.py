@@ -999,6 +999,36 @@ def test_v17_import_factory_rejects_cross_lineage_or_incomplete_matrix(
     )["case-08"] == 6667
 
 
+def test_v17_r2_seed_proof_ref_is_bound_to_public_registry_before_stat_scope(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    proof = tmp_path / "proof.json"
+    proof.write_text(json.dumps({"training_seed": 6666}), encoding="utf-8")
+    expected = {
+        "path": str(proof.resolve()),
+        "sha256": "6f765bfe25e05374d2de05a7ae4ca95e2f25bf0e3b9e30f73295b774f4e55e91",
+    }
+    class Guard:
+        @staticmethod
+        def verify_nonexecution_proofs(refs, _repo):
+            value = refs["prior_epoch_cpu_preflight"]
+            if "ri_codex2_tokenfactory_live_160" in value["path"]:
+                raise ValueError("forbidden")
+            return [{
+                "logical_id": "prior_epoch_cpu_preflight",
+                "proof": value,
+                "training_seed": 6666,
+                "helper_sha256": prepare.CPU_NONEXECUTION_HELPER_SHA256,
+            }]
+
+    monkeypatch.setattr(prepare, "_seed_guard_v3", lambda: Guard)
+    refs = prepare._nonexecution_seed_proof_refs({"prior_epoch_cpu_preflight": proof})
+    assert refs == {"prior_epoch_cpu_preflight": expected}
+    forbidden = tmp_path / "ri_codex2_tokenfactory_live_160" / "proof.json"
+    with pytest.raises(prepare.PreparationError, match="path is not allowed"):
+        prepare._nonexecution_seed_proof_refs({"prior_epoch_cpu_preflight": forbidden})
+
+
 def test_v17_factory_builds_continuation_plan_and_reuses_training_binding_bytes(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:

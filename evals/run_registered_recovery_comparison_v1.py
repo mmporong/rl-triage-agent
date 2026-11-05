@@ -66,7 +66,11 @@ V14_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v14.md"
 V15_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v15.md"
 V16_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v16.md"
 V17_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v17.md"
+V17_R2_NOTE = "bench/protocols/diagnostic_recovery_comparison_20261105_v17_r2.md"
 V16_PREFIX = "bench/protocols/registered_recovery_v16_prefix_20261105_v1.json"
+V17_SEED_NONEXECUTION_REGISTRY = (
+    "bench/protocols/registered_recovery_cpu_seed_nonexecution_20261105_v1.json"
+)
 V13_PUBLIC_SUMMARY = (
     "evals/results/recovery_comparison_s2664_s2667_20261105_v13/summary.json"
 )
@@ -102,6 +106,16 @@ BALANCED_CONTINUATION_SOURCES = {
     "evals/summarize_balanced_recovery_continuation_v1.py",
     "tests/test_summarize_balanced_recovery_continuation_v1.py",
     V17_NOTE, V16_PREFIX,
+}
+BALANCED_CONTINUATION_R2_SOURCES = {
+    "evals/core_seed_guard_v3.py",
+    "tests/test_core_seed_guard_v3.py",
+    "evals/core_seed_guard_v2.py",
+    "tests/test_core_seed_guard_v2.py",
+    "evals/preregistered_seed_guard.py",
+    "tests/test_preregistered_seed_guard.py",
+    V17_R2_NOTE,
+    V17_SEED_NONEXECUTION_REGISTRY,
 }
 EPOCH_SHUTDOWN_RETRY_POLICY_RELATIVE = (
     epoch_failure.POLICY_RELATIVE
@@ -957,6 +971,24 @@ def _validate_plan(plan: dict) -> None:
             }
         ):
             raise ComparisonContractError("v11 continuation preregistration/closure missing")
+        r2_note = notes.get("balanced_resource_continuation_r2_preregistration")
+        r2_registry = notes.get("restart_seed_nonexecution_registry")
+        if (r2_note is None) != (r2_registry is None):
+            raise ComparisonContractError("v11 r2 seed nonexecution inputs are incomplete")
+        if r2_note is not None and (
+            not BALANCED_CONTINUATION_R2_SOURCES <= set(closure)
+            or r2_note != {
+                "role": "balanced_resource_continuation_r2_preregistration",
+                "path": V17_R2_NOTE,
+                "sha256": closure.get(V17_R2_NOTE),
+            }
+            or r2_registry != {
+                "role": "restart_seed_nonexecution_registry",
+                "path": V17_SEED_NONEXECUTION_REGISTRY,
+                "sha256": closure.get(V17_SEED_NONEXECUTION_REGISTRY),
+            }
+        ):
+            raise ComparisonContractError("v11 r2 seed nonexecution registration differs")
 
 
 def load_plan(plan_path: Path, *, repo_root: Path, registration_anchor: str,
