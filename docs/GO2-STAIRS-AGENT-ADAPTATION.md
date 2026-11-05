@@ -2,7 +2,7 @@
 
 Nemotron 3.5가 안정성 검사를 선택하고 그 결과를 받은 뒤, 등록된 300회 추가 학습을 제안했다. 호스트가 이를 실행한 후 **같은 0.25m/s 명령과 같은 계단에서 30초 평가 기준을 통과했다.** 평가 seed는 200, 추가 학습 seed는 5710이다.
 
-[15초 전후 비교 MP4](media/go2-stairs-agent-adaptation-s200-20261106-v1/comparison-15s.mp4) · [GIF](media/go2-stairs-agent-adaptation-s200-20261106-v1/comparison-15s-preview.gif) · [학습 전 30초](media/go2-stairs-agent-adaptation-s200-20261106-v1/before-raw-30s.mp4) · [학습 후 30초](media/go2-stairs-agent-adaptation-s200-20261106-v1/after-raw-30s.mp4) · [결과 JSON](../evals/results/go2_stairs_agent_adaptation_s200_20261106_v1/summary.json).
+[15초 전후 비교 MP4](media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-1080p.mp4) · [컬러 애니메이션](media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-preview.webp) · [학습 전 1440p·30초](media/go2-stairs-agent-adaptation-s200-20261106-v3/before-native-1440p-30s.mp4) · [학습 후 1440p·30초](media/go2-stairs-agent-adaptation-s200-20261106-v3/after-native-1440p-30s.mp4) · [결과 JSON](../evals/results/go2_stairs_agent_adaptation_s200_20261106_v1/summary.json).
 
 ## 에이전트가 한 일과 호스트가 한 일
 
@@ -46,4 +46,4 @@ Nemotron 3.5가 안정성 검사를 선택하고 그 결과를 받은 뒤, 등�
 - [최종 실행 전 등록 v7](../bench/protocols/stairs_agent_repair_s200_20261106_v7.json), [실제 모델 단계 등록 v5](../bench/protocols/stairs_agent_repair_s200_20261106_v5.json).
 - [고정 과제 재생기](../bench/run_go2_stairs_agent_play_v1.py), [학습 실행기](../bench/train_stairs_agent_adaptation_v3.py), [새 인용 계약](../evals/stairs_agent_repair_v2.py).
 - [평가 공통 설정](../evals/results/go2_stairs_agent_adaptation_s200_20261106_v1/evaluation-common-config.json), [원 정책 trace](../evals/results/go2_stairs_agent_adaptation_s200_20261106_v1/baseline-state-trace.jsonl), [추가 학습 후 trace](../evals/results/go2_stairs_agent_adaptation_s200_20261106_v1/adapted-state-trace.jsonl).
-- [영상 출처·프레임·전체 디코딩](media/go2-stairs-agent-adaptation-s200-20261106-v1/source_manifest.json). 15초 비교는 양쪽 원본의 첫 750프레임을 같은 확대 구도로 사용하며 재생 속도 변경·길이 연장용 동작 반복·정지 화면은 없다. 통과 표시는 전체 30초 trace 판정에 따른다.
+- [영상 출처·프레임·전체 디코딩](media/go2-stairs-agent-adaptation-s200-20261106-v3/source_manifest.json). 15초 비교는 양쪽 원본의 첫 750프레임을 같은 확대 구도로 사용하며 재생 속도 변경·길이 연장용 동작 반복·정지 화면은 없다. 통과 표시는 전체 30초 trace 판정에 따른다.

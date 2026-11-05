@@ -1,0 +1,80 @@
+{
+  "schema": "stairs_agent_hq_recapture_result_v1",
+  "status": "complete",
+  "media_only_rerecording": true,
+  "seed": 200,
+  "new_training": 0,
+  "new_model_API": 0,
+  "original_result": "evals/results/go2_stairs_agent_adaptation_s200_20261106_v1/summary.json",
+  "original_state_trace_byte_identical": {
+    "before": true,
+    "after": true
+  },
+  "assessments": {
+    "before": {
+      "command_preserved": true,
+      "reset_count": 0,
+      "inverted_samples": 888,
+      "first_inverted_s": 12.26,
+      "minimum_body_up_z": -0.9888558003648724,
+      "tracking_rmse_xy_m_s": 0.23284981411905734,
+      "dx_m": 2.761855363845825,
+      "dz_m": -0.6000061929225922,
+      "acceptance": {
+        "min_progress_m": 3.75,
+        "max_height_change_m": -0.3,
+        "min_body_up_z": 0.5,
+        "max_tracking_rmse_xy_m_s": 0.25,
+        "inverted_samples": 0,
+        "reset_count": 0
+      },
+      "accepted": false
+    },
+    "after": {
+      "command_preserved": true,
+      "reset_count": 0,
+      "inverted_samples": 0,
+      "first_inverted_s": null,
+      "minimum_body_up_z": 0.7996094892775596,
+      "tracking_rmse_xy_m_s": 0.06402938994462817,
+      "dx_m": 7.217530727386475,
+      "dz_m": -0.35295048356056213,
+      "acceptance": {
+        "min_progress_m": 3.75,
+        "max_height_change_m": -0.3,
+        "min_body_up_z": 0.5,
+        "max_tracking_rmse_xy_m_s": 0.25,
+        "inverted_samples": 0,
+        "reset_count": 0
+      },
+      "accepted": true
+    }
+  },
+  "camera": {
+    "origin_type": "asset_root",
+    "asset_name": "robot",
+    "env_index": 0,
+    "eye": [
+      3.5,
+      6.0,
+      2.2
+    ],
+    "lookat": [
+      0.0,
+      0.0,
+      0.5
+    ],
+    "resolution": [
+      2560,
+      1440
+    ]
+  },
+  "native_resolution": [
+    2560,
+    1440
+  ],
+  "native_fps": 50,
+  "native_duration_s": 30,
+  "registered_protocol": "bench/protocols/go2_stairs_agent_hq_capture_s200_20261106_v2.json",
+  "new_efficacy_or_generalization_claim": false
+}
