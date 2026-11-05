@@ -2,59 +2,60 @@
 
 | Catalog field | Value |
 | --- | --- |
-| Description | Investigates Isaac Lab RL training failures from telemetry, confirms the cause with short approved probes, applies a registered correction with an approved retraining run, and judges recovery with a fixed behavior evaluation. It can also assess a single run without a healthy reference. |
+| Description | Investigates Isaac Lab RL failures with approved checks, runs registered corrections or task adaptations, and verifies the resulting policy with a fixed task evaluation. It can also assess a single run without a healthy reference. |
 | Industry | 🤖 Physical AI |
 | Requirements | Linux or WSL2 · Docker · OpenShell 0.1.1 · NVIDIA API key (build.nvidia.com) · Isaac Lab 2.1.1 + RTX GPU only for re-running experiments |
 | OpenShell | 0.1.1 |
 | Collection | Hackathon |
 
-**A robot policy can train "fine" and still fail its task. This agent finds out why with short, approved experiments, applies a registered fix, and checks recovery with the same fixed evaluation.**
+**Investigate a robot's failed task, choose approved checks, run a registered correction or policy adaptation, and verify the result under the same task conditions.**
 
 [Presentation replay](https://mmporong.github.io/rl-triage-agent/replay/) · [Evidence story replay](docs/replay/agentic-story-v1.html) · [Interactive architecture diagram](https://mmporong.github.io/rl-triage-agent/?view=single-dark) · [English evidence replay](submission/nebius-global-20261030/tokenfactory-v4/README.md) · [한국어 요약](#한국어-요약)
 
 ## The problem
 
-Training curves can look healthy while a robot fails its task. RL Triage uses telemetry and approved checks to investigate the cause. The stair playback below shows why behavior also needs checking: the same pretrained Go2 falls at one commanded speed and stays upright at another.
+A policy that walks on rough terrain can still fail a specific task. In the staircase case below, RL Triage checks the failure, proposes a registered policy adaptation and verifies the updated policy without changing commanded speed.
 
-[![Go2 stair descent: failure at 0.25 m/s and passed at 0.75 m/s](docs/media/go2-stairs-down-comparison-15s-s200-20261105-v1/comparison-15s-preview-720.gif)](docs/media/go2-stairs-down-comparison-15s-s200-20261105-v1/comparison-15s.mp4)
+[![Go2 stair descent before and after agent-proposed adaptation, both at 0.25 m/s](docs/media/go2-stairs-agent-adaptation-s200-20261106-v1/comparison-15s-preview.gif)](docs/media/go2-stairs-agent-adaptation-s200-20261106-v1/comparison-15s.mp4)
 
-*15-second synchronized playback, seed 200. Left: 0.25m/s, inverted from 12.26s. Right: 0.75m/s, passed the registered 15-second motion checks. Same pretrained policy, recorded starting body state and stairs; command speed differs. This is a playback comparison, not an agent-selected repair. [Full-quality MP4](docs/media/go2-stairs-down-comparison-15s-s200-20261105-v1/comparison-15s.mp4) · [Sources and measurements](docs/GO2-STAIRS-COMMAND-CONTRAST.md#15초-실패성공-동시-비교).*
+*Seed 200, 15-second excerpt from 30-second tests. Both panels use 0.25m/s on the same 0.05m stairs. Left: original policy, inverted from 12.26s. Right: final policy after the 300-update adaptation proposed by Nemotron 3.5. Inverted samples fell from 888 to 0; tracking RMSE from 0.233 to 0.064m/s. Already-seen development case; code-bug root cause remains unconfirmed. [Full-quality MP4](docs/media/go2-stairs-agent-adaptation-s200-20261106-v1/comparison-15s.mp4) · [Checks, training and evaluation](docs/GO2-STAIRS-AGENT-ADAPTATION.md).*
 
-Latest same-Play comparison: [healthy → compound fault → after two registered corrections](docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4) · [original clips and provenance](docs/media/five_type_recovery_s5557_20261102_v1/source_manifest.json). The recovered policy is seed 5557; all clips have 625 frames at 50 fps. Recovery comes from the fixed26 evaluation; the video is a playback comparison. The four registered followup arms ended in one recovery and three HOLDs.
+Registered fault-repair comparison: [healthy → compound fault → after two registered corrections](docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4) · [original clips and provenance](docs/media/five_type_recovery_s5557_20261102_v1/source_manifest.json). The recovered policy is seed 5557; all clips have 625 frames at 50 fps. Recovery comes from the fixed26 evaluation; the video is a playback comparison. The four registered followup arms ended in one recovery and three HOLDs.
 
-Official pretrained stair playback: H1 [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) · [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4), and Go2 [stair command contrast and a 30-second downhill failure](docs/GO2-STAIRS-COMMAND-CONTRAST.md). With the same Go2 policy and initial state, 0.75m/s passed both directions; the 0.25m/s uphill stall and downhill inversion are preserved. These are policy playback studies, separate from RL Triage recovery.
+Other pretrained recordings: H1 [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) · [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4) · [original Go2 command contrast](docs/GO2-STAIRS-COMMAND-CONTRAST.md). Those playback references are separate from the agent-adapted policy shown above.
 
 ## How it works
 
-1. **Notice.** A tracking alarm and a fixed evaluation over 26 velocity commands show that the policy does not follow commands.
-2. **Rank.** Nemotron reads the training telemetry and ranks likely causes (reward, actuator, exploration and others).
-3. **Probe.** It selects a [registered check](docs/EVIDENCE-GUIDED-DIAGNOSIS.md). After approval, checks inspect [bound training records on CPU](docs/OPTIMIZER-OBSERVABILITY.md#보관된-학습-계측을-재사용하는-검사) or run in Isaac Lab. The measured outcome narrows the registered causes until one remains, or the agent stops.
-4. **Correct.** The confirmed cause maps to one registered code correction and a recovery mode (continue training or retrain).
-5. **Verify.** After approval the policy is retrained, and the same fixed evaluation decides whether it recovered.
+1. **Notice.** A tracking alarm or registered task evaluation identifies a failed policy.
+2. **Rank.** Nemotron reads bound observations and telemetry to rank hypotheses or choose the next check.
+3. **Probe.** It selects a [registered check](docs/EVIDENCE-GUIDED-DIAGNOSIS.md). After approval, checks inspect [bound training records on CPU](docs/OPTIMIZER-OBSERVABILITY.md#보관된-학습-계측을-재사용하는-검사) or run in Isaac Lab. Receipts update the investigation. Unconfirmed causes never authorize a code correction.
+4. **Correct or adapt.** A confirmed cause maps to a registered code correction. A separate task contract can authorize a registered policy adaptation while leaving the code-bug cause unconfirmed.
+5. **Verify.** After approval the host trains the policy, and the same fixed evaluation judges the result.
 
-Every probe and retraining run needs a recorded approval, and each approval is consumed once. The current 3.5 workflow stops at **HOLD** when evidence supports no registered cause or a model answer stays invalid after one feedback retry. Other registered versions can record a transition to a rule selector. If a correction does not recover the run, a second diagnosis round can confirm and fix the remaining fault.
+Every probe and retraining run needs a recorded approval, and each approval is consumed once. The current 3.5 fault-repair workflow stops at **HOLD** when evidence supports no registered cause or a model answer stays invalid after one feedback retry. Other registered versions can record a transition to a rule selector. If a correction does not recover the run, a second diagnosis round can confirm and fix the remaining fault.
 
 | Component | Role here |
 |---|---|
 | Nemotron 3 Super 120B | Decision model in the recorded demonstrations and frozen workflow configurations |
-| Nemotron 3.5 Super VL | Diagnosis and correction proposals in new versions; policy-frame observations and body localization for render/state checks stay separate from recovery decisions |
+| Nemotron 3.5 Super VL | Diagnosis, check selection and registered adaptation proposals in new versions; frame observations stay separate from fixed behavior verdicts |
 | NeMo Agent Toolkit 1.9 | Configured agent workflows and the 3.5 assessment entry; comparison and recovery experiments use separate host controllers |
 | OpenShell 0.1.1 + openshell-prover | Sandbox with Landlock file policy, L7 network policy and key injection; SMT check of every requested permission |
 | Isaac Lab 2.1.1 / Isaac Sim 4.5 | Fault injection, probes, retraining, fixed evaluation and recorded clips |
 | NVIDIA Skills | `skills/isaaclab-rl-triage` in NVIDIA skill format; the Isaac Lab `isaaclab-debugging-rl-training` checklist validates model correction proposals |
 
-Who decides what differs by run, so results are not pooled as model choices. In the R1 repair run the model chose the first probe and registered rules chose later probes. A model correction proposal is validated and attached as evidence; the correction request always carries the rule-based correction.
+Selection ownership is recorded per run: R1 uses a model-selected first probe and registered-rule followups; the staircase adaptation uses a host integrity check, model-selected stability check and model-proposed registered adaptation. Approved host code supplies the execution arguments; results are not pooled as model choices.
 
 ## Key results
 
 | What we checked | Result | Evidence |
 | --- | --- | --- |
+| Can it adapt a failed stair task without changing the command? | Seen development seed 200: Nemotron 3.5 selected a stability check and proposed 300 more PPO updates. At the same 0.25m/s, the 30-second evaluation changed from failed to passed: inverted samples 888→0, tracking RMSE 0.233→0.064m/s. Code-bug cause remains unconfirmed. | [Same-command stair adaptation](docs/GO2-STAIRS-AGENT-ADAPTATION.md) |
 | Does the full loop recover failed runs? | Four runs on new seeds recovered under preregistered criteria: reward-frame faults (seeds 2030 and 2034, the latter through the NeMo Agent Toolkit tool-calling path) and motor torque-speed faults (seeds 2033 and 2046). In the 2033 motor run the first judgment ranked reward first; three approved probes rejected reward and exploration and confirmed the actuator. | [End-to-end demonstration](docs/E2E-REWARD-DEMO.md) |
 | Can it fix a fault that remains after a correction? | Combined reward-frame and PPO epoch faults recovered after two registered corrections on seeds 2120 and 2121. In a 3.5 run with checkpoint-bound optimizer counts (seed 2311), a model-selected count probe confirmed 4 steps instead of 20 and the second correction recovered the policy. A newer four-arm followup ended three arms at HOLD; the compound/model arm observed 4 optimizer steps against 20 in its reference, restored the registered epoch setting, and recovered with 0.142376m/s linear RMSE on fixed26. This is one recovered arm from two source lineages, not a same-checkpoint selector comparison. | [Two diagnosis rounds](docs/RESIDUAL-DIAGNOSIS-RESULT.md#v2-두-번째-검사와-교정-뒤-회복) · [3.5 runtime observation loop](docs/NEW-LINEAGE-COMPARISON.md#갱신-계측을-연결한-새-복합-사례) · [Latest recovery comparison](docs/FIVE-TYPE-RECOVERY-COMPARISON.md) |
 | Does it carry over to another robot or codebase? | On ANYmal-C, with only the task id, entry points and task text changed, a reward-frame fault on new seed 2047 was confirmed with one probe and recovered after retraining. For a reward bug ported from UniLab PR #1254, the scope check flagged a term the registered correction missed; a four-function correction registered after that result recovered seeds 2051 and 2062 (outside the model loop). | [ANYmal-C port](docs/ANYMAL-C-PORT.md) · [Scope extension](docs/U1-SCOPE-EXTENSION.md) |
 | Does it stop when it should? | All three runs of one external-source fault ended with no supported cause (`none_supported`) and no wrong confirmation. Healthy inputs did not open the loop. A model that broke the output contract twice stopped at `model_invalid`, with no probe or correction. | [External faults](docs/T1-EXTERNAL-FAULTS.md) · [Healthy inputs](docs/T2-NO-INTERVENTION.md) · [PPO stop](docs/PPO-GRADIENT-CHECK.md#종단-실행-v4의-모델-판단-보류) |
 
-**Scope of the evidence.** Faults, probes and corrections were written by the same team, on two flat-terrain locomotion tasks (mostly Go2, two reward-fault runs on ANYmal-C) with a few seeds. Corrections are limited to registered mechanisms; other faults end at HOLD or trigger a scope warning. These results show that the loop works end to end. They do not show diagnosis accuracy, generalization, an advantage over rules or GPU savings. On the first benchmark, simple deterministic rules solved every held-out case; on the 18-run hidden-fault set the agent ranked the true cause first 8 times against 2 to 6 for baselines, a small sample. Approvals were operator approvals delegated by the user; approver strings are recorded, not authenticated.
+**Scope of the evidence.** Faults, probes and corrections were written by the same team, primarily on two flat-terrain locomotion tasks with a few seeds; the stair adaptation adds one already-seen development case. Code corrections are limited to registered mechanisms; other faults end at HOLD or trigger a scope warning. These results show that the loop works end to end. They do not show diagnosis accuracy, generalization, an advantage over rules or GPU savings. On the first benchmark, simple deterministic rules solved every held-out case; on the 18-run hidden-fault set the agent ranked the true cause first 8 times against 2 to 6 for baselines, a small sample. Approvals were operator approvals delegated by the user; approver strings are recorded, not authenticated.
 
 **Nemotron 3.5.** [Latency measurements](docs/NEMOTRON35-EVIDENCE-REPORT.md) and [VL integrity checks](docs/VISUAL-INTEGRITY-OBSERVER.md) are reported separately. [Action-contract development](docs/EVIDENCE-GUIDED-DIAGNOSIS.md) made 12/12 first decisions valid (previously 0/12) and led to one preselected R1 recovery. A [reasoning-mode development trial](docs/NEMOTRON-REASONING-MODES.md) increased correct probe-confirmed families from 2/6 to 5/6, including partial compound diagnoses. A two-seed followup did not confirm this improvement: the original mode confirmed 4/6 families versus 3/6 with reasoning enabled, again including partial diagnoses. The default mode is unchanged. These studies do not establish a model-version or image-driven diagnosis advantage.
 
@@ -187,6 +188,8 @@ The correction replay reports `"status": "pass"` when all six loop records match
 
 ## 한국어 요약
 
+- **같은 명령의 계단 적응:** 3.5가 안정성 검사를 고르고 300회 추가 학습을 제안했습니다. 명령 0.25m/s를 유지한 30초 평가에서 뒤집힌 자세 표본은 888→0, 추종 RMSE는 0.233→0.064m/s로 바뀌어 등록 기준을 통과했습니다. 이미 본 seed 200의 개발 사례이며 코드 결함 원인은 미확정입니다. [실제 요청·검사·학습·평가](docs/GO2-STAIRS-AGENT-ADAPTATION.md)를 공개했습니다.
+
 Isaac Lab 로봇 강화학습이 겉으로는 잘 끝났는데 실제 과제에 실패할 때 원인을 찾아 고치는 에이전트입니다. 학습 기록을 읽고 원인 후보에 순위를 매긴 뒤(Nemotron), 승인된 검사로 가설을 좁힙니다. 원인이 확정되면 미리 등록한 수정과 재학습을 승인받아 실행하고, 처음과 같은 고정 평가(26개 속도 명령)로 회복을 판정합니다.
 
 - **흐름:** 이상 감지 → 원인 순위 → 승인된 검사 → 등록 교정 → 재학습과 고정 평가. 검사와 재학습은 승인이 기록돼야 돌고, 승인은 한 번만 쓰입니다. 현재 3.5 경로는 근거가 없거나 모델 응답이 계속 무효면 HOLD로 멈추며, 등록된 다른 판의 규칙 전환은 선택 주체와 함께 기록합니다.
@@ -196,4 +199,4 @@ Isaac Lab 로봇 강화학습이 겉으로는 잘 끝났는데 실제 과제에 
 - **멈춤:** 외부에서 가져온 결함 한 종의 세 실행은 원인 없음으로 끝났고 틀린 확정은 없었습니다. 정상 입력에는 고리를 열지 않았고, 출력 형식을 두 번 어긴 모델 응답은 규칙으로 대신 채우지 않고 멈췄습니다.
 - **3.5와 최신 비교:** [원인 확인·자원 비교](docs/MECHANISM-AGENT-RESOURCE-COMPARISON.md)의 진단 24행에서 네 방식 모두 전체 원인을 2/6사례에서 확인했습니다. 순서를 맞춘 교정 재측정 16행은 미회복 15·HOLD 1입니다. 완료 효과 7개와 완료 학습 1개를 재사용하고 새 학습·평가 7쌍을 실행했으며, 추가 SDK는 15회·모델 재요청은 0회였습니다. 실패·재개 비용과 미관측 비용을 분리했습니다. 추가 모터 함수 확인은 normal이었지만 상대 행동 기준이 미달해 추가 교정 대신 참조 점검으로 넘겼습니다. 정상 host 차단을 모델 판별로 세거나 부분 확인을 전체 해결로 바꾸지 않습니다. 이전 성공 결과의 분모도 보존했습니다.
 
-결함·검사·교정을 같은 팀이 만들었고, 평지 보행 과제 두 개와 적은 seed로 얻은 결과입니다. 진단 정확도·일반화·규칙 대비 우위·GPU 비용 절감은 주장하지 않습니다.
+결함·검사·교정을 같은 팀이 만들었고, 결과는 평지 보행 과제 두 개와 계단 한 개발 사례의 적은 seed에서 얻었습니다. 진단 정확도·일반화·규칙 대비 우위·GPU 비용 절감은 주장하지 않습니다.

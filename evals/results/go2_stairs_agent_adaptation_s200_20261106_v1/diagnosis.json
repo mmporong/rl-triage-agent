@@ -1,0 +1,90 @@
+{
+  "status": "complete",
+  "action": "fine_tune_stairs_300",
+  "decision": {
+    "action": "fine_tune_stairs_300",
+    "cited_facts": [
+      "P_stairs_task_integrity.result",
+      "P_stairs_stability.result",
+      "P_stairs_stability.measurement.inverted_samples",
+      "P_stairs_stability.measurement.minimum_body_up_z",
+      "P_stairs_stability.measurement.accepted"
+    ],
+    "reason": "작업 무결성은 normal이고 안정성은 abnormal이며, 역전 샘플 888개와 body_up_z -0.989로 수용 실패가 확인됐다. 명령 보존·리셋 없음·추적 RMSE 0.233은 허용 범위 내이므로 과제 명령·관측·보상·수용 기준을 변경하지 않는 300회 추가 학습 후보를 선택한다. 근본 원인은 미확정이며 코드 결함 복원으로 단정하지 않는다."
+  },
+  "root_cause_status": "unconfirmed",
+  "receipts": [
+    {
+      "schema": "stairs_agent_probe_receipt_v1",
+      "probe_id": "P_stairs_task_integrity",
+      "source_digest": "2310e94c1efbd36c19338eb775285af590402d72858ba85881838e827e09caa3",
+      "result": "normal",
+      "measurement": {
+        "command_preserved": true,
+        "reset_count": 0,
+        "inverted_samples": 888,
+        "first_inverted_s": 12.26,
+        "minimum_body_up_z": -0.9888558003648724,
+        "tracking_rmse_xy_m_s": 0.23284981411905734,
+        "dx_m": 2.761855363845825,
+        "dz_m": -0.6000061929225922,
+        "acceptance": {
+          "min_progress_m": 3.75,
+          "max_height_change_m": -0.3,
+          "min_body_up_z": 0.5,
+          "max_tracking_rmse_xy_m_s": 0.25,
+          "inverted_samples": 0,
+          "reset_count": 0
+        },
+        "accepted": false
+      },
+      "root_cause_confirmed": false,
+      "scope": "실제 재생 trace의 명령·자세·진행 검사이며 학습 분포 원인 증명은 아니다"
+    },
+    {
+      "schema": "stairs_agent_probe_receipt_v1",
+      "probe_id": "P_stairs_stability",
+      "source_digest": "2310e94c1efbd36c19338eb775285af590402d72858ba85881838e827e09caa3",
+      "result": "abnormal",
+      "measurement": {
+        "command_preserved": true,
+        "reset_count": 0,
+        "inverted_samples": 888,
+        "first_inverted_s": 12.26,
+        "minimum_body_up_z": -0.9888558003648724,
+        "tracking_rmse_xy_m_s": 0.23284981411905734,
+        "dx_m": 2.761855363845825,
+        "dz_m": -0.6000061929225922,
+        "acceptance": {
+          "min_progress_m": 3.75,
+          "max_height_change_m": -0.3,
+          "min_body_up_z": 0.5,
+          "max_tracking_rmse_xy_m_s": 0.25,
+          "inverted_samples": 0,
+          "reset_count": 0
+        },
+        "accepted": false
+      },
+      "root_cause_confirmed": false,
+      "scope": "실제 재생 trace의 명령·자세·진행 검사이며 학습 분포 원인 증명은 아니다"
+    }
+  ],
+  "calls": [
+    {
+      "call_id": "stairs-agent-s200-v6-01",
+      "status": "valid"
+    },
+    {
+      "call_id": "stairs-agent-s200-v6-02",
+      "status": "valid"
+    }
+  ],
+  "api_calls": 2,
+  "feedback_used": false,
+  "probe_selection_actors": {
+    "P_stairs_task_integrity": "host_precondition",
+    "P_stairs_stability": "model"
+  },
+  "api_task_total": 4,
+  "authorization": "diagnose/adaptation-authorization.json"
+}

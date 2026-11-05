@@ -1,0 +1,29 @@
+{
+  "schema": "stairs_agent_model_response_v1",
+  "call_id": "stairs-agent-s200-v6-02",
+  "reservation": "reservation-04.json",
+  "provider_raw": {
+    "response_id": "chatcmpl-bdf84501-97f7-45f6-8fc7-356c5e3b31a6",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\"action\": \"fine_tune_stairs_300\", \"cited_facts\": [\"P_stairs_task_integrity.result\", \"P_stairs_stability.result\", \"P_stairs_stability.measurement.inverted_samples\", \"P_stairs_stability.measurement.minimum_body_up_z\", \"P_stairs_stability.measurement.accepted\"], \"reason\": \"작업 무결성은 normal이고 안정성은 abnormal이며, 역전 샘플 888개와 body_up_z -0.989로 수용 실패가 확인됐다. 명령 보존·리셋 없음·추적 RMSE 0.233은 허용 범위 내이므로 과제 명령·관측·보상·수용 기준을 변경하지 않는 300회 추가 학습 후보를 선택한다. 근본 원인은 미확정이며 코드 결함 복원으로 단정하지 않는다.\"}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 2416,
+    "output_tokens": 199,
+    "total_tokens": 2615,
+    "wall_s": 5.149737187995925
+  },
+  "status": "valid",
+  "decision": {
+    "action": "fine_tune_stairs_300",
+    "cited_facts": [
+      "P_stairs_task_integrity.result",
+      "P_stairs_stability.result",
+      "P_stairs_stability.measurement.inverted_samples",
+      "P_stairs_stability.measurement.minimum_body_up_z",
+      "P_stairs_stability.measurement.accepted"
+    ],
+    "reason": "작업 무결성은 normal이고 안정성은 abnormal이며, 역전 샘플 888개와 body_up_z -0.989로 수용 실패가 확인됐다. 명령 보존·리셋 없음·추적 RMSE 0.233은 허용 범위 내이므로 과제 명령·관측·보상·수용 기준을 변경하지 않는 300회 추가 학습 후보를 선택한다. 근본 원인은 미확정이며 코드 결함 복원으로 단정하지 않는다."
+  },
+  "validation_error": null
+}

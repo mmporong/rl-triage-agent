@@ -1,0 +1,26 @@
+{
+  "schema": "stairs_agent_adaptation_authorization_v1",
+  "source_digest": "2310e94c1efbd36c19338eb775285af590402d72858ba85881838e827e09caa3",
+  "decision_digest": "e4a23c37613085706e7f2797a67bea109befdc4101ec627149f9c0de94c425bf",
+  "receipts_digest": "b6abbc8bdb0bde7360a65ae974bb548f038124ea3097c5ac18cd79111d3bb83f",
+  "recipe": {
+    "updates": 300,
+    "num_envs": 1024,
+    "learning_rate": 0.0001,
+    "load_optimizer": false,
+    "command_x_m_s": 0.25,
+    "reward_change": false,
+    "checkpoint_selection": "final_only"
+  },
+  "task": {
+    "robot": "Go2",
+    "direction": "down",
+    "command_x_m_s": 0.25,
+    "step_height_m": 0.05,
+    "step_width_m": 0.3,
+    "duration_s": 30
+  },
+  "selected_by": "model",
+  "root_cause_confirmed": false,
+  "citation_contract": "actual_fact_paths_v2"
+}

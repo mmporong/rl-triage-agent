@@ -1,0 +1,42 @@
+{
+  "schema": "stairs_agent_common_evaluation_config_v1",
+  "common_fields": {
+    "capture": {
+      "camera": "asset_root_three_quarter",
+      "command_x_m_s": 0.25,
+      "fps": 50,
+      "frames": 1500,
+      "step_height_m": 0.05,
+      "step_width_m": 0.3
+    },
+    "clip_id": "go2-stairs-agent-s200",
+    "direction": "down",
+    "play_task": "Isaac-Velocity-Rough-Unitree-Go2-Play-v0",
+    "robot_role": "quadruped",
+    "schema": "stairs_agent_play_spec_v1",
+    "seed": 200,
+    "source": {
+      "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+      "isaaclab_files_lf": {
+        "source/isaaclab/isaaclab/terrains/config/rough.py": "4ae6c727d1ff5c1b483b7321a284fd9c241cfe26417c66d74ccbb33c3405fabc",
+        "source/isaaclab/isaaclab/terrains/trimesh/mesh_terrains.py": "586070f00af21420bd86e8610174bfa628d6b87ce5c86931011cc97f67358323",
+        "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+        "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58"
+      },
+      "runner_sha256_lf": "6858d73783ce02fecee6f901033660fd115c17f139d2937e07728fc25c075b5a"
+    },
+    "training_task": "Isaac-Velocity-Rough-Unitree-Go2-v0"
+  },
+  "before_spec_sha256": "497251f22ef3842508f8f96dd12219678dfd7581b4e3737f892802a985376ec7",
+  "after_spec_sha256": "cc7a54ec00cf54b98baac6663afd84176d4acd6f2b20724d67cc5271ea1a7cb5",
+  "recorded_initial_body_fields_equal": [
+    "root_pos_w",
+    "root_quat_w",
+    "root_lin_vel_w",
+    "terrain_origin_w",
+    "body_up_world_z",
+    "episode_length_step",
+    "command_body"
+  ],
+  "full_joint_initial_state_equality_claimed": false
+}

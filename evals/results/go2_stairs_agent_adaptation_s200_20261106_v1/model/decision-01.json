@@ -1,0 +1,33 @@
+{
+  "schema": "stairs_agent_model_response_v1",
+  "call_id": "stairs-agent-s200-v6-01",
+  "reservation": "reservation-03.json",
+  "provider_raw": {
+    "response_id": "chatcmpl-a994ebd7-3227-4ab8-be90-6a401ab496dd",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"P_stairs_stability\",\n  \"cited_facts\": [\n    \"P_stairs_task_integrity\",\n    \"P_stairs_task_integrity.measurement.accepted\",\n    \"P_stairs_task_integrity.measurement.inverted_samples\",\n    \"P_stairs_task_integrity.measurement.tracking_rmse_xy_m_s\",\n    \"P_stairs_task_integrity.measurement.minimum_body_up_z\",\n    \"P_stairs_task_integrity.measurement.dx_m\",\n    \"P_stairs_task_integrity.measurement.dz_m\",\n    \"P_stairs_task_integrity.root_cause_confirmed\",\n    \"source.observed_symptom\"\n  ],\n  \"reason\": \"작업 무결성 결과는 비정상(accepted=false, inverted_samples=888, tracking_rmse=0.2328, minimum_body_up_z=-0.9889, dx=2.7619, dz=-0.6000)이며 root_cause_confirmed=false이다. 적응을 제안하기 전에 P_stairs_stability를 실행해 안정성 측정을 확보해야 한다.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 1740,
+    "output_tokens": 261,
+    "total_tokens": 2001,
+    "wall_s": 2.279332197009353
+  },
+  "status": "valid",
+  "decision": {
+    "action": "P_stairs_stability",
+    "cited_facts": [
+      "P_stairs_task_integrity",
+      "P_stairs_task_integrity.measurement.accepted",
+      "P_stairs_task_integrity.measurement.inverted_samples",
+      "P_stairs_task_integrity.measurement.tracking_rmse_xy_m_s",
+      "P_stairs_task_integrity.measurement.minimum_body_up_z",
+      "P_stairs_task_integrity.measurement.dx_m",
+      "P_stairs_task_integrity.measurement.dz_m",
+      "P_stairs_task_integrity.root_cause_confirmed",
+      "source.observed_symptom"
+    ],
+    "reason": "작업 무결성 결과는 비정상(accepted=false, inverted_samples=888, tracking_rmse=0.2328, minimum_body_up_z=-0.9889, dx=2.7619, dz=-0.6000)이며 root_cause_confirmed=false이다. 적응을 제안하기 전에 P_stairs_stability를 실행해 안정성 측정을 확보해야 한다."
+  },
+  "validation_error": null
+}

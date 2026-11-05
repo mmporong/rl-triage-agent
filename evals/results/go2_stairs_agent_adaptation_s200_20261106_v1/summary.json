@@ -1,0 +1,139 @@
+{
+  "schema": "stairs_agent_task_adaptation_result_v1",
+  "status": "complete",
+  "outcome": "task_adaptation_passed",
+  "task_adaptation_verified": true,
+  "code_bug_root_cause_confirmed": false,
+  "fixed26_recovery_claimed": false,
+  "seed": 200,
+  "development_seen_seed": true,
+  "task": {
+    "robot": "Go2",
+    "direction": "down",
+    "command_x_m_s": 0.25,
+    "step_height_m": 0.05,
+    "step_width_m": 0.3,
+    "duration_s": 30
+  },
+  "before": {
+    "command_preserved": true,
+    "reset_count": 0,
+    "inverted_samples": 888,
+    "first_inverted_s": 12.26,
+    "minimum_body_up_z": -0.9888558003648724,
+    "tracking_rmse_xy_m_s": 0.23284981411905734,
+    "dx_m": 2.761855363845825,
+    "dz_m": -0.6000061929225922,
+    "acceptance": {
+      "min_progress_m": 3.75,
+      "max_height_change_m": -0.3,
+      "min_body_up_z": 0.5,
+      "max_tracking_rmse_xy_m_s": 0.25,
+      "inverted_samples": 0,
+      "reset_count": 0
+    },
+    "accepted": false
+  },
+  "after": {
+    "command_preserved": true,
+    "reset_count": 0,
+    "inverted_samples": 0,
+    "first_inverted_s": null,
+    "minimum_body_up_z": 0.7996094892775596,
+    "tracking_rmse_xy_m_s": 0.06402938994462817,
+    "dx_m": 7.217530727386475,
+    "dz_m": -0.35295048356056213,
+    "acceptance": {
+      "min_progress_m": 3.75,
+      "max_height_change_m": -0.3,
+      "min_body_up_z": 0.5,
+      "max_tracking_rmse_xy_m_s": 0.25,
+      "inverted_samples": 0,
+      "reset_count": 0
+    },
+    "accepted": true
+  },
+  "training_updates": 300,
+  "optimizer_steps": 6000,
+  "training_child_wall_s": 610.0309999999881,
+  "model": {
+    "action": "fine_tune_stairs_300",
+    "cited_facts": [
+      "P_stairs_task_integrity.result",
+      "P_stairs_stability.result",
+      "P_stairs_stability.measurement.inverted_samples",
+      "P_stairs_stability.measurement.minimum_body_up_z",
+      "P_stairs_stability.measurement.accepted"
+    ],
+    "reason": "작업 무결성은 normal이고 안정성은 abnormal이며, 역전 샘플 888개와 body_up_z -0.989로 수용 실패가 확인됐다. 명령 보존·리셋 없음·추적 RMSE 0.233은 허용 범위 내이므로 과제 명령·관측·보상·수용 기준을 변경하지 않는 300회 추가 학습 후보를 선택한다. 근본 원인은 미확정이며 코드 결함 복원으로 단정하지 않는다."
+  },
+  "probe_selection_actors": {
+    "P_stairs_task_integrity": "host_precondition",
+    "P_stairs_stability": "model"
+  },
+  "API": {
+    "requests": 4,
+    "operational_contract_valid": 2,
+    "old_contract_invalid_preserved": 2,
+    "input_tokens": 5988,
+    "output_tokens": 588,
+    "provider_wall_s": 12.281343135997304,
+    "new_post_API": 0
+  },
+  "owned_workload_children": [
+    {
+      "tag": "v4",
+      "stage": "baseline",
+      "SimulationApp_started": true,
+      "exit_code": 0,
+      "cleanup_verified": true,
+      "wall_s": 203.95299999999406
+    },
+    {
+      "tag": "v6",
+      "stage": "train",
+      "SimulationApp_started": false,
+      "exit_code": 1,
+      "cleanup_verified": true,
+      "wall_s": 0.46899999999732245
+    },
+    {
+      "tag": "v7",
+      "stage": "train",
+      "SimulationApp_started": true,
+      "exit_code": 1,
+      "cleanup_verified": true,
+      "wall_s": 16.73399999999674
+    },
+    {
+      "tag": "v8",
+      "stage": "train",
+      "SimulationApp_started": true,
+      "exit_code": 0,
+      "cleanup_verified": true,
+      "wall_s": 610.0309999999881
+    },
+    {
+      "tag": "v8",
+      "stage": "post",
+      "SimulationApp_started": true,
+      "exit_code": 0,
+      "cleanup_verified": true,
+      "wall_s": 141.89100000000326
+    }
+  ],
+  "new_Brev_start": 0,
+  "new_TF_API": 0,
+  "same_command_m_s": 0.25,
+  "same_eval_config_except_checkpoint": true,
+  "source_checkpoint_sha256": "f2aa77bf0349c10ec2a00071162e37123d0cf80f3447c3989c17a618e1b24ad2",
+  "adapted_checkpoint_sha256": "dd32d72400b8b21e734bfc17dec18a1488ea00237f0475c7fe764b609c97455f",
+  "registered_protocol": "bench/protocols/stairs_agent_repair_s200_20261106_v7.json",
+  "model_phase_protocol": "bench/protocols/stairs_agent_repair_s200_20261106_v5.json",
+  "claims": {
+    "LLM_superiority": false,
+    "visual_input_benefit": false,
+    "savings": false,
+    "generalization": false
+  }
+}

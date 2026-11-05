@@ -1,0 +1,32 @@
+{
+  "schema": "stairs_agent_training_receipt_v1",
+  "status": "complete",
+  "pid": 47988,
+  "task": {
+    "robot": "Go2",
+    "direction": "down",
+    "command_x_m_s": 0.25,
+    "step_height_m": 0.05,
+    "step_width_m": 0.3,
+    "duration_s": 30
+  },
+  "recipe": {
+    "updates": 300,
+    "num_envs": 1024,
+    "learning_rate": 0.0001,
+    "load_optimizer": false,
+    "command_x_m_s": 0.25,
+    "reward_change": false,
+    "checkpoint_selection": "final_only"
+  },
+  "updates": 300,
+  "optimizer_steps": 6000,
+  "source_checkpoint_sha256": "f2aa77bf0349c10ec2a00071162e37123d0cf80f3447c3989c17a618e1b24ad2",
+  "checkpoint_sha256": "dd32d72400b8b21e734bfc17dec18a1488ea00237f0475c7fe764b609c97455f",
+  "policy_before": "3a4a57231979c2591ae17e77a649d58a01f342b78d3596578de988ddc0421703",
+  "policy_after": "f93c994715e7291f2a199cc0bfc779089ae9dfd98680fa31613a3b045dbac9ca",
+  "authorization_sha256": "18f0ff0f7e35ca7fecdc13b6a02592b161bf847a96082a33a902d1029d0b8e90",
+  "seed": 5710,
+  "checkpoint": "final.pt",
+  "policy_recovery_verified": false
+}

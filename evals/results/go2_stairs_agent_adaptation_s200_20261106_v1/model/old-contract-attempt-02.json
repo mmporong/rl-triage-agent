@@ -1,0 +1,19 @@
+{
+  "schema": "stairs_agent_model_response_v1",
+  "call_id": "stairs-agent-s200-02",
+  "reservation": "reservation-02.json",
+  "provider_raw": {
+    "response_id": "chatcmpl-93b7f59f-18a0-425a-a2c8-3be540a7d4f4",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"P_stairs_stability\",\n  \"cited_facts\": [\"source.observed_symptom\"],\n  \"reason\": \"관측된 증상이 stability_or_tracking_failure이므로, 과제 무결성 확인 후 안정성 검사를 수행해야 합니다.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 968,
+    "output_tokens": 64,
+    "total_tokens": 1032,
+    "wall_s": 1.8071862639917526
+  },
+  "status": "invalid",
+  "decision": null,
+  "validation_error": "ValueError: 실제 fact ID 인용과 이유가 필요하다"
+}

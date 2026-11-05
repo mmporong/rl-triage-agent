@@ -1132,3 +1132,14 @@
 Go2 하행을 1500프레임으로 늘릴 때 기존 저장기에는 625프레임 입력 제한이 남아 있었다. 상태1501행은 완성됐지만 MP4 저장에서 예외가 났고, SDK 종료 중 access violation도 기록됐다. 부모는 exit0만으로 수용하지 않고 manifest·인코더·종료 봉인 누락을 검사해 invalid로 보존했다. 기존 저장기는 수정하지 않고 [새 저장기](../bench/run_go2_stairs_down_long_v2.py)를 만들었다. 실제 Isaac Python·Gymnasium·MoviePy 경로에서 1500프레임 CPU 인코딩을 통과한 뒤 새 등록으로 재녹화했다. 앞선 임대 읽기 접점의 SDK 시작 전 실패도 보존했다.
 
 재녹화는 1500프레임 전체 디코딩과 SDK 자연 종료·소유 Job 정리를 통과했다. 초기626행은 이전12.5초 원본과 일치하고, 12.26초부터30초까지 뒤집힘이 이어졌다. 종료 조건을 끈 것은 리셋 없는 관찰을 위한 설정이며 회복으로 세지 않는다. [30초 원본과 판정 범위](GO2-STAIRS-COMMAND-CONTRAST.md#30초-하행-원본-관찰)에 결과를 연결했다.
+
+
+## 계단 정책 적응: 실행기 ABI와 생산자 수치 검증
+
+`AppLauncher.add_app_launcher_args`가 만든 Namespace에는 `kit_args`가 이미 있다. 같은 값을 kwargs로 다시 넘기면 앱 생성 전에 중복 인자 오류가 난다. [학습 실행기](../bench/train_stairs_agent_adaptation_v3.py)는 [단일 인자 dict](../bench/train_stairs_agent_adaptation_v2.py)를 전달한다. 실제 SDK에서 인자 해석을 앱 생성 직전까지 실행해 구 오류 재현·새 경계 도달·CUDA 미초기화를 [확인했다](../evals/results/go2_stairs_agent_adaptation_s200_20261106_v1/cpu-launcher-interface-validation.json).
+
+이 설치본의 PPO 정책 객체는 `runner.alg.policy`다. `actor_critic`으로 지표를 읽으면 환경과 체크포인트를 불러온 뒤 첫 갱신 전에 실패한다. 버전 문자열만으로 인터페이스를 추정하지 않고 실제 `OnPolicyRunner.load` 소스를 확인했다. 원 체크포인트와 같은 가중치의 CPU 사본을 불러와 실제 RSL-RL로 3 update·60 optimizer step·저장을 [검증했다](../evals/results/go2_stairs_agent_adaptation_s200_20261106_v1/cpu-rsl-interface-validation.json). 이 검사는 무작위 텐서 환경의 ABI 확인이며 계단 성능 측정과 구분한다.
+
+같은 trace의 xy RMSE가 생산자 Python 3.10에서 `0.23284981411905734`, 부모 Python 3.12에서 `0.23284981411905725`로 계산돼 종료 영수증의 엄격한 일치 검사가 거절했다. Python 3.12는 float 합산 알고리즘을 변경했다([공식 sum 문서](https://docs.python.org/3.12/library/functions.html#sum)). 판정 기준이나 원본을 바꾸지 않고 생산자 Python 3.10에서 다시 검증해 정확한 영수증 일치를 확인했다. 원 녹화는 재실행하지 않았으며 이전 invalid 기록도 보존했다.
+
+임대 reader의 `read_scope()`만 열고 하위 reader를 부르면 기록용 thread-local이 초기화되지 않는다. 전체 `lease_context(stage)` 접점을 사용하고 실제 공용 임대 상태에서 SDK 없는 입장 검사를 수행한다. 원본·모델 인용 계약·갱신 수·학습 후 판정은 [계단 적응 결과](GO2-STAIRS-AGENT-ADAPTATION.md)와 [전체 artifact SHA](../evals/results/go2_stairs_agent_adaptation_s200_20261106_v1/manifest-v2.json)에 연결했다.
