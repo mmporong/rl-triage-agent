@@ -1,3 +1,4 @@
+import argparse
 import importlib
 import sys
 from pathlib import Path
@@ -7,6 +8,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "evals"), str(ROOT / "bench")]
 C = importlib.import_module("stairs_agent_repair_v2")
+TRAIN = importlib.import_module("train_stairs_agent_adaptation_v2")
 
 
 def source():
@@ -42,3 +44,11 @@ def test_incomplete_and_normal_receipts_cannot_authorize_training():
     assert C.ADAPT not in C.packet(s, [C.probe(C.PROBES[0], s)])["eligible_actions"]
     s["assessment"]["accepted"] = True
     assert C.packet(s, [C.probe(p, s) for p in C.PROBES])["eligible_actions"] == ["HOLD"]
+
+
+def test_launcher_arguments_are_passed_once_and_original_namespace_is_preserved():
+    args = argparse.Namespace(kit_args="", headless=True, device="cuda:0")
+    config = TRAIN.launcher_arguments(args)
+    assert config["kit_args"] == "--/app/vulkan=false --/app/window/hideUi=true"
+    assert config["fast_shutdown"] is False and config["headless"] is True
+    assert vars(args) == {"kit_args":"", "headless":True, "device":"cuda:0"}
