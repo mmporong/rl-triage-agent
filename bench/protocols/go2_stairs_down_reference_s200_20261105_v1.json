@@ -1,0 +1,228 @@
+{
+  "schema": "go2_stairs_down_reference_preregistration_v1",
+  "source_anchor": "03b84f9814813d0f836dc07c06cac2324819dc04",
+  "purpose": "15초 실패·성공 동시비교를 위해 같은Go2정책·계단·seed에서명령0.75m/s 후보를녹화한다.",
+  "condition": {
+    "robot": "Go2",
+    "direction": "down",
+    "seed": 200,
+    "step_height_m": 0.05,
+    "step_width_m": 0.3,
+    "command_x_m_s": 0.75,
+    "frames": 1500,
+    "fps": 50,
+    "duration_s": 30
+  },
+  "observation_only_changes": {
+    "base_contact_termination": false,
+    "time_out_termination": false,
+    "episode_length_s": 31,
+    "command_resampling_time_s": 31,
+    "automatic_reset": false
+  },
+  "unchanged": [
+    "checkpoint",
+    "terrain_geometry",
+    "initial_reset_ranges",
+    "control_dt",
+    "action_scale",
+    "policy_network",
+    "camera",
+    "render_sync"
+  ],
+  "prediction": {
+    "known": "같은정책의기존0.75m/s하행은12.5초기준을통과했다.",
+    "new": "앞15초에서도뒤집힘없이진행·하강할것으로예측한다.30초전체의행동성공은미확정이다."
+  },
+  "acceptance": {
+    "technical": "1500개 실제 프레임·1501 상태행·50fps·리셋0·자연종료·owned 정리·종료 봉인·독립 전체 디코딩",
+    "motion": "첫0~15초751상태행에서전진>=1.5m·하강>=0.3m·body-up z음수0·reset0이면15초성공후보로수용한다.",
+    "prefix": "명령이다른0.25m/s실패와frame0의상태만비교하며같은궤적이라고주장하지않는다."
+  },
+  "budget": {
+    "maximum_sdk_processes": 1,
+    "timeout_per_child_s": 1200,
+    "new_training": 0,
+    "model_api": 0,
+    "automatic_retry": 0,
+    "parameter_sweep": false
+  },
+  "source_sha256_lf": {
+    "bench/isaac_training_guard_v1.py": "5512809c5ce166489b0aafa759aea088fc9f7554b62702e0f2ec1d12adf772b2",
+    "bench/lineage_source_training_v1.py": "cdee1c1fa8b777fdbcd986dd6d84379a404d42ed27f94ec2b4acc8e1899f5683",
+    "bench/optimizer_faults.py": "4e02e3852e940a676637863904a0a59b3a1d839b10558e3d0dd5b30520198d24",
+    "bench/ppo_ratio_mutation_v1.py": "19c15646515e7481c34bd909d5e0d6ef52b708ce1a5daec1810c774c602702a3",
+    "bench/ppo_ratio_repair_training.py": "ba47de10661fab2d3349a9c43148a5de9cf8b66daae110d8755adf3845b4cf27",
+    "bench/r1_repair_training.py": "0b1b9aca9d17a4c8fce0a2f1aa451393bea701df66f4769156c2ff9d1f958ae6",
+    "bench/record_evidence_media.py": "0f073c4f6398afc5e6daa36bf33087fb45055d08d5fff5275edc708a4526ab60",
+    "bench/run_go2_stairs_down_long_v1.py": "5c1f8a9417a3f29faeca546fdda495f92649429eb7e1573d8cff6e5f7719d0e9",
+    "bench/run_runtime_readback_smoke.py": "0992d3c7ddbcabedae350d630cdb25ff7658ac1f371d829c4fa4d47b55cf5d36",
+    "bench/run_stairs_playback_v2.py": "6858d73783ce02fecee6f901033660fd115c17f139d2937e07728fc25c075b5a",
+    "bench/runtime_readback_smoke.py": "60a2b37b10520b0296b3aeb42b007e782fe8f512a759294338d15590ceb8869e",
+    "bench/upstream_faults.py": "58d7c07f481328c606a191ea55ba8f9f8e54388db9db121e925c69c8878ae249",
+    "evals/lease_timestamps.py": "dd88cc4af421ee8bba3f75715093c9a71766522d13ab060cbcf35696453971a2",
+    "evals/lineage_gpu_admission_v1.py": "e71e99fe308e11a754233a3b799d547b255ff9af74f20d0d1e1ab9c93630e029",
+    "evals/lineage_lease_context_v2.py": "82a8e86e79cb2d69b6c6ddc61636ff048c5dc73424cab9ce8c1899b3d287816c",
+    "evals/lineage_source_batch_v1.py": "cf0ee2c9fb19c2ecc39916a2d88d40a8c81d9bc15bb9235aafd3219db54adf38",
+    "evals/optimizer_observability.py": "b9ca8ed059f8cefc20d09bf49f2e10c1cc93bc643a1e0493d7ed498a8a050b04",
+    "evals/ppo_gradient_invariant_v1.py": "bdbe4a9d99f8d4fd55a9181238357b4a0e6b1e677164d8c2ded61cdc47316fd3",
+    "evals/ppo_gradient_invariant_v2.py": "ad0bc58500165da891092ae84c283bf5522c25de4d227a1dd818b0b4b7fc41c8",
+    "evals/ppo_ratio_repair_execution.py": "5139e7dfb2e402b45ac1844abc8f6105fa96bda5cebf3fe40b36a4ff01f30026",
+    "evals/ppo_ratio_repair_execution_v2.py": "26aa7283df00c83655bb98f71b653d320daa82af5981ea6637fae987020be357",
+    "evals/ppo_ratio_repair_execution_v3.py": "40bce19bb59eff05f761d4ddaaeee82b27fec233bff5db0c0dbc3790d77f207b",
+    "evals/r1_repair_execution.py": "c76f508fb921c642a33a76de3c3ae65bf0ae2624283d4b206a744c715788c1eb",
+    "evals/r1_repair_execution_v2.py": "a16f0c3dd2b9655b2173440879cd8c9cad0f6415752f04944e3a8ce8dc82cd99",
+    "evals/run_upstream_r1_smoke.py": "a06e582d440b916c75b7e7b5a8cdb521701870f774207f14f01f13439853127c",
+    "evals/run_upstream_smoke.py": "fd8f6f40e8adbc39239ec1cfa6b7bce096dcffa9c7b58d53acd0368b65c93e57",
+    "src/rl_triage/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/rl_triage/grounded_recovery.py": "8b141e28d2ff9712b256ac327ba71e01f7353b0ef174a6b11d7554858b246c0e",
+    "src/rl_triage/probe_loop.py": "0f2da7fc753efaed3bc0c07d5ff699c7beea51630df8a474daf4d1c478d131e1",
+    "src/rl_triage/recovery.py": "9c6b10db10a20616004e4a4df77211070d3f81b5fc1967a589749f7edca0849e",
+    "src/rl_triage/triage_tools.py": "c5a63aff9636d0c4c527cf32d52fd33e7014a6430c7e17ecd50f43634121a9af",
+    "tests/test_go2_stairs_down_long_v1.py": "b5991c8738717a288231b206457a1a58fabb1f519237d509b958f53129427aed",
+    "bench/run_go2_stairs_down_long_v2.py": "47f6eb84f28e14f50bcd786b6d626e509118f9cdce3dcf64328a0d9460d662cc",
+    "tests/test_go2_stairs_down_long_v2.py": "41be50abce9e0dd4aa3cde27c31a58505fe368ac6a567db80fcb10a3983106ea",
+    "bench/run_go2_stairs_down_reference_v1.py": "bb72ed2aee06c482ca5669dfa069ab8a746eebfdf43ea2bfbf08c272b62a482a",
+    "tests/test_go2_stairs_down_reference_v1.py": "25fd5c6398ca4a389c0f1641fc3f67120dfdd149d0489b5239571d6167537210"
+  },
+  "private_source_sha256_lf": {
+    "controller": "ec92b396903439d6e072302153875a8e41a1d46c8a74d1827e23edc714e82e52",
+    "child": "15c2c3a0290ca93c0149b7b27e09b486d79254cff8c743a1e0a1b6891caae0d5",
+    "legacy_exact_encoder": "90c25252f171f6a85f247828df35c2cc23502511cb4b13b117780b90bfdb67fc",
+    "legacy_shutdown": "4fc429ada68b1675da91fc2d4571d63859ec3c61282574c65b339124670e2cc9",
+    "runtime_metadata_reader": "54a4303172753e1c39da89407fa62cfac21f39867b97dc7d63b1c565026de9f2"
+  },
+  "checkpoint_sha256": "f2aa77bf0349c10ec2a00071162e37123d0cf80f3447c3989c17a618e1b24ad2",
+  "old_spec_sha256": "33aaa489a842227e02f085c4c10bea261aaab241ff9a1618b74d03dfee835bca",
+  "old_trace_sha256": "31b6fffd1e499a3880fd186b91fcc955188097ab6aef42a6a6ed43a98bd29990",
+  "isaaclab_commit": "90b79bb2d44feb8d833f260f2bf37da3487180ba",
+  "expected_runtime": {
+    "gymnasium": "1.2.0",
+    "isaaclab": "0.41.3",
+    "isaaclab_rl": "0.1.8",
+    "python": "3.10.15",
+    "rsl_rl": "2.3.3",
+    "torch": "2.7.0+cu128"
+  },
+  "runtime_sha256_lf": {
+    "source/isaaclab/isaaclab/terrains/config/rough.py": "4ae6c727d1ff5c1b483b7321a284fd9c241cfe26417c66d74ccbb33c3405fabc",
+    "source/isaaclab/isaaclab/terrains/trimesh/mesh_terrains.py": "586070f00af21420bd86e8610174bfa628d6b87ce5c86931011cc97f67358323",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/config/go2/rough_env_cfg.py": "cde621c94a6076734adbbc3e7e45dedbcd1812be0343a4bbad901ed0c0bf16a0",
+    "source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py": "962c09406c4347b0488020ac0e1d8800740c5bbc3035f4d14af9aeaeb2441b58",
+    "source/isaaclab/isaaclab/envs/manager_based_rl_env.py": "b13e9106b98666b33637841f100589731aa4e24ce3ca133ff99dddb43f11b1f2",
+    "source/isaaclab/isaaclab/envs/mdp/terminations.py": "a44d87d638ef01f9bc606cda6ae6c64be68e91903bfde784f1a49f4ebf7c2762"
+  },
+  "ffmpeg_sha256": "3256173f3f8bffd7df12227c68adf68025edb1832273a9530688a7bb1ed8edec",
+  "gpu_lease_owner": "rl-triage-lineage-sources-v1",
+  "gpu_admission": {
+    "policy": "desktop_shared_lineage_sources_v1",
+    "gpu_exclusive": false,
+    "performance_measurement": false,
+    "memory_used_limit_mib": 4096,
+    "gpu_index": 0,
+    "active_engine_min_percent": 1,
+    "protected_cim_name_only_process_names": [
+      "dwm.exe",
+      "remoting_desktop.exe",
+      "system",
+      "tabtip.exe"
+    ],
+    "guard_phases": [
+      "before_clip",
+      "after_clip"
+    ],
+    "allowed_process_types": [
+      "C+G",
+      "G"
+    ],
+    "allowed_display_process_names": [
+      "antigravity.exe",
+      "applicationframehost.exe",
+      "asus_framework.exe",
+      "chatgpt.exe",
+      "chrome.exe",
+      "claude.exe",
+      "codex-computer-use-swift.exe",
+      "codex-computer-use.exe",
+      "crossdeviceresume.exe",
+      "cursor.exe",
+      "discord.exe",
+      "dwm.exe",
+      "explorer.exe",
+      "lghub_system_tray.exe",
+      "microsoft.cmdpal.ui.exe",
+      "msedge.exe",
+      "msedgewebview2.exe",
+      "nvidia overlay.exe",
+      "phoneexperiencehost.exe",
+      "powertoys.colorpickerui.exe",
+      "powertoys.exe",
+      "powertoys.fancyzones.exe",
+      "powertoys.peek.ui.exe",
+      "powertoys.quickaccess.exe",
+      "remoting_desktop.exe",
+      "searchhost.exe",
+      "shellexperiencehost.exe",
+      "shellhost.exe",
+      "slack.exe",
+      "startmenuexperiencehost.exe",
+      "system",
+      "systemsettings.exe",
+      "tabtip.exe",
+      "textinputhost.exe",
+      "video.ui.exe",
+      "windowsterminal.exe"
+    ],
+    "allowed_active_engine_types": [
+      "3D",
+      "Copy",
+      "VideoDecode",
+      "VideoEncode"
+    ],
+    "unclassified_activity": "block"
+  },
+  "claims": {
+    "seen_development_source": true,
+    "heldout": false,
+    "agent_diagnosis": false,
+    "agent_recovery": false,
+    "new_training": false,
+    "new_fault_cause_identified": false
+  },
+  "scene_direction": "사족계단하행비교를README대표미디어로사용한다.새정책학습·모델수리성과로표현하지않는다.",
+  "display": {
+    "duration_s": 15,
+    "window_s": [
+      0,
+      15
+    ],
+    "source_fps": 50,
+    "composition": "left0.25failure/right0.75candidate",
+    "static_crop_xywh": [
+      320,
+      40,
+      640,
+      640
+    ],
+    "crop_identical_on_both": true,
+    "panels_scaled_wh": [
+      960,
+      960
+    ],
+    "MP4_wh": [
+      1920,
+      1080
+    ],
+    "MP4_fps": 50,
+    "GIF_wh": [
+      960,
+      540
+    ],
+    "GIF_fps": 10,
+    "freeze_or_loop_to_extend": false,
+    "positive_label_requires_registered_15s_motion_pass": true,
+    "scope": "같은사전학습정책의명령속도대조이며에이전트수리성과가아니다.",
+    "failure_source_sha256": "9c333fb05f283b73f502624891bf07216fc7f0e2c01172913f8f3e7f4313b768"
+  },
+  "reuses_registration": "bench/protocols/go2_stairs_down_long_s200_20261105_v3.json"
+}
