@@ -1,5 +1,6 @@
 import copy
 import importlib
+import json
 import sys
 from pathlib import Path
 from types import SimpleNamespace as NS
@@ -10,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "evals"), str(ROOT / "bench")]
 C = importlib.import_module("stairs_agent_repair_v1")
 TRAIN = importlib.import_module("train_stairs_agent_adaptation_v1")
+PLAY = importlib.import_module("run_go2_stairs_agent_play_v1")
 
 
 def rows():
@@ -114,3 +116,33 @@ def test_training_keeps_task_and_rewards_while_preserving_training_terminations(
     assert cfg.commands.base_velocity.ranges.lin_vel_x == (0.25,0.25)
     assert cfg.terminations.base_contact is term and cfg.terminations.time_out is timeout
     assert cfg.rewards is rewards and cfg.curriculum.terrain_levels is None
+
+
+def test_actual_play_verifier_binds_checkpoint_terrain_and_command(tmp_path):
+    def write(path, value):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value), encoding="utf-8")
+    video = tmp_path/"video/clip.mp4"
+    video.parent.mkdir()
+    video.write_bytes(b"synthetic verifier boundary fixture")
+    trace = tmp_path/"state-trace.jsonl"
+    trace.write_text("\n".join(json.dumps(r) for r in rows())+"\n", encoding="utf-8")
+    m = {"schema":PLAY.MANIFEST_SCHEMA,"source":{"fixture":True},"checkpoint_sha256":"a"*64,
+         "clip_id":"fixture","render_sync":{"physics_state_unchanged":True},
+         "state_trace":{"sha256":C.sha(trace)},"video":{"path":"video/clip.mp4","sha256":C.sha(video)},
+         "terrain":{"terrain_id":"pyramid_stairs","step_height_m":0.05,"step_width_m":0.3,
+         "command":{"lin_vel_x":0.25,"lin_vel_y":0.0,"ang_vel_z":0.0},
+         "observation_extension":{"seconds":30,"automatic_reset_disabled":True}}}
+    write(tmp_path/"manifest.json",m)
+    write(video.with_suffix('.mp4.exact-frames.json'),{"video_sha256":C.sha(video),"frames_written":1500,
+         "frames_received":1500,"frame_sequence":[{"index":i} for i in range(1500)],"fps":50})
+    s = {"source":{"fixture":True},"checkpoint":{"sha256":"a"*64},"clip_id":"fixture"}
+    assert PLAY.verify_record(tmp_path,s)["assessment"]["accepted"]
+    s["checkpoint"]["sha256"] = "b"*64
+    with pytest.raises(ValueError):
+        PLAY.verify_record(tmp_path,s)
+    s["checkpoint"]["sha256"] = "a"*64
+    m["terrain"]["command"]["lin_vel_x"] = 0.75
+    write(tmp_path/"manifest.json",m)
+    with pytest.raises(ValueError):
+        PLAY.verify_record(tmp_path,s)

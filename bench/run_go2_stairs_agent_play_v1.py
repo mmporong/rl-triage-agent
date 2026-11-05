@@ -63,6 +63,13 @@ def verify_record(out: Path, spec: dict) -> dict:
             or m["clip_id"] != spec["clip_id"]
             or m["render_sync"]["physics_state_unchanged"] is not True):
         raise ValueError("실제 manifest와 등록 spec 불일치")
+    terrain = m["terrain"]
+    extension = terrain.get("observation_extension", {})
+    if (terrain.get("terrain_id") != "pyramid_stairs" or terrain.get("step_height_m") != 0.05
+            or terrain.get("step_width_m") != 0.3
+            or terrain.get("command") != {"lin_vel_x": 0.25, "lin_vel_y": 0.0, "ang_vel_z": 0.0}
+            or extension.get("seconds") != 30 or extension.get("automatic_reset_disabled") is not True):
+        raise ValueError("같은 하행 계단·명령·장시간 관찰 계약이 아니다")
     trace = out / "state-trace.jsonl"
     if sha(trace) != m["state_trace"]["sha256"]:
         raise ValueError("trace SHA 불일치")
