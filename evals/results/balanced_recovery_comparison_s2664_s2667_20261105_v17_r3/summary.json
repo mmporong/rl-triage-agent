@@ -1,0 +1,4268 @@
+{
+  "actual_order": [
+    [
+      "case-05",
+      "fixed_sequence"
+    ],
+    [
+      "case-05",
+      "static_rule"
+    ],
+    [
+      "case-05",
+      "one_shot_llm"
+    ],
+    [
+      "case-05",
+      "iterative_agent"
+    ],
+    [
+      "case-06",
+      "static_rule"
+    ],
+    [
+      "case-06",
+      "one_shot_llm"
+    ],
+    [
+      "case-06",
+      "iterative_agent"
+    ],
+    [
+      "case-06",
+      "fixed_sequence"
+    ],
+    [
+      "case-07",
+      "one_shot_llm"
+    ],
+    [
+      "case-07",
+      "iterative_agent"
+    ],
+    [
+      "case-07",
+      "fixed_sequence"
+    ],
+    [
+      "case-07",
+      "static_rule"
+    ],
+    [
+      "case-08",
+      "iterative_agent"
+    ],
+    [
+      "case-08",
+      "fixed_sequence"
+    ],
+    [
+      "case-08",
+      "static_rule"
+    ],
+    [
+      "case-08",
+      "one_shot_llm"
+    ]
+  ],
+  "actual_order_matches_registered": true,
+  "api_calls": 0,
+  "arms": [
+    {
+      "case_id": "case-05",
+      "method": "fixed_sequence",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 356,
+                    "value": 47.5252808988764
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 356,
+                    "value": 5547.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 356,
+                    "value": 86.82
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999364842241597,
+                  "covered_s": 733.1092920303345,
+                  "energy_wh": 15.312728377673684,
+                  "gaps": [
+                    {
+                      "end_s": 1793831527.466392,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793831527.420829
+                    },
+                    {
+                      "end_s": 1793832260.576688,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793832260.575684
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 356,
+                  "scope": "device_wide_estimate",
+                  "window_s": 733.1558589935303
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793832260.576688,
+              "window_start_s": 1793831527.420829
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 718.3130000000019,
+          "phase_wall_s": 735.5707907000033,
+          "scope": "historical_completed_effect",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-05",
+      "method": "static_rule",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 346,
+                    "value": 46.517341040462426
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 346,
+                    "value": 5555.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 346,
+                    "value": 84.59
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999380060069956,
+                  "covered_s": 714.6846299171448,
+                  "energy_wh": 15.079265851522486,
+                  "gaps": [
+                    {
+                      "end_s": 1793832306.728995,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793832306.685686
+                    },
+                    {
+                      "end_s": 1793833021.414625,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793833021.413625
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 346,
+                  "scope": "device_wide_estimate",
+                  "window_s": 714.7289388179779
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793833021.414625,
+              "window_start_s": 1793832306.685686
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 700.0,
+          "phase_wall_s": 717.2942840000032,
+          "scope": "historical_completed_effect",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-05",
+      "method": "one_shot_llm",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 349,
+                    "value": 48.14040114613181
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 349,
+                    "value": 5693.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 349,
+                    "value": 85.41
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999284230322713,
+                  "covered_s": 717.5130400657654,
+                  "energy_wh": 15.197116661393988,
+                  "gaps": [
+                    {
+                      "end_s": 1793833068.806499,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793833068.755138
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 349,
+                  "scope": "device_wide_estimate",
+                  "window_s": 717.5644011497498
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793833786.319539,
+              "window_start_s": 1793833068.755138
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 702.8899999999994,
+          "phase_wall_s": 719.8793383000011,
+          "scope": "historical_completed_effect",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-05",
+      "method": "iterative_agent",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 344,
+                    "value": 48.47093023255814
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 344,
+                    "value": 5896.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 344,
+                    "value": 86.22
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999260038751194,
+                  "covered_s": 706.7830328941345,
+                  "energy_wh": 14.96518763749366,
+                  "gaps": [
+                    {
+                      "end_s": 1793833833.101094,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793833833.05043
+                    },
+                    {
+                      "end_s": 1793834539.885766,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793834539.884127
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 344,
+                  "scope": "device_wide_estimate",
+                  "window_s": 706.8353359699249
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793834539.885766,
+              "window_start_s": 1793833833.05043
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 692.0620000000054,
+          "phase_wall_s": 709.0467894999965,
+          "scope": "historical_completed_effect",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-06",
+      "method": "static_rule",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 348,
+                    "value": 44.94827586206897
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 348,
+                    "value": 5575.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 348,
+                    "value": 85.1
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999296987871539,
+                  "covered_s": 715.7390899658203,
+                  "energy_wh": 14.95089426681598,
+                  "gaps": [
+                    {
+                      "end_s": 1793834586.816572,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793834586.767759
+                    },
+                    {
+                      "end_s": 1793835302.55717,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793835302.555662
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 348,
+                  "scope": "device_wide_estimate",
+                  "window_s": 715.7894108295441
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793835302.55717,
+              "window_start_s": 1793834586.767759
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 702.3589999999967,
+          "phase_wall_s": 717.8136870000017,
+          "scope": "historical_completed_effect",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-06",
+      "method": "one_shot_llm",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 334,
+                    "value": 38.952095808383234
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 334,
+                    "value": 5814.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 334,
+                    "value": 85.17
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.999929333631848,
+                  "covered_s": 687.7334229946136,
+                  "energy_wh": 14.03035867464642,
+                  "gaps": [
+                    {
+                      "end_s": 1793835349.105611,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793835349.057008
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 334,
+                  "scope": "device_wide_estimate",
+                  "window_s": 687.782026052475
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793836036.839034,
+              "window_start_s": 1793835349.057008
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 670.8749999999927,
+          "phase_wall_s": 690.1716353000011,
+          "scope": "historical_completed_effect",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-06",
+      "method": "iterative_agent",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 367,
+                    "value": 46.310626702997276
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 367,
+                    "value": 5813.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 367,
+                    "value": 84.44
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999316138946597,
+                  "covered_s": 755.4425368309021,
+                  "energy_wh": 15.781227774218065,
+                  "gaps": [
+                    {
+                      "end_s": 1793836084.49988,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793836084.449734
+                    },
+                    {
+                      "end_s": 1793836839.943936,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793836839.942417
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 367,
+                  "scope": "device_wide_estimate",
+                  "window_s": 755.4942021369934
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793836839.943936,
+              "window_start_s": 1793836084.449734
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 741.6240000000034,
+          "phase_wall_s": 758.2401185999988,
+          "scope": "historical_completed_effect",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-06",
+      "method": "fixed_sequence",
+      "segments": [
+        {
+          "SDK": 1,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 320,
+                    "value": 48.696875
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 320,
+                    "value": 6099.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 320,
+                    "value": 84.88
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9998888954821212,
+                  "covered_s": 659.3687109947205,
+                  "energy_wh": 14.195344556475018,
+                  "gaps": [
+                    {
+                      "end_s": 1793836897.575944,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793836897.502677
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 320,
+                  "scope": "device_wide_estimate",
+                  "window_s": 659.4419779777527
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793837556.944655,
+              "window_start_s": 1793836897.502677
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 646.4219999999987,
+          "phase_wall_s": 661.9859517000004,
+          "scope": "historical_completed_training",
+          "unmeasured_lease_wait_s": null
+        },
+        {
+          "SDK": 1,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 35,
+                    "value": 22.085714285714285
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 35,
+                    "value": 4302.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 35,
+                    "value": 67.54
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9992601212377759,
+                  "covered_s": 68.92509603500366,
+                  "energy_wh": 1.026288537966874,
+                  "gaps": [
+                    {
+                      "end_s": 1793843728.320141,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793843728.270107
+                    },
+                    {
+                      "end_s": 1793843797.246237,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793843797.245237
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 35,
+                  "scope": "device_wide_estimate",
+                  "window_s": 68.97613000869751
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793843797.246237,
+              "window_start_s": 1793843728.270107
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 48.265999999995984,
+          "phase_wall_s": 70.86505729999772,
+          "scope": "current_dispatch",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-07",
+      "method": "one_shot_llm",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 274,
+                    "value": 44.47445255474452
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 274,
+                    "value": 5588.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 274,
+                    "value": 84.81
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999135307537674,
+                  "covered_s": 563.46719622612,
+                  "energy_wh": 11.817118107390082,
+                  "gaps": [
+                    {
+                      "end_s": 1793843839.873515,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793843839.825791
+                    },
+                    {
+                      "end_s": 1793844403.341714,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793844403.340711
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 274,
+                  "scope": "device_wide_estimate",
+                  "window_s": 563.5159230232239
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793844403.341714,
+              "window_start_s": 1793843839.825791
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 540.6399999999994,
+          "phase_wall_s": 565.5627680000034,
+          "scope": "current_dispatch",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-07",
+      "method": "iterative_agent",
+      "segments": []
+    },
+    {
+      "case_id": "case-07",
+      "method": "fixed_sequence",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 274,
+                    "value": 44.6021897810219
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 274,
+                    "value": 5556.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 274,
+                    "value": 84.43
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999219146914177,
+                  "covered_s": 563.7250669002533,
+                  "energy_wh": 11.854821829330918,
+                  "gaps": [
+                    {
+                      "end_s": 1793844429.57118,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793844429.528662
+                    },
+                    {
+                      "end_s": 1793844993.297751,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793844993.296247
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 274,
+                  "scope": "device_wide_estimate",
+                  "window_s": 563.7690889835358
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793844993.297751,
+              "window_start_s": 1793844429.528662
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 540.5160000000033,
+          "phase_wall_s": 565.7579855000004,
+          "scope": "current_dispatch",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-07",
+      "method": "static_rule",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 259,
+                    "value": 41.972972972972975
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 259,
+                    "value": 5556.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 259,
+                    "value": 85.15
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999197173921964,
+                  "covered_s": 533.0257740020752,
+                  "energy_wh": 11.106930794896012,
+                  "gaps": [
+                    {
+                      "end_s": 1793845014.237238,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793845014.195447
+                    },
+                    {
+                      "end_s": 1793845547.264017,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793845547.263012
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 259,
+                  "scope": "device_wide_estimate",
+                  "window_s": 533.0685701370239
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793845547.264017,
+              "window_start_s": 1793845014.195447
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 511.6560000000027,
+          "phase_wall_s": 534.731998700001,
+          "scope": "current_dispatch",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-08",
+      "method": "iterative_agent",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 250,
+                    "value": 41.408
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 250,
+                    "value": 5489.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 250,
+                    "value": 83.62
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9998996657629495,
+                  "covered_s": 512.9937541484833,
+                  "energy_wh": 10.717088520416617,
+                  "gaps": [
+                    {
+                      "end_s": 1793845566.685026,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793845566.63355
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 250,
+                  "scope": "device_wide_estimate",
+                  "window_s": 513.0452301502228
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793846079.67878,
+              "window_start_s": 1793845566.63355
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 491.640999999996,
+          "phase_wall_s": 514.6776994999964,
+          "scope": "current_dispatch",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-08",
+      "method": "fixed_sequence",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 248,
+                    "value": 41.689516129032256
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 248,
+                    "value": 5517.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 248,
+                    "value": 83.84
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999165344285571,
+                  "covered_s": 508.87265706062317,
+                  "energy_wh": 10.669797990535697,
+                  "gaps": [
+                    {
+                      "end_s": 1793846099.113457,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793846099.072485
+                    },
+                    {
+                      "end_s": 1793846607.987619,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793846607.986114
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 248,
+                  "scope": "device_wide_estimate",
+                  "window_s": 508.9151339530945
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793846607.987619,
+              "window_start_s": 1793846099.072485
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 488.4380000000019,
+          "phase_wall_s": 510.4771901999993,
+          "scope": "current_dispatch",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-08",
+      "method": "static_rule",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 250,
+                    "value": 41.228
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 250,
+                    "value": 5554.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 250,
+                    "value": 83.71
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999094823498477,
+                  "covered_s": 512.3298180103302,
+                  "energy_wh": 10.752105603247214,
+                  "gaps": [
+                    {
+                      "end_s": 1793846627.581157,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793846627.535784
+                    },
+                    {
+                      "end_s": 1793847139.911981,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793847139.910975
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 250,
+                  "scope": "device_wide_estimate",
+                  "window_s": 512.3761970996857
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793847139.911981,
+              "window_start_s": 1793846627.535784
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 490.9690000000046,
+          "phase_wall_s": 513.947009800002,
+          "scope": "current_dispatch",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    },
+    {
+      "case_id": "case-08",
+      "method": "one_shot_llm",
+      "segments": [
+        {
+          "SDK": 2,
+          "device": {
+            "device_summary": {
+              "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                "metrics": {
+                  "gpu_util_percent_sample_mean": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 248,
+                    "value": 41.875
+                  },
+                  "memory_used_mib_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 248,
+                    "value": 5486.0
+                  },
+                  "power_draw_w_peak": {
+                    "missing_or_invalid_samples": 0,
+                    "valid_samples": 248,
+                    "value": 83.68
+                  }
+                },
+                "scope": "whole_device_including_other_loads"
+              }
+            },
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999153451368833,
+                  "covered_s": 509.85883116722107,
+                  "energy_wh": 10.713240823809969,
+                  "gaps": [
+                    {
+                      "end_s": 1793847159.813856,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793847159.771696
+                    },
+                    {
+                      "end_s": 1793847669.673693,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793847669.672687
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 248,
+                  "scope": "device_wide_estimate",
+                  "window_s": 509.9019968509674
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793847669.673693,
+              "window_start_s": 1793847159.771696
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "nested_owned_gpu_s": 488.7500000000073,
+          "phase_wall_s": 511.6691929000008,
+          "scope": "current_dispatch",
+          "unmeasured_lease_wait_s": null
+        }
+      ]
+    }
+  ],
+  "attempted_arms": 15,
+  "base_summary": {
+    "api_calls": 0,
+    "arms": [
+      {
+        "case_id": "case-05",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": null,
+          "current_dispatch_sdk_launches": 0,
+          "current_dispatch_simulator_owned_wall_s": null,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999364842241597,
+                  "covered_s": 733.1092920303345,
+                  "energy_wh": 15.312728377673684,
+                  "gaps": [
+                    {
+                      "end_s": 1793831527.466392,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793831527.420829
+                    },
+                    {
+                      "end_s": 1793832260.576688,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793832260.575684
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 356,
+                  "scope": "device_wide_estimate",
+                  "window_s": 733.1558589935303
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793832260.576688,
+              "window_start_s": 1793831527.420829
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "historical_completed_dispatch_only",
+          "execution_origin": "verified_prior_effect",
+          "lease_wait_s": null,
+          "locked_wall_s": null,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": null,
+          "reused_completed_dispatch_owned_wall_s": 718.3130000000019,
+          "reused_completed_dispatch_sdk_launches": 2,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 718.3130000000019,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": null,
+          "whole_effect_active_phase_s": 735.5707907000033
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7",
+          "fixed_report_sha256": "70a5225997b75aa6c09e36bace17d13200a6ce90cf2e85367c14f79ed600a3fa"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-05:fixed_sequence:diagnostic-manifest",
+            "sha256": "4c2045d49162d7ee54f79b4e719a5888fdce520c80c76d1d0d2a3a0277fc4ce4"
+          },
+          {
+            "logical_id": "case-05:fixed_sequence:historical:projected-resource",
+            "sha256": "3423441f37abf948aac9b02c9fe1a9d2727a8bce4ab63b0fbf2f97b23f5bd937"
+          },
+          {
+            "logical_id": "case-05:fixed_sequence:historical:raw-resource",
+            "sha256": "52e9cdee014de4729b51db97ab9995d4ecb339d954b32ec277cc11f40532e1cf"
+          },
+          {
+            "logical_id": "case-05:fixed_sequence:historical:lease-admission",
+            "sha256": "f1e4be3e4e070d4114712951e6dcf5e47973199968de80fa841d35a01e50f430"
+          },
+          {
+            "logical_id": "case-05:fixed_sequence:historical:training-execution",
+            "sha256": "f57648c3456b0bb3f1a42f0742590fea4cb38a0f91511e703a68786195a715a6"
+          },
+          {
+            "logical_id": "case-05:fixed_sequence:historical:fixed-execution",
+            "sha256": "a89c10a99fec3a174475fa76d956d6a638fcf4c0a64b026a593ff3214950be36"
+          },
+          {
+            "logical_id": "case-05:fixed_sequence:historical:device-sampler",
+            "sha256": "72380b5a6a55938a8e347b5279c1b2f706d556976edeaf307f262e91eeb4ace6"
+          },
+          {
+            "logical_id": "case-05:fixed_sequence:completed-effect-proof",
+            "sha256": "9f06dfd8a6d14c79281b95137de7260216a3e37e722d3294f74b066b8112e77e"
+          },
+          {
+            "logical_id": "case-05:fixed_sequence:fixed-report",
+            "sha256": "70a5225997b75aa6c09e36bace17d13200a6ce90cf2e85367c14f79ed600a3fa"
+          },
+          {
+            "logical_id": "case-05:fixed_sequence:new-checkpoint",
+            "sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7"
+          },
+          {
+            "logical_id": "case-05:fixed_sequence:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "verified_prior_effect",
+        "method": "fixed_sequence",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "below_reference",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "correction_readback_without_registered_post_mapping",
+          "cpu_review_wall_s": 10.935179000000062,
+          "effective_action": "hold",
+          "gpu_launches": 0,
+          "reason_code": "confirmation_check_unknown",
+          "status": "hold",
+          "unobserved_components": [
+            "actuator_mapping",
+            "optimizer_update_count",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-05",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": null,
+          "current_dispatch_sdk_launches": 0,
+          "current_dispatch_simulator_owned_wall_s": null,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999380060069956,
+                  "covered_s": 714.6846299171448,
+                  "energy_wh": 15.079265851522486,
+                  "gaps": [
+                    {
+                      "end_s": 1793832306.728995,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793832306.685686
+                    },
+                    {
+                      "end_s": 1793833021.414625,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793833021.413625
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 346,
+                  "scope": "device_wide_estimate",
+                  "window_s": 714.7289388179779
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793833021.414625,
+              "window_start_s": 1793832306.685686
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "historical_completed_dispatch_only",
+          "execution_origin": "verified_prior_effect",
+          "lease_wait_s": null,
+          "locked_wall_s": null,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": null,
+          "reused_completed_dispatch_owned_wall_s": 700.0,
+          "reused_completed_dispatch_sdk_launches": 2,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 700.0,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": null,
+          "whole_effect_active_phase_s": 717.2942840000032
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7",
+          "fixed_report_sha256": "9b1af59b7559112fb42a9aa418178a744017e31d5904cb547f67909369de8940"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-05:static_rule:diagnostic-manifest",
+            "sha256": "9d1060753255b69372884d3ba33506f2f350e596b0bf9f794f508582219cd5fa"
+          },
+          {
+            "logical_id": "case-05:static_rule:historical:projected-resource",
+            "sha256": "c1fa212b770d2e20c9dc1d972264fa96659099990e6baa5ce43b2298fec07423"
+          },
+          {
+            "logical_id": "case-05:static_rule:historical:raw-resource",
+            "sha256": "9171b81c2e1f67dc69b4f4108bb98ec43b0ec6e9112ef80c3116496aba8fd940"
+          },
+          {
+            "logical_id": "case-05:static_rule:historical:lease-admission",
+            "sha256": "568a1770cc5b0a709187d50a02691fb9ce27b2081c521ac671306ae22980e631"
+          },
+          {
+            "logical_id": "case-05:static_rule:historical:training-execution",
+            "sha256": "10920b5e2f8cdfc59b0f5f75d24b4daa072950584da7978078b5c282903d52bb"
+          },
+          {
+            "logical_id": "case-05:static_rule:historical:fixed-execution",
+            "sha256": "b335cd288afafe09ccaf0dfa628ba5a3c222a125343589028da01f4e2470e0c1"
+          },
+          {
+            "logical_id": "case-05:static_rule:historical:device-sampler",
+            "sha256": "aa70ae9b82821451d0080e2f44be8395a506c05187f81f37773bfc113547e785"
+          },
+          {
+            "logical_id": "case-05:static_rule:completed-effect-proof",
+            "sha256": "5ddc83b4f9cfe01766d4c5d4dd725f99ae8a32b11662d88f5d39fa0f2f6b79af"
+          },
+          {
+            "logical_id": "case-05:static_rule:fixed-report",
+            "sha256": "9b1af59b7559112fb42a9aa418178a744017e31d5904cb547f67909369de8940"
+          },
+          {
+            "logical_id": "case-05:static_rule:new-checkpoint",
+            "sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7"
+          },
+          {
+            "logical_id": "case-05:static_rule:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "verified_prior_effect",
+        "method": "static_rule",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "below_reference",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "correction_readback_without_registered_post_mapping",
+          "cpu_review_wall_s": 12.1815490999943,
+          "effective_action": "hold",
+          "gpu_launches": 0,
+          "reason_code": "confirmation_check_unknown",
+          "status": "hold",
+          "unobserved_components": [
+            "actuator_mapping",
+            "optimizer_update_count",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-05",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": null,
+          "current_dispatch_sdk_launches": 0,
+          "current_dispatch_simulator_owned_wall_s": null,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999284230322713,
+                  "covered_s": 717.5130400657654,
+                  "energy_wh": 15.197116661393988,
+                  "gaps": [
+                    {
+                      "end_s": 1793833068.806499,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793833068.755138
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 349,
+                  "scope": "device_wide_estimate",
+                  "window_s": 717.5644011497498
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793833786.319539,
+              "window_start_s": 1793833068.755138
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "historical_completed_dispatch_only",
+          "execution_origin": "verified_prior_effect",
+          "lease_wait_s": null,
+          "locked_wall_s": null,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": null,
+          "reused_completed_dispatch_owned_wall_s": 702.8899999999994,
+          "reused_completed_dispatch_sdk_launches": 2,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 702.8899999999994,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": null,
+          "whole_effect_active_phase_s": 719.8793383000011
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7",
+          "fixed_report_sha256": "23dc66b8e769948199afc9cc6014690a8ab31cee6d17d5b8c8270b2d743a83e7"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-05:one_shot_llm:diagnostic-manifest",
+            "sha256": "f011a3a1f0777e70d053a9f13c2ba97c4587bf88f02b276f80c646af82af8af8"
+          },
+          {
+            "logical_id": "case-05:one_shot_llm:historical:projected-resource",
+            "sha256": "c3101f6693b1d696458ac4fa14c2b90c71a13921ba29da7dcca0d5c2264d71a1"
+          },
+          {
+            "logical_id": "case-05:one_shot_llm:historical:raw-resource",
+            "sha256": "fd92e46fea2691525cd611d547ae033a840e2eecf6b3a99ef4a237577d674288"
+          },
+          {
+            "logical_id": "case-05:one_shot_llm:historical:lease-admission",
+            "sha256": "cbbe193f5a5ae26b231628344cd4ccd303c244fabf3d4f9901ae94068c43909a"
+          },
+          {
+            "logical_id": "case-05:one_shot_llm:historical:training-execution",
+            "sha256": "6d29295f7e63ace64fd403d874645faca3d927da56a342c5f4a2d41553af76f6"
+          },
+          {
+            "logical_id": "case-05:one_shot_llm:historical:fixed-execution",
+            "sha256": "bbb5aa78b19feffe1001d3403bf207f69017e2b68ffe1b986a6a5db46286236f"
+          },
+          {
+            "logical_id": "case-05:one_shot_llm:historical:device-sampler",
+            "sha256": "365c6c69d6ec49da28465a628b2496ec9ce7e8cd63e87308d3fb4e417704c945"
+          },
+          {
+            "logical_id": "case-05:one_shot_llm:completed-effect-proof",
+            "sha256": "12676c69d802e03fea875bbcd14cc812c0ae5e55603f5725c11e518d5ad4f5b0"
+          },
+          {
+            "logical_id": "case-05:one_shot_llm:fixed-report",
+            "sha256": "23dc66b8e769948199afc9cc6014690a8ab31cee6d17d5b8c8270b2d743a83e7"
+          },
+          {
+            "logical_id": "case-05:one_shot_llm:new-checkpoint",
+            "sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7"
+          },
+          {
+            "logical_id": "case-05:one_shot_llm:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "verified_prior_effect",
+        "method": "one_shot_llm",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "below_reference",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "correction_readback_without_registered_post_mapping",
+          "cpu_review_wall_s": 11.644167300000845,
+          "effective_action": "hold",
+          "gpu_launches": 0,
+          "reason_code": "confirmation_check_unknown",
+          "status": "hold",
+          "unobserved_components": [
+            "actuator_mapping",
+            "optimizer_update_count",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-05",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": null,
+          "current_dispatch_sdk_launches": 0,
+          "current_dispatch_simulator_owned_wall_s": null,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999260038751194,
+                  "covered_s": 706.7830328941345,
+                  "energy_wh": 14.96518763749366,
+                  "gaps": [
+                    {
+                      "end_s": 1793833833.101094,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793833833.05043
+                    },
+                    {
+                      "end_s": 1793834539.885766,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793834539.884127
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 344,
+                  "scope": "device_wide_estimate",
+                  "window_s": 706.8353359699249
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793834539.885766,
+              "window_start_s": 1793833833.05043
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "historical_completed_dispatch_only",
+          "execution_origin": "verified_prior_effect",
+          "lease_wait_s": null,
+          "locked_wall_s": null,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": null,
+          "reused_completed_dispatch_owned_wall_s": 692.0620000000054,
+          "reused_completed_dispatch_sdk_launches": 2,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 692.0620000000054,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": null,
+          "whole_effect_active_phase_s": 709.0467894999965
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7",
+          "fixed_report_sha256": "1b589267c1c6957d8447eb4ec7c4da42008da54115aab77267862c03641a4200"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-05:iterative_agent:diagnostic-manifest",
+            "sha256": "74d9ed1f5a396c10e5ad7d1a5d5657893ca788f7ffd2649f64c11bd25d669c22"
+          },
+          {
+            "logical_id": "case-05:iterative_agent:historical:projected-resource",
+            "sha256": "c6aaa174dbea17d1f86730abab33b5de4afb22ebb41c9fe1698ce6dcd9dba287"
+          },
+          {
+            "logical_id": "case-05:iterative_agent:historical:raw-resource",
+            "sha256": "6c61adad8a9bbc26704803699fa0e380509c0385821b0855b51d4e2d521b654d"
+          },
+          {
+            "logical_id": "case-05:iterative_agent:historical:lease-admission",
+            "sha256": "bb57308963214ac57a568ca6e7628caf6ba3c3836da192ee77a0f7291ce472c4"
+          },
+          {
+            "logical_id": "case-05:iterative_agent:historical:training-execution",
+            "sha256": "b606dce03aa7ec34e45d2832f9e5bb46087ce144076d37b8abddf70c268953e2"
+          },
+          {
+            "logical_id": "case-05:iterative_agent:historical:fixed-execution",
+            "sha256": "692f2de0829d7eb8aa3dacf90cb9f71959e2377977657d5273793512c1f65897"
+          },
+          {
+            "logical_id": "case-05:iterative_agent:historical:device-sampler",
+            "sha256": "3a8aef54f9001a2c1575ab73fa4f106ed6bb9a57cdcc22850998801adadeae00"
+          },
+          {
+            "logical_id": "case-05:iterative_agent:completed-effect-proof",
+            "sha256": "56ed36507639a13352213c24bb36d04e36be4f3c9cb9d205a6554aa8d020a2b3"
+          },
+          {
+            "logical_id": "case-05:iterative_agent:fixed-report",
+            "sha256": "1b589267c1c6957d8447eb4ec7c4da42008da54115aab77267862c03641a4200"
+          },
+          {
+            "logical_id": "case-05:iterative_agent:new-checkpoint",
+            "sha256": "3aaeabbc6a00f4fcb34fe13dff12fdadb557a031fc7ff581d6436b4452f5a3e7"
+          },
+          {
+            "logical_id": "case-05:iterative_agent:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "verified_prior_effect",
+        "method": "iterative_agent",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "below_reference",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "correction_readback_without_registered_post_mapping",
+          "cpu_review_wall_s": 11.495886299999256,
+          "effective_action": "hold",
+          "gpu_launches": 0,
+          "reason_code": "confirmation_check_unknown",
+          "status": "hold",
+          "unobserved_components": [
+            "actuator_mapping",
+            "optimizer_update_count",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-06",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": null,
+          "current_dispatch_sdk_launches": 0,
+          "current_dispatch_simulator_owned_wall_s": null,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999296987871539,
+                  "covered_s": 715.7390899658203,
+                  "energy_wh": 14.95089426681598,
+                  "gaps": [
+                    {
+                      "end_s": 1793834586.816572,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793834586.767759
+                    },
+                    {
+                      "end_s": 1793835302.55717,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793835302.555662
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 348,
+                  "scope": "device_wide_estimate",
+                  "window_s": 715.7894108295441
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793835302.55717,
+              "window_start_s": 1793834586.767759
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "historical_completed_dispatch_only",
+          "execution_origin": "verified_prior_effect",
+          "lease_wait_s": null,
+          "locked_wall_s": null,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": null,
+          "reused_completed_dispatch_owned_wall_s": 702.3589999999967,
+          "reused_completed_dispatch_sdk_launches": 2,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 702.3589999999967,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": null,
+          "whole_effect_active_phase_s": 717.8136870000017
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "f1cf83b23e71949036eb1e6c9b9894a969df8c092a6cba612a497bc979bcb29f",
+          "fixed_report_sha256": "f837e3d08326ce9fc72fce3719236ef63f1a3f1948311dde7a0b1aa30fdc68d6"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-06:static_rule:diagnostic-manifest",
+            "sha256": "b13ecd31c4881dae570c45108580fc19d25d49761f17902ea14684d29897434b"
+          },
+          {
+            "logical_id": "case-06:static_rule:historical:projected-resource",
+            "sha256": "4ed8d1d823a83793037a23123df61d2e52062ecc9e880d9f738d23fd9c0171ab"
+          },
+          {
+            "logical_id": "case-06:static_rule:historical:raw-resource",
+            "sha256": "08310c016a9f5ecde92fe092bf325f482cbc3868025dbc0c6b0511ddb97d7e97"
+          },
+          {
+            "logical_id": "case-06:static_rule:historical:lease-admission",
+            "sha256": "da55c57d578c065c04270d298f526fa4e66803db84d11d640b9afacd9dbffd5c"
+          },
+          {
+            "logical_id": "case-06:static_rule:historical:training-execution",
+            "sha256": "c2492a287e7fa977720e77bc36e4f87c2f8fb71be1e89c65aad45d25e785a095"
+          },
+          {
+            "logical_id": "case-06:static_rule:historical:fixed-execution",
+            "sha256": "fda9c6b961b4d65ce47cdd194708def8f9b020d77a336cb7749a317969fc565f"
+          },
+          {
+            "logical_id": "case-06:static_rule:historical:device-sampler",
+            "sha256": "21434ea2d1f40cbddf7170e68b426dffb5a3b4f85c3f7a10d8fb1eeab613bd9d"
+          },
+          {
+            "logical_id": "case-06:static_rule:completed-effect-proof",
+            "sha256": "63b9b46cb8db11b088a26bfbf2bf125b9bded82a30adb668f3393523c8ea400b"
+          },
+          {
+            "logical_id": "case-06:static_rule:fixed-report",
+            "sha256": "f837e3d08326ce9fc72fce3719236ef63f1a3f1948311dde7a0b1aa30fdc68d6"
+          },
+          {
+            "logical_id": "case-06:static_rule:new-checkpoint",
+            "sha256": "f1cf83b23e71949036eb1e6c9b9894a969df8c092a6cba612a497bc979bcb29f"
+          },
+          {
+            "logical_id": "case-06:static_rule:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "verified_prior_effect",
+        "method": "static_rule",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "below_reference",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "correction_readback_without_registered_post_mapping",
+          "cpu_review_wall_s": 11.023876100000052,
+          "effective_action": "hold",
+          "gpu_launches": 0,
+          "reason_code": "confirmation_check_unknown",
+          "status": "hold",
+          "unobserved_components": [
+            "actuator_mapping",
+            "optimizer_update_count",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-06",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": null,
+          "current_dispatch_sdk_launches": 0,
+          "current_dispatch_simulator_owned_wall_s": null,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.999929333631848,
+                  "covered_s": 687.7334229946136,
+                  "energy_wh": 14.03035867464642,
+                  "gaps": [
+                    {
+                      "end_s": 1793835349.105611,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793835349.057008
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 334,
+                  "scope": "device_wide_estimate",
+                  "window_s": 687.782026052475
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793836036.839034,
+              "window_start_s": 1793835349.057008
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "historical_completed_dispatch_only",
+          "execution_origin": "verified_prior_effect",
+          "lease_wait_s": null,
+          "locked_wall_s": null,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": null,
+          "reused_completed_dispatch_owned_wall_s": 670.8749999999927,
+          "reused_completed_dispatch_sdk_launches": 2,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 670.8749999999927,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": null,
+          "whole_effect_active_phase_s": 690.1716353000011
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "f1cf83b23e71949036eb1e6c9b9894a969df8c092a6cba612a497bc979bcb29f",
+          "fixed_report_sha256": "b528d0c02c2237f29d05b5d9387e4f32dfb5bf1eedd62bbf8f6504693605ab49"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-06:one_shot_llm:diagnostic-manifest",
+            "sha256": "f98a168e7dc643e322584e0e4c9d8bb33bf6063f5992e46bae7d5209bcc83518"
+          },
+          {
+            "logical_id": "case-06:one_shot_llm:historical:projected-resource",
+            "sha256": "f6e4cf90e7a0b94323658d2ed35e49c135d5add68463b909c8c89e36c4408c0d"
+          },
+          {
+            "logical_id": "case-06:one_shot_llm:historical:raw-resource",
+            "sha256": "cc9876658cebe2e6c86988e4d6d10a228ee17964c69a30680fa038c7a0e52088"
+          },
+          {
+            "logical_id": "case-06:one_shot_llm:historical:lease-admission",
+            "sha256": "4461a897f3923d84bd851220f926bb2d58c4a00c92dd465ba604fa5cc6a813c3"
+          },
+          {
+            "logical_id": "case-06:one_shot_llm:historical:training-execution",
+            "sha256": "a670567169902dc508b62245fa1287e49ae894f49d67d51ccf10bcbb7b296333"
+          },
+          {
+            "logical_id": "case-06:one_shot_llm:historical:fixed-execution",
+            "sha256": "765ddc06d09543265819312ab4ab12ea2469e10be33c0763a563bae75713d469"
+          },
+          {
+            "logical_id": "case-06:one_shot_llm:historical:device-sampler",
+            "sha256": "0d9e609cb8417f3784d63268f048960bfd62471d1174b1a6cbd601a60a7588a8"
+          },
+          {
+            "logical_id": "case-06:one_shot_llm:completed-effect-proof",
+            "sha256": "7a1887fdfd658184dfebc6a582325c01467b54cb0bc67b7c1b0c0a16ee21aa79"
+          },
+          {
+            "logical_id": "case-06:one_shot_llm:fixed-report",
+            "sha256": "b528d0c02c2237f29d05b5d9387e4f32dfb5bf1eedd62bbf8f6504693605ab49"
+          },
+          {
+            "logical_id": "case-06:one_shot_llm:new-checkpoint",
+            "sha256": "f1cf83b23e71949036eb1e6c9b9894a969df8c092a6cba612a497bc979bcb29f"
+          },
+          {
+            "logical_id": "case-06:one_shot_llm:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "verified_prior_effect",
+        "method": "one_shot_llm",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "below_reference",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "correction_readback_without_registered_post_mapping",
+          "cpu_review_wall_s": 11.175746500004607,
+          "effective_action": "hold",
+          "gpu_launches": 0,
+          "reason_code": "confirmation_check_unknown",
+          "status": "hold",
+          "unobserved_components": [
+            "actuator_mapping",
+            "optimizer_update_count",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-06",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": null,
+          "current_dispatch_sdk_launches": 0,
+          "current_dispatch_simulator_owned_wall_s": null,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999316138946597,
+                  "covered_s": 755.4425368309021,
+                  "energy_wh": 15.781227774218065,
+                  "gaps": [
+                    {
+                      "end_s": 1793836084.49988,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793836084.449734
+                    },
+                    {
+                      "end_s": 1793836839.943936,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793836839.942417
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 367,
+                  "scope": "device_wide_estimate",
+                  "window_s": 755.4942021369934
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793836839.943936,
+              "window_start_s": 1793836084.449734
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "historical_completed_dispatch_only",
+          "execution_origin": "verified_prior_effect",
+          "lease_wait_s": null,
+          "locked_wall_s": null,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": null,
+          "reused_completed_dispatch_owned_wall_s": 741.6240000000034,
+          "reused_completed_dispatch_sdk_launches": 2,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 741.6240000000034,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": null,
+          "whole_effect_active_phase_s": 758.2401185999988
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "f1cf83b23e71949036eb1e6c9b9894a969df8c092a6cba612a497bc979bcb29f",
+          "fixed_report_sha256": "fe46ad64ab38ba85b7ee441e5206cc3af47b20a6485fdc3cfd982f1e11da701d"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-06:iterative_agent:diagnostic-manifest",
+            "sha256": "15a6a9979d28ebf760cd6829c753c96e0bb0ca7644af9bb72a3f09c4179f5f09"
+          },
+          {
+            "logical_id": "case-06:iterative_agent:historical:projected-resource",
+            "sha256": "73d134bed986354fa70ecf9f5fd8397e84eb67a6904bacd1afd3345277e008b8"
+          },
+          {
+            "logical_id": "case-06:iterative_agent:historical:raw-resource",
+            "sha256": "e4c9f257715b4a98e3a78a5479e99653ca48ef2b926a50a52b591571dd39d2c6"
+          },
+          {
+            "logical_id": "case-06:iterative_agent:historical:lease-admission",
+            "sha256": "88ecc4669e238b8052bc43ff15f550e1f1a2b300f50c7248ab02a14b9509c841"
+          },
+          {
+            "logical_id": "case-06:iterative_agent:historical:training-execution",
+            "sha256": "9bf4de69e1cf06c0bc671b8bd91a280cd210402c5536229040ecfe3e42a79804"
+          },
+          {
+            "logical_id": "case-06:iterative_agent:historical:fixed-execution",
+            "sha256": "0af746f1d833b4003c58bbbc30d743237edc9d4d0e0058ad3a441ce52d92c640"
+          },
+          {
+            "logical_id": "case-06:iterative_agent:historical:device-sampler",
+            "sha256": "5c531ccfeb05474dc30639e7baf12075df68b6e2e4addf8416f83684f0ab7821"
+          },
+          {
+            "logical_id": "case-06:iterative_agent:completed-effect-proof",
+            "sha256": "df99e9ce0ed22e70fd752f7a0360c4ca8671ec65fc3bdc086e2e64bfbe266b6b"
+          },
+          {
+            "logical_id": "case-06:iterative_agent:fixed-report",
+            "sha256": "fe46ad64ab38ba85b7ee441e5206cc3af47b20a6485fdc3cfd982f1e11da701d"
+          },
+          {
+            "logical_id": "case-06:iterative_agent:new-checkpoint",
+            "sha256": "f1cf83b23e71949036eb1e6c9b9894a969df8c092a6cba612a497bc979bcb29f"
+          },
+          {
+            "logical_id": "case-06:iterative_agent:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "verified_prior_effect",
+        "method": "iterative_agent",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "below_reference",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "correction_readback_without_registered_post_mapping",
+          "cpu_review_wall_s": 15.994414900000265,
+          "effective_action": "hold",
+          "gpu_launches": 0,
+          "reason_code": "confirmation_check_unknown",
+          "status": "hold",
+          "unobserved_components": [
+            "actuator_mapping",
+            "optimizer_update_count",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-06",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": null,
+          "current_dispatch_sdk_launches": 1,
+          "current_dispatch_simulator_owned_wall_s": 48.265999999995984,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9992601212377759,
+                  "covered_s": 68.92509603500366,
+                  "energy_wh": 1.026288537966874,
+                  "gaps": [
+                    {
+                      "end_s": 1793843728.320141,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793843728.270107
+                    },
+                    {
+                      "end_s": 1793843797.246237,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793843797.245237
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 35,
+                  "scope": "device_wide_estimate",
+                  "window_s": 68.97613000869751
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793843797.246237,
+              "window_start_s": 1793843728.270107
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "current_dispatch_only",
+          "execution_origin": "continuation_dispatch",
+          "lease_wait_s": null,
+          "locked_wall_s": 70.86505729999772,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": 70.86505729999772,
+          "reused_completed_dispatch_owned_wall_s": 0.0,
+          "reused_completed_dispatch_sdk_launches": 0,
+          "reused_training_device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9998888954821212,
+                  "covered_s": 659.3687109947205,
+                  "energy_wh": 14.195344556475018,
+                  "gaps": [
+                    {
+                      "end_s": 1793836897.575944,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793836897.502677
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 320,
+                  "scope": "device_wide_estimate",
+                  "window_s": 659.4419779777527
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793837556.944655,
+              "window_start_s": 1793836897.502677
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "reused_training_owned_wall_s": 646.4219999999987,
+          "reused_training_sdk_launches": 1,
+          "simulator_owned_wall_s": 694.6879999999946,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": null,
+          "whole_effect_active_phase_s": 732.8510089999982
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "f1cf83b23e71949036eb1e6c9b9894a969df8c092a6cba612a497bc979bcb29f",
+          "fixed_report_sha256": "2af9c0a315fff794a92e31547ee0dcfa5237e5eb9a6bd52e57ebf4dd1a7b6956"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-06:fixed_sequence:diagnostic-manifest",
+            "sha256": "addf61276628fbadf69e73913c37f3a3dd86817f107bdd770f5af4ded0ae1912"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:projected-resource",
+            "sha256": "004b1db623f474b16dbb781dd1148254235585f08ea849e7bf681ec0b835a275"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:raw-resource",
+            "sha256": "133a8fec3e3b12c975dd266211838af8bfc0d24de0e36898ebbd97c59833570b"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:lease-admission",
+            "sha256": "2c842d09d844577c0f006c488674f3c608718e79d4ac814818b36d0603a0d1ac"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:fixed-execution",
+            "sha256": "5453a8ba0852726e507f2cdd05460ebe4a4a7873443931b5c2e9822a16b97685"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:recovery-receipt",
+            "sha256": "78dc6de9a2750074bd9d4bba6176c6ed065ad5cfc50dbb355952e5f3ad4dda3b"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:prior-training-proof",
+            "sha256": "8c0c8464b37bb9047c5187c6df0163a5d1071b85cab694a8faa62fa66ae64df2"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:prior-training-execution",
+            "sha256": "7ec6c85106ce933fc4fb2fbf958108b021cd8cb8c1834b621a97601c54e79739"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:prior-dispatch-resource",
+            "sha256": "e02bc1dc41a6fcce94764cee6f1f0d82c54000802213c0c2d64c77c461b2a90a"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:prior-training-device-sampler",
+            "sha256": "f53f5b2f6343bb49b2ae48a8e032eba7fa4421c5cc7650c2310a7a34ba5be79e"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:device-sampler",
+            "sha256": "028acb47fefc983658364f6903feac5c150a81c2da61294e6348b97805026ff7"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:fixed-report",
+            "sha256": "2af9c0a315fff794a92e31547ee0dcfa5237e5eb9a6bd52e57ebf4dd1a7b6956"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:new-checkpoint",
+            "sha256": "f1cf83b23e71949036eb1e6c9b9894a969df8c092a6cba612a497bc979bcb29f"
+          },
+          {
+            "logical_id": "case-06:fixed_sequence:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "continuation_dispatch",
+        "method": "fixed_sequence",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "below_reference",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "correction_readback_without_registered_post_mapping",
+          "cpu_review_wall_s": 14.510764300001028,
+          "effective_action": "hold",
+          "gpu_launches": 0,
+          "reason_code": "confirmation_check_unknown",
+          "status": "hold",
+          "unobserved_components": [
+            "actuator_mapping",
+            "optimizer_update_count",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-07",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": 2.5930000000007567,
+          "current_dispatch_sdk_launches": 2,
+          "current_dispatch_simulator_owned_wall_s": 540.6399999999994,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999135307537674,
+                  "covered_s": 563.46719622612,
+                  "energy_wh": 11.817118107390082,
+                  "gaps": [
+                    {
+                      "end_s": 1793843839.873515,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793843839.825791
+                    },
+                    {
+                      "end_s": 1793844403.341714,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793844403.340711
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 274,
+                  "scope": "device_wide_estimate",
+                  "window_s": 563.5159230232239
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793844403.341714,
+              "window_start_s": 1793843839.825791
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "current_dispatch_only",
+          "execution_origin": "continuation_dispatch",
+          "lease_wait_s": null,
+          "locked_wall_s": 565.5627680000034,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": 565.5627680000034,
+          "reused_completed_dispatch_owned_wall_s": 0.0,
+          "reused_completed_dispatch_sdk_launches": 0,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 540.6399999999994,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": 1.1719999999986612,
+          "whole_effect_active_phase_s": 565.5627680000034
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "2600c86727268a7f5f7f754952784233f7fd58439a3f3c14fef3d2a0338d810a",
+          "fixed_report_sha256": "4d80a271bce0e7bbb3c7137fc13a2547ba07ee3bdba391fbecd1aa585a31d819"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-07:one_shot_llm:diagnostic-manifest",
+            "sha256": "77abe991524e642f183714fa319bf9372ee34e94eba5cab3f528936938094dfb"
+          },
+          {
+            "logical_id": "case-07:one_shot_llm:projected-resource",
+            "sha256": "2b7d9972e345abb5d4efcdcc3044422a77e43642b7cb7dfe00a34b526519c948"
+          },
+          {
+            "logical_id": "case-07:one_shot_llm:raw-resource",
+            "sha256": "62487e61eb44f9aebd97fb810b7d63dfb31a2b12163a2ec12d6858ec8fb67c66"
+          },
+          {
+            "logical_id": "case-07:one_shot_llm:lease-admission",
+            "sha256": "39065dad4236008598e4b4243ddd9a3c1937b65b53bed09937d7469f814c4dad"
+          },
+          {
+            "logical_id": "case-07:one_shot_llm:checkpoint-execution",
+            "sha256": "095edecdb85b37c8fc2ed84608428e7cb2d2f52891a4d47a68d87286d894761c"
+          },
+          {
+            "logical_id": "case-07:one_shot_llm:telemetry-execution",
+            "sha256": "2c657a4ecdf48885bd9c543c3eccfed114fe6a8476d628f265b35e2d8806b25f"
+          },
+          {
+            "logical_id": "case-07:one_shot_llm:training-execution",
+            "sha256": "183152c58b2184376146695aac79d5d6558dfe126fd9dc62eb3fe25bd274ee71"
+          },
+          {
+            "logical_id": "case-07:one_shot_llm:fixed-execution",
+            "sha256": "7098649bebb3a05550c8c66fa3e97c440d36e89ed4b245709e3374757a53f086"
+          },
+          {
+            "logical_id": "case-07:one_shot_llm:device-sampler",
+            "sha256": "0bb05aff41845015724ca695c995dd329bb002cebaa1a855db7a4c53b1fcdcf5"
+          },
+          {
+            "logical_id": "case-07:one_shot_llm:fixed-report",
+            "sha256": "4d80a271bce0e7bbb3c7137fc13a2547ba07ee3bdba391fbecd1aa585a31d819"
+          },
+          {
+            "logical_id": "case-07:one_shot_llm:new-checkpoint",
+            "sha256": "2600c86727268a7f5f7f754952784233f7fd58439a3f3c14fef3d2a0338d810a"
+          },
+          {
+            "logical_id": "case-07:one_shot_llm:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "continuation_dispatch",
+        "method": "one_shot_llm",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "failed",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "corrected_training_first_three_updates",
+          "cpu_review_wall_s": 1.033998499995505,
+          "effective_action": "investigate",
+          "gpu_launches": 0,
+          "reason_code": "failure_without_confirmed_cause",
+          "status": "investigation_required",
+          "unobserved_components": [
+            "actuator_mapping",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-07",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": null,
+          "current_dispatch_sdk_launches": null,
+          "current_dispatch_simulator_owned_wall_s": null,
+          "device_energy": null,
+          "device_energy_scope": null,
+          "execution_origin": "not_applicable",
+          "lease_wait_s": null,
+          "locked_wall_s": null,
+          "owned_cost_complete": null,
+          "phase_elapsed_s": null,
+          "reused_completed_dispatch_owned_wall_s": null,
+          "reused_completed_dispatch_sdk_launches": null,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": null,
+          "reused_training_sdk_launches": null,
+          "simulator_owned_wall_s": null,
+          "status": "not_applicable",
+          "telemetry_cpu_owned_wall_s": null,
+          "whole_effect_active_phase_s": null
+        },
+        "diagnostic_confirmed": false,
+        "diagnostic_status": "model_hold",
+        "endpoint": null,
+        "evidence": [
+          {
+            "logical_id": "case-07:iterative_agent:diagnostic-manifest",
+            "sha256": "c05fba0993dac562e62f5d5afc39dcc9e9c29c00e5e0aa5c32b95ba2045046c1"
+          }
+        ],
+        "execution_origin": "not_applicable",
+        "method": "iterative_agent",
+        "post_review": null,
+        "recovery_attempted": false,
+        "recovery_outcome": "hold"
+      },
+      {
+        "case_id": "case-07",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": 2.6409999999959837,
+          "current_dispatch_sdk_launches": 2,
+          "current_dispatch_simulator_owned_wall_s": 540.5160000000033,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999219146914177,
+                  "covered_s": 563.7250669002533,
+                  "energy_wh": 11.854821829330918,
+                  "gaps": [
+                    {
+                      "end_s": 1793844429.57118,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793844429.528662
+                    },
+                    {
+                      "end_s": 1793844993.297751,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793844993.296247
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 274,
+                  "scope": "device_wide_estimate",
+                  "window_s": 563.7690889835358
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793844993.297751,
+              "window_start_s": 1793844429.528662
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "current_dispatch_only",
+          "execution_origin": "continuation_dispatch",
+          "lease_wait_s": null,
+          "locked_wall_s": 565.7579855000004,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": 565.7579855000004,
+          "reused_completed_dispatch_owned_wall_s": 0.0,
+          "reused_completed_dispatch_sdk_launches": 0,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 540.5160000000033,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": 1.0310000000026776,
+          "whole_effect_active_phase_s": 565.7579855000004
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "2600c86727268a7f5f7f754952784233f7fd58439a3f3c14fef3d2a0338d810a",
+          "fixed_report_sha256": "503e876a703389ef29f9f28abdf6633e170fda7b27c6cba4ee7c4aab06ca32d7"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-07:fixed_sequence:diagnostic-manifest",
+            "sha256": "1ee1e7625449f22f5adaaa3737bc2a395ecec2a7be85c541d001597ad3f5e97a"
+          },
+          {
+            "logical_id": "case-07:fixed_sequence:projected-resource",
+            "sha256": "a5e723164f349067a85fab2bb7ac02f8367ebcbfdad5320bbaf7f8ecf068a4e3"
+          },
+          {
+            "logical_id": "case-07:fixed_sequence:raw-resource",
+            "sha256": "16af95bcb07975084c2f80e627f9ae9b47eefae8a7ee69f954092e643d7cc7ef"
+          },
+          {
+            "logical_id": "case-07:fixed_sequence:lease-admission",
+            "sha256": "69bd25bc26542e23d08d36cb952195418eeedf57e3d5c4a7dc84db63d81a814d"
+          },
+          {
+            "logical_id": "case-07:fixed_sequence:checkpoint-execution",
+            "sha256": "87b4531111ef42df854cafcdb8ce763b00611b93faa090a3995d5f53faaa5db9"
+          },
+          {
+            "logical_id": "case-07:fixed_sequence:telemetry-execution",
+            "sha256": "9a9f56d7a2c40b2f0c5b65c4d0386b25d8e52269ba282a68ae7f4ea5023848ab"
+          },
+          {
+            "logical_id": "case-07:fixed_sequence:training-execution",
+            "sha256": "5bc6f2ceb5c3d078b3fbf12c2546407cc82020dea545a332da3ae4d5edbdec10"
+          },
+          {
+            "logical_id": "case-07:fixed_sequence:fixed-execution",
+            "sha256": "a28d8fe4994bd02d525cf7191e18461d8958822ee651f402144962d11e79092e"
+          },
+          {
+            "logical_id": "case-07:fixed_sequence:device-sampler",
+            "sha256": "aae2160cf5ba1e64a4eadf150a51739c407fdeb0f42944b36b993ec8c9feec3e"
+          },
+          {
+            "logical_id": "case-07:fixed_sequence:fixed-report",
+            "sha256": "503e876a703389ef29f9f28abdf6633e170fda7b27c6cba4ee7c4aab06ca32d7"
+          },
+          {
+            "logical_id": "case-07:fixed_sequence:new-checkpoint",
+            "sha256": "2600c86727268a7f5f7f754952784233f7fd58439a3f3c14fef3d2a0338d810a"
+          },
+          {
+            "logical_id": "case-07:fixed_sequence:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "continuation_dispatch",
+        "method": "fixed_sequence",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "failed",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "corrected_training_first_three_updates",
+          "cpu_review_wall_s": 0.9706122999996296,
+          "effective_action": "investigate",
+          "gpu_launches": 0,
+          "reason_code": "failure_without_confirmed_cause",
+          "status": "investigation_required",
+          "unobserved_components": [
+            "actuator_mapping",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-07",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": 2.5469999999986612,
+          "current_dispatch_sdk_launches": 2,
+          "current_dispatch_simulator_owned_wall_s": 511.6560000000027,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999197173921964,
+                  "covered_s": 533.0257740020752,
+                  "energy_wh": 11.106930794896012,
+                  "gaps": [
+                    {
+                      "end_s": 1793845014.237238,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793845014.195447
+                    },
+                    {
+                      "end_s": 1793845547.264017,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793845547.263012
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 259,
+                  "scope": "device_wide_estimate",
+                  "window_s": 533.0685701370239
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793845547.264017,
+              "window_start_s": 1793845014.195447
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "current_dispatch_only",
+          "execution_origin": "continuation_dispatch",
+          "lease_wait_s": null,
+          "locked_wall_s": 534.731998700001,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": 534.731998700001,
+          "reused_completed_dispatch_owned_wall_s": 0.0,
+          "reused_completed_dispatch_sdk_launches": 0,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 511.6560000000027,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": 0.9680000000007567,
+          "whole_effect_active_phase_s": 534.731998700001
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "2600c86727268a7f5f7f754952784233f7fd58439a3f3c14fef3d2a0338d810a",
+          "fixed_report_sha256": "6e95989c9e0dcd38a718476ca45b91019bab0479b6c42c5a1588d9c07a1a7a71"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-07:static_rule:diagnostic-manifest",
+            "sha256": "437004ee95e13e660b77b27b6954858ce5947266986976400be07d3bec8f9b0d"
+          },
+          {
+            "logical_id": "case-07:static_rule:projected-resource",
+            "sha256": "a87e0e0a1479531a5ebe86e2108950d516cb8a4062a1d51831777976b1d9aa8c"
+          },
+          {
+            "logical_id": "case-07:static_rule:raw-resource",
+            "sha256": "b035ccea6081242a3d5f53101b368479b1fffc7deb899bb691c0a3927f411d6c"
+          },
+          {
+            "logical_id": "case-07:static_rule:lease-admission",
+            "sha256": "685561b61b338d4ad6268f8c261166e6124cc63194a4e938cba059c013040081"
+          },
+          {
+            "logical_id": "case-07:static_rule:checkpoint-execution",
+            "sha256": "15e0296965e6de697daf069b1ea6a53972ff54bd3e8a6f3851fec233ef973343"
+          },
+          {
+            "logical_id": "case-07:static_rule:telemetry-execution",
+            "sha256": "fc14d85efac449baf69b381c4ef80ea23b7117a9e54f2004beedfb0da7a08ba7"
+          },
+          {
+            "logical_id": "case-07:static_rule:training-execution",
+            "sha256": "a3745856d8a09ef798d4a5f39a4d74cc9c3a8cbf82977176b9e0c3429325e65f"
+          },
+          {
+            "logical_id": "case-07:static_rule:fixed-execution",
+            "sha256": "f508845a924aa12a6edc224d360b2db29b3a3a02f239104a0e0179fe93944ab1"
+          },
+          {
+            "logical_id": "case-07:static_rule:device-sampler",
+            "sha256": "8791c47d7dc9bca131b26fc971b0354f9dec36a5702b08503930e4a2fdf12ab3"
+          },
+          {
+            "logical_id": "case-07:static_rule:fixed-report",
+            "sha256": "6e95989c9e0dcd38a718476ca45b91019bab0479b6c42c5a1588d9c07a1a7a71"
+          },
+          {
+            "logical_id": "case-07:static_rule:new-checkpoint",
+            "sha256": "2600c86727268a7f5f7f754952784233f7fd58439a3f3c14fef3d2a0338d810a"
+          },
+          {
+            "logical_id": "case-07:static_rule:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "continuation_dispatch",
+        "method": "static_rule",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "failed",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "corrected_training_first_three_updates",
+          "cpu_review_wall_s": 0.9445698000054108,
+          "effective_action": "investigate",
+          "gpu_launches": 0,
+          "reason_code": "failure_without_confirmed_cause",
+          "status": "investigation_required",
+          "unobserved_components": [
+            "actuator_mapping",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-08",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": 2.547000000005937,
+          "current_dispatch_sdk_launches": 2,
+          "current_dispatch_simulator_owned_wall_s": 491.640999999996,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9998996657629495,
+                  "covered_s": 512.9937541484833,
+                  "energy_wh": 10.717088520416617,
+                  "gaps": [
+                    {
+                      "end_s": 1793845566.685026,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793845566.63355
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 250,
+                  "scope": "device_wide_estimate",
+                  "window_s": 513.0452301502228
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793846079.67878,
+              "window_start_s": 1793845566.63355
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "current_dispatch_only",
+          "execution_origin": "continuation_dispatch",
+          "lease_wait_s": null,
+          "locked_wall_s": 514.6776994999964,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": 514.6776994999964,
+          "reused_completed_dispatch_owned_wall_s": 0.0,
+          "reused_completed_dispatch_sdk_launches": 0,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 491.640999999996,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": 0.9689999999973224,
+          "whole_effect_active_phase_s": 514.6776994999964
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "219222e5d9307087df9e45d30880b43cfc835da8e74a4bd1d472eaab5d7a6829",
+          "fixed_report_sha256": "1e1cb05a69accb3848398f85f0314299a3092775dab6aa0a683b5cb209b27a3a"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-08:iterative_agent:diagnostic-manifest",
+            "sha256": "522372c8ad1ab11d6d35b27ae03de914d211bbd72edc13de1ff784d9a5dcbbfb"
+          },
+          {
+            "logical_id": "case-08:iterative_agent:projected-resource",
+            "sha256": "b5700562d3179d20d9e5cb8f75fd1c25685e677a340803000dd487cb44d16570"
+          },
+          {
+            "logical_id": "case-08:iterative_agent:raw-resource",
+            "sha256": "7de57d60d06998cf19e78151c40fd062ee814d3d2ca12fb031dd239adb198856"
+          },
+          {
+            "logical_id": "case-08:iterative_agent:lease-admission",
+            "sha256": "83edcf98adc1c9bbbed474f8afc92d3095c2ced0e7d9e9b3159f79186731b3f2"
+          },
+          {
+            "logical_id": "case-08:iterative_agent:checkpoint-execution",
+            "sha256": "cb3e9bf2a52f9acb7ac33f484b4de3c466281e51ad658d5507a15f161c44b3db"
+          },
+          {
+            "logical_id": "case-08:iterative_agent:telemetry-execution",
+            "sha256": "afdd2f101e9c85e39065815d40e5aa61896eaa88db31089b5c81d8c49c036666"
+          },
+          {
+            "logical_id": "case-08:iterative_agent:training-execution",
+            "sha256": "a4c69f2cd293baecf96a82569887be1ca390f035026ff5c00d7b786fa3732854"
+          },
+          {
+            "logical_id": "case-08:iterative_agent:fixed-execution",
+            "sha256": "4bdc2e027274214d6af3d9e5e2008ea66181260e805953c91664373abd6048b3"
+          },
+          {
+            "logical_id": "case-08:iterative_agent:device-sampler",
+            "sha256": "07065b92fa0f7415124fd721f4086e0437a3eec472b74ab85e25b116ef7bde81"
+          },
+          {
+            "logical_id": "case-08:iterative_agent:fixed-report",
+            "sha256": "1e1cb05a69accb3848398f85f0314299a3092775dab6aa0a683b5cb209b27a3a"
+          },
+          {
+            "logical_id": "case-08:iterative_agent:new-checkpoint",
+            "sha256": "219222e5d9307087df9e45d30880b43cfc835da8e74a4bd1d472eaab5d7a6829"
+          },
+          {
+            "logical_id": "case-08:iterative_agent:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "continuation_dispatch",
+        "method": "iterative_agent",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "failed",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "corrected_training_first_three_updates",
+          "cpu_review_wall_s": 0.9439001999999164,
+          "effective_action": "investigate",
+          "gpu_launches": 0,
+          "reason_code": "failure_without_confirmed_cause",
+          "status": "investigation_required",
+          "unobserved_components": [
+            "actuator_mapping",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-08",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": 2.5,
+          "current_dispatch_sdk_launches": 2,
+          "current_dispatch_simulator_owned_wall_s": 488.4380000000019,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999165344285571,
+                  "covered_s": 508.87265706062317,
+                  "energy_wh": 10.669797990535697,
+                  "gaps": [
+                    {
+                      "end_s": 1793846099.113457,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793846099.072485
+                    },
+                    {
+                      "end_s": 1793846607.987619,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793846607.986114
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 248,
+                  "scope": "device_wide_estimate",
+                  "window_s": 508.9151339530945
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793846607.987619,
+              "window_start_s": 1793846099.072485
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "current_dispatch_only",
+          "execution_origin": "continuation_dispatch",
+          "lease_wait_s": null,
+          "locked_wall_s": 510.4771901999993,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": 510.4771901999993,
+          "reused_completed_dispatch_owned_wall_s": 0.0,
+          "reused_completed_dispatch_sdk_launches": 0,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 488.4380000000019,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": 0.9689999999973224,
+          "whole_effect_active_phase_s": 510.4771901999993
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "219222e5d9307087df9e45d30880b43cfc835da8e74a4bd1d472eaab5d7a6829",
+          "fixed_report_sha256": "053cfdde845245855742777084086168aee37832a530a411ccf2341c22ab515c"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-08:fixed_sequence:diagnostic-manifest",
+            "sha256": "dd8ef5e9ec9a11ec155df1b414da7ab1d04f37ae9ab9bae007c7d753e1e9e4de"
+          },
+          {
+            "logical_id": "case-08:fixed_sequence:projected-resource",
+            "sha256": "844d9dd44cdf95bf139908d39aba824d23616d15c48c24b4b8daa2c48474b0d8"
+          },
+          {
+            "logical_id": "case-08:fixed_sequence:raw-resource",
+            "sha256": "f6e9bf5ae73f73b3ca0cea987a2cff598c8d1a21c9df5ef38db37632529a1c07"
+          },
+          {
+            "logical_id": "case-08:fixed_sequence:lease-admission",
+            "sha256": "581dd6fe084d97eb75ef6751bd6b00973bb28ee4b0b66e3c924fa4bd83ea1439"
+          },
+          {
+            "logical_id": "case-08:fixed_sequence:checkpoint-execution",
+            "sha256": "464b4606012c2bbbcb1e518c853fbb2be97835f9224a1dcb8231be45409dd902"
+          },
+          {
+            "logical_id": "case-08:fixed_sequence:telemetry-execution",
+            "sha256": "2b97d051b6a8ec67e2e37d76de7c168f2a1cd4fba50dd25a19c3d820422976e4"
+          },
+          {
+            "logical_id": "case-08:fixed_sequence:training-execution",
+            "sha256": "37ea5841f06ffd7a2e58ceed995d27b24bf31322c71d580763d153be45d65a41"
+          },
+          {
+            "logical_id": "case-08:fixed_sequence:fixed-execution",
+            "sha256": "f9fb2171ef1e8146afe4ce7a7668c61ddcc7e432908da17a0d9a56de6153fba9"
+          },
+          {
+            "logical_id": "case-08:fixed_sequence:device-sampler",
+            "sha256": "7cb6c4b5be1534f90d0dd2393317decb930adf94442b94c8aea6a69858527463"
+          },
+          {
+            "logical_id": "case-08:fixed_sequence:fixed-report",
+            "sha256": "053cfdde845245855742777084086168aee37832a530a411ccf2341c22ab515c"
+          },
+          {
+            "logical_id": "case-08:fixed_sequence:new-checkpoint",
+            "sha256": "219222e5d9307087df9e45d30880b43cfc835da8e74a4bd1d472eaab5d7a6829"
+          },
+          {
+            "logical_id": "case-08:fixed_sequence:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "continuation_dispatch",
+        "method": "fixed_sequence",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "failed",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "corrected_training_first_three_updates",
+          "cpu_review_wall_s": 0.9766874000051757,
+          "effective_action": "investigate",
+          "gpu_launches": 0,
+          "reason_code": "failure_without_confirmed_cause",
+          "status": "investigation_required",
+          "unobserved_components": [
+            "actuator_mapping",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-08",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": 2.5469999999986612,
+          "current_dispatch_sdk_launches": 2,
+          "current_dispatch_simulator_owned_wall_s": 490.9690000000046,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999094823498477,
+                  "covered_s": 512.3298180103302,
+                  "energy_wh": 10.752105603247214,
+                  "gaps": [
+                    {
+                      "end_s": 1793846627.581157,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793846627.535784
+                    },
+                    {
+                      "end_s": 1793847139.911981,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793847139.910975
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 250,
+                  "scope": "device_wide_estimate",
+                  "window_s": 512.3761970996857
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793847139.911981,
+              "window_start_s": 1793846627.535784
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "current_dispatch_only",
+          "execution_origin": "continuation_dispatch",
+          "lease_wait_s": null,
+          "locked_wall_s": 513.947009800002,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": 513.947009800002,
+          "reused_completed_dispatch_owned_wall_s": 0.0,
+          "reused_completed_dispatch_sdk_launches": 0,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 490.9690000000046,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": 0.9689999999973224,
+          "whole_effect_active_phase_s": 513.947009800002
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "219222e5d9307087df9e45d30880b43cfc835da8e74a4bd1d472eaab5d7a6829",
+          "fixed_report_sha256": "7b9e0c3484b7f8ce9d3c4d2d4143d27bb1ccebda2d2ae674b6e85c727252e1a7"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-08:static_rule:diagnostic-manifest",
+            "sha256": "5dd750440837d60ac87fdd74283a50343da1959a30b84e8938c8c23d0bf5498c"
+          },
+          {
+            "logical_id": "case-08:static_rule:projected-resource",
+            "sha256": "c055cfc288a08021c7e45563907617c01872565889d4cc02ceaf36c43034285a"
+          },
+          {
+            "logical_id": "case-08:static_rule:raw-resource",
+            "sha256": "d3ab6930fddca54ae14f189c66145339a6f40d6fdf54473a4a3ce7908cd0c32e"
+          },
+          {
+            "logical_id": "case-08:static_rule:lease-admission",
+            "sha256": "e0532547d93f7d6cc1ac7d17731ef1e0032c5c233db45db277c53b033586ae6e"
+          },
+          {
+            "logical_id": "case-08:static_rule:checkpoint-execution",
+            "sha256": "dfef809a3bf189bb7e2fd6c9a17339237b1791d04059412e26eae57b4b8ca564"
+          },
+          {
+            "logical_id": "case-08:static_rule:telemetry-execution",
+            "sha256": "8ffd1555acb3d35d6fc8e1b417a0e001f069f5d06b18399ce9c691f0025f5148"
+          },
+          {
+            "logical_id": "case-08:static_rule:training-execution",
+            "sha256": "ab0180745f56b63648db7bcf634299d2df523936899de00b40e0ad5a5d4cd653"
+          },
+          {
+            "logical_id": "case-08:static_rule:fixed-execution",
+            "sha256": "5d80c2b7b2d40126680aabd5d9a4be4569b96ca80b6e429bc2d149b4e0b73a9d"
+          },
+          {
+            "logical_id": "case-08:static_rule:device-sampler",
+            "sha256": "9ecdba6abaec50b77133f038e00cc368dac6954a44d987203a1a822cae36d50c"
+          },
+          {
+            "logical_id": "case-08:static_rule:fixed-report",
+            "sha256": "7b9e0c3484b7f8ce9d3c4d2d4143d27bb1ccebda2d2ae674b6e85c727252e1a7"
+          },
+          {
+            "logical_id": "case-08:static_rule:new-checkpoint",
+            "sha256": "219222e5d9307087df9e45d30880b43cfc835da8e74a4bd1d472eaab5d7a6829"
+          },
+          {
+            "logical_id": "case-08:static_rule:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "continuation_dispatch",
+        "method": "static_rule",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "failed",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "corrected_training_first_three_updates",
+          "cpu_review_wall_s": 1.0071811000016169,
+          "effective_action": "investigate",
+          "gpu_launches": 0,
+          "reason_code": "failure_without_confirmed_cause",
+          "status": "investigation_required",
+          "unobserved_components": [
+            "actuator_mapping",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      },
+      {
+        "case_id": "case-08",
+        "costs": {
+          "api_calls": 0,
+          "checkpoint_cpu_owned_wall_s": 2.485000000000582,
+          "current_dispatch_sdk_launches": 2,
+          "current_dispatch_simulator_owned_wall_s": 488.7500000000073,
+          "device_energy": {
+            "energy": {
+              "devices": {
+                "GPU-8fb352f5-5c92-9548-d0e4-60facf1688c9": {
+                  "coverage_fraction": 0.9999153451368833,
+                  "covered_s": 509.85883116722107,
+                  "energy_wh": 10.713240823809969,
+                  "gaps": [
+                    {
+                      "end_s": 1793847159.813856,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793847159.771696
+                    },
+                    {
+                      "end_s": 1793847669.673693,
+                      "reason": "window_boundary_uncovered",
+                      "start_s": 1793847669.672687
+                    }
+                  ],
+                  "max_gap_s": 6.0,
+                  "process_attribution": null,
+                  "sample_count": 248,
+                  "scope": "device_wide_estimate",
+                  "window_s": 509.9019968509674
+                }
+              },
+              "unsupported_devices_remain_null": true,
+              "window_end_s": 1793847669.673693,
+              "window_start_s": 1793847159.771696
+            },
+            "process_gpu_seconds": null,
+            "provider_gpu_seconds": null,
+            "scope": "device_wide"
+          },
+          "device_energy_scope": "current_dispatch_only",
+          "execution_origin": "continuation_dispatch",
+          "lease_wait_s": null,
+          "locked_wall_s": 511.6691929000008,
+          "owned_cost_complete": true,
+          "phase_elapsed_s": 511.6691929000008,
+          "reused_completed_dispatch_owned_wall_s": 0.0,
+          "reused_completed_dispatch_sdk_launches": 0,
+          "reused_training_device_energy": null,
+          "reused_training_owned_wall_s": 0.0,
+          "reused_training_sdk_launches": 0,
+          "simulator_owned_wall_s": 488.7500000000073,
+          "status": "complete",
+          "telemetry_cpu_owned_wall_s": 0.9689999999973224,
+          "whole_effect_active_phase_s": 511.6691929000008
+        },
+        "diagnostic_confirmed": true,
+        "diagnostic_status": "confirmed",
+        "endpoint": {
+          "checkpoint_sha256": "219222e5d9307087df9e45d30880b43cfc835da8e74a4bd1d472eaab5d7a6829",
+          "fixed_report_sha256": "f6421f479384c5e54f7cc4a530e08cfc175f850006587874e39a6dfd1b67378e"
+        },
+        "evidence": [
+          {
+            "logical_id": "case-08:one_shot_llm:diagnostic-manifest",
+            "sha256": "ee918dab6bf74929e96814c06e467af1ec38f3cb2156928e7fd11f39f47a9fe2"
+          },
+          {
+            "logical_id": "case-08:one_shot_llm:projected-resource",
+            "sha256": "39819210a7778a97e4b3e3c119dedc8b859ac7df8afad73739f2dc781dc696e8"
+          },
+          {
+            "logical_id": "case-08:one_shot_llm:raw-resource",
+            "sha256": "ce506a2c518d297cf16f14abeacb74dfceeeb83faf6355ce0d4ce124274899ad"
+          },
+          {
+            "logical_id": "case-08:one_shot_llm:lease-admission",
+            "sha256": "d7d937e5e22afe78f7d52ffa0ce0b62d605da88f02b51867036bb54a69bfcdeb"
+          },
+          {
+            "logical_id": "case-08:one_shot_llm:checkpoint-execution",
+            "sha256": "9b978e021f061707731872c3a729d6243968461f5b5cd4ee3d4a6f43a5c9e589"
+          },
+          {
+            "logical_id": "case-08:one_shot_llm:telemetry-execution",
+            "sha256": "ad2e9fa18d5e07d91dfc97d1a20675fcd419e61433d3e434b7417b368bbba130"
+          },
+          {
+            "logical_id": "case-08:one_shot_llm:training-execution",
+            "sha256": "c6fb1405e14c490044c6065cc73b1d45e02e3241a360f5bc77f3824ef027d3fd"
+          },
+          {
+            "logical_id": "case-08:one_shot_llm:fixed-execution",
+            "sha256": "de5a32256848e0f4359f0e933102f6716ebba61f520ea21d13e5a4814a1f5c63"
+          },
+          {
+            "logical_id": "case-08:one_shot_llm:device-sampler",
+            "sha256": "7536d1591110a24588230acaad6ade1fe1653caffc8f71dcbc38622b925f00a9"
+          },
+          {
+            "logical_id": "case-08:one_shot_llm:fixed-report",
+            "sha256": "f6421f479384c5e54f7cc4a530e08cfc175f850006587874e39a6dfd1b67378e"
+          },
+          {
+            "logical_id": "case-08:one_shot_llm:new-checkpoint",
+            "sha256": "219222e5d9307087df9e45d30880b43cfc835da8e74a4bd1d472eaab5d7a6829"
+          },
+          {
+            "logical_id": "case-08:one_shot_llm:recovery-review-policy",
+            "sha256": "45e7b5ea43123a2a21129629cf86d24420a5a4f6d5e8f28930e719a48c190e03"
+          }
+        ],
+        "execution_origin": "continuation_dispatch",
+        "method": "one_shot_llm",
+        "post_review": {
+          "api_calls": 0,
+          "behavior_outcome": "failed",
+          "confirmation_catalog_complete": false,
+          "confirmation_scope": "corrected_training_first_three_updates",
+          "cpu_review_wall_s": 0.9722661000050721,
+          "effective_action": "investigate",
+          "gpu_launches": 0,
+          "reason_code": "failure_without_confirmed_cause",
+          "status": "investigation_required",
+          "unobserved_components": [
+            "actuator_mapping",
+            "ppo_surrogate_gradient"
+          ]
+        },
+        "recovery_attempted": true,
+        "recovery_outcome": "not_recovered"
+      }
+    ],
+    "common_cost_note": "not present in the registered controller result; not repeated per arm",
+    "common_source_and_diagnostic_costs": null,
+    "completed_arms": 16,
+    "controller_halted": false,
+    "methods": [
+      {
+        "api_calls": 0,
+        "costs": {
+          "checkpoint_cpu_owned_wall_s": {
+            "known_arms": 2,
+            "known_sum": 5.140999999995984,
+            "not_applicable_arms": 0,
+            "unknown_arms": 2
+          },
+          "current_dispatch_sdk_launches": {
+            "known_arms": 3,
+            "known_sum": 5.0,
+            "not_applicable_arms": 1,
+            "unknown_arms": 0
+          },
+          "current_dispatch_simulator_owned_wall_s": {
+            "known_arms": 3,
+            "known_sum": 1077.2200000000012,
+            "not_applicable_arms": 1,
+            "unknown_arms": 0
+          },
+          "lease_wait_s": {
+            "known_arms": 0,
+            "known_sum": null,
+            "not_applicable_arms": 1,
+            "unknown_arms": 3
+          },
+          "locked_wall_s": {
+            "known_arms": 3,
+            "known_sum": 1147.1002329999974,
+            "not_applicable_arms": 1,
+            "unknown_arms": 0
+          },
+          "phase_elapsed_s": {
+            "known_arms": 3,
+            "known_sum": 1147.1002329999974,
+            "not_applicable_arms": 1,
+            "unknown_arms": 0
+          },
+          "reused_completed_dispatch_owned_wall_s": {
+            "known_arms": 4,
+            "known_sum": 718.3130000000019,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_completed_dispatch_sdk_launches": {
+            "known_arms": 4,
+            "known_sum": 2.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_training_owned_wall_s": {
+            "known_arms": 4,
+            "known_sum": 646.4219999999987,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_training_sdk_launches": {
+            "known_arms": 4,
+            "known_sum": 1.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "simulator_owned_wall_s": {
+            "known_arms": 4,
+            "known_sum": 2441.9550000000017,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "telemetry_cpu_owned_wall_s": {
+            "known_arms": 2,
+            "known_sum": 2.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 2
+          },
+          "whole_effect_active_phase_s": {
+            "known_arms": 4,
+            "known_sum": 2544.656975400001,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          }
+        },
+        "diagnostic_confirmed": 4,
+        "method": "fixed_sequence",
+        "outcomes": {
+          "execution_unsettled": 0,
+          "hold": 0,
+          "infrastructure_failure": 0,
+          "normal_or_host_gate": 0,
+          "not_recovered": 4,
+          "not_started": 0,
+          "recovered": 0,
+          "unknown": 0,
+          "unsupported": 0
+        },
+        "planned_arms": 4,
+        "recovery_attempted": 4
+      },
+      {
+        "api_calls": 0,
+        "costs": {
+          "checkpoint_cpu_owned_wall_s": {
+            "known_arms": 2,
+            "known_sum": 5.0939999999973224,
+            "not_applicable_arms": 0,
+            "unknown_arms": 2
+          },
+          "current_dispatch_sdk_launches": {
+            "known_arms": 2,
+            "known_sum": 4.0,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "current_dispatch_simulator_owned_wall_s": {
+            "known_arms": 2,
+            "known_sum": 1002.6250000000073,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "lease_wait_s": {
+            "known_arms": 0,
+            "known_sum": null,
+            "not_applicable_arms": 2,
+            "unknown_arms": 2
+          },
+          "locked_wall_s": {
+            "known_arms": 2,
+            "known_sum": 1048.679008500003,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "phase_elapsed_s": {
+            "known_arms": 2,
+            "known_sum": 1048.679008500003,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "reused_completed_dispatch_owned_wall_s": {
+            "known_arms": 4,
+            "known_sum": 1402.3589999999967,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_completed_dispatch_sdk_launches": {
+            "known_arms": 4,
+            "known_sum": 4.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_training_owned_wall_s": {
+            "known_arms": 4,
+            "known_sum": 0.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_training_sdk_launches": {
+            "known_arms": 4,
+            "known_sum": 0.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "simulator_owned_wall_s": {
+            "known_arms": 4,
+            "known_sum": 2404.984000000004,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "telemetry_cpu_owned_wall_s": {
+            "known_arms": 2,
+            "known_sum": 1.9369999999980791,
+            "not_applicable_arms": 0,
+            "unknown_arms": 2
+          },
+          "whole_effect_active_phase_s": {
+            "known_arms": 4,
+            "known_sum": 2483.786979500008,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          }
+        },
+        "diagnostic_confirmed": 4,
+        "method": "static_rule",
+        "outcomes": {
+          "execution_unsettled": 0,
+          "hold": 0,
+          "infrastructure_failure": 0,
+          "normal_or_host_gate": 0,
+          "not_recovered": 4,
+          "not_started": 0,
+          "recovered": 0,
+          "unknown": 0,
+          "unsupported": 0
+        },
+        "planned_arms": 4,
+        "recovery_attempted": 4
+      },
+      {
+        "api_calls": 0,
+        "costs": {
+          "checkpoint_cpu_owned_wall_s": {
+            "known_arms": 2,
+            "known_sum": 5.078000000001339,
+            "not_applicable_arms": 0,
+            "unknown_arms": 2
+          },
+          "current_dispatch_sdk_launches": {
+            "known_arms": 2,
+            "known_sum": 4.0,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "current_dispatch_simulator_owned_wall_s": {
+            "known_arms": 2,
+            "known_sum": 1029.3900000000067,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "lease_wait_s": {
+            "known_arms": 0,
+            "known_sum": null,
+            "not_applicable_arms": 2,
+            "unknown_arms": 2
+          },
+          "locked_wall_s": {
+            "known_arms": 2,
+            "known_sum": 1077.2319609000042,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "phase_elapsed_s": {
+            "known_arms": 2,
+            "known_sum": 1077.2319609000042,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "reused_completed_dispatch_owned_wall_s": {
+            "known_arms": 4,
+            "known_sum": 1373.7649999999921,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_completed_dispatch_sdk_launches": {
+            "known_arms": 4,
+            "known_sum": 4.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_training_owned_wall_s": {
+            "known_arms": 4,
+            "known_sum": 0.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_training_sdk_launches": {
+            "known_arms": 4,
+            "known_sum": 0.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "simulator_owned_wall_s": {
+            "known_arms": 4,
+            "known_sum": 2403.154999999999,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "telemetry_cpu_owned_wall_s": {
+            "known_arms": 2,
+            "known_sum": 2.1409999999959837,
+            "not_applicable_arms": 0,
+            "unknown_arms": 2
+          },
+          "whole_effect_active_phase_s": {
+            "known_arms": 4,
+            "known_sum": 2487.2829345000064,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          }
+        },
+        "diagnostic_confirmed": 4,
+        "method": "one_shot_llm",
+        "outcomes": {
+          "execution_unsettled": 0,
+          "hold": 0,
+          "infrastructure_failure": 0,
+          "normal_or_host_gate": 0,
+          "not_recovered": 4,
+          "not_started": 0,
+          "recovered": 0,
+          "unknown": 0,
+          "unsupported": 0
+        },
+        "planned_arms": 4,
+        "recovery_attempted": 4
+      },
+      {
+        "api_calls": 0,
+        "costs": {
+          "checkpoint_cpu_owned_wall_s": {
+            "known_arms": 1,
+            "known_sum": 2.547000000005937,
+            "not_applicable_arms": 0,
+            "unknown_arms": 2
+          },
+          "current_dispatch_sdk_launches": {
+            "known_arms": 1,
+            "known_sum": 2.0,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "current_dispatch_simulator_owned_wall_s": {
+            "known_arms": 1,
+            "known_sum": 491.640999999996,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "lease_wait_s": {
+            "known_arms": 0,
+            "known_sum": null,
+            "not_applicable_arms": 2,
+            "unknown_arms": 1
+          },
+          "locked_wall_s": {
+            "known_arms": 1,
+            "known_sum": 514.6776994999964,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "phase_elapsed_s": {
+            "known_arms": 1,
+            "known_sum": 514.6776994999964,
+            "not_applicable_arms": 2,
+            "unknown_arms": 0
+          },
+          "reused_completed_dispatch_owned_wall_s": {
+            "known_arms": 3,
+            "known_sum": 1433.6860000000088,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_completed_dispatch_sdk_launches": {
+            "known_arms": 3,
+            "known_sum": 4.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_training_owned_wall_s": {
+            "known_arms": 3,
+            "known_sum": 0.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "reused_training_sdk_launches": {
+            "known_arms": 3,
+            "known_sum": 0.0,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "simulator_owned_wall_s": {
+            "known_arms": 3,
+            "known_sum": 1925.3270000000048,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          },
+          "telemetry_cpu_owned_wall_s": {
+            "known_arms": 1,
+            "known_sum": 0.9689999999973224,
+            "not_applicable_arms": 0,
+            "unknown_arms": 2
+          },
+          "whole_effect_active_phase_s": {
+            "known_arms": 3,
+            "known_sum": 1981.9646075999917,
+            "not_applicable_arms": 0,
+            "unknown_arms": 0
+          }
+        },
+        "diagnostic_confirmed": 3,
+        "method": "iterative_agent",
+        "outcomes": {
+          "execution_unsettled": 0,
+          "hold": 1,
+          "infrastructure_failure": 0,
+          "normal_or_host_gate": 0,
+          "not_recovered": 3,
+          "not_started": 0,
+          "recovered": 0,
+          "unknown": 0,
+          "unsupported": 0
+        },
+        "planned_arms": 4,
+        "recovery_attempted": 3
+      }
+    ],
+    "planned_arms": 16,
+    "planned_cases": [
+      "case-05",
+      "case-06",
+      "case-07",
+      "case-08"
+    ],
+    "planned_methods": [
+      "fixed_sequence",
+      "static_rule",
+      "one_shot_llm",
+      "iterative_agent"
+    ],
+    "recovered_endpoint_comparison": [],
+    "schema": "registered_recovery_comparison_public_summary_v1",
+    "timing": {
+      "active_command_wall_s": 3852.5811304000003,
+      "known_active_command_wall_s": 3852.5811304000003,
+      "known_window_span_s": 3967.522663,
+      "per_arm": [
+        {
+          "active_wall_s": 107.1127208,
+          "case_id": "case-06",
+          "completed_transitions": 3,
+          "known_active_wall_s": 107.1127208,
+          "method": "fixed_sequence",
+          "unknown_transitions": 0
+        },
+        {
+          "active_wall_s": 569.7389929999999,
+          "case_id": "case-07",
+          "completed_transitions": 3,
+          "known_active_wall_s": 569.7389929999999,
+          "method": "one_shot_llm",
+          "unknown_transitions": 0
+        },
+        {
+          "active_wall_s": 0.6557278,
+          "case_id": "case-07",
+          "completed_transitions": 1,
+          "known_active_wall_s": 0.6557278,
+          "method": "iterative_agent",
+          "unknown_transitions": 0
+        },
+        {
+          "active_wall_s": 569.8958709000001,
+          "case_id": "case-07",
+          "completed_transitions": 3,
+          "known_active_wall_s": 569.8958709000001,
+          "method": "fixed_sequence",
+          "unknown_transitions": 0
+        },
+        {
+          "active_wall_s": 538.7224411999999,
+          "case_id": "case-07",
+          "completed_transitions": 3,
+          "known_active_wall_s": 538.7224411999999,
+          "method": "static_rule",
+          "unknown_transitions": 0
+        },
+        {
+          "active_wall_s": 518.4236354000001,
+          "case_id": "case-08",
+          "completed_transitions": 3,
+          "known_active_wall_s": 518.4236354000001,
+          "method": "iterative_agent",
+          "unknown_transitions": 0
+        },
+        {
+          "active_wall_s": 514.4517192,
+          "case_id": "case-08",
+          "completed_transitions": 3,
+          "known_active_wall_s": 514.4517192,
+          "method": "fixed_sequence",
+          "unknown_transitions": 0
+        },
+        {
+          "active_wall_s": 517.9474943,
+          "case_id": "case-08",
+          "completed_transitions": 3,
+          "known_active_wall_s": 517.9474943,
+          "method": "static_rule",
+          "unknown_transitions": 0
+        },
+        {
+          "active_wall_s": 515.6325278,
+          "case_id": "case-08",
+          "completed_transitions": 3,
+          "known_active_wall_s": 515.6325278,
+          "method": "one_shot_llm",
+          "unknown_transitions": 0
+        }
+      ],
+      "schema": "registered_recovery_timing_v1",
+      "transition_count": 25,
+      "transitions": [
+        {
+          "active_wall_s": 5.8666994,
+          "begin": {
+            "logical_id": "transition:1:begin",
+            "sha256": "0f76868e168bcdf28d3aa3b6fd0340b073c0c230bd80f9c28b85af39f5f8992d"
+          },
+          "case_id": "case-06",
+          "end": {
+            "logical_id": "transition:1:end",
+            "sha256": "d3cf1f6946c8413309f7174b8e38a4bacfe38dc9558c8d9ec761edd8e0b34a38"
+          },
+          "method": "fixed_sequence",
+          "sequence": 1,
+          "status": "complete",
+          "transition_id": "542efde03888e8ad8c6515674f0fb33c1335ac36fc1d7e70793ae7e9641b077f"
+        },
+        {
+          "active_wall_s": 77.6672497,
+          "begin": {
+            "logical_id": "transition:2:begin",
+            "sha256": "c919431af7dbd809a24089818e2bd84b6841b2af3af1fbd05f3fdb6f8e7a83bb"
+          },
+          "case_id": "case-06",
+          "end": {
+            "logical_id": "transition:2:end",
+            "sha256": "10ada80b5cfb2eb9c5eeee59dcb806af8f6fe9b5d6d6c454a47cae12f5dc1c46"
+          },
+          "method": "fixed_sequence",
+          "sequence": 2,
+          "status": "complete",
+          "transition_id": "4d5aa58feb19a52ecc2e819fb6cb0e49886371c30368c490ed9f6e20747b0b1a"
+        },
+        {
+          "active_wall_s": 23.5787717,
+          "begin": {
+            "logical_id": "transition:3:begin",
+            "sha256": "81388335dfa7d699dd2d84daf737ed6a19536b0ba6045901abed80b097b0936f"
+          },
+          "case_id": "case-06",
+          "end": {
+            "logical_id": "transition:3:end",
+            "sha256": "266d58aa33182fafa11b1ba292883aef47ca741c9d27023cce7e918f47c18be0"
+          },
+          "method": "fixed_sequence",
+          "sequence": 3,
+          "status": "complete",
+          "transition_id": "269295a1cb83fac440855ef4305795489caab981443285f68366c6b30c2135b4"
+        },
+        {
+          "active_wall_s": 0.612367,
+          "begin": {
+            "logical_id": "transition:4:begin",
+            "sha256": "c6bad0451928e231fc5221332e02cd343dd49e255ca2c188064bb15156fc43f7"
+          },
+          "case_id": "case-07",
+          "end": {
+            "logical_id": "transition:4:end",
+            "sha256": "d07738337d6043d7c9e3a0a1eeb0c94b7c5a7ab4c62127e53f75fa47b7ee2678"
+          },
+          "method": "one_shot_llm",
+          "sequence": 4,
+          "status": "complete",
+          "transition_id": "9be85491d4b3651533e719d60f87566f09d5d68abd9849e4322a165db1afd2b8"
+        },
+        {
+          "active_wall_s": 567.3408535,
+          "begin": {
+            "logical_id": "transition:5:begin",
+            "sha256": "e9488d789c32ad62700803ff660d920a6b3bf84a3e14f756bbe1b4a750018e76"
+          },
+          "case_id": "case-07",
+          "end": {
+            "logical_id": "transition:5:end",
+            "sha256": "69862bbc44d3f3c5ccd06444f68ac9434864f976bac42f2ad1d331928effa94d"
+          },
+          "method": "one_shot_llm",
+          "sequence": 5,
+          "status": "complete",
+          "transition_id": "70aa505935d85f0d1f162cac51b15d53fb5439af09528d1890e661f323326be0"
+        },
+        {
+          "active_wall_s": 1.7857725,
+          "begin": {
+            "logical_id": "transition:6:begin",
+            "sha256": "c0e4042ea9773b746b00a887d1be020eecb7c88b8aa43484916974956415be38"
+          },
+          "case_id": "case-07",
+          "end": {
+            "logical_id": "transition:6:end",
+            "sha256": "1dfca470df2298e8a6a07542e553ba2e506e06f76e57d5edf64e13c09644ecac"
+          },
+          "method": "one_shot_llm",
+          "sequence": 6,
+          "status": "complete",
+          "transition_id": "a49999fefb587c99969df8428fd3d2a04c0442f98daea6275b777ba7d2893fc3"
+        },
+        {
+          "active_wall_s": 0.6557278,
+          "begin": {
+            "logical_id": "transition:7:begin",
+            "sha256": "69a5c16e35b049c019a8a1c83145e5402dad915a1dd85c74169aaa1b8f29574e"
+          },
+          "case_id": "case-07",
+          "end": {
+            "logical_id": "transition:7:end",
+            "sha256": "17b581176cedcc9f06e0aff3c119c5e22e30bb804e0a7cb82ee25874bb913f4c"
+          },
+          "method": "iterative_agent",
+          "sequence": 7,
+          "status": "complete",
+          "transition_id": "38511ef3b40206350b1997a88d1ecb7402c76c9623022096e1417384459cf027"
+        },
+        {
+          "active_wall_s": 0.7869355,
+          "begin": {
+            "logical_id": "transition:8:begin",
+            "sha256": "e1dfa04f4c236163134ad2bcca643e9d56b57c760b619bfd0502e5cf06652dc9"
+          },
+          "case_id": "case-07",
+          "end": {
+            "logical_id": "transition:8:end",
+            "sha256": "aaa348d455f971ddeab1f379e64fccbf59084d597ce130756a2a7c4b74c7444c"
+          },
+          "method": "fixed_sequence",
+          "sequence": 8,
+          "status": "complete",
+          "transition_id": "7c6e7e0611e000591ae52d5b6e077a4d2041d9e21de9083fe522090ea975a08a"
+        },
+        {
+          "active_wall_s": 567.3802457,
+          "begin": {
+            "logical_id": "transition:9:begin",
+            "sha256": "f065a865883fa021ca885436074c4d4cb55fd115549390e020593524e1bd3fc6"
+          },
+          "case_id": "case-07",
+          "end": {
+            "logical_id": "transition:9:end",
+            "sha256": "9f7b900bcd511c8d902442bb2e4785627b7e6742749bb42ebeb0093d2ef3febe"
+          },
+          "method": "fixed_sequence",
+          "sequence": 9,
+          "status": "complete",
+          "transition_id": "0579b8fd1e93964b0fadc7624ab134a78b63038c265b30312f41e0b7aa799d4f"
+        },
+        {
+          "active_wall_s": 1.7286897,
+          "begin": {
+            "logical_id": "transition:10:begin",
+            "sha256": "e55a00131e7bbd47ffe2083d03c6aa1941a43bc8cdd806f05933779441d8492d"
+          },
+          "case_id": "case-07",
+          "end": {
+            "logical_id": "transition:10:end",
+            "sha256": "51ea7c5fd255d69e77f4cf6e55eb3b116bc84dc1b41a1c9af397ad3fe59f2912"
+          },
+          "method": "fixed_sequence",
+          "sequence": 10,
+          "status": "complete",
+          "transition_id": "6c0cb9bb945a63d43b5d574738916e421a10d8221c1cb8afdd23d8c2c6e5e2d0"
+        },
+        {
+          "active_wall_s": 0.6441646,
+          "begin": {
+            "logical_id": "transition:11:begin",
+            "sha256": "48fb998372b8cf4bb0575c95e9c3c914ea18f10673aec376bc93b1233a654bfd"
+          },
+          "case_id": "case-07",
+          "end": {
+            "logical_id": "transition:11:end",
+            "sha256": "0fe33a9d258850eb2aa32b7989635515e4fac638dda767a9fa4e734b62020f0d"
+          },
+          "method": "static_rule",
+          "sequence": 11,
+          "status": "complete",
+          "transition_id": "e094d44b4b1865e36784fe8c25706f5bf2f3e8ef54edd8651042b707d61a0651"
+        },
+        {
+          "active_wall_s": 536.3764635,
+          "begin": {
+            "logical_id": "transition:12:begin",
+            "sha256": "dff4858b211521fef22eca23625327e09f046792a6649d964c2efe3c2f1bcdec"
+          },
+          "case_id": "case-07",
+          "end": {
+            "logical_id": "transition:12:end",
+            "sha256": "1c0072e0f72cf533d2c4d064b110f8761a976efd434b2171ea95ac116e5ec081"
+          },
+          "method": "static_rule",
+          "sequence": 12,
+          "status": "complete",
+          "transition_id": "7623575e6833e14102b9e6e719a78c52c5203875b49b4d5c657ea12a96b34298"
+        },
+        {
+          "active_wall_s": 1.7018131,
+          "begin": {
+            "logical_id": "transition:13:begin",
+            "sha256": "a51d0e0fafc0ef9199027f526e2c1dc2236b5568ea9ace98ce809145daa493e3"
+          },
+          "case_id": "case-07",
+          "end": {
+            "logical_id": "transition:13:end",
+            "sha256": "333f0ceadd454459df30456b916f5c7ca3fecbd3fad572d553981445da911dc5"
+          },
+          "method": "static_rule",
+          "sequence": 13,
+          "status": "complete",
+          "transition_id": "6de66d201217ee71ff664f4026396520794cce8a49a8c5b09d5cbbd5c56645e1"
+        },
+        {
+          "active_wall_s": 0.6296972,
+          "begin": {
+            "logical_id": "transition:14:begin",
+            "sha256": "403fba88e5fb5421e3795d102b617761ee55d0fb74fea6eaa9e319c0282e79e4"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:14:end",
+            "sha256": "2da5ea03880d2d0ac3e743d12aec265d168e0039252bbdac5fa49e7ac07ed0b3"
+          },
+          "method": "iterative_agent",
+          "sequence": 14,
+          "status": "complete",
+          "transition_id": "9c58e4855de704043ad973ed14f8e4078f2389f21af9e08635bbfbebacdebffe"
+        },
+        {
+          "active_wall_s": 516.1061977,
+          "begin": {
+            "logical_id": "transition:15:begin",
+            "sha256": "a99bc185942f5c9f3d47f3f69a95447ff884527ae0e4049519fcfb109713b1cf"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:15:end",
+            "sha256": "629febe65429665e6be1595d5e25a8f1390fe8f8193b5a71121b50472885f79b"
+          },
+          "method": "iterative_agent",
+          "sequence": 15,
+          "status": "complete",
+          "transition_id": "8b14c475ad8ff828855fadede96d8bb0a7b4d675c8a41e6475ad4fd016f3c713"
+        },
+        {
+          "active_wall_s": 1.6877405,
+          "begin": {
+            "logical_id": "transition:16:begin",
+            "sha256": "5579e96fc50744ed90375fbd4823066dcb8687e4807be06c4edf8847662a7dca"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:16:end",
+            "sha256": "942df9770a406f4b3b4f1a931b31284e1a55a361f14eca8db31c0e7018a42a64"
+          },
+          "method": "iterative_agent",
+          "sequence": 16,
+          "status": "complete",
+          "transition_id": "c233aaf1a7ad4db898230fd07d151bda72e8d3f1596d1058d0d15694e4a79b1a"
+        },
+        {
+          "active_wall_s": 0.6451298,
+          "begin": {
+            "logical_id": "transition:17:begin",
+            "sha256": "4384196b498e60c0620cf6186f991fc6ba943a48af153cf91770d92b8aeffb8e"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:17:end",
+            "sha256": "2b17005d8eefddb1a1d85b7a1540aa39a5a6f65dd0f48d91075d315e9ea6710e"
+          },
+          "method": "fixed_sequence",
+          "sequence": 17,
+          "status": "complete",
+          "transition_id": "7d03608a426eb478b1220810ee6185b55e1e2adcf15d6682546a57771d019ecd"
+        },
+        {
+          "active_wall_s": 512.0417915,
+          "begin": {
+            "logical_id": "transition:18:begin",
+            "sha256": "081491982854d062cc3c67898084c7725aca25f3709225e8596970bc75cc859e"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:18:end",
+            "sha256": "4a11e9fcb899795592aa27d2df6bebe6314bb5a696ba1d6de75704f54a2d2d9d"
+          },
+          "method": "fixed_sequence",
+          "sequence": 18,
+          "status": "complete",
+          "transition_id": "d91fa8d17417664a25bdfecffd50432b6fdcf510403bcb2fc58081600bfaeabe"
+        },
+        {
+          "active_wall_s": 1.7647979,
+          "begin": {
+            "logical_id": "transition:19:begin",
+            "sha256": "b9fe83c3639b6bfb61d3399c52a798c45493006f8ecf1eef71e23798de9dbeeb"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:19:end",
+            "sha256": "5470abc0ca66db7980e5b74d2357d5f00cbb61f8aa29c7affbbd1f3755a92459"
+          },
+          "method": "fixed_sequence",
+          "sequence": 19,
+          "status": "complete",
+          "transition_id": "eca445d2656c4d74d52ba64ec03ec90f6c0aba01d25b66e09c465fc6f2d7c244"
+        },
+        {
+          "active_wall_s": 0.6979336,
+          "begin": {
+            "logical_id": "transition:20:begin",
+            "sha256": "0d499ba7ec1c76e4ce8effa7c6c896dc07d5afa868aa82163e4415ef2712e6a8"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:20:end",
+            "sha256": "426f835c75a242ff346a73f766226a2ffbbb4b1f247183bc10f44ba9025e32c1"
+          },
+          "method": "static_rule",
+          "sequence": 20,
+          "status": "complete",
+          "transition_id": "3109bed0beb83b949c618ee3f72031493c19159f3c1f3dafe47eed455aa86191"
+        },
+        {
+          "active_wall_s": 515.4092597,
+          "begin": {
+            "logical_id": "transition:21:begin",
+            "sha256": "7a66e1784aea94bc4e3befef3d0fb763a07d5aef8cada72ba847925dd45550e0"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:21:end",
+            "sha256": "5f7e4a9410878815c07f6fc697e6d31c53d32d195f97521084b032c9ac7e183b"
+          },
+          "method": "static_rule",
+          "sequence": 21,
+          "status": "complete",
+          "transition_id": "75b1b2355e27a9e442a7067eac94a83bf73f59e5ec4ddb67608dfa021e1c0e03"
+        },
+        {
+          "active_wall_s": 1.840301,
+          "begin": {
+            "logical_id": "transition:22:begin",
+            "sha256": "0606721bd745ed54a8081b2251e70c8840318bbe94a36d902436826657e37ed4"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:22:end",
+            "sha256": "3c65e7676b90315028b0f8da5b880d98b1f54d4aba4b14c040043110bbf8fc1f"
+          },
+          "method": "static_rule",
+          "sequence": 22,
+          "status": "complete",
+          "transition_id": "4bcc8331ab33b480916c0119ea00d10fa266ba6242bbd155236f74334932692d"
+        },
+        {
+          "active_wall_s": 0.6819526,
+          "begin": {
+            "logical_id": "transition:23:begin",
+            "sha256": "98af40b296be761bb4cd2aa6e6d1483b23a6043b86bc8175fd2292b77237d9c1"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:23:end",
+            "sha256": "95f1cf7ebc5e5c708252e79f1b24463e68f0eb6488cdaf78b2f10fa5b44cb43b"
+          },
+          "method": "one_shot_llm",
+          "sequence": 23,
+          "status": "complete",
+          "transition_id": "5101dc89621ad7a656c38547bba3c15012438529d6dfe02ccd0d2fc0386b1b50"
+        },
+        {
+          "active_wall_s": 513.1705429,
+          "begin": {
+            "logical_id": "transition:24:begin",
+            "sha256": "3e52b5c056f8655586ca8425514d76c9b5ce9499a8d415a7292e523da1d16738"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:24:end",
+            "sha256": "ee3d57e9f49923292df23f85c6d9fb3cb83dd6a793db328b3872b9c3221342a6"
+          },
+          "method": "one_shot_llm",
+          "sequence": 24,
+          "status": "complete",
+          "transition_id": "21b1b6a4d04379f33c06ec4a1363fb89be5bb20febb01fd16930df56f6f6800b"
+        },
+        {
+          "active_wall_s": 1.7800323,
+          "begin": {
+            "logical_id": "transition:25:begin",
+            "sha256": "900ca5cfcaf286c20f2ef8bd582d3b4e437566ee95a59b296b86b1720debc7f0"
+          },
+          "case_id": "case-08",
+          "end": {
+            "logical_id": "transition:25:end",
+            "sha256": "1b324b4dd7217837992713ed292cebcf3c534a17fdb80702c2aab4f6042b3900"
+          },
+          "method": "one_shot_llm",
+          "sequence": 25,
+          "status": "complete",
+          "transition_id": "4e55c3cf2528717058e744cbda3f998609a2ad25321bbea1432c22ecb4325a97"
+        }
+      ],
+      "unknown_transition_count": 0,
+      "window_span_s": 3967.522663
+    },
+    "unknown_values_are_not_zero": true
+  },
+  "cpu_launch_accounting": {
+    "caps_are_not_quotas": true,
+    "checkpoint_cap": 8,
+    "checkpoint_observed": 7,
+    "telemetry_cap": 8,
+    "telemetry_observed": 7
+  },
+  "development_remeasurement": true,
+  "diagnostic_HOLD": 1,
+  "elapsed": {
+    "complete_campaign_wall_s": null,
+    "continuous_per_arm_E2E_s": null,
+    "gap_includes_preparation_not_added_again": true,
+    "new_supervisor_wall_s": 3988.9739522999953,
+    "observed_calendar_span_s": 16192.141532,
+    "prior_supervisor_wall_s": 6084.001797800003,
+    "resume_gap_wall_s": 6119.165471
+  },
+  "fresh_effects": 7,
+  "imported_completed_effects": 7,
+  "imported_completed_training": 1,
+  "interrupted_boundary_transition_collapsed_once": true,
+  "measurement_inputs_or_criteria_changed": false,
+  "measurement_source_closure_changed": false,
+  "new_heldout_claim": false,
+  "observed_new_transition_order": [
+    [
+      "case-06",
+      "fixed_sequence"
+    ],
+    [
+      "case-07",
+      "one_shot_llm"
+    ],
+    [
+      "case-07",
+      "iterative_agent"
+    ],
+    [
+      "case-07",
+      "fixed_sequence"
+    ],
+    [
+      "case-07",
+      "static_rule"
+    ],
+    [
+      "case-08",
+      "iterative_agent"
+    ],
+    [
+      "case-08",
+      "fixed_sequence"
+    ],
+    [
+      "case-08",
+      "static_rule"
+    ],
+    [
+      "case-08",
+      "one_shot_llm"
+    ]
+  ],
+  "observed_prior_transition_order": [
+    [
+      "case-05",
+      "fixed_sequence"
+    ],
+    [
+      "case-05",
+      "static_rule"
+    ],
+    [
+      "case-05",
+      "one_shot_llm"
+    ],
+    [
+      "case-05",
+      "iterative_agent"
+    ],
+    [
+      "case-06",
+      "static_rule"
+    ],
+    [
+      "case-06",
+      "one_shot_llm"
+    ],
+    [
+      "case-06",
+      "iterative_agent"
+    ],
+    [
+      "case-06",
+      "fixed_sequence"
+    ]
+  ],
+  "order_scope": "actual_controller_transition_order_including_original_diagnostic_HOLD",
+  "original_diagnostic_HOLD_has_controller_transition": true,
+  "original_diagnostic_HOLD_has_no_GPU_transition": true,
+  "outcomes": {
+    "execution_unsettled": 0,
+    "hold": 1,
+    "infrastructure_failure": 0,
+    "normal_or_host_gate": 0,
+    "not_recovered": 15,
+    "not_started": 0,
+    "recovered": 0,
+    "unknown": 0,
+    "unsupported": 0
+  },
+  "outer_supervisor": {
+    "scope": "outer_supervisor_call_only_not_added_to_nested_owned_costs",
+    "sha256": "053bd9b9ebe3321c03e945f188299720f4c1a3b15777ca4d87f3c4de44008e87",
+    "supervisor_call_wall_s": 3988.9739522999953
+  },
+  "planned_arms": 16,
+  "postprocessing_correction": "cpu_launch_limits_are_caps_and_controller_hold_transition_is_observed",
+  "resources": {
+    "combined_balanced_sdk_launches": 30,
+    "complete_child_CPU_s": null,
+    "cpu_checkpoint_launches": 7,
+    "cpu_telemetry_launches": 7,
+    "current_dispatches": 8,
+    "device_energy_scope": "whole_device_recorded_windows_not_process",
+    "device_energy_status": "complete",
+    "device_energy_wh": 198.1695160078327,
+    "device_windows_overlap": false,
+    "historical_completed_effects": 7,
+    "historical_completed_training": 1,
+    "historical_sdk_launches": 15,
+    "kernel_time_s": null,
+    "nested_costs_not_added_again": true,
+    "new_sdk_launches": 15,
+    "provider_billing_usd": null,
+    "total_owned_children": 29
+  },
+  "schema": "balanced_recovery_resource_continuation_summary_v3",
+  "sdk_accounting": {
+    "HOLD_controller_transition_added_as_SDK": false,
+    "cap": 65,
+    "cumulative": 64,
+    "historical_not_added_twice": true,
+    "new": 15,
+    "prior_recovery_study": 49
+  },
+  "sources": [
+    {
+      "logical_id": "prior_terminal",
+      "sha256": "940bd57f89d56150a68867a90895632096e53306a6563a74f8fa7bb049671085"
+    },
+    {
+      "logical_id": "terminal",
+      "sha256": "053bd9b9ebe3321c03e945f188299720f4c1a3b15777ca4d87f3c4de44008e87"
+    },
+    {
+      "logical_id": "registered_plan",
+      "sha256": "c2e7aa11e3c6fcfc7913635c66e4c95f926c270fc0b91794243cc6f7cfa1570b"
+    },
+    {
+      "logical_id": "prior_timing_seal",
+      "sha256": "4b3e9ade55da7a556fbefc253b28ab8c2539334a243cc41da24b9b1ffd5f2a5a"
+    },
+    {
+      "logical_id": "postprocessing_source",
+      "sha256": "5ec2bca7a3883a8d366a6ce266d97631db89ab5106442c6d0f95d1f9e3fb6729"
+    },
+    {
+      "logical_id": "postprocessing_correction_note",
+      "sha256": "2faf448eaede354e6e4d5d8b16b7b0b827df5a702afe7102311090ed00cec497"
+    }
+  ],
+  "status": "complete"
+}

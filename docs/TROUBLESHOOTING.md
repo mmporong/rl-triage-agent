@@ -1101,3 +1101,16 @@
 - 관찰: 완료한 실험 원문을 요구하는 테스트가 공개 기본 suite에 섞여 있어 원문 없는 새 checkout에서 실행할 수 없었다.
 - 수정: [공용 fixture](../tests/registered_failure_evidence_fixture_v1.py)는 임시 raw·context·proof의 SHA를 만들어 실제 validator의 positive·변조 거부 계약을 검사한다. 이전 실측 통합 개발 테스트의 원본은 보존하고 런타임·프로토콜·결과를 바꾸지 않았다.
 - 확인: 비공개 폴더가 없는 공개 archive 복제본에서 관련 60개가 통과했다. 이 통과는 CPU 계약 검증이며 원래 SDK 실측을 대체하지 않는다. 과거 실험의 source anchor는 당시 테스트 바이트를 계속 가리킨다.
+
+
+## 등록 비교의 입력·재개·정산 검증
+
+완료 학습과 요청 원장을 보존하면서 이어 실행한 기록은 [순서별 교정 비교](../evals/results/balanced_recovery_comparison_s2664_s2667_20261105_v17_r3/summary.json)와 [전체 비용](../evals/results/mechanism_resource_whole_study_20261105_v2/summary.json)에 연결했다. 다음 오류는 원문을 덮어쓰지 않고 새 등록 또는 읽기 전용 정산 판으로 구분했다.
+
+- 기존 로그 이름과 충돌하는 재측정은 학습 전에 거부됐다. source·checkpoint·seed·request를 결합한 별도 namespace를 사용했다. namespace 필드를 기존 학습 manifest에 넣자 고정 23필드 검사에서 거부돼, 별도 영수증으로 분리하고 SDK Python의 실제 소비 경계에서 확인했다. [학습 전 SDK 실패](../evals/results/balanced_recovery_v15_20261105_manifest_failure_lf_v2/summary.json)는 비용에도 남겼다.
+- V16은 효과 7건과 다음 학습을 마친 뒤 고정 평가 전 GPU 입장에서 중단됐다. 당시 상세 예외가 남지 않았으므로 나중의 관측으로 원인을 단정하지 않았다. 새 journal은 기존 입장 기준과 반환·예외를 유지하며 관측을 보존한다. [중단 기록](../evals/results/balanced_recovery_v16_20261105_admission_failure_v2/summary.json)과 학습 체크포인트를 검증해 평가만 이어갔고, 이전 unknown 원장은 바꾸지 않았다.
+- CPU 사전확인의 `training_seed`가 실제 학습 소비로 분류돼 입력 생성이 거부됐다. 새 검사는 공개 SHA와 결합한 SDK 시작 전 차단 기록 한 파일만 분리한다. 같은 seed의 다른 기록과 Isaac 로그는 계속 검사한다. [비실행 증거 등록](../bench/protocols/registered_recovery_cpu_seed_nonexecution_20261105_v1.json)을 사용한다.
+- 완료 학습을 재사용하는 backend의 필수 소스 6개가 closure에서 빠져 준비가 거부됐다. [보완 등록](../bench/protocols/diagnostic_recovery_comparison_20261105_v17_r3.md)은 계획을 쓰기 전에 실제 backend extension 검증을 수행한다. 새 입력의 backend 준비와 요청 원장 불변도 CPU에서 확인한 뒤 GPU를 시작했다.
+- 정산기는 CPU 상한 8회를 기대 횟수로 오독했다. 실제로 새 epoch 7개만 checkpoint·telemetry를 각각 한 번 실행한다. 또 HOLD에는 GPU 작업이 없지만 controller 전이는 기록된다. [정산기 V3](../evals/summarize_balanced_recovery_continuation_v3.py)는 이 두 범위를 구분하고 실제 7회씩과 등록 순서를 검증한다. 측정 입력·판정 기준·원래 결과는 바꾸지 않았다.
+
+공개 JSON은 UTF-8 LF 바이트로 저장하고 manifest SHA와 Git index 바이트를 대조한다. 단계의 정상 종료·CPU 회귀·정책 회복을 같은 완료로 표시하지 않으며, 이미 확인한 검사는 새 변경이나 실패 근거가 있을 때 다시 실행한다.

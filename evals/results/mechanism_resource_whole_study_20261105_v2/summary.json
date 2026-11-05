@@ -1,0 +1,144 @@
+{
+  "API": {
+    "campaign_known": 25,
+    "new_calls": 0
+  },
+  "SDK": {
+    "campaign_total": 177,
+    "prior_campaign": 146,
+    "recovery_study_total": 64,
+    "v15_failed_launch": 1,
+    "v16_partial": 15,
+    "v17_actual": 15
+  },
+  "accounting": {
+    "calendar_gaps_preserved_not_added_as_measured_compute": true,
+    "eight_proof_reused_and_counted_once": true,
+    "nested_actual_cpu_helper_added_again": false,
+    "nested_owned_phase_device_added_again": false,
+    "new_outer_intervals": 10,
+    "outer_intervals_nonoverlapping": true,
+    "preparation_rows": 12,
+    "r2_failed_preparation_counted": true,
+    "r2_failed_preparation_sdk_calls": 0,
+    "seed_guard_validation_wall_added": false
+  },
+  "continuous_end_to_end_measurement": false,
+  "cost": {
+    "complete_cpu_total_s": null,
+    "complete_wall_total_s": null,
+    "cost_per_recovered_denominator": 0,
+    "cost_per_recovered_usd": null,
+    "known_parent_cpu_intervals": 21,
+    "known_parent_cpu_lower_bound_s": 1349.4375,
+    "known_wall_lower_bound_s": 42336.33556284054,
+    "new_nonoverlapping_outer_wall_s": 12747.814060300007,
+    "prior_known_wall_lower_bound_s": 29588.521502540534,
+    "provider_billing_usd": null,
+    "whole_campaign_energy_wh": null
+  },
+  "execution_authority_created": false,
+  "measurement_criteria_changed": false,
+  "schema": "mechanism_resource_whole_study_v18_candidate_v1",
+  "sources": [
+    {
+      "role": "prior_public_summary",
+      "sha256": "c6734c56773f9eb6bc8426aadc8818fbdac143e5e510da3d3f8769b0ce04dcae"
+    },
+    {
+      "role": "preparation_join_v16",
+      "sha256": "0eb55ef0655cdafc257f02e6b4f21f1858788c3cfe7fccac3cca4f303f20562f"
+    },
+    {
+      "role": "v16_public_summary",
+      "sha256": "63fb75a4b4b115e38111863fae838de28636188ffb90cc93f496fbf4390ed47d"
+    },
+    {
+      "role": "v16_terminal",
+      "sha256": "940bd57f89d56150a68867a90895632096e53306a6563a74f8fa7bb049671085"
+    },
+    {
+      "role": "v17_templates_initial",
+      "sha256": "0e6dad2003f4e8d1d0504f352cac1e2b3960e4a50128c6a45581ec89bc3de995"
+    },
+    {
+      "role": "v17_jobs_failed_seed_guard",
+      "sha256": "f3957bab56b0f437f46f85a569f101fdb0f126470dacb861bc310e1650f5aedf"
+    },
+    {
+      "role": "v17_seed_guard_validation",
+      "sha256": "eb716ecbbdd479ce1a400d453f4fde7facff60d86756d63bd57ea96ffa136662"
+    },
+    {
+      "role": "v17_templates_r2",
+      "sha256": "de5f98e2427d7058b15c8ab0994dfc6ddba96e39183162ef197d21f99ab3ed1a"
+    },
+    {
+      "role": "v17_jobs_r2",
+      "sha256": "2e726c3e0a1e1de7359b6a5bf02e2bede87a5e5c7c364108970c8270907699c1"
+    },
+    {
+      "role": "v17_templates_r3",
+      "sha256": "022edd17a65ec316ad75f23c69bf79f46940e30c226ae79f94ab17a89139d394"
+    },
+    {
+      "role": "v17_jobs_r3",
+      "sha256": "7b59f7f7bf3459788f5083c247a5bbe6f4602df37690aaa01ca31e007d6e7ab7"
+    },
+    {
+      "role": "v17_cpu_outer_r3",
+      "sha256": "98feea6fb638d9fdd1b1fbf339c8cfdc4d8aaa20fd70847077f0a5d66d7e22c3"
+    },
+    {
+      "role": "v17_cpu_helper_nested_r3",
+      "sha256": "425b35662dfeabcb2a2c0618454838959b6f67a163871dcbf0c0134688ba586c"
+    },
+    {
+      "role": "v17_eight_proof_r2",
+      "sha256": "51172868e6076f0c883b3a5d838e3da0a21b9d32ad477b93d4672aaa314beb7a"
+    },
+    {
+      "role": "v17_public_summary",
+      "sha256": "4302ee6ab323cb3660c261f0af2dbf69d5a2acccfd7f7b69f6741ec3472f4916"
+    },
+    {
+      "role": "v17_terminal",
+      "sha256": "053bd9b9ebe3321c03e945f188299720f4c1a3b15777ca4d87f3c4de44008e87"
+    }
+  ],
+  "status": "post_measurement_accounting_candidate",
+  "synthetic_study_phases": [
+    "actual_method_diagnosis",
+    "balanced_recovery"
+  ],
+  "unknown_components": [
+    "V15_SDK_ABI_child_CPU_and_nested_wall_not_added",
+    "V15_actual_preflight_outer_overhead_not_included_here",
+    "V17_child_CPU",
+    "V17_complete_energy",
+    "V17_provider_billing",
+    "V17_seed_guard_226.6037225s_has_no_outer_UTC_interval",
+    "actual_provider_billing",
+    "bucket:history.v10.cpu_preflight",
+    "bucket:history.v7.lost_process",
+    "bucket:setup.v5",
+    "calendar_gaps_and_human_time",
+    "child_CPU_and_human_time_unmeasured",
+    "continuous_end_to_end_latency",
+    "current_V16_GPU_runtime_pending_terminal",
+    "current_and_historical_lease_wait",
+    "development_CPU_regressions_not_allocated_to_method_costs",
+    "legacy_diagnostic_pre_app_failed_sdk_duration",
+    "legacy_diagnostic_wrapper_and_unmeasured_overhead",
+    "nonexclusive_whole_device_energy_attribution",
+    "post_device_window_does_not_cover_whole_parent",
+    "post_registration_and_other_preparation_unmeasured_intervals",
+    "prior_development_and_smoke_sdk_costs",
+    "registration_git_lint_test_and_manual_gaps_not_fully_metered",
+    "setup_v5_wall",
+    "v10_cpu_preflight_full_wall_and_process_cpu",
+    "v14_preflight_parent_and_child_CPU",
+    "v7_lost_training_and_observer_clocks",
+    "v8_operator_bootstrap_and_manual_gaps"
+  ]
+}
