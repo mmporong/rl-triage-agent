@@ -14,11 +14,11 @@
 
 ## The problem
 
-In the reward-frame fault below, episodes last almost to the time limit and the training reward rises, yet the Go2 ignores velocity commands: its tracking error equals that of standing still. The cause could be the reward, the actuator, exploration noise, PPO settings, physics or termination, and checking each one by retraining takes several minutes per run.
+Training curves can look healthy while a robot fails its task. RL Triage uses telemetry and approved checks to investigate the cause. The stair playback below shows why behavior also needs checking: the same pretrained Go2 falls at one commanded speed and stays upright at another.
 
-[![Failed, retrained and healthy Go2 policies in Isaac Sim](docs/media/go2-e2e-e2e_reward_s2030_20261013/comparison.gif)](docs/media/go2-e2e-e2e_reward_s2030_20261013/comparison.mp4)
+[![Go2 stair descent: failure at 0.25 m/s and passed at 0.75 m/s](docs/media/go2-stairs-down-comparison-15s-s200-20261105-v1/comparison-15s-preview-720.gif)](docs/media/go2-stairs-down-comparison-15s-s200-20261105-v1/comparison-15s.mp4)
 
-*Seed 2030, reward-frame fault. Left to right: the failed policy stands still, the policy retrained after the registered correction walks, and the healthy policy for reference. Same Play settings for all three. Recovery is judged by the fixed evaluation, not by this video.*
+*15-second synchronized playback, seed 200. Left: 0.25m/s, inverted from 12.26s. Right: 0.75m/s, passed the registered 15-second motion checks. Same pretrained policy, recorded starting body state and stairs; command speed differs. This is a playback comparison, not an agent-selected repair. [Full-quality MP4](docs/media/go2-stairs-down-comparison-15s-s200-20261105-v1/comparison-15s.mp4) · [Sources and measurements](docs/GO2-STAIRS-COMMAND-CONTRAST.md#15초-실패성공-동시-비교).*
 
 Latest same-Play comparison: [healthy → compound fault → after two registered corrections](docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4) · [original clips and provenance](docs/media/five_type_recovery_s5557_20261102_v1/source_manifest.json). The recovered policy is seed 5557; all clips have 625 frames at 50 fps. Recovery comes from the fixed26 evaluation; the video is a playback comparison. The four registered followup arms ended in one recovery and three HOLDs.
 

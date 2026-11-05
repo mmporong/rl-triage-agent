@@ -1,0 +1,73 @@
+{
+  "schema": "go2_stairs_down_comparison_15s_v2",
+  "status": "complete",
+  "duration_s": 15,
+  "video": {
+    "path": "docs/media/go2-stairs-down-comparison-15s-s200-20261105-v1/comparison-15s.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 50,
+    "frames": 750
+  },
+  "preview": {
+    "path": "docs/media/go2-stairs-down-comparison-15s-s200-20261105-v1/comparison-15s-preview-720.gif",
+    "width": 720,
+    "height": 405,
+    "fps": 6,
+    "frames": 90,
+    "duration_s": 15
+  },
+  "same_initial_state": true,
+  "same_checkpoint": true,
+  "seed": 200,
+  "left": {
+    "command_x_m_s": 0.25,
+    "window_s": [
+      0,
+      15
+    ],
+    "state_rows": 751,
+    "root_dx_m": 2.761920690536499,
+    "root_dz_m": -0.5996331125497818,
+    "minimum_body_up_world_z": -0.9888558003648724,
+    "inverted_samples": 138,
+    "first_inverted_time_s": 12.26,
+    "last_body_up_world_z": -0.9651407358272538,
+    "motion_accepted": false
+  },
+  "right": {
+    "command_x_m_s": 0.75,
+    "window_s": [
+      0,
+      15
+    ],
+    "state_rows": 751,
+    "root_dx_m": 10.68515682220459,
+    "root_dz_m": -0.3641449213027954,
+    "minimum_body_up_world_z": 0.9794291228393308,
+    "inverted_samples": 0,
+    "first_inverted_time_s": null,
+    "last_body_up_world_z": 0.9900848910990091,
+    "motion_accepted": true
+  },
+  "static_crop_xywh": [
+    320,
+    40,
+    640,
+    640
+  ],
+  "same_crop_on_both": true,
+  "source_frame_window": [
+    0,
+    749
+  ],
+  "real_time_no_speed_change": true,
+  "source_repetition_or_freeze_to_extend": false,
+  "claims": {
+    "seen_development_source": true,
+    "new_training": false,
+    "model_API": false,
+    "agent_selected_repair": false,
+    "agent_recovery": false
+  }
+}
