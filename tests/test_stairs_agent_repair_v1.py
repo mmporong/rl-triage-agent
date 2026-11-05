@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "evals"), str(ROOT / "bench")]
 C = importlib.import_module("stairs_agent_repair_v1")
 TRAIN = importlib.import_module("train_stairs_agent_adaptation_v1")
+TRAIN3 = importlib.import_module("train_stairs_agent_adaptation_v3")
 PLAY = importlib.import_module("run_go2_stairs_agent_play_v1")
 
 
@@ -103,7 +104,8 @@ def test_unknown_tool_fake_fact_receipt_replacement_and_duplicates_rejected():
         C.packet(s, [p, p])
 
 
-def test_training_keeps_task_and_rewards_while_preserving_training_terminations():
+@pytest.mark.parametrize("training_module", [TRAIN, TRAIN3])
+def test_training_keeps_task_and_rewards_while_preserving_training_terminations(training_module):
     terrain = NS(proportion=1, step_height_range=(0.05,0.2), step_width=0.3)
     term, timeout, rewards = object(), object(), object()
     cfg = NS(scene=NS(terrain=NS(terrain_generator=NS(sub_terrains={"pyramid_stairs":terrain}))),
@@ -111,7 +113,7 @@ def test_training_keeps_task_and_rewards_while_preserving_training_terminations(
         reset_robot_joints=NS(params={})),observations=NS(policy=NS(enable_corruption=True)),
         viewer=NS(),terminations=NS(base_contact=term,time_out=timeout),
         curriculum=NS(terrain_levels=object()),rewards=rewards)
-    TRAIN.configure_training(cfg,{"direction":"down","seed":5710})
+    training_module.configure_training(cfg,{"direction":"down","seed":5710})
     assert cfg.scene.num_envs == 1024
     assert cfg.commands.base_velocity.ranges.lin_vel_x == (0.25,0.25)
     assert cfg.terminations.base_contact is term and cfg.terminations.time_out is timeout
