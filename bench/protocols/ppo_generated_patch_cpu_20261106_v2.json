@@ -1,0 +1,52 @@
+{
+  "schema": "ppo_generated_patch_cpu_protocol_v1",
+  "source_anchor": "3b4eea5afa10013a16beb29b2abd6ac093061cba",
+  "source_sha256_lf": {
+    "bench/ppo_patch_cases_v1.py": "373e9f97f6dd3761f4cd94bdb591bb1eba6b6cc0e918891c203cab1e7aeddac5",
+    "bench/inspect_ppo_patch_cpu_v1.py": "5c8be1c446aee0d34ef671d31c1aa2e94f3c46fb8b9a9bc8db0a65b82bc446cb",
+    "evals/ppo_patch_contract_v1.py": "a3c43c8f246c362fd07cd86a49e57a3825ebbc5dd25111af84f3f5cc703dbbff",
+    "evals/run_ppo_patch_model_v1.py": "8338f19548695df96b1e29c74e886e5bcfa50e4925289dbd06eb16a6a806f8fa",
+    "tests/test_ppo_patch_contract_v1.py": "8ddbb6bab39198446a57159dd1abf558470f77d295207955b387aa300ff8ac27",
+    "tests/test_inspect_ppo_patch_cpu_v1.py": "3badf3659e2a632960849aa9f4236b7a6bb7d7962e67ea0c760506de47f877c1",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8"
+  },
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "accepted_models": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "campaign_id": "ppo_generated_patch_cpu_20261106_v1",
+  "contexts_sha256": [
+    "1c4b9d6205946059931db4689145f7aac5669b8a8e182c565022d948a3eb7632",
+    "1ffba6f7b29b51a53c0b9692c1285a3d93cd3e67c195f65720f0ab499105ec42",
+    "7e8dc8eecd8f9e2cb6a3abc8bdf02a4d4abe1792a90bd15120a7dae975204d2e",
+    "dfbc43e5df4e11544f89d63dd84db350c8fd1043830f54850ab14f7ce786dd48"
+  ],
+  "API_cap": 12,
+  "initial_cases": 4,
+  "semantic_retries": 0,
+  "infra_retries_per_case": 2,
+  "normal_control": 1,
+  "implementation_variants": 3,
+  "development_created_variants": true,
+  "new_fault_family_generalization": false,
+  "supersedes_unexecuted": "bench/protocols/ppo_generated_patch_cpu_20261106_v1.json",
+  "revision_reason": "Before any API call, enumerate existing AST syntax restrictions in the model prompt; fixture code, CPU inputs and criteria unchanged.",
+  "CPU_only": true,
+  "GPU_behavior_evaluation": "separate future preregistration required",
+  "pre_model_CPU_observations_sha256": "cd269ea016386d3983dc4de898ed12965b7f71fd3a67b03188cfcd89c59300cf",
+  "success_criteria": {
+    "healthy": "hold and source unchanged",
+    "fault": "patch proposal valid, all three actual PPO CPU configurations match configured counts, other parameters preserved",
+    "behavior": "not evaluated in this CPU protocol"
+  },
+  "frozen_parameters": {
+    "temperature": 0,
+    "max_tokens": 16384,
+    "reasoning_effort": "none"
+  },
+  "claim_wording": {
+    "CPU_all_pass": "Generated adapters restored configured counts in CPU development variants; robot behavior not yet evaluated.",
+    "partial_or_fail": "Report each generation/contract/CPU result; no repair claim from code changes alone."
+  }
+}
