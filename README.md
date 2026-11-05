@@ -22,7 +22,7 @@ In the reward-frame fault below, episodes last almost to the time limit and the 
 
 Latest same-Play comparison: [healthy → compound fault → after two registered corrections](docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4) · [original clips and provenance](docs/media/five_type_recovery_s5557_20261102_v1/source_manifest.json). The recovered policy is seed 5557; all clips have 625 frames at 50 fps. Recovery comes from the fixed26 evaluation; the video is a playback comparison. The four registered followup arms ended in one recovery and three HOLDs.
 
-Official pretrained stair playback: H1 [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) · [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4), and Go2 [up/down with a command contrast](docs/GO2-STAIRS-COMMAND-CONTRAST.md). With the same Go2 policy and initial state, 0.75m/s passed both directions; the 0.25m/s uphill stall and downhill inversion are preserved. These are policy playback studies, separate from RL Triage recovery.
+Official pretrained stair playback: H1 [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) · [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4), and Go2 [stair command contrast and a 30-second downhill failure](docs/GO2-STAIRS-COMMAND-CONTRAST.md). With the same Go2 policy and initial state, 0.75m/s passed both directions; the 0.25m/s uphill stall and downhill inversion are preserved. These are policy playback studies, separate from RL Triage recovery.
 
 ## How it works
 
