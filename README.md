@@ -1,202 +1,126 @@
-# Isaac Lab RL Training Triage Agent
+# RL Triage Agent
+
+**Investigate failed robot policies, choose approved checks, and verify registered corrections or policy adaptations in Isaac Lab.**
+
+[Watch the replay](https://mmporong.github.io/rl-triage-agent/replay/) · [Architecture](https://mmporong.github.io/rl-triage-agent/?view=single-dark) · [Quickstart](#quickstart) · [한국어 요약](#한국어-요약)
 
 | Catalog field | Value |
 | --- | --- |
-| Description | Investigates Isaac Lab RL failures with approved checks, runs registered corrections or task adaptations, and verifies the resulting policy with a fixed task evaluation. It can also assess a single run without a healthy reference. |
-| Industry | 🤖 Physical AI |
-| Requirements | Linux or WSL2 · Docker · OpenShell 0.1.1 · NVIDIA API key (build.nvidia.com) · Isaac Lab 2.1.1 + RTX GPU only for re-running experiments |
+| Description | Evidence-based investigation of Isaac Lab RL failures, with approved checks and fixed evaluation. |
+| Industry | Physical AI |
+| Requirements | Python + `uv`; NVIDIA API for model calls; an RTX host with Isaac Lab for simulation. Docker + OpenShell for the sandbox path. |
 | OpenShell | 0.1.1 |
-| Collection | Hackathon |
+| Collection | Hackathon · Mollet |
 
-**Investigate a robot's failed task, choose approved checks, run a registered correction or policy adaptation, and verify the result under the same task conditions.**
+## See the result
 
-[Presentation replay](https://mmporong.github.io/rl-triage-agent/replay/) · [Evidence story replay](docs/replay/agentic-story-v1.html) · [Interactive architecture diagram](https://mmporong.github.io/rl-triage-agent/?view=single-dark) · [English evidence replay](submission/nebius-global-20261030/tokenfactory-v4/README.md) · [한국어 요약](#한국어-요약)
-
-## The problem
-
-A policy that walks on rough terrain can still fail a specific task. In the staircase case below, RL Triage checks the failure, proposes a registered policy adaptation and verifies the updated policy without changing commanded speed.
+The original Go2 policy falls while descending stairs. Nemotron 3.5 selects a stability check and proposes a registered 300-update adaptation. The updated policy passes the same 30-second task at the same commanded speed.
 
 <a href="docs/media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-1080p.mp4"><img src="docs/media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-preview.webp" alt="Go2 stair descent before and after agent-proposed adaptation, both at 0.25 m/s" width="100%"></a>
 
-*Seed 200, 15-second excerpt from 30-second tests. Both panels use 0.25m/s on the same 0.05m stairs. Left: original policy, inverted from 12.26s. Right: final policy after the 300-update adaptation proposed by Nemotron 3.5. Inverted samples fell from 888 to 0; tracking RMSE from 0.233 to 0.064m/s. Already-seen development case; code-bug root cause remains unconfirmed. [Full-quality MP4](docs/media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-1080p.mp4) · [Checks, training and evaluation](docs/GO2-STAIRS-AGENT-ADAPTATION.md).*
+*Left: original policy. Right: adapted policy. Both use 0.25m/s on the same stairs. A 15-second excerpt from the 30-second tests on development seed 200. [1080p video](docs/media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-1080p.mp4) · [1440p originals and evidence](docs/GO2-STAIRS-AGENT-ADAPTATION.md).*
 
-Registered fault-repair comparison: [healthy → compound fault → after two registered corrections](docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4) · [original clips and provenance](docs/media/five_type_recovery_s5557_20261102_v1/source_manifest.json). The recovered policy is seed 5557; all clips have 625 frames at 50 fps. Recovery comes from the fixed26 evaluation; the video is a playback comparison. The four registered followup arms ended in one recovery and three HOLDs.
-
-Other pretrained recordings: H1 [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) · [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4) · [original Go2 command contrast](docs/GO2-STAIRS-COMMAND-CONTRAST.md). Those playback references are separate from the agent-adapted policy shown above.
+Other recordings: [compound-fault repair](docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4) · H1 pretrained playback [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) / [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4). H1 clips are playback references, not agent-repair results.
 
 ## How it works
 
-1. **Notice.** A tracking alarm or registered task evaluation identifies a failed policy.
-2. **Rank.** Nemotron reads bound observations and telemetry to rank hypotheses or choose the next check.
-3. **Probe.** It selects a [registered check](docs/EVIDENCE-GUIDED-DIAGNOSIS.md). After approval, checks inspect [bound training records on CPU](docs/OPTIMIZER-OBSERVABILITY.md#보관된-학습-계측을-재사용하는-검사) or run in Isaac Lab. Receipts update the investigation. Unconfirmed causes never authorize a code correction.
-4. **Correct or adapt.** A confirmed cause maps to a registered code correction. A separate task contract can authorize a registered policy adaptation while leaving the code-bug cause unconfirmed.
-5. **Verify.** After approval the host trains the policy, and the same fixed evaluation judges the result.
+1. **Observe:** read bound training records, task context and available frames.
+2. **Select:** Nemotron chooses a registered check and cites evidence IDs.
+3. **Check:** the host validates approval, executes the check and returns a receipt.
+4. **Correct or adapt:** a confirmed cause permits a registered correction. A separate task contract can permit policy adaptation while the code-bug cause stays unconfirmed.
+5. **Evaluate:** the host trains, then applies the same fixed evaluation to the resulting policy.
 
-Every probe and retraining run needs a recorded approval, and each approval is consumed once. The current 3.5 fault-repair workflow stops at **HOLD** when evidence supports no registered cause or a model answer stays invalid after one feedback retry. Other registered versions can record a transition to a rule selector. If a correction does not recover the run, a second diagnosis round can confirm and fix the remaining fault.
+The model selects actions; the host supplies execution arguments and checks authority. Each approval is consumed once. Unsupported causes or persistently invalid model answers end at **HOLD** in the current 3.5 fault-repair path. Other registered versions can record a rule fallback. A second diagnosis round can investigate a failure that remains after correction.
 
-| Component | Role here |
-|---|---|
-| Nemotron 3 Super 120B | Decision model in the recorded demonstrations and frozen workflow configurations |
-| Nemotron 3.5 Super VL | Diagnosis, check selection and registered adaptation proposals in new versions; frame observations stay separate from fixed behavior verdicts |
-| NeMo Agent Toolkit 1.9 | Configured agent workflows and the 3.5 assessment entry; comparison and recovery experiments use separate host controllers |
-| OpenShell 0.1.1 + openshell-prover | Sandbox with Landlock file policy, L7 network policy and key injection; SMT check of every requested permission |
-| Isaac Lab 2.1.1 / Isaac Sim 4.5 | Fault injection, probes, retraining, fixed evaluation and recorded clips |
-| NVIDIA Skills | `skills/isaaclab-rl-triage` in NVIDIA skill format; the Isaac Lab `isaaclab-debugging-rl-training` checklist validates model correction proposals |
-
-Selection ownership is recorded per run: R1 uses a model-selected first probe and registered-rule followups; the staircase adaptation uses a host integrity check, model-selected stability check and model-proposed registered adaptation. Approved host code supplies the execution arguments; results are not pooled as model choices.
-
-## Key results
-
-| What we checked | Result | Evidence |
-| --- | --- | --- |
-| Can it adapt a failed stair task without changing the command? | Seen development seed 200: Nemotron 3.5 selected a stability check and proposed 300 more PPO updates. At the same 0.25m/s, the 30-second evaluation changed from failed to passed: inverted samples 888→0, tracking RMSE 0.233→0.064m/s. Code-bug cause remains unconfirmed. | [Same-command stair adaptation](docs/GO2-STAIRS-AGENT-ADAPTATION.md) |
-| Does the full loop recover failed runs? | Four runs on new seeds recovered under preregistered criteria: reward-frame faults (seeds 2030 and 2034, the latter through the NeMo Agent Toolkit tool-calling path) and motor torque-speed faults (seeds 2033 and 2046). In the 2033 motor run the first judgment ranked reward first; three approved probes rejected reward and exploration and confirmed the actuator. | [End-to-end demonstration](docs/E2E-REWARD-DEMO.md) |
-| Can it fix a fault that remains after a correction? | Combined reward-frame and PPO epoch faults recovered after two registered corrections on seeds 2120 and 2121. In a 3.5 run with checkpoint-bound optimizer counts (seed 2311), a model-selected count probe confirmed 4 steps instead of 20 and the second correction recovered the policy. A newer four-arm followup ended three arms at HOLD; the compound/model arm observed 4 optimizer steps against 20 in its reference, restored the registered epoch setting, and recovered with 0.142376m/s linear RMSE on fixed26. This is one recovered arm from two source lineages, not a same-checkpoint selector comparison. | [Two diagnosis rounds](docs/RESIDUAL-DIAGNOSIS-RESULT.md#v2-두-번째-검사와-교정-뒤-회복) · [3.5 runtime observation loop](docs/NEW-LINEAGE-COMPARISON.md#갱신-계측을-연결한-새-복합-사례) · [Latest recovery comparison](docs/FIVE-TYPE-RECOVERY-COMPARISON.md) |
-| Does it carry over to another robot or codebase? | On ANYmal-C, with only the task id, entry points and task text changed, a reward-frame fault on new seed 2047 was confirmed with one probe and recovered after retraining. For a reward bug ported from UniLab PR #1254, the scope check flagged a term the registered correction missed; a four-function correction registered after that result recovered seeds 2051 and 2062 (outside the model loop). | [ANYmal-C port](docs/ANYMAL-C-PORT.md) · [Scope extension](docs/U1-SCOPE-EXTENSION.md) |
-| Does it stop when it should? | All three runs of one external-source fault ended with no supported cause (`none_supported`) and no wrong confirmation. Healthy inputs did not open the loop. A model that broke the output contract twice stopped at `model_invalid`, with no probe or correction. | [External faults](docs/T1-EXTERNAL-FAULTS.md) · [Healthy inputs](docs/T2-NO-INTERVENTION.md) · [PPO stop](docs/PPO-GRADIENT-CHECK.md#종단-실행-v4의-모델-판단-보류) |
-
-**Scope of the evidence.** Faults, probes and corrections were written by the same team, primarily on two flat-terrain locomotion tasks with a few seeds; the stair adaptation adds one already-seen development case. Code corrections are limited to registered mechanisms; other faults end at HOLD or trigger a scope warning. These results show that the loop works end to end. They do not show diagnosis accuracy, generalization, an advantage over rules or GPU savings. On the first benchmark, simple deterministic rules solved every held-out case; on the 18-run hidden-fault set the agent ranked the true cause first 8 times against 2 to 6 for baselines, a small sample. Approvals were operator approvals delegated by the user; approver strings are recorded, not authenticated.
-
-**Nemotron 3.5.** [Latency measurements](docs/NEMOTRON35-EVIDENCE-REPORT.md) and [VL integrity checks](docs/VISUAL-INTEGRITY-OBSERVER.md) are reported separately. [Action-contract development](docs/EVIDENCE-GUIDED-DIAGNOSIS.md) made 12/12 first decisions valid (previously 0/12) and led to one preselected R1 recovery. A [reasoning-mode development trial](docs/NEMOTRON-REASONING-MODES.md) increased correct probe-confirmed families from 2/6 to 5/6, including partial compound diagnoses. A two-seed followup did not confirm this improvement: the original mode confirmed 4/6 families versus 3/6 with reasoning enabled, again including partial diagnoses. The default mode is unchanged. These studies do not establish a model-version or image-driven diagnosis advantage.
-
-**Current comparison.** The [mechanism and resource study](docs/MECHANISM-AGENT-RESOURCE-COMPARISON.md) completed 24 diagnostic rows on six new source policies. Fixed order, explicit rules, one-shot Nemotron and the iterative agent each confirmed the full fault set in 2/6 cases. The [ordered 16-row correction remeasurement](evals/results/balanced_recovery_comparison_s2664_s2667_20261105_v17_r3/summary.json) ended at 15 `not_recovered` and one HOLD. Its continuation reused seven completed effects and one completed training, then ran seven new training/evaluation pairs, with 15 new SDK launches and no model requery. Registered order, interruption costs and unknown costs are reported separately. A separate actuator check routed a relative-only miss to reference review without correction authority. No recovery, latency or energy advantage was established. Earlier [five-policy](docs/FIVE-TYPE-DIAGNOSIS-COMPARISON.md) and [second-correction](docs/FIVE-TYPE-RECOVERY-COMPARISON.md) results retain their original denominators.
-
-## At A Glance
-
-| Question | Answer |
+| Component | Role |
 | --- | --- |
-| Category | Community Recipe |
-| Contributor or provenance | Mollet (Korea Agentic AI Hackathon 2026) |
-| Use this when | An Isaac Lab RSL-RL training run fails, with or without a known healthy reference |
-| You will get | Ranked hypotheses with telemetry evidence and one next measurement or experiment. Reference-based workflows can register an experiment and obtain a verification verdict; single-run assessments are saved under `preregistrations/assessments/<case>.json`. |
-| Runs on | Linux or Windows 11 + WSL2 (Ubuntu 24.04); Docker for the sandbox path, and a Windows or Linux RTX host for Isaac Lab retraining |
-| Requires | `uv` and NVIDIA API access to the registered model (new versions: `nvidia/nemotron-3.5-super-vl-120b-a12b`; archived configurations retain 3 Super). The sandbox workflow also requires an OpenShell 0.1.1 gateway. |
-| Verified on | Windows 11 + WSL2 Ubuntu 24.04, Docker 29.8.1, OpenShell 0.1.1, NeMo Agent Toolkit 1.9.0, Isaac Sim 4.5.0 / Isaac Lab 2.1.1, RTX 3060 12 GB |
-| Evidence level | live end-to-end |
-| Support and maturity | Best-effort community support; hackathon prototype |
-| External access, data, and actions | Sends telemetry summaries, selected configuration facts when supplied, and agent messages to `integrate.api.nvidia.com` (NVIDIA API). The optional VL observation stage also sends sampled Play frames. Tools write assessments, preregistrations and analysis scratch files in the workspace. Approved verification writes evaluation records and new runs under the Isaac Lab log directory. |
-| Start here | [Quickstart](#quickstart) |
-| Confirm success | [Verification](#verification) |
+| Nemotron 3.5 Super VL | Current diagnosis, check selection, adaptation proposals and auxiliary frame observations. Frozen experiments retain Nemotron 3 Super. |
+| NeMo Agent Toolkit 1.9 | Configured tool workflows and the assessment entry; some experiments use separate host controllers. |
+| OpenShell 0.1.1 + prover | File and network restrictions, key injection and permission proofs in the sandbox path. |
+| Isaac Lab 2.1.1 / Isaac Sim 4.5 | Simulation, probes, training, fixed evaluation and recording. |
+| NVIDIA Skills | Isaac Lab investigation and correction checklists; see `skills/isaaclab-rl-triage`. |
+
+## Recorded results
+
+| Test | Observed result | Evidence |
+| --- | --- | --- |
+| Same-command stair adaptation | Development seed 200: inverted samples **888→0**, tracking RMSE **0.233→0.064m/s**; the 30-second task changes from fail to pass. | [Stair adaptation](docs/GO2-STAIRS-AGENT-ADAPTATION.md) |
+| Registered reward and motor faults | Four new-seed runs recovered. In the motor case, three checks overturned the initial reward hypothesis and confirmed the actuator. | [End-to-end repair](docs/E2E-REWARD-DEMO.md) |
+| Failure remaining after correction | Compound faults recovered after two registered corrections on seeds 2120/2121. A separate 3.5 run, seed 2311, used observed optimizer counts before the second correction. | [Residual diagnosis](docs/RESIDUAL-DIAGNOSIS-RESULT.md) · [3.5 run](docs/NEW-LINEAGE-COMPARISON.md) |
+| Robot and correction-scope transfer | ANYmal-C seed 2047 recovered. An expanded U1 correction recovered seeds 2051/2062, evaluated separately from model-selected runs. | [ANYmal-C](docs/ANYMAL-C-PORT.md) · [U1](docs/U1-SCOPE-EXTENSION.md) |
+
+Results are reported per registered task and run. The linked evidence includes protocols, model responses, training receipts and fixed evaluations. See also the [model comparisons](docs/NEMOTRON35-VALUE-COMPARISON.md), [VL checks](docs/VISUAL-INTEGRITY-OBSERVER.md) and [healthy-input tests](docs/T2-NO-INTERVENTION.md).
 
 ## Quickstart
 
-The Nemotron 3.5 entry starts with a CPU-only preparation pass for one training run. It checks the telemetry, task context, dependencies and registered configuration, then writes a new evidence packet. This step does not call the model, run Isaac, approve a probe, apply a correction or claim recovery.
+Start with a recorded-data replay. It uses no model API or GPU and recomputes stored results rather than running a new investigation.
 
 ```bash
 git clone https://github.com/mmporong/rl-triage-agent.git "$HOME/rl-triage-agent"
 cd "$HOME/rl-triage-agent"
 uv sync
+uv run python evals/replay.py evals/results/blind_v1 evals/results/heldout_blind \
+  evals/results/heldout_changes --traces evals/results/traces
+```
+
+For an existing training run, prepare a Nemotron 3.5 evidence packet on CPU:
+
+```bash
 export RUN_DIR="$HOME/isaaclab/logs/rsl_rl/<run>"
 uv run python bench/extract_tb.py "$RUN_DIR" "$RUN_DIR/telemetry.json"
 cat > /tmp/triage-task.json <<'JSON'
 {"schema":"nemotron35_task_context_v1","task":"Isaac-Velocity-Rough-Go2-v0","observed_problem":"The trained policy does not follow velocity commands."}
 JSON
 uv run python -m rl_triage.nemotron35_entry_v1 \
-  --run-dir "$RUN_DIR" \
-  --task-context /tmp/triage-task.json \
-  --out "$PWD/workspace/nemotron35-prepare" \
-  --prepare-only
+  --run-dir "$RUN_DIR" --task-context /tmp/triage-task.json \
+  --out "$PWD/workspace/nemotron35-prepare" --prepare-only
 ```
 
-For probe approvals, correction and status queries, use the [registered CLI](docs/REGISTERED-DIAGNOSTIC-RUNTIME.md): `uv run python -m rl_triage.investigate_v3 --help`. The preparation command reports `ready_for_execute` but still performs no model call. To request the registered Nemotron 3.5 assessment, load the NVIDIA key from your existing local secret store and choose `--execute` explicitly. Use a new output directory because entry outputs are write-once.
+Preparation makes no model call and authorizes no probe or training. Output directories are write-once. Registered investigation, approval, execution and status commands are documented in the [CLI guide](docs/REGISTERED-DIAGNOSTIC-RUNTIME.md).
+
+<details>
+<summary>Request a model assessment</summary>
+
+Load your NVIDIA key from the existing local secret store, then use a new output directory:
 
 ```bash
 . "$HOME/.config/nvidia/env"
 uv run python -m rl_triage.nemotron35_entry_v1 \
-  --run-dir "$RUN_DIR" \
-  --task-context /tmp/triage-task.json \
-  --out "$PWD/workspace/nemotron35-execute" \
-  --execute
+  --run-dir "$RUN_DIR" --task-context /tmp/triage-task.json \
+  --out "$PWD/workspace/nemotron35-execute" --execute
 ```
 
-`--execute` may save model hypotheses and one registered next-check proposal. Probe approval, execution, correction and recovery evaluation remain separate recorded operations. Recorded 3.5 outcomes include seed 2307 (`not_recovered`/HOLD) and a separately registered seed 2311 compound run (recovered after two approved corrections); see the [per-run evidence](docs/NEW-LINEAGE-COMPARISON.md). These runs do not establish video-assisted selection gains.
+This requests hypotheses and a next-check proposal. Probe execution, correction, training and recovery evaluation require separate recorded steps.
 
-For the frozen 3 Super benchmark workflow and OpenShell setup, see [multi-step investigation](docs/AGENTIC-INVESTIGATION.md) and [grounded single-run workflow](docs/GROUNDED-SINGLE-RUN.md). The [pipeline preflight](docs/PIPELINE-PREFLIGHT.md) checks the registered CPU-side inputs before a separately approved GPU operation.
+</details>
 
-For existing RSL-style training, the optional [`observe_optimizer`](src/rl_triage/optimizer_trace.py) recorder exports step and minibatch counts without a fault label. A separate [recorded PPO workflow](docs/OPTIMIZER-OBSERVABILITY.md#모델-선택에서-보관-검사-확정까지) keeps update-count and surrogate-gradient checks separate.
+## Execution and verification
 
-## Safety boundary
+Verified environment: Windows 11 + WSL2 Ubuntu 24.04, RTX 3060 12GB, Isaac Lab 2.1.1 / Sim 4.5.0. This is a hackathon prototype maintained by Mollet.
 
-The controls below were verified in the recorded OpenShell sandbox path. The 3.5 assessment entry and registered experiment controllers run on the host with separate approval and receipt checks.
-
-| Threat | Control | Evidence |
-| --- | --- | --- |
-| Agent edits configs, joint limits or rewards to pass the gate | No config path in the sandbox filesystem policy; bridge has no config API (405) | kernel test PASS; prover counterexample `PUT /config/` |
-| Checkpoint or robot model exfiltration | Only `POST /v1/chat/completions` on `integrate.api.nvidia.com` | kernel test PASS; prover counterexample `huggingface.co:443` |
-| GPU retraining abuse | Preregistration required + human CLI approval; no HTTP approval route | `tests/test_security.py` |
-| API key leakage | OpenShell provider injects the key at egress; the sandbox sees `openshell:resolve:...` | observed in sandbox run |
-| Writing reference data | Landlock read-only; prover returns `unsupported` → fail-closed reject | kernel test PASS |
-
-Within that sandbox, network rules also apply to child processes. Host-side model workers and GPU runs are outside this boundary. This recipe uses the OpenShell path described in the NemoClaw docs; the NemoClaw harness path is not verified here.
-
-## Verification
+Host model calls send telemetry summaries, supplied configuration facts and optional sampled frames to NVIDIA's API. OpenShell provides file/network restrictions and key injection for the sandbox path; host controllers check their own approval records and receipts. See [policy files](policies/) and [sandbox setup](docs/GROUNDED-SINGLE-RUN.md).
 
 ```bash
 uv run python evals/prove_policies.py
-OPENSHELL_SANDBOX=1 python -m pytest -q tests/sandbox    # inside the sandbox
-uv run python evals/run_eval.py --task blind --seed 123 --mode both --tag heldout
+uv run python evals/correct_v2.py replay
+uv run python evals/build_replay_page.py --check
 ```
 
-Expected:
+These check permission proofs, stored correction records and public replay data. They do not launch new training. Live sandbox kernel checks require the sandbox environment; see [pipeline preflight](docs/PIPELINE-PREFLIGHT.md) and [workflow setup](docs/AGENTIC-INVESTIGATION.md).
 
-```text
-triage_agent           result=within_boundary   gate=human_review PASS
-bad_exfil_checkpoint   result=exceeds_boundary  gate=auto_reject  PASS
-bad_patch_config       result=exceeds_boundary  gate=auto_reject  PASS
-bad_write_reference    result=unsupported       gate=auto_reject  PASS
-ok_request_eval        result=within_boundary   gate=human_review PASS
-8 passed                                                  # tests/sandbox
-```
+## Evidence and implementation
 
-This verifies the permission proofs, kernel enforcement inside a live OpenShell sandbox, agent scores on recorded Isaac Lab telemetry, and the approve → retrain → verdict loop on a real Isaac Lab run. It does not cover faults that only appear in long training, rough terrain, robots other than Go2 and ANYmal-C, manipulation, real robots or multi-sandbox fleets.
-
-**Offline replay (no API key, network or GPU).** A clean checkout recomputes the stored scores from public files with the Python standard library:
-
-```bash
-python evals/replay.py evals/results/blind_v1 evals/results/heldout_blind evals/results/heldout_changes \
-  --traces evals/results/traces             # add --tag <new-folder> to save evals/results/<new-folder>/replay.json
-python bench/build_workspace.py 123 --blind              # public params from bench/reference/; the blind leak check runs automatically
-python evals/replay.py evals/results/p0a2_holdout_20261008
-python evals/correct_v2.py replay                        # contract-gated correction step on six public loop records
-```
-
-The replay fails if any stored value differs, and `--traces` fails on answer-file markers in saved tool calls. Expected for the first command:
-
-```text
-evals/results/blind_v1: rows=47 infra=7 mismatches=0
-  blind    agent         top-1 10/20  top-2 12/20  seeds=7,42
-  blind    control       top-1 8/20  top-2 10/20  seeds=7,42
-evals/results/heldout_blind: rows=22 infra=2 mismatches=0
-  blind    agent         top-1 6/10  top-2 6/10  seeds=123
-  blind    control       top-1 2/10  top-2 6/10  seeds=123
-evals/results/heldout_changes: rows=22 infra=2 mismatches=0
-  changes  agent         top-1 10/10  top-2 10/10  seeds=123
-  changes  control       top-1 10/10  top-2 10/10  seeds=123
-evals/results/traces: trace files=68 leak hits=0
-status=pass
-```
-
-The correction replay reports `"status": "pass"` when all six loop records match. The [presentation replay](docs/replay/index.html) reads only committed public results; `python evals/build_replay_page.py --check` confirms that its data matches them.
-
-## Documentation
-
-- **Main results:** [end-to-end demonstration](docs/E2E-REWARD-DEMO.md) · [two diagnosis rounds](docs/RESIDUAL-DIAGNOSIS-RESULT.md) · [optimizer inspection and R1 repair](docs/OPTIMIZER-OBSERVABILITY.md) · [ANYmal-C port](docs/ANYMAL-C-PORT.md) · [U1 scope extension](docs/U1-SCOPE-EXTENSION.md) · [external faults](docs/T1-EXTERNAL-FAULTS.md) · [healthy inputs](docs/T2-NO-INTERVENTION.md)
-- **Further checks:** [recovery modes and partial resets](docs/TRAINING-CORRECTION.md) · [probe-selection comparison](docs/SELECTION-COMPARISON.md) · [10-case diagnosis comparison and first-correction protocol](docs/NEW-LINEAGE-COMPARISON.md) · [PPO gradient check](docs/PPO-GRADIENT-CHECK.md) · [cross-robot applicability contract](docs/COMBINATION-APPLICABILITY.md) · [model repeatability](docs/N2-PASS-K.md) · [multi-change search](docs/D3-MULTI-CHANGE.md) · [Nemotron endpoint comparison](docs/NEMOTRON-ENDPOINT-COMPARISON-V3.md) · [3.5 paired comparison](docs/NEMOTRON35-VALUE-COMPARISON.md)
-- **Benchmarks:** [five-policy comparison](docs/FIVE-TYPE-DIAGNOSIS-COMPARISON.md) · [five-type source data](docs/FIVE-TYPE-SOURCE-COLLECTION.md) · [first benchmark and baselines](evals/results/p0a2_holdout_20261008/) · [hidden-fault set](evals/results/replay_p0c_20261009/) · [probe loop on 18 runs](evals/results/p1a_loop_compare_20261009/) (14 confirmed with 2.1 probes on average, no wrong confirmation)
-- **Video and compute:** [evidence story replay](docs/AGENTIC-STORY-REPLAY.md) · [video evidence contract](docs/VISION-EVIDENCE-CONTRACT.md) · [Brev data collection](docs/VISION-BREV-DATA.md) · [Brev environment](docs/VISION-BREV-ENVIRONMENT.md) · [multi-step investigation](docs/AGENTIC-INVESTIGATION.md) · [Brev compute pilot](docs/BREV-COMPUTE-PILOT.md) · [troubleshooting](docs/TROUBLESHOOTING.md)
-- **Earlier development:** [Brev registered-F1 run](docs/BREV-RECOVERY.md) · [grounded single-run workflow](docs/GROUNDED-SINGLE-RUN.md) · [active diagnosis](docs/ACTIVE-DIAGNOSIS.md) · [resumable diagnosis](docs/RESUMABLE-DIAGNOSIS.md) · [live approval-loop records](docs/LIVE-LOOP-EVIDENCE.md) · [callback correction feasibility](docs/RECOVERY-FEASIBILITY.md)
+| Topic | Read more |
+| --- | --- |
+| Diagnosis and checks | [Evidence-guided selection](docs/EVIDENCE-GUIDED-DIAGNOSIS.md) · [Optimizer checks and R1 repair](docs/OPTIMIZER-OBSERVABILITY.md) · [PPO calculation check](docs/PPO-GRADIENT-CHECK.md) |
+| Corrections and applicability | [Recovery modes](docs/TRAINING-CORRECTION.md) · [Combination contracts](docs/COMBINATION-APPLICABILITY.md) · [External faults](docs/T1-EXTERNAL-FAULTS.md) |
+| Model and resource comparisons | [3.5 measurements](docs/NEMOTRON35-EVIDENCE-REPORT.md) · [Reasoning modes](docs/NEMOTRON-REASONING-MODES.md) · [Agent/resource study](docs/MECHANISM-AGENT-RESOURCE-COMPARISON.md) |
+| Video and reproducibility | [Video contract](docs/VISION-EVIDENCE-CONTRACT.md) · [Evidence story](docs/AGENTIC-STORY-REPLAY.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) |
 
 ## 한국어 요약
 
-- **같은 명령의 계단 적응:** 3.5가 안정성 검사를 고르고 300회 추가 학습을 제안했습니다. 명령 0.25m/s를 유지한 30초 평가에서 뒤집힌 자세 표본은 888→0, 추종 RMSE는 0.233→0.064m/s로 바뀌어 등록 기준을 통과했습니다. 이미 본 seed 200의 개발 사례이며 코드 결함 원인은 미확정입니다. [실제 요청·검사·학습·평가](docs/GO2-STAIRS-AGENT-ADAPTATION.md)를 공개했습니다.
+RL Triage는 Isaac Lab 로봇 정책이 과제에 실패했을 때, 학습 기록과 관측에서 검사 후보를 고르는 에이전트입니다. Nemotron이 검사를 선택하면 호스트가 승인과 근거를 확인해 실행합니다. 원인이 확인되면 등록 교정을, 별도 과제 계약이 있으면 정책 적응을 실행하고 같은 기준으로 다시 평가합니다. 근거가 부족하면 HOLD로 멈춥니다.
 
-Isaac Lab 로봇 강화학습이 겉으로는 잘 끝났는데 실제 과제에 실패할 때 원인을 찾아 고치는 에이전트입니다. 학습 기록을 읽고 원인 후보에 순위를 매긴 뒤(Nemotron), 승인된 검사로 가설을 좁힙니다. 원인이 확정되면 미리 등록한 수정과 재학습을 승인받아 실행하고, 처음과 같은 고정 평가(26개 속도 명령)로 회복을 판정합니다.
+현재 대표 영상은 같은 0.25m/s 명령에서 실패 정책과 에이전트가 제안한 추가 학습 정책을 비교합니다. 개발 seed 200의 30초 평가에서 뒤집힘 표본은 888→0으로 줄었고 등록 과제 기준을 통과했습니다.
 
-- **흐름:** 이상 감지 → 원인 순위 → 승인된 검사 → 등록 교정 → 재학습과 고정 평가. 검사와 재학습은 승인이 기록돼야 돌고, 승인은 한 번만 쓰입니다. 현재 3.5 경로는 근거가 없거나 모델 응답이 계속 무효면 HOLD로 멈추며, 등록된 다른 판의 규칙 전환은 선택 주체와 함께 기록합니다.
-- **회복:** 새 seed의 보상·모터 결함 네 건(2030·2033·2034·2046)이 사전등록 기준으로 회복했습니다. 모터 결함에서는 첫 판단이 보상을 의심했지만 검사 세 번으로 바로잡았습니다.
-- **두 번째 교정:** 기존 복합 사례 2120·2121과 새 3.5 고리의 seed 2311은 첫 교정 뒤 미회복을 확인하고 두 번째 교정에서 회복했습니다. 2311은 모델이 고른 갱신 검사로 예상 20회·실제 4회를 확인해 epoch를 복원했고, 추종 오차는 1.219→1.163→0.142m/s였습니다. 이전 2307의 세 검사 HOLD는 유지합니다. [입력·검사·회복 근거](docs/NEW-LINEAGE-COMPARISON.md#갱신-계측을-연결한-새-복합-사례)를 구분해 기록했습니다.
-- **이식:** ANYmal-C의 새 seed 2047 보상 결함을 검사 한 번으로 확정하고 재학습으로 회복했습니다. 다른 프레임워크에서 옮긴 U1 버그는 범위 경고가 났고, 그 결과를 본 뒤 넓힌 교정으로 2051·2062가 회복했습니다(모델 고리 밖).
-- **멈춤:** 외부에서 가져온 결함 한 종의 세 실행은 원인 없음으로 끝났고 틀린 확정은 없었습니다. 정상 입력에는 고리를 열지 않았고, 출력 형식을 두 번 어긴 모델 응답은 규칙으로 대신 채우지 않고 멈췄습니다.
-- **3.5와 최신 비교:** [원인 확인·자원 비교](docs/MECHANISM-AGENT-RESOURCE-COMPARISON.md)의 진단 24행에서 네 방식 모두 전체 원인을 2/6사례에서 확인했습니다. 순서를 맞춘 교정 재측정 16행은 미회복 15·HOLD 1입니다. 완료 효과 7개와 완료 학습 1개를 재사용하고 새 학습·평가 7쌍을 실행했으며, 추가 SDK는 15회·모델 재요청은 0회였습니다. 실패·재개 비용과 미관측 비용을 분리했습니다. 추가 모터 함수 확인은 normal이었지만 상대 행동 기준이 미달해 추가 교정 대신 참조 점검으로 넘겼습니다. 정상 host 차단을 모델 판별로 세거나 부분 확인을 전체 해결로 바꾸지 않습니다. 이전 성공 결과의 분모도 보존했습니다.
-
-결함·검사·교정을 같은 팀이 만들었고, 결과는 평지 보행 과제 두 개와 계단 한 개발 사례의 적은 seed에서 얻었습니다. 진단 정확도·일반화·규칙 대비 우위·GPU 비용 절감은 주장하지 않습니다.
+실제 모델 응답, 검사 결과, 학습 기록과 평가 수치를 연결해 공개합니다. 등록 결함의 교정 사례와 계단 과제의 정책 적응은 각각의 실행 근거로 확인할 수 있습니다.
