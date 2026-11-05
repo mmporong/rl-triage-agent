@@ -1,0 +1,54 @@
+{
+  "schema": "stairs_agent_readme_media_v2",
+  "source_manifest": "docs/media/go2-stairs-agent-adaptation-s200-20261106-v1/source_manifest.json",
+  "source_manifest_sha256": "f98ed7b1d7742e4ebe3a6d0b2b5e52e47605c3213b36a074e9c5b8977b89742f",
+  "before_raw_sha256": "d2ca401f79d59251444ed9296106c9481716d2af3fda39b53f8da2ce2cb9bb6b",
+  "after_raw_sha256": "650694610b4435c366b69ad592e7fb07ad55da3cb3a98738c4b44e485b887633",
+  "same_crop_xywh": [
+    400,
+    260,
+    480,
+    400
+  ],
+  "source_frames": [
+    0,
+    749
+  ],
+  "duration_s": 15,
+  "no_speed_change": true,
+  "same_crop_for_both_panels": true,
+  "horizontal_padding_pixels": 0,
+  "video": {
+    "width": 960,
+    "height": 480,
+    "fps": 50,
+    "frames": 750,
+    "sha256": "3b011ad824887995cdf792c053be68f1f2524c47e872b7b084426ae4e7dcb948",
+    "bytes": 1617583
+  },
+  "preview": {
+    "width": 640,
+    "height": 320,
+    "fps": 20,
+    "palette_colors": 24,
+    "loop": true,
+    "frames": 300,
+    "sha256": "54e623128e06d2f40ea031cfd61681a0d9f24c69fd9d2bd415b855d2535b212a",
+    "bytes": 9901408
+  },
+  "original_files_unchanged": {
+    "after-raw-30s.mp4": "650694610b4435c366b69ad592e7fb07ad55da3cb3a98738c4b44e485b887633",
+    "baseline-frame-13s.jpg": "bd7844c5d7581c4c79a55927a4900e9ce9f8d38ba8b9bcb7e46cb9c818e2d9e7",
+    "before-raw-30s.mp4": "d2ca401f79d59251444ed9296106c9481716d2af3fda39b53f8da2ce2cb9bb6b",
+    "comparison-13s.jpg": "dcc4efd95e0398b91017de90dce32581fdbe18eb7d4ba173f4f8132b77a281ca",
+    "comparison-15s-preview.gif": "c86f40b6f7a9a4b164df76a84cbb9e15d21e31eaa4fc11f5be02f1f8f4c47390",
+    "comparison-15s.mp4": "74d04fbd442b1e93c0656ab322d89111d80f4530ed42aef08f6e6e6a07252ce4",
+    "source_manifest.json": "f98ed7b1d7742e4ebe3a6d0b2b5e52e47605c3213b36a074e9c5b8977b89742f"
+  },
+  "full_decode_errors": 0,
+  "verdict_source": "evals/results/go2_stairs_agent_adaptation_s200_20261106_v1/summary.json",
+  "no_new_training_or_model_calls": true,
+  "preview_filter": "fps=20,scale=640:320:flags=lanczos,split[a][b];[a]palettegen=max_colors=24:stats_mode=diff[p];[b][p]paletteuse=dither=none:diff_mode=rectangle",
+  "readme_display_width": "100%",
+  "preview_timing": "300 frames at 50 ms, 15 seconds total; original playback speed"
+}

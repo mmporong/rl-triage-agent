@@ -16,9 +16,9 @@
 
 A policy that walks on rough terrain can still fail a specific task. In the staircase case below, RL Triage checks the failure, proposes a registered policy adaptation and verifies the updated policy without changing commanded speed.
 
-[![Go2 stair descent before and after agent-proposed adaptation, both at 0.25 m/s](docs/media/go2-stairs-agent-adaptation-s200-20261106-v1/comparison-15s-preview.gif)](docs/media/go2-stairs-agent-adaptation-s200-20261106-v1/comparison-15s.mp4)
+<a href="docs/media/go2-stairs-agent-adaptation-s200-20261106-v2/comparison-15s.mp4"><img src="docs/media/go2-stairs-agent-adaptation-s200-20261106-v2/comparison-15s-preview.gif" alt="Go2 stair descent before and after agent-proposed adaptation, both at 0.25 m/s" width="100%"></a>
 
-*Seed 200, 15-second excerpt from 30-second tests. Both panels use 0.25m/s on the same 0.05m stairs. Left: original policy, inverted from 12.26s. Right: final policy after the 300-update adaptation proposed by Nemotron 3.5. Inverted samples fell from 888 to 0; tracking RMSE from 0.233 to 0.064m/s. Already-seen development case; code-bug root cause remains unconfirmed. [Full-quality MP4](docs/media/go2-stairs-agent-adaptation-s200-20261106-v1/comparison-15s.mp4) · [Checks, training and evaluation](docs/GO2-STAIRS-AGENT-ADAPTATION.md).*
+*Seed 200, 15-second excerpt from 30-second tests. Both panels use 0.25m/s on the same 0.05m stairs. Left: original policy, inverted from 12.26s. Right: final policy after the 300-update adaptation proposed by Nemotron 3.5. Inverted samples fell from 888 to 0; tracking RMSE from 0.233 to 0.064m/s. Already-seen development case; code-bug root cause remains unconfirmed. [Full-quality MP4](docs/media/go2-stairs-agent-adaptation-s200-20261106-v2/comparison-15s.mp4) · [Checks, training and evaluation](docs/GO2-STAIRS-AGENT-ADAPTATION.md).*
 
 Registered fault-repair comparison: [healthy → compound fault → after two registered corrections](docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4) · [original clips and provenance](docs/media/five_type_recovery_s5557_20261102_v1/source_manifest.json). The recovered policy is seed 5557; all clips have 625 frames at 50 fps. Recovery comes from the fixed26 evaluation; the video is a playback comparison. The four registered followup arms ended in one recovery and three HOLDs.
 
