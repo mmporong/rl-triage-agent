@@ -3,6 +3,13 @@
   "use strict";
 
   var LINE_COLORS = ["#b4451f", "#7c3aed", "#047857"];
+  // 원본 MP4의 1초 프레임. 출처·영상/이미지 SHA는 posters/manifest.json에 보존한다.
+  var VIDEO_POSTERS = {
+    "docs/media/go2-correction-reward_resume_dev3_20261013/comparison.mp4": "posters/reward-resume-s2027.jpg",
+    "docs/media/go2-correction-reward_v4_s2026_20261013/comparison.mp4": "posters/reward-modes-s2026.jpg",
+    "docs/media/go2-correction-reward_v4_s2028_20261013/comparison.mp4": "posters/reward-modes-s2028.jpg",
+    "docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4": "posters/compound-recovery-s5557.jpg"
+  };
 
   function esc(value) {
     return String(value).replace(/[&<>"']/g, function (ch) {
@@ -181,11 +188,22 @@
     return '<div class="' + className + '">' + block.items.map(function (item) {
       var row = data.sources[item.source] || { status: "waiting" };
       var src = row.status === "ready" && row.path ? link(row.path, "video") : null;
+      var poster = src && VIDEO_POSTERS[row.path];
       var media = src
-        ? '<video controls preload="metadata" src="' + esc(src) + '"></video>'
+        ? '<video controls preload="metadata" playsinline' + (poster ? ' poster="' + esc(poster) + '"' : '') +
+          ' aria-label="' + esc(item.label) + '" src="' + esc(src) + '"></video>'
         : '<div class="placeholder"><span class="status ' + esc(row.status) + '">' + esc(statusLabel(data, row.status)) + "</span></div>";
-      return '<div class="video-cell">' + media + "<div>" + esc(item.label) + "</div></div>";
+      var fallback = src ? '<a class="video-open" href="' + esc(src) +
+        '" target="_blank" rel="noopener">영상 크게 열기 · MP4</a>' +
+        '<p class="video-error" role="status" hidden>이 화면에서 재생하지 못했습니다. 위 MP4 링크로 열어 주세요.</p>' : "";
+      return '<div class="video-cell">' + media + "<div>" + esc(item.label) + "</div>" + fallback + "</div>";
     }).join("") + "</div>";
+  }
+
+  function showVideoError(event) {
+    if (!event.target || event.target.tagName !== "VIDEO") return;
+    var message = event.target.parentNode.querySelector(".video-error");
+    if (message) message.hidden = false;
   }
 
   function renderSlot(data, block) {
@@ -269,6 +287,8 @@
       var step = event.target.getAttribute && event.target.getAttribute("data-step");
       if (step) go(parseInt(step, 10));
     });
+    // error는 버블링하지 않는다. 파일 수용 상태와 브라우저 디코딩 실패를 별도로 표시한다.
+    stage.addEventListener("error", showVideoError, true);
     window.addEventListener("keydown", function (event) {
       if (["ArrowRight", "PageDown", " "].indexOf(event.key) >= 0) { event.preventDefault(); go(1); }
       if (["ArrowLeft", "PageUp"].indexOf(event.key) >= 0) { event.preventDefault(); go(-1); }
@@ -282,7 +302,7 @@
   }
 
   var api = { esc: esc, formatNumber: formatNumber, collectSources: collectSources, linker: linker, renderScene: renderScene,
-              sceneIndex: sceneIndex };
+              sceneIndex: sceneIndex, showVideoError: showVideoError };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && root.document) start(root);
 })(typeof window !== "undefined" ? window : null);

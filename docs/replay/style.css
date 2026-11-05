@@ -65,7 +65,9 @@ td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .additional-checks-v2 .videos.single-video { grid-template-columns: 1fr; }
 .additional-checks-v2 .videos.single-video video { height: 180px; object-fit: contain; }
 .video-cell { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-size: 15px; }
-.video-cell video { width: 100%; display: block; border-radius: 6px; background: #f1f3f6; }
+.video-cell video { width: 100%; min-height: 120px; object-fit: contain; display: block; border-radius: 6px; background: #f1f3f6; }
+.video-open { display: inline-block; margin-top: 7px; color: #1d4ed8; font-weight: 600; }
+.video-error { margin: 7px 0 0; color: var(--mismatch-ink); font-size: 14px; }
 .video-cell .placeholder { height: 150px; display: grid; place-items: center; background: #f1f3f6; border-radius: 6px; }
 
 .charts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }

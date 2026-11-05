@@ -525,7 +525,7 @@ def test_static_page_files_are_local_only():
         text = (PAGE / name).read_text(encoding="utf-8")
         assert not B.path_violations(text), name
     html = (PAGE / "index.html").read_text(encoding="utf-8")
-    assert 'src="data.js"' in html and 'src="app.js"' in html and 'href="style.css"' in html
+    assert 'src="data.js"' in html and 'src="app.js?' in html and 'href="style.css?' in html
     for name in ("index.html", "app.js", "style.css"):
         static_text = (PAGE / name).read_text(encoding="utf-8")
         assert not any(B.claim_violations(line) for line in static_text.splitlines()), name
@@ -622,7 +622,8 @@ def test_github_pages_links_docs_relative_and_other_files_to_the_repository(tmp_
                      if built["sources"][item["source"]]["status"] == "ready"})
     assert videos and all(v.startswith("docs/media/") for v in videos)
     for video in videos:  # 영상은 GitHub 파일 화면이 아니라 Pages에서 재생한다
-        assert f'<video controls preload="metadata" src="../{video[len("docs/"):]}"></video>' in pages
+        assert f'src="../{video[len("docs/"):]}"></video>' in pages
+        assert f'class="video-open" href="../{video[len("docs/"):]}"' in pages
         assert f'src="{BLOB}{video}"' not in pages and f'href="{BLOB}{video}"' not in pages
     others = {row["path"] for row in built["sources"].values() if row.get("path") and not row["path"].startswith("docs/")}
     assert all(f'href="{BLOB}{p}"' in pages for p in others if any(p in html for html in out["default"]))
