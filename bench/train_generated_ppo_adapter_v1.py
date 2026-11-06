@@ -53,6 +53,8 @@ REQUIRED_SOURCES = {
     "evals/ppo_patch_contract_v1.py",
     "tests/test_ppo_patch_contract_v1.py",
     "evals/lineage_lease_context_v2.py",
+    "evals/lineage_lease_context_v3.py",
+    "tests/test_lineage_lease_context_v3.py",
 }
 ADAPTER_PROBE_CONFIG = {
     "num_learning_epochs": 5,
@@ -338,13 +340,13 @@ def train(spec: dict[str, Any], *, out: Path) -> dict[str, Any]:
 
     import gymnasium as gym
     import isaaclab_tasks  # noqa: F401
-    import lineage_lease_context_v2 as LEASE
+    import lineage_lease_context_v3 as LEASE
     import torch
     from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
     from isaaclab_tasks.utils import load_cfg_from_registry, parse_env_cfg
     from rsl_rl.runners import OnPolicyRunner
 
-    LEASE.lease_context()
+    LEASE.lease_context(out / "lease-checks" / "initial")
     torch.manual_seed(spec["seed"])
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(spec["seed"])
@@ -420,7 +422,7 @@ def train(spec: dict[str, Any], *, out: Path) -> dict[str, Any]:
             updates_stream.flush()
             os.fsync(updates_stream.fileno())
             if counts["updates"] % 25 == 0:
-                LEASE.lease_context()
+                LEASE.lease_context(out / "lease-checks" / f"update-{counts['updates']:06d}")
             return result
 
         runner.alg.storage.mini_batch_generator = measured_generator
@@ -433,7 +435,7 @@ def train(spec: dict[str, Any], *, out: Path) -> dict[str, Any]:
             )
         finally:
             updates_stream.close()
-        LEASE.lease_context()
+        LEASE.lease_context(out / "lease-checks" / "final")
         final = out / "final.pt"
         runner.save(str(final))
         policy_after = _model_digest(runner.alg.policy)
