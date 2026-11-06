@@ -1,0 +1,120 @@
+{
+  "schema": "diagnostic_generated_patch_cpu_protocol_v1",
+  "source_anchor": "2726e232b1b838d461c2e73f77f776d91a391a3d",
+  "source_sha256_lf": {
+    "evals/diagnostic_patch_bridge_v1.py": "a9a63ba25ea1c95c5ba45ad9c5674ef068e31e707c9c720fe645594b4beb0622",
+    "evals/diagnostic_patch_prompts_v1.py": "22927e683b871d2965f938d2d7d5ff4be5efb39d523c3c03b5d05d6638134f5c",
+    "evals/run_diagnostic_patch_model_v1.py": "c79922c0c680f6902ce2382e9e4e8ebea2fbfba400f154124b1b3f1ad9ac1270",
+    "evals/ppo_patch_feedback_v1.py": "cf794c1e5e1d6c19c8a159eee3e7cdfd72ef520c740a892f04200c3de4b291a1",
+    "bench/inspect_ppo_patch_feedback_v1.py": "bd288a161c18424140055e0be50a74b98ac9471e4e6aa7af50d80f600a2082db",
+    "tests/test_diagnostic_patch_bridge_v1.py": "97e8210e53cb114b242e17e2d543c0a0f81fc684339f4ac3f398848d9a6024e7",
+    "tests/test_run_diagnostic_patch_model_v1.py": "bdd5b6723e7d7fb958643240341ff6637c210b87a2671d7753bc3e4ff65b1ae6",
+    "tests/test_ppo_patch_feedback_v1.py": "061d3a2632fd9948c05c87b54c3f073d05676a0f7e9852b9d5c44b55d9fd6d2a",
+    "evals/ppo_patch_contract_v1.py": "a3c43c8f246c362fd07cd86a49e57a3825ebbc5dd25111af84f3f5cc703dbbff",
+    "bench/inspect_ppo_patch_cpu_v1.py": "5c8be1c446aee0d34ef671d31c1aa2e94f3c46fb8b9a9bc8db0a65b82bc446cb",
+    "bench/ppo_patch_cases_v1.py": "373e9f97f6dd3761f4cd94bdb591bb1eba6b6cc0e918891c203cab1e7aeddac5",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8"
+  },
+  "private_controller_sha256_lf": "acda85476d45d73815ab50490b3fe052fde1b2e03401f17d66dbdc6bce25be5f",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "accepted_models": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "params": {
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "cases": [
+    {
+      "case_id": "case-a",
+      "mode": "new_adapter",
+      "source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_epochs\", 1)\n    return options\n"
+    },
+    {
+      "case_id": "case-b",
+      "mode": "new_adapter",
+      "source": "def build_algorithm_kwargs(config):\n    kwargs = {\"num_mini_batches\": config[\"num_mini_batches\"], \"learning_rate\": config[\"learning_rate\"], \"schedule\": config[\"schedule\"]}\n    return kwargs\n"
+    },
+    {
+      "case_id": "case-c",
+      "mode": "new_adapter",
+      "source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    return options\n"
+    },
+    {
+      "case_id": "case-d",
+      "mode": "new_adapter",
+      "source": "def build_algorithm_kwargs(config):\n    values = config.copy()\n    return values\n"
+    },
+    {
+      "case_id": "historical-late_override",
+      "mode": "historical_feedback",
+      "first_request": {
+        "scope": "repo",
+        "path": "evals/results/ppo_generated_patch_cpu_20261106_v1/model/late_override.request.json",
+        "sha256": "ffacae01b7b4d764b22aafda6b4d2ad29d2a88a8f80e6b93ad9c0e2923c4e989"
+      },
+      "first_response": {
+        "scope": "repo",
+        "path": "evals/results/ppo_generated_patch_cpu_20261106_v1/model/late_override.response-01.json",
+        "sha256": "4a71137f5e8c7dbc4e4f84161631fe2679bcace99013ef2f2ce53d65866fe022"
+      },
+      "deduplicated_identical_candidate": "omitted_argument"
+    }
+  ],
+  "CPU_configurations": [
+    {
+      "num_learning_epochs": 4,
+      "num_mini_batches": 3,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    },
+    {
+      "num_learning_epochs": 2,
+      "num_mini_batches": 4,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    },
+    {
+      "num_learning_epochs": 7,
+      "num_mini_batches": 2,
+      "learning_rate": 0.001,
+      "schedule": "fixed",
+      "gamma": 0.97,
+      "clip_param": 0.17
+    },
+    {
+      "num_mini_batches": 4,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    }
+  ],
+  "API_cap": 24,
+  "infra_retries_per_phase": 2,
+  "revision_steps_max": 1,
+  "campaign_id": "diagnostic_generated_patch_cpu_20261106_v1",
+  "development_evaluation": true,
+  "new_fault_family_generalization": false,
+  "CPU_preflight_sha256": "b28d0da715ca0d51ffd2a5e5b5a0e588b8bdb84a780d733ee4103d986af7be78",
+  "focused_probe": {
+    "id": "P_optimizer_updates_cpu_adapter",
+    "backend": "actual_rsl_cpu_tensor_abi",
+    "updates": 3
+  },
+  "historical_policy": "One representative of byte-identical failed candidates; recorded first response is preserved, not a new first-pass observation.",
+  "feedback_policy": "One new decision after measured CPU feedback, not a retry of the same model input. First and revised outcomes are separate.",
+  "normal_policy": "If model holds, preserve source. If inspection is normal, host stops before patch generation; report host protection separately.",
+  "criteria": {
+    "diagnosis": "inspect then abnormal CPU confirmation before patch",
+    "CPU_patch": "all four settings and optional omission preserve semantics and actual updates",
+    "feedback": "original failed validation preserved; one model revision then CPU pass or HOLD",
+    "GPU": "Not authorized by this CPU protocol; separate preregistration after candidate validation"
+  },
+  "GPU_apps": 0,
+  "new_training": 0
+}
