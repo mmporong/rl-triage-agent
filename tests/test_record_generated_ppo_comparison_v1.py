@@ -205,8 +205,25 @@ def test_verify_capture_requires_750_native_frames_and_fast_close(tmp_path, monk
                                 "calls": 750, "physics_state_unchanged": True}}
     _write(out / "manifest.json", manifest)
     for index, event in enumerate(("app-startup", "result-ready", "app-close-entered", "app-close-returned"), 1):
-        _write(out / "shutdown" / f"{index:02d}-{event}.json", {"event": event})
+        _write(out / "shutdown" / f"{index:02d}-{event}.json", {
+            "schema": R.SHUTDOWN_SCHEMA, "event": event, "pid": 123, "sequence": index,
+            "monotonic_ns": index, "manifest_sha256": R.sha(out / "manifest.json"),
+            "fast_shutdown": True, "wait_for_replicator": False})
+    owned = {"exit_code": 0, "natural_exit": True, "cleanup_verified": True,
+             "timed_out": False, "job_assigned_before_release": True,
+             "error_type": None, "owned_process_identities": {"123": 456}}
+    _write(out.parent / "owned/owned-result.json", owned)
     assert R.verify_capture(out, batch_path, "fault")["duration_s"] == 15.0
+    (out / "shutdown/04-app-close-returned.json").unlink()
+    assert R.verify_capture(out, batch_path, "fault")["app_close_returned"] is False
+    for field, value in (("exit_code", 1), ("cleanup_verified", False)):
+        _write(out.parent / "owned/owned-result.json", {**owned, field: value})
+        with pytest.raises(ValueError, match="owned SDK"):
+            R.verify_capture(out, batch_path, "fault")
+    _write(out.parent / "owned/owned-result.json", {**owned, "owned_process_identities": {"456": 789}})
+    with pytest.raises(ValueError, match="종료 PID"):
+        R.verify_capture(out, batch_path, "fault")
+    _write(out.parent / "owned/owned-result.json", owned)
     manifest["trace"]["rows"] = 750
     _write(out / "bad.json", manifest)
     (out / "manifest.json").write_text((out / "bad.json").read_text(), encoding="utf-8")

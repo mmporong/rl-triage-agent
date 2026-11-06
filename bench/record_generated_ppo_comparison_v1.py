@@ -534,16 +534,39 @@ def verify_capture(out: Path, batch_path: Path, arm: str) -> dict[str, Any]:
         "physics_state_unchanged": True,
     }:
         raise ValueError("trace/render-sync 영수증이 다르다")
-    shutdown = [read(path) for path in sorted((out / "shutdown").glob("*.json"))]
-    if [row["event"] for row in shutdown] != [
-        "app-startup", "result-ready", "app-close-entered", "app-close-returned"
-    ]:
-        raise ValueError("fast-close 증거가 다르다")
+    shutdown = verify_shutdown(out)
     return {
         "status": "complete", "arm": arm, "manifest_sha256": sha(out / "manifest.json"),
         "video_sha256": manifest["video"]["sha256"], "frames": FRAMES,
         "fps": FPS, "duration_s": FRAMES / FPS,
+        "app_close_returned": shutdown["app_close_returned"],
     }
+
+
+def verify_shutdown(out: Path) -> dict[str, Any]:
+    """SDK fast close의 자연 exit0과 실제 자식 PID를 부모 영수증으로 확인한다."""
+    owned = validate_owned_receipt(read(out.parent / "owned/owned-result.json"))
+    if (out / "failure.json").exists() or (out / "close-failure.json").exists():
+        raise ValueError("실패 증거가 있는 녹화는 수용하지 않는다")
+    rows = [read(path) for path in sorted((out / "shutdown").glob("*.json"))]
+    required = ["app-startup", "result-ready", "app-close-entered"]
+    if [row.get("event") for row in rows] not in (required, required + ["app-close-returned"]):
+        raise ValueError("fast-close 증거가 다르다")
+    pid = rows[0].get("pid")
+    if type(pid) is not int or str(pid) not in owned["owned_process_identities"]:
+        raise ValueError("녹화 종료 PID가 owned 자식과 다르다")
+    for index, row in enumerate(rows, 1):
+        if (row.get("schema") != SHUTDOWN_SCHEMA or row.get("pid") != pid
+                or row.get("sequence") != index or type(row.get("monotonic_ns")) is not int
+                or row["monotonic_ns"] < 0):
+            raise ValueError("종료 marker schema·PID·순서가 다르다")
+    if any(right["monotonic_ns"] < left["monotonic_ns"] for left, right in zip(rows, rows[1:])):
+        raise ValueError("종료 marker 시간이 역전됐다")
+    if rows[1].get("manifest_sha256") != sha(out / "manifest.json"):
+        raise ValueError("종료 전에 봉인한 manifest SHA가 다르다")
+    if rows[2].get("fast_shutdown") is not True or rows[2].get("wait_for_replicator") is not False:
+        raise ValueError("SDK fast close 설정이 다르다")
+    return {"child_pid": pid, "app_close_returned": len(rows) == 4}
 
 
 def main() -> int:
