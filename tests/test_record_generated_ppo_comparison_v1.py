@@ -14,6 +14,14 @@ sys.path.insert(0, str(ROOT / "bench"))
 import record_generated_ppo_comparison_v1 as R
 
 
+def test_actual_camera_launcher_uses_registered_windows_renderer():
+    arguments = R.launcher_arguments()
+    assert arguments["enable_cameras"] is True
+    assert arguments["headless"] is True
+    assert "--/app/vulkan=false" in arguments["kit_args"].split()
+    assert arguments["fast_shutdown"] is False
+
+
 def _write(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value), encoding="utf-8")

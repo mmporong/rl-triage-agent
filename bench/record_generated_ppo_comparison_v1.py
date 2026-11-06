@@ -434,6 +434,11 @@ def _marker(out: Path, sequence: int, event: str, **extra: Any) -> None:
     })
 
 
+def launcher_arguments() -> dict[str, Any]:
+    return {"headless": True, "device": "cuda:0", "enable_cameras": True,
+            "kit_args": "--/app/vulkan=false --/app/window/hideUi=true", "fast_shutdown": False}
+
+
 def execute(batch_path: Path, arm: str, out: Path) -> dict[str, Any]:
     if out.exists() or out.is_symlink():
         raise FileExistsError(out)
@@ -453,8 +458,7 @@ def execute(batch_path: Path, arm: str, out: Path) -> dict[str, Any]:
     try:
         from isaaclab.app import AppLauncher
 
-        app = AppLauncher({"headless": True, "device": "cuda:0", "enable_cameras": True,
-                           "kit_args": "--/app/window/hideUi=true", "fast_shutdown": False}).app
+        app = AppLauncher(launcher_arguments()).app
         _marker(out, 1, "app-startup", enable_cameras=True)
         result = _run(batch, arm, out)
         manifest = {
