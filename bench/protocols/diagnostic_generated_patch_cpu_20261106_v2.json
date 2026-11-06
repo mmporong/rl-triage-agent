@@ -1,0 +1,164 @@
+{
+  "schema": "diagnostic_generated_patch_cpu_protocol_v1",
+  "continues_protocol": "bench/protocols/diagnostic_generated_patch_cpu_20261106_v1.json",
+  "continuation_reason": "Preserve five prior transmissions and all first results; reproduce adapter execution errors as failed CPU evidence so one registered feedback decision can continue. No prompts, CPU criteria, roots or API budget changed.",
+  "prior_API_transmissions": 5,
+  "prior_immutable_artifacts": {
+    "runs/api/case-a/diagnosis/request.json": "d4b6c8583576491919e52d5c20a91b50176a04a38d42318d924762369a4c7b66",
+    "runs/api/case-a/diagnosis/response-01.json": "3c9c20d348159c7d9ee52d07db6414452d978a2525e436776422f7f90d1478fa",
+    "runs/api/case-a/diagnosis/worker-01.json": "e77c8e4ac95d5e6ba7f5e41568ff69eb0e637db94b5d1f8bd5bc886c3527cb37",
+    "runs/api/case-a/patch/request.json": "8f7341d281327df74a990b5067451254cc68c6588a4683c7c35e9d2db0329aa2",
+    "runs/api/case-a/patch/response-01.json": "20b1b71a47bed47d68f15c2f09cff516ace72f3ef946c926288a80aa3243fe83",
+    "runs/api/case-a/patch/worker-01.json": "10747d1df94fbfec466349fc4a3e70957b291f0019e4c412d5d4f26aeccbe12d",
+    "runs/api/case-b/diagnosis/request.json": "74e5e35bcb1d598bea34bedc2d7c3bf4ad77e1623feaa3a6403ea39adadd91c7",
+    "runs/api/case-b/diagnosis/response-01.json": "ed19b6480dc63a06e00c24f6084f839a40d453706df0f30979b2feed18dcd5d6",
+    "runs/api/case-b/diagnosis/worker-01.json": "e742d3da0d85d7d49112f006084a26d1be15d6dafea72c1197716481a6a6c69e",
+    "runs/api/case-b/patch/request.json": "4aefc027be661e63943cb0fd3989ccee8765889661b72efca759c9abddbe2bd7",
+    "runs/api/case-b/patch/response-01.json": "3164a04fd73f34bac92d11454bd0b970679bedb55205b60876aac36f597ed91f",
+    "runs/api/case-b/patch/response-02.json": "0608ddd4d066c5e1342153a88695e88721d236a1002e9c2153e055f750a5ead0",
+    "runs/api/case-b/patch/worker-01.json": "9372d8b9173942cfb54afd7bc97f63115da90bcfc62d01d2685b477d5c05a995",
+    "runs/api/case-b/patch/worker-02.json": "dc20b8feb8978f87ba9e3719324f6461505a2dc029e843518ac80e3a7eb8e6e2",
+    "runs/case-a/authorization.json": "0b87ddd3a8981aaa3bc209c900f5b32e313290717b987ca13c79082717d1a245",
+    "runs/case-a/confirmation.json": "e574495560132b5d65bbb45108d43b378d0fd4c0f851a759bb7e1d837f0fc871",
+    "runs/case-a/result.json": "aa1aaf46083ba5f7788ff2aaa8e4e8ce0825b365e56219b5607d2ca8addaf96f",
+    "runs/case-b/authorization.json": "d0437533d9b892b1b07f2a5e9ddd008f475828c1e678f74d1bddd07d17f5fba6",
+    "runs/case-b/confirmation.json": "08d5d40106f559e2a3ab1c8e696d3856d3fa4875e1b19b9e40947f0e82df4e52",
+    "runs/cpu/case-a-confirmation/baseline.json": "d46b0551b714c281dff8ea84496713e5bfeffe47a7ac8a9094f180e70b3cddcc",
+    "runs/cpu/case-a-confirmation/reference.json": "92b552da6cbcb03e5e56ba50dff68782848aeadd4e8301ee3627090af5913c20",
+    "runs/cpu/case-a-confirmation/result.json": "d96f6ae2b9bfc5ab4afb4a30e45e11749ca2ff39b0da3655072203e1384bf47f",
+    "runs/cpu/case-a-first/candidate.json": "88832bb82322d9e3ebcc047b09c7855c16fa2ff1307b4b75d6e772f76b90ffdb",
+    "runs/cpu/case-a-first/result.json": "e426b1d5cdf489ffc8059806e0e718984892eeb1e6eed4740b4b621f9d59033f",
+    "runs/cpu/case-b-confirmation/baseline.json": "e682d5ac20481ad4b9d441114a91e735e0b893179df96631b2882faf64145a4e",
+    "runs/cpu/case-b-confirmation/reference.json": "92b552da6cbcb03e5e56ba50dff68782848aeadd4e8301ee3627090af5913c20",
+    "runs/cpu/case-b-confirmation/result.json": "261be2248d806df1aa53ea27fd9463d39259387f2d4dabf6ef837f54134ab252",
+    "runs/cpu/case-b-first/candidate.json": "ac948ea58358356ad4da87353fa619c96ea843b7f65de77e23148abb2afa126a",
+    "runs/cpu/case-b-first/result.json": "d7e64f3f686db1f45d1c168ef9210c069df1ee0da9d00d866ad3de75ac37728f",
+    "runs/cpu/preflight-native/reference.json": "92b552da6cbcb03e5e56ba50dff68782848aeadd4e8301ee3627090af5913c20",
+    "runs/cpu/preflight-native/result.json": "31454bfbcdc16510dabdf490aab564095eb1b689d2facfc482caa1654f9dea42",
+    "runs/cpu-before-v1/case-a.json": "d46b0551b714c281dff8ea84496713e5bfeffe47a7ac8a9094f180e70b3cddcc",
+    "runs/cpu-before-v1/case-b.json": "e682d5ac20481ad4b9d441114a91e735e0b893179df96631b2882faf64145a4e",
+    "runs/cpu-before-v1/case-c.json": "92b552da6cbcb03e5e56ba50dff68782848aeadd4e8301ee3627090af5913c20",
+    "runs/cpu-before-v1/case-d.json": "9aee7103ee27c9db29edcbe43b987b57595ea2aff0d05bc1a0cfab8221720a4c",
+    "runs/cpu-before-v1/healthy-reference.json": "92b552da6cbcb03e5e56ba50dff68782848aeadd4e8301ee3627090af5913c20",
+    "runs/cpu-before-v1/historical-late_override.json": "5b5643feeac4a12b1bc6233fa01d28f27f452f123dd5740dbc00ad0b265bec93",
+    "runs/cpu-before-v1/historical-omitted_argument.json": "5b5643feeac4a12b1bc6233fa01d28f27f452f123dd5740dbc00ad0b265bec93",
+    "runs/cpu-before-v1/result.json": "b28d0da715ca0d51ffd2a5e5b5a0e588b8bdb84a780d733ee4103d986af7be78"
+  },
+  "source_anchor": "cc89e85a1302e9dee9c8a23fbe74209a2354bb0d",
+  "source_sha256_lf": {
+    "evals/diagnostic_patch_bridge_v1.py": "a9a63ba25ea1c95c5ba45ad9c5674ef068e31e707c9c720fe645594b4beb0622",
+    "evals/diagnostic_patch_prompts_v1.py": "22927e683b871d2965f938d2d7d5ff4be5efb39d523c3c03b5d05d6638134f5c",
+    "evals/run_diagnostic_patch_model_v1.py": "c79922c0c680f6902ce2382e9e4e8ebea2fbfba400f154124b1b3f1ad9ac1270",
+    "evals/ppo_patch_feedback_v1.py": "c3ca8204d4b4b27d1619c460f737aee8e3721a4496d4e23bbc7fde013e037cd3",
+    "bench/inspect_ppo_patch_feedback_v1.py": "bd288a161c18424140055e0be50a74b98ac9471e4e6aa7af50d80f600a2082db",
+    "tests/test_diagnostic_patch_bridge_v1.py": "97e8210e53cb114b242e17e2d543c0a0f81fc684339f4ac3f398848d9a6024e7",
+    "tests/test_run_diagnostic_patch_model_v1.py": "bdd5b6723e7d7fb958643240341ff6637c210b87a2671d7753bc3e4ff65b1ae6",
+    "tests/test_ppo_patch_feedback_v1.py": "28ebc1d94ec286fe7ed502d36db57e9f9451b8e1b0dc7d5f87011aae9c3141b5",
+    "evals/ppo_patch_contract_v1.py": "a3c43c8f246c362fd07cd86a49e57a3825ebbc5dd25111af84f3f5cc703dbbff",
+    "bench/inspect_ppo_patch_cpu_v1.py": "5c8be1c446aee0d34ef671d31c1aa2e94f3c46fb8b9a9bc8db0a65b82bc446cb",
+    "bench/ppo_patch_cases_v1.py": "373e9f97f6dd3761f4cd94bdb591bb1eba6b6cc0e918891c203cab1e7aeddac5",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8"
+  },
+  "private_controller_sha256_lf": "909a502a23ef6e487b0736116b1f4d7e4958c26641b1e3fce128120104329177",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "accepted_models": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "params": {
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "cases": [
+    {
+      "case_id": "case-a",
+      "mode": "new_adapter",
+      "source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_epochs\", 1)\n    return options\n"
+    },
+    {
+      "case_id": "case-b",
+      "mode": "new_adapter",
+      "source": "def build_algorithm_kwargs(config):\n    kwargs = {\"num_mini_batches\": config[\"num_mini_batches\"], \"learning_rate\": config[\"learning_rate\"], \"schedule\": config[\"schedule\"]}\n    return kwargs\n"
+    },
+    {
+      "case_id": "case-c",
+      "mode": "new_adapter",
+      "source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    return options\n"
+    },
+    {
+      "case_id": "case-d",
+      "mode": "new_adapter",
+      "source": "def build_algorithm_kwargs(config):\n    values = config.copy()\n    return values\n"
+    },
+    {
+      "case_id": "historical-late_override",
+      "mode": "historical_feedback",
+      "first_request": {
+        "scope": "repo",
+        "path": "evals/results/ppo_generated_patch_cpu_20261106_v1/model/late_override.request.json",
+        "sha256": "ffacae01b7b4d764b22aafda6b4d2ad29d2a88a8f80e6b93ad9c0e2923c4e989"
+      },
+      "first_response": {
+        "scope": "repo",
+        "path": "evals/results/ppo_generated_patch_cpu_20261106_v1/model/late_override.response-01.json",
+        "sha256": "4a71137f5e8c7dbc4e4f84161631fe2679bcace99013ef2f2ce53d65866fe022"
+      },
+      "deduplicated_identical_candidate": "omitted_argument"
+    }
+  ],
+  "CPU_configurations": [
+    {
+      "num_learning_epochs": 4,
+      "num_mini_batches": 3,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    },
+    {
+      "num_learning_epochs": 2,
+      "num_mini_batches": 4,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    },
+    {
+      "num_learning_epochs": 7,
+      "num_mini_batches": 2,
+      "learning_rate": 0.001,
+      "schedule": "fixed",
+      "gamma": 0.97,
+      "clip_param": 0.17
+    },
+    {
+      "num_mini_batches": 4,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    }
+  ],
+  "API_cap": 24,
+  "infra_retries_per_phase": 2,
+  "revision_steps_max": 1,
+  "campaign_id": "diagnostic_generated_patch_cpu_20261106_v1",
+  "development_evaluation": true,
+  "new_fault_family_generalization": false,
+  "CPU_preflight_sha256": "b28d0da715ca0d51ffd2a5e5b5a0e588b8bdb84a780d733ee4103d986af7be78",
+  "focused_probe": {
+    "id": "P_optimizer_updates_cpu_adapter",
+    "backend": "actual_rsl_cpu_tensor_abi",
+    "updates": 3
+  },
+  "historical_policy": "One representative of byte-identical failed candidates; recorded first response is preserved, not a new first-pass observation.",
+  "feedback_policy": "One new decision after measured CPU feedback, not a retry of the same model input. First and revised outcomes are separate.",
+  "normal_policy": "If model holds, preserve source. If inspection is normal, host stops before patch generation; report host protection separately.",
+  "criteria": {
+    "diagnosis": "inspect then abnormal CPU confirmation before patch",
+    "CPU_patch": "all four settings and optional omission preserve semantics and actual updates",
+    "feedback": "original failed validation preserved; one model revision then CPU pass or HOLD",
+    "GPU": "Not authorized by this CPU protocol; separate preregistration after candidate validation"
+  },
+  "GPU_apps": 0,
+  "new_training": 0
+}
