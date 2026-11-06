@@ -29,4 +29,9 @@ def messages(kind: str, context: dict) -> list[dict]:
             " This is the single registered revision after actual CPU validation. Read the supplied "
             "failed checks and propose a new replacement for the current candidate source. "
             "No further revision is available. The host does not supply replacement code.")
+    if any(key.startswith("runtime.seed") for key in context.get("facts", {})):
+        result[0]["content"] += (
+            " Evidence IDs must exactly equal keys in the top-level facts mapping. Nested values "
+            "are not separate evidence IDs. For feedback, inspect every failed_checks entry: "
+            "passing counts under one configuration do not establish correctness under the others.")
     return result
