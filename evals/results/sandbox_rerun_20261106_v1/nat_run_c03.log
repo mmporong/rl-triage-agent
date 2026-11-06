@@ -1,0 +1,29 @@
+# 2026-11-06 19:28:38 KST 샌드박스 rl-triage 안에서 사례 c03 실행(입력 문구는 evals/run_eval.py:134와 같음)
+$ openshell sandbox exec -n rl-triage --env HOME=/tmp -- bash -c 'cd /sandbox/app && nat run --config_file configs/triage_workflow.yml --input "Triage failed training case_id=c03. Find the root-cause change and register the next experiment."'
+/sandbox/app/.venv/lib/python3.12/site-packages/nat/authentication/credential_validator/bearer_token_validator.py:25: AuthlibDeprecationWarning: authlib.jose module is deprecated, please use joserfc instead.
+It will be compatible before version 2.0.0.
+  from authlib.jose import JsonWebKey
+2026-11-06 10:28:47 - INFO     - nat.cli.commands.start:192 - Starting NAT from config file: 'configs/triage_workflow.yml'
+
+Configuration Summary:
+--------------------
+Workflow Type: tool_calling_agent
+Number of Functions: 6
+Number of Function Groups: 0
+Number of LLMs: 1
+Number of Embedders: 0
+Number of Memory: 0
+Number of Object Stores: 0
+Number of Retrievers: 0
+Number of TTC Strategies: 0
+Number of Authentication Providers: 0
+
+2026-11-06 10:28:50 - INFO     - nat.runtime.session:332 - Shared workflow built (entry_function=None)
+2026-11-06 10:28:51 - INFO     - httpx:1740 - HTTP Request: POST https://integrate.api.nvidia.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2026-11-06 10:28:51 - ERROR    - nat.plugins.langchain.agent.tool_calling_agent.agent:157 - [AGENT] Failed to call agent_node: Error code: 404 - {'status': 404, 'title': 'Not Found', 'detail': "Function 'ac74040f-9fc9-4c5e-ac74-279ba5161d69': Not found for account '<redacted>'"}
+2026-11-06 10:28:51 - ERROR    - nat.plugins.langchain.agent.tool_calling_agent.register:190 - [AGENT] Tool Calling Agent failed with exception: Error code: 404 - {'status': 404, 'title': 'Not Found', 'detail': "Function 'ac74040f-9fc9-4c5e-ac74-279ba5161d69': Not found for account '<redacted>'"}
+2026-11-06 10:28:51 - ERROR    - nat.builder.function:211 - Error with ainvoke in function with input: Triage failed training case_id=c03. Find the root-cause change and register the next experiment.. Error: Error code: 404 - {'status': 404, 'title': 'Not Found', 'detail': "Function 'ac74040f-9fc9-4c5e-ac74-279ba5161d69': Not found for account '<redacted>'"}
+2026-11-06 10:28:51 - ERROR    - nat.runtime.runner:246 - Error running workflow: Error code: 404 - {'status': 404, 'title': 'Not Found', 'detail': "Function 'ac74040f-9fc9-4c5e-ac74-279ba5161d69': Not found for account '<redacted>'"}
+2026-11-06 10:28:51 - ERROR    - nat.cli.commands.start:243 - Failed to initialize workflow
+Error: Error code: 404 - {'status': 404, 'title': 'Not Found', 'detail': "Function 'ac74040f-9fc9-4c5e-ac74-279ba5161d69': Not found for account '<redacted>'"}
+# exit=1 elapsed=14s

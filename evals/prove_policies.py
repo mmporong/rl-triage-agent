@@ -52,7 +52,11 @@ def to_wsl(p: Path) -> str:
 def prove(candidate: Path) -> dict:
     cmd = f"{PROVER} check {to_wsl(candidate)} --boundary {to_wsl(POL / 'site_boundary.yaml')}"
     argv = ["wsl", "-d", "Ubuntu", "--exec", "bash", "-lc", cmd] if platform.system() == "Windows" else ["bash", "-lc", cmd]
-    proc = subprocess.run(argv, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    try:
+        proc = subprocess.run(argv, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    except OSError as e:  # wsl·bash 자체가 없으면 판정 없음으로 돌려준다.
+        return {"exit_code": None, "result": None, "counterexample": None, "coverage": None, "reason": None,
+                "stderr": f"{type(e).__name__}: {e}"[-500:]}
     lines = dict(l.split(": ", 1) for l in proc.stdout.strip().splitlines() if ": " in l)
     return {"exit_code": proc.returncode, "result": lines.get("result"), "counterexample": lines.get("counterexample"),
             "coverage": lines.get("coverage"), "reason": lines.get("reason"), "stderr": proc.stderr.strip()[-500:]}
@@ -65,21 +69,26 @@ def main():
     for p in sorted((POL / "proposals").glob("*.yaml")):
         merged = merge(agent, yaml.safe_load(p.read_text(encoding="utf-8")))
         dst = OUT / f"{p.stem}.merged.yaml"
-        dst.write_text(yaml.safe_dump(merged, sort_keys=False, allow_unicode=True), encoding="utf-8")
+        dst.write_text(yaml.safe_dump(merged, sort_keys=False, allow_unicode=True), encoding="utf-8", newline="\n")
         candidates[p.stem] = dst
-    results, ok = {}, True
+    results, ok, unavailable = {}, True, False
     for name, path in candidates.items():
         r = prove(path)
+        unavailable |= r["result"] is None
         r["expected"] = EXPECT.get(name)
         r["pass"] = r["result"] == r["expected"]
         # 승인 게이트: 증명된 경우만 사람 검토로 넘기고, 초과·증명 불가는 자동 거절한다.
         r["gate"] = "human_review" if r["result"] == "within_boundary" else "auto_reject"
         ok &= r["pass"]
         results[name] = r
-        print(f"{name:22s} result={r['result']:<17} expected={r['expected']:<17} "
+        print(f"{name:22s} result={r['result'] or 'unavailable':<17} expected={r['expected']!s:<17} "
               f"gate={r['gate']:<12} {'PASS' if r['pass'] else 'FAIL'}  {r['counterexample'] or ''}")
+    if unavailable:
+        # prover 판정이 없으면 저장된 증명 기록을 덮어쓰지 않는다.
+        print(f"prover 판정 없음: {PROVER} 실행 결과를 받지 못해 policy_proofs.json을 갱신하지 않는다", file=sys.stderr)
+        sys.exit(1)
     (ROOT / "evals" / "results").mkdir(parents=True, exist_ok=True)
-    (ROOT / "evals" / "results" / "policy_proofs.json").write_text(json.dumps(results, ensure_ascii=False, indent=1), encoding="utf-8")
+    (ROOT / "evals" / "results" / "policy_proofs.json").write_text(json.dumps(results, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
     sys.exit(0 if ok else 1)
 
 

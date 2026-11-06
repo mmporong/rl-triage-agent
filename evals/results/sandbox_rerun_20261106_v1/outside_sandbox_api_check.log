@@ -1,0 +1,12 @@
+# 2026-11-06 19:35:35 KST 샌드박스 밖(WSL)에서 같은 키로 확인. 키는 출력하지 않는다. 계정 ID는 <redacted>.
+$ curl -sS https://integrate.api.nvidia.com/v1/models   # 인증 없음, 대상 모델 ID만 표시
+models 84
+nvidia/nemotron-3-super-120b-a12b True
+nvidia/nemotron-nano-3-30b-a3b True
+nvidia/nemotron-3.5-super-vl-120b-a12b True
+$ curl -sS https://integrate.api.nvidia.com/v1/chat/completions -H "Authorization: Bearer $NVIDIA_API_KEY" -d {"model":"nvidia/nemotron-3-super-120b-a12b","messages":[{"role":"user","content":"Say OK"}],"max_tokens":8}
+HTTP 404 {"status":404,"title":"Not Found","detail":"Function 'ac74040f-9fc9-4c5e-ac74-279ba5161d69': Not found for account <redacted>
+$ curl -sS https://integrate.api.nvidia.com/v1/chat/completions -H "Authorization: Bearer $NVIDIA_API_KEY" -d {"model":"nvidia/nemotron-nano-3-30b-a3b","messages":[{"role":"user","content":"Say OK"}],"max_tokens":8}
+HTTP 404 {"status":404,"title":"Not Found","detail":"Function '2b2dcd47-c858-425a-9c04-4cacf2eac993': Not found for account <redacted>
+$ curl -sS https://integrate.api.nvidia.com/v1/chat/completions -H "Authorization: Bearer $NVIDIA_API_KEY" -d {"model":"nvidia/nemotron-3.5-super-vl-120b-a12b","messages":[{"role":"user","content":"Say OK"}],"max_tokens":8}
+HTTP 200 {"id":"<id>","choices":[{"index":0,"message":{"content":null,"role":"assistant","reasoning_content":"The user wants me to say \"OK"},"finish_reason":"length","logprobs":null}],"created":1793961337,"model":"private/nvidia/nemotron-3.5-super-120b-a12b","service

@@ -1,0 +1,13 @@
+# ~/.config/openshell/gateway.toml (WSL Ubuntu + Docker Desktop). <WSL_IP>는 `ip -4 -o addr show eth0`의 주소.
+# 이 IP는 서버 인증서 SAN에도 있어야 한다:
+#   openshell-gateway generate-certs --output-dir ~/.local/state/openshell/tls \
+#     --server-san host.openshell.internal --server-san <WSL_IP>
+[openshell]
+version = 2
+
+[openshell.gateway]
+bind_address   = "0.0.0.0:17670"
+compute_driver = "docker"
+
+[openshell.drivers.docker]
+grpc_endpoint = "https://<WSL_IP>:17670"

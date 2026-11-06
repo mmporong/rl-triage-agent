@@ -1,0 +1,457 @@
+$ docker build -f docker/Dockerfile.sandbox -t rl-triage-sandbox:0.1 .
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.sandbox
+#1 transferring dockerfile: 839B 0.0s done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for ghcr.io/astral-sh/uv:0.11.6
+#2 DONE 2.0s
+
+#3 [internal] load metadata for nvcr.io/nvidia/base/ubuntu:24.04
+#3 DONE 2.8s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 109B 0.1s done
+#4 DONE 0.2s
+
+#5 FROM ghcr.io/astral-sh/uv:0.11.6@sha256:b1e699368d24c57cda93c338a57a8c5a119009ba809305cc8e86986d4a006754
+#5 resolve ghcr.io/astral-sh/uv:0.11.6@sha256:b1e699368d24c57cda93c338a57a8c5a119009ba809305cc8e86986d4a006754 0.0s done
+#5 sha256:b2aec5afb2dfa270be1458176f97e524bf33a9c0a1d51f396d4ebe07f21ad436 0B / 98B 0.2s
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 0B / 25.22MB 0.2s
+#5 sha256:b2aec5afb2dfa270be1458176f97e524bf33a9c0a1d51f396d4ebe07f21ad436 98B / 98B 0.5s done
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 2.10MB / 25.22MB 1.2s
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 4.19MB / 25.22MB 2.1s
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 6.29MB / 25.22MB 3.2s
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 8.39MB / 25.22MB 3.6s
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 10.49MB / 25.22MB 4.1s
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 12.58MB / 25.22MB 4.4s
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 14.68MB / 25.22MB 4.8s
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 16.78MB / 25.22MB 5.6s
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 18.87MB / 25.22MB 6.2s
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 20.97MB / 25.22MB 6.6s
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 23.07MB / 25.22MB 7.1s
+#5 ...
+
+#6 [internal] load build context
+#6 transferring context: 4.88MB 7.2s
+#6 ...
+
+#5 FROM ghcr.io/astral-sh/uv:0.11.6@sha256:b1e699368d24c57cda93c338a57a8c5a119009ba809305cc8e86986d4a006754
+#5 sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 25.22MB / 25.22MB 7.8s done
+#5 DONE 8.0s
+
+#6 [internal] load build context
+#6 ...
+
+#5 FROM ghcr.io/astral-sh/uv:0.11.6@sha256:b1e699368d24c57cda93c338a57a8c5a119009ba809305cc8e86986d4a006754
+#5 extracting sha256:84680555efbed604c9b200588ee8aab41a0e5e8c54df188dfba754c0e6f6a067 0.9s done
+#5 extracting sha256:b2aec5afb2dfa270be1458176f97e524bf33a9c0a1d51f396d4ebe07f21ad436 0.0s done
+#5 DONE 9.0s
+
+#6 [internal] load build context
+#6 ...
+
+#7 [stage-0  1/10] FROM nvcr.io/nvidia/base/ubuntu:24.04@sha256:d9461f428eea54e553add3a5158a0f245c6e1ea73efc59fff8e98e3d4a38e378
+#7 resolve nvcr.io/nvidia/base/ubuntu:24.04@sha256:d9461f428eea54e553add3a5158a0f245c6e1ea73efc59fff8e98e3d4a38e378 0.0s done
+#7 sha256:e71484ac58310d5bdd4786769393e0b75fc60aa7aee8c49b1f8c03ac047f0eb6 917.74kB / 917.74kB 0.4s done
+#7 sha256:f2b4ef06ff01a67d4bed7657a4ae379a7d07934b7c3e743454a22a0d5275fb2b 29.77MB / 29.77MB 8.2s done
+#7 extracting sha256:f2b4ef06ff01a67d4bed7657a4ae379a7d07934b7c3e743454a22a0d5275fb2b
+#7 ...
+
+#6 [internal] load build context
+#6 transferring context: 9.92MB 10.5s done
+#6 DONE 10.6s
+
+#7 [stage-0  1/10] FROM nvcr.io/nvidia/base/ubuntu:24.04@sha256:d9461f428eea54e553add3a5158a0f245c6e1ea73efc59fff8e98e3d4a38e378
+#7 extracting sha256:f2b4ef06ff01a67d4bed7657a4ae379a7d07934b7c3e743454a22a0d5275fb2b 2.2s done
+#7 extracting sha256:e71484ac58310d5bdd4786769393e0b75fc60aa7aee8c49b1f8c03ac047f0eb6 0.0s done
+#7 DONE 10.7s
+
+#8 [stage-0  2/10] RUN apt-get update && apt-get install -y --no-install-recommends python3.12 python3.12-venv ca-certificates     && rm -rf /var/lib/apt/lists/*
+#8 0.893 Get:1 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+#8 1.503 Get:2 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+#8 2.150 Get:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+#8 2.480 Get:4 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+#8 2.492 Get:5 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [2132 kB]
+#8 2.813 Get:6 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [19.3 MB]
+#8 5.015 Get:7 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1553 kB]
+#8 6.234 Get:8 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [55.6 kB]
+#8 6.261 Get:9 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1425 kB]
+#8 7.195 Get:10 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [331 kB]
+#8 7.221 Get:11 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1808 kB]
+#8 7.323 Get:12 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [117 kB]
+#8 7.330 Get:13 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [2274 kB]
+#8 7.515 Get:14 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [61.8 kB]
+#8 7.527 Get:15 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2173 kB]
+#8 7.758 Get:16 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1762 kB]
+#8 7.957 Get:17 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [36.0 kB]
+#8 7.962 Get:18 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [49.0 kB]
+#8 7.972 Get:19 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Packages [669 B]
+#8 8.632 Fetched 33.7 MB in 8s (3987 kB/s)
+#8 8.632 Reading package lists...
+#8 9.721 Reading package lists...
+#8 11.00 Building dependency tree...
+#8 11.39 Reading state information...
+#8 11.92 The following additional packages will be installed:
+#8 11.92   libexpat1 libpython3.12-minimal libpython3.12-stdlib libreadline8t64
+#8 11.93   libsqlite3-0 media-types netbase openssl python3-pip-whl
+#8 11.93   python3-setuptools-whl python3.12-minimal readline-common tzdata
+#8 11.93 Suggested packages:
+#8 11.93   python3.12-doc binutils binfmt-support readline-doc
+#8 12.00 The following NEW packages will be installed:
+#8 12.00   ca-certificates libexpat1 libpython3.12-minimal libpython3.12-stdlib
+#8 12.01   libreadline8t64 libsqlite3-0 media-types netbase openssl python3-pip-whl
+#8 12.01   python3-setuptools-whl python3.12 python3.12-minimal python3.12-venv
+#8 12.01   readline-common tzdata
+#8 12.48 0 upgraded, 16 newly installed, 0 to remove and 3 not upgraded.
+#8 12.48 Need to get 10.8 MB of archives.
+#8 12.48 After this operation, 32.8 MB of additional disk space will be used.
+#8 12.48 Get:1 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpython3.12-minimal amd64 3.12.3-1ubuntu0.17 [839 kB]
+#8 14.11 Get:2 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libexpat1 amd64 2.6.1-2ubuntu0.6 [98.9 kB]
+#8 14.13 Get:3 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3.12-minimal amd64 3.12.3-1ubuntu0.17 [2335 kB]
+#8 14.56 Get:4 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 openssl amd64 3.0.13-0ubuntu3.16 [1004 kB]
+#8 14.68 Get:5 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 ca-certificates all 20260816ubuntu0.24.04.2 [140 kB]
+#8 14.70 Get:6 http://archive.ubuntu.com/ubuntu noble/main amd64 media-types all 10.1.0 [27.5 kB]
+#8 14.71 Get:7 http://archive.ubuntu.com/ubuntu noble/main amd64 netbase all 6.4 [13.1 kB]
+#8 14.71 Get:8 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 tzdata all 2026e-0ubuntu0.24.04.1 [282 kB]
+#8 14.74 Get:9 http://archive.ubuntu.com/ubuntu noble/main amd64 readline-common all 8.2-4build1 [56.5 kB]
+#8 14.74 Get:10 http://archive.ubuntu.com/ubuntu noble/main amd64 libreadline8t64 amd64 8.2-4build1 [153 kB]
+#8 14.75 Get:11 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libsqlite3-0 amd64 3.45.1-1ubuntu2.9 [702 kB]
+#8 14.85 Get:12 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpython3.12-stdlib amd64 3.12.3-1ubuntu0.17 [2071 kB]
+#8 15.79 Get:13 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3.12 amd64 3.12.3-1ubuntu0.17 [651 kB]
+#8 15.96 Get:14 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 python3-pip-whl all 24.0+dfsg-1ubuntu1.3 [1707 kB]
+#8 16.13 Get:15 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 python3-setuptools-whl all 68.1.2-2ubuntu1.2 [716 kB]
+#8 16.20 Get:16 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 python3.12-venv amd64 3.12.3-1ubuntu0.17 [5684 B]
+#8 16.35 debconf: delaying package configuration, since apt-utils is not installed
+#8 16.40 Fetched 10.8 MB in 4s (2588 kB/s)
+#8 16.43 Selecting previously unselected package libpython3.12-minimal:amd64.
+#8 16.43 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 4381 files and directories currently installed.)
+#8 16.44 Preparing to unpack .../00-libpython3.12-minimal_3.12.3-1ubuntu0.17_amd64.deb ...
+#8 16.45 Unpacking libpython3.12-minimal:amd64 (3.12.3-1ubuntu0.17) ...
+#8 16.54 Selecting previously unselected package libexpat1:amd64.
+#8 16.54 Preparing to unpack .../01-libexpat1_2.6.1-2ubuntu0.6_amd64.deb ...
+#8 16.55 Unpacking libexpat1:amd64 (2.6.1-2ubuntu0.6) ...
+#8 16.59 Selecting previously unselected package python3.12-minimal.
+#8 16.59 Preparing to unpack .../02-python3.12-minimal_3.12.3-1ubuntu0.17_amd64.deb ...
+#8 16.60 Unpacking python3.12-minimal (3.12.3-1ubuntu0.17) ...
+#8 16.67 Selecting previously unselected package openssl.
+#8 16.68 Preparing to unpack .../03-openssl_3.0.13-0ubuntu3.16_amd64.deb ...
+#8 16.68 Unpacking openssl (3.0.13-0ubuntu3.16) ...
+#8 16.74 Selecting previously unselected package ca-certificates.
+#8 16.74 Preparing to unpack .../04-ca-certificates_20260816ubuntu0.24.04.2_all.deb ...
+#8 16.75 Unpacking ca-certificates (20260816ubuntu0.24.04.2) ...
+#8 16.80 Selecting previously unselected package media-types.
+#8 16.80 Preparing to unpack .../05-media-types_10.1.0_all.deb ...
+#8 16.80 Unpacking media-types (10.1.0) ...
+#8 16.84 Selecting previously unselected package netbase.
+#8 16.85 Preparing to unpack .../06-netbase_6.4_all.deb ...
+#8 16.85 Unpacking netbase (6.4) ...
+#8 16.89 Selecting previously unselected package tzdata.
+#8 16.89 Preparing to unpack .../07-tzdata_2026e-0ubuntu0.24.04.1_all.deb ...
+#8 16.89 Unpacking tzdata (2026e-0ubuntu0.24.04.1) ...
+#8 16.97 Selecting previously unselected package readline-common.
+#8 16.97 Preparing to unpack .../08-readline-common_8.2-4build1_all.deb ...
+#8 16.98 Unpacking readline-common (8.2-4build1) ...
+#8 17.02 Selecting previously unselected package libreadline8t64:amd64.
+#8 17.02 Preparing to unpack .../09-libreadline8t64_8.2-4build1_amd64.deb ...
+#8 17.03 Adding 'diversion of /lib/x86_64-linux-gnu/libhistory.so.8 to /lib/x86_64-linux-gnu/libhistory.so.8.usr-is-merged by libreadline8t64'
+#8 17.03 Adding 'diversion of /lib/x86_64-linux-gnu/libhistory.so.8.2 to /lib/x86_64-linux-gnu/libhistory.so.8.2.usr-is-merged by libreadline8t64'
+#8 17.04 Adding 'diversion of /lib/x86_64-linux-gnu/libreadline.so.8 to /lib/x86_64-linux-gnu/libreadline.so.8.usr-is-merged by libreadline8t64'
+#8 17.05 Adding 'diversion of /lib/x86_64-linux-gnu/libreadline.so.8.2 to /lib/x86_64-linux-gnu/libreadline.so.8.2.usr-is-merged by libreadline8t64'
+#8 17.05 Unpacking libreadline8t64:amd64 (8.2-4build1) ...
+#8 17.09 Selecting previously unselected package libsqlite3-0:amd64.
+#8 17.09 Preparing to unpack .../10-libsqlite3-0_3.45.1-1ubuntu2.9_amd64.deb ...
+#8 17.09 Unpacking libsqlite3-0:amd64 (3.45.1-1ubuntu2.9) ...
+#8 17.13 Selecting previously unselected package libpython3.12-stdlib:amd64.
+#8 17.14 Preparing to unpack .../11-libpython3.12-stdlib_3.12.3-1ubuntu0.17_amd64.deb ...
+#8 17.14 Unpacking libpython3.12-stdlib:amd64 (3.12.3-1ubuntu0.17) ...
+#8 17.26 Selecting previously unselected package python3.12.
+#8 17.26 Preparing to unpack .../12-python3.12_3.12.3-1ubuntu0.17_amd64.deb ...
+#8 17.27 Unpacking python3.12 (3.12.3-1ubuntu0.17) ...
+#8 17.30 Selecting previously unselected package python3-pip-whl.
+#8 17.30 Preparing to unpack .../13-python3-pip-whl_24.0+dfsg-1ubuntu1.3_all.deb ...
+#8 17.31 Unpacking python3-pip-whl (24.0+dfsg-1ubuntu1.3) ...
+#8 17.34 Selecting previously unselected package python3-setuptools-whl.
+#8 17.34 Preparing to unpack .../14-python3-setuptools-whl_68.1.2-2ubuntu1.2_all.deb ...
+#8 17.35 Unpacking python3-setuptools-whl (68.1.2-2ubuntu1.2) ...
+#8 17.38 Selecting previously unselected package python3.12-venv.
+#8 17.38 Preparing to unpack .../15-python3.12-venv_3.12.3-1ubuntu0.17_amd64.deb ...
+#8 17.39 Unpacking python3.12-venv (3.12.3-1ubuntu0.17) ...
+#8 17.43 Setting up libexpat1:amd64 (2.6.1-2ubuntu0.6) ...
+#8 17.44 Setting up media-types (10.1.0) ...
+#8 17.45 Setting up python3-setuptools-whl (68.1.2-2ubuntu1.2) ...
+#8 17.47 Setting up libsqlite3-0:amd64 (3.45.1-1ubuntu2.9) ...
+#8 17.48 Setting up libpython3.12-minimal:amd64 (3.12.3-1ubuntu0.17) ...
+#8 17.50 Setting up tzdata (2026e-0ubuntu0.24.04.1) ...
+#8 17.60 
+#8 17.60 Current default time zone: 'Etc/UTC'
+#8 17.60 Local time is now:      Fri Nov  6 10:22:38 UTC 2026.
+#8 17.60 Universal Time is now:  Fri Nov  6 10:22:38 UTC 2026.
+#8 17.60 Run 'dpkg-reconfigure tzdata' if you wish to change it.
+#8 17.60 
+#8 17.63 Setting up netbase (6.4) ...
+#8 17.67 Setting up openssl (3.0.13-0ubuntu3.16) ...
+#8 17.69 Setting up readline-common (8.2-4build1) ...
+#8 17.70 Setting up python3.12-minimal (3.12.3-1ubuntu0.17) ...
+#8 18.28 Setting up ca-certificates (20260816ubuntu0.24.04.2) ...
+#8 18.74 Updating certificates in /etc/ssl/certs...
+#8 19.40 120 added, 0 removed; done.
+#8 19.40 Running hooks in /etc/ca-certificates/update.d...
+#8 19.40 done.
+#8 19.43 Setting up libreadline8t64:amd64 (8.2-4build1) ...
+#8 19.45 Setting up libpython3.12-stdlib:amd64 (3.12.3-1ubuntu0.17) ...
+#8 19.46 Setting up python3-pip-whl (24.0+dfsg-1ubuntu1.3) ...
+#8 19.47 Setting up python3.12 (3.12.3-1ubuntu0.17) ...
+#8 20.45 Setting up python3.12-venv (3.12.3-1ubuntu0.17) ...
+#8 20.51 Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+#8 DONE 20.9s
+
+#9 [stage-0  3/10] COPY --from=ghcr.io/astral-sh/uv:0.11.6 /uv /usr/local/bin/uv
+#9 DONE 0.2s
+
+#10 [stage-0  4/10] RUN useradd -m -u 1001 -s /bin/bash sandbox
+#10 DONE 0.3s
+
+#11 [stage-0  5/10] WORKDIR /sandbox
+#11 DONE 0.1s
+
+#12 [stage-0  6/10] COPY pyproject.toml uv.lock README.md /sandbox/app/
+#12 DONE 0.1s
+
+#13 [stage-0  7/10] COPY src /sandbox/app/src
+#13 DONE 0.1s
+
+#14 [stage-0  8/10] COPY configs /sandbox/app/configs
+#14 DONE 0.0s
+
+#15 [stage-0  9/10] COPY tests /sandbox/app/tests
+#15 DONE 0.1s
+
+#16 [stage-0 10/10] RUN cd /sandbox/app && UV_PROJECT_ENVIRONMENT=/sandbox/app/.venv UV_PYTHON_DOWNLOADS=never     uv sync --frozen --python /usr/bin/python3.12 && chmod -R a+rX /sandbox/app
+#16 0.315 Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+#16 0.315 Creating virtual environment at: .venv
+#16 0.374    Building rl-triage-agent @ file:///sandbox/app
+#16 0.531 Downloading openai (1.6MiB)
+#16 0.614 Downloading hf-xet (4.3MiB)
+#16 0.615 Downloading pip (1.7MiB)
+#16 0.616 Downloading networkx (2.0MiB)
+#16 0.618 Downloading zstandard (5.3MiB)
+#16 0.620 Downloading pandas (11.8MiB)
+#16 0.621 Downloading cryptography (4.5MiB)
+#16 0.622 Downloading uvloop (4.2MiB)
+#16 0.636 Downloading litellm (26.1MiB)
+#16 0.637 Downloading numpy (15.9MiB)
+#16 0.642 Downloading tokenizers (3.2MiB)
+#16 0.643 Downloading pygments (1.2MiB)
+#16 0.654 Downloading botocore (15.2MiB)
+#16 0.657 Downloading aiohttp (1.7MiB)
+#16 0.658 Downloading oci (35.3MiB)
+#16 0.661 Downloading grpcio (6.8MiB)
+#16 0.662 Downloading pydantic-core (2.0MiB)
+#16 0.664 Downloading sqlalchemy (4.5MiB)
+#16 0.664 Downloading tiktoken (1.1MiB)
+#16 0.673 Downloading langchain-community (2.4MiB)
+#16 6.090    Building wikipedia==1.4.0
+#16 6.111  Downloaded tiktoken
+#16 6.412  Downloaded pygments
+#16 6.966  Downloaded openai
+#16 7.214  Downloaded pip
+#16 7.466  Downloaded aiohttp
+#16 7.824  Downloaded pydantic-core
+#16 8.016  Downloaded networkx
+#16 8.483       Built rl-triage-agent @ file:///sandbox/app
+#16 8.517  Downloaded langchain-community
+#16 9.709  Downloaded tokenizers
+#16 9.756       Built wikipedia==1.4.0
+#16 10.82  Downloaded uvloop
+#16 11.22  Downloaded cryptography
+#16 11.26  Downloaded hf-xet
+#16 11.37  Downloaded sqlalchemy
+#16 11.92  Downloaded zstandard
+#16 13.04  Downloaded grpcio
+#16 15.83  Downloaded pandas
+#16 17.23  Downloaded botocore
+#16 17.87  Downloaded numpy
+#16 19.69  Downloaded litellm
+#16 22.82  Downloaded oci
+#16 22.82 Prepared 164 packages in 22.40s
+#16 23.70 Installed 164 packages in 883ms
+#16 23.70  + aiofiles==25.1.0
+#16 23.70  + aiohappyeyeballs==2.7.1
+#16 23.70  + aiohttp==3.14.3
+#16 23.70  + aiosignal==1.4.0
+#16 23.70  + annotated-doc==0.0.5
+#16 23.70  + annotated-types==0.8.0
+#16 23.70  + anyio==4.15.1
+#16 23.70  + attrs==26.1.0
+#16 23.70  + authlib==1.8.0
+#16 23.70  + beautifulsoup4==4.15.0
+#16 23.70  + boto3==1.43.103
+#16 23.70  + botocore==1.43.103
+#16 23.70  + cachetools==7.2.0
+#16 23.70  + certifi==2026.7.22
+#16 23.70  + cffi==2.1.1
+#16 23.70  + charset-normalizer==3.5.1
+#16 23.70  + circuitbreaker==2.1.3
+#16 23.70  + click==8.5.0
+#16 23.70  + colorama==0.4.6
+#16 23.70  + crc32c==2.8
+#16 23.70  + cryptography==48.0.1
+#16 23.70  + dataclasses-json==0.6.7
+#16 23.70  + distro==1.9.0
+#16 23.70  + exa-py==1.16.2
+#16 23.71  + expandvars==1.1.2
+#16 23.71  + fastapi==0.141.1
+#16 23.71  + fastuuid==0.14.0
+#16 23.71  + filelock==4.0.3
+#16 23.71  + frozenlist==1.8.0
+#16 23.71  + fsspec==2026.9.0
+#16 23.71  + googleapis-common-protos==1.75.4
+#16 23.71  + grpcio==1.84.0
+#16 23.71  + h11==0.16.0
+#16 23.71  + hf-xet==1.6.0
+#16 23.71  + httpcore==1.0.9
+#16 23.71  + httpcore2==2.13.1
+#16 23.71  + httptools==0.8.0
+#16 23.71  + httpx==0.28.1
+#16 23.71  + httpx-sse==0.4.3
+#16 23.71  + httpx2==2.13.1
+#16 23.71  + huggingface-hub==1.33.0
+#16 23.71  + idna==3.20
+#16 23.71  + importlib-metadata==8.9.0
+#16 23.71  + iniconfig==2.3.0
+#16 23.71  + jinja2==3.1.6
+#16 23.71  + jiter==0.17.0
+#16 23.71  + jmespath==1.1.0
+#16 23.71  + joserfc==1.7.5
+#16 23.71  + jsonpatch==1.33
+#16 23.71  + jsonpath-ng==1.8.0
+#16 23.71  + jsonpointer==3.1.1
+#16 23.71  + jsonschema==4.26.0
+#16 23.71  + jsonschema-specifications==2025.9.1
+#16 23.71  + langchain==1.4.2
+#16 23.71  + langchain-aws==1.7.9
+#16 23.71  + langchain-classic==1.0.8
+#16 23.71  + langchain-community==0.4.1
+#16 23.71  + langchain-core==1.6.5
+#16 23.71  + langchain-exa==1.1.0
+#16 23.71  + langchain-huggingface==1.2.2
+#16 23.71  + langchain-litellm==0.9.0
+#16 23.71  + langchain-milvus==0.3.3
+#16 23.71  + langchain-nvidia-ai-endpoints==1.4.3
+#16 23.71  + langchain-oci==0.3.2
+#16 23.71  + langchain-openai==1.6.6
+#16 23.71  + langchain-protocol==0.0.19
+#16 23.71  + langchain-text-splitters==1.1.2
+#16 23.71  + langgraph==1.2.12
+#16 23.71  + langgraph-checkpoint==4.2.0
+#16 23.71  + langgraph-prebuilt==1.1.0
+#16 23.71  + langgraph-sdk==0.4.5
+#16 23.71  + langsmith==0.14.1
+#16 23.71  + litellm==1.102.1
+#16 23.71  + markdown-it-py==4.2.0
+#16 23.71  + markupsafe==3.0.3
+#16 23.71  + marshmallow==3.26.2
+#16 23.71  + mdurl==0.1.2
+#16 23.71  + multidict==6.9.1
+#16 23.71  + mypy-extensions==1.1.0
+#16 23.71  + nest-asyncio2==1.7.3
+#16 23.71  + networkx==3.7
+#16 23.71  + numpy==2.5.3
+#16 23.71  + nvidia-nat==1.9.0
+#16 23.71  + nvidia-nat-atif==1.9.0
+#16 23.71  + nvidia-nat-core==1.9.0
+#16 23.71  + nvidia-nat-eval==1.9.0
+#16 23.71  + nvidia-nat-langchain==1.9.0
+#16 23.71  + nvidia-nat-opentelemetry==1.9.0
+#16 23.71  + oci==2.187.0
+#16 23.71  + oci-openai==1.1.0
+#16 23.71  + openai==2.54.0
+#16 23.71  + openevals==0.2.0
+#16 23.71  + openinference-semantic-conventions==0.1.39
+#16 23.71  + opentelemetry-api==1.45.0
+#16 23.71  + opentelemetry-exporter-http-transport==0.66b0
+#16 23.71  + opentelemetry-exporter-otlp==1.45.0
+#16 23.71  + opentelemetry-exporter-otlp-common==0.66b0
+#16 23.71  + opentelemetry-exporter-otlp-proto-common==1.45.0
+#16 23.71  + opentelemetry-exporter-otlp-proto-grpc==1.45.0
+#16 23.71  + opentelemetry-exporter-otlp-proto-http==1.45.0
+#16 23.71  + opentelemetry-proto==1.45.0
+#16 23.71  + opentelemetry-sdk==1.45.0
+#16 23.71  + opentelemetry-semantic-conventions==0.66b0
+#16 23.71  + orjson==3.12.0
+#16 23.71  + ormsgpack==1.12.2
+#16 23.71  + packaging==26.3
+#16 23.71  + pandas==2.3.3
+#16 23.71  + pip==26.2.1
+#16 23.71  + pkce==1.0.3
+#16 23.71  + pkginfo==1.13
+#16 23.71  + platformdirs==4.11.15
+#16 23.71  + pluggy==1.6.0
+#16 23.71  + propcache==0.5.4
+#16 23.71  + protobuf==7.36.2
+#16 23.71  + pycparser==3.0
+#16 23.71  + pydantic==2.13.5
+#16 23.71  + pydantic-core==2.46.5
+#16 23.71  + pydantic-settings==2.15.0
+#16 23.71  + pygments==2.21.0
+#16 23.71  + pyjwt==2.15.0
+#16 23.71  + pymilvus==2.6.9
+#16 23.71  + pyopenssl==26.2.0
+#16 23.71  + pytest==9.1.1
+#16 23.71  + python-dateutil==2.9.0.post0
+#16 23.71  + python-dotenv==1.2.3
+#16 23.71  + python-multipart==0.0.32
+#16 23.71  + pytz==2026.4
+#16 23.71  + pyyaml==6.0.3
+#16 23.71  + referencing==0.37.0
+#16 23.71  + regex==2026.9.10
+#16 23.71  + requests==2.34.2
+#16 23.71  + requests-toolbelt==1.0.0
+#16 23.71  + rich==14.3.4
+#16 23.71  + rl-triage-agent==0.1.0 (from file:///sandbox/app)
+#16 23.71  + rpds-py==2026.6.3
+#16 23.71  + s3transfer==0.19.2
+#16 23.71  + setuptools==84.0.0
+#16 23.71  + six==1.17.0
+#16 23.71  + sniffio==1.3.1
+#16 23.71  + soupsieve==2.10
+#16 23.71  + sqlalchemy==2.1.1
+#16 23.71  + starlette==1.7.0
+#16 23.71  + tabulate==0.10.0
+#16 23.71  + tenacity==9.1.4
+#16 23.71  + tiktoken==0.14.0
+#16 23.71  + tokenizers==0.23.2
+#16 23.71  + tqdm==4.70.1
+#16 23.71  + truststore==0.10.4
+#16 23.71  + typing-extensions==4.16.0
+#16 23.71  + typing-inspect==0.9.0
+#16 23.71  + typing-inspection==0.4.4
+#16 23.71  + tzdata==2026.4
+#16 23.71  + tzlocal==5.4.4
+#16 23.71  + urllib3==2.8.0
+#16 23.71  + uuid-utils==0.17.1
+#16 23.71  + uvicorn==0.54.0
+#16 23.71  + uvloop==0.22.1
+#16 23.71  + watchfiles==1.3.0
+#16 23.71  + websockets==16.1.1
+#16 23.71  + wikipedia==1.4.0
+#16 23.71  + xxhash==4.0.1
+#16 23.71  + yarl==1.25.1
+#16 23.71  + zipp==4.1.0
+#16 23.71  + zstandard==0.25.0
+#16 DONE 27.1s
+
+#17 exporting to image
+#17 exporting layers
+#17 exporting layers 28.2s done
+#17 exporting manifest sha256:9a03c3f91d10e87c508f7ac18bac2b7c485893ff2251b35434d7654d2ed764d7 0.0s done
+#17 exporting config sha256:9a3eeca03975b414d78941aa8ef213f14a109c0be081171c8b71be37a00a0083 0.0s done
+#17 exporting attestation manifest sha256:a3c75fd8147a3d530b597e5a0fd083bb1219f784475dc3d74cd1b62a6245d9a7 0.0s done
+#17 exporting manifest list sha256:07db720e373a07a2d968614b3d8951dee14006664610722248df0c9bc02bc1ae 0.0s done
+#17 naming to docker.io/library/rl-triage-sandbox:0.1 done
+#17 unpacking to docker.io/library/rl-triage-sandbox:0.1
+#17 unpacking to docker.io/library/rl-triage-sandbox:0.1 21.5s done
+#17 DONE 49.9s
+exit=0 elapsed=114s

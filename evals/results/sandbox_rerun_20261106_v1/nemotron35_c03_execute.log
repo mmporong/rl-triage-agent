@@ -1,0 +1,25 @@
+# 2026-11-06 19:33:24 KST 샌드박스 rl-triage 안에서 Nemotron 3.5 입구 실행(사례 c03, task context는 nemotron35_c03_prepare.log의 /tmp/task_c03.json)
+$ openshell sandbox exec -n rl-triage --env HOME=/tmp -- bash -c "cd /sandbox/app && python -m rl_triage.nemotron35_entry_v1 --run-dir /sandbox/workspace/cases/c03 --task-context /tmp/task_c03.json --out /tmp/n35_c03_exec --execute; echo exit=$?"
+/sandbox/app/.venv/lib/python3.12/site-packages/nat/authentication/credential_validator/bearer_token_validator.py:25: AuthlibDeprecationWarning: authlib.jose module is deprecated, please use joserfc instead.
+It will be compatible before version 2.0.0.
+  from authlib.jose import JsonWebKey
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/sandbox/app/src/rl_triage/nemotron35_entry_v1.py", line 439, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/sandbox/app/src/rl_triage/nemotron35_entry_v1.py", line 428, in main
+    record = execute(prepared)
+             ^^^^^^^^^^^^^^^^^
+  File "/sandbox/app/src/rl_triage/nemotron35_entry_v1.py", line 347, in execute
+    worker, events, progress = _worker(), [], {"workflow_execution_entered": False}
+                               ^^^^^^^^^
+  File "/sandbox/app/src/rl_triage/nemotron35_entry_v1.py", line 285, in _worker
+    spec.loader.exec_module(module)
+  File "<frozen importlib._bootstrap_external>", line 991, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1128, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1186, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/sandbox/app/evals/grounded_active_model_call.py'
+exit=1
+# elapsed=11s

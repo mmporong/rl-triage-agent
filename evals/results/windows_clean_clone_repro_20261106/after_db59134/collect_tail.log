@@ -1,0 +1,40 @@
+tests/test_vl_aux_demo_export.py::test_public_provider_identity_preserves_registered_raw_alias_without_weights_claim
+tests/test_vl_aux_demo_export.py::test_public_fixed_evaluations_preserve_measured_rmse_and_labels
+tests/test_vl_aux_demo_export.py::test_public_inventory_has_no_private_or_user_paths_and_contains_exactly_18_jpegs
+tests/test_vl_aux_demo_export.py::test_export_refuses_existing_output_and_public_validator_rejects_sensitive_paths
+tests/test_vl_aux_demo_export.py::test_private_source_replay_and_public_export_verifier_pass
+tests/test_vl_aux_demo_v1.py::test_configured_sets_expected_context_and_restores_every_identity
+tests/test_vl_aux_demo_v1.py::test_configured_restores_after_exception_and_rejects_nesting
+tests/test_vl_aux_demo_v1.py::test_owned_proxy_only_replaces_training_child_entrypoint
+tests/test_vl_aux_demo_v1.py::test_observe_sends_only_two_sha_bindings_and_api_failure_is_nonfatal
+tests/test_vl_aux_demo_v1.py::test_observe_recording_failure_stops_and_records_error
+tests/test_vl_aux_demo_v1.py::test_pipeline_keeps_auxiliary_results_out_of_base_decision_and_runs_expected_order[arms0]
+tests/test_vl_aux_demo_v1.py::test_pipeline_keeps_auxiliary_results_out_of_base_decision_and_runs_expected_order[arms1]
+tests/test_vl_aux_demo_v1.py::test_configured_source_binding_covers_new_runtime_dependency_closure
+tests/test_vl_aux_demo_v1.py::test_correction_child_help_is_cpu_only_and_importable
+tests/test_vl_aux_demo_v1.py::test_nested_auxiliary_output_blocks_a_new_start
+tests/test_vl_aux_observer_v1.py::test_budget_constants_cover_three_expected_and_four_maximum_policies
+tests/test_vl_aux_observer_v1.py::test_prepare_binds_six_frames_and_keeps_private_metadata_out_of_messages
+tests/test_vl_aux_observer_v1.py::test_call_accepts_registered_provider_alias_and_does_not_send_binding
+tests/test_vl_aux_observer_v1.py::test_semantic_invalid_has_no_retry_and_wrong_alias_is_call_error
+tests/test_vl_aux_observer_v1.py::test_only_infrastructure_error_retries_once
+tests/test_vl_aux_observer_v1.py::test_duplicate_packet_quota_and_crash_unknown_are_fail_closed
+tests/test_vl_aux_observer_v1.py::test_tampered_frame_and_forbidden_binding_are_rejected
+tests/test_vl_aux_observer_v1.py::test_invoke_delegates_to_owned_worker_and_reverifies_record
+tests/test_vl_aux_observer_v1.py::test_invoke_rejects_forged_valid_output_without_ledger
+tests/test_vl_aux_observer_v1.py::test_verify_record_rejects_record_and_ledger_semantic_mismatch
+tests/test_vl_aux_observer_v1.py::test_verify_record_rejects_unrelated_crash_unknown_reservation
+tests/test_vl_aux_worker_v1.py::test_saved_result_requires_finished_owned_worker
+tests/test_vl_aux_worker_v1.py::test_timeout_requires_identity_cleanup
+tests/test_vl_aux_worker_v1.py::test_missing_identity_does_not_issue_cleanup_command
+tests/test_vl_aux_worker_v1.py::test_cleanup_failure_does_not_accept_a_saved_output
+tests/test_vl_aux_worker_v1.py::test_reused_output_or_unregistered_kind_is_rejected_before_launch
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\nat\authentication\credential_validator\bearer_token_validator.py:25
+  <repo>\.venv\Lib\site-packages\nat\authentication\credential_validator\bearer_token_validator.py:25: AuthlibDeprecationWarning: authlib.jose module is deprecated, please use joserfc instead.
+  It will be compatible before version 2.0.0.
+    from authlib.jose import JsonWebKey
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+9516 tests collected in 72.41s (0:01:12)

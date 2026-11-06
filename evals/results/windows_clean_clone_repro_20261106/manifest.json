@@ -1,0 +1,109 @@
+{
+ "schema": "windows_clean_clone_repro_v1",
+ "note": "run_all.sh로 같은 clone에서 실행한 원문 로그의 공개 사본. 사용자 경로를 <repo>·<home>·<user>로 가렸고 collect.log는 마지막 40줄만 남겼다.",
+ "scripts": {
+  "run_all.sh": {
+   "public_sha256": "106abea2dd31ed7d904f1acf0b2b74be72692503dd165e379f9890a8973fbcb7",
+   "note": "실행본과는 로그 위치 한 줄(L=)만 다르다."
+  },
+  "crlf_check.py": {
+   "public_sha256": "8094cb6fe014943ab513cc339e6a168e9c1f9d8a1c82645ea020163c6115b682"
+  }
+ },
+ "runs": {
+  "before_a6cc301": {
+   "collect_tail.log": {
+    "source_sha256": "99d19d9d25630c1f25edeffdc1d93e41a940b0796a3ccafe44a659a1ceef9546",
+    "public_sha256": "b9b409f856a0a60e184f980bd57acd091415d95d52b19d1f52ff51593cf39d7e",
+    "redactions": 3
+   },
+   "correct_v2.log": {
+    "source_sha256": "5e8b804642cbd08088be60b2a8beb566190ebe373b59f67eddd97aba4dda8c98",
+    "public_sha256": "7348948176db032aa82b85290bcfc5e3761b8497e6f34aaeed928e4297614272",
+    "redactions": 0
+   },
+   "git_status_after_prove.txt": {
+    "source_sha256": "67a0453ee978050a93e579cfbf08f10bf8609ef03f390764ce8196c7faea17d2",
+    "public_sha256": "67a0453ee978050a93e579cfbf08f10bf8609ef03f390764ce8196c7faea17d2",
+    "redactions": 0
+   },
+   "prove.log": {
+    "source_sha256": "0709c79c40358370adcd259202c7d650dfc2a05d4c4c7ba32af887b3ed3a0a0d",
+    "public_sha256": "66695f112bb9efc0f443840204baf9ca25256a11e94bfb274168a86853657d1c",
+    "redactions": 2
+   },
+   "replay.log": {
+    "source_sha256": "9f925981835e74f55e9c728bd5adf20485b49917b9ef79cd5c150ff8b284b43e",
+    "public_sha256": "8738ea429d379336ac8e82ed3063402094af41f826ad6c73e0cfd9711c545795",
+    "redactions": 0
+   },
+   "replay_page.log": {
+    "source_sha256": "6d75072cf3b8db53734aa5fbd51de752607e1b9a1eb4b079983901f0051a9b64",
+    "public_sha256": "f7250bbbce55f4ca23a5368aed7bd10cf95390c5b77ad22b7d6b541298d21119",
+    "redactions": 0
+   },
+   "snapshot_tests.log": {
+    "source_sha256": "2c5bd73ca5062989294eb0d0a89bda9ad76af2b90f6148883598c1ad3d778389",
+    "public_sha256": "45a2c14af86a66bc8369a9dfb3278b236f9c51b13ef8d82639af54f5dae822af",
+    "redactions": 0
+   },
+   "timings.txt": {
+    "source_sha256": "07e2aa6f0730db3af030159d71ca8aa5c9b9fd98835f33eee852ed23379602b2",
+    "public_sha256": "07e2aa6f0730db3af030159d71ca8aa5c9b9fd98835f33eee852ed23379602b2",
+    "redactions": 0
+   }
+  },
+  "after_db59134": {
+   "collect_tail.log": {
+    "source_sha256": "ddc9c2a1204975b10385c82428d26d2a365d395262a56c9c1cbcdee0d8b4710b",
+    "public_sha256": "f19ae2db3ba64b8cd752670aadc109903b7fff65b026b007b4b4ed60f5326eee",
+    "redactions": 1
+   },
+   "correct_v2.log": {
+    "source_sha256": "5e8b804642cbd08088be60b2a8beb566190ebe373b59f67eddd97aba4dda8c98",
+    "public_sha256": "7348948176db032aa82b85290bcfc5e3761b8497e6f34aaeed928e4297614272",
+    "redactions": 0
+   },
+   "crlf_check.log": {
+    "source_sha256": "aaebfa9643681aed861c9cf722cbdd2e72395c37a8a3ff7266873a6fb6240165",
+    "public_sha256": "2ac2e5afeab5a3569e4925473a970d813a0d2bfbbbf134d751c74b6411ad172c",
+    "redactions": 0
+   },
+   "git_status_after_prove.txt": {
+    "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "redactions": 0
+   },
+   "prove.log": {
+    "source_sha256": "67c29b1aed58309a4bcd3c5bb04d1d25304d86823534adf8dc07c7f48e501cda",
+    "public_sha256": "ef6ee9676091f16aca1f88c0347b1bc8e4954bed8248a541da9acf2148d0fb59",
+    "redactions": 0
+   },
+   "prove_tests.log": {
+    "source_sha256": "c306a3919f8971babc4f41d939047f425a3fa2a591818dd5bafb4d1029ef0736",
+    "public_sha256": "2a003ec602a1a06a548d13335804dfbf235de2221c8fd3d98080c47422892510",
+    "redactions": 0
+   },
+   "replay.log": {
+    "source_sha256": "9f925981835e74f55e9c728bd5adf20485b49917b9ef79cd5c150ff8b284b43e",
+    "public_sha256": "8738ea429d379336ac8e82ed3063402094af41f826ad6c73e0cfd9711c545795",
+    "redactions": 0
+   },
+   "replay_page.log": {
+    "source_sha256": "89813b0023f97fffaa725e47d909fe9fe82b700ca574a1d78b26f21f3245122d",
+    "public_sha256": "109c0be4d2dbc211e1a578eeee9087469d52a785ed7824fd8066898d7860ec00",
+    "redactions": 0
+   },
+   "snapshot_tests.log": {
+    "source_sha256": "1dfa0c844802b6b49647424191887435c566bef90c7582aaaec8227eae616b29",
+    "public_sha256": "9f6c83aadc45cece65a89211c38d5295e31ad21cacc52f6cb1495670b94b4d2b",
+    "redactions": 0
+   },
+   "timings.txt": {
+    "source_sha256": "d61730c485116ef0c51b53d78b1618f83b0eebb2366f1675e6f25dc6a9174b40",
+    "public_sha256": "d61730c485116ef0c51b53d78b1618f83b0eebb2366f1675e6f25dc6a9174b40",
+    "redactions": 0
+   }
+  }
+ }
+}

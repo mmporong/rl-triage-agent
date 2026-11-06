@@ -1,0 +1,57 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_____________ test_written_data_matches_current_approved_results ______________
+
+built = {'schema': 'replay_page_data_v1', 'scope': '승인된 공개 결과만 읽는 발표 재생 화면. 이미 본 합성 결함 개발 사례이며 일반화·GPU 절감 주장이 아니다.', 'status_l...까지', 'dense': True, 'scope': '승인된 공개 결과만 읽는 발표 재생 화면. 이미 본 결함 종류의 새 seed 단일 실행이며 일반화·GPU 절감 주장이 아니다.', ...}, ...], ...}
+
+    def test_written_data_matches_current_approved_results(built):
+>       assert (PAGE / "data.js").read_text(encoding="utf-8") == B.render(built)
+E       assert 'window.REPLA...  }\n }\n};\n' == 'window.REPLA...  }\n }\n};\n'
+E         
+E         Skipping 256059 identical leading characters in diff, use -v to show
+E         Skipping 157066 identical trailing characters in diff, use -v to show
+E         - sha256": "01b29b3f0730b92fa9735c3d1fe2f247863294209f9eb6a96428c636081c696d",
+E         + sha256": "f7e2ebab9a78488e7ef37e8a90e415b93ee095242b92163edade06a5cb283827",
+E              "status": "ready",
+E              "reason": null...
+E         
+E         ...Full output truncated (625 lines hidden), use '-vv' to show
+
+tests\test_replay_page.py:520: AssertionError
+______________ test_v2_snapshot_and_html_entrypoint_are_current _______________
+
+    def test_v2_snapshot_and_html_entrypoint_are_current():
+>       assert R.B.render(R.build()) == (ROOT / R.OUTPUT).read_text(encoding="utf-8")
+E       assert 'window.REPLA...  }\n ]\n};\n' == 'window.REPLA...  }\n ]\n};\n'
+E         
+E         Skipping 17697 identical leading characters in diff, use -v to show
+E         Skipping 8664 identical trailing characters in diff, use -v to show
+E         - ha256": "81c6fb7a65987c6d673d7e8e9b1d5a7ee7ca0d7468231efa61d33c7726c2214c",
+E         + ha256": "852472699e762bb31f61af9c0d88498f81e3291ce67ac389123fc3085f17eb80",
+E              "status": "ready",
+E              "reason": null,...
+E         
+E         ...Full output truncated (9 lines hidden), use '-vv' to show
+
+tests\test_additional_checks_replay_v2.py:173: AssertionError
+______________ test_snapshot_html_and_fixed_viewport_are_current ______________
+
+    def test_snapshot_html_and_fixed_viewport_are_current():
+>       assert R.B.render(R.build()) == (ROOT / R.OUTPUT).read_text(encoding="utf-8")
+E       assert 'window.REPLA...  }\n ]\n};\n' == 'window.REPLA...  }\n ]\n};\n'
+E         
+E         Skipping 2544 identical leading characters in diff, use -v to show
+E         Skipping 6539 identical trailing characters in diff, use -v to show
+E         - sha256": "41ab2a11752552eb1b993099912fb24c49694d009f86e1ee404f277e419bc653",
+E         + sha256": "8748ec56494912b6c0761ff722e33cc80d03c01ea30cb9c9958756cd3c5babe2",
+E              "status": "ready",
+E              "reason": null...
+E         
+E         ...Full output truncated (412 lines hidden), use '-vv' to show
+
+tests\test_ppo_gradient_replay_v1.py:102: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_replay_page.py::test_written_data_matches_current_approved_results
+FAILED tests/test_additional_checks_replay_v2.py::test_v2_snapshot_and_html_entrypoint_are_current
+FAILED tests/test_ppo_gradient_replay_v1.py::test_snapshot_html_and_fixed_viewport_are_current
+3 failed in 159.79s (0:02:39)

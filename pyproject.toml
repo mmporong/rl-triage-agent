@@ -24,3 +24,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/rl_triage"]
+
+[tool.pytest.ini_options]
+# `uv run pytest`도 `python -m pytest`처럼 저장소 루트의 evals·bench를 import한다.
+pythonpath = ["."]
