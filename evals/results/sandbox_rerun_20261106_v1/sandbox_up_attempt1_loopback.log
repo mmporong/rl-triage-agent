@@ -1,0 +1,36 @@
+$ bash scripts/sandbox_up.sh 42   # 2026-11-06 19:24:39 KST
+✓ Created provider nvidia-triage
+sha256:b5b4a21f32adb0ee2c17791e941c091bd1d80198f611de30c257c0367fb38204
+
+Created sandbox: rl-triage
+
+  [0.0s] Requesting compute...
+[0.0s] Sandbox allocated
+[0.0s] Pulling image rl-triage-ws:seed42
+[0.1s] Image already present
+[0.5s] Starting sandbox Container created
+Error:   × sandbox entered error phase while provisioning:
+  │ ControlSupervisorStartFailed: Docker supervisor exited before becoming
+  │ ready; log tail: openshell: log push connect failed: failed to connect to
+  │ OpenShell server
+  │ 2026-11-06T10:24:44.211Z INFO openshell_supervisor: Starting sandbox
+  │ supervision
+  │ 2026-11-06T10:24:44.350Z INFO openshell_supervisor: Fetching sandbox
+  │ policy via gRPC
+  │ 2026-11-06T10:24:44.351Z WARN openshell_supervisor: Startup configuration
+  │ fetch failed, retrying
+  │ openshell: log push connect failed: failed to connect to OpenShell server
+  │ 2026-11-06T10:24:45.352Z WARN openshell_supervisor: Startup configuration
+  │ fetch failed, retrying
+  │ openshell: log push connect failed: failed to connect to OpenShell server
+  │ 2026-11-06T10:24:47.354Z WARN openshell_supervisor: Startup configuration
+  │ fetch failed, retrying
+  │ openshell: log push connect failed: failed to connect to OpenShell server
+  │ 2026-11-06T10:24:51.357Z WARN openshell_supervisor: Startup configuration
+  │ fetch failed, retrying
+  │ Error:   × Startup configuration fetch failed after 5 attempts: failed to
+  │ connect to
+  │   │ OpenShell server; sandbox log tail: 2026-11-06T10:24:43.666Z INFO
+  │ openshell_sandbox::boundary_server::linux: Boundary control listener ready
+
+exit=1 elapsed=16s

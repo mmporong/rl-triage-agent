@@ -1197,3 +1197,23 @@ Go2 하행을 1500프레임으로 늘릴 때 기존 저장기에는 625프레임
 - 수정: `33fff4f`, `42432af`, `2650473`, `db59134`. 수정 후 같은 clone에서 다섯 명령과 관련 테스트 6개가 기대대로 끝났다.
 - 남은 것: prover 실제 증명과 pytest 전체 실행은 하지 않았다. `ffprobe`가 없는 환경의 영상 검사 실패는 그대로다.
 - 근거: [재현 기록](WINDOWS-CLEAN-CLONE-REPRODUCTION.md), [공개 로그와 SHA-256](../evals/results/windows_clean_clone_repro_20261106/manifest.json).
+
+## 2026-11-06: WSL2 + Docker Desktop에서 OpenShell 샌드박스 재실행
+
+- 관찰:
+  - `scripts/sandbox_up.sh 42` 1차 시도에서 샌드박스가 `ControlSupervisorStartFailed`로 끝났다. supervisor 로그는 `failed to connect to OpenShell server`다.
+  - 게이트웨이를 고친 뒤 커널 시험은 8 passed였다. 사례 c03 `nat run`은 NVIDIA API `404 Function … Not found for account`로 실패했다.
+- 확인된 원인:
+  - docker 드라이버의 기본 supervisor 접속 주소는 `127.0.0.1:<게이트웨이 포트>`이고, supervisor는 host 네트워크로 뜬다. Docker Desktop에서 그 host는 게이트웨이가 있는 Ubuntu가 아니라 Docker Desktop VM이다.
+  - 404는 샌드박스 밖에서 같은 키로 호출해도 같았다. `nvidia/nemotron-3-super-120b-a12b`와 `nvidia/nemotron-nano-3-30b-a3b`는 404, `nvidia/nemotron-3.5-super-vl-120b-a12b`는 200이다. 원인은 이 키 계정의 모델 ID별 접근 문제다(`evals/results/sandbox_rerun_20261106_v1/outside_sandbox_api_check.log`).
+- 수정:
+  - 서버 인증서 SAN에 Ubuntu eth0 IP를 넣어 다시 만들었다.
+  - `~/.config/openshell/gateway.toml`에 `bind_address = "0.0.0.0:17670"`과 `[openshell.drivers.docker] grpc_endpoint = "https://<WSL_IP>:17670"`을 넣었다. docker 드라이버 README v0.1.1에 있는 방법이다.
+- 설치 중 함정:
+  - docker 그룹을 추가한 뒤 systemd 사용자 관리자가 새 그룹을 받도록 WSL을 다시 시작해야 했다.
+  - `wsl --terminate Ubuntu` 뒤 Ubuntu 안 `/usr/bin/docker`의 대상(`/mnt/wsl/docker-desktop/cli-tools/…`)이 사라져 docker를 쓸 수 없었다(로그 없음). Docker Desktop 종료 → `wsl --shutdown` → Docker Desktop 시작 순서로 복구했다.
+- 남은 것:
+  - `nat run` 성공과 사전등록 JSON은 없다. 3 Super 접근이 확인되면 새 `_v2` 폴더로 다시 실행한다.
+  - 대안으로 시도한 Nemotron 3.5 입구(`rl_triage.nemotron35_entry_v1 --execute`)는 모델 호출 전에 멈췄다. `docker/Dockerfile.sandbox`가 `evals/`를 이미지에 넣지 않아 `evals/grounded_active_model_call.py`가 없다.
+  - WSL IP가 바뀌면 인증서와 `grpc_endpoint`를 다시 맞춰야 한다.
+- 근거: [재실행 기록](../evals/results/sandbox_rerun_20261106_v1/README.md).

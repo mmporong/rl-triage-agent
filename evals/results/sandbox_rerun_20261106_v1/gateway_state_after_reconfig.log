@@ -1,0 +1,35 @@
+# 2026-11-06 19:35:38 KST 게이트웨이 재설정 뒤 상태 확인. 재설정 명령(19:27 KST 전후)은 실행 당시 로그를 남기지 않아 README 3단계에 정리본으로 적었다. Ubuntu eth0 IP는 <WSL_IP>로 가렸다.
+$ cat ~/.config/openshell/gateway.toml
+# rl-triage 결선 재실행(2026-11-06): Docker Desktop(WSL2)에서는 host 네트워크 supervisor의 127.0.0.1이
+# Ubuntu가 아니라 Docker Desktop VM이다. supervisor가 Ubuntu eth0 IP로 게이트웨이에 접속하도록 한다.
+[openshell]
+version = 2
+
+[openshell.gateway]
+bind_address   = "0.0.0.0:17670"
+compute_driver = "docker"
+
+[openshell.drivers.docker]
+grpc_endpoint = "https://<WSL_IP>:17670"
+$ openssl x509 -in ~/.local/state/openshell/tls/server/tls.crt -noout -ext subjectAltName
+X509v3 Subject Alternative Name: 
+    DNS:openshell, DNS:openshell.openshell.svc, DNS:openshell.openshell.svc.cluster.local, DNS:localhost, DNS:openshell.localhost, DNS:*.openshell.localhost, DNS:host.docker.internal, DNS:host.containers.internal, IP Address:127.0.0.1, IP Address:0:0:0:0:0:0:0:1, DNS:host.openshell.internal, IP Address:<WSL_IP>
+$ ls -d ~/.local/state/openshell/tls.bak-20261106
+~/.local/state/openshell/tls.bak-20261106
+$ systemctl --user is-enabled openshell-gateway; systemctl --user is-active openshell-gateway
+enabled
+active
+$ journalctl --user -u openshell-gateway -o cat | grep -E "listener bound|Using compute driver" | tail -2
+2026-11-06T10:27:16.684536Z  INFO openshell_server: Using compute driver driver=docker
+2026-11-06T10:27:17.087484Z  INFO openshell_server::gateway_listener: Gateway listener bound address=0.0.0.0:17670
+$ openshell status
+Server Status
+
+  Gateway: openshell
+  Server: https://127.0.0.1:17670
+  Status: Connected
+  Authentication: Authenticated (mTLS transport)
+  Version: 0.1.1
+$ openshell sandbox list
+NAME       CREATED              PHASE
+rl-triage  2026-11-06 10:27:37  Ready
