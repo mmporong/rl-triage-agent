@@ -51,7 +51,7 @@ window.REPLAY_DATA = {
    "id": "evals/results/ppo_gradient_v5_20261017/dry_run/dry_s2143_on/records.jsonl",
    "path": "evals/results/ppo_gradient_v5_20261017/dry_run/dry_s2143_on/records.jsonl",
    "kind": "public_ppo_gradient_v5",
-   "sha256": "41ab2a11752552eb1b993099912fb24c49694d009f86e1ee404f277e419bc653",
+   "sha256": "8748ec56494912b6c0761ff722e33cc80d03c01ea30cb9c9958756cd3c5babe2",
    "status": "ready",
    "reason": null
   },
@@ -123,7 +123,7 @@ window.REPLAY_DATA = {
    "id": "evals/results/ppo_gradient_v5_20261017/runs/inverse_ratio_s2144_on/records.jsonl",
    "path": "evals/results/ppo_gradient_v5_20261017/runs/inverse_ratio_s2144_on/records.jsonl",
    "kind": "public_ppo_gradient_v5",
-   "sha256": "c3871ff123a67523ea7fa203f79c28487d54167dd31a99afe75f4305b129826e",
+   "sha256": "4bbc4b3255928a67412f3a86d96555c126a19554efe686daf513f01fdb890226",
    "status": "ready",
    "reason": null
   },
@@ -219,7 +219,7 @@ window.REPLAY_DATA = {
    "id": "evals/results/ppo_gradient_v5_20261017/runs/none_s2144_on/records.jsonl",
    "path": "evals/results/ppo_gradient_v5_20261017/runs/none_s2144_on/records.jsonl",
    "kind": "public_ppo_gradient_v5",
-   "sha256": "b492ad8551cf2c21ff0caae3736997249638b5cfac0ceb35b7b5edfee610d401",
+   "sha256": "6382eed61b38f64b1c2727cd18db0c12bcdc7512428de9fca0b8e79473dc6822",
    "status": "ready",
    "reason": null
   },
@@ -315,7 +315,7 @@ window.REPLAY_DATA = {
    "id": "evals/results/ppo_gradient_v5_20261017/runs/none_s2145_on/records.jsonl",
    "path": "evals/results/ppo_gradient_v5_20261017/runs/none_s2145_on/records.jsonl",
    "kind": "public_ppo_gradient_v5",
-   "sha256": "bd87392e2b99d27a8eea9db962f5e8e6476bba319f5f56e410e24edbc6bdae71",
+   "sha256": "b51de3a6f71ed43eaf27b255fe67330195ee35e8828d55d624bba7cb951321c5",
    "status": "ready",
    "reason": null
   },
@@ -411,7 +411,7 @@ window.REPLAY_DATA = {
    "id": "evals/results/ppo_gradient_v5_20261017/runs/none_s2146_on/records.jsonl",
    "path": "evals/results/ppo_gradient_v5_20261017/runs/none_s2146_on/records.jsonl",
    "kind": "public_ppo_gradient_v5",
-   "sha256": "a3b6b35755d9099293d9a716a00ff1cc507cd14870a8fff71ed4349e26cde29c",
+   "sha256": "2440e6c4e6476c3cafcde70ff4fe1673401a5d47a7c5a08ef42a273edd7a3f57",
    "status": "ready",
    "reason": null
   },
@@ -459,7 +459,7 @@ window.REPLAY_DATA = {
    "id": "evals/results/ppo_gradient_v5_20261017/runs/restored_s2144_on/records.jsonl",
    "path": "evals/results/ppo_gradient_v5_20261017/runs/restored_s2144_on/records.jsonl",
    "kind": "public_ppo_gradient_v5",
-   "sha256": "d96af0053a8c13c215866011b353397ff5a5e45b5a1ffb907fdc4942322e535a",
+   "sha256": "07ea75b837df601d95c271cfbe94b493895d355edd651fd8b766c3eb5ac00dab",
    "status": "ready",
    "reason": null
   },
