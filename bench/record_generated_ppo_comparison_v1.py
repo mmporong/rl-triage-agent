@@ -11,6 +11,7 @@ import os
 import sys
 import time
 import traceback
+from itertools import pairwise
 from pathlib import Path
 from typing import Any, TextIO
 
@@ -560,7 +561,7 @@ def verify_shutdown(out: Path) -> dict[str, Any]:
                 or row.get("sequence") != index or type(row.get("monotonic_ns")) is not int
                 or row["monotonic_ns"] < 0):
             raise ValueError("종료 marker schema·PID·순서가 다르다")
-    if any(right["monotonic_ns"] < left["monotonic_ns"] for left, right in zip(rows, rows[1:])):
+    if any(right["monotonic_ns"] < left["monotonic_ns"] for left, right in pairwise(rows)):
         raise ValueError("종료 marker 시간이 역전됐다")
     if rows[1].get("manifest_sha256") != sha(out / "manifest.json"):
         raise ValueError("종료 전에 봉인한 manifest SHA가 다르다")
