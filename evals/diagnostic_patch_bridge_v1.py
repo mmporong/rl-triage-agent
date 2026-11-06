@@ -31,6 +31,59 @@ def diagnosis_context(source: str, config: dict, *, case_id: str) -> dict:
             "scope": "focused adapter investigation; robot behavior has not been measured"}
 
 
+def runtime_diagnosis_context(source: str, config: dict, *, case_id: str, runtime: dict) -> dict:
+    """실제 실패 정책과 정상 참조를 확인한 뒤 후속 CPU 검사를 선택한다."""
+    from rl_triage import grounded_recovery as G
+    from rl_triage import recovery as RECOVERY
+
+    context = diagnosis_context(source, config, case_id=case_id)
+    pairs = runtime.get("pairs")
+    if not isinstance(pairs, list) or not 1 <= len(pairs) <= 2:
+        raise ValueError("실제 학습·평가 정책 쌍이 없다")
+    seeds = set()
+    for pair in pairs:
+        healthy, fault = pair["healthy_training"], pair["fault_training"]
+        seed = fault.get("seed")
+        if type(seed) is not int or seed in seeds or healthy.get("seed") != seed:
+            raise ValueError("학습 쌍의 seed가 다르거나 중복됐다")
+        seeds.add(seed)
+        if fault.get("adapter_source_sha256") != context["source_sha256"]:
+            raise ValueError("실패 정책의 source와 조사 대상이 다르다")
+        for role, training in (("healthy", healthy), ("fault", fault)):
+            fixed = pair[f"{role}_fixed"]
+            actual = training.get("actual_ppo", {})
+            epochs, batches = actual.get("num_learning_epochs"), actual.get("num_mini_batches")
+            if type(epochs) is not int or type(batches) is not int or min(epochs, batches) <= 0:
+                raise ValueError("실제 PPO 인자가 잘못됐다")
+            counts = training.get("counts", {})
+            if (training.get("status") != "complete" or training.get("arm") != role
+                    or counts.get("updates") != 300 or counts.get("optimizer_steps") != 300*epochs*batches
+                    or counts.get("minibatches") != 300*epochs*batches
+                    or training.get("policy_parameters_finite") is not True
+                    or fixed.get("checkpoint", {}).get("sha256") != training.get("checkpoint_sha256")
+                    or fixed.get("protocol_sha256_lf") != runtime.get("fixed_protocol_sha256_lf")
+                    or training.get("task_terms_before") != training.get("task_terms_after")
+                    or training.get("task_terms_before") != healthy.get("task_terms_before")):
+                raise ValueError("학습·체크포인트·평가·과제 설정의 결합이 다르다")
+        h, f = G._behavior(pair["healthy_fixed"]), G._behavior(pair["fault_fixed"])
+        walks = (h["err_xy"] < G.WALK_FRACTION*pair["healthy_fixed"]["standstill"]["lin_vel_rmse_mps"]
+                 and h["fall_frac"] <= G.REF_FALL_MAX)
+        if not walks or RECOVERY.verdict(RECOVERY.compare(f, h), runtime["bands"])["label"] != "unhealthy":
+            raise ValueError("실제 실패 또는 정상 보행 참조가 확인되지 않았다")
+        prefix = f"runtime.seed{seed}"
+        context["facts"].update({f"{prefix}.fault_tracking_RMSE": f["err_xy"],
+            f"{prefix}.healthy_tracking_RMSE": h["err_xy"],
+            f"{prefix}.configured_epochs": fault["algorithm_before"]["num_learning_epochs"],
+            f"{prefix}.configured_minibatches": fault["algorithm_before"]["num_mini_batches"],
+            f"{prefix}.actual_optimizer_steps": [r["optimizer_steps"] for r in fault["first_three_updates"]],
+            f"{prefix}.actual_epochs": fault["actual_ppo"]["num_learning_epochs"],
+            f"{prefix}.survival_s": f["survival_s"], f"{prefix}.fall_frac": f["fall_frac"]})
+    context["runtime_binding_sha256"] = digest(runtime)
+    context["config_scope"] = "CPU confirmation test settings; original training settings have runtime-prefixed fact IDs"
+    context["scope"] = "follow-up optimizer adapter investigation after actual Go2 failure and healthy fixed evaluation"
+    return context
+
+
 def validate_choice(choice: dict, context: dict) -> dict:
     if type(choice) is not dict or set(choice) != {"action", "probe", "source_sha256", "fact_ids", "rationale"}:
         raise ValueError("진단 선택 필드가 계약과 다르다")

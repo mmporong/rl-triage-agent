@@ -65,11 +65,17 @@ def validate_request(protocol: dict, request: dict, root: Path) -> tuple[dict, l
         raise ValueError("사전등록되지 않은 사례다")
     kind, chain = request["kind"], request["chain"]
     if kind == "diagnosis":
-        if case["mode"] != "new_adapter" or chain:
-            raise ValueError("진단 최초 입력의 계보가 다르다")
-        expected = BRIDGE.diagnosis_context(case["source"], protocol["CPU_configurations"][0], case_id=case["case_id"])
+        if case["mode"] == "runtime_pairs":
+            if chain != {"runtime_inputs": case["runtime_inputs"]}:
+                raise ValueError("실제 정책 쌍 입력이 등록과 다르다")
+            expected = BRIDGE.runtime_diagnosis_context(case["source"], protocol["CPU_configurations"][0],
+                case_id=case["case_id"], runtime=artifact(chain["runtime_inputs"], root))
+        else:
+            if case["mode"] != "new_adapter" or chain:
+                raise ValueError("진단 최초 입력의 계보가 다르다")
+            expected = BRIDGE.diagnosis_context(case["source"], protocol["CPU_configurations"][0], case_id=case["case_id"])
     elif kind == "patch":
-        if case["mode"] != "new_adapter":
+        if case["mode"] not in {"new_adapter", "runtime_pairs"}:
             raise ValueError("저장 응답에 새 최초 패치를 덧붙일 수 없다")
         parent = artifact(chain["diagnosis_request"], root)
         validate_request(protocol, parent, root)

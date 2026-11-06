@@ -86,3 +86,40 @@ def test_legacy_path_consumes_existing_verifier_without_registered_correction_ex
     value = B.verify_legacy_diagnosis({"fixture": True}, [], verifier=verifier)
     assert seen == [({"fixture": True}, [])]
     assert not value["registered_correction_executed"] and not value["execution_allowed"]
+
+
+def runtime_fixture():
+    root = ROOT / "evals/results/ppo_generated_patch_behavior_s5750_20261106_v1"
+    read = lambda p: json.loads(p.read_text(encoding="utf-8"))
+    protocol = read(ROOT / "bench/protocols/generated_ppo_patch_behavior_s5750_20261106_v3.json")
+    pair = {f"{role}_training": read(root / "training" / role / "training-result.json")
+            for role in ("healthy", "fault")}
+    pair.update({f"{role}_fixed": read(root / "fixed" / f"{role}.json") for role in ("healthy", "fault")})
+    return {"pairs": [pair], "fixed_protocol_sha256_lf": protocol["fixed_eval"]["sha256_lf"],
+            "bands": protocol["fixed_eval"]["bands"]}
+
+
+def test_actual_robot_failure_is_bound_before_model_followup():
+    runtime = runtime_fixture()
+    context = B.runtime_diagnosis_context(C.SOURCES["literal_override"], F.validation_plan()[0],
+                                          case_id="observed-fixture", runtime=runtime)
+    assert context["facts"]["runtime.seed5750.actual_optimizer_steps"] == [4, 4, 4]
+    assert context["facts"]["runtime.seed5750.fault_tracking_RMSE"] > 1
+    assert context["runtime_binding_sha256"] == B.digest(runtime)
+
+
+@pytest.mark.parametrize("mode", ["checkpoint", "healthy_fault", "source", "counts"])
+def test_runtime_substitution_or_absent_failure_is_rejected(mode):
+    runtime = runtime_fixture()
+    pair = runtime["pairs"][0]
+    if mode == "checkpoint":
+        pair["fault_fixed"]["checkpoint"]["sha256"] = "0"*64
+    elif mode == "healthy_fault":
+        pair["fault_fixed"]["metrics"] = copy.deepcopy(pair["healthy_fixed"]["metrics"])
+    elif mode == "source":
+        pair["fault_training"]["adapter_source_sha256"] = "0"*64
+    else:
+        pair["fault_training"]["counts"]["optimizer_steps"] = 6000
+    with pytest.raises(ValueError):
+        B.runtime_diagnosis_context(C.SOURCES["literal_override"], F.validation_plan()[0],
+                                    case_id="observed-fixture", runtime=runtime)
