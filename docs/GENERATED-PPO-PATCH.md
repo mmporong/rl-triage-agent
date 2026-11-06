@@ -4,6 +4,33 @@ Nemotron 3.5가 설정·코드·실제 PPO 갱신 기록을 읽고 새 설정 �
 
 기존 seed 2311은 모델이 검사를 고르고 호스트가 등록 교정을 적용한 사례다. 이 측정은 수정 소스를 모델이 작성한다는 점에서 구분한다. 계단 seed 200의 정책 적응 결과도 여기에 합산하지 않는다.
 
+## CPU 피드백 재작성 패치의 행동 회복
+
+설정 일부를 누락하던 원 코드 `c4c710f1…`를 대상으로 만든 모델의 최종 재작성 `02fa206f…`를 새 개발 학습 seed 5753·5754에서 평가했다. CPU 최초 패치 `0ecdc01d…`는 설정에 epoch 항목이 없는 네 번째 검사에서 예외가 났고, 모델은 그 검사 피드백을 받은 뒤 다음 함수를 반환했다. 이 최종 소스의 바이트를 바꾸지 않고 사용했다.
+
+```python
+def build_algorithm_kwargs(config):
+    kwargs = dict(config)
+    return kwargs
+```
+
+CPU 네 설정의 update당 실제 갱신은 기대값 12·8·14·4회와 일치했다. GPU 비교는 정상·원 결함·최종 재작성 패치를 각 4,096환경에서 처음부터 300회 학습하고 같은 Fixed26으로 평가했다. GPU 단계의 새 모델 호출은 0회였다.
+
+| 개발 seed | 정상 RMSE, m/s | 원 결함 RMSE, m/s | 재작성 패치 RMSE, m/s | 판정 |
+| --- | ---: | ---: | ---: | --- |
+| 5753 | 0.145369 | 1.176277 | 0.145369 | recovered, 9/9 |
+| 5754 | 0.145229 | 1.177175 | 0.145229 | recovered, 9/9 |
+
+두 seed 모두 optimizer 갱신은 1,200→6,000회, 갱신당 4→20회로 돌아왔다. 패치 정책의 낙상률은 0, 평균 생존은 20초였다. 정상 보행 참조, 원 결함 실패, 기록된 CPU 후보 입장, 패치 행동 회복, 갱신 횟수, 정상 소스 유지, reward·termination 유지, 평가 프로토콜 유지, 소유 실행·종료 영수증을 각각 확인해 두 seed 모두 9/9 조건을 충족했다. 정책 tensor 상태 해시도 각 정상 대조와 같았다.
+
+설정 누락으로 실제 바뀐 값은 epoch 5→1, gamma 0.99→0.998, entropy 계수 0.01→0이었다. 재작성은 누락된 설정 전체의 전달을 복원하므로 epoch 하나의 인과 효과로 설명하지 않는다. `class_name`은 호스트가 복원한 알고리즘 선택 메타데이터이며, 누락된 학습 인자는 보충하지 않고 실제 PPO 생성자 기본값을 사용했다. 전달 전후와 기본값 해석은 arm별 학습 영수증에 공개했다.
+
+이는 기록된 CPU 재작성 패치 한 개를 두 학습 seed에서 확인한 개발 결과다. 첫 수정안 `0ecdc01d…`의 GPU 성능은 측정하지 않았고, 이번 GPU 실패를 모델에 새로 입력한 진단도 아니다. 비교 영상의 왼쪽은 첫 수정안이 아니라 원 설정 누락 코드다.
+
+[최종 결과·9조건](../evals/results/rewritten_config_patch_recovery_s5753_s5754_20261106_v1/summary.json) · [수치 CSV](../evals/results/rewritten_config_patch_recovery_s5753_s5754_20261106_v1/results.csv) · [모델의 CPU 재작성 원문](../evals/results/diagnostic_generated_patch_cpu_20261106_v1/runs/api/case-b/revision/response-01.json) · [CPU 네 설정 검사](../evals/results/diagnostic_generated_patch_cpu_20261106_v1/runs/cpu/case-b-revision/candidate.json) · [행동 사전등록](../bench/protocols/rewrite_generated_patch_recovery_s5753_s5754_20261106_v1.json)
+
+[같은 재작성 패치의 seed 5753 전후 15초 영상](media/rewritten-config-patch-s5753-20261106-v1/comparison-15s.mp4) · [영상 출처와 프레임 결합](media/rewritten-config-patch-s5753-20261106-v1/source-manifest.json)
+
 ## 생성 패치와 CPU 검사
 
 알려진 PPO epoch 결함 계열에서 인자 누락·상수 덮어쓰기·설정 후 재덮어쓰기 세 구현과 정상 구현 하나를 만들었다. 모두 개발용 합성 설정 어댑터이며, 처음 보는 결함군을 찾아낸 결과로 해석하지 않는다.

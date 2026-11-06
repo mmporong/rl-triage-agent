@@ -32,7 +32,7 @@ Nemotron 3.5 selected a stability check and proposed registered policy adaptatio
 
 *15 seconds at original speed, development evaluation seed 200. Left: original policy. Right: after agent-proposed adaptation. The full 30-second traces recorded 888→0 inverted samples and tracking RMSE 0.233→0.064m/s. [1080p video](docs/media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-1080p.mp4) · [Checks, adaptation and task evaluation](docs/GO2-STAIRS-AGENT-ADAPTATION.md).*
 
-Nemotron 3.5 also selected an optimizer check and wrote a restricted PPO settings patch. The host validated it before training; two additional development seeds passed fixed evaluation. [Generated patch and recovery](docs/GENERATED-PPO-PATCH.md) · [15-second code-patch comparison](docs/media/generated-ppo-patch-s5750-20261106-v1/comparison-15s.mp4).
+Nemotron 3.5 also wrote a PPO settings patch and revised it after CPU feedback. That recorded rewrite passed fixed evaluation in two additional development seeds. [Generated patch and recovery](docs/GENERATED-PPO-PATCH.md) · [15-second rewrite comparison](docs/media/rewritten-config-patch-s5753-20261106-v1/comparison-15s.mp4).
 
 Other recordings: [compound-fault repair](docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4) · H1 pretrained playback [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) / [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4). H1 clips are playback references.
 
@@ -58,7 +58,7 @@ The model selects actions; the host supplies execution arguments and checks auth
 
 | Test | Observed result | Evidence |
 | --- | --- | --- |
-| Generated PPO patch loop | Additional development seeds 5751/5752: actual updates **4→20**, tracking RMSE **1.081→0.142 / 1.186→0.154m/s**. Separate CPU variants passed **1/2 initially, 2/2 after one feedback revision**; the host preserved both normal sources. | [Patch, checks and recovery](docs/GENERATED-PPO-PATCH.md) |
+| Generated PPO patch loop | After one CPU-feedback revision, the recorded rewrite recovered development seeds 5753/5754: tracking RMSE **1.176→0.145 / 1.177→0.145m/s**, optimizer steps per update **4→20**. Both normal controls were preserved. | [Patch, checks and recovery](docs/GENERATED-PPO-PATCH.md) |
 | Follow-up diagnosis and repair | The 3.5 seed 2311 case above recovered after a second diagnosis round and registered correction. Earlier compound-fault seeds 2120/2121 also recovered after two corrections. | [3.5 case](docs/NEW-LINEAGE-COMPARISON.md#갱신-계측을-연결한-새-복합-사례) · [Residual diagnosis](docs/RESIDUAL-DIAGNOSIS-RESULT.md) |
 | Same-command stair adaptation | Development seed 200: inverted samples **888→0**, tracking RMSE **0.233→0.064m/s**; the 30-second task changes from fail to pass. | [Stair adaptation](docs/GO2-STAIRS-AGENT-ADAPTATION.md) |
 | Registered reward and motor faults | Four new-seed runs recovered. In the motor case, three checks overturned the initial reward hypothesis and confirmed the actuator. | [End-to-end repair](docs/E2E-REWARD-DEMO.md) |

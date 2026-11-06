@@ -1,0 +1,176 @@
+{
+  "actual_ppo": {
+    "num_learning_epochs": 5,
+    "num_mini_batches": 4
+  },
+  "adapter_resolution": {
+    "adapter_source_sha256": "5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106",
+    "constructor_abi_sha256": "a91a1f013f4a541e054a621b9973d7cc0a85eaa953a62c92e9a7e6e650aa061d",
+    "constructor_source_sha256_lf": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+    "effective_parameters": {
+      "clip_param": 0.2,
+      "desired_kl": 0.01,
+      "entropy_coef": 0.01,
+      "gamma": 0.99,
+      "lam": 0.95,
+      "max_grad_norm": 1.0,
+      "normalize_advantage_per_mini_batch": false,
+      "num_learning_epochs": 5,
+      "num_mini_batches": 4,
+      "schedule": "adaptive",
+      "use_clipped_value_loss": true,
+      "value_loss_coef": 1.0
+    },
+    "metadata_restored_by_host": [],
+    "omitted_algorithm_keys": [],
+    "raw_adapter_kwargs": {
+      "class_name": "PPO",
+      "clip_param": 0.2,
+      "desired_kl": 0.01,
+      "entropy_coef": 0.01,
+      "gamma": 0.99,
+      "lam": 0.95,
+      "learning_rate": 0.001,
+      "max_grad_norm": 1.0,
+      "normalize_advantage_per_mini_batch": false,
+      "num_learning_epochs": 5,
+      "num_mini_batches": 4,
+      "rnd_cfg": null,
+      "schedule": "adaptive",
+      "symmetry_cfg": null,
+      "use_clipped_value_loss": true,
+      "value_loss_coef": 1.0
+    },
+    "runner_kwargs": {
+      "class_name": "PPO",
+      "clip_param": 0.2,
+      "desired_kl": 0.01,
+      "entropy_coef": 0.01,
+      "gamma": 0.99,
+      "lam": 0.95,
+      "learning_rate": 0.001,
+      "max_grad_norm": 1.0,
+      "normalize_advantage_per_mini_batch": false,
+      "num_learning_epochs": 5,
+      "num_mini_batches": 4,
+      "rnd_cfg": null,
+      "schedule": "adaptive",
+      "symmetry_cfg": null,
+      "use_clipped_value_loss": true,
+      "value_loss_coef": 1.0
+    },
+    "schema": "generated_ppo_adapter_resolution_v2"
+  },
+  "adapter_source_sha256": "5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106",
+  "algorithm_after": {
+    "class_name": "PPO",
+    "clip_param": 0.2,
+    "desired_kl": 0.01,
+    "entropy_coef": 0.01,
+    "gamma": 0.99,
+    "lam": 0.95,
+    "learning_rate": 0.001,
+    "max_grad_norm": 1.0,
+    "normalize_advantage_per_mini_batch": false,
+    "num_learning_epochs": 5,
+    "num_mini_batches": 4,
+    "rnd_cfg": null,
+    "schedule": "adaptive",
+    "symmetry_cfg": null,
+    "use_clipped_value_loss": true,
+    "value_loss_coef": 1.0
+  },
+  "algorithm_before": {
+    "class_name": "PPO",
+    "clip_param": 0.2,
+    "desired_kl": 0.01,
+    "entropy_coef": 0.01,
+    "gamma": 0.99,
+    "lam": 0.95,
+    "learning_rate": 0.001,
+    "max_grad_norm": 1.0,
+    "normalize_advantage_per_mini_batch": false,
+    "num_learning_epochs": 5,
+    "num_mini_batches": 4,
+    "rnd_cfg": null,
+    "schedule": "adaptive",
+    "symmetry_cfg": null,
+    "use_clipped_value_loss": true,
+    "value_loss_coef": 1.0
+  },
+  "arm": "healthy",
+  "checkpoint": {
+    "file": "final.pt",
+    "sha256": "162b3cbc8e61525106611610b3b80ac214bc396658b967fedbf529aa60b4a1e2"
+  },
+  "counts": {
+    "minibatches": 6000,
+    "optimizer_steps": 6000,
+    "updates": 300
+  },
+  "first_three_updates": [
+    {
+      "index": 1,
+      "learning_rate": 0.0006666666666666666,
+      "mean_policy_std": 0.9998114109039307,
+      "minibatches": 20,
+      "optimizer_steps": 20,
+      "return_values_finite": true
+    },
+    {
+      "index": 2,
+      "learning_rate": 0.0015,
+      "mean_policy_std": 0.9879845380783081,
+      "minibatches": 20,
+      "optimizer_steps": 20,
+      "return_values_finite": true
+    },
+    {
+      "index": 3,
+      "learning_rate": 0.0033750000000000004,
+      "mean_policy_std": 0.9768178462982178,
+      "minibatches": 20,
+      "optimizer_steps": 20,
+      "return_values_finite": true
+    }
+  ],
+  "owned_execution": {
+    "cleanup_verified": true,
+    "exit_code": 0,
+    "natural_exit": true,
+    "pid": 58820,
+    "pid_in_owned_identities": true,
+    "timed_out": false,
+    "wall_s": 508.3440000000119,
+    "wall_scope": "parent_launch_to_exit_and_owned_job_empty_verification"
+  },
+  "policy_parameters_finite": true,
+  "policy_sha256_after": "122365d14c81444e41692ebcb03d99991fdeaafc3def5b928fb044e96797b378",
+  "policy_sha256_before": "0121ee853cacd0bdc0d24a578625a4c8421ab83656c9cd187ce2b767952de7b7",
+  "protocol_sha256_lf": "1f3b18274eea69f63c32a8ffe7234026bd31fdf6ff3d098cd562544c537d2a01",
+  "raw_sha256": {
+    "adapter_resolution": "79dbbb87ab8a2265209578e05007911f78a5f6b520b20183be2941d0463905c2",
+    "checkpoint": "162b3cbc8e61525106611610b3b80ac214bc396658b967fedbf529aa60b4a1e2",
+    "owned_result": "bae7df1e233d76accc03ca6846eab8b194c072bfd84544d396bab90bf139dce4",
+    "stage_result": "b49d5a2b8e07573aeb6f29cf27062905a485738ebf8b631ba8dbcc879bdd7619",
+    "training_result": "8952d6ad4a45d5c6a43f8991ec6d2f74e1d32f193dab81b0b8873be2a729b7ff",
+    "updates": "c20d026badf9386574ed918e87c316e891d1ddd3a7d8444104f947a8dca7ec52"
+  },
+  "schema": "rewritten_config_patch_training_projection_v1",
+  "seed": 5753,
+  "source_commit": "aca6d85667c8e42113c7663bbcc7889b3498383c",
+  "status": "complete",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "task_terms_after": {
+    "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+    "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+  },
+  "task_terms_before": {
+    "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+    "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+  },
+  "training": {
+    "num_envs": 4096,
+    "updates": 300
+  }
+}

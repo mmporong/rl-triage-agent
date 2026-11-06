@@ -1,0 +1,114 @@
+{
+  "schema": "rewritten_config_patch_media_manifest_v1",
+  "seed": 5753,
+  "model_patch_source_sha256": "02fa206fbedf0bf374b7bafab534efdb498dfb3e51fbae8a7fbd6ff674e59295",
+  "recovery_summary_sha256": "9f66d4af3e351862c153403f0890dcdadf7f6db0acc38e87685107bb232c95f3",
+  "capture_registration_sha256_lf": "0a4f311c346cd2b5924285d53452e13a879a50efc798e0c4fce49e93e01975a9",
+  "play_contract": {
+    "command_body_m_s": [
+      0.25,
+      0,
+      0
+    ],
+    "native_frames": 750,
+    "fps": 50,
+    "duration_s": 15,
+    "native_resolution": [
+      2560,
+      1440
+    ]
+  },
+  "captures": {
+    "fault": {
+      "capture_manifest_sha256": "45f3f4f54722d10693d01e41e533888d81f6e7cab756f8c1e983bf7b6a062397",
+      "trace_sha256": "49a5dd316c25e5c223ba3a20ed0c1cd8d51f87b742cfb4e587ed82a8d19b17be",
+      "encoder_sha256": "67fa524655f21befe51cea6270d95b44d606fa44d2e5bd20b4446645d3110dcb",
+      "checkpoint_sha256": "01f8c1f877c82be5fcc44b1d09d1442dddb897c4020c58c094d007b602f28305",
+      "owned_receipt_sha256": "615ace14c9c1dc51e1bb5a594b5f8fdca78ce08b30e61308c8ae56a0dc3769f6",
+      "trace_rows": 751,
+      "root_displacement_w_m": [
+        0.016527820378541946,
+        -0.001702195149846375,
+        -0.2313549667596817
+      ],
+      "mean_body_vx_m_s": 0.0004686721595329194,
+      "body_vx_rmse_to_play_command": 0.2501888735711812,
+      "terminated_samples": 0,
+      "fixed26": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 1.1762765240491084,
+        "yaw_rate_rmse_radps": 0.831905122608527
+      },
+      "native_video": {
+        "path": "fault-native-15s.mp4",
+        "sha256": "b1ea3f5671402e4ae1e66bd503af753f7aa58054330b14d7733dc517829d5995"
+      }
+    },
+    "patched": {
+      "capture_manifest_sha256": "3965daec92f5a72808bcc34dc962287aeb1955910d621ff3cc640a137f620137",
+      "trace_sha256": "c217d269289c511367260f047dc5a86b95c82bd23d3b5109c744bb1710ad5c03",
+      "encoder_sha256": "2461c2534583c6b7151349f86c44548e73cbc29c326f338d5706af3b6678ef7d",
+      "checkpoint_sha256": "162b3cbc8e61525106611610b3b80ac214bc396658b967fedbf529aa60b4a1e2",
+      "owned_receipt_sha256": "f349d197a8bf69753a92a6b38317f731c2ae9115864b46487a6e60c81cffea06",
+      "trace_rows": 751,
+      "root_displacement_w_m": [
+        2.4994616508483887,
+        0.021939575672149658,
+        -0.229488343000412
+      ],
+      "mean_body_vx_m_s": 0.16636436097486876,
+      "body_vx_rmse_to_play_command": 0.09498058856357443,
+      "terminated_samples": 0,
+      "fixed26": {
+        "fall_rate": 0.0,
+        "mean_survival_s": 20.0,
+        "lin_vel_rmse_mps": 0.14536877203997392,
+        "yaw_rate_rmse_radps": 0.2935733913572142
+      },
+      "native_video": {
+        "path": "patched-native-15s.mp4",
+        "sha256": "1e69a8511851ae47584473e773e5f5dbc631e059a8e15dfe3f10c48d277003f6"
+      }
+    }
+  },
+  "comparison": {
+    "path": "comparison-15s.mp4",
+    "sha256": "102584f2124b833ff693f7626e1792b2d96a543c8ae583debc296ea55106d556",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": 50,
+    "frames": 750,
+    "duration_s": 15.0,
+    "full_decode": "pass"
+  },
+  "poster": {
+    "path": "poster-7p5s.jpg",
+    "sha256": "fbbbe4c0aef5ee5a8838b7c6b6c3f057a8940007bcdd8309418c5ace89fca543",
+    "time_s": 7.5
+  },
+  "postprocess": {
+    "crop_native_xywh": [
+      880,
+      500,
+      800,
+      800
+    ],
+    "panel_resolution": [
+      960,
+      960
+    ],
+    "top_header_px": 120,
+    "speed_changed": false,
+    "looped": false,
+    "source_sha256": "65bd92385f17fefa16f2ee63d8ad272c8876f120e9350c900f40c4bdaff72b63"
+  },
+  "claim_boundary": {
+    "fixed26_not_single_play_rmse": true,
+    "same_recorded_rewrite_as_GPU_training": true,
+    "development_case": true,
+    "new_model_API": 0
+  }
+}

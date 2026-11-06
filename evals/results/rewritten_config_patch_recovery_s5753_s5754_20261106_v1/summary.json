@@ -1,0 +1,322 @@
+{
+  "causal_scope": "The adapter rewrite restores all omitted constructor values, including epochs, gamma, and entropy_coef; epoch-only causality is not claimed.",
+  "constructor_defaults_can_change_more_than_epochs": true,
+  "development_evaluation": true,
+  "fault_source_sha256": "c4c710f10da5f2db24cbb8433eba348467e92840b56e54baf19bda1b940ecf75",
+  "model_input_scope": "Recorded CPU adapter inspection and feedback; GPU evaluation is a later validation, not a new runtime diagnosis.",
+  "model_patch_source_sha256": "02fa206fbedf0bf374b7bafab534efdb498dfb3e51fbae8a7fbd6ff674e59295",
+  "model_reuse": "Recorded CPU model response reused; no fresh model API in this GPU evaluation.",
+  "new_model_API": 0,
+  "outcome": "recovered",
+  "protocol_sha256_lf": "1f3b18274eea69f63c32a8ffe7234026bd31fdf6ff3d098cd562544c537d2a01",
+  "raw_summary_sha256": "9f66d4af3e351862c153403f0890dcdadf7f6db0acc38e87685107bb232c95f3",
+  "same_recorded_model_patch_across_seeds": true,
+  "schema": "recorded_rewrite_recovery_result_v1",
+  "seeds": {
+    "5753": {
+      "algorithm_before": {
+        "class_name": "PPO",
+        "clip_param": 0.2,
+        "desired_kl": 0.01,
+        "entropy_coef": 0.01,
+        "gamma": 0.99,
+        "lam": 0.95,
+        "learning_rate": 0.001,
+        "max_grad_norm": 1.0,
+        "normalize_advantage_per_mini_batch": false,
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "rnd_cfg": null,
+        "schedule": "adaptive",
+        "symmetry_cfg": null,
+        "use_clipped_value_loss": true,
+        "value_loss_coef": 1.0
+      },
+      "effective_parameters": {
+        "fault": {
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.0,
+          "gamma": 0.998,
+          "lam": 0.95,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 1,
+          "num_mini_batches": 4,
+          "schedule": "adaptive",
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "healthy": {
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "schedule": "adaptive",
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "patched": {
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "schedule": "adaptive",
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        }
+      },
+      "fixed_metrics": {
+        "fault": {
+          "fall_rate": 0.0,
+          "lin_vel_rmse_mps": 1.1762765240491084,
+          "mean_survival_s": 20.0,
+          "yaw_rate_rmse_radps": 0.831905122608527
+        },
+        "healthy": {
+          "fall_rate": 0.0,
+          "lin_vel_rmse_mps": 0.14536877203997392,
+          "mean_survival_s": 20.0,
+          "yaw_rate_rmse_radps": 0.2935733913572142
+        },
+        "patched": {
+          "fall_rate": 0.0,
+          "lin_vel_rmse_mps": 0.14536877203997392,
+          "mean_survival_s": 20.0,
+          "yaw_rate_rmse_radps": 0.2935733913572142
+        }
+      },
+      "normal_patched_policy_state_equal": true,
+      "outcome": "recovered",
+      "relative_verdicts": {
+        "fault": {
+          "checks": {
+            "err_xy_ratio": false,
+            "err_yaw_ratio": false,
+            "fall_frac": true,
+            "survival_ratio": true
+          },
+          "failed": [
+            "err_xy_ratio",
+            "err_yaw_ratio"
+          ],
+          "label": "unhealthy",
+          "short_horizon": false
+        },
+        "healthy": {
+          "checks": {
+            "err_xy_ratio": true,
+            "err_yaw_ratio": true,
+            "fall_frac": true,
+            "survival_ratio": true
+          },
+          "failed": [],
+          "label": "healthy",
+          "short_horizon": false
+        },
+        "patched": {
+          "checks": {
+            "err_xy_ratio": true,
+            "err_yaw_ratio": true,
+            "fall_frac": true,
+            "survival_ratio": true
+          },
+          "failed": [],
+          "label": "healthy",
+          "short_horizon": false
+        }
+      },
+      "success_conditions": {
+        "fault_is_unhealthy": true,
+        "fixed_protocol_unchanged": true,
+        "normal_source_unchanged": true,
+        "optimizer_steps_1200_to_6000": true,
+        "owned_PID_exit_cleanup": true,
+        "patched_fixed26_healthy": true,
+        "recorded_rewrite_CPU_admitted": true,
+        "reference_walks": true,
+        "same_reward_termination": true
+      },
+      "training_counts": {
+        "fault": {
+          "minibatches": 1200,
+          "optimizer_steps": 1200,
+          "updates": 300
+        },
+        "healthy": {
+          "minibatches": 6000,
+          "optimizer_steps": 6000,
+          "updates": 300
+        },
+        "patched": {
+          "minibatches": 6000,
+          "optimizer_steps": 6000,
+          "updates": 300
+        }
+      }
+    },
+    "5754": {
+      "algorithm_before": {
+        "class_name": "PPO",
+        "clip_param": 0.2,
+        "desired_kl": 0.01,
+        "entropy_coef": 0.01,
+        "gamma": 0.99,
+        "lam": 0.95,
+        "learning_rate": 0.001,
+        "max_grad_norm": 1.0,
+        "normalize_advantage_per_mini_batch": false,
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "rnd_cfg": null,
+        "schedule": "adaptive",
+        "symmetry_cfg": null,
+        "use_clipped_value_loss": true,
+        "value_loss_coef": 1.0
+      },
+      "effective_parameters": {
+        "fault": {
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.0,
+          "gamma": 0.998,
+          "lam": 0.95,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 1,
+          "num_mini_batches": 4,
+          "schedule": "adaptive",
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "healthy": {
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "schedule": "adaptive",
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "patched": {
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "schedule": "adaptive",
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        }
+      },
+      "fixed_metrics": {
+        "fault": {
+          "fall_rate": 0.0,
+          "lin_vel_rmse_mps": 1.1771751075458925,
+          "mean_survival_s": 20.0,
+          "yaw_rate_rmse_radps": 0.8333572066384266
+        },
+        "healthy": {
+          "fall_rate": 0.0,
+          "lin_vel_rmse_mps": 0.14522880969329502,
+          "mean_survival_s": 20.0,
+          "yaw_rate_rmse_radps": 0.27508174537414914
+        },
+        "patched": {
+          "fall_rate": 0.0,
+          "lin_vel_rmse_mps": 0.14522880969329502,
+          "mean_survival_s": 20.0,
+          "yaw_rate_rmse_radps": 0.27508174537414914
+        }
+      },
+      "normal_patched_policy_state_equal": true,
+      "outcome": "recovered",
+      "relative_verdicts": {
+        "fault": {
+          "checks": {
+            "err_xy_ratio": false,
+            "err_yaw_ratio": false,
+            "fall_frac": true,
+            "survival_ratio": true
+          },
+          "failed": [
+            "err_xy_ratio",
+            "err_yaw_ratio"
+          ],
+          "label": "unhealthy",
+          "short_horizon": false
+        },
+        "healthy": {
+          "checks": {
+            "err_xy_ratio": true,
+            "err_yaw_ratio": true,
+            "fall_frac": true,
+            "survival_ratio": true
+          },
+          "failed": [],
+          "label": "healthy",
+          "short_horizon": false
+        },
+        "patched": {
+          "checks": {
+            "err_xy_ratio": true,
+            "err_yaw_ratio": true,
+            "fall_frac": true,
+            "survival_ratio": true
+          },
+          "failed": [],
+          "label": "healthy",
+          "short_horizon": false
+        }
+      },
+      "success_conditions": {
+        "fault_is_unhealthy": true,
+        "fixed_protocol_unchanged": true,
+        "normal_source_unchanged": true,
+        "optimizer_steps_1200_to_6000": true,
+        "owned_PID_exit_cleanup": true,
+        "patched_fixed26_healthy": true,
+        "recorded_rewrite_CPU_admitted": true,
+        "reference_walks": true,
+        "same_reward_termination": true
+      },
+      "training_counts": {
+        "fault": {
+          "minibatches": 1200,
+          "optimizer_steps": 1200,
+          "updates": 300
+        },
+        "healthy": {
+          "minibatches": 6000,
+          "optimizer_steps": 6000,
+          "updates": 300
+        },
+        "patched": {
+          "minibatches": 6000,
+          "optimizer_steps": 6000,
+          "updates": 300
+        }
+      }
+    }
+  },
+  "status": "complete"
+}

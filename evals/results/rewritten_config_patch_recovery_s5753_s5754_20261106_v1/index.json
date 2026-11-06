@@ -1,0 +1,41 @@
+{
+  "claims": {
+    "development_evaluation": true,
+    "epoch_only_causality": false,
+    "fresh_model_API": false,
+    "outcomes_preserved_without_relabeling": true
+  },
+  "result": "summary.json",
+  "schema": "rewritten_config_patch_recovery_public_index_v1",
+  "seeds": {
+    "5753": {
+      "arms": [
+        "healthy",
+        "fault",
+        "patched"
+      ],
+      "outcome": "recovered"
+    },
+    "5754": {
+      "arms": [
+        "healthy",
+        "fault",
+        "patched"
+      ],
+      "outcome": "recovered"
+    }
+  },
+  "source": {
+    "protocol": "bench/protocols/rewrite_generated_patch_recovery_s5753_s5754_20261106_v1.json",
+    "protocol_sha256_lf": "1f3b18274eea69f63c32a8ffe7234026bd31fdf6ff3d098cd562544c537d2a01",
+    "recorded_model_evidence_sha256": {
+      "original_model_input_scope": "CPU development adapter; not fresh GPU failure input",
+      "request": "d0cae03d9c334e90cf6214f63a08f07adafdf2ea60a4006de524da1931b7f0d1",
+      "response": "adbd7939f49f491292c7c29479858b7161a033b000ff9b5f20e0c7b195ad78ce",
+      "source_cases": "a1c4b2527ae44bda90f605618110baf659e21c747102d4da5e26499195e10d42",
+      "validation": "b9a0e57445d80a20ebe58fc4d4f051fac026277202418096e42c9e51dc12f8ea"
+    }
+  },
+  "status": "complete",
+  "table": "results.csv"
+}
