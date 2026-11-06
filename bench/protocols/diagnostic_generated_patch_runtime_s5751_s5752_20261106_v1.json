@@ -1,0 +1,100 @@
+{
+  "schema": "diagnostic_generated_patch_cpu_protocol_v1",
+  "source_anchor": "92bc1b18edd4d3a191071a5f18215f5e1cb50076",
+  "source_sha256_lf": {
+    "evals/diagnostic_patch_bridge_v1.py": "609ee6c410fe2a16ee118370f14ea51becc3dd8e6b358070c4ab3e12d78dd0e1",
+    "evals/diagnostic_patch_prompts_v1.py": "a4ad8ada63c60a260c886b26044a4cc56e3473571528c3836e17b8a249436881",
+    "evals/run_diagnostic_patch_model_v1.py": "91499befe2d9c0ebc9798f98cb359fcd300becb2238203ad15e3bad4203209d5",
+    "evals/ppo_patch_feedback_v1.py": "c3ca8204d4b4b27d1619c460f737aee8e3721a4496d4e23bbc7fde013e037cd3",
+    "bench/inspect_ppo_patch_feedback_v1.py": "bd288a161c18424140055e0be50a74b98ac9471e4e6aa7af50d80f600a2082db",
+    "tests/test_diagnostic_patch_bridge_v1.py": "4d52a42143a7e5923086552eb03488eed4b0281c02ad0569e1957c3fa621078e",
+    "tests/test_run_diagnostic_patch_model_v1.py": "bdd5b6723e7d7fb958643240341ff6637c210b87a2671d7753bc3e4ff65b1ae6",
+    "tests/test_ppo_patch_feedback_v1.py": "28ebc1d94ec286fe7ed502d36db57e9f9451b8e1b0dc7d5f87011aae9c3141b5",
+    "evals/ppo_patch_contract_v1.py": "a3c43c8f246c362fd07cd86a49e57a3825ebbc5dd25111af84f3f5cc703dbbff",
+    "bench/inspect_ppo_patch_cpu_v1.py": "5c8be1c446aee0d34ef671d31c1aa2e94f3c46fb8b9a9bc8db0a65b82bc446cb",
+    "bench/ppo_patch_cases_v1.py": "373e9f97f6dd3761f4cd94bdb591bb1eba6b6cc0e918891c203cab1e7aeddac5",
+    "evals/feedback_model_call.py": "bc9ccb14601544d1c1602ee9a84c57a141570d1c2fc1d06c23b69920a1d7aac8"
+  },
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "accepted_models": [
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "private/nvidia/nemotron-3.5-super-120b-a12b"
+  ],
+  "params": {
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "temperature": 0,
+    "max_tokens": 16384,
+    "stream": false,
+    "extra_body": {
+      "reasoning_effort": "none"
+    }
+  },
+  "cases": [
+    {
+      "case_id": "runtime-repeat",
+      "mode": "runtime_pairs",
+      "source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_epochs\", 1)\n    return options\n",
+      "runtime_inputs": {
+        "scope": "run",
+        "path": "gpu-pre/runtime-pairs.json",
+        "sha256": "1809550333a04095dd232747dfb4e8d63631a968f69d828d4b2470e4dc03d4ae"
+      }
+    }
+  ],
+  "CPU_configurations": [
+    {
+      "num_learning_epochs": 4,
+      "num_mini_batches": 3,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    },
+    {
+      "num_learning_epochs": 2,
+      "num_mini_batches": 4,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    },
+    {
+      "num_learning_epochs": 7,
+      "num_mini_batches": 2,
+      "learning_rate": 0.001,
+      "schedule": "fixed",
+      "gamma": 0.97,
+      "clip_param": 0.17
+    },
+    {
+      "num_mini_batches": 4,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    }
+  ],
+  "campaign_id": "diagnostic_generated_patch_cpu_20261106_v1",
+  "API_cap": 24,
+  "infra_retries_per_phase": 2,
+  "revision_steps_max": 1,
+  "API_transmissions_already_consumed": 9,
+  "development_evaluation": true,
+  "new_fault_family_generalization": false,
+  "stage": "fresh decision after actual source training and fixed evaluation; prior CPU answers not substituted",
+  "source_protocol": "bench/protocols/diagnostic_generated_patch_sources_s5751_s5752_20261106_v1.json",
+  "source_protocol_sha256_lf": "7c43d43b2915506bc0862a9a0170b664062865266d786fddb2745db85703fe41",
+  "runtime_result_sha256": "1ed20a82967df1afbc53d55bc455509897459f255fca6a910158b3ac20e8ed12",
+  "private_sources_sha256_lf": {
+    "controller": "d49d91c1e5f91923ff861e4c46bce211be24f4ff30295fa9dce2e3513b7b53e3",
+    "reused_cpu_controller": "909a502a23ef6e487b0736116b1f4d7e4958c26641b1e3fce128120104329177"
+  },
+  "predictions": {
+    "diagnosis": "inspect optimizer adapter",
+    "confirmation": "abnormal",
+    "patch": "one source preserving configuration and optional omission"
+  },
+  "criteria": {
+    "diagnosis": "native valid inspect with existing fact IDs, before actual CPU confirmation",
+    "patch": "actual CPU counts and full settings preservation in all four settings",
+    "revision": "at most one after actual failed first candidate; preserve first result",
+    "GPU": "separate registration; only admitted native source is eligible"
+  },
+  "GPU_apps": 0,
+  "normal_source": "unchanged healthy adapter from existing source pairs",
+  "scope": "one model-authored patch evaluated later on two development training seeds, not two independent model repair tasks"
+}
