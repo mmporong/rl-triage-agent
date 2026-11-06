@@ -37,7 +37,15 @@ uv run pytest --collect-only -q tests  # README에 없는 추가 검사
 
 PowerShell에서는 `export PYTHONUTF8=1` 대신 `$env:PYTHONUTF8 = "1"`을 쓰고, `\` 줄 이음 없이 한 줄로 입력한다. `PYTHONUTF8=1`은 [HANDOFF.md](HANDOFF.md) 52행의 Windows 실행 방식을 따른 것이며, 설정하지 않은 실행은 확인하지 않았다.
 
-실제 측정에는 위 명령과 6·7번 테스트를 묶은 [`run_all.sh`](../evals/results/windows_clean_clone_repro_20261106/run_all.sh)를 썼다(`--no-sync`, 명령별 exit·초 기록). 공개 사본은 로그 위치만 `REPRO_LOGS` 변수로 바꿨다. 소요 시간은 이 PC에서 다른 pytest 실행과 동시에 잰 벽시계 값이라 기준값이 아니다.
+지금 재현할 때는 저장소 루트에서 아래 안전 실행기를 사용한다. `uv sync`는 먼저 끝내야 하며 Git Bash 또는 Linux Bash가 필요하다.
+
+```bash
+bash bench/reproduce_windows_clean_clone_v2.sh fresh-check-01
+```
+
+`policies/candidates`에 staged·unstaged·미추적 변경이 있으면 명령 실행 전에 거부한다. 새 로그 폴더만 사용하고 후보 파일을 되돌리거나 삭제하지 않는다. 실행 중 생성된 변경도 남겨 검사할 수 있다. 명령별 종료 코드를 기록하고, 어느 하나라도 실패하면 나머지 진단을 마친 뒤 전체 exit 1로 끝낸다. prover가 없는 환경의 `unavailable`도 실패로 집계한다. 인자·입장 거부는 exit 2다. 로그 기본 위치는 저장소 옆 `repro-logs/<tag>`이며 `REPRO_LOGS`로 바꿀 수 있다.
+
+실제 측정에는 위 명령과 6·7번 테스트를 묶은 [`run_all.sh`](../evals/results/windows_clean_clone_repro_20261106/run_all.sh)를 썼다(`--no-sync`, 명령별 exit·초 기록). 공개 사본은 로그 위치만 `REPRO_LOGS` 변수로 바꿨다. 이 보관 스크립트는 당시 실행 원문이며 후보를 되돌리는 명령이 있어 현재 진입점으로 사용하지 않는다. 소요 시간은 이 PC에서 다른 pytest 실행과 동시에 잰 벽시계 값이라 기준값이 아니다.
 
 ## 3. 결과
 

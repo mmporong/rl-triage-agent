@@ -7,7 +7,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "evals"))
 
-import prove_policies as P  # noqa: E402
+import prove_policies as P
 
 
 @pytest.fixture
@@ -27,13 +27,22 @@ def _fake_prove(result_for):
     return prove
 
 
-def test_missing_prover_exits_without_overwriting_proofs(repo, monkeypatch, capsys):
+@pytest.mark.parametrize("existing_proof", [False, True])
+def test_missing_prover_exits_without_overwriting_proofs(repo, monkeypatch, capsys, existing_proof):
+    proof = repo / "evals" / "results" / "policy_proofs.json"
+    sentinel = b'{"saved_proof":"preserve these exact bytes"}\r\n'
+    if existing_proof:
+        proof.parent.mkdir(parents=True)
+        proof.write_bytes(sentinel)
     monkeypatch.setattr(P, "prove", _fake_prove(lambda name: None))
     with pytest.raises(SystemExit) as exc:
         P.main()
     assert exc.value.code == 1
     assert "result=unavailable" in capsys.readouterr().out
-    assert not (repo / "evals" / "results" / "policy_proofs.json").exists()
+    if existing_proof:
+        assert proof.read_bytes() == sentinel
+    else:
+        assert not proof.exists()
 
 
 def test_missing_shell_is_reported_as_no_result(monkeypatch):
