@@ -24,15 +24,17 @@ In Go2 development seed 2311, Nemotron 3.5 selected checks for a combined reward
 
 Nemotron chose all four checks across the two diagnosis rounds. The host applied registered corrections, retrained and evaluated; the corrected training recorded 20 optimizer steps per update. [Checks, corrections and evaluation](docs/NEW-LINEAGE-COMPARISON.md#갱신-계측을-연결한-새-복합-사례) · [Original result](evals/results/runtime_observation_compound_s2311_20261031_v1/summary.json).
 
-## From generated code to a moving policy
+## Stair descent: before and after adaptation
 
-Nemotron 3.5 selected an optimizer check, read its result and wrote a restricted PPO settings patch. The host validated the generated code before training. Two additional development seeds passed the same fixed evaluation after patching.
+Nemotron 3.5 selected a stability check and proposed registered policy adaptation. At the same 0.25m/s command, the original Go2 policy overturned; the adapted policy passed the registered 30-second stair task.
 
-<a href="docs/media/generated-ppo-patch-s5750-20261106-v1/comparison-15s.mp4"><img src="docs/media/generated-ppo-patch-s5750-20261106-v1/comparison-15s.webp" alt="Go2 before and after a Nemotron-generated PPO patch, at the same commanded speed" width="100%"></a>
+<a href="docs/media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-1080p.mp4"><img src="docs/media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-preview.webp" alt="Go2 stair descent before and after agent-proposed adaptation, at the same commanded speed" width="100%"></a>
 
-*Clip: development seed 5750, same 0.25m/s command, original speed, 15 seconds. Left: faulty settings adapter. Right: model-generated patch. [1080p video](docs/media/generated-ppo-patch-s5750-20261106-v1/comparison-15s.mp4) · [Code, checks and additional-seed results](docs/GENERATED-PPO-PATCH.md).*
+*15 seconds at original speed, development evaluation seed 200. Left: original policy. Right: after agent-proposed adaptation. The full 30-second traces recorded 888→0 inverted samples and tracking RMSE 0.233→0.064m/s. [1080p video](docs/media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-1080p.mp4) · [Checks, adaptation and task evaluation](docs/GO2-STAIRS-AGENT-ADAPTATION.md).*
 
-Other recordings: [same-command stair adaptation](docs/media/go2-stairs-agent-adaptation-s200-20261106-v3/comparison-15s-1080p.mp4) · [compound-fault repair](docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4) · H1 pretrained playback [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) / [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4). H1 clips are playback references.
+Nemotron 3.5 also selected an optimizer check and wrote a restricted PPO settings patch. The host validated it before training; two additional development seeds passed fixed evaluation. [Generated patch and recovery](docs/GENERATED-PPO-PATCH.md) · [15-second code-patch comparison](docs/media/generated-ppo-patch-s5750-20261106-v1/comparison-15s.mp4).
+
+Other recordings: [compound-fault repair](docs/media/five_type_recovery_s5557_20261102_v1/comparison.mp4) · H1 pretrained playback [up](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-up/video/rl-video-step-0.mp4) / [down](docs/media/stairs_h1_s172_20261030_v1/biped-stairs-down/video/rl-video-step-0.mp4). H1 clips are playback references.
 
 ## How it works
 
@@ -118,6 +120,8 @@ uv run python evals/prove_policies.py
 uv run python evals/correct_v2.py replay
 uv run python evals/build_replay_page.py --check
 ```
+
+Policy proofs require `openshell-prover`; Windows uses it through WSL Ubuntu. An unavailable prover exits with code 1 and preserves saved proof results. For the CPU clean-clone checks and their prerequisites, see the [reproduction guide](docs/WINDOWS-CLEAN-CLONE-REPRODUCTION.md).
 
 These check permission proofs, stored correction records and public replay data. They do not launch new training. Live sandbox kernel checks require the sandbox environment; see [pipeline preflight](docs/PIPELINE-PREFLIGHT.md) and [workflow setup](docs/AGENTIC-INVESTIGATION.md).
 
