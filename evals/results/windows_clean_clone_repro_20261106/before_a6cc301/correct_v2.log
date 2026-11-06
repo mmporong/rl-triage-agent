@@ -1,0 +1,120 @@
+{
+ "schema": "correct_v2_replay_v1",
+ "status": "pass",
+ "cases": {
+  "h02_s2080": {
+   "decision": "proposed",
+   "reason": null,
+   "contract_status": "ready",
+   "trace": [
+    "applicability",
+    "injection",
+    "source",
+    "scope",
+    "noop",
+    "recovery"
+   ],
+   "correction_id": "restore_body_frame_reward",
+   "recovery_mode": "restart",
+   "restoration_targets": [
+    "track_lin_vel_xy_exp"
+   ],
+   "selection_actor": "model"
+  },
+  "u1_s2040": {
+   "decision": "HOLD",
+   "reason": "scope_insufficient",
+   "contract_status": "scope_insufficient",
+   "trace": [
+    "applicability",
+    "injection",
+    "source",
+    "scope"
+   ]
+  },
+  "h06_s2046": {
+   "decision": "proposed",
+   "reason": null,
+   "contract_status": "ready",
+   "trace": [
+    "applicability",
+    "injection",
+    "source",
+    "scope",
+    "noop",
+    "recovery"
+   ],
+   "correction_id": "restore_motor_torque_speed",
+   "recovery_mode": "restart",
+   "restoration_targets": [
+    "DCMotor._clip_effort"
+   ],
+   "selection_actor": "registered_rule"
+  },
+  "h06_s2033": {
+   "decision": "proposed",
+   "reason": null,
+   "contract_status": "ready",
+   "trace": [
+    "applicability",
+    "injection",
+    "source",
+    "scope",
+    "noop",
+    "recovery"
+   ],
+   "correction_id": "restore_motor_torque_speed",
+   "recovery_mode": "restart",
+   "restoration_targets": [
+    "DCMotor._clip_effort"
+   ],
+   "selection_actor": "registered_rule"
+  },
+  "e01_s2027": {
+   "decision": "HOLD",
+   "reason": "loop status unidentifiable",
+   "contract_status": null,
+   "trace": null
+  },
+  "h05_s2027": {
+   "decision": "HOLD",
+   "reason": "unregistered_mechanism",
+   "contract_status": null,
+   "trace": null
+  }
+ },
+ "inputs_sha256_lf": {
+  "evals/loops/h02_s2080/prereg.json": "6062055741bb309ca90dc57c83e87cd686b4ac87a76f3fb47899828acec266e4",
+  "evals/loops/h02_s2080/state.json": "27096041f4f45add92ec94dbe0cdc70e05f03c8ed2a8878b0f29f3afb69e9bf3",
+  "evals/loops/h02_s2080/ledger.jsonl": "5dadf0795278d5b97a07d1c4dcceabbefb68960bb511d6d6bea1c29b71b72a23",
+  "evals/loops/h02_s2080/reference.json": "141744f790323d2417dd4b4aafd314c2239cdb3069d307a5a0e1a9ef8671a29f",
+  "bench/fixtures/combination_contract_v1/cases/go2_f1_ready.json": "834238117a1b8fec6a0250d59adbd2dcedbdbe06c03f39c7975d20b3d628a4be",
+  "evals/results/vl_aux_f1_s2080_20261016/demo_result.json": "549f785336be2cf3d6d135050efdc4ecffe6008deef5bf054a7c7e990cce8667",
+  "evals/loops/u1_s2040/prereg.json": "57a8743d1d74d9c0ff5796277d142751916d84c3c4e1d8865ed45465c1464c63",
+  "evals/loops/u1_s2040/state.json": "4f075c283ed5afff0ea66fa71f09a6f83ba49787c255afca339a03991125115f",
+  "evals/loops/u1_s2040/ledger.jsonl": "5b59e7cdf676bfb6de0cf79887a9c3740d334c1b53678efaa1d51576c3cccb7c",
+  "evals/loops/u1_s2040/reference.json": "c670d770066224cc1d26287f530892ae699a16cb26ed5fb2b76bd1fa95eef15c",
+  "bench/fixtures/combination_contract_v1/cases/go2_u1_legacy_scope_insufficient.json": "e5c95068cad32384c66d5a9867d5059585b5e6bc1d65b1fb3d7c37a68f9f18ee",
+  "evals/results/e2e_demo_u1_s2040_20261013/demo_result.json": "a30f841acc064b15b717f066e2ef81afc025f339a8441c22615f2b37c1a4e21e",
+  "evals/loops/h06_s2046/prereg.json": "cf15f4ff52e9439c3a01e8bec35610efa9a9420207fc2b2e225dd479977f9718",
+  "evals/loops/h06_s2046/state.json": "2a210eacf7114cff79f9eba9d56a4188a1657fbcaabb085905c7e0e6598ad1bf",
+  "evals/loops/h06_s2046/ledger.jsonl": "dfa3554f5609b981cc4869d8db3806d5033b15e8624f50b97dc4f3c9cb087d8a",
+  "evals/loops/h06_s2046/reference.json": "00dd9be3c63ebb4b58ce2623e8a3b34ad3ef47827b21979ca8d98c886ac8f915",
+  "bench/fixtures/combination_contract_v2/cases/go2_f2_ready_s2046.json": "8666f0fb1dd55839076d8631945b7a07a6d6f44841c4ae1dc7a0cd8b54d4b81b",
+  "evals/results/e2e_demo_v4_f2_s2046_20261014/demo_result.json": "5dced87d92740479037aed0e13296df50d7c20a04b038f24bf47adc3fe9db408",
+  "evals/loops/h06_s2033/prereg.json": "7f1d43f39f3aeaea9e065cd1843e6b68b65f208a29d44b898e7e101a98495795",
+  "evals/loops/h06_s2033/state.json": "9a37c0e45de8644ecf3f46928fea2a36acd1b54e01ae30cabbe8bbbbf1b8c722",
+  "evals/loops/h06_s2033/ledger.jsonl": "4b1805543d28eee25f504472c6ee3c55a5b91574c64a9278cd8868bfd004411f",
+  "evals/loops/h06_s2033/reference.json": "30d34f1952c3a9019d127fae7db818fc6d1f85934c29f412fbe973f58690cc3a",
+  "bench/fixtures/combination_contract_v2/cases/go2_f2_ready_s2033.json": "f751a88527ec8711698d44d0a1a523a6474ca1cf575fdaa9d5007e50fa86ae09",
+  "evals/results/e2e_demo_v3_1_f2_s2033_20261013/demo_result.json": "a13bfe9ad5a610bb3a547b81add9f3c52d82be6fe4a4eada08b7267bec42c14d",
+  "evals/loops/e01_s2027/prereg.json": "f4a71a21ea2927a64ed69b9da855a7d46eeff6e7297982d8d6dbe76e80c7b8a0",
+  "evals/loops/e01_s2027/state.json": "4923b5ce97b37c4c740023ea0a7e96feb19a7dc645316d7f0d50ffc3faa82b94",
+  "evals/loops/e01_s2027/ledger.jsonl": "70849342ff2030e69810f93be9c44e7c7ad9473dc38364d8eae5048e6caa2ce6",
+  "evals/loops/e01_s2027/reference.json": "fdf7ff67d893172b621e00fe7fa955e79c83b9cc14fb9bc20b625f384f333119",
+  "evals/loops/h05_s2027/prereg.json": "51958b360cb3daae0b813765f79badd751e7a3e8a78003fb9b021bf903993b16",
+  "evals/loops/h05_s2027/state.json": "ee534d706109f4e4392d04af6d49d693cb535623d0798d1c7d7d70f5f3acf4b7",
+  "evals/loops/h05_s2027/ledger.jsonl": "4a0fb9dc26e3dd05e7e507785bd4f25806e9578a51d252c16b8c6f102062871b",
+  "evals/loops/h05_s2027/reference.json": "4f2572f3135f5805a8366c6e0540809f180e7985ad5026ba5f3b827eef2ee2b1"
+ }
+}

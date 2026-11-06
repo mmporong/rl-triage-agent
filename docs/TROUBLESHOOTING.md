@@ -1183,3 +1183,17 @@ Go2 하행을 1500프레임으로 늘릴 때 기존 저장기에는 625프레임
 - 근거: `INFRA_V3_FAILURE.md` SHA-256 `5996d7b754c0dbdca57e7c801f0d7a47d55c376e40ac87afdfde30320a4aa821`, 최종 녹화 등록 v3 SHA-256 `09b05dd6804bcd7ebcf98d8a13e840ee7afc1f94c7195635023829046bae09f0`.
 
 실제 실패 관측 후의 새 모델 판에서는 중첩 값이 아닌 `facts`의 최상위 키만 근거 ID로 인용하도록 범위를 명시했다. 앞선 CPU 요청 여덟 개의 메시지는 바뀌지 않았음을 대조했고, 새 진단·패치 응답 두 개는 계약을 통과했다. 과거 무효 응답과 HOLD 결과는 보존한다.
+
+## 2026-11-06: Windows 깨끗한 clone의 CPU 재현
+
+- 관찰: `a6cc301`의 Windows clone에서 다음 세 가지가 실패했다.
+  - `uv run pytest`가 `No module named 'evals'` 수집 오류 5건을 냈다.
+  - prover가 없는 `prove_policies.py`가 `TypeError`로 끝나고 추적 파일 4개의 줄끝을 바꿨다.
+  - 재생 데이터 `--check`가 stale이었다.
+- 확인된 원인:
+  - pytest import 경로에 저장소 루트가 없었다.
+  - `result=None`의 서식 오류와 Windows 기본 줄끝 쓰기가 있었다.
+  - 재생 데이터 세 파일의 소스 해시 59개가 CRLF 변환 바이트 기준이었다.
+- 수정: `33fff4f`, `42432af`, `2650473`, `db59134`. 수정 후 같은 clone에서 다섯 명령과 관련 테스트 6개가 기대대로 끝났다.
+- 남은 것: prover 실제 증명과 pytest 전체 실행은 하지 않았다. `ffprobe`가 없는 환경의 영상 검사 실패는 그대로다.
+- 근거: [재현 기록](WINDOWS-CLEAN-CLONE-REPRODUCTION.md), [공개 로그와 SHA-256](../evals/results/windows_clean_clone_repro_20261106/manifest.json).

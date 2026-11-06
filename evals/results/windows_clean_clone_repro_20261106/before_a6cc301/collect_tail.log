@@ -1,0 +1,40 @@
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_actor_reset_budget_v1.py:9: in <module>
+    from evals import actor_reset_budget_v1 as B
+E   ModuleNotFoundError: No module named 'evals'
+________ ERROR collecting tests/test_agentic_frame_quality_guard_v1.py ________
+ImportError while importing test module '<repo>\tests\test_agentic_frame_quality_guard_v1.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\conda12\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_agentic_frame_quality_guard_v1.py:19: in <module>
+    from evals import agentic_frame_quality_guard_v1 as Q
+E   ModuleNotFoundError: No module named 'evals'
+________ ERROR collecting tests/test_agentic_runtime_input_guard_v1.py ________
+ImportError while importing test module '<repo>\tests\test_agentic_runtime_input_guard_v1.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\conda12\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_agentic_runtime_input_guard_v1.py:16: in <module>
+    from evals import agentic_runtime_input_guard_v1 as G
+E   ModuleNotFoundError: No module named 'evals'
+============================== warnings summary ===============================
+.venv\Lib\site-packages\nat\authentication\credential_validator\bearer_token_validator.py:25
+  <repo>\.venv\Lib\site-packages\nat\authentication\credential_validator\bearer_token_validator.py:25: AuthlibDeprecationWarning: authlib.jose module is deprecated, please use joserfc instead.
+  It will be compatible before version 2.0.0.
+    from authlib.jose import JsonWebKey
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/test_active_replay.py
+ERROR tests/test_actor_reset_budget_export.py
+ERROR tests/test_actor_reset_budget_v1.py
+ERROR tests/test_agentic_frame_quality_guard_v1.py
+ERROR tests/test_agentic_runtime_input_guard_v1.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 5 errors during collection !!!!!!!!!!!!!!!!!!!
+9422 tests collected, 5 errors in 194.18s (0:03:14)
