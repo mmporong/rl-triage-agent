@@ -1,0 +1,27 @@
+{
+  "schema": "ppo_constructor_defaults_v1",
+  "package": "rsl-rl-lib",
+  "version": "2.3.3",
+  "source": "rsl_rl/algorithms/ppo.py",
+  "source_sha256_lf": "efc1acf07745562d610c17ed28297e188c68101f3c38c68a0b029f68f5467cdc",
+  "constructor_defaults": {
+    "num_learning_epochs": 1,
+    "num_mini_batches": 1,
+    "clip_param": 0.2,
+    "gamma": 0.998,
+    "lam": 0.95,
+    "value_loss_coef": 1.0,
+    "entropy_coef": 0.0,
+    "learning_rate": 0.001,
+    "max_grad_norm": 1.0,
+    "use_clipped_value_loss": true,
+    "schedule": "fixed",
+    "desired_kl": 0.01,
+    "device": "cpu",
+    "normalize_advantage_per_mini_batch": false,
+    "rnd_cfg": null,
+    "symmetry_cfg": null,
+    "multi_gpu_cfg": null
+  },
+  "provenance": "AST extraction from the installed pinned runtime; no SDK application, no inference, no GPU initialization."
+}
