@@ -12,6 +12,11 @@ from evals import ppo_patch_contract_v1 as CONTRACT
 from evals import ppo_patch_feedback_v1 as FEEDBACK
 
 ROOT = Path(__file__).resolve().parents[1]
+TASK576 = (
+    ROOT
+    / "bench/private/claude_reward_track_20261013/codex_main_20261025/vision_goal"
+    / "ri_diagnostic_patch_loop_576_20261106"
+)
 
 ROOT_SOURCE = """def build_algorithm_kwargs(config):
     options = dict(config)
@@ -254,6 +259,56 @@ def test_error_record_cannot_be_promoted_to_success():
     promoted["records"][0]["failed_checks"] = []
     with pytest.raises(FEEDBACK.PatchFeedbackError, match="error record"):
         FEEDBACK.verify_validation(GOOD_REVISION, promoted)
+
+
+def test_actual_candidate_adapter_error_is_preserved_as_feedback_evidence():
+    validation = json.loads(
+        (TASK576 / "runs/cpu/case-b-first/candidate.json").read_text(encoding="utf-8")
+    )
+    response = json.loads(
+        (TASK576 / "runs/api/case-b/patch/response-02.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    source = response["proposal"]["replacement_source"]
+    checked = FEEDBACK.verify_validation(source, validation)
+    assert checked["all_passed"] is False
+    assert checked["records"][3]["algorithm_kwargs"] is None
+    assert checked["records"][3]["error"] == {
+        "type": "PatchContractError",
+        "message": "adapter execution failed",
+    }
+
+    root = _context()
+    proposal = _proposal(root, source)
+    context = FEEDBACK.build_feedback_context(root, proposal, validation)
+    assert context["facts"]["feedback.record3.error"] == checked["records"][3][
+        "error"
+    ]
+
+
+@pytest.mark.parametrize("mutation", ["type", "message", "promoted"])
+def test_actual_adapter_error_forgery_is_rejected(mutation: str):
+    validation = json.loads(
+        (TASK576 / "runs/cpu/case-b-first/candidate.json").read_text(encoding="utf-8")
+    )
+    response = json.loads(
+        (TASK576 / "runs/api/case-b/patch/response-02.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    source = response["proposal"]["replacement_source"]
+    record = validation["records"][3]
+    if mutation == "type":
+        record["error"]["type"] = "RuntimeError"
+    elif mutation == "message":
+        record["error"]["message"] = "different failure"
+    else:
+        record["passed"] = True
+        record["failed_checks"] = []
+        validation["all_passed"] = True
+    with pytest.raises(FEEDBACK.PatchFeedbackError):
+        FEEDBACK.verify_validation(source, validation)
 
 
 def test_one_revision_transition_preserves_native_proposals_and_separates_results():

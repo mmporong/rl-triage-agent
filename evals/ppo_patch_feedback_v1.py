@@ -309,7 +309,35 @@ def verify_validation(
     for index, (configuration, record) in enumerate(zip(plan, records, strict=True)):
         if record.get("configuration") != configuration:
             raise PatchFeedbackError(f"validation record {index} configuration changed")
-        algorithm_kwargs = CONTRACT.apply_adapter(source, copy.deepcopy(configuration))
+        try:
+            algorithm_kwargs = CONTRACT.apply_adapter(
+                source, copy.deepcopy(configuration)
+            )
+        except CONTRACT.PatchContractError as exc:
+            if set(record) != {
+                "configuration",
+                "algorithm_kwargs",
+                "error",
+                "passed",
+                "failed_checks",
+            }:
+                raise PatchFeedbackError(
+                    f"validation adapter error record {index} shape changed"
+                ) from exc
+            error = record["error"]
+            if (
+                record.get("algorithm_kwargs") is not None
+                or not isinstance(error, dict)
+                or error.get("type") != type(exc).__name__
+                or error.get("message") != str(exc)
+                or record["failed_checks"] != ["inspection.exception"]
+                or record["passed"] is not False
+            ):
+                raise PatchFeedbackError(
+                    f"validation adapter error record {index} is invalid"
+                ) from exc
+            derived_passes.append(False)
+            continue
         if record.get("algorithm_kwargs") != algorithm_kwargs:
             raise PatchFeedbackError(f"validation record {index} adapter output changed")
 
