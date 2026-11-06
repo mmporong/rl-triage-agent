@@ -1,0 +1,30 @@
+{
+  "schema": "diagnostic_patch_response_v1",
+  "kind": "diagnosis",
+  "request_sha256": "74e5e35bcb1d598bea34bedc2d7c3bf4ad77e1623feaa3a6403ea39adadd91c7",
+  "context_sha256": "121c0a5b165e9eeb3df725d1703444e54fdcb50dbe7ab4a51885734a743c9df3",
+  "provider_raw": {
+    "response_id": "chatcmpl-c1b6aed3-b770-4817-8fd0-9960797a5fe1",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"inspect\",\n  \"probe\": \"P_optimizer_updates_cpu_adapter\",\n  \"source_sha256\": \"c4c710f10da5f2db24cbb8433eba348467e92840b56e54baf19bda1b940ecf75\",\n  \"fact_ids\": [\n    \"configured.epochs\",\n    \"configured.minibatches\"\n  ],\n  \"rationale\": \"The adapter builds algorithm kwargs from config and the supplied facts record configured epochs (4) and minibatches (3), but no actual PPO minibatch or optimizer update counts have been measured yet. The CPU check is justified to verify configuration preservation before any fault is claimed.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 417,
+    "output_tokens": 178,
+    "total_tokens": 595,
+    "wall_s": 1.9078535139851738
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "inspect",
+    "probe": "P_optimizer_updates_cpu_adapter",
+    "source_sha256": "c4c710f10da5f2db24cbb8433eba348467e92840b56e54baf19bda1b940ecf75",
+    "fact_ids": [
+      "configured.epochs",
+      "configured.minibatches"
+    ],
+    "rationale": "The adapter builds algorithm kwargs from config and the supplied facts record configured epochs (4) and minibatches (3), but no actual PPO minibatch or optimizer update counts have been measured yet. The CPU check is justified to verify configuration preservation before any fault is claimed."
+  },
+  "error": null,
+  "reservation": 3
+}

@@ -1,0 +1,268 @@
+{
+  "schema": "diagnostic_generated_patch_recovery_result_v1",
+  "status": "complete",
+  "outcome": "recovered",
+  "seeds": {
+    "5751": {
+      "outcome": "recovered",
+      "success_conditions": {
+        "normal_reference_walks": true,
+        "fault_policy_unhealthy": true,
+        "runtime_model_patch_matches_CPU_admission": true,
+        "patched_policy_healthy": true,
+        "optimizer_steps_restore_1200_to_6000": true,
+        "normal_source_unchanged": true,
+        "same_reward_termination": true,
+        "fixed_protocol_unchanged": true,
+        "owned_process_PID_and_source_receipts": true
+      },
+      "fixed_metrics": {
+        "healthy": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.14207924478857956,
+          "yaw_rate_rmse_radps": 0.3004340855940289
+        },
+        "fault": {
+          "fall_rate": 0.04326923191547394,
+          "mean_survival_s": 19.260384521484376,
+          "lin_vel_rmse_mps": 1.080870187896255,
+          "yaw_rate_rmse_radps": 0.6820469822767838
+        },
+        "patched": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.14207924478857956,
+          "yaw_rate_rmse_radps": 0.3004340855940289
+        }
+      },
+      "relative_verdicts": {
+        "healthy": {
+          "label": "healthy",
+          "failed": [],
+          "short_horizon": false,
+          "checks": {
+            "survival_ratio": true,
+            "fall_frac": true,
+            "err_xy_ratio": true,
+            "err_yaw_ratio": true
+          }
+        },
+        "fault": {
+          "label": "unhealthy",
+          "failed": [
+            "err_xy_ratio",
+            "err_yaw_ratio"
+          ],
+          "short_horizon": false,
+          "checks": {
+            "survival_ratio": true,
+            "fall_frac": true,
+            "err_xy_ratio": false,
+            "err_yaw_ratio": false
+          }
+        },
+        "patched": {
+          "label": "healthy",
+          "failed": [],
+          "short_horizon": false,
+          "checks": {
+            "survival_ratio": true,
+            "fall_frac": true,
+            "err_xy_ratio": true,
+            "err_yaw_ratio": true
+          }
+        }
+      },
+      "training_counts": {
+        "fault": {
+          "minibatches": 1200,
+          "optimizer_steps": 1200,
+          "updates": 300
+        },
+        "patched": {
+          "minibatches": 6000,
+          "optimizer_steps": 6000,
+          "updates": 300
+        }
+      },
+      "owned_training_receipts": {
+        "healthy": {
+          "label": "healthy-s5751",
+          "pid": 82204,
+          "pid_in_owned_identities": true,
+          "exit_code": 0,
+          "natural_exit": true,
+          "timed_out": false,
+          "cleanup_verified": true,
+          "training_result_sha256": "71e07d4a6b46a5982313917f24e7ed5aaa8363018b32e347f5f9e3a25d6bc3fa",
+          "owned_receipt_sha256": "cc9b2ec273661635b746f1ceabf27628655bd545304029751605779e4612eb02",
+          "adapter_source_sha256": "5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106"
+        },
+        "fault": {
+          "label": "fault-s5751",
+          "pid": 13588,
+          "pid_in_owned_identities": true,
+          "exit_code": 0,
+          "natural_exit": true,
+          "timed_out": false,
+          "cleanup_verified": true,
+          "training_result_sha256": "a141cde228444a0f63041b28a3d397bfc361d0d15af27c168db020c24ac2da01",
+          "owned_receipt_sha256": "cc206a2ea1863d295a025ae8bab2c7e54be535e4e1792620ec09b413282774b8",
+          "adapter_source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3"
+        },
+        "patched": {
+          "label": "patched-s5751",
+          "pid": 73764,
+          "pid_in_owned_identities": true,
+          "exit_code": 0,
+          "natural_exit": true,
+          "timed_out": false,
+          "cleanup_verified": true,
+          "training_result_sha256": "517078c5e5c76207eab65cca2f0a517d3b29f66cd128097de1153059667295ef",
+          "owned_receipt_sha256": "756c42ac879b8a4983e41ddc55d12e0f0497097c0269caab6f5848ce42f943ad",
+          "adapter_source_sha256": "40da12471f9887a9ee78066e768dd62ec11303c927c796e517177c92eaa20eee"
+        }
+      }
+    },
+    "5752": {
+      "outcome": "recovered",
+      "success_conditions": {
+        "normal_reference_walks": true,
+        "fault_policy_unhealthy": true,
+        "runtime_model_patch_matches_CPU_admission": true,
+        "patched_policy_healthy": true,
+        "optimizer_steps_restore_1200_to_6000": true,
+        "normal_source_unchanged": true,
+        "same_reward_termination": true,
+        "fixed_protocol_unchanged": true,
+        "owned_process_PID_and_source_receipts": true
+      },
+      "fixed_metrics": {
+        "healthy": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.15393801496894308,
+          "yaw_rate_rmse_radps": 0.294663903797547
+        },
+        "fault": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.185980527396306,
+          "yaw_rate_rmse_radps": 0.5759336593342564
+        },
+        "patched": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.15393801496894308,
+          "yaw_rate_rmse_radps": 0.294663903797547
+        }
+      },
+      "relative_verdicts": {
+        "healthy": {
+          "label": "healthy",
+          "failed": [],
+          "short_horizon": false,
+          "checks": {
+            "survival_ratio": true,
+            "fall_frac": true,
+            "err_xy_ratio": true,
+            "err_yaw_ratio": true
+          }
+        },
+        "fault": {
+          "label": "unhealthy",
+          "failed": [
+            "err_xy_ratio",
+            "err_yaw_ratio"
+          ],
+          "short_horizon": false,
+          "checks": {
+            "survival_ratio": true,
+            "fall_frac": true,
+            "err_xy_ratio": false,
+            "err_yaw_ratio": false
+          }
+        },
+        "patched": {
+          "label": "healthy",
+          "failed": [],
+          "short_horizon": false,
+          "checks": {
+            "survival_ratio": true,
+            "fall_frac": true,
+            "err_xy_ratio": true,
+            "err_yaw_ratio": true
+          }
+        }
+      },
+      "training_counts": {
+        "fault": {
+          "minibatches": 1200,
+          "optimizer_steps": 1200,
+          "updates": 300
+        },
+        "patched": {
+          "minibatches": 6000,
+          "optimizer_steps": 6000,
+          "updates": 300
+        }
+      },
+      "owned_training_receipts": {
+        "healthy": {
+          "label": "healthy-s5752",
+          "pid": 13568,
+          "pid_in_owned_identities": true,
+          "exit_code": 0,
+          "natural_exit": true,
+          "timed_out": false,
+          "cleanup_verified": true,
+          "training_result_sha256": "eaa1ebdb8431034ada7306e96ed57eb3f5978f6ab0dfec95ff24bcb9ff847275",
+          "owned_receipt_sha256": "959599d7b565830de56bf931bf42b691ab82ee21b3397b09da5d38dc8751c58d",
+          "adapter_source_sha256": "5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106"
+        },
+        "fault": {
+          "label": "fault-s5752",
+          "pid": 14588,
+          "pid_in_owned_identities": true,
+          "exit_code": 0,
+          "natural_exit": true,
+          "timed_out": false,
+          "cleanup_verified": true,
+          "training_result_sha256": "8e0710ab3d2763773bdbb168473ffc683a2e1d1281eab9713b43646f9376e13c",
+          "owned_receipt_sha256": "5924b023f76f7e1ff36d2289c2c368bf19518c42e46f51198747b666ba545a72",
+          "adapter_source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3"
+        },
+        "patched": {
+          "label": "patched-s5752",
+          "pid": 73632,
+          "pid_in_owned_identities": true,
+          "exit_code": 0,
+          "natural_exit": true,
+          "timed_out": false,
+          "cleanup_verified": true,
+          "training_result_sha256": "7173311fe1615ab662b7825346c6a41c39929af01f34826ff74f6e7e68ad6ed5",
+          "owned_receipt_sha256": "9bc814ff579d050f4d463f46af888f8e5d92dd7e7f870b0ad253e29c3d2f823a",
+          "adapter_source_sha256": "40da12471f9887a9ee78066e768dd62ec11303c927c796e517177c92eaa20eee"
+        }
+      }
+    }
+  },
+  "model_patch_source_sha256": "40da12471f9887a9ee78066e768dd62ec11303c927c796e517177c92eaa20eee",
+  "owned_fixed_receipt": {
+    "label": "fixed-patched-batch",
+    "pid": 59224,
+    "pid_in_owned_identities": true,
+    "exit_code": 0,
+    "natural_exit": true,
+    "timed_out": false,
+    "cleanup_verified": true,
+    "fixed_result_sha256": "22edf39c267236845ea9142ad546c63fa73416aed47b3b4ff338d439f46feee1",
+    "owned_receipt_sha256": "a42e2efab29a04fb62104cdb3ba5ccaf5693c5a60fa38eb11c1ccec6f687562a"
+  },
+  "owned_training_receipt_count": 6,
+  "development_evaluation": true,
+  "generalization_claimed": false,
+  "new_model_API": 0,
+  "SDK_apps": 3
+}

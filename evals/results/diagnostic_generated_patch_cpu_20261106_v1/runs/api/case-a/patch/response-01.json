@@ -1,0 +1,33 @@
+{
+  "schema": "diagnostic_patch_response_v1",
+  "kind": "patch",
+  "request_sha256": "8f7341d281327df74a990b5067451254cc68c6588a4683c7c35e9d2db0329aa2",
+  "context_sha256": "04238b71d65cd65160dff20e88175e48bc690c503a38b72940fe5f432276f1af",
+  "provider_raw": {
+    "response_id": "chatcmpl-2010d5be-84b8-4ee4-8c04-0aa9248c5cc9",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"patch\",\n  \"source_sha256\": \"34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3\",\n  \"replacement_source\": \"def build_algorithm_kwargs(config):\\n    options = dict(config)\\n    return options\",\n  \"evidence_ids\": [\n    \"configured.epochs\",\n    \"configured.minibatches\",\n    \"inspection.expected_steps\",\n    \"inspection.actual_steps\",\n    \"inspection.actual_minibatches\"\n  ],\n  \"rationale\": \"The adapter overwrites num_learning_epochs with num_epochs, causing only 3 update steps instead of the configured 4 epochs. Removing the overwrite preserves all configured parameters including num_learning_epochs: 4 and num_mini_batches: 3, matching the expected 12 steps.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 1167,
+    "output_tokens": 227,
+    "total_tokens": 1394,
+    "wall_s": 2.0498029409791343
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "patch",
+    "source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3",
+    "replacement_source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    return options",
+    "evidence_ids": [
+      "configured.epochs",
+      "configured.minibatches",
+      "inspection.expected_steps",
+      "inspection.actual_steps",
+      "inspection.actual_minibatches"
+    ],
+    "rationale": "The adapter overwrites num_learning_epochs with num_epochs, causing only 3 update steps instead of the configured 4 epochs. Removing the overwrite preserves all configured parameters including num_learning_epochs: 4 and num_mini_batches: 3, matching the expected 12 steps."
+  },
+  "error": null,
+  "reservation": 2
+}

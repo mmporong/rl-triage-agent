@@ -1,0 +1,30 @@
+{
+  "schema": "diagnostic_patch_response_v1",
+  "kind": "diagnosis",
+  "request_sha256": "2e7b6ecfa1a7b6a371fce286d7be24c0bfb185d09a0ed2cd5a238e45ee6501fe",
+  "context_sha256": "e6d97c9e102747b2e7bf34effae98e8dbe7bcd00171097b74c35e6089fa50b95",
+  "provider_raw": {
+    "response_id": "chatcmpl-82d7b2a9-6d78-4702-9bcd-1183eb591437",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"inspect\",\n  \"probe\": \"P_optimizer_updates_cpu_adapter\",\n  \"source_sha256\": \"595fe8fa23527bff6c0945b65b2b4f3a7a8dea73da12dffe45d37e2caea8d3a9\",\n  \"fact_ids\": [\n    \"configured.epochs\",\n    \"configured.minibatches\"\n  ],\n  \"rationale\": \"The adapter copies configuration values without transformation, so preservation of configured epochs (4) and minibatches (3) should be verified against actual PPO optimizer update counts using the CPU adapter probe before any fault is claimed.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 380,
+    "output_tokens": 164,
+    "total_tokens": 544,
+    "wall_s": 6.081095250003273
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "inspect",
+    "probe": "P_optimizer_updates_cpu_adapter",
+    "source_sha256": "595fe8fa23527bff6c0945b65b2b4f3a7a8dea73da12dffe45d37e2caea8d3a9",
+    "fact_ids": [
+      "configured.epochs",
+      "configured.minibatches"
+    ],
+    "rationale": "The adapter copies configuration values without transformation, so preservation of configured epochs (4) and minibatches (3) should be verified against actual PPO optimizer update counts using the CPU adapter probe before any fault is claimed."
+  },
+  "error": null,
+  "reservation": 8
+}

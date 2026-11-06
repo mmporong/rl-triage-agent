@@ -1,0 +1,30 @@
+{
+  "schema": "diagnostic_patch_response_v1",
+  "kind": "patch",
+  "request_sha256": "c690ccc47af78138630be9103beaabcd7289b4f7ec87bb58626187397565caea",
+  "context_sha256": "4cbd4a3ab406e5ffb0fb4808f50a02e72cd9c9e9e0395b6a09ce45dc09806fc8",
+  "provider_raw": {
+    "response_id": "chatcmpl-5a1679ad-a4f0-436b-9cae-140db4f45798",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"patch\",\n  \"source_sha256\": \"34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3\",\n  \"replacement_source\": \"def build_algorithm_kwargs(config):\\n    options = dict(config)\\n    return options\",\n  \"evidence_ids\": [\n    \"configured.epochs\",\n    \"configured.minibatches\"\n  ],\n  \"rationale\": \"The adapter already preserves the configured num_learning_epochs value of 4 and num_mini_batches value of 3 by copying the config without overwriting. The current implementation incorrectly maps num_epochs to num_learning_epochs, which would override the configured 4 epochs with a default of 1 when num_epochs is absent, contradicting the requirement to preserve configured algorithm parameters and not hardcode epoch counts.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 1965,
+    "output_tokens": 223,
+    "total_tokens": 2188,
+    "wall_s": 1.7634393560001627
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "patch",
+    "source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3",
+    "replacement_source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    return options",
+    "evidence_ids": [
+      "configured.epochs",
+      "configured.minibatches"
+    ],
+    "rationale": "The adapter already preserves the configured num_learning_epochs value of 4 and num_mini_batches value of 3 by copying the config without overwriting. The current implementation incorrectly maps num_epochs to num_learning_epochs, which would override the configured 4 epochs with a default of 1 when num_epochs is absent, contradicting the requirement to preserve configured algorithm parameters and not hardcode epoch counts."
+  },
+  "error": null,
+  "reservation": 11
+}

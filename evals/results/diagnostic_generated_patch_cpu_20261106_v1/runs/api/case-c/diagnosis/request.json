@@ -1,0 +1,42 @@
+{
+  "schema": "diagnostic_patch_request_v1",
+  "case_id": "case-c",
+  "kind": "diagnosis",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "context": {
+    "schema": "ppo_adapter_diagnosis_context_v1",
+    "case_id": "case-c",
+    "source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    return options\n",
+    "source_sha256": "5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106",
+    "config": {
+      "num_learning_epochs": 4,
+      "num_mini_batches": 3,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    },
+    "facts": {
+      "configured.epochs": 4,
+      "configured.minibatches": 3
+    },
+    "available_probes": [
+      {
+        "id": "P_optimizer_updates_cpu_adapter",
+        "backend": "actual_rsl_cpu_tensor_abi",
+        "measures": "configured versus actual PPO minibatch and optimizer update counts"
+      }
+    ],
+    "scope": "focused adapter investigation; robot behavior has not been measured"
+  },
+  "context_sha256": "353ea25f8fd5af1fcb829317d0d894406d94687b5fb98d44ce5f956f45c8e8cb",
+  "messages": [
+    {
+      "role": "system",
+      "content": "Investigate the supplied PPO configuration adapter. Select the registered CPU check if configuration preservation needs verification, or hold if no check is justified. Do not claim that a fault is confirmed before a check result. Use only supplied source and facts. Return one JSON object with exactly action, probe, source_sha256, fact_ids, rationale. action is inspect or hold; probe is P_optimizer_updates_cpu_adapter for inspect and null for hold. Copy source_sha256 exactly. Cite at least one distinct existing fact ID. The proposal grants no execution permission."
+    },
+    {
+      "role": "user",
+      "content": "{\"schema\": \"ppo_adapter_diagnosis_context_v1\", \"case_id\": \"case-c\", \"source\": \"def build_algorithm_kwargs(config):\\n    options = dict(config)\\n    return options\\n\", \"source_sha256\": \"5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106\", \"config\": {\"num_learning_epochs\": 4, \"num_mini_batches\": 3, \"learning_rate\": 0.001, \"schedule\": \"fixed\"}, \"facts\": {\"configured.epochs\": 4, \"configured.minibatches\": 3}, \"available_probes\": [{\"id\": \"P_optimizer_updates_cpu_adapter\", \"backend\": \"actual_rsl_cpu_tensor_abi\", \"measures\": \"configured versus actual PPO minibatch and optimizer update counts\"}], \"scope\": \"focused adapter investigation; robot behavior has not been measured\"}"
+    }
+  ],
+  "chain": {}
+}

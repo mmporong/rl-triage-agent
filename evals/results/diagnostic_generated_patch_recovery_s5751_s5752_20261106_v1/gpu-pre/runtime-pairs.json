@@ -1,0 +1,2131 @@
+{
+  "pairs": [
+    {
+      "healthy_training": {
+        "actual_ppo": {
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4
+        },
+        "adapter_source_sha256": "5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106",
+        "algorithm_after": {
+          "class_name": "PPO",
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "learning_rate": 0.001,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "rnd_cfg": null,
+          "schedule": "adaptive",
+          "symmetry_cfg": null,
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "algorithm_before": {
+          "class_name": "PPO",
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "learning_rate": 0.001,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "rnd_cfg": null,
+          "schedule": "adaptive",
+          "symmetry_cfg": null,
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "arm": "healthy",
+        "checkpoint": "final.pt",
+        "checkpoint_sha256": "2bda803f8bd5f7b5b2e88c4c86a64e1c227cf16822b3831ea3ed40aa21019f95",
+        "counts": {
+          "minibatches": 6000,
+          "optimizer_steps": 6000,
+          "updates": 300
+        },
+        "first_three_updates": [
+          {
+            "index": 1,
+            "learning_rate": 0.0006666666666666666,
+            "mean_policy_std": 0.9987747073173523,
+            "minibatches": 20,
+            "optimizer_steps": 20,
+            "return_values_finite": true
+          },
+          {
+            "index": 2,
+            "learning_rate": 0.0022500000000000003,
+            "mean_policy_std": 0.9864047765731812,
+            "minibatches": 20,
+            "optimizer_steps": 20,
+            "return_values_finite": true
+          },
+          {
+            "index": 3,
+            "learning_rate": 0.005062500000000001,
+            "mean_policy_std": 0.9782404899597168,
+            "minibatches": 20,
+            "optimizer_steps": 20,
+            "return_values_finite": true
+          }
+        ],
+        "pid": 82204,
+        "policy_parameters_finite": true,
+        "policy_recovery_verified": false,
+        "policy_sha256_after": "a69691f5f9b1e00887054682952e2e154ca8477675bacd5f8d09beec12e6ec84",
+        "policy_sha256_before": "0008314df69a097c833b6130f0725429fa159b09588084db4ea1e80cd58d4ee4",
+        "protocol_sha256_lf": "7c43d43b2915506bc0862a9a0170b664062865266d786fddb2745db85703fe41",
+        "schema": "generated_ppo_adapter_training_result_v1",
+        "seed": 5751,
+        "source_commit": "c07c2f4fbb9309c652b32af570e347e6ee448ed2",
+        "status": "complete",
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "task_terms_after": {
+          "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+          "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+        },
+        "task_terms_before": {
+          "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+          "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+        },
+        "training": {
+          "num_envs": 4096,
+          "updates": 300
+        }
+      },
+      "fault_training": {
+        "actual_ppo": {
+          "num_learning_epochs": 1,
+          "num_mini_batches": 4
+        },
+        "adapter_source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3",
+        "algorithm_after": {
+          "class_name": "PPO",
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "learning_rate": 0.001,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 1,
+          "num_mini_batches": 4,
+          "rnd_cfg": null,
+          "schedule": "adaptive",
+          "symmetry_cfg": null,
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "algorithm_before": {
+          "class_name": "PPO",
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "learning_rate": 0.001,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "rnd_cfg": null,
+          "schedule": "adaptive",
+          "symmetry_cfg": null,
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "arm": "fault",
+        "checkpoint": "final.pt",
+        "checkpoint_sha256": "dd523ba5ecebf589f5d9a405c8ca397c1aa273e50d611675ac3d320faf9f3691",
+        "counts": {
+          "minibatches": 1200,
+          "optimizer_steps": 1200,
+          "updates": 300
+        },
+        "first_three_updates": [
+          {
+            "index": 1,
+            "learning_rate": 0.0006666666666666666,
+            "mean_policy_std": 1.000156044960022,
+            "minibatches": 4,
+            "optimizer_steps": 4,
+            "return_values_finite": true
+          },
+          {
+            "index": 2,
+            "learning_rate": 0.001,
+            "mean_policy_std": 0.9986461400985718,
+            "minibatches": 4,
+            "optimizer_steps": 4,
+            "return_values_finite": true
+          },
+          {
+            "index": 3,
+            "learning_rate": 0.0022500000000000003,
+            "mean_policy_std": 0.9927845001220703,
+            "minibatches": 4,
+            "optimizer_steps": 4,
+            "return_values_finite": true
+          }
+        ],
+        "pid": 13588,
+        "policy_parameters_finite": true,
+        "policy_recovery_verified": false,
+        "policy_sha256_after": "239a501c1629a86389d93a5b34841a3a3ce4ad17247114c9696edae8eef8b426",
+        "policy_sha256_before": "0008314df69a097c833b6130f0725429fa159b09588084db4ea1e80cd58d4ee4",
+        "protocol_sha256_lf": "7c43d43b2915506bc0862a9a0170b664062865266d786fddb2745db85703fe41",
+        "schema": "generated_ppo_adapter_training_result_v1",
+        "seed": 5751,
+        "source_commit": "c07c2f4fbb9309c652b32af570e347e6ee448ed2",
+        "status": "complete",
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "task_terms_after": {
+          "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+          "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+        },
+        "task_terms_before": {
+          "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+          "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+        },
+        "training": {
+          "num_envs": 4096,
+          "updates": 300
+        }
+      },
+      "healthy_fixed": {
+        "protocol": "fixed_eval_v1",
+        "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "eval_seed": 2026,
+        "num_envs": 1040,
+        "horizon_steps": 1000,
+        "step_dt": 0.02,
+        "action_scale": 0.25,
+        "standstill": {
+          "lin_vel_rmse_mps": 1.1766968108291043,
+          "yaw_rate_rmse_radps": 0.8320502943378437
+        },
+        "versions": {
+          "torch": "2.7.0+cu128",
+          "gpu": "NVIDIA GeForce RTX 3060",
+          "isaaclab": "0.41.3",
+          "isaaclab_tasks": "0.10.36",
+          "isaaclab_rl": "0.1.8",
+          "rsl-rl-lib": "2.3.3",
+          "isaacsim": null
+        },
+        "name": "healthy-s5751",
+        "checkpoint": {
+          "file": "final.pt",
+          "sha256": "2bda803f8bd5f7b5b2e88c4c86a64e1c227cf16822b3831ea3ed40aa21019f95"
+        },
+        "metrics": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.14207924478857956,
+          "yaw_rate_rmse_radps": 0.3004340855940289
+        },
+        "by_condition": [
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.16927553078417928,
+            "yaw_rate_rmse_radps": 0.1887694332400806,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1146.168212890625,
+            "yaw_error_sq_sum": 1425.35595703125
+          },
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.14115253698141264,
+            "yaw_rate_rmse_radps": 0.07236956735095529,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 796.9615478515625,
+            "yaw_error_sq_sum": 209.49417114257812
+          },
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.17086281325129946,
+            "yaw_rate_rmse_radps": 0.11395447179933926,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1167.7640380859375,
+            "yaw_error_sq_sum": 519.4248657226562
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.11006868125632222,
+            "yaw_rate_rmse_radps": 0.13513624310013486,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 484.6045837402344,
+            "yaw_error_sq_sum": 730.47216796875
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.09079072518726401,
+            "yaw_rate_rmse_radps": 0.05369284851646002,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 329.7182312011719,
+            "yaw_error_sq_sum": 115.31687927246094
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.1069533960688676,
+            "yaw_rate_rmse_radps": 0.10380617022982402,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 457.5611572265625,
+            "yaw_error_sq_sum": 431.0288391113281
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.16264306915554666,
+            "yaw_rate_rmse_radps": 0.1810805798300899,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1058.1107177734375,
+            "yaw_error_sq_sum": 1311.6070556640625
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.14308168247154043,
+            "yaw_rate_rmse_radps": 0.08991967325307323,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 818.8947143554688,
+            "yaw_error_sq_sum": 323.4219055175781
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.1469027774597561,
+            "yaw_rate_rmse_radps": 0.1162382255251782,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 863.217041015625,
+            "yaw_error_sq_sum": 540.4530029296875
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.10922752334219041,
+            "yaw_rate_rmse_radps": 0.09957663754307415,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 477.22607421875,
+            "yaw_error_sq_sum": 396.6202697753906
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.10508079689911533,
+            "yaw_rate_rmse_radps": 0.06646085473263184,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 441.678955078125,
+            "yaw_error_sq_sum": 176.6818084716797
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.11309323028082434,
+            "yaw_rate_rmse_radps": 0.13142889129410198,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 511.6031494140625,
+            "yaw_error_sq_sum": 690.942138671875
+          },
+          {
+            "command": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.025259245435690844,
+            "yaw_rate_rmse_radps": 0.9814338502129168,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 25.52117919921875,
+            "yaw_error_sq_sum": 38528.49609375
+          },
+          {
+            "command": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.029138937893626177,
+            "yaw_rate_rmse_radps": 0.9820569929998971,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 33.96310806274414,
+            "yaw_error_sq_sum": 38577.4375
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.11997724953204018,
+            "yaw_rate_rmse_radps": 0.17119894561442892,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 575.7816162109375,
+            "yaw_error_sq_sum": 1172.3631591796875
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.11509090645245121,
+            "yaw_rate_rmse_radps": 0.10745223292626284,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 529.836669921875,
+            "yaw_error_sq_sum": 461.83929443359375
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.11571343086909183,
+            "yaw_rate_rmse_radps": 0.1079351833958569,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 535.5839233398438,
+            "yaw_error_sq_sum": 466.0001525878906
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.22391714661857562,
+            "yaw_rate_rmse_radps": 0.13118599048343954,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 2005.5555419921875,
+            "yaw_error_sq_sum": 688.3905639648438
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.1717141292599418,
+            "yaw_rate_rmse_radps": 0.09755929953135595,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1179.4296875,
+            "yaw_error_sq_sum": 380.7126770019531
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.19422242680550245,
+            "yaw_rate_rmse_radps": 0.18970878368547375,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1508.89404296875,
+            "yaw_error_sq_sum": 1439.576904296875
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.136801637820428,
+            "yaw_rate_rmse_radps": 0.13841402082921142,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 748.5875244140625,
+            "yaw_error_sq_sum": 766.337646484375
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.14765743323765326,
+            "yaw_rate_rmse_radps": 0.08871072249258401,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 872.1087036132812,
+            "yaw_error_sq_sum": 314.78369140625
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.14028821433411534,
+            "yaw_rate_rmse_radps": 0.1963049472739257,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 787.2313232421875,
+            "yaw_error_sq_sum": 1541.42529296875
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.17765706594744463,
+            "yaw_rate_rmse_radps": 0.17534650231476942,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1262.4813232421875,
+            "yaw_error_sq_sum": 1229.8558349609375
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.16061430305456337,
+            "yaw_rate_rmse_radps": 0.07724519002315851,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1031.878173828125,
+            "yaw_error_sq_sum": 238.6727752685547
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.18327655444752405,
+            "yaw_rate_rmse_radps": 0.1727972063191959,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1343.61181640625,
+            "yaw_error_sq_sum": 1194.35498046875
+          }
+        ],
+        "elapsed_s": 39.3,
+        "started_at": "2026-11-06T04:04:41+00:00",
+        "finished_at": "2026-11-06T04:05:20+00:00"
+      },
+      "fault_fixed": {
+        "protocol": "fixed_eval_v1",
+        "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "eval_seed": 2026,
+        "num_envs": 1040,
+        "horizon_steps": 1000,
+        "step_dt": 0.02,
+        "action_scale": 0.25,
+        "standstill": {
+          "lin_vel_rmse_mps": 1.1766968108291043,
+          "yaw_rate_rmse_radps": 0.8320502943378437
+        },
+        "versions": {
+          "torch": "2.7.0+cu128",
+          "gpu": "NVIDIA GeForce RTX 3060",
+          "isaaclab": "0.41.3",
+          "isaaclab_tasks": "0.10.36",
+          "isaaclab_rl": "0.1.8",
+          "rsl-rl-lib": "2.3.3",
+          "isaacsim": null
+        },
+        "name": "fault-s5751",
+        "checkpoint": {
+          "file": "final.pt",
+          "sha256": "dd523ba5ecebf589f5d9a405c8ca397c1aa273e50d611675ac3d320faf9f3691"
+        },
+        "metrics": {
+          "fall_rate": 0.04326923191547394,
+          "mean_survival_s": 19.260384521484376,
+          "lin_vel_rmse_mps": 1.080870187896255,
+          "yaw_rate_rmse_radps": 0.6820469822767838
+        },
+        "by_condition": [
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.125,
+            "lin_vel_rmse_mps": 1.243964905547421,
+            "yaw_rate_rmse_radps": 0.5809804977691485,
+            "num_envs": 40,
+            "fall_count": 5,
+            "alive_steps_sum": 39186,
+            "lin_error_sq_sum": 60638.32421875,
+            "yaw_error_sq_sum": 13226.77734375
+          },
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 1.0,
+            "lin_vel_rmse_mps": 1.4250993514979096,
+            "yaw_rate_rmse_radps": 0.6888172144305932,
+            "num_envs": 40,
+            "fall_count": 40,
+            "alive_steps_sum": 2354,
+            "lin_error_sq_sum": 4780.7578125,
+            "yaw_error_sq_sum": 1116.900390625
+          },
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.3920085813762069,
+            "yaw_rate_rmse_radps": 0.9775498009212881,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 77507.515625,
+            "yaw_error_sq_sum": 38224.14453125
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.20841294540058417,
+            "yaw_rate_rmse_radps": 0.19729681838767305,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1737.438232421875,
+            "yaw_error_sq_sum": 1557.0413818359375
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.17815844840831382,
+            "yaw_rate_rmse_radps": 0.16806216515748532,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1269.6173095703125,
+            "yaw_error_sq_sum": 1129.795654296875
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.9930486420456703,
+            "yaw_rate_rmse_radps": 0.9826666724085538,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 39445.82421875,
+            "yaw_error_sq_sum": 38625.3515625
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.6685167525481317,
+            "yaw_rate_rmse_radps": 0.2140789654935694,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 17876.5859375,
+            "yaw_error_sq_sum": 1833.192138671875
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.8790132296003855,
+            "yaw_rate_rmse_radps": 0.14992016002634276,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 30906.5703125,
+            "yaw_error_sq_sum": 899.0421752929688
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.4039159797242142,
+            "yaw_rate_rmse_radps": 0.9926056697525962,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 78839.203125,
+            "yaw_error_sq_sum": 39410.640625
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.0147405764529178,
+            "yaw_rate_rmse_radps": 0.9708272587882203,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 41187.9375,
+            "yaw_error_sq_sum": 37700.22265625
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.0017744510523565,
+            "yaw_rate_rmse_radps": 0.028352618292677892,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 40142.08203125,
+            "yaw_error_sq_sum": 32.15483856201172
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.9984794592122314,
+            "yaw_rate_rmse_radps": 0.9888367139598934,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 39878.44921875,
+            "yaw_error_sq_sum": 39111.921875
+          },
+          {
+            "command": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.30361793441372376,
+            "yaw_rate_rmse_radps": 0.34442511829042755,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 3687.35400390625,
+            "yaw_error_sq_sum": 4745.146484375
+          },
+          {
+            "command": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.06953857383303473,
+            "yaw_rate_rmse_radps": 0.9854615035606413,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 193.42453002929688,
+            "yaw_error_sq_sum": 38845.375
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.7402774764826362,
+            "yaw_rate_rmse_radps": 0.26467711156930795,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 21920.4296875,
+            "yaw_error_sq_sum": 2802.158935546875
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.9994365600176932,
+            "yaw_rate_rmse_radps": 0.04709716233697432,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 39954.9375,
+            "yaw_error_sq_sum": 88.7257080078125
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.007185027533422,
+            "yaw_rate_rmse_radps": 0.9853544730197351,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 40576.8671875,
+            "yaw_error_sq_sum": 38836.9375
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.4168262701148295,
+            "yaw_rate_rmse_radps": 0.9969840261696774,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 80295.8671875,
+            "yaw_error_sq_sum": 39759.0859375
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.4110783775184141,
+            "yaw_rate_rmse_radps": 0.030486892385085836,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 79645.6875,
+            "yaw_error_sq_sum": 37.17802429199219
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.4111434996351364,
+            "yaw_rate_rmse_radps": 0.8407375331275362,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 79653.0390625,
+            "yaw_error_sq_sum": 28273.583984375
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.0006281230432212,
+            "yaw_rate_rmse_radps": 0.9844729117972216,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 40050.265625,
+            "yaw_error_sq_sum": 38767.4765625
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.9971834847929192,
+            "yaw_rate_rmse_radps": 0.022979290678001505,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 39774.99609375,
+            "yaw_error_sq_sum": 21.121912002563477
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.0776580963627795,
+            "yaw_rate_rmse_radps": 0.6375065295315119,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 46453.87890625,
+            "yaw_error_sq_sum": 16256.5830078125
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.413054993290247,
+            "yaw_rate_rmse_radps": 0.9850105091444457,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 79868.9765625,
+            "yaw_error_sq_sum": 38809.828125
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.4156847393576015,
+            "yaw_rate_rmse_radps": 0.02151020287014161,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 80166.53125,
+            "yaw_error_sq_sum": 18.507553100585938
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.6095576959408755,
+            "yaw_rate_rmse_radps": 0.37998644352874617,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 103627.0390625,
+            "yaw_error_sq_sum": 5775.587890625
+          }
+        ],
+        "elapsed_s": 43.3,
+        "started_at": "2026-11-06T04:05:20+00:00",
+        "finished_at": "2026-11-06T04:06:03+00:00"
+      }
+    },
+    {
+      "healthy_training": {
+        "actual_ppo": {
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4
+        },
+        "adapter_source_sha256": "5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106",
+        "algorithm_after": {
+          "class_name": "PPO",
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "learning_rate": 0.001,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "rnd_cfg": null,
+          "schedule": "adaptive",
+          "symmetry_cfg": null,
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "algorithm_before": {
+          "class_name": "PPO",
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "learning_rate": 0.001,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "rnd_cfg": null,
+          "schedule": "adaptive",
+          "symmetry_cfg": null,
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "arm": "healthy",
+        "checkpoint": "final.pt",
+        "checkpoint_sha256": "f75d0fb0a26d74f43875dd30205bd97723cdbf3c203587b244396e1be44ec7e5",
+        "counts": {
+          "minibatches": 6000,
+          "optimizer_steps": 6000,
+          "updates": 300
+        },
+        "first_three_updates": [
+          {
+            "index": 1,
+            "learning_rate": 0.0006666666666666666,
+            "mean_policy_std": 0.9992911219596863,
+            "minibatches": 20,
+            "optimizer_steps": 20,
+            "return_values_finite": true
+          },
+          {
+            "index": 2,
+            "learning_rate": 0.0022500000000000003,
+            "mean_policy_std": 0.988381028175354,
+            "minibatches": 20,
+            "optimizer_steps": 20,
+            "return_values_finite": true
+          },
+          {
+            "index": 3,
+            "learning_rate": 0.005062500000000001,
+            "mean_policy_std": 0.9796069860458374,
+            "minibatches": 20,
+            "optimizer_steps": 20,
+            "return_values_finite": true
+          }
+        ],
+        "pid": 13568,
+        "policy_parameters_finite": true,
+        "policy_recovery_verified": false,
+        "policy_sha256_after": "be9ac6ff6c90494765bddfb4dc92bdb5b67b4fc43b6d92624502eb5bdba1cc82",
+        "policy_sha256_before": "ec3257cf50f95191332b5cef23e2ff3260c052987bb920b8eff1ca5376da7155",
+        "protocol_sha256_lf": "7c43d43b2915506bc0862a9a0170b664062865266d786fddb2745db85703fe41",
+        "schema": "generated_ppo_adapter_training_result_v1",
+        "seed": 5752,
+        "source_commit": "c07c2f4fbb9309c652b32af570e347e6ee448ed2",
+        "status": "complete",
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "task_terms_after": {
+          "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+          "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+        },
+        "task_terms_before": {
+          "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+          "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+        },
+        "training": {
+          "num_envs": 4096,
+          "updates": 300
+        }
+      },
+      "fault_training": {
+        "actual_ppo": {
+          "num_learning_epochs": 1,
+          "num_mini_batches": 4
+        },
+        "adapter_source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3",
+        "algorithm_after": {
+          "class_name": "PPO",
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "learning_rate": 0.001,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 1,
+          "num_mini_batches": 4,
+          "rnd_cfg": null,
+          "schedule": "adaptive",
+          "symmetry_cfg": null,
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "algorithm_before": {
+          "class_name": "PPO",
+          "clip_param": 0.2,
+          "desired_kl": 0.01,
+          "entropy_coef": 0.01,
+          "gamma": 0.99,
+          "lam": 0.95,
+          "learning_rate": 0.001,
+          "max_grad_norm": 1.0,
+          "normalize_advantage_per_mini_batch": false,
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "rnd_cfg": null,
+          "schedule": "adaptive",
+          "symmetry_cfg": null,
+          "use_clipped_value_loss": true,
+          "value_loss_coef": 1.0
+        },
+        "arm": "fault",
+        "checkpoint": "final.pt",
+        "checkpoint_sha256": "04b44227ef5e52ee61235844d15cbc09923681d23e04a69155d0ef2dfc062cac",
+        "counts": {
+          "minibatches": 1200,
+          "optimizer_steps": 1200,
+          "updates": 300
+        },
+        "first_three_updates": [
+          {
+            "index": 1,
+            "learning_rate": 0.0006666666666666666,
+            "mean_policy_std": 1.000537633895874,
+            "minibatches": 4,
+            "optimizer_steps": 4,
+            "return_values_finite": true
+          },
+          {
+            "index": 2,
+            "learning_rate": 0.001,
+            "mean_policy_std": 0.999146580696106,
+            "minibatches": 4,
+            "optimizer_steps": 4,
+            "return_values_finite": true
+          },
+          {
+            "index": 3,
+            "learning_rate": 0.0015,
+            "mean_policy_std": 0.9952684640884399,
+            "minibatches": 4,
+            "optimizer_steps": 4,
+            "return_values_finite": true
+          }
+        ],
+        "pid": 14588,
+        "policy_parameters_finite": true,
+        "policy_recovery_verified": false,
+        "policy_sha256_after": "a1af85f7212691448002a59f01fb0304452582581fb0df6d10751543ab862d8c",
+        "policy_sha256_before": "ec3257cf50f95191332b5cef23e2ff3260c052987bb920b8eff1ca5376da7155",
+        "protocol_sha256_lf": "7c43d43b2915506bc0862a9a0170b664062865266d786fddb2745db85703fe41",
+        "schema": "generated_ppo_adapter_training_result_v1",
+        "seed": 5752,
+        "source_commit": "c07c2f4fbb9309c652b32af570e347e6ee448ed2",
+        "status": "complete",
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "task_terms_after": {
+          "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+          "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+        },
+        "task_terms_before": {
+          "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+          "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+        },
+        "training": {
+          "num_envs": 4096,
+          "updates": 300
+        }
+      },
+      "healthy_fixed": {
+        "protocol": "fixed_eval_v1",
+        "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "eval_seed": 2026,
+        "num_envs": 1040,
+        "horizon_steps": 1000,
+        "step_dt": 0.02,
+        "action_scale": 0.25,
+        "standstill": {
+          "lin_vel_rmse_mps": 1.1766968108291043,
+          "yaw_rate_rmse_radps": 0.8320502943378437
+        },
+        "versions": {
+          "torch": "2.7.0+cu128",
+          "gpu": "NVIDIA GeForce RTX 3060",
+          "isaaclab": "0.41.3",
+          "isaaclab_tasks": "0.10.36",
+          "isaaclab_rl": "0.1.8",
+          "rsl-rl-lib": "2.3.3",
+          "isaacsim": null
+        },
+        "name": "healthy-s5752",
+        "checkpoint": {
+          "file": "final.pt",
+          "sha256": "f75d0fb0a26d74f43875dd30205bd97723cdbf3c203587b244396e1be44ec7e5"
+        },
+        "metrics": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 0.15393801496894308,
+          "yaw_rate_rmse_radps": 0.294663903797547
+        },
+        "by_condition": [
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.15548738699537154,
+            "yaw_rate_rmse_radps": 0.11826596845430047,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 967.0531005859375,
+            "yaw_error_sq_sum": 559.4735717773438
+          },
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.15675293082823744,
+            "yaw_rate_rmse_radps": 0.07064176377372312,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 982.8592529296875,
+            "yaw_error_sq_sum": 199.6103515625
+          },
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.17492600974903288,
+            "yaw_rate_rmse_radps": 0.14700439986307062,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1223.96435546875,
+            "yaw_error_sq_sum": 864.4117431640625
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.13854082716302665,
+            "yaw_rate_rmse_radps": 0.13598387880704887,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 767.742431640625,
+            "yaw_error_sq_sum": 739.6646118164062
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.1062534681763928,
+            "yaw_rate_rmse_radps": 0.08106138903019061,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 451.59197998046875,
+            "yaw_error_sq_sum": 262.83795166015625
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.13110450454992478,
+            "yaw_rate_rmse_radps": 0.1460823806989864,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 687.53564453125,
+            "yaw_error_sq_sum": 853.6024780273438
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.1597027496999308,
+            "yaw_rate_rmse_radps": 0.130872550642672,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1020.19873046875,
+            "yaw_error_sq_sum": 685.10498046875
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.16546570685941053,
+            "yaw_rate_rmse_radps": 0.08500297092406811,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1095.156005859375,
+            "yaw_error_sq_sum": 289.02020263671875
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.1898010979607583,
+            "yaw_rate_rmse_radps": 0.14762325503539778,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1440.978271484375,
+            "yaw_error_sq_sum": 871.7050170898438
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.12406266604011244,
+            "yaw_rate_rmse_radps": 0.1165394188986137,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 615.6618041992188,
+            "yaw_error_sq_sum": 543.2574462890625
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.11706468173395705,
+            "yaw_rate_rmse_radps": 0.08969620187260492,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 548.1655883789062,
+            "yaw_error_sq_sum": 321.81634521484375
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.12455059595260248,
+            "yaw_rate_rmse_radps": 0.14484187481930724,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 620.5140380859375,
+            "yaw_error_sq_sum": 839.166748046875
+          },
+          {
+            "command": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.0235339122142683,
+            "yaw_rate_rmse_radps": 0.9855759043733009,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 22.15380096435547,
+            "yaw_error_sq_sum": 38854.39453125
+          },
+          {
+            "command": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.03425358362314565,
+            "yaw_rate_rmse_radps": 0.9427238315945184,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 46.93231964111328,
+            "yaw_error_sq_sum": 35549.12890625
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.12337147165990706,
+            "yaw_rate_rmse_radps": 0.10678384027417806,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 608.82080078125,
+            "yaw_error_sq_sum": 456.1115417480469
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.12332649280720262,
+            "yaw_rate_rmse_radps": 0.07972585196507853,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 608.376953125,
+            "yaw_error_sq_sum": 254.2484588623047
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.11567262400768913,
+            "yaw_rate_rmse_radps": 0.11635089392685441,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 535.2062377929688,
+            "yaw_error_sq_sum": 541.501220703125
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.20908768620476179,
+            "yaw_rate_rmse_radps": 0.1635674450556444,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1748.7064208984375,
+            "yaw_error_sq_sum": 1070.17236328125
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.18514425890760242,
+            "yaw_rate_rmse_radps": 0.11515283794342969,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1371.1358642578125,
+            "yaw_error_sq_sum": 530.4070434570312
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.23330759542293356,
+            "yaw_rate_rmse_radps": 0.17931842190792022,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 2177.29736328125,
+            "yaw_error_sq_sum": 1286.203857421875
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.14353242280573536,
+            "yaw_rate_rmse_radps": 0.13270685136208116,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 824.062255859375,
+            "yaw_error_sq_sum": 704.4443359375
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.15121107372927214,
+            "yaw_rate_rmse_radps": 0.06640540555529265,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 914.591552734375,
+            "yaw_error_sq_sum": 176.38711547851562
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.17929259424356025,
+            "yaw_rate_rmse_radps": 0.15566178342905013,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1285.8333740234375,
+            "yaw_error_sq_sum": 969.2236328125
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.1791911452966758,
+            "yaw_rate_rmse_radps": 0.17209918795033305,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1284.378662109375,
+            "yaw_error_sq_sum": 1184.7252197265625
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.17041536636913515,
+            "yaw_rate_rmse_radps": 0.11067297633311254,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1161.6558837890625,
+            "yaw_error_sq_sum": 489.9403076171875
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.20212727470745767,
+            "yaw_rate_rmse_radps": 0.17344561143757176,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 1634.2174072265625,
+            "yaw_error_sq_sum": 1203.335205078125
+          }
+        ],
+        "elapsed_s": 39.1,
+        "started_at": "2026-11-06T04:06:03+00:00",
+        "finished_at": "2026-11-06T04:06:43+00:00"
+      },
+      "fault_fixed": {
+        "protocol": "fixed_eval_v1",
+        "protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46",
+        "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+        "eval_seed": 2026,
+        "num_envs": 1040,
+        "horizon_steps": 1000,
+        "step_dt": 0.02,
+        "action_scale": 0.25,
+        "standstill": {
+          "lin_vel_rmse_mps": 1.1766968108291043,
+          "yaw_rate_rmse_radps": 0.8320502943378437
+        },
+        "versions": {
+          "torch": "2.7.0+cu128",
+          "gpu": "NVIDIA GeForce RTX 3060",
+          "isaaclab": "0.41.3",
+          "isaaclab_tasks": "0.10.36",
+          "isaaclab_rl": "0.1.8",
+          "rsl-rl-lib": "2.3.3",
+          "isaacsim": null
+        },
+        "name": "fault-s5752",
+        "checkpoint": {
+          "file": "final.pt",
+          "sha256": "04b44227ef5e52ee61235844d15cbc09923681d23e04a69155d0ef2dfc062cac"
+        },
+        "metrics": {
+          "fall_rate": 0.0,
+          "mean_survival_s": 20.0,
+          "lin_vel_rmse_mps": 1.185980527396306,
+          "yaw_rate_rmse_radps": 0.5759336593342564
+        },
+        "by_condition": [
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.50719692745341,
+            "yaw_rate_rmse_radps": 0.3135452927963768,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 90865.703125,
+            "yaw_error_sq_sum": 3932.426025390625
+          },
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.414522611607888,
+            "yaw_rate_rmse_radps": 0.0350356165999971,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 80034.96875,
+            "yaw_error_sq_sum": 49.09977722167969
+          },
+          {
+            "command": [
+              -1.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.180219209643912,
+            "yaw_rate_rmse_radps": 0.2982206140895843,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 55716.6953125,
+            "yaw_error_sq_sum": 3557.42138671875
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.0001705909181193,
+            "yaw_rate_rmse_radps": 0.9957038575173845,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 40013.6484375,
+            "yaw_error_sq_sum": 39657.046875
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.0028643060784694,
+            "yaw_rate_rmse_radps": 0.030054909999054556,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 40229.47265625,
+            "yaw_error_sq_sum": 36.13190460205078
+          },
+          {
+            "command": [
+              -1.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.8677321769183018,
+            "yaw_rate_rmse_radps": 0.2616433660090821,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 30118.365234375,
+            "yaw_error_sq_sum": 2738.2900390625
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.4148473305448894,
+            "yaw_rate_rmse_radps": 0.9927109347639926,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 80071.71875,
+            "yaw_error_sq_sum": 39419.0
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.417187121003257,
+            "yaw_rate_rmse_radps": 0.03164636630492,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 80336.7734375,
+            "yaw_error_sq_sum": 40.05970001220703
+          },
+          {
+            "command": [
+              -1.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.4645447111431933,
+            "yaw_rate_rmse_radps": 0.2961210512644333,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 85795.6484375,
+            "yaw_error_sq_sum": 3507.507080078125
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.9989585885905131,
+            "yaw_rate_rmse_radps": 0.9876014089544172,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 39916.73046875,
+            "yaw_error_sq_sum": 39014.26171875
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.9985153529897525,
+            "yaw_rate_rmse_radps": 0.030559307407499833,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 39881.31640625,
+            "yaw_error_sq_sum": 37.35485076904297
+          },
+          {
+            "command": [
+              0.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.7704160680883739,
+            "yaw_rate_rmse_radps": 0.24095335753587768,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 23741.63671875,
+            "yaw_error_sq_sum": 2322.3408203125
+          },
+          {
+            "command": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.021500835979088872,
+            "yaw_rate_rmse_radps": 0.9882741229980172,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 18.491437911987305,
+            "yaw_error_sq_sum": 39067.4296875
+          },
+          {
+            "command": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.2957725727563695,
+            "yaw_rate_rmse_radps": 0.2523704271889463,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 3499.256591796875,
+            "yaw_error_sq_sum": 2547.63330078125
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.9998227381953763,
+            "yaw_rate_rmse_radps": 0.9834978234597167,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 39985.8203125,
+            "yaw_error_sq_sum": 38690.71875
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.0004513629794805,
+            "yaw_rate_rmse_radps": 0.03624520631861683,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 40036.1171875,
+            "yaw_error_sq_sum": 52.54859924316406
+          },
+          {
+            "command": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.2391780762616404,
+            "yaw_rate_rmse_radps": 0.27934561419139686,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 61422.4921875,
+            "yaw_error_sq_sum": 3121.35888671875
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.4143095433373134,
+            "yaw_rate_rmse_radps": 0.9872228151328098,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 80010.859375,
+            "yaw_error_sq_sum": 38984.35546875
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.4125846213590179,
+            "yaw_rate_rmse_radps": 0.032272191891887916,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 79815.8125,
+            "yaw_error_sq_sum": 41.65977478027344
+          },
+          {
+            "command": [
+              1.0,
+              -1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.3416955224640201,
+            "yaw_rate_rmse_radps": 0.2666921806845511,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 72005.875,
+            "yaw_error_sq_sum": 2844.98876953125
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.0019272931611605,
+            "yaw_rate_rmse_radps": 0.9870497391215906,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 40154.33203125,
+            "yaw_error_sq_sum": 38970.6875
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 0.998209089679487,
+            "yaw_rate_rmse_radps": 0.032988597807373246,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 39856.85546875,
+            "yaw_error_sq_sum": 43.529903411865234
+          },
+          {
+            "command": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.1391463875145722,
+            "yaw_rate_rmse_radps": 0.28018080187314987,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 51906.1796875,
+            "yaw_error_sq_sum": 3140.05126953125
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              -1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.4147997042426181,
+            "yaw_rate_rmse_radps": 0.9795265019226126,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 80066.328125,
+            "yaw_error_sq_sum": 38378.88671875
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.4135149837815657,
+            "yaw_rate_rmse_radps": 0.03699254713518094,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 79920.984375,
+            "yaw_error_sq_sum": 54.73794174194336
+          },
+          {
+            "command": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "fall_rate": 0.0,
+            "lin_vel_rmse_mps": 1.6385187074572876,
+            "yaw_rate_rmse_radps": 0.34343902837467016,
+            "num_envs": 40,
+            "fall_count": 0,
+            "alive_steps_sum": 40000,
+            "lin_error_sq_sum": 107389.7421875,
+            "yaw_error_sq_sum": 4718.0146484375
+          }
+        ],
+        "elapsed_s": 40.8,
+        "started_at": "2026-11-06T04:06:43+00:00",
+        "finished_at": "2026-11-06T04:07:23+00:00"
+      }
+    }
+  ],
+  "bands": {
+    "survival_ratio_min": 0.9,
+    "err_xy_ratio_max": 1.1513,
+    "err_yaw_ratio_max": 1.1719,
+    "fall_frac_max": 0.05
+  },
+  "fixed_protocol_sha256_lf": "8d24652eeed47f462d78244fceec785164b7695e5b757ae8a4e9bd7947aa8a46"
+}

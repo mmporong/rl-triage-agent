@@ -1,0 +1,34 @@
+{
+  "status": "complete",
+  "case": "runtime-repeat",
+  "result": {
+    "status": "admitted",
+    "first_passed": true,
+    "revision_used": false,
+    "source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    return options",
+    "source_sha256": "40da12471f9887a9ee78066e768dd62ec11303c927c796e517177c92eaa20eee",
+    "request": {
+      "scope": "run",
+      "path": "runs/api/runtime-repeat/patch/request.json",
+      "sha256": "c690ccc47af78138630be9103beaabcd7289b4f7ec87bb58626187397565caea"
+    },
+    "response": {
+      "scope": "run",
+      "path": "runs/api/runtime-repeat/patch/response-01.json",
+      "sha256": "d3f7dc5062cd21ece36fdc7fba291ee3553dfd425e08516346ffc018cd629e64"
+    },
+    "validation": {
+      "scope": "run",
+      "path": "runs/cpu/runtime-repeat-first/candidate.json",
+      "sha256": "88832bb82322d9e3ebcc047b09c7855c16fa2ff1307b4b75d6e772f76b90ffdb"
+    }
+  },
+  "runtime_inputs": {
+    "scope": "run",
+    "path": "gpu-pre/runtime-pairs.json",
+    "sha256": "1809550333a04095dd232747dfb4e8d63631a968f69d828d4b2470e4dc03d4ae"
+  },
+  "development_evaluation": true,
+  "GPU_apps": 0,
+  "behavior_recovery": "pending separate registered patched-policy evaluation"
+}

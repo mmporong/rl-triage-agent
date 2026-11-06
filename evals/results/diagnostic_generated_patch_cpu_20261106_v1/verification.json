@@ -1,0 +1,16 @@
+{
+  "schema": "diagnostic_generated_patch_cpu_public_verification_v1",
+  "status": "PASS",
+  "byte_identical_copies": 63,
+  "cpu_validations_rederived": 20,
+  "api_transmissions": 9,
+  "semantic_responses": 8,
+  "contract_valid_semantic_responses": 7,
+  "sensitive_path_matches": [],
+  "checks": [
+    "Every copied run artifact is byte-identical to its preserved private source.",
+    "All 20 CPU validation records pass the existing ppo_patch_feedback_v1 verifier against their bound source.",
+    "API transmission and contract-valid counts were recomputed from the saved native response records.",
+    "No user path, private-task path, API-key marker or bearer-token marker was found in the public package."
+  ]
+}

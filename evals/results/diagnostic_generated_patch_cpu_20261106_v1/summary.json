@@ -1,0 +1,79 @@
+{
+  "schema": "diagnostic_generated_patch_cpu_public_summary_v1",
+  "status": "complete",
+  "scope": "development_evaluation",
+  "model": {
+    "requested": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "observed_provider_alias": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "input_modality": "text"
+  },
+  "focused_check": {
+    "id": "P_optimizer_updates_cpu_adapter",
+    "backend": "actual_rsl_cpu_tensor_abi",
+    "configurations": 4,
+    "updates_per_configuration": 3,
+    "gpu_apps": 0
+  },
+  "fresh_fault_cases": {
+    "total": 2,
+    "first_patch_passed": 1,
+    "passed_after_at_most_one_feedback_revision": 2,
+    "cases": {
+      "case-a": {
+        "fault": "configured epoch value overwritten from the wrong key",
+        "first_patch_passed": true,
+        "revision_used": false,
+        "generated_source_sha256": "40da12471f9887a9ee78066e768dd62ec11303c927c796e517177c92eaa20eee",
+        "cpu_validation_sha256": "88832bb82322d9e3ebcc047b09c7855c16fa2ff1307b4b75d6e772f76b90ffdb"
+      },
+      "case-b": {
+        "fault": "algorithm configuration copied incompletely and epoch value omitted",
+        "first_patch_passed": false,
+        "first_patch_failed_check": "inspection.exception",
+        "revision_used": true,
+        "revised_source_sha256": "02fa206fbedf0bf374b7bafab534efdb498dfb3e51fbae8a7fbd6ff674e59295",
+        "first_cpu_validation_sha256": "ac948ea58358356ad4da87353fa619c96ea843b7f65de77e23148abb2afa126a",
+        "revised_cpu_validation_sha256": "b9a0e57445d80a20ebe58fc4d4f051fac026277202418096e42c9e51dc12f8ea"
+      }
+    }
+  },
+  "healthy_sources": {
+    "total": 2,
+    "model_requested_inspection": 2,
+    "confirmed_normal_by_cpu_check": 2,
+    "patch_requests_after_normal_confirmation": 0,
+    "preserved_by_host_gate": 2,
+    "model_no_change_successes": 0,
+    "note": "These are host-side normal-input protections after a model-selected inspection, not model HOLD decisions."
+  },
+  "historical_feedback": {
+    "byte_identical_prior_candidates": 2,
+    "deduplicated_representatives": 1,
+    "revision_result": "HOLD",
+    "valid_revisions": 0,
+    "reason": "The model returned HOLD and cited six evidence identifiers that were not valid top-level contract identifiers.",
+    "counted_as_fresh_first_pass": false
+  },
+  "api": {
+    "transmissions": 9,
+    "semantic_responses": 8,
+    "infrastructure_failures": 1,
+    "infrastructure_failure": "HTTP 502 InternalServerError",
+    "infrastructure_retries": 1,
+    "contract_valid_semantic_responses": 7,
+    "contract_valid_semantic_denominator": 8
+  },
+  "claims": {
+    "supported": [
+      "The measured CPU check admitted one of two first patches and both cases after at most one registered feedback revision.",
+      "The host stopped both healthy cases before patch generation after the CPU check confirmed normal update counts.",
+      "The raw first patch, failed CPU record, revised patch and final CPU record are preserved separately."
+    ],
+    "not_measured_here": [
+      "GPU behavior recovery",
+      "new fault-family generalization",
+      "model-version superiority",
+      "visual-input benefit"
+    ]
+  }
+}

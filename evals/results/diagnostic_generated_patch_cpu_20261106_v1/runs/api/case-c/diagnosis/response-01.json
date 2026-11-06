@@ -1,0 +1,30 @@
+{
+  "schema": "diagnostic_patch_response_v1",
+  "kind": "diagnosis",
+  "request_sha256": "0985461b1ca74291eeec0ffe7262b3645e6f9d82c271a5d33808e0699109bdd0",
+  "context_sha256": "353ea25f8fd5af1fcb829317d0d894406d94687b5fb98d44ce5f956f45c8e8cb",
+  "provider_raw": {
+    "response_id": "chatcmpl-1f0034e6-2769-404c-9182-b014474ca2e9",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"inspect\",\n  \"probe\": \"P_optimizer_updates_cpu_adapter\",\n  \"source_sha256\": \"5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106\",\n  \"fact_ids\": [\n    \"configured.epochs\",\n    \"configured.minibatches\"\n  ],\n  \"rationale\": \"The adapter passes configuration through dict(config) without transformation, so configured epochs (4) and minibatches (3) should be preserved; a CPU check is justified to verify actual optimizer update counts match the configuration before any fault is claimed.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 381,
+    "output_tokens": 170,
+    "total_tokens": 551,
+    "wall_s": 2.83760023600189
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "inspect",
+    "probe": "P_optimizer_updates_cpu_adapter",
+    "source_sha256": "5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106",
+    "fact_ids": [
+      "configured.epochs",
+      "configured.minibatches"
+    ],
+    "rationale": "The adapter passes configuration through dict(config) without transformation, so configured epochs (4) and minibatches (3) should be preserved; a CPU check is justified to verify actual optimizer update counts match the configuration before any fault is claimed."
+  },
+  "error": null,
+  "reservation": 7
+}

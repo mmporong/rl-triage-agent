@@ -1,0 +1,53 @@
+{
+  "schema": "diagnostic_generated_patch_recovery_provenance_v1",
+  "status": "complete",
+  "protocols": [
+    {
+      "path": "bench/protocols/diagnostic_generated_patch_sources_s5751_s5752_20261106_v1.json",
+      "sha256": "7c43d43b2915506bc0862a9a0170b664062865266d786fddb2745db85703fe41"
+    },
+    {
+      "path": "bench/protocols/diagnostic_generated_patch_runtime_s5751_s5752_20261106_v1.json",
+      "sha256": "28bc761d9bd5f0de8753a5b5381ebc4363c77041a2698138dff333966d41decf"
+    },
+    {
+      "path": "bench/protocols/diagnostic_generated_patch_recovery_s5751_s5752_20261106_v1.json",
+      "sha256": "aa6f094038d3f7558cdb06d7ff7f642d8c20398de93f2495fe7d1dc0d98b0d0d"
+    }
+  ],
+  "nim_campaign": {
+    "campaign_id": "diagnostic_generated_patch_cpu_20261106_v1",
+    "total_transmissions": 11,
+    "semantic_responses": 10,
+    "contract_valid_semantic_responses": 9,
+    "infrastructure_failures": 1,
+    "cpu_development_transmissions": 9,
+    "fresh_runtime_transmissions": 2,
+    "fresh_runtime_valid": 2
+  },
+  "model_patch": {
+    "model_tasks": 1,
+    "training_seeds": 2,
+    "source_sha256": "40da12471f9887a9ee78066e768dd62ec11303c927c796e517177c92eaa20eee",
+    "cpu_configurations_passed": 4,
+    "cpu_configurations_total": 4,
+    "revision_used": false
+  },
+  "model_artifacts": {
+    "diagnosis_request_sha256": "87a0943fc58a50a5dbf818c66659a39f39f93e3d2bdb833f3478f89d616176e4",
+    "diagnosis_response_sha256": "b29934ae812d594ec7729ecf46373f67fe88af5407332de9c97e9e5346665af9",
+    "patch_request_sha256": "c690ccc47af78138630be9103beaabcd7289b4f7ec87bb58626187397565caea",
+    "patch_response_sha256": "d3f7dc5062cd21ece36fdc7fba291ee3553dfd425e08516346ffc018cd629e64"
+  },
+  "phase_results": {
+    "source_observation_sha256": "1ed20a82967df1afbc53d55bc455509897459f255fca6a910158b3ac20e8ed12",
+    "runtime_loop_sha256": "328ce87383015bc9cc85337dac4b8204f761a5ffe187981199a300eb62b0eb97",
+    "recovery_summary_sha256": "08d73bebfe3ff2fc308e72550c2dab751f0d95139dcca11c2d489d040c7df3f8"
+  },
+  "claim_boundary": {
+    "development_seeds": true,
+    "new_fault_family_generalization": false,
+    "model_version_superiority": false,
+    "gpu_cost_reduction": false
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "diagnostic_generated_patch_cpu_public_provenance_v1",
+  "campaign_id": "diagnostic_generated_patch_cpu_20261106_v1",
+  "protocols": [
+    {
+      "path": "bench/protocols/diagnostic_generated_patch_cpu_20261106_v1.json",
+      "sha256": "695025faeabaf148b56c435be1f09400e55207ed23d5fff48a5316b4737cb718",
+      "source_anchor": "2726e232b1b838d461c2e73f77f776d91a391a3d"
+    },
+    {
+      "path": "bench/protocols/diagnostic_generated_patch_cpu_20261106_v2.json",
+      "sha256": "f4ebe06acc7a1991ed05fc82de23c276ddec1f85fb69302dbac4ccc590de7c3b",
+      "source_anchor": "cc89e85a1302e9dee9c8a23fbe74209a2354bb0d",
+      "continuation_reason": "Preserve the first five transmissions and represent an adapter execution exception as failed CPU evidence before the one registered feedback revision."
+    }
+  ],
+  "private_controller_sha256_lf": "909a502a23ef6e487b0736116b1f4d7e4958c26641b1e3fce128120104329177",
+  "cpu_preflight_sha256": "b28d0da715ca0d51ffd2a5e5b5a0e588b8bdb84a780d733ee4103d986af7be78",
+  "copied_roots": {
+    "raw-loop-result.json": "ea0aa6283dda20d7ade9109103aeb4e5fe1aa91a83b542eab5565b4698ef8800",
+    "source-cases.json": "a1c4b2527ae44bda90f605618110baf659e21c747102d4da5e26499195e10d42"
+  },
+  "artifact_policy": {
+    "copied": "Model requests, native responses, authorization and confirmation receipts, CPU validation records and case results were copied byte-for-byte while preserving the runs-relative layout.",
+    "excluded": "Worker stdout/stderr wrappers were excluded because they are not decision evidence and can contain host-specific execution details.",
+    "sensitive_path_scan_matches": 0
+  }
+}

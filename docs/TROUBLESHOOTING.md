@@ -1151,3 +1151,35 @@ Go2 하행을 1500프레임으로 늘릴 때 기존 저장기에는 625프레임
 - 수정: `evals/lineage_lease_context_v3.py`가 canonical 파일만 `CreateFileW`의 read/write/delete 공유로 새 handle에서 읽는다. [Microsoft의 공유 모드 설명](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew)을 따르며, 기존 소유자·PID 계보·60초 heartbeat·배타 lock·2초/20회 재시도 검증은 유지한다. 각 임대 확인의 fresh-read 증거도 저장한다.
 - 검증: Windows 원자 교체 동시 읽기와 기존 임대 검증 회귀, 실제 SDK Python 3.10 읽기 확인 뒤 같은 seed·예산의 v3를 등록했다. v3의 1 update 예비 실행·학습 3개·고정 평가가 끝났고, 임대 확인 51건은 모두 fresh read로 통과했다(캐시 수용 0).
 - 결과: [보존한 이전 시도](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/prior-infrastructure-attempt.json), [v3 읽기 기록](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/lease-read-observations.json), [최종 행동 결과](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/summary.json). 생성 패치의 갱신 정상화와 행동 회복은 최종 판에서 확인했으며 v2 원문은 보존했다.
+
+## 생성 PPO 패치 고리의 실행 오류와 수정
+
+### 후보 실행 예외를 CPU 실패 근거로 남기지 못함
+
+- 관찰: case-b의 첫 패치는 `num_learning_epochs`가 없는 설정에서 해당 키를 다시 읽어 `PatchContractError`를 냈다. CPU 생산자는 실패 원문을 봉인했지만, 검증기가 후보 코드를 재실행하면서 같은 예외를 밖으로 올려 v1 고리가 모델 전송 5회 뒤 중단됐다.
+- 확인된 원인: 검증기가 모든 후보에서 정상 측정값이 생긴다고 가정했다. 후보 실행 예외를 실패 기록으로 대조하는 분기가 없었다.
+- 수정: 저장된 예외 유형·문구·실패 검사 `inspection.exception`을 같은 소스와 설정으로 재현한 경우에만 실패 증거로 받도록 했다. 이 기록은 통과로 승격하지 않는다. 이어진 v2는 첫 응답과 다섯 번의 전송을 보존한 채, 실패 기록을 한 번의 모델 수정 입력으로 넘겼다.
+- 검증: 수정된 패치는 네 CPU 설정을 모두 통과했다. 기존 첫 패치 실패와 수정 패치 성공은 별도 원문으로 남아 있다.
+- 근거: `CPU_V1_INTERRUPTION.md` SHA-256 `c0f617afb77a9998fb598822acbc080571674a5281ae6d193dfc4d95bf10eedf`, 공개 첫 실패 기록 SHA-256 `ac948ea58358356ad4da87353fa619c96ea843b7f65de77e23148abb2afa126a`, 수정 뒤 기록 SHA-256 `b9a0e57445d80a20ebe58fc4d4f051fac026277202418096e42c9e51dc12f8ea`.
+
+### 모델 패치 요청의 HTTP 502
+
+- 관찰: case-b 패치 요청의 첫 전송이 HTTP 502 `InternalServerError`로 끝났다. 응답 파일은 무효 상태로 봉인됐다.
+- 처리: 의미 응답 재시도가 아니라 인프라 재시도 규칙을 적용해 같은 요청을 한 번 더 보냈다. 두 번째 전송에서 계약 유효 응답을 받았고, 첫 502 원문은 덮어쓰지 않았다.
+- 근거: 실패 응답 SHA-256 `3164a04fd73f34bac92d11454bd0b970679bedb55205b60876aac36f597ed91f`, 후속 응답 SHA-256 `0608ddd4d066c5e1342153a88695e88721d236a1002e9c2153e055f750a5ead0`.
+
+### Windows 기본 Vulkan 렌더러에서 녹화 시작 실패
+
+- 관찰: 첫 녹화 판은 AppLauncher 시작 중 Windows native access violation이 났다. 배치 파일 종료 코드는 0이었지만 manifest가 없었고 프레임도 생성되지 않아 수용 검사가 거부했다.
+- 수정: 녹화 실행에 `--/app/vulkan=false`와 `--/app/window/hideUi=true`를 넣어 D3D12 경로를 고정했다. 실패 실행의 stdout·stderr와 임대 해제 기록은 그대로 보존했다.
+- 근거: `INFRA_V2_FAILURE.md` SHA-256 `192011a17387bcdbc5793e4ece3baf56bc082cd2aae82c47902c8a696a0eeb10`, 첫 녹화 등록 v1 SHA-256 `4ed39b896e6fb6aeb981e426ef1c8824a6b26440440fa6837e21eb2d5452605d`.
+
+### fast close에서 app-close-returned 표식이 남지 않음
+
+- 관찰: D3D12 판은 결함 정책 750프레임과 trace 751행, render forward 750회를 봉인했다. fast shutdown이 `app.close()` 안에서 exit 0으로 끝나 `app-close-returned` 표식이 없었고, 이전 검증기는 실행을 거부했다.
+- 확인된 원인: 자연 종료를 사용하는 SDK 경로에서 `app.close()`가 반환되지 않을 수 있는데도, 검증 계약이 반환 표식을 필수로 두고 있었다.
+- 수정: manifest와 프레임, 소스 SHA, marker PID, 소유 프로세스의 자연 종료 0, cleanup을 필수로 확인한다. `app-close-returned`는 이 조건이 모두 맞을 때만 선택 표식으로 처리한다. 오류 표식이나 0이 아닌 종료는 계속 거부한다. 기존 거부 영상을 나중에 수용한 것으로 바꾸지 않고 새 판에서 두 정책을 다시 녹화했다.
+- 검증: 최종 두 원본과 비교 MP4는 각각 750프레임, 15초 full decode를 통과했다. 공개 source manifest SHA-256은 `a7b7cdda3438950a5655b53d6bc65041866cf9f9bfc549617517f7960329a052`, 검증 요약 SHA-256은 `b80aba3c12999c98ebebd6bb0bec33fc925829dacf3e546ca3d422eb279f5a12`다.
+- 근거: `INFRA_V3_FAILURE.md` SHA-256 `5996d7b754c0dbdca57e7c801f0d7a47d55c376e40ac87afdfde30320a4aa821`, 최종 녹화 등록 v3 SHA-256 `09b05dd6804bcd7ebcf98d8a13e840ee7afc1f94c7195635023829046bae09f0`.
+
+실제 실패 관측 후의 새 모델 판에서는 중첩 값이 아닌 `facts`의 최상위 키만 근거 ID로 인용하도록 범위를 명시했다. 앞선 CPU 요청 여덟 개의 메시지는 바뀌지 않았음을 대조했고, 새 진단·패치 응답 두 개는 계약을 통과했다. 과거 무효 응답과 HOLD 결과는 보존한다.

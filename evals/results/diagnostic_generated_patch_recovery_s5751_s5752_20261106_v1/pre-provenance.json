@@ -1,0 +1,35 @@
+{
+  "schema": "diagnostic_generated_patch_recovery_pre_provenance_v1",
+  "status": "partial_before_patched_policy_evaluation",
+  "protocols": [
+    {
+      "path": "bench/protocols/diagnostic_generated_patch_sources_s5751_s5752_20261106_v1.json",
+      "sha256": "7c43d43b2915506bc0862a9a0170b664062865266d786fddb2745db85703fe41",
+      "phase": "healthy_and_fault_source_observation"
+    },
+    {
+      "path": "bench/protocols/diagnostic_generated_patch_runtime_s5751_s5752_20261106_v1.json",
+      "sha256": "28bc761d9bd5f0de8753a5b5381ebc4363c77041a2698138dff333966d41decf",
+      "phase": "fresh_runtime_model_and_cpu_patch_admission"
+    },
+    {
+      "path": "bench/protocols/diagnostic_generated_patch_recovery_s5751_s5752_20261106_v1.json",
+      "sha256": "aa6f094038d3f7558cdb06d7ff7f642d8c20398de93f2495fe7d1dc0d98b0d0d",
+      "phase": "patched_policy_evaluation_pending"
+    }
+  ],
+  "model_artifacts": {
+    "diagnosis_request_sha256": "87a0943fc58a50a5dbf818c66659a39f39f93e3d2bdb833f3478f89d616176e4",
+    "diagnosis_response_sha256": "b29934ae812d594ec7729ecf46373f67fe88af5407332de9c97e9e5346665af9",
+    "patch_request_sha256": "c690ccc47af78138630be9103beaabcd7289b4f7ec87bb58626187397565caea",
+    "patch_response_sha256": "d3f7dc5062cd21ece36fdc7fba291ee3553dfd425e08516346ffc018cd629e64"
+  },
+  "runtime_pair_sha256": "1809550333a04095dd232747dfb4e8d63631a968f69d828d4b2470e4dc03d4ae",
+  "runtime_loop_result_sha256": "328ce87383015bc9cc85337dac4b8204f761a5ffe187981199a300eb62b0eb97",
+  "artifact_policy": {
+    "layout": "Task-relative paths are retained so run-scoped model references resolve inside this public result folder.",
+    "byte_identical_data": true,
+    "owned_receipts": "sanitized summary only",
+    "final_summary_and_manifest": "deferred until the registered patched-policy evaluation finishes"
+  }
+}

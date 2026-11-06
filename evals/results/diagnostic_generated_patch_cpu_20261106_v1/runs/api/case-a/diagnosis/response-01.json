@@ -1,0 +1,30 @@
+{
+  "schema": "diagnostic_patch_response_v1",
+  "kind": "diagnosis",
+  "request_sha256": "d4b6c8583576491919e52d5c20a91b50176a04a38d42318d924762369a4c7b66",
+  "context_sha256": "d691227093bafe65c165a637e6f7a2ec05d65510ed7fd1b0b095e0c4130e3f81",
+  "provider_raw": {
+    "response_id": "chatcmpl-42ce0a2e-fb04-49b2-aefc-e6c22afe8d3f",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"inspect\",\n  \"probe\": \"P_optimizer_updates_cpu_adapter\",\n  \"source_sha256\": \"34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3\",\n  \"fact_ids\": [\n    \"configured.epochs\",\n    \"configured.minibatches\"\n  ],\n  \"rationale\": \"The adapter maps num_epochs into num_learning_epochs while config already specifies num_learning_epochs: 4, so configuration preservation needs verification against actual PPO minibatch and optimizer update counts before any fault is claimed.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 407,
+    "output_tokens": 171,
+    "total_tokens": 578,
+    "wall_s": 2.017987928004004
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "inspect",
+    "probe": "P_optimizer_updates_cpu_adapter",
+    "source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3",
+    "fact_ids": [
+      "configured.epochs",
+      "configured.minibatches"
+    ],
+    "rationale": "The adapter maps num_epochs into num_learning_epochs while config already specifies num_learning_epochs: 4, so configuration preservation needs verification against actual PPO minibatch and optimizer update counts before any fault is claimed."
+  },
+  "error": null,
+  "reservation": 1
+}

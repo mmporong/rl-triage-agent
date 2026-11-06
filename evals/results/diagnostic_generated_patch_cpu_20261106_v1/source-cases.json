@@ -1,0 +1,44 @@
+{
+  "variants": {
+    "case-a": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_epochs\", 1)\n    return options\n",
+    "case-b": "def build_algorithm_kwargs(config):\n    kwargs = {\"num_mini_batches\": config[\"num_mini_batches\"], \"learning_rate\": config[\"learning_rate\"], \"schedule\": config[\"schedule\"]}\n    return kwargs\n",
+    "case-c": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    return options\n",
+    "case-d": "def build_algorithm_kwargs(config):\n    values = config.copy()\n    return values\n"
+  },
+  "historical": {
+    "historical-late_override": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_learning_epochs\", 5)\n    return options",
+    "historical-omitted_argument": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_learning_epochs\", 5)\n    return options"
+  },
+  "CPU_plan": [
+    {
+      "num_learning_epochs": 4,
+      "num_mini_batches": 3,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    },
+    {
+      "num_learning_epochs": 2,
+      "num_mini_batches": 4,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    },
+    {
+      "num_learning_epochs": 7,
+      "num_mini_batches": 2,
+      "learning_rate": 0.001,
+      "schedule": "fixed",
+      "gamma": 0.97,
+      "clip_param": 0.17
+    },
+    {
+      "num_mini_batches": 4,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    }
+  ],
+  "seeds": {
+    "case-a": 5751,
+    "case-b": 5752
+  },
+  "development_scope": true
+}

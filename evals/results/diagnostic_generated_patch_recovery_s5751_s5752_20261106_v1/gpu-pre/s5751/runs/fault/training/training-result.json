@@ -1,0 +1,100 @@
+{
+  "actual_ppo": {
+    "num_learning_epochs": 1,
+    "num_mini_batches": 4
+  },
+  "adapter_source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3",
+  "algorithm_after": {
+    "class_name": "PPO",
+    "clip_param": 0.2,
+    "desired_kl": 0.01,
+    "entropy_coef": 0.01,
+    "gamma": 0.99,
+    "lam": 0.95,
+    "learning_rate": 0.001,
+    "max_grad_norm": 1.0,
+    "normalize_advantage_per_mini_batch": false,
+    "num_learning_epochs": 1,
+    "num_mini_batches": 4,
+    "rnd_cfg": null,
+    "schedule": "adaptive",
+    "symmetry_cfg": null,
+    "use_clipped_value_loss": true,
+    "value_loss_coef": 1.0
+  },
+  "algorithm_before": {
+    "class_name": "PPO",
+    "clip_param": 0.2,
+    "desired_kl": 0.01,
+    "entropy_coef": 0.01,
+    "gamma": 0.99,
+    "lam": 0.95,
+    "learning_rate": 0.001,
+    "max_grad_norm": 1.0,
+    "normalize_advantage_per_mini_batch": false,
+    "num_learning_epochs": 5,
+    "num_mini_batches": 4,
+    "rnd_cfg": null,
+    "schedule": "adaptive",
+    "symmetry_cfg": null,
+    "use_clipped_value_loss": true,
+    "value_loss_coef": 1.0
+  },
+  "arm": "fault",
+  "checkpoint": "final.pt",
+  "checkpoint_sha256": "dd523ba5ecebf589f5d9a405c8ca397c1aa273e50d611675ac3d320faf9f3691",
+  "counts": {
+    "minibatches": 1200,
+    "optimizer_steps": 1200,
+    "updates": 300
+  },
+  "first_three_updates": [
+    {
+      "index": 1,
+      "learning_rate": 0.0006666666666666666,
+      "mean_policy_std": 1.000156044960022,
+      "minibatches": 4,
+      "optimizer_steps": 4,
+      "return_values_finite": true
+    },
+    {
+      "index": 2,
+      "learning_rate": 0.001,
+      "mean_policy_std": 0.9986461400985718,
+      "minibatches": 4,
+      "optimizer_steps": 4,
+      "return_values_finite": true
+    },
+    {
+      "index": 3,
+      "learning_rate": 0.0022500000000000003,
+      "mean_policy_std": 0.9927845001220703,
+      "minibatches": 4,
+      "optimizer_steps": 4,
+      "return_values_finite": true
+    }
+  ],
+  "pid": 13588,
+  "policy_parameters_finite": true,
+  "policy_recovery_verified": false,
+  "policy_sha256_after": "239a501c1629a86389d93a5b34841a3a3ce4ad17247114c9696edae8eef8b426",
+  "policy_sha256_before": "0008314df69a097c833b6130f0725429fa159b09588084db4ea1e80cd58d4ee4",
+  "protocol_sha256_lf": "7c43d43b2915506bc0862a9a0170b664062865266d786fddb2745db85703fe41",
+  "schema": "generated_ppo_adapter_training_result_v1",
+  "seed": 5751,
+  "source_commit": "c07c2f4fbb9309c652b32af570e347e6ee448ed2",
+  "status": "complete",
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "task_terms_after": {
+    "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+    "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+  },
+  "task_terms_before": {
+    "rewards_sha256": "97946db8b041f78f2dd4965835115bda3029ed036db390026deae86fb5b50919",
+    "terminations_sha256": "722b6e57dce84f43c026a0e56d6377ec8973db987de4055e95caea74cc16d0b0"
+  },
+  "training": {
+    "num_envs": 4096,
+    "updates": 300
+  }
+}

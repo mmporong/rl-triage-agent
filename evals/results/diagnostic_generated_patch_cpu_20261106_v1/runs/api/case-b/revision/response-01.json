@@ -1,0 +1,36 @@
+{
+  "schema": "diagnostic_patch_response_v1",
+  "kind": "revision",
+  "request_sha256": "d0cae03d9c334e90cf6214f63a08f07adafdf2ea60a4006de524da1931b7f0d1",
+  "context_sha256": "8737cab002b2dd317648251c8acc2e98f39ddcbd959e96a327d81e9f2abe892e",
+  "provider_raw": {
+    "response_id": "chatcmpl-03a72ab5-14a9-45a8-acec-2d2b072d448a",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"patch\",\n  \"source_sha256\": \"0ecdc01dad622a2e2331cb60a669c9abf2f31f3c804af71ad6de590b21eb9cc6\",\n  \"replacement_source\": \"def build_algorithm_kwargs(config):\\n    kwargs = dict(config)\\n    return kwargs\",\n  \"evidence_ids\": [\n    \"configured.epochs\",\n    \"configured.minibatches\",\n    \"inspection.expected_steps\",\n    \"inspection.actual_steps\",\n    \"inspection.actual_minibatches\",\n    \"feedback.record3.configuration\",\n    \"feedback.record3.failed_checks\",\n    \"feedback.record3.error\"\n  ],\n  \"rationale\": \"The current adapter redundantly reassigns num_learning_epochs to itself and fails when the key is missing, as shown by record3. Preserving the configuration unchanged matches all passing records and respects the installed PPO constructor default when num_learning_epochs is absent.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 3985,
+    "output_tokens": 238,
+    "total_tokens": 4223,
+    "wall_s": 3.3381120630074292
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "patch",
+    "source_sha256": "0ecdc01dad622a2e2331cb60a669c9abf2f31f3c804af71ad6de590b21eb9cc6",
+    "replacement_source": "def build_algorithm_kwargs(config):\n    kwargs = dict(config)\n    return kwargs",
+    "evidence_ids": [
+      "configured.epochs",
+      "configured.minibatches",
+      "inspection.expected_steps",
+      "inspection.actual_steps",
+      "inspection.actual_minibatches",
+      "feedback.record3.configuration",
+      "feedback.record3.failed_checks",
+      "feedback.record3.error"
+    ],
+    "rationale": "The current adapter redundantly reassigns num_learning_epochs to itself and fails when the key is missing, as shown by record3. Preserving the configuration unchanged matches all passing records and respects the installed PPO constructor default when num_learning_epochs is absent."
+  },
+  "error": null,
+  "reservation": 6
+}

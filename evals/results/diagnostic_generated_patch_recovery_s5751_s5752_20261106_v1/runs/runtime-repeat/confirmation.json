@@ -1,0 +1,54 @@
+{
+  "schema": "diagnostic_generated_patch_bridge_v1",
+  "backend": "actual_rsl_cpu_tensor_abi",
+  "probe": "P_optimizer_updates_cpu_adapter",
+  "source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3",
+  "diagnosis_context_sha256": "a0139790af2591c6484cf5576bb423b888aa05432c150208c26a47c945df7c48",
+  "choice_sha256": "cbc81aaa162610c75b39a17c894a0f008ff8c38a28d65a61466f62d177a62ddd",
+  "authorization_sha256": "dff40a027e0a4523831ef0801cc9e9fb3c76f7189e46c8ac305caac7df901a1e",
+  "baseline_sha256": "308b96b4020db4103e8c91051bf011cbf3fa66b36b13e4c6d079fe2304683e97",
+  "reference_sha256": "632c57403cb355461367a56cdbbc178b5a3e3c82c910801fb3a1d23491ff239c",
+  "outcome": "abnormal",
+  "facts": {
+    "configured.epochs": 4,
+    "configured.minibatches": 3,
+    "runtime.seed5751.fault_tracking_RMSE": 1.080870187896255,
+    "runtime.seed5751.healthy_tracking_RMSE": 0.14207924478857956,
+    "runtime.seed5751.configured_epochs": 5,
+    "runtime.seed5751.configured_minibatches": 4,
+    "runtime.seed5751.actual_optimizer_steps": [
+      4,
+      4,
+      4
+    ],
+    "runtime.seed5751.actual_epochs": 1,
+    "runtime.seed5751.survival_s": 19.260384521484376,
+    "runtime.seed5751.fall_frac": 0.04326923191547394,
+    "runtime.seed5752.fault_tracking_RMSE": 1.185980527396306,
+    "runtime.seed5752.healthy_tracking_RMSE": 0.15393801496894308,
+    "runtime.seed5752.configured_epochs": 5,
+    "runtime.seed5752.configured_minibatches": 4,
+    "runtime.seed5752.actual_optimizer_steps": [
+      4,
+      4,
+      4
+    ],
+    "runtime.seed5752.actual_epochs": 1,
+    "runtime.seed5752.survival_s": 20.0,
+    "runtime.seed5752.fall_frac": 0.0,
+    "inspection.expected_steps": 12,
+    "inspection.actual_steps": [
+      3,
+      3,
+      3
+    ],
+    "inspection.actual_minibatches": [
+      3,
+      3,
+      3
+    ]
+  },
+  "patch_eligible": true,
+  "normal_source_preserved": false,
+  "GPU_approval_granted": false
+}

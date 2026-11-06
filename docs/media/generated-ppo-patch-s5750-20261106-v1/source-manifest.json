@@ -1,0 +1,100 @@
+{
+  "schema": "generated_ppo_patch_media_source_manifest_v1",
+  "development_case": true,
+  "seed": 5750,
+  "task": "Isaac-Velocity-Flat-Unitree-Go2-v0",
+  "play_contract": {
+    "command_body_m_s": [0.25, 0.0, 0.0],
+    "duration_s": 15.0,
+    "native_frames": 750,
+    "native_fps": 50,
+    "native_resolution": [2560, 1440],
+    "same_native_duration": true,
+    "new_training": 0,
+    "model_api": 0
+  },
+  "captures": {
+    "fault": {
+      "label": "생성 패치 전",
+      "ppo_optimizer_steps_per_update": 4,
+      "checkpoint_sha256": "403e3c5428f766b9fd4da5648569c8a181425b79614e2aa1ecb7447c69cb44dd",
+      "fixed26": {
+        "report_sha256": "750935a70d8cc33894b9b42fcaaaa11742951c068415d04e5d39a13e4aa2b252",
+        "lin_vel_rmse_m_s": 1.1730560454811372,
+        "fall_rate": 0.0
+      },
+      "play_trace": {
+        "sha256": "d00064a60a7bb9cb2e10d07fe9f0f77c1c84532e9a507cee320a1ddbbe4cdb3a",
+        "rows": 751,
+        "terminated_count": 0,
+        "root_displacement_w_m": [-0.018549734726548195, -0.004529098514467478, -0.26563534140586853],
+        "mean_body_vx_m_s": 0.0006429624657297002,
+        "body_vx_rmse_to_play_command_m_s": 0.2509938899179024
+      },
+      "source_manifest_sha256": "8b117f2801242b78daf3b8a13cd253cc5db00d800d9bbf90d349c779ff294d2a",
+      "exact_frames_sha256": "96db373a5258254c04f302d0991216b8f886a364f2366cdf920ddfb1c2de2fd4",
+      "owned_receipt_sha256": "cb0ccf558b8bb37221011f1dce8b4c84f0f23008ba479ede3167e9bb62f1bc5b",
+      "native_video": {
+        "path": "fault-native-15s.mp4",
+        "sha256": "b2985aff9b9149c3c627c4fcb3d3e3411ed239bc3e20062df1daae327f77a188"
+      }
+    },
+    "patched": {
+      "label": "생성 패치 후",
+      "ppo_optimizer_steps_per_update": 20,
+      "checkpoint_sha256": "a3323c2ec68841fce4ab80a66332f9b7914a23dc6cfc599bac254c1045734ab2",
+      "fixed26": {
+        "report_sha256": "92df2b64988d5be881106af4e6f8456b5468aa5448fe3496ac6061d3174308a1",
+        "lin_vel_rmse_m_s": 0.14578562336420092,
+        "fall_rate": 0.0
+      },
+      "play_trace": {
+        "sha256": "8bdddfc7c2f55d33320bfd5362d6d8d3b2a3a05d5318b3228300ef4355e5a19a",
+        "rows": 751,
+        "terminated_count": 0,
+        "root_displacement_w_m": [2.9304256439208984, 0.2415902018547058, -0.2231854349374771],
+        "mean_body_vx_m_s": 0.19617429879738485,
+        "body_vx_rmse_to_play_command_m_s": 0.08056494157970925
+      },
+      "source_manifest_sha256": "268c99e375210731ffb8d7426469256e7c06d52650de5f0dc0c2a71b9f427022",
+      "exact_frames_sha256": "f9ed390aff83d03073a8ec98831f483a095983b4e178ea62ee09ca83105b94bc",
+      "owned_receipt_sha256": "5fbbea376b582460bb97154837ecbf8fa0f40d55cad7877dfcc6a7c5a4946af5",
+      "native_video": {
+        "path": "patched-native-15s.mp4",
+        "sha256": "713ca32ca2684000c01fb82570cdd6682526903ee6a65a2d7337e29b9b4db6f3"
+      }
+    }
+  },
+  "comparison": {
+    "path": "comparison-15s.mp4",
+    "sha256": "6020926128e1414389a58692db62013339fe92f2a78120f970eccb1e2c95a5ad",
+    "resolution": [1920, 1080],
+    "fps": 50,
+    "frames": 750,
+    "duration_s": 15.0,
+    "codec": "h264",
+    "crf": 18,
+    "speed_changed": false
+  },
+  "animated_preview": {
+    "path": "comparison-15s.webp",
+    "sha256": "d12089d8ea3ad4609d423e93b6c9d254e67b394f4a6ac3f932a6103a64f03bbd",
+    "resolution": [1280, 720],
+    "fps": 25,
+    "frames": 375,
+    "duration_s": 15.0
+  },
+  "poster": {
+    "path": "poster-7p5s.jpg",
+    "sha256": "40b76aa07402e17850ea53d534aed80e304130cbb2c0c1f96d5f9b7635960978",
+    "time_s": 7.5,
+    "resolution": [1920, 1080]
+  },
+  "claim_boundary": {
+    "fixed26_rmse_is_not_single_play_window_rmse": true,
+    "play_displacement_comes_from_bound_trace": true,
+    "fall_or_recovery_effect_claimed": false,
+    "generalization_claimed": false
+  },
+  "private_paths_in_public_manifest": false
+}

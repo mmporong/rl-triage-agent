@@ -1,0 +1,30 @@
+{
+  "schema": "diagnostic_generated_patch_bridge_v1",
+  "backend": "actual_rsl_cpu_tensor_abi",
+  "probe": "P_optimizer_updates_cpu_adapter",
+  "source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3",
+  "diagnosis_context_sha256": "d691227093bafe65c165a637e6f7a2ec05d65510ed7fd1b0b095e0c4130e3f81",
+  "choice_sha256": "0a9a2fdf2c38dcb8907dd4348d1e8ec8dc99e3134ef92afe0f312d545861375f",
+  "authorization_sha256": "8d5994273f24e8299a7e8c53fd420ebe7e56ae52deb6d6d0f86d7fe9e9e55d0f",
+  "baseline_sha256": "308b96b4020db4103e8c91051bf011cbf3fa66b36b13e4c6d079fe2304683e97",
+  "reference_sha256": "632c57403cb355461367a56cdbbc178b5a3e3c82c910801fb3a1d23491ff239c",
+  "outcome": "abnormal",
+  "facts": {
+    "configured.epochs": 4,
+    "configured.minibatches": 3,
+    "inspection.expected_steps": 12,
+    "inspection.actual_steps": [
+      3,
+      3,
+      3
+    ],
+    "inspection.actual_minibatches": [
+      3,
+      3,
+      3
+    ]
+  },
+  "patch_eligible": true,
+  "normal_source_preserved": false,
+  "GPU_approval_granted": false
+}

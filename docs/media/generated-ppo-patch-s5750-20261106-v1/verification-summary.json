@@ -1,0 +1,42 @@
+{
+  "schema": "generated_ppo_patch_media_verification_v1",
+  "status": "complete",
+  "full_decode": {
+    "fault-native-15s.mp4": {"status": "pass", "frames": 750, "duration_s": 15.0},
+    "patched-native-15s.mp4": {"status": "pass", "frames": 750, "duration_s": 15.0},
+    "comparison-15s.mp4": {"status": "pass", "frames": 750, "duration_s": 15.0},
+    "comparison-15s.webp": {"status": "pass", "frames": 375, "duration_s": 15.0}
+  },
+  "media_properties": {
+    "native": {"resolution": [2560, 1440], "fps": 50, "codec": "h264"},
+    "comparison": {"resolution": [1920, 1080], "fps": 50, "codec": "h264", "pixel_format": "yuv420p"},
+    "animated_preview": {"resolution": [1280, 720], "fps": 25, "codec": "webp_anim"}
+  },
+  "visual_inspection": {
+    "same_center_crop": true,
+    "left_right_empty_margin": false,
+    "robot_visible_both_panels": true,
+    "command_marker_visible_both_panels": true,
+    "korean_text_rendered": true,
+    "labels": ["생성 패치 전", "생성 패치 후"]
+  },
+  "source_integrity": {
+    "native_fault_copy_matches_source": true,
+    "native_patched_copy_matches_source": true,
+    "native_exact_frame_receipts": [750, 750],
+    "native_trace_rows": [751, 751],
+    "owned_natural_exit": [true, true],
+    "owned_cleanup_verified": [true, true],
+    "app_close_returned": [false, false],
+    "fast_close_accepted_with_owned_exit_and_manifest": [true, true],
+    "manifest_bound": [true, true]
+  },
+  "sensitive_path_scan": {
+    "status": "pass",
+    "matches": 0,
+    "patterns": ["사용자 홈 경로", "비공개 작업 경로", "드라이브 경로"]
+  },
+  "new_training": 0,
+  "gpu_execution_for_postprocessing": 0,
+  "model_api": 0
+}

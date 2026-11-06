@@ -1,0 +1,106 @@
+{
+  "schema": "diagnostic_patch_request_v1",
+  "case_id": "case-a",
+  "kind": "patch",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "context": {
+    "schema": "ppo_patch_context_v1",
+    "source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_epochs\", 1)\n    return options\n",
+    "source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3",
+    "config": {
+      "num_learning_epochs": 4,
+      "num_mini_batches": 3,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    },
+    "facts": {
+      "configured.epochs": 4,
+      "configured.minibatches": 3,
+      "inspection.expected_steps": 12,
+      "inspection.actual_steps": [
+        3,
+        3,
+        3
+      ],
+      "inspection.actual_minibatches": [
+        3,
+        3,
+        3
+      ]
+    },
+    "diagnosis_confirmation": {
+      "schema": "diagnostic_generated_patch_bridge_v1",
+      "backend": "actual_rsl_cpu_tensor_abi",
+      "probe": "P_optimizer_updates_cpu_adapter",
+      "source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3",
+      "diagnosis_context_sha256": "d691227093bafe65c165a637e6f7a2ec05d65510ed7fd1b0b095e0c4130e3f81",
+      "choice_sha256": "0a9a2fdf2c38dcb8907dd4348d1e8ec8dc99e3134ef92afe0f312d545861375f",
+      "authorization_sha256": "8d5994273f24e8299a7e8c53fd420ebe7e56ae52deb6d6d0f86d7fe9e9e55d0f",
+      "baseline_sha256": "308b96b4020db4103e8c91051bf011cbf3fa66b36b13e4c6d079fe2304683e97",
+      "reference_sha256": "632c57403cb355461367a56cdbbc178b5a3e3c82c910801fb3a1d23491ff239c",
+      "outcome": "abnormal",
+      "facts": {
+        "configured.epochs": 4,
+        "configured.minibatches": 3,
+        "inspection.expected_steps": 12,
+        "inspection.actual_steps": [
+          3,
+          3,
+          3
+        ],
+        "inspection.actual_minibatches": [
+          3,
+          3,
+          3
+        ]
+      },
+      "patch_eligible": true,
+      "normal_source_preserved": false,
+      "GPU_approval_granted": false
+    },
+    "observation_scope": "registered focused CPU optimizer check; robot recovery requires separate fixed evaluation"
+  },
+  "context_sha256": "04238b71d65cd65160dff20e88175e48bc690c503a38b72940fe5f432276f1af",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You investigate an optimizer configuration adapter used by an actual PPO implementation. Use only the provided source, configured parameters and measured CPU update facts. If the adapter already preserves the configuration and the measured updates conform, choose hold without changing it. Otherwise propose a corrected replacement of the single build_algorithm_kwargs(config) function. Preserve all configured algorithm parameters. Do not hardcode epoch or minibatch counts. The function must be pure: only local dict construction, config reads, assignments, and return; no imports, loops, classes, nested functions, external calls or file/process access. Use single-assignment local variable names, never assign to config or dict, and return a local dictionary variable. Allowed calls are dict(config), config.copy(), and config.get with a constant key and optional scalar default. Dictionary literals and config/local-dictionary lookups use constant string keys. Only the num_learning_epochs field of a local dictionary may be assigned after construction. Do not use annotations, decorators, chained assignments, unpacking, arithmetic, or keyword arguments. Return one JSON object with exact keys action, source_sha256, replacement_source, evidence_ids, rationale. action is patch or hold; replacement_source is the entire replacement source for patch, null for hold. Copy source_sha256 from the context and cite at least one exact existing fact ID. A proposal does not authorize execution or imply recovery. Preserve optional-argument omission and the installed constructor default; never invent a fallback that changes a missing configuration value. The host will check multiple configurations and unrelated parameters as well as actual PPO updates."
+    },
+    {
+      "role": "user",
+      "content": "{\"schema\": \"ppo_patch_context_v1\", \"source\": \"def build_algorithm_kwargs(config):\\n    options = dict(config)\\n    options[\\\"num_learning_epochs\\\"] = config.get(\\\"num_epochs\\\", 1)\\n    return options\\n\", \"source_sha256\": \"34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3\", \"config\": {\"num_learning_epochs\": 4, \"num_mini_batches\": 3, \"learning_rate\": 0.001, \"schedule\": \"fixed\"}, \"facts\": {\"configured.epochs\": 4, \"configured.minibatches\": 3, \"inspection.expected_steps\": 12, \"inspection.actual_steps\": [3, 3, 3], \"inspection.actual_minibatches\": [3, 3, 3]}, \"diagnosis_confirmation\": {\"schema\": \"diagnostic_generated_patch_bridge_v1\", \"backend\": \"actual_rsl_cpu_tensor_abi\", \"probe\": \"P_optimizer_updates_cpu_adapter\", \"source_sha256\": \"34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3\", \"diagnosis_context_sha256\": \"d691227093bafe65c165a637e6f7a2ec05d65510ed7fd1b0b095e0c4130e3f81\", \"choice_sha256\": \"0a9a2fdf2c38dcb8907dd4348d1e8ec8dc99e3134ef92afe0f312d545861375f\", \"authorization_sha256\": \"8d5994273f24e8299a7e8c53fd420ebe7e56ae52deb6d6d0f86d7fe9e9e55d0f\", \"baseline_sha256\": \"308b96b4020db4103e8c91051bf011cbf3fa66b36b13e4c6d079fe2304683e97\", \"reference_sha256\": \"632c57403cb355461367a56cdbbc178b5a3e3c82c910801fb3a1d23491ff239c\", \"outcome\": \"abnormal\", \"facts\": {\"configured.epochs\": 4, \"configured.minibatches\": 3, \"inspection.expected_steps\": 12, \"inspection.actual_steps\": [3, 3, 3], \"inspection.actual_minibatches\": [3, 3, 3]}, \"patch_eligible\": true, \"normal_source_preserved\": false, \"GPU_approval_granted\": false}, \"observation_scope\": \"registered focused CPU optimizer check; robot recovery requires separate fixed evaluation\"}"
+    }
+  ],
+  "chain": {
+    "diagnosis_request": {
+      "scope": "run",
+      "path": "runs/api/case-a/diagnosis/request.json",
+      "sha256": "d4b6c8583576491919e52d5c20a91b50176a04a38d42318d924762369a4c7b66"
+    },
+    "diagnosis_response": {
+      "scope": "run",
+      "path": "runs/api/case-a/diagnosis/response-01.json",
+      "sha256": "3c9c20d348159c7d9ee52d07db6414452d978a2525e436776422f7f90d1478fa"
+    },
+    "baseline": {
+      "scope": "run",
+      "path": "runs/cpu/case-a-confirmation/baseline.json",
+      "sha256": "d46b0551b714c281dff8ea84496713e5bfeffe47a7ac8a9094f180e70b3cddcc"
+    },
+    "reference": {
+      "scope": "run",
+      "path": "runs/cpu/case-a-confirmation/reference.json",
+      "sha256": "92b552da6cbcb03e5e56ba50dff68782848aeadd4e8301ee3627090af5913c20"
+    },
+    "authorization": {
+      "scope": "run",
+      "path": "runs/case-a/authorization.json",
+      "sha256": "0b87ddd3a8981aaa3bc209c900f5b32e313290717b987ca13c79082717d1a245"
+    },
+    "confirmation": {
+      "scope": "run",
+      "path": "runs/case-a/confirmation.json",
+      "sha256": "e574495560132b5d65bbb45108d43b378d0fd4c0f851a759bb7e1d837f0fc871"
+    }
+  }
+}

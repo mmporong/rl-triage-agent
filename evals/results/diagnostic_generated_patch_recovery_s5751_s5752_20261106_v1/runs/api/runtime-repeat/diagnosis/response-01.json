@@ -1,0 +1,32 @@
+{
+  "schema": "diagnostic_patch_response_v1",
+  "kind": "diagnosis",
+  "request_sha256": "87a0943fc58a50a5dbf818c66659a39f39f93e3d2bdb833f3478f89d616176e4",
+  "context_sha256": "a0139790af2591c6484cf5576bb423b888aa05432c150208c26a47c945df7c48",
+  "provider_raw": {
+    "response_id": "chatcmpl-549299f8-477a-4257-b80b-1e414f9889be",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"inspect\",\n  \"probe\": \"P_optimizer_updates_cpu_adapter\",\n  \"source_sha256\": \"34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3\",\n  \"fact_ids\": [\n    \"runtime.seed5751.configured_epochs\",\n    \"runtime.seed5751.actual_epochs\",\n    \"runtime.seed5751.configured_minibatches\",\n    \"runtime.seed5751.actual_optimizer_steps\"\n  ],\n  \"rationale\": \"The supplied build_algorithm_kwargs sets num_learning_epochs from config.get(\\\"num_epochs\\\", 1), while runtime facts show configured_epochs=5 but actual_epochs=1 and actual_optimizer_steps=[4,4,4], indicating a possible configuration preservation mismatch between intended PPO epochs/minibatches and executed optimizer updates. A CPU check is justified to verify whether configured values are preserved before declaring a fault.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 871,
+    "output_tokens": 250,
+    "total_tokens": 1121,
+    "wall_s": 2.780344992002938
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "inspect",
+    "probe": "P_optimizer_updates_cpu_adapter",
+    "source_sha256": "34b81900fdf188f1458848bfba7670592228a413c0eaefc822e448983481bdb3",
+    "fact_ids": [
+      "runtime.seed5751.configured_epochs",
+      "runtime.seed5751.actual_epochs",
+      "runtime.seed5751.configured_minibatches",
+      "runtime.seed5751.actual_optimizer_steps"
+    ],
+    "rationale": "The supplied build_algorithm_kwargs sets num_learning_epochs from config.get(\"num_epochs\", 1), while runtime facts show configured_epochs=5 but actual_epochs=1 and actual_optimizer_steps=[4,4,4], indicating a possible configuration preservation mismatch between intended PPO epochs/minibatches and executed optimizer updates. A CPU check is justified to verify whether configured values are preserved before declaring a fault."
+  },
+  "error": null,
+  "reservation": 10
+}

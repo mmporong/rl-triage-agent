@@ -1,0 +1,21 @@
+{
+  "schema": "diagnostic_patch_response_v1",
+  "kind": "revision",
+  "request_sha256": "19336984f580d27a4c4ad8f05caaf5afcfb562edb146570261587fee29060def",
+  "context_sha256": "f5dc277090d3c3788f1c0276e48e37ea1f5da6e25fada506b0885525c911aba3",
+  "provider_raw": {
+    "response_id": "chatcmpl-e71f6b86-a9a1-483d-9c9f-331a03a1a953",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"hold\",\n  \"source_sha256\": \"13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294\",\n  \"replacement_source\": null,\n  \"evidence_ids\": [\n    \"feedback.record3.measurement.counts_match\",\n    \"feedback.record3.measurement.expected_total\",\n    \"feedback.record3.measurement.expected_per_update\",\n    \"feedback.record3.measurement.per_update\",\n    \"feedback.record3.resolved.num_learning_epochs_source\",\n    \"feedback.record3.resolved.installed_ppo_signature_default\"\n  ],\n  \"rationale\": \"The adapter preserves the full configuration by copying config and only assigning num_learning_epochs from config.get with the configured value, so no fallback is invented and optional-argument omission is preserved. The measured CPU updates conform: 3 updates, 20 minibatches and optimizer steps per update, 60 total, matching expected_per_update 20 and expected_total 60. counts_match is true, policy parameters remain finite, and resolved epochs source is config with the installed PPO default of 1 not substituted. Therefore no patch is needed.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 5333,
+    "output_tokens": 294,
+    "total_tokens": 5627,
+    "wall_s": 2.5760961789928842
+  },
+  "status": "invalid",
+  "proposal": null,
+  "error": "PatchContractError: proposal cites an unknown evidence ID",
+  "reservation": 9
+}
