@@ -113,3 +113,5 @@ uv run --no-sync python evals/run_eval.py --bench p0c --task blind --seed 2026 -
 - 결함 종류가 6개뿐이고 seed 3개라 사실상 6개 사례의 반복이다. 표본이 작다.
 - 규칙·템플릿은 다른 학습 예산(1024 env × 100회)의 v1 dev로 만든 것이다. 같은 예산의 dev(보정 실행)로 다시 맞춘 규칙과는 비교하지 않았다.
 - 에이전트 프롬프트는 바꾸지 않았지만, 결함 설계자가 평가 하네스를 만들었다.
+- Isaac Lab 잠재 결함 [#7283](https://github.com/isaac-sim/IsaacLab/issues/7283)(`feet_air_time` 첫 접촉 판정의 float32 오차)은 v2.1.1 코드에 있어 기준 실행을 포함한 모든 holdout 실행에 대칭으로 들어 있다. 비교는 유지되지만 `Episode_Reward/feet_air_time` 수치에는 이 오차로 빠진 첫 접촉이 있을 수 있다. 누락률은 측정하지 않았다([NEXT-STEPS-20261009.md](NEXT-STEPS-20261009.md) 1.3절 X4, 1.5절).
+- PhysX GPU 접촉력 고착 [#7613](https://github.com/isaac-sim/IsaacLab/issues/7613)은 이슈 본문에 따르면 history_length=3인 velocity task에 영향이 없어 이 기준 실행에는 해당하지 않는다(같은 문서 X2).
