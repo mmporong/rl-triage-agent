@@ -202,3 +202,24 @@ def test_launcher_arguments_have_one_fixed_kit_args_value():
     assert value["headless"] is True
     assert value["kit_args"] == "--/app/vulkan=false --/app/window/hideUi=true"
     assert value["fast_shutdown"] is False
+
+
+@pytest.mark.parametrize(
+    ("epochs", "minibatches"), [(5, 4), (1, 4)]
+)
+def test_runtime_parameters_match_adapter_fields_separately(epochs, minibatches):
+    module = _load()
+    expected = {"num_learning_epochs": epochs, "num_mini_batches": minibatches}
+    module.verify_runtime_parameters(Namespace(**expected), expected)
+
+
+@pytest.mark.parametrize(
+    ("epochs", "minibatches"), [(4, 5), (10, 2), (True, 20), (5, 4.0)]
+)
+def test_runtime_parameters_reject_wrong_pair_even_with_same_step_product(epochs, minibatches):
+    module = _load()
+    with pytest.raises(module.TrainingContractError, match="실제 PPO"):
+        module.verify_runtime_parameters(
+            Namespace(num_learning_epochs=epochs, num_mini_batches=minibatches),
+            {"num_learning_epochs": 5, "num_mini_batches": 4},
+        )

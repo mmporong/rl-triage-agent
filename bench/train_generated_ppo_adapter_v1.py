@@ -325,6 +325,14 @@ def launcher_arguments(args: argparse.Namespace) -> dict[str, Any]:
     return value
 
 
+def verify_runtime_parameters(ppo: Any, expected: Mapping[str, Any]) -> None:
+    """실제 PPO가 어댑터의 epoch·미니배치 값을 각각 소비했는지 확인한다."""
+    for key in ("num_learning_epochs", "num_mini_batches"):
+        actual = getattr(ppo, key, None)
+        _require(type(actual) is int and actual == expected[key],
+                 f"실제 PPO {key}가 생성 어댑터 출력과 다르다")
+
+
 def train(spec: dict[str, Any], *, out: Path) -> dict[str, Any]:
     """Run the registered from-scratch training after the application starts."""
 
@@ -372,7 +380,9 @@ def train(spec: dict[str, Any], *, out: Path) -> dict[str, Any]:
         }
         _require(task_terms_after == task_terms_before,
                  "등록 task reward 또는 termination 설정이 바뀌었다")
-        runner = OnPolicyRunner(env, runner_cfg, log_dir=str(out / "logs"), device=agent.device)
+        # RSL이 class_name 등을 pop해도 전달 전후 설정 영수증은 보존한다.
+        runner = OnPolicyRunner(env, copy.deepcopy(runner_cfg), log_dir=str(out / "logs"), device=agent.device)
+        verify_runtime_parameters(runner.alg, algorithm_after)
         policy_before = _model_digest(runner.alg.policy)
         counts = {"updates": 0, "minibatches": 0, "optimizer_steps": 0}
         first_three: list[dict[str, Any]] = []
@@ -429,6 +439,7 @@ def train(spec: dict[str, Any], *, out: Path) -> dict[str, Any]:
         policy_after = _model_digest(runner.alg.policy)
         actual_epochs = int(runner.alg.num_learning_epochs)
         actual_minibatches = int(runner.alg.num_mini_batches)
+        verify_runtime_parameters(runner.alg, algorithm_after)
         expected_steps = spec["training"]["updates"] * actual_epochs * actual_minibatches
         _require(
             counts == {
