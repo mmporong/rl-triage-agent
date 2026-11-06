@@ -1,0 +1,41 @@
+{
+  "schema": "generated_ppo_patch_resource_observations_v1",
+  "timing_context": "shared desktop; launch-to-exit and owned-job cleanup; not a performance benchmark",
+  "GPU": "RTX 3060 12GB",
+  "source_training": {
+    "healthy": {
+      "outer_updates": 300,
+      "optimizer_steps": 6000,
+      "epochs": 5,
+      "minibatches": 4,
+      "wall_s": 492.2820000000065
+    },
+    "fault": {
+      "outer_updates": 300,
+      "optimizer_steps": 1200,
+      "epochs": 1,
+      "minibatches": 4,
+      "wall_s": 468.03100000001723
+    },
+    "patched": {
+      "outer_updates": 300,
+      "optimizer_steps": 6000,
+      "epochs": 5,
+      "minibatches": 4,
+      "wall_s": 492.81200000000536
+    }
+  },
+  "API_requests": 4,
+  "new_API_during_GPU": 0,
+  "SDK_apps_including_prior_infrastructure_attempt": 7,
+  "prior_attempts": {
+    "one_update_smoke": 1,
+    "healthy_failed_before_update": 1,
+    "fixed_evaluation": 0
+  },
+  "current_attempt": {
+    "one_update_smoke": 1,
+    "source_training": 3,
+    "fixed_evaluation_batch": 1
+  }
+}

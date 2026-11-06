@@ -34,11 +34,31 @@ def build_algorithm_kwargs(config):
 
 모델의 실제 응답은 [상수 덮어쓰기 사례 원문](../evals/results/ppo_generated_patch_cpu_20261106_v1/model/literal_override.response-01.json)에 보존했다. 요청한 모델은 `nvidia/nemotron-3.5-super-vl-120b-a12b`, 반환된 provider 별칭은 `private/nvidia/nemotron-3.5-super-120b-a12b`였다. 이번 입력은 텍스트이며 VL 영상 효과나 3 Super 대비 우위를 측정하지 않았다.
 
+## GPU 행동 회복 확인
+
+개발 seed 5750에서 정상 코드·상수 덮어쓰기 결함·모델 생성 패치를 각각 처음부터 300회 학습했다. 각 실행은 4,096개 환경을 사용했고, 같은 Fixed26(26조건·1,040환경·1,000 step, 평가 seed 2026)으로 평가했다. 입력 설정과 달라진 epoch만 교정했으며, 학습 update 예산과 task의 reward·termination 설정은 유지했다.
+
+| 정책 | 실제 epoch × minibatch | optimizer 갱신 합계 | 추종 RMSE, m/s | 낙상률 | 평균 생존 | 판정 |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 정상 코드 | 5 × 4 | 6,000 | 0.145786 | 0 | 20초 | healthy |
+| 결함 코드 | 1 × 4 | 1,200 | 1.173056 | 0 | 20초 | unhealthy |
+| 모델 생성 패치 | 5 × 4 | 6,000 | 0.145786 | 0 | 20초 | recovered |
+
+결함 정책은 넘어지지 않고 평가 시간을 버텼지만 명령을 추종하지 못했다. 생성 패치를 적용한 정책은 정상 정책과 같은 추종 오차를 기록했다. 등록한 일곱 조건인 정상 참조 보행, 결함 실패 재현, CPU 후보 입장, 패치 정책의 고정 평가 통과, 정상 소스 유지, reward·termination 유지, 실제 갱신 인자·횟수 일치를 모두 충족했다.
+
+이 결과는 선택된 패치 **한 개의 개발 사례**다. CPU에서 검사한 세 구현, GPU 정책 세 개, 평가 조건 26개를 독립된 회복 성공 사례로 합산하지 않는다. 정상 입력의 모델 무수정 실패 0/1과 호스트 차단 1/1도 별도 결과로 유지한다.
+
+학습 실행 시간은 정상 492.282초, 결함 468.031초, 패치 492.812초였다. 공유 데스크톱에서 자식 실행부터 종료·정리까지 잰 관측값이며 속도 우위나 GPU 절감을 판정하는 측정으로 쓰지 않았다. 모델 요청은 CPU 단계의 네 회뿐이고 GPU 단계의 새 모델 요청은 0회다.
+
+[행동 회복 요약](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/summary.json) · [정상·결함·패치 평가 원문](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/fixed/) · [학습과 갱신 기록](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/training/) · [실행 시간·자원](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/resources.json) · [원문 SHA 목록](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/SHA256SUMS.json)
+
 ## 실행 경계
 
 생성 소스는 `build_algorithm_kwargs(config)` 함수 하나로 제한한다. 설정 dictionary 복사·상수 조회·epoch 항목 대입·반환만 허용하며 import, 파일·네트워크·셸 접근, 반복문, 임의 함수 호출은 거부한다. 여러 설정에서 실제 갱신 횟수와 나머지 설정의 보존을 확인한 후보만 별도 GPU 등록 대상으로 삼는다.
 
 정상·결함·선택된 패치의 GPU 비교는 같은 task·seed·환경 수·학습 update 예산과 같은 고정 평가를 사용한다. 정상 코드는 유지하고, reward·termination 설정 해시와 실제 PPO epoch·minibatch 값을 각각 확인한다. 패치 생성, 검사 정상화, 행동 회복, 정상 대조는 별개 항목으로 보고한다.
+
+GPU v1 등록은 실행 없이 v2로 대체됐다. v2는 1회 예비 학습 통과 후 본학습 전 임대 메타데이터 접근 오류로 중단됐고, 행동 평가는 실행하지 않았다. 이 기록과 소비를 보존한 뒤 같은 seed·예산의 [v3 인프라 재시도](../bench/protocols/generated_ppo_patch_behavior_s5750_20261106_v3.json)로 위 결과를 얻었다. 자세한 기록은 [이전 시도 요약](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/prior-infrastructure-attempt.json)에 있다.
 
 ## 근거와 재현 코드
 

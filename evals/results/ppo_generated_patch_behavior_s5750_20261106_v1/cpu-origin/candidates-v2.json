@@ -1,0 +1,6 @@
+{
+  "late_override": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_learning_epochs\", 5)\n    return options",
+  "literal_override": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    return options",
+  "omitted_argument": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_learning_epochs\", 5)\n    return options",
+  "healthy": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_learning_epochs\", 5)\n    return options"
+}

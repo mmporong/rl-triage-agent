@@ -1,6 +1,6 @@
 # RL Triage Agent
 
-**Investigate failed robot policies, use check results to select registered corrections, and verify recovery in Isaac Lab.**
+**Investigate failed robot policies, select corrections or validate proposed code patches, and verify recovery in Isaac Lab.**
 
 [Watch the replay](https://mmporong.github.io/rl-triage-agent/replay/) · [Architecture](https://mmporong.github.io/rl-triage-agent/?view=single-dark) · [Quickstart](#quickstart) · [한국어 요약](#한국어-요약)
 
@@ -39,14 +39,14 @@ Other recordings: [compound-fault repair](docs/media/five_type_recovery_s5557_20
 1. **Observe:** read bound training records, task context and available frames.
 2. **Select:** Nemotron chooses a registered check and cites evidence IDs.
 3. **Check:** the host validates approval, executes the check and returns a receipt.
-4. **Correct or adapt:** a confirmed cause permits a registered correction. A separate task contract can permit policy adaptation while the code-bug cause stays unconfirmed.
+4. **Correct or adapt:** a confirmed cause permits a registered correction. The generated-PPO development path validates model-written adapter code before training. A separate task contract can permit policy adaptation.
 5. **Evaluate:** the host trains, then applies the same fixed evaluation to the resulting policy.
 
 The model selects actions; the host supplies execution arguments and checks authority. Each approval is consumed once. Unsupported causes or persistently invalid model answers end at **HOLD** in the current 3.5 fault-repair path. Other registered versions can record a rule fallback. A second diagnosis round can investigate a failure that remains after correction.
 
 | Component | Role |
 | --- | --- |
-| Nemotron 3.5 Super VL | Current diagnosis, check selection, adaptation proposals and auxiliary frame observations. Frozen experiments retain Nemotron 3 Super. |
+| Nemotron 3.5 Super VL | Current diagnosis, check selection, adaptation and restricted PPO patch proposals, plus auxiliary frame observations. Frozen experiments retain Nemotron 3 Super. |
 | NeMo Agent Toolkit 1.9 | Configured tool workflows and the assessment entry; some experiments use separate host controllers. |
 | OpenShell 0.1.1 + prover | File and network restrictions, key injection and permission proofs in the sandbox path. |
 | Isaac Lab 2.1.1 / Isaac Sim 4.5 | Simulation, probes, training, fixed evaluation and recording. |
@@ -56,6 +56,7 @@ The model selects actions; the host supplies execution arguments and checks auth
 
 | Test | Observed result | Evidence |
 | --- | --- | --- |
+| Generated PPO code patch | Nemotron 3.5 wrote a restricted settings adapter. Development seed 5750: actual updates restored from 4 to 20 per iteration; tracking RMSE **1.173→0.146m/s**, with the healthy control preserved. | [Patch, checks and recovery](docs/GENERATED-PPO-PATCH.md) |
 | Follow-up diagnosis and repair | The 3.5 seed 2311 case above recovered after a second diagnosis round and registered correction. Earlier compound-fault seeds 2120/2121 also recovered after two corrections. | [3.5 case](docs/NEW-LINEAGE-COMPARISON.md#갱신-계측을-연결한-새-복합-사례) · [Residual diagnosis](docs/RESIDUAL-DIAGNOSIS-RESULT.md) |
 | Same-command stair adaptation | Development seed 200: inverted samples **888→0**, tracking RMSE **0.233→0.064m/s**; the 30-second task changes from fail to pass. | [Stair adaptation](docs/GO2-STAIRS-AGENT-ADAPTATION.md) |
 | Registered reward and motor faults | Four new-seed runs recovered. In the motor case, three checks overturned the initial reward hypothesis and confirmed the actuator. | [End-to-end repair](docs/E2E-REWARD-DEMO.md) |
@@ -133,6 +134,6 @@ These check permission proofs, stored correction records and public replay data.
 
 RL Triage는 Isaac Lab 로봇 정책이 과제에 실패했을 때, 학습 기록과 관측에서 검사 후보를 고르는 에이전트입니다. Nemotron이 검사를 선택하면 호스트가 승인과 근거를 확인해 실행합니다. 원인이 확인되면 등록 교정을, 별도 과제 계약이 있으면 정책 적응을 실행하고 같은 기준으로 다시 평가합니다. 근거가 부족하면 HOLD로 멈춥니다.
 
-대표 수리 사례는 Nemotron 3.5를 사용한 seed 2311입니다. 보상 교정 뒤에도 추종 실패가 남자 두 번째 진단에서 갱신 횟수 검사를 선택했습니다. 검사에서 기대 20회·실제 4회를 확인했고, 등록된 PPO epoch 복원 후 고정 평가를 통과했습니다. 추종 오차는 1.219→1.163→0.142m/s였습니다.
+대표 수리 사례는 Nemotron 3.5를 사용한 seed 2311입니다. 보상 교정 뒤에도 추종 실패가 남자 두 번째 진단에서 갱신 횟수 검사를 선택했습니다. 검사에서 기대 20회·실제 4회를 확인했고, 등록된 PPO epoch 복원 후 고정 평가를 통과했습니다. 추종 오차는 1.219→1.163→0.142m/s였습니다. 별도 개발 seed 5750에서는 모델이 제한된 PPO 설정 패치를 작성했고, 실제 갱신 횟수 복원과 함께 추종 오차가 1.173→0.146m/s로 개선돼 고정 평가를 통과했습니다.
 
 계단 영상은 별도의 정책 적응 사례입니다. 같은 0.25m/s 명령을 유지한 개발 seed 200에서 뒤집힘 표본은 888→0으로 줄었습니다. 모델의 검사 선택, 호스트의 등록 교정 실행, 학습과 평가 기록을 사례별로 연결해 공개합니다.

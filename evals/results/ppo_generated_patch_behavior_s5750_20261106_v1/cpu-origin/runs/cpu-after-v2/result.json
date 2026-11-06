@@ -1,0 +1,1149 @@
+{
+  "schema": "ppo_patch_cpu_batch_v1",
+  "status": "complete",
+  "records": [
+    {
+      "variant": "late_override",
+      "configuration": {
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "source_sha256": "13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 5,
+            "num_mini_batches": 4,
+            "learning_rate": 0.001,
+            "schedule": "fixed"
+          },
+          "config_sha256": "5a3ccc88a215f9bf9f67361ca8ec9e69c69fdb1a4520fb011eabf28809e381b9",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 60,
+          "optimizer_steps": 60,
+          "expected_per_update": 20,
+          "expected_total": 60,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "82c1d3eabd7c1117f7e199fb272228aac2e404fd3ef989c8cdee5d3d6c1088ea",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 20,
+      "other_parameters_preserved": true
+    },
+    {
+      "variant": "late_override",
+      "configuration": {
+        "num_learning_epochs": 3,
+        "num_mini_batches": 2,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 3,
+        "num_mini_batches": 2,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "source_sha256": "13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 3,
+            "num_mini_batches": 2,
+            "learning_rate": 0.001,
+            "schedule": "fixed"
+          },
+          "config_sha256": "c9a2351fc4f5b0ef594905c76daafb106ac7a723787492edd62811dc643f9cf4",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 3,
+          "num_mini_batches": 2,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 18,
+          "optimizer_steps": 18,
+          "expected_per_update": 6,
+          "expected_total": 18,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "ff95c05bf4f07e6e7042dc023a2013c3540e006cdf29e2c0956f5856b206182b",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 6,
+      "other_parameters_preserved": true
+    },
+    {
+      "variant": "late_override",
+      "configuration": {
+        "num_learning_epochs": 2,
+        "num_mini_batches": 3,
+        "learning_rate": 0.001,
+        "schedule": "fixed",
+        "clip_param": 0.17,
+        "gamma": 0.97
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 2,
+        "num_mini_batches": 3,
+        "learning_rate": 0.001,
+        "schedule": "fixed",
+        "clip_param": 0.17,
+        "gamma": 0.97
+      },
+      "source_sha256": "13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 2,
+            "num_mini_batches": 3,
+            "learning_rate": 0.001,
+            "schedule": "fixed",
+            "clip_param": 0.17,
+            "gamma": 0.97
+          },
+          "config_sha256": "52d8130b69d958b5533462117cbc9f3af64e510453260353ab898156f91dc276",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 2,
+          "num_mini_batches": 3,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 18,
+          "optimizer_steps": 18,
+          "expected_per_update": 6,
+          "expected_total": 18,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "f88763802876928ae87263669c784cb59d9d1d002f49a9d02db3ba2ba57cb354",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 6,
+      "other_parameters_preserved": true
+    },
+    {
+      "variant": "literal_override",
+      "configuration": {
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "source_sha256": "40da12471f9887a9ee78066e768dd62ec11303c927c796e517177c92eaa20eee",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 5,
+            "num_mini_batches": 4,
+            "learning_rate": 0.001,
+            "schedule": "fixed"
+          },
+          "config_sha256": "5a3ccc88a215f9bf9f67361ca8ec9e69c69fdb1a4520fb011eabf28809e381b9",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 60,
+          "optimizer_steps": 60,
+          "expected_per_update": 20,
+          "expected_total": 60,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "82c1d3eabd7c1117f7e199fb272228aac2e404fd3ef989c8cdee5d3d6c1088ea",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 20,
+      "other_parameters_preserved": true
+    },
+    {
+      "variant": "literal_override",
+      "configuration": {
+        "num_learning_epochs": 3,
+        "num_mini_batches": 2,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 3,
+        "num_mini_batches": 2,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "source_sha256": "40da12471f9887a9ee78066e768dd62ec11303c927c796e517177c92eaa20eee",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 3,
+            "num_mini_batches": 2,
+            "learning_rate": 0.001,
+            "schedule": "fixed"
+          },
+          "config_sha256": "c9a2351fc4f5b0ef594905c76daafb106ac7a723787492edd62811dc643f9cf4",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 3,
+          "num_mini_batches": 2,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 18,
+          "optimizer_steps": 18,
+          "expected_per_update": 6,
+          "expected_total": 18,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "ff95c05bf4f07e6e7042dc023a2013c3540e006cdf29e2c0956f5856b206182b",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 6,
+      "other_parameters_preserved": true
+    },
+    {
+      "variant": "literal_override",
+      "configuration": {
+        "num_learning_epochs": 2,
+        "num_mini_batches": 3,
+        "learning_rate": 0.001,
+        "schedule": "fixed",
+        "clip_param": 0.17,
+        "gamma": 0.97
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 2,
+        "num_mini_batches": 3,
+        "learning_rate": 0.001,
+        "schedule": "fixed",
+        "clip_param": 0.17,
+        "gamma": 0.97
+      },
+      "source_sha256": "40da12471f9887a9ee78066e768dd62ec11303c927c796e517177c92eaa20eee",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 2,
+            "num_mini_batches": 3,
+            "learning_rate": 0.001,
+            "schedule": "fixed",
+            "clip_param": 0.17,
+            "gamma": 0.97
+          },
+          "config_sha256": "52d8130b69d958b5533462117cbc9f3af64e510453260353ab898156f91dc276",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 2,
+          "num_mini_batches": 3,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 18,
+          "optimizer_steps": 18,
+          "expected_per_update": 6,
+          "expected_total": 18,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "f88763802876928ae87263669c784cb59d9d1d002f49a9d02db3ba2ba57cb354",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 6,
+      "other_parameters_preserved": true
+    },
+    {
+      "variant": "omitted_argument",
+      "configuration": {
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "source_sha256": "13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 5,
+            "num_mini_batches": 4,
+            "learning_rate": 0.001,
+            "schedule": "fixed"
+          },
+          "config_sha256": "5a3ccc88a215f9bf9f67361ca8ec9e69c69fdb1a4520fb011eabf28809e381b9",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 60,
+          "optimizer_steps": 60,
+          "expected_per_update": 20,
+          "expected_total": 60,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "82c1d3eabd7c1117f7e199fb272228aac2e404fd3ef989c8cdee5d3d6c1088ea",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 20,
+      "other_parameters_preserved": true
+    },
+    {
+      "variant": "omitted_argument",
+      "configuration": {
+        "num_learning_epochs": 3,
+        "num_mini_batches": 2,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 3,
+        "num_mini_batches": 2,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "source_sha256": "13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 3,
+            "num_mini_batches": 2,
+            "learning_rate": 0.001,
+            "schedule": "fixed"
+          },
+          "config_sha256": "c9a2351fc4f5b0ef594905c76daafb106ac7a723787492edd62811dc643f9cf4",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 3,
+          "num_mini_batches": 2,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 18,
+          "optimizer_steps": 18,
+          "expected_per_update": 6,
+          "expected_total": 18,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "ff95c05bf4f07e6e7042dc023a2013c3540e006cdf29e2c0956f5856b206182b",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 6,
+      "other_parameters_preserved": true
+    },
+    {
+      "variant": "omitted_argument",
+      "configuration": {
+        "num_learning_epochs": 2,
+        "num_mini_batches": 3,
+        "learning_rate": 0.001,
+        "schedule": "fixed",
+        "clip_param": 0.17,
+        "gamma": 0.97
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 2,
+        "num_mini_batches": 3,
+        "learning_rate": 0.001,
+        "schedule": "fixed",
+        "clip_param": 0.17,
+        "gamma": 0.97
+      },
+      "source_sha256": "13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 2,
+            "num_mini_batches": 3,
+            "learning_rate": 0.001,
+            "schedule": "fixed",
+            "clip_param": 0.17,
+            "gamma": 0.97
+          },
+          "config_sha256": "52d8130b69d958b5533462117cbc9f3af64e510453260353ab898156f91dc276",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 2,
+          "num_mini_batches": 3,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 18,
+          "optimizer_steps": 18,
+          "expected_per_update": 6,
+          "expected_total": 18,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "f88763802876928ae87263669c784cb59d9d1d002f49a9d02db3ba2ba57cb354",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 6,
+      "other_parameters_preserved": true
+    },
+    {
+      "variant": "healthy",
+      "configuration": {
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "source_sha256": "13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 5,
+            "num_mini_batches": 4,
+            "learning_rate": 0.001,
+            "schedule": "fixed"
+          },
+          "config_sha256": "5a3ccc88a215f9bf9f67361ca8ec9e69c69fdb1a4520fb011eabf28809e381b9",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 5,
+          "num_mini_batches": 4,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 60,
+          "optimizer_steps": 60,
+          "expected_per_update": 20,
+          "expected_total": 60,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 20,
+              "optimizer_steps": 20,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "82c1d3eabd7c1117f7e199fb272228aac2e404fd3ef989c8cdee5d3d6c1088ea",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 20,
+      "other_parameters_preserved": true
+    },
+    {
+      "variant": "healthy",
+      "configuration": {
+        "num_learning_epochs": 3,
+        "num_mini_batches": 2,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 3,
+        "num_mini_batches": 2,
+        "learning_rate": 0.001,
+        "schedule": "fixed"
+      },
+      "source_sha256": "13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 3,
+            "num_mini_batches": 2,
+            "learning_rate": 0.001,
+            "schedule": "fixed"
+          },
+          "config_sha256": "c9a2351fc4f5b0ef594905c76daafb106ac7a723787492edd62811dc643f9cf4",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 3,
+          "num_mini_batches": 2,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 18,
+          "optimizer_steps": 18,
+          "expected_per_update": 6,
+          "expected_total": 18,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "ff95c05bf4f07e6e7042dc023a2013c3540e006cdf29e2c0956f5856b206182b",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 6,
+      "other_parameters_preserved": true
+    },
+    {
+      "variant": "healthy",
+      "configuration": {
+        "num_learning_epochs": 2,
+        "num_mini_batches": 3,
+        "learning_rate": 0.001,
+        "schedule": "fixed",
+        "clip_param": 0.17,
+        "gamma": 0.97
+      },
+      "algorithm_kwargs": {
+        "num_learning_epochs": 2,
+        "num_mini_batches": 3,
+        "learning_rate": 0.001,
+        "schedule": "fixed",
+        "clip_param": 0.17,
+        "gamma": 0.97
+      },
+      "source_sha256": "13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294",
+      "measurement": {
+        "schema": "rsl_ppo_patch_cpu_inspection_v1",
+        "status": "passed",
+        "runtime": {
+          "python": "3.10.15",
+          "torch": "2.7.0+cu128",
+          "rsl_rl": "2.3.3",
+          "ppo_class": "rsl_rl.algorithms.ppo.PPO",
+          "ppo_constructor_signature": "(self, policy, num_learning_epochs=1, num_mini_batches=1, clip_param=0.2, gamma=0.998, lam=0.95, value_loss_coef=1.0, entropy_coef=0.0, learning_rate=0.001, max_grad_norm=1.0, use_clipped_value_loss=True, schedule='fixed', desired_kl=0.01, device='cpu', normalize_advantage_per_mini_batch=False, rnd_cfg: 'dict | None' = None, symmetry_cfg: 'dict | None' = None, multi_gpu_cfg: 'dict | None' = None)"
+        },
+        "input": {
+          "config": {
+            "num_learning_epochs": 2,
+            "num_mini_batches": 3,
+            "learning_rate": 0.001,
+            "schedule": "fixed",
+            "clip_param": 0.17,
+            "gamma": 0.97
+          },
+          "config_sha256": "52d8130b69d958b5533462117cbc9f3af64e510453260353ab898156f91dc276",
+          "updates": 3,
+          "seed": 575
+        },
+        "resolved": {
+          "num_learning_epochs": 2,
+          "num_mini_batches": 3,
+          "num_learning_epochs_source": "config",
+          "installed_ppo_signature_default": 1
+        },
+        "fixture": {
+          "kind": "deterministic_tensor_abi_not_simulation_result",
+          "num_envs": 32,
+          "rollout_steps": 8,
+          "observation_dim": 48,
+          "action_dim": 12,
+          "device": "cpu"
+        },
+        "measurement": {
+          "updates": 3,
+          "minibatches": 18,
+          "optimizer_steps": 18,
+          "expected_per_update": 6,
+          "expected_total": 18,
+          "counts_match": true,
+          "per_update": [
+            {
+              "index": 1,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 2,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            },
+            {
+              "index": 3,
+              "minibatches": 6,
+              "optimizer_steps": 6,
+              "return_values_finite": true
+            }
+          ],
+          "policy_sha256_before": "dd1d9dfcb51c5e0775e8bfae59d742b6aefdd0fc7bc8abf5f656061392290170",
+          "policy_sha256_after": "f88763802876928ae87263669c784cb59d9d1d002f49a9d02db3ba2ba57cb354",
+          "changed_parameter_tensors": 13,
+          "policy_parameters_finite": true
+        },
+        "isolation": {
+          "CUDA_VISIBLE_DEVICES": "-1",
+          "cuda_initialized_before": false,
+          "cuda_initialized_after": false,
+          "simulation_modules_before": [],
+          "simulation_modules_after": []
+        }
+      },
+      "configured_steps": 6,
+      "other_parameters_preserved": true
+    }
+  ],
+  "robot_simulation": false,
+  "new_GPU": 0,
+  "new_model_API": 0
+}

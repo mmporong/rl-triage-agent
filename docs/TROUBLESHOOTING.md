@@ -1143,3 +1143,11 @@ Go2 하행을 1500프레임으로 늘릴 때 기존 저장기에는 625프레임
 같은 trace의 xy RMSE가 생산자 Python 3.10에서 `0.23284981411905734`, 부모 Python 3.12에서 `0.23284981411905725`로 계산돼 종료 영수증의 엄격한 일치 검사가 거절했다. Python 3.12는 float 합산 알고리즘을 변경했다([공식 sum 문서](https://docs.python.org/3.12/library/functions.html#sum)). 판정 기준이나 원본을 바꾸지 않고 생산자 Python 3.10에서 다시 검증해 정확한 영수증 일치를 확인했다. 원 녹화는 재실행하지 않았으며 이전 invalid 기록도 보존했다.
 
 임대 reader의 `read_scope()`만 열고 하위 reader를 부르면 기록용 thread-local이 초기화되지 않는다. 전체 `lease_context(stage)` 접점을 사용하고 실제 공용 임대 상태에서 SDK 없는 입장 검사를 수행한다. 원본·모델 인용 계약·갱신 수·학습 후 판정은 [계단 적응 결과](GO2-STAIRS-AGENT-ADAPTATION.md)와 [전체 artifact SHA](../evals/results/go2_stairs_agent_adaptation_s200_20261106_v1/manifest-v2.json)에 연결했다.
+
+## 2026-11-06: 생성 PPO 패치 비교의 임대 메타데이터 읽기
+
+- 등록: `generated_ppo_patch_behavior_s5750_20261106_v2`(커밋 `9dc13ed`). 1 update 예비 실행은 통과했으나 본 정상 학습의 최초 임대 확인에서 canonical `gpu-lease.json` 읽기가 `PermissionError(errno=13)`로 실패했다. 본학습 update·모델 API·고정 평가는 0이었고, 자식 exit 1·소유 프로세스 정리·임대 해제를 확인했다.
+- 확인된 범위: 오류 단계는 PPO 갱신 이전의 상태 파일 접근이다. 해당 순간의 쓰기 주체, 접근 불가가 지속된 이유, 자식의 정확한 재시도 횟수는 확인하지 못했다. 저장된 오류를 모델 패치 실패나 정책 미회복으로 합산하지 않았다.
+- 수정: `evals/lineage_lease_context_v3.py`가 canonical 파일만 `CreateFileW`의 read/write/delete 공유로 새 handle에서 읽는다. [Microsoft의 공유 모드 설명](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew)을 따르며, 기존 소유자·PID 계보·60초 heartbeat·배타 lock·2초/20회 재시도 검증은 유지한다. 각 임대 확인의 fresh-read 증거도 저장한다.
+- 검증: Windows 원자 교체 동시 읽기와 기존 임대 검증 회귀, 실제 SDK Python 3.10 읽기 확인 뒤 같은 seed·예산의 v3를 등록했다. v3의 1 update 예비 실행·학습 3개·고정 평가가 끝났고, 임대 확인 51건은 모두 fresh read로 통과했다(캐시 수용 0).
+- 결과: [보존한 이전 시도](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/prior-infrastructure-attempt.json), [v3 읽기 기록](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/lease-read-observations.json), [최종 행동 결과](../evals/results/ppo_generated_patch_behavior_s5750_20261106_v1/summary.json). 생성 패치의 갱신 정상화와 행동 회복은 최종 판에서 확인했으며 v2 원문은 보존했다.
