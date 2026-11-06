@@ -1,0 +1,35 @@
+{
+  "schema": "ppo_patch_model_response_v1",
+  "request_sha256": "0f36a9ac02be07d78906705c4349fdbc68b89582ea52de8f43c596279c403718",
+  "context_sha256": "1ffba6f7b29b51a53c0b9692c1285a3d93cd3e67c195f65720f0ab499105ec42",
+  "provider_raw": {
+    "response_id": "chatcmpl-c03e3a48-b525-40d9-a0ea-94b7ee3f544b",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\"action\": \"patch\", \"source_sha256\": \"23358b8bd33d610103273ef3ee3d14d797f7f41b680d246c29b176710d35e2bc\", \"replacement_source\": \"def build_algorithm_kwargs(config):\\n    options = dict(config)\\n    return options\", \"evidence_ids\": [\"configured.epochs\", \"configured.minibatches\", \"observed.update0.optimizer_steps\", \"observed.update0.minibatches\", \"observed.update1.optimizer_steps\", \"observed.update1.minibatches\", \"observed.update2.optimizer_steps\", \"observed.update2.minibatches\"], \"rationale\": \"The adapter overwrites num_learning_epochs with 1, contradicting the configured value of 5. Measured CPU updates show 4 optimizer steps per update matching num_mini_batches, not a single epoch, so the override must be removed to preserve all configured algorithm parameters.\"}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 611,
+    "output_tokens": 241,
+    "total_tokens": 852,
+    "wall_s": 1.5265048000001116
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "patch",
+    "source_sha256": "23358b8bd33d610103273ef3ee3d14d797f7f41b680d246c29b176710d35e2bc",
+    "replacement_source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    return options",
+    "evidence_ids": [
+      "configured.epochs",
+      "configured.minibatches",
+      "observed.update0.optimizer_steps",
+      "observed.update0.minibatches",
+      "observed.update1.optimizer_steps",
+      "observed.update1.minibatches",
+      "observed.update2.optimizer_steps",
+      "observed.update2.minibatches"
+    ],
+    "rationale": "The adapter overwrites num_learning_epochs with 1, contradicting the configured value of 5. Measured CPU updates show 4 optimizer steps per update matching num_mini_batches, not a single epoch, so the override must be removed to preserve all configured algorithm parameters."
+  },
+  "error": null,
+  "reservation": 2
+}

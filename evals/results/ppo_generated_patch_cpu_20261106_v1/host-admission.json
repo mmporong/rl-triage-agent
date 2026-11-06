@@ -1,0 +1,82 @@
+{
+  "late_override": {
+    "schema": "ppo_generated_patch_admission_v1",
+    "admitted": true,
+    "reason": "candidate_conforms",
+    "promoted_source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_learning_epochs\", 5)\n    return options",
+    "promoted_source_sha256": "13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294",
+    "baseline_conforms": false,
+    "candidate_conforms": true,
+    "baseline_reasons": [
+      "configuration_not_preserved",
+      "configuration_not_preserved",
+      "configuration_not_preserved"
+    ],
+    "candidate_reasons": [
+      "conforms",
+      "conforms",
+      "conforms"
+    ],
+    "model_proposal_success": true
+  },
+  "literal_override": {
+    "schema": "ppo_generated_patch_admission_v1",
+    "admitted": true,
+    "reason": "candidate_conforms",
+    "promoted_source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    return options",
+    "promoted_source_sha256": "40da12471f9887a9ee78066e768dd62ec11303c927c796e517177c92eaa20eee",
+    "baseline_conforms": false,
+    "candidate_conforms": true,
+    "baseline_reasons": [
+      "configuration_not_preserved",
+      "configuration_not_preserved",
+      "configuration_not_preserved"
+    ],
+    "candidate_reasons": [
+      "conforms",
+      "conforms",
+      "conforms"
+    ],
+    "model_proposal_success": true
+  },
+  "omitted_argument": {
+    "schema": "ppo_generated_patch_admission_v1",
+    "admitted": true,
+    "reason": "candidate_conforms",
+    "promoted_source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_learning_epochs\", 5)\n    return options",
+    "promoted_source_sha256": "13436e8d6763bf39a116d5f2146fdf61688795154360f67ccb0f1d4f96bd4294",
+    "baseline_conforms": false,
+    "candidate_conforms": true,
+    "baseline_reasons": [
+      "configuration_not_preserved",
+      "configuration_not_preserved",
+      "configuration_not_preserved"
+    ],
+    "candidate_reasons": [
+      "conforms",
+      "conforms",
+      "conforms"
+    ],
+    "model_proposal_success": true
+  },
+  "healthy": {
+    "schema": "ppo_generated_patch_admission_v1",
+    "admitted": false,
+    "reason": "baseline_conforms",
+    "promoted_source": null,
+    "promoted_source_sha256": null,
+    "baseline_conforms": true,
+    "candidate_conforms": true,
+    "baseline_reasons": [
+      "conforms",
+      "conforms",
+      "conforms"
+    ],
+    "candidate_reasons": [
+      "conforms",
+      "conforms",
+      "conforms"
+    ],
+    "model_proposal_success": false
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "ppo_patch_model_response_v1",
+  "request_sha256": "499d42ce90054bffdacdd77d002579c93fecabbfc73bd6cd0e7212fbba65e1c9",
+  "context_sha256": "7e8dc8eecd8f9e2cb6a3abc8bdf02a4d4abe1792a90bd15120a7dae975204d2e",
+  "provider_raw": {
+    "response_id": "chatcmpl-c329f622-e0dc-4952-8433-0b5093f338e5",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"patch\",\n  \"source_sha256\": \"ef943cdb086fea69b5305c7ce23d1d7a9f66bae45456236b984cb9a490918b6c\",\n  \"replacement_source\": \"def build_algorithm_kwargs(config):\\n    options = dict(config)\\n    options[\\\"num_learning_epochs\\\"] = config.get(\\\"num_learning_epochs\\\", 5)\\n    return options\",\n  \"evidence_ids\": [\n    \"configured.epochs\",\n    \"configured.minibatches\",\n    \"observed.update0.optimizer_steps\",\n    \"observed.update0.minibatches\"\n  ],\n  \"rationale\": \"The current adapter drops num_learning_epochs and other configured parameters, so the algorithm cannot preserve the configured 5 epochs. The replacement copies the full config into a local dictionary, assigns num_learning_epochs from config with the configured default, and returns the local dictionary, preserving all configured algorithm parameters without hardcoding epoch or minibatch counts.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 636,
+    "output_tokens": 254,
+    "total_tokens": 890,
+    "wall_s": 1.9218303240049863
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "patch",
+    "source_sha256": "ef943cdb086fea69b5305c7ce23d1d7a9f66bae45456236b984cb9a490918b6c",
+    "replacement_source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_learning_epochs\", 5)\n    return options",
+    "evidence_ids": [
+      "configured.epochs",
+      "configured.minibatches",
+      "observed.update0.optimizer_steps",
+      "observed.update0.minibatches"
+    ],
+    "rationale": "The current adapter drops num_learning_epochs and other configured parameters, so the algorithm cannot preserve the configured 5 epochs. The replacement copies the full config into a local dictionary, assigns num_learning_epochs from config with the configured default, and returns the local dictionary, preserving all configured algorithm parameters without hardcoding epoch or minibatch counts."
+  },
+  "error": null,
+  "reservation": 3
+}

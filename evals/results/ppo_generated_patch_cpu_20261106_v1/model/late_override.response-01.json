@@ -1,0 +1,31 @@
+{
+  "schema": "ppo_patch_model_response_v1",
+  "request_sha256": "ffacae01b7b4d764b22aafda6b4d2ad29d2a88a8f80e6b93ad9c0e2923c4e989",
+  "context_sha256": "1c4b9d6205946059931db4689145f7aac5669b8a8e182c565022d948a3eb7632",
+  "provider_raw": {
+    "response_id": "chatcmpl-672b37b3-bb65-48e3-8a95-9c2fa9452936",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"patch\",\n  \"source_sha256\": \"91a012e466794588532c453d6a7302313c859b9ab6d74e625d1c0b161abfdfea\",\n  \"replacement_source\": \"def build_algorithm_kwargs(config):\\n    options = dict(config)\\n    options[\\\"num_learning_epochs\\\"] = config.get(\\\"num_learning_epochs\\\", 5)\\n    return options\",\n  \"evidence_ids\": [\n    \"configured.epochs\",\n    \"observed.update0.optimizer_steps\",\n    \"observed.update1.optimizer_steps\",\n    \"observed.update2.optimizer_steps\"\n  ],\n  \"rationale\": \"The adapter overwrites num_learning_epochs with 1 after copying config, contradicting the configured value of 5 and the observed 4 optimizer steps per CPU update. The corrected function preserves all configured parameters by copying config and only assigning num_learning_epochs from config.get with the configured default, without hardcoding epoch or minibatch counts.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 635,
+    "output_tokens": 259,
+    "total_tokens": 894,
+    "wall_s": 1.6533437450125348
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "patch",
+    "source_sha256": "91a012e466794588532c453d6a7302313c859b9ab6d74e625d1c0b161abfdfea",
+    "replacement_source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_learning_epochs\", 5)\n    return options",
+    "evidence_ids": [
+      "configured.epochs",
+      "observed.update0.optimizer_steps",
+      "observed.update1.optimizer_steps",
+      "observed.update2.optimizer_steps"
+    ],
+    "rationale": "The adapter overwrites num_learning_epochs with 1 after copying config, contradicting the configured value of 5 and the observed 4 optimizer steps per CPU update. The corrected function preserves all configured parameters by copying config and only assigning num_learning_epochs from config.get with the configured default, without hardcoding epoch or minibatch counts."
+  },
+  "error": null,
+  "reservation": 1
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "ppo_patch_model_response_v1",
+  "request_sha256": "349e95184d201386813e602edb09b5e055ca6f850d37c615b44b6a1113808b20",
+  "context_sha256": "dfbc43e5df4e11544f89d63dd84db350c8fd1043830f54850ab14f7ce786dd48",
+  "provider_raw": {
+    "response_id": "chatcmpl-decb923a-e695-41b6-89d7-cd697185a564",
+    "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+    "content": "{\n  \"action\": \"patch\",\n  \"source_sha256\": \"5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106\",\n  \"replacement_source\": \"def build_algorithm_kwargs(config):\\n    options = dict(config)\\n    options[\\\"num_learning_epochs\\\"] = config.get(\\\"num_learning_epochs\\\", 5)\\n    return options\",\n  \"evidence_ids\": [\n    \"configured.epochs\",\n    \"configured.minibatches\",\n    \"observed.update0.optimizer_steps\",\n    \"observed.update0.minibatches\"\n  ],\n  \"rationale\": \"The adapter currently copies config without enforcing the configured num_learning_epochs, while measured CPU updates show 20 optimizer steps and 20 minibatches per update, consistent with 5 epochs over 4 minibatches. The patch preserves all configured parameters, explicitly assigns num_learning_epochs from config with the configured default, and does not hardcode epoch or minibatch counts.\"\n}",
+    "finish_reason": "stop",
+    "reasoning_content": null,
+    "input_tokens": 598,
+    "output_tokens": 263,
+    "total_tokens": 861,
+    "wall_s": 1.6263159449881641
+  },
+  "status": "valid",
+  "proposal": {
+    "action": "patch",
+    "source_sha256": "5910a76a93cdc1bc1b49b345dbac47ebb58e54105c122d3597b7de35df6b2106",
+    "replacement_source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = config.get(\"num_learning_epochs\", 5)\n    return options",
+    "evidence_ids": [
+      "configured.epochs",
+      "configured.minibatches",
+      "observed.update0.optimizer_steps",
+      "observed.update0.minibatches"
+    ],
+    "rationale": "The adapter currently copies config without enforcing the configured num_learning_epochs, while measured CPU updates show 20 optimizer steps and 20 minibatches per update, consistent with 5 epochs over 4 minibatches. The patch preserves all configured parameters, explicitly assigns num_learning_epochs from config with the configured default, and does not hardcode epoch or minibatch counts."
+  },
+  "error": null,
+  "reservation": 4
+}

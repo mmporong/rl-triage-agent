@@ -1,0 +1,74 @@
+{
+  "schema": "generated_ppo_patch_cpu_public_result_v1",
+  "status": "complete",
+  "scope": "known PPO-epoch family, synthetic adapter implementation variants, development CPU test",
+  "primary": {
+    "fault_patches_passed": 3,
+    "fault_patches_total": 3,
+    "configurations_per_case": 3,
+    "model_contract_valid": 4,
+    "model_responses": 4,
+    "healthy_model_no_change_passed": 0,
+    "healthy_model_no_change_total": 1
+  },
+  "posthoc_default_edge": {
+    "designed_after_primary_results": true,
+    "fault_patches_preserving_default": 1,
+    "fault_patches_total": 3,
+    "selected_variant": "literal_override"
+  },
+  "host_protection": {
+    "healthy_patch_promotion_blocked": true,
+    "model_no_change_failure_preserved": true,
+    "counts_as_model_success": false
+  },
+  "runtime": {
+    "actual_RSL_PPO_CPU_inspections": 29,
+    "updates_per_inspection": 3,
+    "simulation": false,
+    "GPU_executions": 0
+  },
+  "usage": [
+    {
+      "case": "late_override",
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "finish_reason": "stop",
+      "input_tokens": 635,
+      "output_tokens": 259,
+      "total_tokens": 894,
+      "wall_s": 1.6533437450125348
+    },
+    {
+      "case": "literal_override",
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "finish_reason": "stop",
+      "input_tokens": 611,
+      "output_tokens": 241,
+      "total_tokens": 852,
+      "wall_s": 1.5265048000001116
+    },
+    {
+      "case": "omitted_argument",
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "finish_reason": "stop",
+      "input_tokens": 636,
+      "output_tokens": 254,
+      "total_tokens": 890,
+      "wall_s": 1.9218303240049863
+    },
+    {
+      "case": "healthy",
+      "provider_model": "private/nvidia/nemotron-3.5-super-120b-a12b",
+      "finish_reason": "stop",
+      "input_tokens": 598,
+      "output_tokens": 263,
+      "total_tokens": 861,
+      "wall_s": 1.6263159449881641
+    }
+  ],
+  "inference_requests": 4,
+  "semantic_retries": 0,
+  "behavior_recovery_evaluated": false,
+  "LLM_or_version_advantage_claimed": false,
+  "preregistration": "bench/protocols/ppo_generated_patch_cpu_20261106_v2.json"
+}

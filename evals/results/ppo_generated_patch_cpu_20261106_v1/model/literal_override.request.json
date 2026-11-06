@@ -1,0 +1,39 @@
+{
+  "schema": "ppo_patch_model_request_v1",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "context": {
+    "schema": "ppo_patch_context_v1",
+    "source": "def build_algorithm_kwargs(config):\n    options = dict(config)\n    options[\"num_learning_epochs\"] = 1\n    return options\n",
+    "source_sha256": "23358b8bd33d610103273ef3ee3d14d797f7f41b680d246c29b176710d35e2bc",
+    "config": {
+      "num_learning_epochs": 5,
+      "num_mini_batches": 4,
+      "learning_rate": 0.001,
+      "schedule": "fixed"
+    },
+    "facts": {
+      "configured.epochs": 5,
+      "configured.minibatches": 4,
+      "configured.expected_steps_per_update": 20,
+      "observed.cpu_updates": 3,
+      "observed.update0.optimizer_steps": 4,
+      "observed.update0.minibatches": 4,
+      "observed.update1.optimizer_steps": 4,
+      "observed.update1.minibatches": 4,
+      "observed.update2.optimizer_steps": 4,
+      "observed.update2.minibatches": 4
+    },
+    "observation_scope": "actual RSL-RL CPU update on deterministic tensor environment; not robot simulation"
+  },
+  "context_sha256": "1ffba6f7b29b51a53c0b9692c1285a3d93cd3e67c195f65720f0ab499105ec42",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You investigate an optimizer configuration adapter used by an actual PPO implementation. Use only the provided source, configured parameters and measured CPU update facts. If the adapter already preserves the configuration and the measured updates conform, choose hold without changing it. Otherwise propose a corrected replacement of the single build_algorithm_kwargs(config) function. Preserve all configured algorithm parameters. Do not hardcode epoch or minibatch counts. The function must be pure: only local dict construction, config reads, assignments, and return; no imports, loops, classes, nested functions, external calls or file/process access. Use single-assignment local variable names, never assign to config or dict, and return a local dictionary variable. Allowed calls are dict(config), config.copy(), and config.get with a constant key and optional scalar default. Dictionary literals and config/local-dictionary lookups use constant string keys. Only the num_learning_epochs field of a local dictionary may be assigned after construction. Do not use annotations, decorators, chained assignments, unpacking, arithmetic, or keyword arguments. Return one JSON object with exact keys action, source_sha256, replacement_source, evidence_ids, rationale. action is patch or hold; replacement_source is the entire replacement source for patch, null for hold. Copy source_sha256 from the context and cite at least one exact existing fact ID. A proposal does not authorize execution or imply recovery."
+    },
+    {
+      "role": "user",
+      "content": "{\"schema\": \"ppo_patch_context_v1\", \"source\": \"def build_algorithm_kwargs(config):\\n    options = dict(config)\\n    options[\\\"num_learning_epochs\\\"] = 1\\n    return options\\n\", \"source_sha256\": \"23358b8bd33d610103273ef3ee3d14d797f7f41b680d246c29b176710d35e2bc\", \"config\": {\"num_learning_epochs\": 5, \"num_mini_batches\": 4, \"learning_rate\": 0.001, \"schedule\": \"fixed\"}, \"facts\": {\"configured.epochs\": 5, \"configured.minibatches\": 4, \"configured.expected_steps_per_update\": 20, \"observed.cpu_updates\": 3, \"observed.update0.optimizer_steps\": 4, \"observed.update0.minibatches\": 4, \"observed.update1.optimizer_steps\": 4, \"observed.update1.minibatches\": 4, \"observed.update2.optimizer_steps\": 4, \"observed.update2.minibatches\": 4}, \"observation_scope\": \"actual RSL-RL CPU update on deterministic tensor environment; not robot simulation\"}"
+    }
+  ]
+}
