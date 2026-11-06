@@ -367,4 +367,3 @@ def assess_candidate(
         "candidate_reasons": [item.reason for item in candidate],
         "model_proposal_success": admitted,
     }
-
