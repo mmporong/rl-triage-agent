@@ -58,7 +58,7 @@ def probe() -> dict:
             "application_unchanged": before == after, "application_sha256": after,
             "application_mode": oct(app.stat().st_mode & 0o777), "uid": os.getuid(),
             "model_calls": 0, "model_prompt_injection_measured": False,
-            "gpu_runs": 0, "data_sent_to_unregistered_host": False,
+            "gpu_runs": 0, "workspace_or_credential_data_sent_to_unregistered_host": False,
             "probe_scope": "operator syscall controls; EACCES distinguished from outage or refused connection"}
 
 

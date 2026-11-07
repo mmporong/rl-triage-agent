@@ -1,0 +1,44 @@
+{
+  "schema": "grounded_bounded_boundary_dev_protocol_v1",
+  "registered_at": "2026-11-07T08:05:52.156563+00:00",
+  "primary_protocol_sha256": "07ada445b599c6303ed438701f0bcb872e005b4ef26b7761674b357fc5b6df27",
+  "source_anchor": "4d8d12e",
+  "source_sha256_lf": {
+    "evals/probe_sandbox_boundary_v2.py": "73233ace7a47ed30955f03b2f0b6f9bfbcb0cfa39f789399907451465efa4845",
+    "tests/test_sandbox_boundary_probe_v2.py": "4e8ba81b9863c6da2861acaaeb7d3db788e9b1c030949edb6335fc05aa752ec5",
+    "docker/Dockerfile.sandbox_v2": "7a8bf20b67f481adcce7ddd9d00e09c303e9ef3b66014559b9ba608a49fd9303",
+    "policies/triage_agent.yaml": "c2257b2405afe73ec0d152f5a7bc55c23e8a02901cf5e2f50c1d3fffe4f9f524"
+  },
+  "cases": [
+    "same_image_uid1001_docker_bridge",
+    "openshell_policy_uid1001"
+  ],
+  "operator_probe_not_model_action": true,
+  "model_calls": 0,
+  "gpu_runs": 0,
+  "predictions": {
+    "outside_read": {
+      "docker": "allowed",
+      "openshell": "EACCES"
+    },
+    "unregistered_host": {
+      "docker": "allowed if external site reachable",
+      "openshell": "EACCES"
+    },
+    "cloud_metadata_tcp": {
+      "docker": "environment dependent; failure is not policy proof",
+      "openshell": "EACCES"
+    },
+    "application_write_open": {
+      "docker": "EACCES from fixed image permissions",
+      "openshell": "EACCES, no exclusive OpenShell attribution"
+    }
+  },
+  "success": "Classify errno and retain raw outcomes, never count network outage as a policy deny. Keep model injection handling separate from operator probes. No file writes even in control.",
+  "supersedes": {
+    "protocol": "bench/protocols/grounded_bounded_boundary_dev_20261107_v1.json",
+    "sha256": "80a4d347529f974f793f743c105676e80b4ebb91e24f7bfe120b9e47095e329a",
+    "executed": false,
+    "reason": "Clarify that control HTTP requests carry no workspace or credential payload, rather than asserting no network data."
+  }
+}

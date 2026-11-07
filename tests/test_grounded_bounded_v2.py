@@ -132,3 +132,14 @@ def test_repeated_write_cannot_change_saved_file(bounded):
     with pytest.raises(B.ToolBoundaryError, match="session_closed"):
         bounded.call("write_grounded_active_assessment", args)
     assert p.read_bytes() == before
+
+
+def test_semantic_refusal_has_a_category_without_raw_model_text(bounded):
+    args = assessment_args(bounded)
+    args["hypotheses"][0]["premises"][0]["operand"]["value"] = 1234.0
+    with pytest.raises(B.ToolBoundaryError):
+        bounded.call("write_grounded_active_assessment", args)
+    failure = bounded.receipt()["events"][-1]["validation_failure"]
+    assert failure["kind"] == "premise_not_true"
+    assert len(failure["message_sha256"]) == 64
+    assert "1234" not in json.dumps(failure)

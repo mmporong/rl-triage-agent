@@ -1,6 +1,7 @@
 """Bounded grounded tools; this layer never approves or executes an inspection."""
 from __future__ import annotations
 
+import hashlib
 from collections import Counter
 from contextvars import ContextVar
 from copy import deepcopy
@@ -18,6 +19,16 @@ TOOL_LIMITS = {
 }
 CHECK_IDS = tuple(sorted(A.ACTIVE_CHECKS))
 CURRENT_SESSION: ContextVar[BoundedSession | None] = ContextVar("grounded_bounded_session_v2", default=None)
+
+
+def validation_failure(message: str) -> dict:
+    # Keep diagnostic categories, not arbitrary model text or filesystem paths.
+    categories = [("배타적", "predictions_not_exclusive"), ("measurement", "measurement_contract"),
+                  ("근거 관계가 참", "premise_not_true"), ("단위", "unit_mismatch"),
+                  ("타입", "value_type_mismatch"), ("selection", "selection_binding"),
+                  ("evidence", "evidence_binding"), ("next check", "check_not_registered")]
+    kind = next((kind for marker, kind in categories if marker in message), "semantic_contract")
+    return {"kind": kind, "message_sha256": hashlib.sha256(message.encode()).hexdigest()}
 
 
 class ToolBoundaryError(ValueError):
@@ -71,6 +82,7 @@ class BoundedSession:
             try:
                 result = self._dispatch(tool, deepcopy(arguments))
                 if "error" in result or result.get("status") == "hold":
+                    event["validation_failure"] = validation_failure(str(result.get("error", result.get("reason"))))
                     raise ToolBoundaryError("backend_semantic_rejection")
                 if tool == "write_grounded_active_assessment":
                     if result.get("status") != "hypotheses_only" or not result.get("assessment_sha256"):
