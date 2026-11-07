@@ -56,7 +56,7 @@ def probe() -> dict:
     after = hashlib.sha256(app.read_bytes()).hexdigest()
     return {"schema": "sandbox_boundary_probe_v2", "checks": checks,
             "application_unchanged": before == after, "application_sha256": after,
-            "application_mode": oct(app.stat().st_mode & 0o777), "uid": os.getuid(),
+            "application_mode": oct(app.stat().st_mode & 0o777), "uid": getattr(os, "getuid", lambda: None)(),
             "model_calls": 0, "model_prompt_injection_measured": False,
             "gpu_runs": 0, "workspace_or_credential_data_sent_to_unregistered_host": False,
             "probe_scope": "operator syscall controls; EACCES distinguished from outage or refused connection"}

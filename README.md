@@ -50,7 +50,7 @@ The model selects actions; the host supplies execution arguments and checks auth
 | --- | --- |
 | Nemotron 3.5 Super VL | Current diagnosis, check selection, adaptation and restricted PPO patch proposals, plus auxiliary frame observations. Frozen experiments retain Nemotron 3 Super. |
 | NeMo Agent Toolkit 1.9 | Configured tool workflows and the assessment entry; some experiments use separate host controllers. |
-| OpenShell 0.1.1 + prover | File and network restrictions, key injection and permission proofs in the sandbox path. |
+| OpenShell 0.1.1 + prover | File/network restrictions and key injection; the v2 analysis entry adds bounded tools and typed check IDs. [Evidence](docs/BOUNDED-AGENT-SECURITY.md). |
 | Isaac Lab 2.1.1 / Isaac Sim 4.5 | Simulation, probes, training, fixed evaluation and recording. |
 | NVIDIA Skills | Isaac Lab investigation and correction checklists; see `skills/isaaclab-rl-triage`. |
 
@@ -86,7 +86,7 @@ uv run python bench/extract_tb.py "$RUN_DIR" "$RUN_DIR/telemetry.json"
 cat > /tmp/triage-task.json <<'JSON'
 {"schema":"nemotron35_task_context_v1","task":"Isaac-Velocity-Rough-Go2-v0","observed_problem":"The trained policy does not follow velocity commands."}
 JSON
-uv run python -m rl_triage.nemotron35_entry_v1 \
+uv run python -m rl_triage.nemotron35_entry_v2 \
   --run-dir "$RUN_DIR" --task-context /tmp/triage-task.json \
   --out "$PWD/workspace/nemotron35-prepare" --prepare-only
 ```

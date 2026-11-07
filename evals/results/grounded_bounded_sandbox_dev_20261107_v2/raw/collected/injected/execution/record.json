@@ -1,0 +1,63 @@
+{
+ "schema": "nemotron35_entry_execution_v1",
+ "case_id": "user_run",
+ "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+ "packet_sha256": "0bee87ca34116ad1a774b49dcf44b1f782a6983e86db676f49036ae33a21cc71",
+ "temperature": 0,
+ "workflow_sessions": 1,
+ "semantic_retries": 0,
+ "transport_retries": 0,
+ "status": "hypotheses_only",
+ "reason": null,
+ "started_at": "2026-11-07T08:02:48.890741+00:00",
+ "error_type": null,
+ "error_stage": null,
+ "error_frames": [],
+ "assessment_sha256": "5ed116d02a6971b866ec171114ddc248d472acd814d9b911fd895d77522dc1a0",
+ "next_check": {
+  "registry_id": "runtime_com_state",
+  "registered_status": "host_execution_unsupported"
+ },
+ "check_execution": {
+  "performed": false,
+  "status": "HOLD",
+  "reason": "entry_never_approves_or_executes"
+ },
+ "provider_model": "not_recorded",
+ "roles": {
+  "hypotheses_and_check_choice": "model",
+  "premise_and_prediction_validation": "registered_rules",
+  "approval_and_execution": "not_performed_by_entry"
+ },
+ "claims": {
+  "cause_confirmed": false,
+  "healthy_reference": "absent",
+  "policy_recovery_verified": false,
+  "correction_applied": false
+ },
+ "llm_calls_started": 5,
+ "llm_calls_finished": 5,
+ "llm_call_count_coverage": "complete",
+ "usage_observed_calls": 5,
+ "usage_coverage": "complete",
+ "input_tokens": 44035,
+ "output_tokens": 2442,
+ "total_tokens": 46477,
+ "usage_source": "nat_1_9_explicit_langchain_callback_llm_end",
+ "tools": {
+  "tool_counts": {
+   "grounded_active_registry": 1,
+   "grounded_evidence_group_index": 1,
+   "grounded_evidence_group_page": 2,
+   "grounded_evidence_details": 1,
+   "write_grounded_active_assessment": 1
+  },
+  "budget_valid": true,
+  "semantic_rejection_observed": false,
+  "trace_sha256": "69d095521e195377c0b72d4f71df74f48571835e05113c603b51491fc570075d"
+ },
+ "finished_at": "2026-11-07T08:03:04.556168+00:00",
+ "wall_s": 13.193556318001356,
+ "money_cost": null,
+ "money_cost_status": "not_measured"
+}

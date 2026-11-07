@@ -1,5 +1,7 @@
 # Nemotron 3.5 사용자 실행 입구
 
+이 문서는 기존 v1 계약과 당시 검증 범위다. 새 호출 상한·검사 ID 계약과 실제 sandbox 개발 측정은 [v2 실행 경계](BOUNDED-AGENT-SECURITY.md)에 있다.
+
 `src/rl_triage/nemotron35_entry_v1.py`는 사용자가 자기 Isaac Lab RSL-RL 학습 로그로 Nemotron 3.5 grounded 진단을 시작하는 모듈 CLI다. 기존 [grounded 단일 실행](GROUNDED-SINGLE-RUN.md)의 도구 다섯 개와 저장 계약을 그대로 쓰고, 모델과 전송 설정만 새 설정 `configs/triage_nemotron35_v1.yml`로 분리했다. 동결된 3 Super 설정 `configs/triage_single_run_grounded_active.yml`은 바꾸지 않는다.
 
 출력은 가설과 다음 검사 사전등록 한 건이다. 정상 기준은 항상 `absent`이며, 원인 확정·검사 승인·검사 실행·GPU·교정은 하지 않는다.

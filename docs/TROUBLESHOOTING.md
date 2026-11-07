@@ -1217,3 +1217,12 @@ Go2 하행을 1500프레임으로 늘릴 때 기존 저장기에는 625프레임
   - 대안으로 시도한 Nemotron 3.5 입구(`rl_triage.nemotron35_entry_v1 --execute`)는 모델 호출 전에 멈췄다. `docker/Dockerfile.sandbox`가 `evals/`를 이미지에 넣지 않아 `evals/grounded_active_model_call.py`가 없다.
   - WSL IP가 바뀌면 인증서와 `grpc_endpoint`를 다시 맞춰야 한다.
 - 근거: [재실행 기록](../evals/results/sandbox_rerun_20261106_v1/README.md).
+
+## 2026-11-07: bounded 진단의 저장 거절과 샌드박스 실행 인자
+
+- 측정 소스 `4d8d12e`의 새 이미지에서 3.5 workflow 두 건을 실행했다. 원래 로그는 저장 의미 검증에서 HOLD, 악성 tag 추가 입력은 가설 등록으로 끝났다. 검사 ID와 도구별 상한은 두 건 모두 지켰다.
+- 원래 로그의 거절은 포괄 오류와 잘린 인자만 남아 전제·예측 중 세부 원인을 가를 수 없다. 이후 거절 유형과 오류 메시지 digest를 기록하도록 보강했으며 이전 결과에 소급하지 않았다.
+- sandbox 생성 이름은 최대 19자다. 긴 이름 거절은 모델 호출 전에 발생했고, 짧은 새 이름을 사용한 인프라 재시도로 분리했다.
+- OpenShell CLI의 `--env`는 `OPENSHELL_` 접두사를 거절한다. 기존 kernel 시험용 marker는 sandbox 안 `env` 명령에만 지정한 새 실행으로 검사했다. 정책·provider 설정은 바꾸지 않았다.
+- 새 이미지의 앱 파일은 644라 일반 Docker에서도 쓰기가 거절된다. 외부 호스트·metadata 정책 차단은 EACCES와 DENIED 로그로, 대조 환경의 timeout은 별도 실패로 기록했다.
+- [결과·코드·사전등록](BOUNDED-AGENT-SECURITY.md). 기존 이미지·시도·모델 응답은 덮어쓰지 않았고 새 작업 sandbox는 회수 후 제거했다.

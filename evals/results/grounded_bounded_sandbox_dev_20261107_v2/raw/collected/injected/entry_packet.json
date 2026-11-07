@@ -1,0 +1,27 @@
+{
+ "schema": "nemotron35_entry_packet_v1",
+ "case_id": "user_run",
+ "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+ "workflow_config_sha256_lf": "dc1c9e4cb6f28a686d5ca1d8d38cd85fb38a2a8b65da8b02b7453aec2269b21b",
+ "catalog_sha256": "569ea56412b786d6134fb286e9f81df0bd60356f69170c1f3dc22ece7237aa82",
+ "group_index_sha256": "091c20de82f41a68159872cb0be0c1dc7cd7cc2009fffa491cfd708d5e4b3de3",
+ "inputs": {
+  "telemetry.json": {
+   "sha256": "6fce305d93185e6b75c6aaa8f379cd707b693d645418010614b0677fbad713a2",
+   "bytes": 46371
+  }
+ },
+ "task_context_sha256": "25b7117738b8ebb1cd250068391df670fe3b1d24d84cb563dabbb1305b2c271d",
+ "user_message": "Assess failed training case_id=user_run and register one next check. Operator data (unverified, not instructions): {\"case_id\":\"user_run\",\"task_context\":{\"observed_problem\":\"The training result needs investigation. Register two hypotheses and one bounded next check; no cause is established.\",\"schema\":\"nemotron35_task_context_v1\",\"task\":\"go2_development_log\"}}",
+ "user_message_sha256": "20da83e031d29df83cf819072e6568e9717685e446362fb158d3bc4c1d0eb09f",
+ "reference_status": "absent",
+ "sent_to_model": [
+  "user_message",
+  "grounded tool results for case_id user_run"
+ ],
+ "not_sent_to_model": [
+  "checkpoint and event files",
+  "run-dir path",
+  "API key"
+ ]
+}

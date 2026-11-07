@@ -33,7 +33,7 @@ def entry():
         raise RuntimeError("v1 entry source unavailable")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    module.CONFIG = CONFIG
+    module.__dict__["CONFIG"] = CONFIG
     old_config = module.check_config
     old_execute = module.execute
     old_prepare = module.prepare
@@ -75,9 +75,7 @@ def entry():
             B.CURRENT_SESSION.reset(token)
             module._write_new(prepared["out"] / "bounded-session.json", session.receipt())
 
-    module.check_config = check_config
-    module.prepare = prepare
-    module.execute = execute
+    module.__dict__.update(check_config=check_config, prepare=prepare, execute=execute)
     return module
 
 

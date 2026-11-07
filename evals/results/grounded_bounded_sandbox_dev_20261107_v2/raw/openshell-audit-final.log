@@ -1,0 +1,121 @@
+[1794038495.370] [sandbox] [INFO ] [openshell_supervisor] Starting sandbox supervision command=["/bin/sleep", "infinity"]
+[1794038495.441] [sandbox] [INFO ] [openshell_supervisor] Fetching sandbox policy via gRPC endpoint=https://127.0.0.1:17670 sandbox=triage-bounded-582 sandbox_id=3a212249-3f57-420b-94d6-5e216ce50ea7
+[1794038495.471] [sandbox] [OCSF ] [ocsf] CONFIG:ENRICHED [INFO] Enriched policy with baseline filesystem paths for proxy mode
+[1794038495.494] [sandbox] [INFO ] [openshell_supervisor_network::opa] Configured OPA runtime binary identity mode require_binary_identity=true source=proto
+[1794038495.496] [sandbox] [OCSF ] [ocsf] CONFIG:CONFIGURED [INFO] OPA runtime binary identity mode configured [source:proto require_binary_identity:true] [source:proto]
+[1794038495.539] [sandbox] [INFO ] [openshell_supervisor] Isolation boundary attached backend=openshell-sandbox
+[1794038495.540] [sandbox] [INFO ] [openshell_supervisor] Isolation boundary enforcement confirmed backend=openshell-sandbox
+[1794038495.545] [sandbox] [OCSF ] [ocsf] CONFIG:ENABLED [INFO] TLS termination enabled: ephemeral CA generated
+[1794038495.546] [sandbox] [OCSF ] [ocsf] CONFIG:READY [INFO] Policy DNS connected to isolation boundary
+[1794038495.546] [sandbox] [OCSF ] [ocsf] NET:LISTEN [INFO] 127.0.0.1:3128
+[1794038495.546] [sandbox] [WARN ] [openshell_supervisor_network::proxy] host.openshell.internal maps to a non-link-local IP; trusted-gateway SSRF exemption disabled ip=127.0.0.1
+[1794038495.561] [sandbox] [INFO ] [openshell_supervisor] Isolation boundary agent started backend=openshell-sandbox
+[1794038495.566] [sandbox] [OCSF ] [ocsf] SSH:LISTEN [INFO]
+[1794038495.575] [sandbox] [OCSF ] [ocsf] CONFIG:LOADED [INFO] Acknowledged initial policy revision as loaded [version:2] [hash:3225366c90a5afb7529ff8a4ad97c7addc76a9b3c0b14ece1d6468556731857d]
+[1794038495.580] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] 127.0.0.1:17670
+[1794038495.580] [sandbox] [INFO ] [openshell_supervisor] Control-mode access plane started backend=openshell-sandbox
+[1794038505.568] [sandbox] [OCSF ] [ocsf] CONFIG:DETECTED [INFO] Settings poll: config change detected [old_revision:11556681566704419303 new_revision:11556681566704419303 policy_changed:false provider_env_changed:true]
+[1794038505.571] [sandbox] [INFO ] [openshell_supervisor_network::opa] Configured OPA runtime binary identity mode require_binary_identity=true source=proto
+[1794038505.571] [sandbox] [OCSF ] [ocsf] CONFIG:CONFIGURED [INFO] OPA runtime binary identity mode configured [source:proto require_binary_identity:true] [source:proto]
+[1794038520.994] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=191b310e-69ba-4bf3-ad27-f3c139f34a57, target=unix:/run/openshell/ssh.sock)
+[1794038520.994] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038526.428] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=191b310e-69ba-4bf3-ad27-f3c139f34a57, target=unix:/run/openshell/ssh.sock)
+[1794038540.655] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=af70c622-94a1-4448-853f-2d36a2e2bd41, target=unix:/run/openshell/ssh.sock)
+[1794038540.655] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038549.266] [sandbox] [OCSF ] [ocsf] CONFIG:PUBLISHED [INFO] Policy DNS mapped integrate.api.nvidia.com resolved=75.2.113.119,99.83.136.103 synthetic=198.18.0.2 ports=443 mapping_id=263a63db-44a1-409c-a0b7-abc16e9cd946
+[1794038549.284] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/bin/python3.12(0) -> integrate.api.nvidia.com:443 [policy:_provider_nvidia_triage engine:opa]
+[1794038549.355] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://integrate.api.nvidia.com:443/v1/chat/completions [policy:_provider_nvidia_triage engine:l7]
+[1794038549.835] [sandbox] [OCSF ] [ocsf] CONFIG:PUBLISHED [INFO] Policy DNS mapped integrate.api.nvidia.com resolved=75.2.113.119,99.83.136.103 synthetic=198.18.0.2 ports=443 mapping_id=512a24f3-5140-4bf3-bde4-63964cc432d9
+[1794038549.846] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/bin/python3.12(0) -> integrate.api.nvidia.com:443 [policy:_provider_nvidia_triage engine:opa]
+[1794038549.911] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://integrate.api.nvidia.com:443/v1/chat/completions [policy:_provider_nvidia_triage engine:l7]
+[1794038550.689] [sandbox] [INFO ] [openshell_supervisor] Flushed activity summary to gateway denied_action_count=0 network_activity_count=2 sandbox_name=triage-bounded-582
+[1794038553.314] [sandbox] [OCSF ] [ocsf] CONFIG:PUBLISHED [INFO] Policy DNS mapped integrate.api.nvidia.com resolved=75.2.113.119,99.83.136.103 synthetic=198.18.0.2 ports=443 mapping_id=3d17292b-28c5-4f2f-a784-128fbdb0c570
+[1794038553.320] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/bin/python3.12(0) -> integrate.api.nvidia.com:443 [policy:_provider_nvidia_triage engine:opa]
+[1794038553.384] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://integrate.api.nvidia.com:443/v1/chat/completions [policy:_provider_nvidia_triage engine:l7]
+[1794038555.504] [sandbox] [OCSF ] [ocsf] CONFIG:PUBLISHED [INFO] Policy DNS mapped integrate.api.nvidia.com resolved=75.2.113.119,99.83.136.103 synthetic=198.18.0.2 ports=443 mapping_id=b99f4fbf-73e1-493a-8733-3221157a9607
+[1794038555.509] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/bin/python3.12(0) -> integrate.api.nvidia.com:443 [policy:_provider_nvidia_triage engine:opa]
+[1794038555.567] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://integrate.api.nvidia.com:443/v1/chat/completions [policy:_provider_nvidia_triage engine:l7]
+[1794038560.689] [sandbox] [INFO ] [openshell_supervisor] Flushed activity summary to gateway denied_action_count=0 network_activity_count=2 sandbox_name=triage-bounded-582
+[1794038564.778] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=af70c622-94a1-4448-853f-2d36a2e2bd41, target=unix:/run/openshell/ssh.sock)
+[1794038564.817] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=f2479549-81f4-4d4a-9909-f1044c9dec08, target=unix:/run/openshell/ssh.sock)
+[1794038564.817] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038570.348] [sandbox] [OCSF ] [ocsf] CONFIG:PUBLISHED [INFO] Policy DNS mapped integrate.api.nvidia.com resolved=75.2.113.119,99.83.136.103 synthetic=198.18.0.2 ports=443 mapping_id=17fac0aa-3658-48f7-a83e-b49d94ff14ca
+[1794038570.355] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/bin/python3.12(0) -> integrate.api.nvidia.com:443 [policy:_provider_nvidia_triage engine:opa]
+[1794038570.421] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://integrate.api.nvidia.com:443/v1/chat/completions [policy:_provider_nvidia_triage engine:l7]
+[1794038570.688] [sandbox] [INFO ] [openshell_supervisor] Flushed activity summary to gateway denied_action_count=0 network_activity_count=1 sandbox_name=triage-bounded-582
+[1794038570.813] [sandbox] [OCSF ] [ocsf] CONFIG:PUBLISHED [INFO] Policy DNS mapped integrate.api.nvidia.com resolved=75.2.113.119,99.83.136.103 synthetic=198.18.0.2 ports=443 mapping_id=e21d801f-31a3-4a1c-a493-23ded19c9504
+[1794038570.820] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/bin/python3.12(0) -> integrate.api.nvidia.com:443 [policy:_provider_nvidia_triage engine:opa]
+[1794038570.879] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://integrate.api.nvidia.com:443/v1/chat/completions [policy:_provider_nvidia_triage engine:l7]
+[1794038573.441] [sandbox] [OCSF ] [ocsf] CONFIG:PUBLISHED [INFO] Policy DNS mapped integrate.api.nvidia.com resolved=75.2.113.119,99.83.136.103 synthetic=198.18.0.2 ports=443 mapping_id=c4ba1bcf-2257-4699-93dd-667464e37c8c
+[1794038573.446] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/bin/python3.12(0) -> integrate.api.nvidia.com:443 [policy:_provider_nvidia_triage engine:opa]
+[1794038573.508] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://integrate.api.nvidia.com:443/v1/chat/completions [policy:_provider_nvidia_triage engine:l7]
+[1794038575.090] [sandbox] [OCSF ] [ocsf] CONFIG:PUBLISHED [INFO] Policy DNS mapped integrate.api.nvidia.com resolved=75.2.113.119,99.83.136.103 synthetic=198.18.0.2 ports=443 mapping_id=8356614c-8a13-4aa0-9a0a-8f8269086221
+[1794038575.097] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/bin/python3.12(0) -> integrate.api.nvidia.com:443 [policy:_provider_nvidia_triage engine:opa]
+[1794038575.157] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://integrate.api.nvidia.com:443/v1/chat/completions [policy:_provider_nvidia_triage engine:l7]
+[1794038582.840] [sandbox] [OCSF ] [ocsf] CONFIG:PUBLISHED [INFO] Policy DNS mapped integrate.api.nvidia.com resolved=75.2.113.119,99.83.136.103 synthetic=198.18.0.2 ports=443 mapping_id=16b3e542-84a8-4479-8481-063fa52c12b7
+[1794038582.845] [sandbox] [OCSF ] [ocsf] NET:OPEN [INFO] ALLOWED /usr/bin/python3.12(0) -> integrate.api.nvidia.com:443 [policy:_provider_nvidia_triage engine:opa]
+[1794038582.908] [sandbox] [OCSF ] [ocsf] HTTP:POST [INFO] ALLOWED POST http://integrate.api.nvidia.com:443/v1/chat/completions [policy:_provider_nvidia_triage engine:l7]
+[1794038583.156] [sandbox] [INFO ] [openshell_supervisor] Flushed activity summary to gateway denied_action_count=0 network_activity_count=4 sandbox_name=triage-bounded-582
+[1794038585.279] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=f2479549-81f4-4d4a-9909-f1044c9dec08, target=unix:/run/openshell/ssh.sock)
+[1794038605.603] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=3fd9ee67-3e22-408e-93f7-afd3c27a650d, target=unix:/run/openshell/ssh.sock)
+[1794038605.603] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038605.613] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=3fd9ee67-3e22-408e-93f7-afd3c27a650d, target=unix:/run/openshell/ssh.sock)
+[1794038605.657] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=6da1d02b-acc5-4257-923e-904a0e279657, target=unix:/run/openshell/ssh.sock)
+[1794038605.657] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038605.666] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=6da1d02b-acc5-4257-923e-904a0e279657, target=unix:/run/openshell/ssh.sock)
+[1794038605.712] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=8b8539b1-16ea-41e1-9648-5443b98e0250, target=unix:/run/openshell/ssh.sock)
+[1794038605.712] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038605.721] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=8b8539b1-16ea-41e1-9648-5443b98e0250, target=unix:/run/openshell/ssh.sock)
+[1794038605.764] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=cc5d3630-1ee1-42e7-9e52-ce046f31ef96, target=unix:/run/openshell/ssh.sock)
+[1794038605.764] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038605.773] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=cc5d3630-1ee1-42e7-9e52-ce046f31ef96, target=unix:/run/openshell/ssh.sock)
+[1794038605.816] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=4be7d160-c715-46ca-b5f4-e3ff527a2e9e, target=unix:/run/openshell/ssh.sock)
+[1794038605.816] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038605.825] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=4be7d160-c715-46ca-b5f4-e3ff527a2e9e, target=unix:/run/openshell/ssh.sock)
+[1794038605.868] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=27f3ce07-2ded-419a-be1d-e34088c71614, target=unix:/run/openshell/ssh.sock)
+[1794038605.868] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038605.877] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=27f3ce07-2ded-419a-be1d-e34088c71614, target=unix:/run/openshell/ssh.sock)
+[1794038605.923] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=1cf8a1c2-2938-466c-8e9c-5db11cb6445b, target=unix:/run/openshell/ssh.sock)
+[1794038605.923] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038605.933] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=1cf8a1c2-2938-466c-8e9c-5db11cb6445b, target=unix:/run/openshell/ssh.sock)
+[1794038605.979] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=6ec3e82e-ab35-498f-8825-cbd8cd564455, target=unix:/run/openshell/ssh.sock)
+[1794038605.979] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038605.988] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=6ec3e82e-ab35-498f-8825-cbd8cd564455, target=unix:/run/openshell/ssh.sock)
+[1794038606.032] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=5eda86f6-6c02-4aef-8408-57276405a832, target=unix:/run/openshell/ssh.sock)
+[1794038606.032] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038606.040] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=5eda86f6-6c02-4aef-8408-57276405a832, target=unix:/run/openshell/ssh.sock)
+[1794038606.083] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=3cbc5890-bebb-4027-93ef-c5555b456149, target=unix:/run/openshell/ssh.sock)
+[1794038606.083] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038606.092] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=3cbc5890-bebb-4027-93ef-c5555b456149, target=unix:/run/openshell/ssh.sock)
+[1794038606.136] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=0ced6459-5b61-48f1-ba35-6c521129594f, target=unix:/run/openshell/ssh.sock)
+[1794038606.136] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038606.145] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=0ced6459-5b61-48f1-ba35-6c521129594f, target=unix:/run/openshell/ssh.sock)
+[1794038606.188] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=b50ba4e8-6167-456e-ba40-014067e2a3d2, target=unix:/run/openshell/ssh.sock)
+[1794038606.188] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038606.197] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=b50ba4e8-6167-456e-ba40-014067e2a3d2, target=unix:/run/openshell/ssh.sock)
+[1794038778.013] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=35cba482-81ca-469f-8474-bcf2338fe80b, target=unix:/run/openshell/ssh.sock)
+[1794038778.013] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038778.076] [sandbox] [OCSF ] [ocsf] NET:REFUSE [MED] DENIED huggingface.co [reason:policy_dns_ineligible]
+[1794038778.076] [sandbox] [OCSF ] [ocsf] CONFIG:OBSERVATION [INFO] Policy DNS staged unapproved name huggingface.co synthetic=198.18.0.3 for TCP policy review
+[1794038778.077] [sandbox] [WARN ] [openshell_supervisor_network::proxy] Denied staged transparent connection destination=198.18.0.3:443 reason=endpoint huggingface.co:443 is not allowed by any policy
+[1794038778.077] [sandbox] [OCSF ] [ocsf] NET:OPEN [MED] DENIED /usr/bin/python3.12(0) -> huggingface.co:443 [reason:transparent_tcp_policy_denied]
+[1794038778.078] [sandbox] [WARN ] [openshell_supervisor_network::proxy] Denied staged transparent connection destination=169.254.169.254:80 reason=endpoint 169.254.169.254:80 is not allowed by any policy
+[1794038778.078] [sandbox] [OCSF ] [ocsf] NET:OPEN [MED] DENIED /usr/bin/python3.12(0) -> 169.254.169.254:80 [reason:transparent_tcp_policy_denied]
+[1794038778.087] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=35cba482-81ca-469f-8474-bcf2338fe80b, target=unix:/run/openshell/ssh.sock)
+[1794038785.562] [sandbox] [INFO ] [openshell_supervisor] Flushed denial analysis to gateway proposals=1 sandbox_name=triage-bounded-582 summaries=1
+[1794038830.060] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=9fac60e8-ad4a-442f-8043-e4845ee30f13, target=unix:/run/openshell/ssh.sock)
+[1794038830.060] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038830.070] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=9fac60e8-ad4a-442f-8043-e4845ee30f13, target=unix:/run/openshell/ssh.sock)
+[1794038830.163] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=598015ac-7648-446f-8f7f-92a88e43cd9d, target=unix:/run/openshell/ssh.sock)
+[1794038830.163] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038830.196] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=598015ac-7648-446f-8f7f-92a88e43cd9d, target=unix:/run/openshell/ssh.sock)
+[1794038849.518] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay open (channel_id=ccb6a808-4f90-4c99-91f1-27dff9e1901f, target=unix:/run/openshell/ssh.sock)
+[1794038849.518] [sandbox] [OCSF ] [ocsf] SSH:OPEN [INFO] ALLOWED
+[1794038850.862] [sandbox] [OCSF ] [ocsf] NET:REFUSE [MED] DENIED huggingface.co [reason:policy_dns_ineligible]
+[1794038850.862] [sandbox] [OCSF ] [ocsf] CONFIG:OBSERVATION [INFO] Policy DNS staged unapproved name huggingface.co synthetic=198.18.0.3 for TCP policy review
+[1794038850.863] [sandbox] [WARN ] [openshell_supervisor_network::proxy] Denied staged transparent connection destination=198.18.0.3:443 reason=endpoint huggingface.co:443 is not allowed by any policy
+[1794038850.863] [sandbox] [OCSF ] [ocsf] NET:OPEN [MED] DENIED /usr/bin/python3.12(0) -> huggingface.co:443 [reason:transparent_tcp_policy_denied]
+[1794038850.865] [sandbox] [WARN ] [openshell_supervisor_network::proxy] Denied staged transparent connection destination=169.254.169.254:80 reason=endpoint 169.254.169.254:80 is not allowed by any policy
+[1794038850.865] [sandbox] [OCSF ] [ocsf] NET:OPEN [MED] DENIED /usr/bin/python3.12(0) -> 169.254.169.254:80 [reason:transparent_tcp_policy_denied]
+[1794038851.004] [sandbox] [OCSF ] [ocsf] EVENT [INFO] ssh relay closed (channel_id=ccb6a808-4f90-4c99-91f1-27dff9e1901f, target=unix:/run/openshell/ssh.sock)
+[1794038862.918] [sandbox] [INFO ] [openshell_supervisor] Flushed denial analysis to gateway proposals=1 sandbox_name=triage-bounded-582 summaries=1

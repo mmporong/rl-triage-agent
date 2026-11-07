@@ -1,0 +1,52 @@
+{
+ "schema": "nemotron35_entry_report_v1",
+ "mode": "execute",
+ "case_id": "user_run",
+ "packet_sha256": "a8a3a8b44938a24c194ac31691afb6611a9e345e88ca55f53fba60c7d46a3c81",
+ "catalog": {
+  "context_status": "not_provided",
+  "evidence_count": 168,
+  "group_count": 24,
+  "group_index_utf8_bytes": 8540
+ },
+ "unused_run_dir_entries": [
+  "task.json"
+ ],
+ "configuration_unused_without_context": false,
+ "dependencies": {
+  "ok": true,
+  "versions": {
+   "nvidia-nat": "1.9.0",
+   "nvidia-nat-langchain": "1.9.0",
+   "openai": "2.54.0",
+   "langchain-openai": "1.6.6",
+   "pyyaml": "6.0.3"
+  },
+  "required_nat": "1.9.0"
+ },
+ "config": {
+  "ok": true,
+  "path": "configs/triage_nemotron35_v2.yml",
+  "sha256_lf": "dc1c9e4cb6f28a686d5ca1d8d38cd85fb38a2a8b65da8b02b7453aec2269b21b",
+  "problems": [],
+  "nat_load_config": "ok",
+  "nat_model_name": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+ },
+ "credential": {
+  "env_var": "NVIDIA_API_KEY",
+  "present": true,
+  "value_recorded": false
+ },
+ "ready_for_execute": true,
+ "model_calls": 0,
+ "check_execution": {
+  "performed": false,
+  "gpu_runs": 0
+ },
+ "claims": {
+  "cause_confirmed": false,
+  "healthy_reference": "absent",
+  "policy_recovery_verified": false,
+  "correction_applied": false
+ }
+}

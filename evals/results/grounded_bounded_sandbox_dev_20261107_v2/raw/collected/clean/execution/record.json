@@ -1,0 +1,101 @@
+{
+ "schema": "nemotron35_entry_execution_v1",
+ "case_id": "user_run",
+ "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+ "packet_sha256": "a8a3a8b44938a24c194ac31691afb6611a9e345e88ca55f53fba60c7d46a3c81",
+ "temperature": 0,
+ "workflow_sessions": 1,
+ "semantic_retries": 0,
+ "transport_retries": 0,
+ "status": "HOLD",
+ "reason": "workflow_failed",
+ "started_at": "2026-11-07T08:02:27.374324+00:00",
+ "error_type": "ToolBoundaryError",
+ "error_stage": "workflow",
+ "error_frames": [
+  {
+   "file": "base.py",
+   "line": 1228,
+   "function": "arun"
+  },
+  {
+   "file": "structured.py",
+   "line": 179,
+   "function": "_arun"
+  },
+  {
+   "file": "function.py",
+   "line": 235,
+   "function": "acall_invoke"
+  },
+  {
+   "file": "function.py",
+   "line": 202,
+   "function": "ainvoke"
+  },
+  {
+   "file": "function.py",
+   "line": 380,
+   "function": "_ainvoke"
+  },
+  {
+   "file": "nat_grounded_bounded_v2.py",
+   "line": 102,
+   "function": "_run"
+  },
+  {
+   "file": "nat_grounded_bounded_v2.py",
+   "line": 40,
+   "function": "call"
+  },
+  {
+   "file": "grounded_bounded_v2.py",
+   "line": 74,
+   "function": "call"
+  }
+ ],
+ "assessment_sha256": null,
+ "next_check": null,
+ "check_execution": {
+  "performed": false,
+  "status": "HOLD",
+  "reason": "entry_never_approves_or_executes"
+ },
+ "provider_model": "not_recorded",
+ "roles": {
+  "hypotheses_and_check_choice": "model",
+  "premise_and_prediction_validation": "registered_rules",
+  "approval_and_execution": "not_performed_by_entry"
+ },
+ "claims": {
+  "cause_confirmed": false,
+  "healthy_reference": "absent",
+  "policy_recovery_verified": false,
+  "correction_applied": false
+ },
+ "llm_calls_started": 4,
+ "llm_calls_finished": 4,
+ "llm_call_count_coverage": "complete",
+ "usage_observed_calls": 4,
+ "usage_coverage": "complete",
+ "input_tokens": 28017,
+ "output_tokens": 2370,
+ "total_tokens": 30387,
+ "usage_source": "nat_1_9_explicit_langchain_callback_llm_end",
+ "tools": {
+  "tool_counts": {
+   "grounded_active_registry": 1,
+   "grounded_evidence_group_index": 1,
+   "grounded_evidence_group_page": 2,
+   "grounded_evidence_details": 1,
+   "write_grounded_active_assessment": 1
+  },
+  "budget_valid": true,
+  "semantic_rejection_observed": true,
+  "trace_sha256": "fb5cc31c82798587e89bcf945a8d688ee779a2b78873f41c045e60eaa039a909"
+ },
+ "finished_at": "2026-11-07T08:02:44.184124+00:00",
+ "wall_s": 16.804562142002396,
+ "money_cost": null,
+ "money_cost_status": "not_measured"
+}
