@@ -11,6 +11,7 @@
 | Requirements | Python + `uv`; NVIDIA API for model calls; an RTX host with Isaac Lab for simulation. Docker + OpenShell for the sandbox path. |
 | OpenShell | 0.1.1 |
 | Collection | Hackathon · Mollet |
+| Result | NVIDIA Korea Agentic AI Hackathon 2026: final top 5 (Team Mollet). Presented at NVIDIA AI Day Seoul 2026 on Nov 10, 2026. |
 
 ## When the first correction is not enough
 
@@ -135,6 +136,8 @@ These check permission proofs, stored correction records and public replay data.
 | Video and reproducibility | [Video contract](docs/VISION-EVIDENCE-CONTRACT.md) · [Evidence story](docs/AGENTIC-STORY-REPLAY.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) |
 
 ## 한국어 요약
+
+NVIDIA Korea Agentic AI Hackathon 2026에서 Team Mollet으로 최종 결선 TOP 5에 올랐고, 2026-11-10 NVIDIA AI Day Seoul 2026 결선 무대에서 발표했습니다.
 
 RL Triage는 Isaac Lab 로봇 정책이 과제에 실패했을 때, 학습 기록과 관측에서 검사 후보를 고르는 에이전트입니다. Nemotron이 검사를 선택하면 호스트가 승인과 근거를 확인해 실행합니다. 원인이 확인되면 등록 교정을, 별도 과제 계약이 있으면 정책 적응을 실행하고 같은 기준으로 다시 평가합니다. 근거가 부족하면 HOLD로 멈춥니다.
 
